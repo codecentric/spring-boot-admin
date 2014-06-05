@@ -5,19 +5,19 @@
         <tr>
           <th>Service</th>
           <th>Version</th>
-          <th>URL</th>
-          <th>Message</th>
-          <th>Active</th>
-          <th>Actions</th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="service in services">
-          <td>{{ service.name }}</td>
-          <td>{{ service.version }}</td>
-          <td>{{ service.url }}</td>
-          <td>{{ service.message }}</td>
-          <td>{{ service.active }}</td>
+        <tr ng-repeat="application in applications">
+          <td>{{ application.name }}</td>
+          <td>{{ application.version }}</td>
+          <td></td>
+          <td></td>
+          <td></td>
           <td><button type="button" ng-click="editService(service.id)" class="btn btn-success">Edit</button></td>
           <td><button type="button" ng-click="deleteService(service.id)" class="btn btn-danger">Delete</button></td>
         </tr>

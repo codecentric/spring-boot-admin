@@ -1,47 +1,47 @@
 'use strict';
 
 angular.module('service-registry')
-  .controller('MainCtrl', function ($scope, Service, ServiceDetail, $location) {
+  .controller('MainCtrl', function ($scope, Application, ApplicationDetail, $location) {
 	  
 	//Gets the service from /api/services
-	$scope.services = Service.query(); 
+	$scope.applications = Application.query(); 
 	
-	$scope.addService = function () {		
-        window.location = "/#add-service";
+	$scope.addApplication = function () {		
+        window.location = "/#add-applications";
     };
     
     // callback for ng-click 'editService':
-    $scope.editService = function (id) {
-        $location.path('/services/' + id);
+    $scope.editApplication = function (id) {
+        $location.path('/applications/' + id);
     };
 
     // callback for ng-click 'deleteService':
-    $scope.deleteService = function (id) {
-    	ServiceDetail.delete({ id: id });
-        $scope.services = Service.query();
+    $scope.deleteApplication = function (id) {
+    	ApplicationDetail.delete({ id: id });
+        $scope.applications = Application.query();
     };
     
   })
-  .controller('ServiceCreationCtrl', function ($scope, Service, $location) {
+  .controller('ApplicationCreationCtrl', function ($scope, Application, $location) {
       // callback for ng-click 'saveService':
-      $scope.saveService = function () {
+      $scope.saveApplication = function () {
           Service.create($scope.service);
-          $location.path('/services');
+          $location.path('/applications');
       }
       // callback for ng-click 'cancel':
       $scope.cancel = function () {
-          $location.path('/services');
+          $location.path('/applications');
       };
   })
-  .controller('ServiceDetailCtrl', function ($scope, $routeParams, Service, ServiceDetail, $location) {
+  .controller('ApplicationDetailCtrl', function ($scope, $routeParams, Application, ApplicationDetail, $location) {
       // callback for ng-click 'updateService':
-      $scope.saveService = function () {
-    	  ServiceDetail.update($scope.service);
-          $location.path('/services');
+      $scope.saveApplication = function () {
+    	  ApplicationDetail.update($scope.service);
+          $location.path('/applications');
       }
       // callback for ng-click 'cancel':
       $scope.cancel = function () {
-          $location.path('/services');
+          $location.path('/applications');
       };
-      $scope.service = ServiceDetail.show({id: $routeParams.id});
+      $scope.service = ApplicationDetail.show({id: $routeParams.id});
   });

@@ -14,13 +14,13 @@ angular.module('service-registry', [
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
       })
-      .when('/add-service', {
+      .when('/add-application', {
         templateUrl: 'views/detail.html',
-        controller: 'ServiceCreationCtrl'
+        controller: 'ApplicationCreationCtrl'
       })
-      .when('/services/:id', {
+      .when('/applications/:id', {
         templateUrl: 'views/detail.html',
-        controller: 'ServiceDetailCtrl'
+        controller: 'ApplicationDetailCtrl'
       })
       .otherwise({
         redirectTo: '/'

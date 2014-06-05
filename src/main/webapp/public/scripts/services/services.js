@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('service-registry.services', ['ngResource'])
-.factory('Service', ['$resource',
+.factory('Application', ['$resource',
   function($resource){
     return $resource(
     		'/api/applications', {}, {
@@ -9,7 +9,7 @@ angular.module('service-registry.services', ['ngResource'])
     			create: { method: 'POST' }
     		});
   }])
-  .factory('ServiceDetail', ['$resource',
+  .factory('ApplicationDetail', ['$resource',
   function($resource){
     return $resource(
     		'/api/applications/:id', 
