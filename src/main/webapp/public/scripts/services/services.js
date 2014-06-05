@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('service-registry.services', ['ngResource'])
+angular.module('registry.services', ['ngResource'])
 .factory('Application', ['$resource',
   function($resource){
     return $resource(

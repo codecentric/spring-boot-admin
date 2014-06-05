@@ -1,10 +1,10 @@
 'use strict';
 
-angular.module('service-registry')
+angular.module('registry')
   .controller('MainCtrl', function ($scope, Application, ApplicationDetail, $location) {
 	  
 	//Gets the service from /api/services
-	$scope.applications = Application.query(); 
+	$scope.applications = Application.query();
 	
 	$scope.addApplication = function () {		
         window.location = "/#add-applications";

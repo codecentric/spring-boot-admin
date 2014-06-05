@@ -1,12 +1,12 @@
 'use strict';
 
-angular.module('service-registry', [
+angular.module('registry', [
   'ngCookies',
   'ngResource',
   'ngSanitize',
   'ngRoute',
   'ngResource',
-  'service-registry.services'
+  'registry.services'
 ])
   .config(function ($routeProvider) {
     $routeProvider
