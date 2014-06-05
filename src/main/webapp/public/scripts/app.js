@@ -14,14 +14,6 @@ angular.module('registry', [
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
       })
-      .when('/add-application', {
-        templateUrl: 'views/detail.html',
-        controller: 'ApplicationCreationCtrl'
-      })
-      .when('/applications/:id', {
-        templateUrl: 'views/detail.html',
-        controller: 'ApplicationDetailCtrl'
-      })
       .otherwise({
         redirectTo: '/'
       });

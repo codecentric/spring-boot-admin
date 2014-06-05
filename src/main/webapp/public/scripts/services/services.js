@@ -9,13 +9,12 @@ angular.module('registry.services', ['ngResource'])
     			create: { method: 'POST' }
     		});
   }])
-  .factory('ApplicationDetail', ['$resource',
+  .factory('ApplicationInfo', ['$resource',
   function($resource){
     return $resource(
-    		'/api/applications/:id', 
-    		{id:'@id'}, {
-    			show: { method: 'GET' },
+    		':url', 
+    		{url:'@url'}, {
+    			query: { method: 'GET' },
     			update: {method: 'PUT', params: {id: '@id'} },
-    			delete: {method:'DELETE', params: {id: '@id'} }
     		});
   }]);

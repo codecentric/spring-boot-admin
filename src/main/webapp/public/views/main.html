@@ -13,16 +13,14 @@
       </thead>
       <tbody>
         <tr ng-repeat="application in applications">
-          <td>{{ application.name }}</td>
-          <td>{{ application.version }}</td>
+          <td>{{ application.id }}</td>
+          <td>{{ application.url }}</td>
           <td></td>
           <td></td>
           <td></td>
           <td><button type="button" ng-click="editService(service.id)" class="btn btn-success">Edit</button></td>
-          <td><button type="button" ng-click="deleteService(service.id)" class="btn btn-danger">Delete</button></td>
         </tr>
       </tbody>
     </table>
-    <!-- <button type="button" ng-click="addService()" class="btn btn-primary">Add Service</button> -->
   </div>
 </div><!-- /.container -->
