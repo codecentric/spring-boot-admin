@@ -1,0 +1,28 @@
+<div class="container">
+  <div class="main-template">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Service</th>
+          <th>Version</th>
+          <th>URL</th>
+          <th>Message</th>
+          <th>Active</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="service in services">
+          <td>{{ service.name }}</td>
+          <td>{{ service.version }}</td>
+          <td>{{ service.url }}</td>
+          <td>{{ service.message }}</td>
+          <td>{{ service.active }}</td>
+          <td><button type="button" ng-click="editService(service.id)" class="btn btn-success">Edit</button></td>
+          <td><button type="button" ng-click="deleteService(service.id)" class="btn btn-danger">Delete</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <!-- <button type="button" ng-click="addService()" class="btn btn-primary">Add Service</button> -->
+  </div>
+</div><!-- /.container -->

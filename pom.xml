@@ -7,7 +7,7 @@
 	<properties>
 		<spring-boot.version>1.0.2.RELEASE</spring-boot.version>
 		<spring.version>4.0.3.RELEASE</spring.version>
-		<bootstrap.version>3.1.1</bootstrap.version>
+		<bootstrap.version>2.3.2</bootstrap.version>
 		<jquery.version>1.11.0</jquery.version>
 		<angularjs.version>1.2.12</angularjs.version>
 	</properties>
@@ -42,7 +42,7 @@
 			<artifactId>angularjs</artifactId>
 			<version>${angularjs.version}</version>
 		</dependency>
-		
+
 		<!-- Test -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -65,6 +65,13 @@
 			</resource>
 			<resource>
 				<directory>src/main/webapp</directory>
+			</resource>
+			<resource>
+				<directory>src/main/webapp</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*.html</include>
+				</includes>
 			</resource>
 		</resources>
 		<plugins>
