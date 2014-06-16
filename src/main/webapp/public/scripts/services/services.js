@@ -5,16 +5,14 @@ angular.module('registry.services', ['ngResource'])
   function($resource){
     return $resource(
     		'/api/applications', {}, {
-    			query: {method:'GET', isArray:true},
-    			create: { method: 'POST' }
+    			query: { method:'GET', isArray:true }
     		});
   }])
   .factory('ApplicationInfo', ['$resource',
   function($resource){
     return $resource(
-    		':url', 
-    		{url:'@url'}, {
-    			query: { method: 'GET' },
-    			update: {method: 'PUT', params: {id: '@id'} },
+    		decodeURIComponent(':url'), 
+    		{}, {
+    			query: { method: 'GET' } ,
     		});
   }]);
