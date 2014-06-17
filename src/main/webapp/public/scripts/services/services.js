@@ -8,11 +8,15 @@ angular.module('registry.services', ['ngResource'])
     			query: { method:'GET', isArray:true }
     		});
   }])
-  .factory('ApplicationInfo', ['$resource',
-  function($resource){
-    return $resource(
-    		decodeURIComponent(':url'), 
-    		{}, {
-    			query: { method: 'GET' } ,
-    		});
+  .service('ApplicationInfo', ['$http',
+  function($http){
+	var _app;
+	this.setApp = function(app) {
+		_app = app;
+	}
+	this.getInfo = function() {
+    	return $http.get(_app.url + '/info').success(function(response) {
+    		_app.version = response.version;
+    	});
+    }
   }]);

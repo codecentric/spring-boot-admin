@@ -5,7 +5,6 @@ angular.module('registry', [
   'ngResource',
   'ngSanitize',
   'ngRoute',
-  'ngResource',
   'registry.services'
 ])
   .config(function ($routeProvider) {
