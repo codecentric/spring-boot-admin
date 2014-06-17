@@ -1,8 +1,8 @@
-package de.codecentric;
+package de.codecentric.boot.admin;
 
 import org.springframework.web.client.RestTemplate;
 
-import de.codecentric.model.Application;
+import de.codecentric.boot.admin.model.Application;
 
 public class RegisterExampleApp {
 

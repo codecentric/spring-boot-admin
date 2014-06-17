@@ -1,4 +1,4 @@
-package de.codecentric.controller;
+package de.codecentric.boot.admin.controller;
 
 import java.util.List;
 
@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import de.codecentric.model.Application;
-import de.codecentric.service.ApplicationRegistry;
+import de.codecentric.boot.admin.model.Application;
+import de.codecentric.boot.admin.service.ApplicationRegistry;
 
 @Controller
 public class RegistryController {

@@ -1,4 +1,4 @@
-package de.codecentric.config;
+package de.codecentric.boot.admin.config;
 
 import java.util.List;
 
