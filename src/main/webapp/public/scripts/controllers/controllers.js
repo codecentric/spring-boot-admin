@@ -10,6 +10,7 @@ angular.module('registry')
 		for (var i = 0; i < applications.length; i++) {
 			var app = applications[i];
 			ApplicationInfo.getInfo(app);
+			ApplicationInfo.getHealth(app);
 		}	
 	});
 	
