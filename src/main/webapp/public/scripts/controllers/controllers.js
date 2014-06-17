@@ -9,8 +9,7 @@ angular.module('registry')
 		// Get details from applications
 		for (var i = 0; i < applications.length; i++) {
 			var app = applications[i];
-			ApplicationInfo.setApp(app);
-			ApplicationInfo.getInfo();
+			ApplicationInfo.getInfo(app);
 		}	
 	});
 	

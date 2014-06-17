@@ -10,13 +10,9 @@ angular.module('registry.services', ['ngResource'])
   }])
   .service('ApplicationInfo', ['$http',
   function($http){
-	var _app;
-	this.setApp = function(app) {
-		_app = app;
-	}
-	this.getInfo = function() {
-    	return $http.get(_app.url + '/info').success(function(response) {
-    		_app.version = response.version;
+	this.getInfo = function(app) {
+    	return $http.get(app.url + '/info').success(function(response) {
+    		app.version = response.version;
     	});
     }
   }]);
