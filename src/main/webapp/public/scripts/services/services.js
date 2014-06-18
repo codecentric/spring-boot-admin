@@ -13,7 +13,7 @@ angular.module('springBootAdmin.services', ['ngResource'])
     function($resource){
       return $resource(
     		'/api/application', {}, {
-    			query: { method:'GET', isArray:true }
+    			query: { method:'GET'}
     		});
     }
   ])
