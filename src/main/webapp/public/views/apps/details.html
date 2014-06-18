@@ -1,0 +1,20 @@
+<div class="row-fluid">
+	<div class="span12">
+		<h1 class="index-page--title">{{ application.id }}</h1>
+		<p class="index-page--subtitle">Show information provided by the Spring-Boot Actuators.</p>
+	</div>
+</div>
+<div class="container">
+	<div class="main-template">
+		<div id="xd-jobs" class="tab-pane active col-md-12">
+			<ul class="nav nav-tabs">
+				<li ng-class="{ active: $state.includes('apps.details.infos') }"><a ui-sref="apps.details.infos">Infos</a></li>
+				<li ng-class="{ active: $state.includes('apps.details.metrics') }"><a ui-sref="apps.details.metrics">Metrics</a></li>
+			</ul>
+			<div class="tab-content">
+				<div ui-view></div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /.container -->

@@ -1,0 +1,36 @@
+<div class="row-fluid">
+	<div class="span12">
+		<h1 class="index-page--title">Spring-Boot applications</h1>
+		<p class="index-page--subtitle">Here you'll find all Spring-Boot applications that registered itself at this admin
+			application.</p>
+	</div>
+</div>
+<div class="container">
+	<div class="main-template">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>Application</th>
+					<th>Version</th>
+					<th>Status</th>
+					<th></th>
+					<th></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="application in applications">
+					<td>{{ application.id }}</td>
+					<td>{{ application.version }}</td>
+					<td>{{ application.status }}</td>
+					<td></td>
+					<td></td>
+					<td>
+						<!-- <button type="button" ng-click="editService(service.id)" class="btn btn-success">Edit</button> -->
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+<!-- /.container -->

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('springBootAdmin')
-  .controller('mainCtrl', function ($scope, Application, ApplicationInfo, $location, $http) {
+  .controller('overviewCtrl', function ($scope, Application, ApplicationInfo, $location, $http) {
 	// Gets the service from /api/services
 	$scope.applications = Application.query({}, function(applications) {
 
@@ -15,8 +15,11 @@ angular.module('springBootAdmin')
 	
   })
   .controller('navCtrl', function ($scope, $location) {
-	 $scope.navClass = function(page) {
-		var currentRoute = $location.path().substring(1) || 'main';
-		return page == currentRoute ? 'active' : '';
-	 };
+	$scope.navClass = function(page) {
+	  var currentRoute = $location.path().substring(1) || 'main';
+	  return page == currentRoute ? 'active' : '';
+	};
+  })
+  .controller('metricsCtrl', function ($scope, $location) {
+	 
   });

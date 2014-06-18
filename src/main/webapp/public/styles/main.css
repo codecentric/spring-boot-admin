@@ -5,3 +5,27 @@
 @import "base.css";
 @import "application.css";
 @import "highlight.css";
+
+.table > thead > tr > th {
+  background-color: #34302D;  /* lighten 3% */
+  color: #f1f1f1;
+}
+
+.table-filter {
+  background-color: #34302D;
+  padding: 9px 12px;
+}
+
+.nav > li > a {
+  color: #838789;
+}
+
+.nav {
+  margin-bottom: 0;
+}
+
+.nav-tabs > .active > a, .nav-tabs > .active > a:hover, .nav-tabs > .active > a:focus {
+  background-color: #34302D;
+  border-color: #34302D;
+  color: #f1f1f1;
+}

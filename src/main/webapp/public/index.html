@@ -26,8 +26,8 @@
 						<a class="spring-logo" href="/"><span></span></a>
 					</div>
 					<ul class="nav pull-right" ng-controller='navCtrl'>
-						<li class="navbar-link" ng-class="navClass('main')"><a href="/#/main">Applications</a></li>
-						<li class="navbar-link" ng-class="navClass('about')"><a href="/#/about">About</a></li>
+						<li class="navbar-link" ng-class="{active: $state.includes('apps')}"><a ui-sref="apps.overview">Applications</a></li>
+						<li class="navbar-link" ng-class="{active: $state.includes('about')}"><a ui-sref="about">About</a></li>
 						<li class="navbar-link" ng-if="authenticationEnabled" class="dropdown"><a data-target="#" class="dropdown-toggle"
 							data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span><b class="caret"></b></a>
 							<ul class="dropdown-menu">
@@ -40,15 +40,7 @@
 		</header>
 		<div class="body--container container-fluid ">
 			<div class="main-body--wrapper">
-				<div class="row-fluid docs--header">
-					<div class="span12">
-						<h1 class="index-page--title">Spring-Boot applications</h1>
-						<p class="index-page--subtitle">
-							Here you'll find all Spring-Boot applications that registered itself at this admin application.
-						</p>
-					</div>
-				</div>
-				<div ng-view></div>
+				<div ui-view></div>
 			</div>
 			<div id="footer-push-down"></div>
 		</div>
@@ -64,6 +56,7 @@
 	<script src="/webjars/bootstrap/${bootstrap.version}/js/bootstrap.min.js"></script>
 	<script src="/webjars/angularjs/${angularjs.version}/angular-resource.min.js"></script>
 	<script src="/webjars/angularjs/${angularjs.version}/angular-route.min.js"></script>
+	<script src="/webjars/angular-ui-router/0.2.10/angular-ui-router.min.js"></script>
 	<script src="/scripts/app.js"></script>
 	<script src="/scripts/controllers/controllers.js"></script>
 	<script src="/scripts/services/services.js"></script>
