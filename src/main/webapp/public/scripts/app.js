@@ -1,17 +1,23 @@
 'use strict';
 
-angular.module('registry', [
+angular.module('springBootAdmin', [
   'ngCookies',
   'ngResource',
   'ngSanitize',
   'ngRoute',
-  'registry.services'
+  'springBootAdmin.services'
 ])
   .config(function ($routeProvider) {
     $routeProvider
-      .when('/', {
+      .when('/main', {
         templateUrl: 'views/main.html',
-        controller: 'MainCtrl'
+        controller: 'mainCtrl'
+      })
+      .when('/about', {
+        templateUrl: 'views/about.html'
+      })
+      .when('/', {
+        redirectTo: '/main'
       })
       .otherwise({
         redirectTo: '/'

@@ -11,7 +11,7 @@
 <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/${bootstrap.version}/css/bootstrap.min.css" />
 <link rel="stylesheet" type="text/css" href="/styles/main.css" />
 </head>
-<body ng-app="registry">
+<body ng-app="springBootAdmin">
 	<script type="text/javascript">
 		// Work around Google font rendering issues in webkit browsers on Windows 7
 		if (navigator.userAgent.indexOf("NT 6.1") != -1) {
@@ -25,9 +25,9 @@
 					<div class="spring-logo--container">
 						<a class="spring-logo" href="/"><span></span></a>
 					</div>
-					<ul class="nav pull-right">
-						<li class="navbar-link" ng-class="{ active: $state.includes('home.apps') }"><a ui-sref="home.apps.tabs.definitions">Applications</a></li>
-						<li class="navbar-link" ng-class="{ active: $state.includes('home.about') }"><a ui-sref="home.about">About</a></li>
+					<ul class="nav pull-right" ng-controller='navCtrl'>
+						<li class="navbar-link" ng-class="navClass('main')"><a href="/#/main">Applications</a></li>
+						<li class="navbar-link" ng-class="navClass('about')"><a href="/#/about">About</a></li>
 						<li class="navbar-link" ng-if="authenticationEnabled" class="dropdown"><a data-target="#" class="dropdown-toggle"
 							data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span><b class="caret"></b></a>
 							<ul class="dropdown-menu">

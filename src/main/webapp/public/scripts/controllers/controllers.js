@@ -1,8 +1,7 @@
 'use strict';
 
-angular.module('registry')
-  .controller('MainCtrl', function ($scope, Application, ApplicationInfo, $location, $http) {
-	  
+angular.module('springBootAdmin')
+  .controller('mainCtrl', function ($scope, Application, ApplicationInfo, $location, $http) {
 	// Gets the service from /api/services
 	$scope.applications = Application.query({}, function(applications) {
 
@@ -14,4 +13,10 @@ angular.module('registry')
 		}	
 	});
 	
+  })
+  .controller('navCtrl', function ($scope, $location) {
+	 $scope.navClass = function(page) {
+		var currentRoute = $location.path().substring(1) || 'main';
+		return page == currentRoute ? 'active' : '';
+	 };
   });

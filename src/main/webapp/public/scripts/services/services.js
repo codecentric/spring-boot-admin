@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('registry.services', ['ngResource'])
+angular.module('springBootAdmin.services', ['ngResource'])
 .factory('Application', ['$resource',
   function($resource){
     return $resource(
