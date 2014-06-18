@@ -1,9 +1,7 @@
 'use strict';
 
 angular.module('springBootAdmin', [
-  'ngCookies',
   'ngResource',
-  'ngSanitize',
   'ngRoute',
   'springBootAdmin.services'
 ])
