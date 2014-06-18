@@ -1,13 +1,22 @@
 'use strict';
 
 angular.module('springBootAdmin.services', ['ngResource'])
-.factory('Application', ['$resource',
-  function($resource){
-    return $resource(
+  .factory('Applications', ['$resource',
+    function($resource){
+      return $resource(
     		'/api/applications', {}, {
     			query: { method:'GET', isArray:true }
     		});
-  }])
+    }
+  ])
+  .factory('Application', ['$resource',
+    function($resource){
+      return $resource(
+    		'/api/application', {}, {
+    			query: { method:'GET', isArray:true }
+    		});
+    }
+  ])
   .service('ApplicationInfo', ['$http',
   function($http){
 	this.getInfo = function(app) {

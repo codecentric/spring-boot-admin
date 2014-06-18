@@ -1,8 +1,9 @@
 package de.codecentric.boot.admin.service;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.Validate;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import de.codecentric.boot.admin.model.Application;
 @Service
 public class ApplicationRegistry {
 
-	private final List<Application> registry = new ArrayList<>();
+	private final Map<String, Application> registry = new HashMap<>();
 
 	/**
 	 * Register application.
@@ -27,18 +28,18 @@ public class ApplicationRegistry {
 		Validate.notNull(app, "Application must not be null");
 		Validate.notNull(app.getId(), "Application ID must not be null");
 		Validate.notNull(app.getUrl(), "Application URL must not be null");
-		registry.add(app);
+		registry.put(app.getId(), app);
 	}
 
 	/**
 	 * Checks, if an application is already registerd.
 	 * 
-	 * @param app
-	 *            The application.
+	 * @param id
+	 *            The application ID.
 	 * @return exists?
 	 */
-	public boolean isRegistered(Application app) {
-		return registry.contains(app);
+	public boolean isRegistered(String id) {
+		return registry.containsKey(id);
 	}
 
 	/**
@@ -47,7 +48,21 @@ public class ApplicationRegistry {
 	 * @return List.
 	 */
 	public List<Application> getApplications() {
-		return Collections.unmodifiableList(registry);
+		return new ArrayList<>(registry.values());
+	}
+
+	/**
+	 * Get a specific application inside the registry.
+	 * 
+	 * @param id
+	 *            Id.
+	 * @return Application.
+	 */
+	public Application getApplication(String id) {
+		if (!isRegistered(id)) {
+			throw new IllegalArgumentException("Application with ID " + id + " is not registered");
+		}
+		return registry.get(id);
 	}
 
 }

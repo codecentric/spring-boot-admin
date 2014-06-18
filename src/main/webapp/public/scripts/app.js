@@ -29,11 +29,12 @@ angular.module('springBootAdmin', [
 		templateUrl: 'views/apps/details.html'
 	  })
 	  .state('apps.details.infos', {
-		url: '/infos',
-		templateUrl: 'views/apps/details/infos.html'
+		url: '/infos/{id}',
+		templateUrl: 'views/apps/details/infos.html',
+		controller: 'infosCtrl'
 	  })
 	  .state('apps.details.metrics', {
-		url: '/metrics',
+		url: '/metrics/{id}',
 		templateUrl: 'views/apps/details/metrics.html'
 	  });
   })

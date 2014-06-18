@@ -32,6 +32,13 @@ public class RegistryController {
 		registry.register(app);
 	}
 
+	@RequestMapping(value = "/api/application", method = RequestMethod.GET)
+	@ResponseBody
+	public Application get(@RequestBody String id) {
+		LOGGER.debug("Deliver registered application with ID '{}'", id);
+		return registry.getApplication(id);
+	}
+
 	@RequestMapping(value = "/api/applications", method = RequestMethod.GET)
 	@ResponseBody
 	public List<Application> applications() {
