@@ -12,7 +12,7 @@ angular.module('springBootAdmin.services', ['ngResource'])
   .factory('Application', ['$resource',
     function($resource){
       return $resource(
-    		'/api/application', {}, {
+    		'/api/application/:id', {}, {
     			query: { method:'GET'}
     		});
     }

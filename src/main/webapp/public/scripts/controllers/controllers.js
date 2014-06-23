@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('springBootAdmin')
-  .controller('overviewCtrl', function ($scope, Applications, ApplicationInfo, $location, $http) {
+  .controller('overviewCtrl', function ($scope, Applications, ApplicationInfo, $location) {
 	$scope.applications = Applications.query({}, function(applications) {
 	  for (var i = 0; i < applications.length; i++) {
 		var app = applications[i];
@@ -9,6 +9,10 @@ angular.module('springBootAdmin')
 		ApplicationInfo.getHealth(app);
 	  }	
 	});
+	// callback for ng-click 'showDetails':
+    $scope.showDetails = function(id) {
+        $location.path('/apps/details/infos/' + id);
+    };
   })
   .controller('navCtrl', function ($scope, $location) {
 	$scope.navClass = function(page) {
@@ -16,8 +20,13 @@ angular.module('springBootAdmin')
 	  return page == currentRoute ? 'active' : '';
 	};
   })
-  .controller('infosCtrl', function ($scope, Application, ApplicationInfo) {
-	$scope.application = Application.query({}, function(application) {
+  .controller('infosCtrl', function ($scope, $stateParams, Application, ApplicationInfo) {
+	$scope.application = Application.query({id: $stateParams.id}, function(application) {
+	  ApplicationInfo.getInfo(application);
+	});
+  })
+  .controller('metricsCtrl', function ($scope, $stateParams, Application, ApplicationInfo) {
+	$scope.application = Application.query({id: $stateParams.id}, function(application) {
 	  ApplicationInfo.getInfo(application);
 	});
   });

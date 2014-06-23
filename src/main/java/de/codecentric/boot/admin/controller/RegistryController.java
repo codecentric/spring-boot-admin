@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,9 +33,9 @@ public class RegistryController {
 		registry.register(app);
 	}
 
-	@RequestMapping(value = "/api/application", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/application/{id}", method = RequestMethod.GET)
 	@ResponseBody
-	public Application get(@RequestBody String id) {
+	public Application get(@PathVariable String id) {
 		LOGGER.debug("Deliver registered application with ID '{}'", id);
 		return registry.getApplication(id);
 	}

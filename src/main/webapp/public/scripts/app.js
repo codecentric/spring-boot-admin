@@ -13,7 +13,8 @@ angular.module('springBootAdmin', [
 	$stateProvider
 	  .state('apps', {
 		url: '/apps',
-		templateUrl: 'views/apps.html',
+		abstract: true,
+		template: '<ui-view/>',
 	  })
 	  .state('about', {
 		url: '/about',
@@ -26,16 +27,18 @@ angular.module('springBootAdmin', [
 	  })
 	  .state('apps.details', {
 		url: '/details',
+		abstract: true,
 		templateUrl: 'views/apps/details.html'
 	  })
 	  .state('apps.details.infos', {
-		url: '/infos/{id}',
+		url: '/infos/:id',
 		templateUrl: 'views/apps/details/infos.html',
 		controller: 'infosCtrl'
 	  })
 	  .state('apps.details.metrics', {
-		url: '/metrics/{id}',
-		templateUrl: 'views/apps/details/metrics.html'
+		url: '/metrics/:id',
+		templateUrl: 'views/apps/details/metrics.html',
+		controller: 'metricsCtrl'
 	  });
   })
   .run(function ($rootScope, $state, $stateParams, $log) {
