@@ -41,4 +41,9 @@ angular.module('springBootAdmin.services', ['ngResource'])
   				app.info = response;
   			});
   		}
+  		this.getMetrics = function(app) {
+  			return $http.get(app.url + '/metrics').success(function(response) {
+  				app.metrics = response;
+  			});
+  		}
   	}]);

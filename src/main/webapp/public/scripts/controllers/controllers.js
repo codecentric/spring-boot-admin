@@ -30,6 +30,6 @@ angular.module('springBootAdmin')
   	})
   	.controller('metricsCtrl', function ($scope, $stateParams, Application, ApplicationDetails) {
   		$scope.application = Application.query({id: $stateParams.id}, function(application) {
-  			$scope.metrics.used = 0; 
+  			ApplicationDetails.getMetrics(application);
   		});
   	});
