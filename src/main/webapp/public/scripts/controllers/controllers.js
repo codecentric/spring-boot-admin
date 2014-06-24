@@ -32,4 +32,9 @@ angular.module('springBootAdmin')
   		$scope.application = Application.query({id: $stateParams.id}, function(application) {
   			ApplicationDetails.getMetrics(application);
   		});
+  	})
+  	.controller('envCtrl', function ($scope, $stateParams, Application, ApplicationDetails) {
+  		$scope.application = Application.query({id: $stateParams.id}, function(application) {
+  			ApplicationDetails.getEnv(application);
+  		});
   	});

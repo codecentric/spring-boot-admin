@@ -4,9 +4,6 @@
 			<th>Used Memory</th>
 			<th>Free Memory</th>
 			<th>Processors</th>
-			<th></th>
-			<th></th>
-			<th></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -14,9 +11,6 @@
 			<td>{{ application.metrics['mem'] / 1024 | number:2 }} MB</td>
 			<td>{{ application.metrics['mem.free'] / 1024 | number:2 }} MB</td>
 			<td>{{ application.metrics['processors'] }}</td>
-			<td></td>
-			<td></td>
-			<td></td>
 		</tr>
 	</tbody>
 </table>

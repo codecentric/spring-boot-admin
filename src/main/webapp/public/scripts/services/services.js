@@ -38,12 +38,20 @@ angular.module('springBootAdmin.services', ['ngResource'])
   	.service('ApplicationDetails', ['$http', function($http) {
   		this.getInfo = function(app) {
   			return $http.get(app.url + '/info').success(function(response) {
-  				app.info = response;
+  				app.info = angular.toJson(response, true);
   			});
   		}
   		this.getMetrics = function(app) {
   			return $http.get(app.url + '/metrics').success(function(response) {
   				app.metrics = response;
+  			});
+  		}
+  		this.getEnv = function(app) {
+  			return $http.get(app.url + '/env').success(function(response) {
+  				app.env = response;
+  				app.env.systemProp = angular.toJson(app.env['systemProperties'], true);
+  				app.env.systemEnv = angular.toJson(app.env['systemEnvironment'], true);
+  				//app.env.config = response['applicationConfig: [classpath:/application.properties]'];
   			});
   		}
   	}]);

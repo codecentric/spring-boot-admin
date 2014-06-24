@@ -40,6 +40,11 @@ angular.module('springBootAdmin', [
   				url: '/metrics',
   				templateUrl: 'views/apps/details/metrics.html',
   				controller: 'metricsCtrl'
+  			})
+  			.state('apps.details.env', {
+  				url: '/env',
+  				templateUrl: 'views/apps/details/env.html',
+  				controller: 'envCtrl'
   			});
   	})
   	.run(function ($rootScope, $state, $stateParams, $log) {
