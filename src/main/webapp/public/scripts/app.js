@@ -26,17 +26,18 @@ angular.module('springBootAdmin', [
 	    controller: 'overviewCtrl'
 	  })
 	  .state('apps.details', {
-		url: '/details',
+		url: '/details/:id',
 		abstract: true,
-		templateUrl: 'views/apps/details.html'
+		templateUrl: 'views/apps/details.html',
+		controller: 'detailsCtrl'
 	  })
 	  .state('apps.details.infos', {
-		url: '/infos/:id',
+		url: '/infos',
 		templateUrl: 'views/apps/details/infos.html',
 		controller: 'infosCtrl'
 	  })
 	  .state('apps.details.metrics', {
-		url: '/metrics/:id',
+		url: '/metrics',
 		templateUrl: 'views/apps/details/metrics.html',
 		controller: 'metricsCtrl'
 	  });

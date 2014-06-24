@@ -20,13 +20,18 @@ angular.module('springBootAdmin')
 	  return page == currentRoute ? 'active' : '';
 	};
   })
+  .controller('detailsCtrl', function ($scope, $stateParams, Application, ApplicationInfo) {
+	$scope.application = Application.query({id: $stateParams.id}, function(application) {
+		// nop
+	});
+  })
   .controller('infosCtrl', function ($scope, $stateParams, Application, ApplicationInfo) {
 	$scope.application = Application.query({id: $stateParams.id}, function(application) {
-	  ApplicationInfo.getInfo(application);
+	  //ApplicationInfo.getInfo(application);
 	});
   })
   .controller('metricsCtrl', function ($scope, $stateParams, Application, ApplicationInfo) {
 	$scope.application = Application.query({id: $stateParams.id}, function(application) {
-	  ApplicationInfo.getInfo(application);
+	  //ApplicationInfo.getInfo(application);
 	});
   });
