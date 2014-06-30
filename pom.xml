@@ -5,8 +5,7 @@
 	<artifactId>spring-boot-admin</artifactId>
 	<version>1.0.0-RC1</version>
 	<properties>
-		<spring-boot.version>1.0.2.RELEASE</spring-boot.version>
-		<spring.version>4.0.3.RELEASE</spring.version>
+		<spring-boot.version>1.1.0.RELEASE</spring-boot.version>
 		<bootstrap.version>2.3.2</bootstrap.version>
 		<jquery.version>1.11.0</jquery.version>
 		<angularjs.version>1.2.12</angularjs.version>
@@ -59,12 +58,6 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.10</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>${spring.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

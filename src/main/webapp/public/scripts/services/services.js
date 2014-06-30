@@ -3,16 +3,16 @@
 angular.module('springBootAdmin.services', ['ngResource'])
   	.factory('Applications', ['$resource', function($resource) {
   		return $resource(
-  				'/api/applications', {}, {
-  					query: { method:'GET', isArray:true }
-  				});
+  			'/api/applications', {}, {
+  				query: { method:'GET', isArray:true }
+  			});
   		}
   	])
   	.factory('Application', ['$resource', function($resource) {
   		return $resource(
-  				'/api/application/:id', {}, {
-  					query: { method:'GET'}
-  				});
+  			'/api/application/:id', {}, {
+  				query: { method:'GET'}
+  			});
   		}
   	])
   	.service('ApplicationOverview', ['$http', function($http) {
@@ -25,15 +25,20 @@ angular.module('springBootAdmin.services', ['ngResource'])
   		}
   		this.getHealth = function(app) {
   			return $http.get(app.url + '/health').success(function(response) {
-  				if (response.indexOf('ok') != -1 || response.status.indexOf('ok') != -1) { 
-  					app.status = 'online';
+  				if (typeof(response) === 'string' && response.indexOf('ok') != -1 
+  						|| typeof(response.status) === 'string' && 
+  							(response.status.indexOf('ok') != -1 || response.status.indexOf('UP') != -1)) { 
+  					app.online = true;
   				} else {
-  					app.status = 'offline';
+  					app.online = false;
   				}
   			}).error(function() {
-  				app.status = 'offline';
+  				app.online = false;
   			});
   		}
+  		this.refresh = function(app) {
+  			return $http.post(app.url + '/refresh');
+  		};
   	}])
   	.service('ApplicationDetails', ['$http', function($http) {
   		this.getInfo = function(app) {

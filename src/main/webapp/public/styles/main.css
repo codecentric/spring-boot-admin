@@ -48,3 +48,12 @@ a.spring-boot-logo span {
 a:hover.spring-boot-logo span {
   opacity: 1;
 }
+
+span.online {
+	color: #00AA00;
+}
+
+span.offline {
+	color: #DD0000;
+	font-weight: bold;
+}

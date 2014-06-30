@@ -14,19 +14,19 @@
 					<th>Version</th>
 					<th>Status</th>
 					<th></th>
-					<th></th>
-					<th></th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr ng-repeat="application in applications">
 					<td>{{ application.id }}</td>
 					<td>{{ application.version }}</td>
-					<td>{{ application.status }}</td>
-					<td></td>
-					<td></td>
 					<td>
+						<span ng-show="application.online" class="online">online</span>
+						<span ng-show="!application.online" class="offline">offline</span>
+					</td>
+					<td align="right">
 						<button type="button" ng-click="showDetails(application.id)" class="btn btn-success">Details</button>
+						<!-- <button type="button" ng-click="refresh(application.id)" class="btn btn-success">Refresh</button> -->
 					</td>
 				</tr>
 			</tbody>

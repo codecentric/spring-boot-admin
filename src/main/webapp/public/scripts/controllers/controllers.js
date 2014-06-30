@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('springBootAdmin')
-  	.controller('overviewCtrl', function ($scope, Applications, ApplicationOverview, $location) {
+  	.controller('overviewCtrl', function ($scope, Applications, Application, ApplicationOverview, $location) {
   		$scope.applications = Applications.query({}, function(applications) {
   			for (var i = 0; i < applications.length; i++) {
   				var app = applications[i];
@@ -12,6 +12,12 @@ angular.module('springBootAdmin')
   		// callback for ng-click 'showDetails':
   		$scope.showDetails = function(id) {
   			$location.path('/apps/details/' + id + '/infos');
+  		};
+  		// callback for ng-click 'refresh':
+  		$scope.refresh = function(id) {
+  			$scope.application = Application.query({id: id}, function(application) {
+  				ApplicationOverview.refresh(application);
+  	  		});
   		};
   	})
   	.controller('navCtrl', function ($scope, $location) {
