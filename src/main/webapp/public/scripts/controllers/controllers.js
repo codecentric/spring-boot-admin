@@ -19,6 +19,10 @@ angular.module('springBootAdmin')
   				ApplicationOverview.refresh(application);
   	  		});
   		};
+  		// url for ng-href 'logfile':
+  		$scope.logfile = function(url) {
+  			return url + '/logfile';
+  		};
   	})
   	.controller('navCtrl', function ($scope, $location) {
   		$scope.navClass = function(page) {

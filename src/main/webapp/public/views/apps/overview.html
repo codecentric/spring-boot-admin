@@ -26,8 +26,9 @@
 					</td>
 					<td>
 						<span ng-show="application.online" style="float:right">
-							<button type="button" ng-click="showDetails(application.id)" class="btn btn-success">Details</button>
-							<!-- <button type="button" ng-click="refresh(application.id)" class="btn btn-success">Refresh</button> -->
+							<button ng-click="showDetails(application.id)" class="btn btn-success">Details</button>
+							<a target="_self" ng-href="{{logfile(application.url)}}"><button class="btn btn-success">Logfile</button></a>
+							<!-- <button ng-click="refresh(application.id)" class="btn btn-success">Refresh</button> -->
 						</span>
 					</td>
 				</tr>
