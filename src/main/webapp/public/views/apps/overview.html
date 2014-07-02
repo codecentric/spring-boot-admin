@@ -24,9 +24,11 @@
 						<span ng-show="application.online" class="online">online</span>
 						<span ng-show="!application.online" class="offline">offline</span>
 					</td>
-					<td align="right">
-						<button type="button" ng-click="showDetails(application.id)" class="btn btn-success">Details</button>
-						<!-- <button type="button" ng-click="refresh(application.id)" class="btn btn-success">Refresh</button> -->
+					<td>
+						<span ng-show="application.online" style="float:right">
+							<button type="button" ng-click="showDetails(application.id)" class="btn btn-success">Details</button>
+							<!-- <button type="button" ng-click="refresh(application.id)" class="btn btn-success">Refresh</button> -->
+						</span>
 					</td>
 				</tr>
 			</tbody>
