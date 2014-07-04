@@ -11,7 +11,8 @@ import org.springframework.stereotype.Service;
 import de.codecentric.boot.admin.model.Application;
 
 /**
- * Registry for all applications that should be managed/administrated by the spring-boot-admin application.
+ * Registry for all applications that should be managed/administrated by the spring-boot-admin application. This
+ * registry is just "in-memory", so that after a restart all applications have to be registered again.
  */
 @Service
 public class ApplicationRegistry {

@@ -12,6 +12,12 @@ import de.codecentric.boot.admin.config.WebappConfig;
 @Import(WebappConfig.class)
 public class SpringBootAdmin {
 
+	/**
+	 * Starting point for application to boot.
+	 * 
+	 * @param args
+	 *            Passed arguments.
+	 */
 	public static void main(String[] args) {
 		SpringApplication.run(SpringBootAdmin.class, args);
 	}

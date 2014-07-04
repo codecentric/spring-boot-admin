@@ -26,6 +26,13 @@ public class RegistryController {
 	@Autowired
 	private ApplicationRegistry registry;
 
+	/**
+	 * Register an application within this admin application.
+	 * 
+	 * @param app
+	 *            The application infos.
+	 * @return The registered application.
+	 */
 	@RequestMapping(value = "/api/applications", method = RequestMethod.POST)
 	@ResponseBody
 	public Application register(@RequestBody Application app) {
@@ -33,6 +40,13 @@ public class RegistryController {
 		return registry.register(app);
 	}
 
+	/**
+	 * Get a single application out of the registry.
+	 * 
+	 * @param id
+	 *            The application identifier.
+	 * @return The registered application.
+	 */
 	@RequestMapping(value = "/api/application/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	public Application get(@PathVariable String id) {
@@ -40,6 +54,11 @@ public class RegistryController {
 		return registry.getApplication(id);
 	}
 
+	/**
+	 * List all registered applications.
+	 * 
+	 * @return List.
+	 */
 	@RequestMapping(value = "/api/applications", method = RequestMethod.GET)
 	@ResponseBody
 	public List<Application> applications() {

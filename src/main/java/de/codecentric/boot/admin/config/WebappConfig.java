@@ -14,16 +14,25 @@ import de.codecentric.boot.admin.service.ApplicationRegistry;
 @Configuration
 public class WebappConfig extends WebMvcConfigurerAdapter {
 
+	/**
+	 * Add JSON MessageConverter to send JSON objects to web clients.
+	 */
 	@Override
 	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 		converters.add(new MappingJackson2HttpMessageConverter());
 	}
 
+	/**
+	 * Controller with REST-API for spring-boot applications to register itself.
+	 */
 	@Bean
 	public RegistryController registryController() {
 		return new RegistryController();
 	}
 
+	/**
+	 * Registry for all registered application.
+	 */
 	@Bean
 	public ApplicationRegistry applicationRegistry() {
 		return new ApplicationRegistry();
