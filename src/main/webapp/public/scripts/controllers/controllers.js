@@ -47,4 +47,9 @@ angular.module('springBootAdmin')
   		$scope.application = Application.query({id: $stateParams.id}, function(application) {
   			ApplicationDetails.getEnv(application);
   		});
+  	})
+  	.controller('propsCtrl', function ($scope, $stateParams, Application, ApplicationDetails) {
+  		$scope.application = Application.query({id: $stateParams.id}, function(application) {
+  			ApplicationDetails.getProps(application);
+  		});
   	});

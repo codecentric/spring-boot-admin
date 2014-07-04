@@ -45,6 +45,11 @@ angular.module('springBootAdmin', [
   				url: '/env',
   				templateUrl: 'views/apps/details/env.html',
   				controller: 'envCtrl'
+  			})
+  			.state('apps.details.props', {
+  				url: '/props',
+  				templateUrl: 'views/apps/details/props.html',
+  				controller: 'propsCtrl'
   			});
   	})
   	.run(function ($rootScope, $state, $stateParams, $log) {

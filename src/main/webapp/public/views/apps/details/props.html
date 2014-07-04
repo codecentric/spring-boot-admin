@@ -1,0 +1,14 @@
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>Resource</th>
+			<th>Properties</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="prop in application.props">
+			<td>{{ prop.key }}</td>
+			<td style="word-break: normal; ">{{ prop.value }}</td>
+		</tr>
+	</tbody>
+</table>

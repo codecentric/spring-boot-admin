@@ -56,7 +56,19 @@ angular.module('springBootAdmin.services', ['ngResource'])
   				app.env = response;
   				app.env.systemProp = angular.toJson(app.env['systemProperties'], true);
   				app.env.systemEnv = angular.toJson(app.env['systemEnvironment'], true);
-  				//app.env.config = response['applicationConfig: [classpath:/application.properties]'];
+  			});
+  		}
+  		this.getProps = function(app) {
+  			return $http.get(app.url + '/env').success(function(response) {
+  				app.props = [];
+  				for (var attr in response) {
+  					if (attr.indexOf('[') != -1 && attr.indexOf('.properties]') != -1) {
+  						var prop = new Object();
+  						prop.key = attr;
+  						prop.value = angular.toJson(response[attr], true);
+  						app.props.push(prop);
+  					}
+  				}
   			});
   		}
   	}]);
