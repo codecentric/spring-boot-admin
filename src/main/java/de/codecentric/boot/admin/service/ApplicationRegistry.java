@@ -24,11 +24,11 @@ public class ApplicationRegistry {
 	 * @param app
 	 *            The Application.
 	 */
-	public void register(Application app) {
+	public Application register(Application app) {
 		Validate.notNull(app, "Application must not be null");
 		Validate.notNull(app.getId(), "Application ID must not be null");
 		Validate.notNull(app.getUrl(), "Application URL must not be null");
-		registry.put(app.getId(), app);
+		return registry.put(app.getId(), app);
 	}
 
 	/**

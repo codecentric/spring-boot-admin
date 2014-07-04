@@ -28,9 +28,9 @@ public class RegistryController {
 
 	@RequestMapping(value = "/api/applications", method = RequestMethod.POST)
 	@ResponseBody
-	public void register(@RequestBody Application app) {
+	public Application register(@RequestBody Application app) {
 		LOGGER.info("Register application with ID '{}' and URL '{}'", app.getId(), app.getUrl());
-		registry.register(app);
+		return registry.register(app);
 	}
 
 	@RequestMapping(value = "/api/application/{id}", method = RequestMethod.GET)
