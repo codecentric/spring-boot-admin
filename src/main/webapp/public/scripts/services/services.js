@@ -36,9 +36,18 @@ angular.module('springBootAdmin.services', ['ngResource'])
   				app.online = false;
   			});
   		}
+  		this.getLogfile = function(app) {
+  			return $http.get(app.url + '/logfile').success(function(response) {
+  				app.providesLogfile = true;
+  				app.urlLogfile = app.url + '/logfile';
+  			}).error(function() {
+  				app.providesLogfile = false;
+  				app.urlLogfile = null;
+  			});
+  		}
   		this.refresh = function(app) {
   			return $http.post(app.url + '/refresh');
-  		};
+  		}
   	}])
   	.service('ApplicationDetails', ['$http', function($http) {
   		this.getInfo = function(app) {

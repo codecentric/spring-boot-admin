@@ -7,6 +7,7 @@ angular.module('springBootAdmin')
   				var app = applications[i];
   				ApplicationOverview.getVersion(app);
   				ApplicationOverview.getHealth(app);
+  				ApplicationOverview.getLogfile(app);
   			}	
   		});
   		// callback for ng-click 'showDetails':
@@ -18,10 +19,6 @@ angular.module('springBootAdmin')
   			$scope.application = Application.query({id: id}, function(application) {
   				ApplicationOverview.refresh(application);
   	  		});
-  		};
-  		// url for ng-href 'logfile':
-  		$scope.logfile = function(url) {
-  			return url + '/logfile';
   		};
   	})
   	.controller('navCtrl', function ($scope, $location) {
