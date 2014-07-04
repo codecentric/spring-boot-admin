@@ -7,6 +7,7 @@ This application provides a simple GUI to administrate Spring Boot applications 
 
 <ul>
 <li>Show name/id and version number</li>
+<li>Show online status</li>
 <li>Download main logfile</li>
 <li>Show details, like</li>
 <ul>
