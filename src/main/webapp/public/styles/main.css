@@ -37,12 +37,8 @@ a.spring-boot-logo {
 a.spring-boot-logo span {
   display: block;
   width: 160px;
-  height: 46px;
-  background: url("../img/platform-spring-boot.png") -1px -48px no-repeat;
-  opacity: 0;
-  -moz-transition: opacity 0.12s ease-in-out;
-  -webkit-transition: opacity 0.12s ease-in-out;
-  -o-transition: opacity 0.12s ease-in-out;
+  height: 50px;
+  background: url("../img/platform-spring-boot.png") 20px -6px no-repeat;
 }
 
 a:hover.spring-boot-logo span {
