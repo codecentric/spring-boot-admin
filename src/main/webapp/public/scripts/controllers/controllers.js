@@ -1,15 +1,18 @@
 'use strict';
 
 angular.module('springBootAdmin')
-  	.controller('overviewCtrl', function ($scope, Applications, Application, ApplicationOverview, $location) {
-  		$scope.applications = Applications.query({}, function(applications) {
-  			for (var i = 0; i < applications.length; i++) {
-  				var app = applications[i];
-  				ApplicationOverview.getVersion(app);
-  				ApplicationOverview.getHealth(app);
-  				ApplicationOverview.getLogfile(app);
-  			}	
-  		});
+  	.controller('overviewCtrl', function ($scope, Applications, Application, ApplicationOverview, $location, $interval) {
+  		$scope.loadData = function() {
+  			$scope.applications = Applications.query({}, function(applications) {
+	  			for (var i = 0; i < applications.length; i++) {
+	  				var app = applications[i];
+	  				ApplicationOverview.getVersion(app);
+	  				ApplicationOverview.getHealth(app);
+	  				ApplicationOverview.getLogfile(app);
+	  			}	
+	  		});
+  		}
+  		$scope.loadData();
   		// callback for ng-click 'showDetails':
   		$scope.showDetails = function(id) {
   			$location.path('/apps/details/' + id + '/infos');
@@ -24,6 +27,10 @@ angular.module('springBootAdmin')
   				ApplicationOverview.refresh(application);
   	  		});
   		};
+  		// reload site every 30 seconds
+  		var task = $interval(function() {
+  			§scope.loadData();
+  		}, 30000);
   	})
   	.controller('navCtrl', function ($scope, $location) {
   		$scope.navClass = function(page) {
