@@ -27,13 +27,17 @@ angular.module('springBootAdmin.services', ['ngResource'])
   			return $http.get(app.url + '/health').success(function(response) {
   				if (typeof(response) === 'string' && response.indexOf('ok') != -1 
   						|| typeof(response.status) === 'string' && 
-  							(response.status.indexOf('ok') != -1 || response.status.indexOf('UP') != -1)) { 
-  					app.online = true;
+							(response.status.indexOf('ok') != -1 || response.status.indexOf('UP') != -1)) { 
+  					app.up = true;
+  				} else if (typeof(response.status) === 'string' && response.status.indexOf('DOWN') != -1) { 
+  					app.down = true;
+  				} else if (typeof(response.status) === 'string' && response.status.indexOf('OUT-OF-SERVICE') != -1) { 
+  					app.outofservice = true;
   				} else {
-  					app.online = false;
+  					app.unknown = true;
   				}
   			}).error(function() {
-  				app.online = false;
+  				app.offline = true;
   			});
   		}
   		this.getLogfile = function(app) {
@@ -79,5 +83,31 @@ angular.module('springBootAdmin.services', ['ngResource'])
   					}
   				}
   			});
+  		}
+  	}])
+  	.service('ApplicationLogging', ['$http', function($http) {
+  		this.getLoglevel = function(app) {
+  			return $http.get(app.url + 
+  					'/jolokia/exec/ch.qos.logback.classic:Name=default,Type=ch.qos.logback.classic.jmx.JMXConfigurator/getLoggerLevel/' + 
+  					app.logger.name)
+  				.success(function(response) {
+  					if (response['value'].length > 0) {
+  						app.logger.loglevel = response['value'];
+  					} else {
+  						app.logger.loglevel = '<unknown>';
+  					}
+  				});
+  		}
+  		this.setLoglevel = function(app) {
+  			return $http.get(app.url + 
+  					'/jolokia/exec/ch.qos.logback.classic:Name=default,Type=ch.qos.logback.classic.jmx.JMXConfigurator/setLoggerLevel/' + 
+  					app.logger.name + '/' + app.logger.loglevel)
+  				.success(function(response) {
+  					if (response['status'] == 200) {
+  						app.logger.success = true;
+  					} else {
+  						app.logger.success = false;
+  					}
+  				});
   		}
   	}]);

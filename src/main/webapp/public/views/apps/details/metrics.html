@@ -3,14 +3,20 @@
 		<tr>
 			<th>Used Memory</th>
 			<th>Free Memory</th>
+			<th>Used Heap</th>
+			<th>Max Heap</th>
 			<th>Processors</th>
+			<th>Uptime</th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
 			<td>{{ application.metrics['mem'] / 1024 | number:2 }} MB</td>
 			<td>{{ application.metrics['mem.free'] / 1024 | number:2 }} MB</td>
+			<td>{{ application.metrics['heap.used'] / 1024 | number:2 }} MB</td>
+			<td>{{ application.metrics['heap'] / 1024 | number:2 }} MB</td>
 			<td>{{ application.metrics['processors'] }}</td>
+			<td>{{ application.metrics['uptime'] / 60000 | ceil }}:{{ application.metrics['uptime'] % 60000 / 1000 | ceil }} min</td>
 		</tr>
 	</tbody>
 </table>

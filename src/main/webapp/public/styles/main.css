@@ -45,11 +45,20 @@ a:hover.spring-boot-logo span {
   opacity: 1;
 }
 
-span.online {
+span.up {
 	color: #00AA00;
 }
 
 span.offline {
 	color: #DD0000;
 	font-weight: bold;
+}
+
+span.down, span.outofservice {
+	color: #FF8800;
+	font-weight: bold;
+}
+
+span.unknown {
+	color: #DDDDDD;
 }

@@ -3,6 +3,7 @@
 
 	<include resource="org/springframework/boot/logging/logback/base.xml"/>
 
+	<jmxConfigurator/>
 	<logger name="de.codecentric" level="DEBUG" />
 	<logger name="org.springframework.data" level="INFO" />
 

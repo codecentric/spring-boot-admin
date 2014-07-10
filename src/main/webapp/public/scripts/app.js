@@ -34,22 +34,38 @@ angular.module('springBootAdmin', [
   			.state('apps.details.infos', {
   				url: '/infos',
   				templateUrl: 'views/apps/details/infos.html',
-  				controller: 'infosCtrl'
+  				controller: 'detailsInfosCtrl'
   			})
   			.state('apps.details.metrics', {
   				url: '/metrics',
   				templateUrl: 'views/apps/details/metrics.html',
-  				controller: 'metricsCtrl'
+  				controller: 'detailsMetricsCtrl'
   			})
   			.state('apps.details.env', {
   				url: '/env',
   				templateUrl: 'views/apps/details/env.html',
-  				controller: 'envCtrl'
+  				controller: 'detailsEnvCtrl'
   			})
   			.state('apps.details.props', {
   				url: '/props',
   				templateUrl: 'views/apps/details/props.html',
-  				controller: 'propsCtrl'
+  				controller: 'detailsPropsCtrl'
+  			})
+  			.state('apps.logging', {
+  				url: '/logging/:id',
+  				abstract: true,
+  				templateUrl: 'views/apps/logging.html',
+  				controller: 'detailsCtrl'
+  			})
+  			.state('apps.logging.read', {
+  				url: '/read',
+  				templateUrl: 'views/apps/logging/read.html',
+  				controller: 'loggingReadCtrl'
+  			})
+  			.state('apps.logging.write', {
+  				url: '/write',
+  				templateUrl: 'views/apps/logging/write.html',
+  				controller: 'loggingWriteCtrl'
   			});
   	})
   	.run(function ($rootScope, $state, $stateParams, $log) {

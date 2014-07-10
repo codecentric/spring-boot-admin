@@ -21,13 +21,17 @@
 					<td>{{ application.id }}</td>
 					<td>{{ application.version }}</td>
 					<td>
-						<span ng-show="application.online" class="online">online</span>
-						<span ng-show="!application.online" class="offline">offline</span>
+						<span ng-show="application.up" class="up">up</span>
+						<span ng-show="application.down" class="down">down</span>
+						<span ng-show="application.outofservice" class="oufofservice">out of service</span>
+						<span ng-show="application.unknown" class="unknown">unknown</span>
+						<span ng-show="application.offline" class="offline">offline</span>
 					</td>
 					<td>
-						<span ng-show="application.online" style="float:right">
+						<span ng-show="application.up" style="float:right">
 							<a ng-show="application.providesLogfile" target="_self" ng-href="{{application.urlLogfile}}"><button class="btn btn-success">Logfile</button></a>
 							<button ng-click="showDetails(application.id)" class="btn btn-success">Details</button>
+							<button ng-click="showLogging(application.id)" class="btn btn-success">Logging</button>
 							<!-- <button ng-click="refresh(application.id)" class="btn btn-success">Refresh</button> -->
 						</span>
 					</td>
