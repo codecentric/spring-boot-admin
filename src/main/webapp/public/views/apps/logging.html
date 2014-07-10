@@ -1,0 +1,19 @@
+<div class="row-fluid">
+	<div class="span12">
+		<h1 class="index-page--title">{{ application.id }}</h1>
+		<p class="index-page--subtitle">Read and write log levels of specified loggers.</p>
+	</div>
+</div>
+<div class="container">
+	<div class="main-template">
+		<div id="xd-jobs" class="tab-pane active col-md-12">
+			<ul class="nav nav-tabs">
+				<li ui-sref-active="active"><a ui-sref="apps.logging.read({id: application.id})">Read</a></li>
+				<li ui-sref-active="active"><a ui-sref="apps.logging.write({id: application.id})">Write</a></li>
+			</ul>
+			<div class="tab-content">
+				<div ui-view></div>
+			</div>
+		</div>
+	</div>
+</div>
