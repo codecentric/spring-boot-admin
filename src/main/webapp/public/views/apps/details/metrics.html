@@ -16,7 +16,7 @@
 			<td>{{ application.metrics['heap.used'] / 1024 | number:2 }} MB</td>
 			<td>{{ application.metrics['heap'] / 1024 | number:2 }} MB</td>
 			<td>{{ application.metrics['processors'] }}</td>
-			<td>{{ application.metrics['uptime'] / 60000 | ceil }}:{{ application.metrics['uptime'] % 60000 / 1000 | ceil }} min</td>
+			<td>{{ application.metrics['uptime'] / 86400000 | floor | padZero }}:{{ application.metrics['uptime'] % 86400000 / 3600000 | floor | padZero }}:{{ application.metrics['uptime'] % 3600000 / 60000 | floor | padZero }}:{{ application.metrics['uptime'] % 60000 / 1000 | floor | padZero }} [d:h:m:s]</td>
 		</tr>
 	</tbody>
 </table>
