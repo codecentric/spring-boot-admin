@@ -29,7 +29,7 @@ angular.module('springBootAdmin')
   		};
   		// reload site every 30 seconds
   		var task = $interval(function() {
-  			§scope.loadData();
+  			$scope.loadData();
   		}, 30000);
   	})
   	.controller('navCtrl', function ($scope, $location) {
