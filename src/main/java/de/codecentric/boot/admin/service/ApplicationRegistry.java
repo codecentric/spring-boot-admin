@@ -15,12 +15,14 @@
  */
 package de.codecentric.boot.admin.service;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.Validate;
+import org.apache.tomcat.util.net.URL;
 import org.springframework.stereotype.Service;
 
 import de.codecentric.boot.admin.model.Application;
@@ -42,9 +44,26 @@ public class ApplicationRegistry {
 	 */
 	public Application register(Application app) {
 		Validate.notNull(app, "Application must not be null");
-		Validate.notNull(app.getId(), "Application ID must not be null");
-		Validate.notNull(app.getUrl(), "Application URL must not be null");
+		Validate.notNull(app.getId(), "ID must not be null");
+		Validate.notNull(app.getUrl(), "URL must not be null");
+		Validate.isTrue(checkUrl(app.getUrl()), "URL is not valid");
 		return registry.put(app.getId(), app);
+	}
+
+	/**
+	 * Checks the syntax of the given URL.
+	 * 
+	 * @param url
+	 *            The URL.
+	 * @return true, if valid.
+	 */
+	private boolean checkUrl(String url) {
+		try {
+			new URL(url);
+		} catch (MalformedURLException e) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
