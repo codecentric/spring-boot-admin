@@ -3,7 +3,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin</artifactId>
-	<version>1.0.0.RELEASE</version>
+	<version>1.0.1.RELEASE</version>
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://opensource.org/licenses/Apache-2.0</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 	<properties>
 		<spring-boot.version>1.1.4.RELEASE</spring-boot.version>
 		<bootstrap.version>2.3.2</bootstrap.version>
@@ -15,7 +22,7 @@
 		<dependency>
 			<groupId>de.codecentric</groupId>
 			<artifactId>spring-boot-starter-admin-client</artifactId>
-			<version>1.0.0.RELEASE</version>
+			<version>1.0.1.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
