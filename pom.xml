@@ -13,6 +13,7 @@
 	</licenses>
 	<properties>
 		<spring-boot.version>1.1.4.RELEASE</spring-boot.version>
+		<spring.version>4.0.6.RELEASE</spring.version>
 		<bootstrap.version>2.3.2</bootstrap.version>
 		<jquery.version>1.11.0</jquery.version>
 		<angularjs.version>1.2.12</angularjs.version>
@@ -65,6 +66,12 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
