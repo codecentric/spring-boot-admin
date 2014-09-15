@@ -1,14 +1,21 @@
 <table class="table table-striped">
 	<thead>
 		<tr>
-			<th>Info JSON</th>
+			<th colspan="3">Info JSON</th>
 		</tr>
 	</thead>
 	<tbody>
-		<tr>
-			<td>
-				{{ application.info }}
-			</td>
+	
+		<tr ng-repeat-start="(infokey, infovalue) in application.info">
+			<td style="background-color: #6DB33F; font-weight:bold;" colspan="3">{{infokey}}</td>
 		</tr>
+	
+		<tr ng-repeat-end ng-repeat="(propkey, propvalue) in infovalue" >
+				<td>&nbsp</td>
+				<td>{{propkey}}</td>
+				<td>{{propvalue}}</td>
+		</tr>
+		
+		
 	</tbody>
 </table>
