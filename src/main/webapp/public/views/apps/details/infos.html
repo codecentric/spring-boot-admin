@@ -1,14 +1,16 @@
 <table class="table table-striped">
+    <col style="width:30%">
+    <col style="width:auto">
 	<thead>
 		<tr>
-			<th>Info JSON</th>
+			<th>Key</th>
+			<th>Value</th>
 		</tr>
 	</thead>
 	<tbody>
-		<tr>
-			<td>
-				{{ application.info }}
-			</td>
+		<tr ng-repeat="(key, value) in application.info" >
+			<td style="text-align: right;" >{{ key }}</td>
+			<td>{{ value }}</td>
 		</tr>
 	</tbody>
 </table>

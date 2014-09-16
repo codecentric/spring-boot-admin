@@ -11,6 +11,11 @@
   color: #f1f1f1;
 }
 
+.table tr.highlight > td {
+  background-color: #6db33f !important;
+  font-weight: bold;
+}
+
 .table-filter {
   background-color: #34302D;
   padding: 9px 12px;
