@@ -1,14 +1,20 @@
 <table class="table table-striped">
+    <col style="width:30%">
+    <col style="width:auto">
 	<thead>
 		<tr>
-			<th>Resource</th>
-			<th>Properties</th>
+			<th>Property</th>
+			<th>Value</th>
 		</tr>
 	</thead>
-	<tbody>
-		<tr ng-repeat="prop in application.props">
-			<td>{{ prop.key }}</td>
-			<td style="word-break: normal; ">{{ prop.value }}</td>
+	<tbody>	
+		<tr class="highlight" ng-repeat-start="prop in application.props">
+			<td colspan="2">{{ prop.key }}</td>
+		</tr>
+		<tr ng-repeat-end ng-repeat="(key, value) in prop.value" >
+			<td style="text-align: right; word-break: break-all;" >{{ key }}</td>
+			<td style="word-break: break-all;" >{{ value }}</td>
 		</tr>
 	</tbody>
 </table>
+

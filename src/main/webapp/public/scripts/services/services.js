@@ -71,7 +71,7 @@ angular.module('springBootAdmin.services', ['ngResource'])
   	.service('ApplicationDetails', ['$http', function($http) {
   		this.getInfo = function(app) {
   			return $http.get(app.url + '/info').success(function(response) {
-  				app.info = angular.toJson(response, true);
+  				app.info = response;
   			});
   		}
   		this.getMetrics = function(app) {
@@ -82,8 +82,6 @@ angular.module('springBootAdmin.services', ['ngResource'])
   		this.getEnv = function(app) {
   			return $http.get(app.url + '/env').success(function(response) {
   				app.env = response;
-  				app.env.systemProp = angular.toJson(app.env['systemProperties'], true);
-  				app.env.systemEnv = angular.toJson(app.env['systemEnvironment'], true);
   			});
   		}
   		this.getProps = function(app) {
@@ -93,7 +91,7 @@ angular.module('springBootAdmin.services', ['ngResource'])
   					if (attr.indexOf('[') != -1 && attr.indexOf('.properties]') != -1) {
   						var prop = new Object();
   						prop.key = attr;
-  						prop.value = angular.toJson(response[attr], true);
+  						prop.value = response[attr];
   						app.props.push(prop);
   					}
   				}
