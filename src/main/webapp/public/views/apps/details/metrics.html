@@ -1,22 +1,76 @@
 <table class="table table-striped">
+	<col style="width: 50%;" />
+	<col style="width: auto;" />
 	<thead>
 		<tr>
-			<th>Used Memory</th>
-			<th>Free Memory</th>
-			<th>Used Heap</th>
-			<th>Max Heap</th>
-			<th>Processors</th>
-			<th>Uptime</th>
+			<th colspan="2">Memory <small class="pull-right"><a href="{{ application.url }}/metrics">raw JSON</a></small></th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
-			<td>{{ application.metrics['mem'] / 1024 | number:2 }} MB</td>
-			<td>{{ application.metrics['mem.free'] / 1024 | number:2 }} MB</td>
-			<td>{{ application.metrics['heap.used'] / 1024 | number:2 }} MB</td>
-			<td>{{ application.metrics['heap'] / 1024 | number:2 }} MB</td>
+			<td>
+				<h1 style="text-align: center;">JVM Memory</h1>
+				<div class="center-block" style="width: 400px; height: 200px;">
+					<nvd3-pie-chart id="memoryChart" nodata="not available" 
+									data="memoryData" x="xFunction()" y="yFunction()"
+									color="colorFunction()" margin="{left:0,top:0,bottom:0,right:0}">
+	    			</nvd3-pie-chart>
+    			</div>
+
+    			<ul class="chart-legend center-block" style="width: 200px;">
+    				<li class="chart-1">Free Memory: {{ application.metrics['mem.free'] / 1024 | number:2 }} MB</li>
+    				<li class="chart-2">Used Memory: {{ application.metrics['mem.used'] / 1024 | number:2 }} MB</li>
+    				<li class="no-bullet"><b>Total Memory: {{ application.metrics['mem'] / 1024 | number:2 }} MB</b></li>
+    			</ul>
+
+    		</td>
+   			<td>
+   				<h1 style="text-align: center;">Heap Memory</h1>
+				<div class="center-block" style="width: 400px; height: 200px;">
+					<nvd3-pie-chart id="heapMemoryChart" nodata="not available" 
+									data="heapMemoryData" x="xFunction()" y="yFunction()"
+									color="colorFunction()" margin="{left:0,top:0,bottom:0,right:0}">
+	    			</nvd3-pie-chart>
+    			</div>
+    			<ul class="chart-legend center-block" style="width: 200px;">
+    				<li class="chart-1">Free Heap: {{ application.metrics['heap.free'] / 1024 | number:2 }} MB</li>
+    				<li class="chart-2">Used Heap: {{ application.metrics['heap.used'] / 1024 | number:2 }} MB</li>
+    				<li class="no-bullet"><b>Max Heap: {{ application.metrics['heap'] / 1024 | number:2 }} MB</b></li>
+    			</ul>
+    		
+    		</td>
+		</tr>
+	</tbody>
+</table>
+
+<table class="table table-striped">
+	<col style="width:30%">
+    <col style="width:auto">
+	<thead>
+		<tr>
+			<th colspan="2">JVM Information</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>Available Processors</td>
 			<td>{{ application.metrics['processors'] }}</td>
+		</tr>
+		<tr>
+			<td>Uptime</td>	
 			<td>{{ application.metrics['uptime'] / 86400000 | floor | padZero }}:{{ application.metrics['uptime'] % 86400000 / 3600000 | floor | padZero }}:{{ application.metrics['uptime'] % 3600000 / 60000 | floor | padZero }}:{{ application.metrics['uptime'] % 60000 / 1000 | floor | padZero }} [d:h:m:s]</td>
+		</tr>
+		<tr>
+			<td>Current loaded Classes</td>
+			<td>{{ application.metrics['classes']}}</td>
+		</tr>
+		<tr>
+			<td> Total loaded Classes</td>
+			<td>{{ application.metrics['classes.loaded']}}</td>
+		</tr>
+		<tr>
+			<td> Unloaded Classes</td>
+			<td>{{ application.metrics['classes.unloaded']}}</td>
 		</tr>
 	</tbody>
 </table>

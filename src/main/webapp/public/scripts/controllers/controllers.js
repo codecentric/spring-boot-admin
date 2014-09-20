@@ -62,9 +62,44 @@ angular.module('springBootAdmin')
   		});
   	})
   	.controller('detailsMetricsCtrl', function ($scope, $stateParams, Application, ApplicationDetails) {
+  		$scope.memoryData = [];
+  		$scope.heapMemoryData = [];
+  		
   		$scope.application = Application.query({id: $stateParams.id}, function(application) {
-  			ApplicationDetails.getMetrics(application);
+  			ApplicationDetails.getMetrics(application, function(application) {
+  				//*** Extract data for JVM-Memory-Chart
+  				application.metrics["mem.used"] = application.metrics["mem"] - $scope.application.metrics["mem.free"];
+  				$scope.memoryData = [{ label: 'Free Memory', value: application.metrics["mem.free"] },
+  				                     { label: 'Used Memory', value : application.metrics["mem.used"] }];
+  				
+  				//*** Extract data for Heap-Memory-Chart
+  				application.metrics["heap.free"] = application.metrics["heap"] - $scope.application.metrics["heap.used"];
+  				$scope.heapMemoryData = [{ label: 'Free Heap', value : application.metrics["heap.free"] },
+  				                     { label: 'Used Heap', value : application.metrics["heap.used"] }];
+
+  			});
   		});
+  		
+  			
+  		$scope.xFunction = function(){
+  		    return function(d) {
+  		        return d.label;
+  		    };
+  		}
+  		
+  		$scope.yFunction = function(){
+  		    return function(d) {
+  		        return d.value;
+  		    };
+  		}
+  		
+  		var colorArray = ['#6db33f',  '#a5b2b9', '#ebf1e7', '#34302d' ];
+  		$scope.colorFunction = function() {
+  			return function(d, i) {
+  		    	return colorArray[i % colorArray.length];
+  		    };
+  		}
+  		
   	})
   	.controller('detailsEnvCtrl', function ($scope, $stateParams, Application, ApplicationDetails) {
   		$scope.application = Application.query({id: $stateParams.id}, function(application) {

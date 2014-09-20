@@ -4,7 +4,7 @@
 	<thead>
 		<tr>
 			<th>Property</th>
-			<th>Value</th>
+			<th>Value <small class="pull-right"><a href="{{ application.url }}/env">raw JSON</a></small></th>
 		</tr>
 	</thead>
 	<tbody>	
@@ -12,7 +12,7 @@
 			<td colspan="2">{{ prop.key }}</td>
 		</tr>
 		<tr ng-repeat-end ng-repeat="(key, value) in prop.value" >
-			<td style="text-align: right; word-break: break-all;" >{{ key }}</td>
+			<td style="word-break: break-all;" >{{ key }}</td>
 			<td style="word-break: break-all;" >{{ value }}</td>
 		</tr>
 	</tbody>

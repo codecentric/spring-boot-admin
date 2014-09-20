@@ -19,7 +19,8 @@ angular.module('springBootAdmin', [
   'ngResource',
   'ngRoute',
   'ui.router',
-  'springBootAdmin.services'
+  'springBootAdmin.services',
+  'nvd3ChartDirectives'
 ])
   	.config(function ($stateProvider, $urlRouterProvider) {
   		$urlRouterProvider
