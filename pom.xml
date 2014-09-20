@@ -18,6 +18,9 @@
 		<jquery.version>1.11.0</jquery.version>
 		<angularjs.version>1.2.12</angularjs.version>
 		<angular-ui-router.version>0.2.10-1</angular-ui-router.version>
+		<angularjs-nvd3-directives.version>0.0.7-1</angularjs-nvd3-directives.version>
+		<d3js.version>3.4.1</d3js.version>
+		<nvd3.version>1.1.15-beta</nvd3.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -59,6 +62,21 @@
 			<groupId>org.webjars</groupId>
 			<artifactId>angular-ui-router</artifactId>
 			<version>${angular-ui-router.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>angularjs-nvd3-directives</artifactId>
+			<version>${angularjs-nvd3-directives.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>d3js</artifactId>
+			<version>${d3js.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>nvd3</artifactId>
+			<version>${nvd3.version}</version>
 		</dependency>
 
 		<!-- Test -->

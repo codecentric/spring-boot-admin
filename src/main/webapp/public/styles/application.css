@@ -7,3 +7,35 @@ ul.download-links {
   list-style-type: none;
   margin-left: 0;
 }
+
+.center-block {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+ul.chart-legend {
+    list-style: none;
+}
+
+ul.chart-legend li:before {
+	content: "• ";
+	font-size: 250%;
+	vertical-align: middle;
+}
+
+li.chart-1:before {
+	color: #6db33f;
+}
+li.chart-2:before {
+	color: #a5b2b9;
+}
+li.chart-3:before {
+	color: #ebf1e7;
+}
+li.chart-4:before {
+	color: #34302d;
+}
+li.no-bullet:before {
+	color: rgba(0,0,0, 0.0);
+}
