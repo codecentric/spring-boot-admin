@@ -44,6 +44,42 @@
 </table>
 
 <table class="table table-striped">
+	<thead>
+		<tr>
+			<th>Metrics</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>
+				<h1 style="text-align: center;">Counter</h1>
+				<div class="center-block" style="width: 800px; height: 300px; position:relative;">
+					<nvd3-discrete-bar-chart id="counterChart" nodata="not available" 
+									data="counterData" x="xFunction()" y="yFunction()"
+									color="colorFunction()" 
+									tooltips="true" tooltipContent="toolTipContentFunction()"
+									showYAxis="true" yAxisTickFormat="intFormatFunction()">
+	    			</nvd3-discrete-bar-chart>
+    			</div>
+    		</td>
+    	</tr>
+    	<tr>
+    		<td>
+				<h1 style="text-align: center;">Gauge</h1>
+				<div class="center-block" style="width: 800px; height: 300px; position:relative;">
+					<nvd3-discrete-bar-chart id="gaugesChart" nodata="not available" 
+									data="gaugeData" x="xFunction()" y="yFunction()"
+									color="colorFunction()"
+									tooltips="true" tooltipContent="toolTipContentFunction()" 
+									showYAxis="true" yAxisTickFormat="intFormatFunction()">
+	    			</nvd3-discrete-bar-chart>
+    			</div>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<table class="table table-striped">
 	<col style="width:30%">
     <col style="width:auto">
 	<thead>

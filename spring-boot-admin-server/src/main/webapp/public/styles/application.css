@@ -14,6 +14,10 @@ ul.download-links {
   margin-right: auto;
 }
 
+.nvd3 text, div.nvtooltip {
+	font-size: 14px;
+}
+
 ul.chart-legend {
     list-style: none;
 }
@@ -31,9 +35,6 @@ li.chart-2:before {
 	color: #a5b2b9;
 }
 li.chart-3:before {
-	color: #ebf1e7;
-}
-li.chart-4:before {
 	color: #34302d;
 }
 li.no-bullet:before {

@@ -64,6 +64,8 @@ angular.module('springBootAdmin')
   	.controller('detailsMetricsCtrl', function ($scope, $stateParams, Application, ApplicationDetails) {
   		$scope.memoryData = [];
   		$scope.heapMemoryData = [];
+  		$scope.counterData = [];
+  		$scope.gaugeData = [];
   		
   		$scope.application = Application.query({id: $stateParams.id}, function(application) {
   			ApplicationDetails.getMetrics(application, function(application) {
@@ -76,6 +78,22 @@ angular.module('springBootAdmin')
   				application.metrics["heap.free"] = application.metrics["heap"] - $scope.application.metrics["heap.used"];
   				$scope.heapMemoryData = [{ label: 'Free Heap', value : application.metrics["heap.free"] },
   				                     { label: 'Used Heap', value : application.metrics["heap.used"] }];
+
+  				
+  				//*** Extract data for Counter-Chart and Gauge-Chart
+  				$scope.counterData = [ { key : "value", values: [] } ];
+  				$scope.gaugeData = [ { key : "value", values: [] } ];
+  				for (var metric in application.metrics) {
+  					var matchCounter = /counter\.(.+)/.exec(metric);
+  					if ( matchCounter !== null) {
+  						$scope.counterData[0].values.push({ label : matchCounter[1], value : application.metrics[metric] });
+  					}
+
+  					var matchGauge = /gauge\.(.+)/.exec(metric);
+  					if ( matchGauge !== null) {
+  						$scope.gaugeData[0].values.push({ label : matchGauge[1], value : application.metrics[metric] });
+  					}
+  				}
 
   			});
   		});
@@ -93,11 +111,24 @@ angular.module('springBootAdmin')
   		    };
   		}
   		
-  		var colorArray = ['#6db33f',  '#a5b2b9', '#ebf1e7', '#34302d' ];
+  		var colorArray = ['#6db33f',  '#a5b2b9', '#34302d' ];
   		$scope.colorFunction = function() {
   			return function(d, i) {
   		    	return colorArray[i % colorArray.length];
   		    };
+  		}
+  		
+  		$scope.intFormatFunction = function(){
+  		    return function(d) {
+  		        return d3.format('d')(d);
+  		    };
+  		}
+  		
+  		$scope.toolTipContentFunction = function(){
+  			return function(key, x, y, e, graph) {
+  				console.log(key, x, y, e, graph);
+  		    	return x + ': ' + y ;
+  			}
   		}
   		
   	})
