@@ -57,6 +57,12 @@ Each application that want to register itself to the admin application has to in
 </dependency>
 ```
 
+Inside your application.properties you also have to define the URL of the Spring Boot Admin Server, e.g.
+
+```
+spring.boot.admin.url=http://localhost:8080
+```
+
 #### Screenshots
 
 ##### Dashboard
