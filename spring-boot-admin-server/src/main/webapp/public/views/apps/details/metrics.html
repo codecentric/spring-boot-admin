@@ -12,7 +12,7 @@
 				<h1 style="text-align: center;">JVM Memory</h1>
 				<div class="center-block" style="width: 400px; height: 200px;">
 					<nvd3-pie-chart id="memoryChart" nodata="not available" 
-									data="memoryData" x="xFunction()" y="yFunction()"
+									data="memoryData"
 									color="colorFunction()" margin="{left:0,top:0,bottom:0,right:0}">
 	    			</nvd3-pie-chart>
     			</div>
@@ -28,7 +28,7 @@
    				<h1 style="text-align: center;">Heap Memory</h1>
 				<div class="center-block" style="width: 400px; height: 200px;">
 					<nvd3-pie-chart id="heapMemoryChart" nodata="not available" 
-									data="heapMemoryData" x="xFunction()" y="yFunction()"
+									data="heapMemoryData"
 									color="colorFunction()" margin="{left:0,top:0,bottom:0,right:0}">
 	    			</nvd3-pie-chart>
     			</div>
@@ -53,26 +53,30 @@
 		<tr>
 			<td>
 				<h1 style="text-align: center;">Counter</h1>
-				<div class="center-block" style="width: 800px; height: 300px; position:relative;">
-					<nvd3-discrete-bar-chart id="counterChart" nodata="not available" 
-									data="counterData" x="xFunction()" y="yFunction()"
+				<div class="center-block" style="width: 800px; height:  {{ 50 + counterData[0].values.length * 15 }}px; position:relative;">
+					<nvd3-multi-bar-horizontal-chart id="counterChart" nodata="not available" 
+									data="counterData"
 									color="colorFunction()" 
 									tooltips="true" tooltipContent="toolTipContentFunction()"
-									showYAxis="true" yAxisTickFormat="intFormatFunction()">
-	    			</nvd3-discrete-bar-chart>
+									showYAxis="true" yAxisTickFormat="intFormatFunction()"
+									showXAxis="true" xAxisTickFormat="abbreviateFunction(30, 1, 3)" 
+									margin="{ top: 25, left: 250, right: 25, bottom: 50}">
+	    			</nvd3-multi-bar-horizontal-chart>
     			</div>
     		</td>
     	</tr>
     	<tr>
     		<td>
 				<h1 style="text-align: center;">Gauge</h1>
-				<div class="center-block" style="width: 800px; height: 300px; position:relative;">
-					<nvd3-discrete-bar-chart id="gaugesChart" nodata="not available" 
-									data="gaugeData" x="xFunction()" y="yFunction()"
+				<div class="center-block" style="width: 800px; height: {{ 50 + gaugeData[0].values.length * 15 }}px; position:relative;">
+					<nvd3-multi-bar-horizontal-chart id="gaugesChart" nodata="not available" 
+									data="gaugeData"
 									color="colorFunction()"
 									tooltips="true" tooltipContent="toolTipContentFunction()" 
-									showYAxis="true" yAxisTickFormat="intFormatFunction()">
-	    			</nvd3-discrete-bar-chart>
+									showYAxis="true" yAxisTickFormat="intFormatFunction()"
+									showXAxis="true" xAxisTickFormat="abbreviateFunction(30, 1, 3)" 
+									margin="{ top: 25, left: 250, right: 25, bottom: 50}">
+	    			</nvd3-multi-bar-horizontal-chart>
     			</div>
 			</td>
 		</tr>
