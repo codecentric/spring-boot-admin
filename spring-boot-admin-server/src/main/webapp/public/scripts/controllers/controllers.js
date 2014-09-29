@@ -61,7 +61,7 @@ angular.module('springBootAdmin')
   			ApplicationDetails.getInfo(application);
   		});
   	})
-  	.controller('detailsMetricsCtrl', function ($scope, $stateParams, Application, ApplicationDetails) {
+  	.controller('detailsMetricsCtrl', function ($scope, $stateParams, Application, ApplicationDetails, Abbreviator) {
   		$scope.memoryData = [];
   		$scope.heapMemoryData = [];
   		$scope.counterData = [];
@@ -71,13 +71,13 @@ angular.module('springBootAdmin')
   			ApplicationDetails.getMetrics(application, function(application) {
   				//*** Extract data for JVM-Memory-Chart
   				application.metrics["mem.used"] = application.metrics["mem"] - $scope.application.metrics["mem.free"];
-  				$scope.memoryData = [{ label: 'Free Memory', value: application.metrics["mem.free"] },
-  				                     { label: 'Used Memory', value : application.metrics["mem.used"] }];
+  				$scope.memoryData = [ ['Free Memory', application.metrics["mem.free"]],
+  				                      ['Used Memory', application.metrics["mem.used"]] ];
   				
   				//*** Extract data for Heap-Memory-Chart
   				application.metrics["heap.free"] = application.metrics["heap"] - $scope.application.metrics["heap.used"];
-  				$scope.heapMemoryData = [{ label: 'Free Heap', value : application.metrics["heap.free"] },
-  				                     { label: 'Used Heap', value : application.metrics["heap.used"] }];
+  				$scope.heapMemoryData = [ ['Free Heap', application.metrics["heap.free"]],
+  				                          ['Used Heap', application.metrics["heap.used"]] ];
 
   				
   				//*** Extract data for Counter-Chart and Gauge-Chart
@@ -86,39 +86,32 @@ angular.module('springBootAdmin')
   				for (var metric in application.metrics) {
   					var matchCounter = /counter\.(.+)/.exec(metric);
   					if ( matchCounter !== null) {
-  						$scope.counterData[0].values.push({ label : matchCounter[1], value : application.metrics[metric] });
+  						$scope.counterData[0].values.push([ matchCounter[1], application.metrics[metric] ]);
   					}
 
   					var matchGauge = /gauge\.(.+)/.exec(metric);
   					if ( matchGauge !== null) {
-  						$scope.gaugeData[0].values.push({ label : matchGauge[1], value : application.metrics[metric] });
+  						$scope.gaugeData[0].values.push([ matchGauge[1], application.metrics[metric] ]);
   					}
   				}
 
   			});
   		});
   		
-  			
-  		$scope.xFunction = function(){
-  		    return function(d) {
-  		        return d.label;
-  		    };
-  		}
-  		
-  		$scope.yFunction = function(){
-  		    return function(d) {
-  		        return d.value;
-  		    };
-  		}
-  		
-  		var colorArray = ['#6db33f',  '#a5b2b9', '#34302d' ];
+   		var colorArray = ['#6db33f',  '#a5b2b9', '#34302d' ];
   		$scope.colorFunction = function() {
   			return function(d, i) {
   		    	return colorArray[i % colorArray.length];
   		    };
   		}
   		
-  		$scope.intFormatFunction = function(){
+		$scope.abbreviateFunction = function(targetLength, preserveLast, shortenThreshold){
+  		    return function(s) {
+  		        return Abbreviator.abbreviate(s, targetLength, preserveLast, shortenThreshold)
+  		    };
+  		}
+
+		$scope.intFormatFunction = function(){
   		    return function(d) {
   		        return d3.format('d')(d);
   		    };
@@ -126,8 +119,7 @@ angular.module('springBootAdmin')
   		
   		$scope.toolTipContentFunction = function(){
   			return function(key, x, y, e, graph) {
-  				console.log(key, x, y, e, graph);
-  		    	return x + ': ' + y ;
+  		    	return e.point[0] + ': ' + e.point[1] ;
   			}
   		}
   		

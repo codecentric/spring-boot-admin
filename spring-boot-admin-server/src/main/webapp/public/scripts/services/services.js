@@ -124,4 +124,73 @@ angular.module('springBootAdmin.services', ['ngResource'])
   					}
   				});
   		}
+  	}])
+  	.service('Abbreviator', [function() {
+  		  function _computeDotIndexes(fqName, preserveLast) {
+		    var dotArray = [];
+		    
+		    //iterate over String and find dots
+		    var lastIndex = -1;
+		    do {
+		      lastIndex = fqName.indexOf('.', lastIndex + 1);
+		      if (lastIndex !== -1) {
+		        dotArray.push(lastIndex);
+		      }
+		    } while (lastIndex !== -1)
+
+		    // remove dots to preserve more than the last element
+		    for (var i = 0; i < preserveLast -1; i++ ) {
+		    	dotArray.pop();
+		    }
+		    	
+		    return dotArray;
+		  }
+
+		  function _computeLengthArray(fqName, targetLength, dotArray, shortenThreshold) {
+			var lengthArray = [];
+		    var toTrim = fqName.length - targetLength;
+
+		    for (var i = 0; i < dotArray.length; i++) {
+		      var previousDotPosition = -1;
+		      if (i > 0) {
+		        previousDotPosition = dotArray[i - 1];
+		      }
+
+		      var len = dotArray[i] - previousDotPosition - 1;
+		      var newLen = (toTrim > 0 && len > shortenThreshold ? 1 : len);
+		      
+		      toTrim -= (len - newLen);
+		      lengthArray[i] = newLen + 1;
+		    }
+
+		    var lastDotIndex = dotArray.length - 1;
+		    lengthArray[dotArray.length] = fqName.length - dotArray[lastDotIndex];
+		    
+		    return lengthArray;
+		  }
+  		
+  		this.abbreviate = function(fqName, targetLength, preserveLast, shortenThreshold) {
+  		    if (fqName.length < targetLength) {
+  		      return fqName;
+  		    }
+
+  		    var dotIndexesArray = _computeDotIndexes(fqName, preserveLast);
+
+  		    if (dotIndexesArray.length === 0) {
+  		      return fqName;
+  		    }
+
+  		    var lengthArray = _computeLengthArray(fqName, targetLength, dotIndexesArray, shortenThreshold);
+
+  		    var result = "";
+  		    for (var i = 0; i <= dotIndexesArray.length; i++) {
+  		    	if (i === 0 ) {
+  		    		result += fqName.substr(0, lengthArray[i] -1);
+  		    	} else {
+  		    		result += fqName.substr(dotIndexesArray[i - 1], lengthArray[i]);
+  		    	}
+  		    }
+  		    
+  		    return result;
+  		}
   	}]);
