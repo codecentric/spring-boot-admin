@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.1.9.RELEASE</version>
+		<version>1.2.1.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>de.codecentric</groupId>
@@ -16,7 +16,7 @@
 	<description>Spring Boot Admin</description>
 	<url>https://github.com/codecentric/spring-boot-admin/</url>
 	<properties>
-		<spring-boot.version>1.1.9.RELEASE</spring-boot.version>
+		<spring-boot.version>1.2.1.RELEASE</spring-boot.version>
 		<hazelcast.version>3.3.3</hazelcast.version>
 		<main.basedir>${basedir}</main.basedir>
 		<passphrase>${gpg.passphrase}</passphrase>
@@ -181,11 +181,6 @@
 				<version>${spring-boot.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-databind</artifactId>
-				<version>2.3.3</version>
-			</dependency>
-			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
 				<version>3.3.2</version>
@@ -201,12 +196,6 @@
 				<version>${hazelcast.version}</version>
 			</dependency>
 			<!-- Test -->
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.10</version>
-				<scope>test</scope>
-			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-test</artifactId>
