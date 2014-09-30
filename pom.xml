@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.1.6.RELEASE</version>
+		<version>1.1.7.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>de.codecentric</groupId>
@@ -16,7 +16,7 @@
 	<description>Spring Boot Admin</description>
 	<url>https://github.com/codecentric/spring-boot-admin/</url>
 	<properties>
-		<spring-boot.version>1.1.6.RELEASE</spring-boot.version>
+		<spring-boot.version>1.1.7.RELEASE</spring-boot.version>
 		<spring.version>4.0.7.RELEASE</spring.version>
 		<bootstrap.version>2.3.2</bootstrap.version>
 		<jquery.version>1.11.0</jquery.version>

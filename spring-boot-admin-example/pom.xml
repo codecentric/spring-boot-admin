@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>de.codecentric</groupId>
 		<artifactId>spring-boot-admin</artifactId>
-		<version>1.0.2-SNAPSHOT</version>
+		<version>1.0.3-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>	
 	<artifactId>spring-boot-admin-example</artifactId>
@@ -32,7 +32,8 @@
 					</execution>
 				</executions>
 				<configuration>
-					<mainClass>de.codecentric.SpringBootAdminApplication</mainClass>
+					<mainClass>de.codecentric.boot.admin.SpringBootAdminApplication</mainClass>
+                    <addResources>false</addResources>
 				</configuration>
 			</plugin>
 		</plugins>
