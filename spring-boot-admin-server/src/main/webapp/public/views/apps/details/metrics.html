@@ -53,7 +53,7 @@
 		<tr>
 			<td>
 				<h1 style="text-align: center;">Counter</h1>
-				<div class="center-block" style="width: 800px; height:  {{ 50 + counterData[0].values.length * 15 }}px; position:relative;">
+				<div class="center-block" style="width: 800px; height:  {{ 75 + counterData[0].values.length * 15 }}px; position:relative;">
 					<nvd3-multi-bar-horizontal-chart id="counterChart" nodata="not available" 
 									data="counterData"
 									color="colorFunction()" 
@@ -68,7 +68,7 @@
     	<tr>
     		<td>
 				<h1 style="text-align: center;">Gauge</h1>
-				<div class="center-block" style="width: 800px; height: {{ 50 + gaugeData[0].values.length * 15 }}px; position:relative;">
+				<div class="center-block" style="width: 800px; height: {{ 75 + gaugeData[0].values.length * 15 }}px; position:relative;">
 					<nvd3-multi-bar-horizontal-chart id="gaugesChart" nodata="not available" 
 									data="gaugeData"
 									color="colorFunction()"

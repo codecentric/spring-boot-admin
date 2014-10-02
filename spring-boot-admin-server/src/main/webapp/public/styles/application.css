@@ -23,7 +23,7 @@ ul.chart-legend {
 }
 
 ul.chart-legend li:before {
-	content: "• ";
+	content: '\2022';
 	font-size: 250%;
 	vertical-align: middle;
 }
