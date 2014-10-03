@@ -68,13 +68,14 @@
     	<tr>
     		<td>
 				<h1 style="text-align: center;">Gauge</h1>
-				<div class="center-block" style="width: 800px; height: {{ 75 + gaugeData[0].values.length * 15 }}px; position:relative;">
+				<div class="center-block" style="width: 800px; height: {{ 75 + gaugeData[0].values.length * (10 + gaugeData.length *5) }}px; position:relative;">
 					<nvd3-multi-bar-horizontal-chart id="gaugesChart" nodata="not available" 
 									data="gaugeData"
 									color="colorFunction()"
 									tooltips="true" tooltipContent="toolTipContentFunction()" 
 									showYAxis="true" yAxisTickFormat="intFormatFunction()"
-									showXAxis="true" xAxisTickFormat="abbreviateFunction(30, 1, 3)" 
+									showXAxis="true" xAxisTickFormat="abbreviateFunction(30, 1, 3)"
+									showLegend="{{ gaugeData.length > 1 ? 'true' : 'false' }} " legendColor="colorFunction()" 
 									margin="{ top: 25, left: 250, right: 25, bottom: 50}">
 	    			</nvd3-multi-bar-horizontal-chart>
     			</div>

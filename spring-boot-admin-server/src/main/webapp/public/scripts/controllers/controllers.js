@@ -82,23 +82,72 @@ angular.module('springBootAdmin')
   				
   				//*** Extract data for Counter-Chart and Gauge-Chart
   				$scope.counterData = [ { key : "value", values: [] } ];
-  				$scope.gaugeData = [ { key : "value", values: [] } ];
+  				$scope.gaugeData = [ { key : "value", values: []   }, 
+  				                     { key : "average", values: [] },
+  									 { key : "min", values: []     },
+  									 { key : "max", values: []     },
+  				                     { key : "count", values: []   } ];
+  			
   				for (var metric in application.metrics) {
   					var matchCounter = /counter\.(.+)/.exec(metric);
   					if ( matchCounter !== null) {
   						$scope.counterData[0].values.push([ matchCounter[1], application.metrics[metric] ]);
+  						continue;
   					}
 
-  					var matchGauge = /gauge\.(.+)/.exec(metric);
-  					if ( matchGauge !== null) {
-  						$scope.gaugeData[0].values.push([ matchGauge[1], application.metrics[metric] ]);
+  					var matchGaugeValue = /gauge\.(.+)\.val/.exec(metric);
+  					if ( matchGaugeValue !== null) {
+  						$scope.gaugeData[0].values.push([ matchGaugeValue[1], application.metrics[metric] ]);
+  						continue;
+  					}
+  					
+  					var matchGaugeAvg = /gauge\.(.+)\.avg/.exec(metric);
+  					if ( matchGaugeAvg !== null) {
+  						$scope.gaugeData[1].values.push([ matchGaugeAvg[1], application.metrics[metric] ]);
+  						continue;
+  					}
+  					
+  					var matchGaugeMin = /gauge\.(.+)\.min/.exec(metric);
+  					if ( matchGaugeMin !== null) {
+  						$scope.gaugeData[2].values.push([ matchGaugeMin[1], application.metrics[metric] ]);
+  						continue;
+  					}
+  					
+  					var matchGaugeMax = /gauge\.(.+)\.max/.exec(metric);
+  					if ( matchGaugeMax !== null) {
+  						$scope.gaugeData[3].values.push([ matchGaugeMax[1], application.metrics[metric] ]);
+  						continue;
+  					}
+  					
+  					var matchGaugeCount = /gauge\.(.+)\.count/.exec(metric);
+  					if ( matchGaugeCount !== null) {
+  						$scope.gaugeData[4].values.push([ matchGaugeCount[1], application.metrics[metric] ]);
+  						continue;
+  					}
+  					
+  					var matchGaugeAlpha = /gauge\.(.+)\.alpha/.exec(metric);
+  					if ( matchGaugeAlpha !== null) {
+  						continue;
+  					} 
+  					
+  					var matchGaugeValue = /gauge\.(.+)/.exec(metric);
+  					if ( matchGaugeValue !== null) {
+  						$scope.gaugeData[0].values.push([ matchGaugeValue[1], application.metrics[metric] ]);
+  					}
+  				}
+  				
+  				//in case no richGauges are present remove empty groups
+  				var i = $scope.gaugeData.length;
+  				while (--i) {
+  					if ($scope.gaugeData[i].values.length === 0) {
+  						$scope.gaugeData.splice(i, 1);
   					}
   				}
 
   			});
   		});
   		
-   		var colorArray = ['#6db33f',  '#a5b2b9', '#34302d' ];
+   		var colorArray = ['#6db33f', '#a5b2b9', '#34302d'  , '#fec600' ,'#4e681e' ];
   		$scope.colorFunction = function() {
   			return function(d, i) {
   		    	return colorArray[i % colorArray.length];
@@ -119,7 +168,7 @@ angular.module('springBootAdmin')
   		
   		$scope.toolTipContentFunction = function(){
   			return function(key, x, y, e, graph) {
-  		    	return e.point[0] + ': ' + e.point[1] ;
+  		    	return '<b>' + key + '</b> ' +e.point[0] + ': ' + e.point[1] ;
   			}
   		}
   		
