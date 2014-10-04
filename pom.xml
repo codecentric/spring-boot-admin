@@ -23,7 +23,7 @@
 		<angularjs.version>1.2.12</angularjs.version>
 		<angular-ui-router.version>0.2.10-1</angular-ui-router.version>
 		<angularjs-nvd3-directives.version>0.0.7-1</angularjs-nvd3-directives.version>
-		<d3js.version>3.4.1</d3js.version>
+		<d3js.version>3.4.11</d3js.version>
 		<nvd3.version>1.1.15-beta</nvd3.version>
 		<main.basedir>${basedir}</main.basedir>
 		<passphrase>${gpg.passphrase}</passphrase>
