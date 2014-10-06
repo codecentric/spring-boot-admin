@@ -36,7 +36,8 @@ public class SpringBootAdminClientAutoConfiguration {
 	 * Task that registers the application at the spring-boot-admin application.
 	 */
 	@Bean
-	public SpringBootAdminRegistratorTask registrator() {
+	@ConditionalOnProperty("spring.boot.admin.url")
+	public Runnable registrator() {
 		return new SpringBootAdminRegistratorTask();
 	}
 
