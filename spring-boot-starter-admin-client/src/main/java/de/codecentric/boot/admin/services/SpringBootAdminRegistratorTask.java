@@ -46,7 +46,7 @@ public class SpringBootAdminRegistratorTask implements Runnable {
 		Assert.notNull(env.getProperty("spring.boot.admin.url"),
 				"The URL of the spring-boot-admin application is mandatory");
 		Assert.notNull(env.getProperty("server.port"), "The server port of the application is mandatory");
-		Assert.notNull(env.getProperty("info.id"), "The id of the application is mandatory");
+		Assert.notNull(env.getProperty("spring.application.name"), "The id of the application is mandatory");
 	}
 
 	/**
