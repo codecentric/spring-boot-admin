@@ -74,3 +74,17 @@ spring.boot.admin.url=http://localhost:8080
 
 [](url "title") 
 <img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-metrics.png">
+
+#### Build
+
+```shell
+mvn clean package
+```
+
+#### Release
+
+```shell
+mvn build-helper:parse-version versions:set -DnewVersion=${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}
+mvn -Psign-artifacts clean deploy
+```
+
