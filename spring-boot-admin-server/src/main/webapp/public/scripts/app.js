@@ -67,6 +67,11 @@ angular.module('springBootAdmin', [
   				templateUrl: 'views/apps/details/props.html',
   				controller: 'detailsPropsCtrl'
   			})
+  			.state('apps.details.classpath', {
+  				url: '/classpath',
+  				templateUrl: 'views/apps/details/classpath.html',
+  				controller: 'detailsClasspathCtrl'
+  			})
   			.state('apps.logging', {
   				url: '/logging/:id',
   				abstract: true,

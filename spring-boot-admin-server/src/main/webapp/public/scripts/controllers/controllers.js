@@ -156,7 +156,7 @@ angular.module('springBootAdmin')
   		
 		$scope.abbreviateFunction = function(targetLength, preserveLast, shortenThreshold){
   		    return function(s) {
-  		        return Abbreviator.abbreviate(s, targetLength, preserveLast, shortenThreshold)
+  		        return Abbreviator.abbreviate(s, '.', targetLength, preserveLast, shortenThreshold)
   		    };
   		}
 
@@ -181,6 +181,11 @@ angular.module('springBootAdmin')
   	.controller('detailsPropsCtrl', function ($scope, $stateParams, Application, ApplicationDetails) {
   		$scope.application = Application.query({id: $stateParams.id}, function(application) {
   			ApplicationDetails.getProps(application);
+  		});
+  	})
+  	.controller('detailsClasspathCtrl', function ($scope, $stateParams, Application, ApplicationDetails, Abbreviator) {
+  		$scope.application = Application.query({id: $stateParams.id}, function(application) {
+  			ApplicationDetails.getClasspath(application);
   		});
   	})
   	.controller('loggingCtrl', function ($scope, $stateParams, Application) {

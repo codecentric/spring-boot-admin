@@ -98,6 +98,11 @@ angular.module('springBootAdmin.services', ['ngResource'])
   				}
   			});
   		}
+  		this.getClasspath = function(app) {
+  			return $http.get(app.url + '/env').success(function(response) {
+  				app.classpath = response['systemProperties']['java.class.path'].split(":");
+  			});
+  		}
   	}])
   	.service('ApplicationLogging', ['$http', function($http) {
   		this.getLoglevel = function(app) {
@@ -126,13 +131,13 @@ angular.module('springBootAdmin.services', ['ngResource'])
   		}
   	}])
   	.service('Abbreviator', [function() {
-  		  function _computeDotIndexes(fqName, preserveLast) {
+  		  function _computeDotIndexes(fqName, delimiter, preserveLast) {
 		    var dotArray = [];
 		    
 		    //iterate over String and find dots
 		    var lastIndex = -1;
 		    do {
-		      lastIndex = fqName.indexOf('.', lastIndex + 1);
+		      lastIndex = fqName.indexOf(delimiter, lastIndex + 1);
 		      if (lastIndex !== -1) {
 		        dotArray.push(lastIndex);
 		      }
@@ -169,12 +174,12 @@ angular.module('springBootAdmin.services', ['ngResource'])
 		    return lengthArray;
 		  }
   		
-  		this.abbreviate = function(fqName, targetLength, preserveLast, shortenThreshold) {
+  		this.abbreviate = function(fqName, delimiter, targetLength, preserveLast, shortenThreshold) {
   		    if (fqName.length < targetLength) {
   		      return fqName;
   		    }
 
-  		    var dotIndexesArray = _computeDotIndexes(fqName, preserveLast);
+  		    var dotIndexesArray = _computeDotIndexes(fqName, delimiter, preserveLast);
 
   		    if (dotIndexesArray.length === 0) {
   		      return fqName;
