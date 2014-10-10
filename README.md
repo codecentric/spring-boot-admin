@@ -1,5 +1,7 @@
 spring-boot-admin
 =================
+[![Build Status](https://travis-ci.org/codecentric/spring-boot-admin.png?branch=master)](https://travis-ci.org/codecentric/spring-boot-admin)
+
 
 This is a simple admin interface for [Spring Boot](http://projects.spring.io/spring-boot/ "Official Spring-Boot website") applications.
 
