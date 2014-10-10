@@ -88,3 +88,13 @@ mvn build-helper:parse-version versions:set -DnewVersion=${parsedVersion.majorVe
 mvn -Psign-artifacts clean deploy
 ```
 
+#### Increment version for next release
+
+Example:
+
+```shell
+mvn build-helper:parse-version versions:set -DnewVersion=1.0.0-SNAPSHOT
+mvn versions:commit
+```
+
+
