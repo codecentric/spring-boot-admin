@@ -30,13 +30,13 @@ import de.codecentric.boot.admin.web.SimpleCORSFilter;
  * application is registered at the spring-boot-admin application. If not, it registers itself.
  */
 @Configuration
+@ConditionalOnProperty("spring.boot.admin.url")
 public class SpringBootAdminClientAutoConfiguration {
 
 	/**
 	 * Task that registers the application at the spring-boot-admin application.
 	 */
 	@Bean
-	@ConditionalOnProperty("spring.boot.admin.url")
 	public Runnable registrator() {
 		return new SpringBootAdminRegistratorTask();
 	}
