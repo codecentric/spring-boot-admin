@@ -6,9 +6,15 @@
 @import "application.css";
 @import "highlight.css";
 
+.accordion-heading ,
 .table > thead > tr > th {
   background-color: #34302D;  /* lighten 3% */
   color: #f1f1f1;
+}
+
+.tabs-left > ul {
+	max-width: 30%; 
+	overflow: hidden;
 }
 
 .table tr.highlight > td {

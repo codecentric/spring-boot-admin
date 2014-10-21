@@ -22,9 +22,11 @@
 		<jquery.version>1.11.0</jquery.version>
 		<angularjs.version>1.2.12</angularjs.version>
 		<angular-ui-router.version>0.2.10-1</angular-ui-router.version>
+		<angular-ui-bootstrap.version>0.8.0</angular-ui-bootstrap.version>
 		<angularjs-nvd3-directives.version>0.0.7-1</angularjs-nvd3-directives.version>
 		<d3js.version>3.4.11</d3js.version>
 		<nvd3.version>1.1.15-beta</nvd3.version>
+		<jolokia-js.version>1.2.2</jolokia-js.version>
 		<main.basedir>${basedir}</main.basedir>
 		<passphrase>${gpg.passphrase}</passphrase>
 	</properties>
@@ -208,6 +210,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.webjars</groupId>
+				<artifactId>angular-ui-bootstrap</artifactId>
+				<version>${angular-ui-bootstrap.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.webjars</groupId>
 				<artifactId>angularjs-nvd3-directives</artifactId>
 				<version>${angularjs-nvd3-directives.version}</version>
 			</dependency>
@@ -220,6 +227,11 @@
 				<groupId>org.webjars</groupId>
 				<artifactId>nvd3</artifactId>
 				<version>${nvd3.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.webjars</groupId>
+				<artifactId>jolokia.js</artifactId>
+				<version>${jolokia-js.version}</version>
 			</dependency>
 			<!-- Test -->
 			<dependency>

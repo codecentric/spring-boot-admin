@@ -19,6 +19,7 @@ angular.module('springBootAdmin', [
   'ngResource',
   'ngRoute',
   'ui.router',
+  'ui.bootstrap',
   'springBootAdmin.services',
   'nvd3ChartDirectives'
 ])
@@ -87,6 +88,11 @@ angular.module('springBootAdmin', [
   				url: '/write',
   				templateUrl: 'views/apps/logging/write.html',
   				controller: 'loggingWriteCtrl'
+  			})
+  			.state('apps.jmx', {
+  				url: '/jmx/:id',
+  				templateUrl: 'views/apps/jmx.html',
+  				controller: 'jmxCtrl'
   			});
   	})
   	.run(function ($rootScope, $state, $stateParams, $log) {

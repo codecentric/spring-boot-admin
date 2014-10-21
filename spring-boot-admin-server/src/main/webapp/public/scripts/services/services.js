@@ -130,6 +130,78 @@ angular.module('springBootAdmin.services', ['ngResource'])
   				});
   		}
   	}])
+  	.service('ApplicationJMX', ['$rootScope', 'Abbreviator', 'Jolokia', function($rootScope, Abbreviator, jolokia) {
+  		this.list = function(app) {
+  			return jolokia.list(app.url + '/jolokia/').then(function(response) {
+  					var domains = [];
+  					for (var rDomainName in response.value) {
+  						var rDomain = response.value[rDomainName];
+  						var domain = {name : rDomainName, beans: [] };
+  						
+  						for (var rBeanName in rDomain ) {
+  							var rBean = rDomain[rBeanName];
+  							var bean = { id : domain.name + ':' + rBeanName,
+  									     name : '', 
+  									     nameProps: {},
+  										 description : rBean.desc,
+  										 operations : rBean.op,
+  										 attributes : rBean.attr
+  										 };
+  						
+  							var name = '';
+  							var type = '';
+  							var parts = rBeanName.split(',');
+  							for (var i in parts ) {
+  								var tokens = parts[i].split('=');
+								if (tokens[0].toLowerCase() === 'name') {
+									name = tokens[1];
+								} else{
+									bean.nameProps[tokens[0]] = tokens[1];
+									if ((tokens[0].toLowerCase() === 'type' || tokens[0].toLowerCase() == 'j2eetype') && type.length ==0 ) {
+										type = tokens[1];
+									}
+								}
+  							}
+  							
+  							if (name.length !== 0) {
+  								bean.name = name;
+  							} 
+  							if ( type.length !== 0) {
+  								if (bean.name  !== 0) {
+  									bean.name += ' ';
+  								}
+  								bean.name += '[' + Abbreviator.abbreviate(type, '.', 25, 1, 1) + ']';
+  							} 
+  							
+  							if (bean.name.length === 0) {
+  								bean.name = rBeanName;
+  							}
+  						
+	  						domain.beans.push(bean);
+  						}
+  						
+  						domains.push(domain);
+  					}
+  					
+  					return domains;
+  				}, function(response) {
+  					return response;
+  				});
+  		}
+  		
+  		this.readAttr = function(app, bean) { 			
+  			return jolokia.read(app.url + '/jolokia', bean.id)
+  		}
+  		
+  		this.writeAttr = function(app, bean, attr, val) {
+  			return jolokia.write(app.url + '/jolokia', bean.id, attr, val);
+  		}
+  		
+  		this.invoke = function(app, bean, opname, args) {
+  			return jolokia.exec(app.url + '/jolokia', bean.id, opname, args);
+		}
+  		
+  	}])
   	.service('Abbreviator', [function() {
   		  function _computeDotIndexes(fqName, delimiter, preserveLast) {
 		    var dotArray = [];
@@ -197,5 +269,42 @@ angular.module('springBootAdmin.services', ['ngResource'])
   		    }
   		    
   		    return result;
+  		}
+  	}])
+  	.service('Jolokia', [ '$q' , '$rootScope', function($q){
+  		var j4p = new Jolokia();
+  		
+  		function call(url, request) {
+  			var deferred = $q.defer();
+  			deferred.notify(request);
+
+  			j4p.request( request,
+  					 {	url: url,
+  						method: 'post',
+  						success: function (response) {
+  							deferred.resolve(response);
+  						},
+  						error: function (response) {
+  							deferred.reject(response);
+  						}
+  					 });
+  			
+  			return deferred.promise;
+  		}
+  		
+  		this.exec = function(url, mbean, op, args) {
+  			return call(url, { type: 'exec', mbean: mbean, operation: op, arguments: args });
+  		}
+  		
+  		this.read = function(url, mbean) {
+  			return call(url, { type: 'read', mbean: mbean });
+  		}
+  		
+  		this.write = function(url, mbean, attr, val) {
+  			return call(url, { type: 'write', mbean: mbean, attribute: attr, value: val });
+  		}
+  		
+  		this.list = function(url) {
+  			return call(url, { type: 'list' });
   		}
   	}]);
