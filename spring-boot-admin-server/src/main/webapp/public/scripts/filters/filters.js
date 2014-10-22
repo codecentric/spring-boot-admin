@@ -32,4 +32,20 @@ angular.module('springBootAdmin')
 		    while (s.length < 2) s = "0" + s;
 		    return s;
 		} 
-	});
+	})
+	.filter('classNameLoggerOnly', function() { 
+		return function(input, active) { 
+			if (!active) {
+				return input;
+			}
+			var result = [];
+			for (var j in input) {
+				var name = input[j].name;
+				var i = name.lastIndexOf('.') + 1;
+				if ( name.charAt(i) === name.charAt(i).toUpperCase() ) {
+					result.push(input[j]);
+				}
+			}
+			return result;
+		}
+	})

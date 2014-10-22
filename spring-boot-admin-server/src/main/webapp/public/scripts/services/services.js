@@ -104,30 +104,23 @@ angular.module('springBootAdmin.services', ['ngResource'])
   			});
   		}
   	}])
-  	.service('ApplicationLogging', ['$http', function($http) {
-  		this.getLoglevel = function(app) {
-  			return $http.get(app.url + 
-  					'/jolokia/exec/ch.qos.logback.classic:Name=default,Type=ch.qos.logback.classic.jmx.JMXConfigurator/getLoggerLevel/' + 
-  					app.logger.name)
-  				.success(function(response) {
-  					if (response['value'].length > 0) {
-  						app.logger.loglevel = response['value'];
-  					} else {
-  						app.logger.loglevel = '<unknown>';
-  					}
-  				});
+  	.service('ApplicationLogging', ['$http' , 'Jolokia', function($http, jolokia) {
+  		var LOGBACK_MBEAN = 'ch.qos.logback.classic:Name=default,Type=ch.qos.logback.classic.jmx.JMXConfigurator';
+  		
+  		this.getLoglevel = function(app, loggers) {
+  			var requests = [];
+  			for (var j in loggers) {
+  				requests.push({ type: 'exec', mbean: LOGBACK_MBEAN, operation: 'getLoggerEffectiveLevel', arguments: [ loggers[j].name ] })
+  			}
+  			return jolokia.bulkRequest(app.url + '/jolokia', requests);
   		}
-  		this.setLoglevel = function(app) {
-  			return $http.get(app.url + 
-  					'/jolokia/exec/ch.qos.logback.classic:Name=default,Type=ch.qos.logback.classic.jmx.JMXConfigurator/setLoggerLevel/' + 
-  					app.logger.name + '/' + app.logger.loglevel)
-  				.success(function(response) {
-  					if (response['status'] == 200) {
-  						app.logger.success = true;
-  					} else {
-  						app.logger.success = false;
-  					}
-  				});
+  		
+  		this.setLoglevel = function(app, logger, level) {
+  			return jolokia.exec(app.url + '/jolokia', LOGBACK_MBEAN, 'setLoggerLevel' , [ logger, level] );
+  		}
+  		
+  		this.getAllLoggers = function(app) {
+  			return jolokia.readAttr(app.url + '/jolokia', LOGBACK_MBEAN, 'LoggerList'); 
   		}
   	}])
   	.service('ApplicationJMX', ['$rootScope', 'Abbreviator', 'Jolokia', function($rootScope, Abbreviator, jolokia) {
@@ -189,12 +182,12 @@ angular.module('springBootAdmin.services', ['ngResource'])
   				});
   		}
   		
-  		this.readAttr = function(app, bean) { 			
+  		this.readAllAttr = function(app, bean) { 			
   			return jolokia.read(app.url + '/jolokia', bean.id)
   		}
   		
   		this.writeAttr = function(app, bean, attr, val) {
-  			return jolokia.write(app.url + '/jolokia', bean.id, attr, val);
+  			return jolokia.writeAttr(app.url + '/jolokia', bean.id, attr, val);
   		}
   		
   		this.invoke = function(app, bean, opname, args) {
@@ -272,9 +265,44 @@ angular.module('springBootAdmin.services', ['ngResource'])
   		}
   	}])
   	.service('Jolokia', [ '$q' , '$rootScope', function($q){
+  		var outer = this;
   		var j4p = new Jolokia();
   		
-  		function call(url, request) {
+  		
+  		this.bulkRequest = function(url, requests) {
+  			var deferred = $q.defer();
+  			deferred.notify(requests);
+
+  			var hasError = false;
+  			var responses = [];
+  			
+  			j4p.request( requests,
+  					 {	url: url,
+  						method: 'post',
+  						success: function (response) {
+  							responses.push(response);
+  							if (responses.length >= requests.length) {
+  								if (!hasError) {
+  									deferred.resolve(responses);
+  								} else {
+  									deferred.resolve(responses);
+  								}
+  							}
+  						},
+  						error: function (response) {
+  							hasError = true;
+  							responses.push(response);
+  							if (responses.length >= requests.length) {
+  								deferred.reject(responses);
+  							}
+  						}
+  					 });
+  			
+  			return deferred.promise;
+  		}
+  		
+  		
+  		this.request = function(url, request) {
   			var deferred = $q.defer();
   			deferred.notify(request);
 
@@ -293,18 +321,22 @@ angular.module('springBootAdmin.services', ['ngResource'])
   		}
   		
   		this.exec = function(url, mbean, op, args) {
-  			return call(url, { type: 'exec', mbean: mbean, operation: op, arguments: args });
+  			return outer.request(url, { type: 'exec', mbean: mbean, operation: op, arguments: args });
   		}
   		
   		this.read = function(url, mbean) {
-  			return call(url, { type: 'read', mbean: mbean });
+  			return outer.request(url, { type: 'read', mbean: mbean });
   		}
   		
-  		this.write = function(url, mbean, attr, val) {
-  			return call(url, { type: 'write', mbean: mbean, attribute: attr, value: val });
+  		this.readAttr = function(url, mbean, attr) {
+  			return outer.request(url, { type: 'read', mbean: mbean, attribute: attr });
+  		}
+  		
+  		this.writeAttr = function(url, mbean, attr, val) {
+  			return outer.request(url, { type: 'write', mbean: mbean, attribute: attr, value: val });
   		}
   		
   		this.list = function(url) {
-  			return call(url, { type: 'list' });
+  			return outer.request(url, { type: 'list' });
   		}
   	}]);

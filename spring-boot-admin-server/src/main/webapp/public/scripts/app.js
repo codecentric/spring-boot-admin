@@ -75,19 +75,8 @@ angular.module('springBootAdmin', [
   			})
   			.state('apps.logging', {
   				url: '/logging/:id',
-  				abstract: true,
   				templateUrl: 'views/apps/logging.html',
-  				controller: 'detailsCtrl'
-  			})
-  			.state('apps.logging.read', {
-  				url: '/read',
-  				templateUrl: 'views/apps/logging/read.html',
-  				controller: 'loggingReadCtrl'
-  			})
-  			.state('apps.logging.write', {
-  				url: '/write',
-  				templateUrl: 'views/apps/logging/write.html',
-  				controller: 'loggingWriteCtrl'
+  				controller: 'loggingCtrl'
   			})
   			.state('apps.jmx', {
   				url: '/jmx/:id',

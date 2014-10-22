@@ -34,7 +34,7 @@ angular.module('springBootAdmin')
   		};
   		// callback for ng-click 'showLogging':
   		$scope.showLogging = function(id) {
-  			$location.path('/apps/logging/' + id + '/read');
+  			$location.path('/apps/logging/' + id);
   		};
   		// callback for ng-click 'showJmx':
   		$scope.showJmx = function(id) {
@@ -192,20 +192,86 @@ angular.module('springBootAdmin')
   			ApplicationDetails.getClasspath(application);
   		});
   	})
-  	.controller('loggingCtrl', function ($scope, $stateParams, Application) {
-  		$scope.application = Application.query({id: $stateParams.id});
-  	})
-  	.controller('loggingReadCtrl', function ($scope, $stateParams, Application, ApplicationLogging) {
-  		$scope.$parent.application.logger = new Object(); 
-  		$scope.readLoglevel = function(application) {
-  			ApplicationLogging.getLoglevel(application);
-  		};
-  	})
-  	.controller('loggingWriteCtrl', function ($scope, $stateParams, Application, ApplicationLogging) {
-  		$scope.$parent.application.logger = new Object(); 
-  		$scope.writeLoglevel = function(application) {
-  			ApplicationLogging.setLoglevel(application);
-  		};
+  	.controller('loggingCtrl', function ($scope, $stateParams, $filter, Application, ApplicationLogging) {
+  		$scope.loggers = [];
+  		$scope.filteredLoggers = [];
+  		$scope.limit = 10;
+  		
+  		function findLogger(loggers, name) {
+  			for(var i in loggers) {
+  				if (loggers[i].name === name){
+  					return loggers[i];
+  				}
+  			}
+  		}
+  		
+		$scope.setLogLevel = function(name, level) {
+			ApplicationLogging.setLoglevel($scope.application, name, level).then(function(response){
+				$scope.reload(name);
+			}).catch(function(response){
+				$scope.error = response.error;
+				console.log(response.stacktrace)
+				$scope.reload(name);
+			})
+  		} 
+		
+  		$scope.reload = function(prefix) {
+  			for (var i in $scope.loggers) {
+  				if (prefix == null || prefix === 'ROOT' || $scope.loggers[i].name.indexOf(prefix) == 0 ){
+  					$scope.loggers[i].level = null;
+  				}
+  			}
+  			$scope.refreshLevels();
+  		} 
+  		
+  		$scope.refreshLevels = function() {
+  			var toLoad = [];
+  			var slice = $scope.filteredLoggers.slice(0, $scope.limit);
+  			for (var i in slice ) {
+  				if (slice[i].level === null) {
+  					toLoad.push(slice[i]);
+  				}
+  			}
+
+  			if (toLoad.length == 0) return;
+  			
+  			ApplicationLogging.getLoglevel($scope.application, toLoad).then(
+  					function(responses) {
+  						for (var i in responses) {
+  							var name = responses[i].request.arguments[0];
+  							var level = responses[i].value;
+  							findLogger($scope.loggers, name).level = level;
+  						}
+  					}).catch(function(responses){
+  						for (var i in responses) {
+  							if (responses[i].error != null) {
+  								$scope.error = responses[i].error;
+  								console.log(responses[i].stacktrace);
+  								break;
+  							}
+  						}
+  					});
+  		} 
+  		
+  		$scope.application = Application.query({id: $stateParams.id}, function(application) {
+  			ApplicationLogging.getAllLoggers(application).then( function (response) {
+  				$scope.loggers  = [];
+  				for (var i in response.value) {
+  					$scope.loggers .push({name: response.value[i], level: null});
+  				}
+  				
+  		  		$scope.$watchCollection('filteredLoggers', function() {
+  		  			$scope.refreshLevels();
+  		  		});
+
+  		  		$scope.$watch('limit', function() {
+		  			$scope.refreshLevels();
+		  		});
+  			}).catch(function(response) {
+  				$scope.error = response.error;
+  				console.log(response.stacktrace);
+  			})
+  		});
   	})
   	.controller('jmxCtrl', function ($scope, $stateParams, $modal, Application, ApplicationJMX) {
   		$scope.application = Application.query({id: $stateParams.id}, function(application) {
@@ -219,9 +285,9 @@ angular.module('springBootAdmin')
   			})
   		});
   		
-  		$scope.readAttr = function(bean) {
+  		$scope.readAllAttr = function(bean) {
   			bean.error = null;
-  			ApplicationJMX.readAttr($scope.application, bean).then(
+  			ApplicationJMX.readAllAttr($scope.application, bean).then(
   					function(response) {
 		  				for (var name in response.value) {
 		  					bean.attributes[name].error = null;
@@ -244,7 +310,6 @@ angular.module('springBootAdmin')
   		}
   		
   		$scope.invoke = function() {
-  			
   			$scope.invocation.state = 'executing';
   			
   			ApplicationJMX.invoke($scope.application, $scope.invocation.bean, $scope.invocation.opname, $scope.invocation.args).then(
