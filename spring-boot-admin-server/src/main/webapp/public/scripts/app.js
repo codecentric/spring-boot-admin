@@ -25,33 +25,27 @@ angular.module('springBootAdmin', [
 ])
   	.config(function ($stateProvider, $urlRouterProvider) {
   		$urlRouterProvider
-  			.when('/', '/apps/overview')
+  			.when('/', '/overview')
   			.otherwise('/')
   		$stateProvider
-  			.state('apps', {
-  				url: '/apps',
-  				abstract: true,
-  				templateUrl: 'views/apps.html',
-  			})
+	  		.state('overview', {
+	  			url: '/overview',
+	  			templateUrl: 'views/overview.html',
+	  			controller: 'overviewCtrl'
+	  		})
   			.state('about', {
   				url: '/about',
   				templateUrl: 'views/about.html'
   			})
-  			.state('apps.overview', {
-  				url: '/overview',
-  				templateUrl: 'views/apps/overview.html',
-  				controller: 'overviewCtrl'
+  			.state('apps', {
+  				url: '/apps/:id',
+  				controller: 'appsCtrl',
+  				templateUrl: 'views/apps.html',
   			})
   			.state('apps.details', {
-  				url: '/details/:id',
-  				abstract: true,
+  				url: '/details',
   				templateUrl: 'views/apps/details.html',
   				controller: 'detailsCtrl'
-  			})
-  			.state('apps.details.infos', {
-  				url: '/infos',
-  				templateUrl: 'views/apps/details/infos.html',
-  				controller: 'detailsInfosCtrl'
   			})
   			.state('apps.details.metrics', {
   				url: '/metrics',
@@ -74,12 +68,12 @@ angular.module('springBootAdmin', [
   				controller: 'detailsClasspathCtrl'
   			})
   			.state('apps.logging', {
-  				url: '/logging/:id',
+  				url: '/logging',
   				templateUrl: 'views/apps/logging.html',
   				controller: 'loggingCtrl'
   			})
   			.state('apps.jmx', {
-  				url: '/jmx/:id',
+  				url: '/jmx',
   				templateUrl: 'views/apps/jmx.html',
   				controller: 'jmxCtrl'
   			});

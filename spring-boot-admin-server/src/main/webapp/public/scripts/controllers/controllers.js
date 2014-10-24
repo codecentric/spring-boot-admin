@@ -16,10 +16,11 @@
 'use strict';
 
 angular.module('springBootAdmin')
-  	.controller('overviewCtrl', function ($scope, Applications, Application, ApplicationOverview, $location, $interval) {
+  	.controller('overviewCtrl', ['$scope', '$location', '$interval', 'Applications', 'ApplicationOverview', 
+  	                             function ($scope, $location, $interval, Applications, ApplicationOverview) {
   		$scope.loadData = function() {
   			$scope.applications = Applications.query({}, function(applications) {
-	  			for (var i = 0; i < applications.length; i++) {
+	  			for (var i in applications) {
 	  				var app = applications[i];
 	  				ApplicationOverview.getVersion(app);
 	  				ApplicationOverview.getHealth(app);
@@ -28,44 +29,59 @@ angular.module('springBootAdmin')
 	  		});
   		}
   		$scope.loadData();
-  		// callback for ng-click 'showDetails':
-  		$scope.showDetails = function(id) {
-  			$location.path('/apps/details/' + id + '/infos');
-  		};
-  		// callback for ng-click 'showLogging':
-  		$scope.showLogging = function(id) {
-  			$location.path('/apps/logging/' + id);
-  		};
-  		// callback for ng-click 'showJmx':
-  		$scope.showJmx = function(id) {
-  			$location.path('/apps/jmx/' + id);
-  		};  		
-  		// callback for ng-click 'refresh':
+
   		$scope.refresh = function(id) {
   			$scope.application = Application.query({id: id}, function(application) {
   				ApplicationOverview.refresh(application);
   	  		});
   		};
+  		
   		// reload site every 30 seconds
   		var task = $interval(function() {
   			$scope.loadData();
   		}, 30000);
-  	})
-  	.controller('navCtrl', function ($scope, $location) {
-  		$scope.navClass = function(page) {
-  			var currentRoute = $location.path().substring(1) || 'main';
-  			return page == currentRoute ? 'active' : '';
-  		};
-  	})
-  	.controller('detailsCtrl', function ($scope, $stateParams, Application) {
-  		$scope.application = Application.query({id: $stateParams.id});
-  	})
-  	.controller('detailsInfosCtrl', function ($scope, $stateParams, Application, ApplicationDetails) {
+  	}])
+  	.controller('navCtrl', ['$scope', '$location', function ($scope, $location) {
+  	}])
+  	.controller('appsCtrl',  ['$scope', '$stateParams', function ($scope,  $stateParams) {
+  		$scope.applicationId = $stateParams.id;
+  	}])  	
+  	.controller('detailsCtrl', ['$scope', '$stateParams', '$interval', 'Application', 'ApplicationDetails', 
+  	                            function ($scope, $stateParams, $interval, Application, ApplicationDetails) {
   		$scope.application = Application.query({id: $stateParams.id}, function(application) {
   			ApplicationDetails.getInfo(application);
+  			
+  			ApplicationDetails.getMetrics(application, function(application){
+  				application.metrics["mem.used"] = application.metrics["mem"] - $scope.application.metrics["mem.free"];
+  				
+  				$scope.gcInfos = {};
+  				for (var metric in application.metrics) {
+  					var matchTime = /gc\.(.+)\.time/.exec(metric);
+  					if ( matchTime !== null) {
+  						var gcName = matchTime[1];
+  						if ($scope.gcInfos[gcName] == null) $scope.gcInfos[gcName] = {};
+  						$scope.gcInfos[gcName].time = application.metrics[metric];
+  					}
+  					
+  					var matchCount = /gc\.(.+)\.count/.exec(metric);
+  					if ( matchCount !== null) {
+  						var gcName = matchCount[1];
+  						if ($scope.gcInfos[gcName] == null) $scope.gcInfos[gcName] = {};
+  						$scope.gcInfos[gcName].count = application.metrics[metric];
+  					}
+  					
+  				}
+  				
+  			});
   		});
-  	})
-  	.controller('detailsMetricsCtrl', function ($scope, $stateParams, Application, ApplicationDetails, Abbreviator) {
+  		
+  		var start = Date.now();
+  		var tick = $interval(function() {
+  			$scope.ticks = Date.now() - start;
+  		},1000);
+  	}])
+  	.controller('detailsMetricsCtrl',  ['$scope', '$stateParams', 'Application', 'ApplicationDetails', 'Abbreviator', 
+  	                                    function ($scope, $stateParams, Application, ApplicationDetails, Abbreviator) {
   		$scope.memoryData = [];
   		$scope.heapMemoryData = [];
   		$scope.counterData = [];
@@ -73,17 +89,6 @@ angular.module('springBootAdmin')
   		
   		$scope.application = Application.query({id: $stateParams.id}, function(application) {
   			ApplicationDetails.getMetrics(application, function(application) {
-  				//*** Extract data for JVM-Memory-Chart
-  				application.metrics["mem.used"] = application.metrics["mem"] - $scope.application.metrics["mem.free"];
-  				$scope.memoryData = [ ['Free Memory', application.metrics["mem.free"]],
-  				                      ['Used Memory', application.metrics["mem.used"]] ];
-  				
-  				//*** Extract data for Heap-Memory-Chart
-  				application.metrics["heap.free"] = application.metrics["heap"] - $scope.application.metrics["heap.used"];
-  				$scope.heapMemoryData = [ ['Free Heap', application.metrics["heap.free"]],
-  				                          ['Used Heap', application.metrics["heap.used"]] ];
-
-  				
   				//*** Extract data for Counter-Chart and Gauge-Chart
   				$scope.counterData = [ { key : "value", values: [] } ];
   				$scope.gaugeData = [ { key : "value", values: []   }, 
@@ -176,23 +181,27 @@ angular.module('springBootAdmin')
   			}
   		}
   		
-  	})
-  	.controller('detailsEnvCtrl', function ($scope, $stateParams, Application, ApplicationDetails) {
+  	}])
+  	.controller('detailsEnvCtrl',  ['$scope', '$stateParams', 'Application', 'ApplicationDetails', 
+  	                                function ($scope, $stateParams, Application, ApplicationDetails) {
   		$scope.application = Application.query({id: $stateParams.id}, function(application) {
   			ApplicationDetails.getEnv(application);
   		});
-  	})
-  	.controller('detailsPropsCtrl', function ($scope, $stateParams, Application, ApplicationDetails) {
+  	}])
+  	.controller('detailsPropsCtrl', ['$scope', '$stateParams', 'Application', 'ApplicationDetails', 
+  			function ($scope, $stateParams, Application, ApplicationDetails) {
   		$scope.application = Application.query({id: $stateParams.id}, function(application) {
   			ApplicationDetails.getProps(application);
   		});
-  	})
-  	.controller('detailsClasspathCtrl', function ($scope, $stateParams, Application, ApplicationDetails, Abbreviator) {
+  	}])
+  	.controller('detailsClasspathCtrl',  ['$scope', '$stateParams', 'Application', 'ApplicationDetails', 'Abbreviator', 
+  	                                      function ($scope, $stateParams, Application, ApplicationDetails, Abbreviator) {
   		$scope.application = Application.query({id: $stateParams.id}, function(application) {
   			ApplicationDetails.getClasspath(application);
   		});
-  	})
-  	.controller('loggingCtrl', function ($scope, $stateParams, $filter, Application, ApplicationLogging) {
+  	}])
+  	.controller('loggingCtrl',  ['$scope', '$stateParams', 'Application', 'ApplicationLogging', 
+  	                             function ($scope, $stateParams, Application, ApplicationLogging) {
   		$scope.loggers = [];
   		$scope.filteredLoggers = [];
   		$scope.limit = 10;
@@ -272,8 +281,9 @@ angular.module('springBootAdmin')
   				console.log(response.stacktrace);
   			})
   		});
-  	})
-  	.controller('jmxCtrl', function ($scope, $stateParams, $modal, Application, ApplicationJMX) {
+  	}])
+  	.controller('jmxCtrl',  ['$scope', '$stateParams', '$modal', 'Application', 'ApplicationJMX', 
+  	                         function ($scope, $stateParams, $modal, Application, ApplicationJMX) {
   		$scope.application = Application.query({id: $stateParams.id}, function(application) {
   			$scope.error = null;
   			$scope.domains = [];
@@ -366,4 +376,4 @@ angular.module('springBootAdmin')
   				}
   			}
   		}
-  	});
+  	}]);

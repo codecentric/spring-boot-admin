@@ -100,7 +100,8 @@ angular.module('springBootAdmin.services', ['ngResource'])
   		}
   		this.getClasspath = function(app) {
   			return $http.get(app.url + '/env').success(function(response) {
-  				app.classpath = response['systemProperties']['java.class.path'].split(":");
+  				var seperator =  response['systemProperties']['path.separator'];
+  				app.classpath = response['systemProperties']['java.class.path'].split(seperator);
   			});
   		}
   	}])
