@@ -35,7 +35,7 @@
       </tr>
       <tr>
         <td> Threads</td>
-        <td>{{ application.metrics['threads'] }} total / {{ application.metrics['threads.daemon'] }} daemon</td>
+        <td>{{ application.metrics['threads'] }} total / {{ application.metrics['threads.daemon'] }} daemon / {{ application.metrics['threads.peak'] }} peak </td>
       </tr>
     </tbody>
   </table>
@@ -82,12 +82,30 @@
   <table class="table">
     <thead><tr><th colspan="2">Garbage Collection</th></tr></thead>
       <tr ng-repeat-start="(name, value) in gcInfos track by name">
-        <td>{{name | capitalize}} Count</td>
+        <td>{{name | capitalize}} GC Count</td>
         <td>{{value.count}}</td>
       </tr>
       <tr ng-repeat-end>
-        <td>{{name | capitalize}} Time</td>
+        <td>{{name | capitalize}} GC Time</td>
         <td>{{value.time}} ms</td>
+      </tr>
+    </tbody>
+   </table>
+</div>
+
+<div class="span6" ng-show="hasDatasources">
+  <table class="table">
+    <thead><tr><th colspan="2">Datasources</th></tr></thead>
+      <tr ng-repeat = "(name, value) in datasources track by name">
+         <td colspan="2">
+          <span>{{name | capitalize}} Datasource Connections (active: {{ value.active }})</span>
+          <div class="progress" style="margin-bottom: 0px;">
+            <div class="bar" style="width:{{ value.usage * 100 | number:0 }}%;"
+               ng-class="{'bar-success': value.usage < 0.75, 'bar-warning': value.usage >= 0.75 && value.usage < 0.95, 'bar-danger': value.usage >= 0.95}">
+              {{value.usage * 100 | number}}%
+            </div>
+          </div>
+        </td>
       </tr>
     </tbody>
    </table>

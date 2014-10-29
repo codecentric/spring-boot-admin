@@ -340,4 +340,17 @@ angular.module('springBootAdmin.services', ['ngResource'])
   		this.list = function(url) {
   			return outer.request(url, { type: 'list' });
   		}
+  	}])
+  	.service('MetricsHelper', [function() {
+  		this.find = function (metrics, regexes, callbacks) {
+  			for (var metric in metrics) {
+  				for (var i in regexes) {
+  						var match = regexes[i].exec(metric);
+						if (match != null) {
+							callbacks[i](metric, match, metrics[metric]);
+							break;
+						}
+					}
+				}
+			}
   	}]);

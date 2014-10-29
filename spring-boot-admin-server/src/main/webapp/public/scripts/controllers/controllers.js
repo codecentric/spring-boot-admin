@@ -46,8 +46,8 @@ angular.module('springBootAdmin')
   	.controller('appsCtrl',  ['$scope', '$stateParams', function ($scope,  $stateParams) {
   		$scope.applicationId = $stateParams.id;
   	}])  	
-  	.controller('detailsCtrl', ['$scope', '$stateParams', '$interval', 'Application', 'ApplicationDetails', 
-  	                            function ($scope, $stateParams, $interval, Application, ApplicationDetails) {
+  	.controller('detailsCtrl', ['$scope', '$stateParams', '$interval', 'Application', 'ApplicationDetails', 'MetricsHelper',
+  	                            function ($scope, $stateParams, $interval, Application, ApplicationDetails, MetricsHelper) {
   		$scope.application = Application.query({id: $stateParams.id}, function(application) {
   			ApplicationDetails.getInfo(application);
   			
@@ -55,23 +55,28 @@ angular.module('springBootAdmin')
   				application.metrics["mem.used"] = application.metrics["mem"] - $scope.application.metrics["mem.free"];
   				
   				$scope.gcInfos = {};
-  				for (var metric in application.metrics) {
-  					var matchTime = /gc\.(.+)\.time/.exec(metric);
-  					if ( matchTime !== null) {
-  						var gcName = matchTime[1];
-  						if ($scope.gcInfos[gcName] == null) $scope.gcInfos[gcName] = {};
-  						$scope.gcInfos[gcName].time = application.metrics[metric];
-  					}
-  					
-  					var matchCount = /gc\.(.+)\.count/.exec(metric);
-  					if ( matchCount !== null) {
-  						var gcName = matchCount[1];
-  						if ($scope.gcInfos[gcName] == null) $scope.gcInfos[gcName] = {};
-  						$scope.gcInfos[gcName].count = application.metrics[metric];
-  					}
-  					
+  				$scope.datasources = {}
+  				
+  				function createOrGet(map, key, factory) {
+  					return map[key] || (map[key] = factory());
   				}
   				
+  				MetricsHelper.find(application.metrics,
+  						[ /gc\.(.+)\.time/, /gc\.(.+)\.count/, /datasource\.(.+)\.active/,  /datasource\.(.+)\.usage/ ],
+  						[ function(metric, match, value) {
+  							createOrGet($scope.gcInfos, match[1], function() {return {time: 0, count: 0};}).time = value;
+  						 },
+  						function(metric, match, value) {
+   							createOrGet($scope.gcInfos, match[1], function() {return {time: 0, count: 0};}).count = value;
+   						 },
+  						function(metric, match, value) {
+   							$scope.hasDatasources = true;
+   							createOrGet($scope.datasources, match[1], function() {return {min: 0, max:0, active: 0, usage: 0};}).active = value;
+   						 },
+  						function(metric, match, value) {
+   							$scope.hasDatasources = true;
+   							createOrGet($scope.datasources, match[1], function() {return {min: 0, max:0, active: 0, usage: 0};}).usage = value;
+   						 }]);
   			});
   		});
   		
@@ -80,8 +85,8 @@ angular.module('springBootAdmin')
   			$scope.ticks = Date.now() - start;
   		},1000);
   	}])
-  	.controller('detailsMetricsCtrl',  ['$scope', '$stateParams', 'Application', 'ApplicationDetails', 'Abbreviator', 
-  	                                    function ($scope, $stateParams, Application, ApplicationDetails, Abbreviator) {
+  	.controller('detailsMetricsCtrl',  ['$scope', '$stateParams', 'Application', 'ApplicationDetails', 'Abbreviator', 'MetricsHelper',
+  	                                    function ($scope, $stateParams, Application, ApplicationDetails, Abbreviator, MetricsHelper) {
   		$scope.memoryData = [];
   		$scope.heapMemoryData = [];
   		$scope.counterData = [];
@@ -97,54 +102,17 @@ angular.module('springBootAdmin')
   									 { key : "max", values: []     },
   				                     { key : "count", values: []   } ];
   			
-  				for (var metric in application.metrics) {
-  					var matchCounter = /counter\.(.+)/.exec(metric);
-  					if ( matchCounter !== null) {
-  						$scope.counterData[0].values.push([ matchCounter[1], application.metrics[metric] ]);
-  						continue;
-  					}
-
-  					var matchGaugeValue = /gauge\.(.+)\.val/.exec(metric);
-  					if ( matchGaugeValue !== null) {
-  						$scope.gaugeData[0].values.push([ matchGaugeValue[1], application.metrics[metric] ]);
-  						continue;
-  					}
-  					
-  					var matchGaugeAvg = /gauge\.(.+)\.avg/.exec(metric);
-  					if ( matchGaugeAvg !== null) {
-  						$scope.gaugeData[1].values.push([ matchGaugeAvg[1], application.metrics[metric] ]);
-  						continue;
-  					}
-  					
-  					var matchGaugeMin = /gauge\.(.+)\.min/.exec(metric);
-  					if ( matchGaugeMin !== null) {
-  						$scope.gaugeData[2].values.push([ matchGaugeMin[1], application.metrics[metric] ]);
-  						continue;
-  					}
-  					
-  					var matchGaugeMax = /gauge\.(.+)\.max/.exec(metric);
-  					if ( matchGaugeMax !== null) {
-  						$scope.gaugeData[3].values.push([ matchGaugeMax[1], application.metrics[metric] ]);
-  						continue;
-  					}
-  					
-  					var matchGaugeCount = /gauge\.(.+)\.count/.exec(metric);
-  					if ( matchGaugeCount !== null) {
-  						$scope.gaugeData[4].values.push([ matchGaugeCount[1], application.metrics[metric] ]);
-  						continue;
-  					}
-  					
-  					var matchGaugeAlpha = /gauge\.(.+)\.alpha/.exec(metric);
-  					if ( matchGaugeAlpha !== null) {
-  						continue;
-  					} 
-  					
-  					var matchGaugeValue = /gauge\.(.+)/.exec(metric);
-  					if ( matchGaugeValue !== null) {
-  						$scope.gaugeData[0].values.push([ matchGaugeValue[1], application.metrics[metric] ]);
-  					}
-  				}
-  				
+  				MetricsHelper.find(application.metrics, 
+  						[ /counter\.(.+)/, /gauge\.(.+)\.val/, /gauge\.(.+)\.avg/,  /gauge\.(.+)\.min/,  /gauge\.(.+)\.max/,  /gauge\.(.+)\.count/,   /gauge\.(.+)\.alpha/,  /gauge\.(.+)/], 
+  						[ function (metric, match, value) { $scope.counterData[0].values.push([ match[1], value]); },
+  						function (metric, match, value) { $scope.gaugeData[0].values.push([ match[1], value]); },
+  						function (metric, match, value) { $scope.gaugeData[1].values.push([ match[1], value]); },
+  						function (metric, match, value) { $scope.gaugeData[2].values.push([ match[1], value]); },
+  						function (metric, match, value) { $scope.gaugeData[3].values.push([ match[1], value]); },
+  						function (metric, match, value) { $scope.gaugeData[4].values.push([ match[1], value]); },
+  						function (metric, match, value) { /*NOP*/ },
+  						function (metric, match, value) { $scope.gaugeData[0].values.push([ match[1], value]); }]);
+  			
   				//in case no richGauges are present remove empty groups
   				var i = $scope.gaugeData.length;
   				while (--i) {
