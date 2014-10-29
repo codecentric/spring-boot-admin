@@ -2,6 +2,7 @@
 
 body {
   background-color: #f1f1f1;
+  font-family: "Varela Round",sans-serif;
 }
 
 .container-fluid {
@@ -20,6 +21,15 @@ body {
   margin-right: auto;
 }
 
+a {
+    color: #5fa134;
+}
+
+a:hover,
+a:active {
+    color: #5fa134;
+}
+
 /** NVD3 **/
 .nvd3 text, div.nvtooltip {
 	font-size: 14px;
@@ -30,6 +40,7 @@ body {
   margin: 0;
 }
 .header--navbar .navbar-inner {
+  font-family: Montserrat,sans-serif;
   position: absolute;
   z-index: 999;
   background-image: none;
