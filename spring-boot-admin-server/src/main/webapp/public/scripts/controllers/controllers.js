@@ -18,22 +18,22 @@
 angular.module('springBootAdmin')
   	.controller('overviewCtrl', ['$scope', '$location', '$interval', 'Applications', 'ApplicationOverview', 
   	                             function ($scope, $location, $interval, Applications, ApplicationOverview) {
+
   		$scope.loadData = function() {
-  			$scope.applications = Applications.query({}, function(applications) {
+  			Applications.query(function(applications) {
 	  			for (var i in applications) {
 	  				var app = applications[i];
 	  				ApplicationOverview.getVersion(app);
 	  				ApplicationOverview.getHealth(app);
 	  				ApplicationOverview.getLogfile(app);
 	  			}	
+	  			$scope.applications = applications;
 	  		});
   		}
   		$scope.loadData();
 
-  		$scope.refresh = function(id) {
-  			$scope.application = Application.query({id: id}, function(application) {
-  				ApplicationOverview.refresh(application);
-  	  		});
+  		$scope.refresh = function(application) {
+  			ApplicationOverview.refresh(application);
   		};
   		
   		// reload site every 30 seconds
@@ -48,11 +48,18 @@ angular.module('springBootAdmin')
   	}])  	
   	.controller('detailsCtrl', ['$scope', '$stateParams', '$interval', 'Application', 'ApplicationDetails', 'MetricsHelper',
   	                            function ($scope, $stateParams, $interval, Application, ApplicationDetails, MetricsHelper) {
+  		
+  		
   		$scope.application = Application.query({id: $stateParams.id}, function(application) {
-  			ApplicationDetails.getInfo(application);
+  			ApplicationDetails.getInfo(application).success(function(info) {
+  				$scope.info = info;
+  			}).error( function(error) {
+  				$scope.error = error;
+  			});
   			
-  			ApplicationDetails.getMetrics(application, function(application){
-  				application.metrics["mem.used"] = application.metrics["mem"] - $scope.application.metrics["mem.free"];
+  			ApplicationDetails.getMetrics(application).success( function(metrics) {
+  				$scope.metrics = metrics;
+  				$scope.metrics["mem.used"] = $scope.metrics["mem"] - $scope.metrics["mem.free"];
   				
   				$scope.gcInfos = {};
   				$scope.datasources = {}
@@ -61,7 +68,7 @@ angular.module('springBootAdmin')
   					return map[key] || (map[key] = factory());
   				}
   				
-  				MetricsHelper.find(application.metrics,
+  				MetricsHelper.find(metrics,
   						[ /gc\.(.+)\.time/, /gc\.(.+)\.count/, /datasource\.(.+)\.active/,  /datasource\.(.+)\.usage/ ],
   						[ function(metric, match, value) {
   							createOrGet($scope.gcInfos, match[1], function() {return {time: 0, count: 0};}).time = value;
@@ -77,6 +84,8 @@ angular.module('springBootAdmin')
    							$scope.hasDatasources = true;
    							createOrGet($scope.datasources, match[1], function() {return {min: 0, max:0, active: 0, usage: 0};}).usage = value;
    						 }]);
+  			}).error( function(error) {
+  				$scope.error = error;
   			});
   		});
   		
@@ -93,7 +102,7 @@ angular.module('springBootAdmin')
   		$scope.gaugeData = [];
   		
   		$scope.application = Application.query({id: $stateParams.id}, function(application) {
-  			ApplicationDetails.getMetrics(application, function(application) {
+  			ApplicationDetails.getMetrics(application).success( function(metrics) {
   				//*** Extract data for Counter-Chart and Gauge-Chart
   				$scope.counterData = [ { key : "value", values: [] } ];
   				$scope.gaugeData = [ { key : "value", values: []   }, 
@@ -102,7 +111,7 @@ angular.module('springBootAdmin')
   									 { key : "max", values: []     },
   				                     { key : "count", values: []   } ];
   			
-  				MetricsHelper.find(application.metrics, 
+  				MetricsHelper.find(metrics, 
   						[ /counter\.(.+)/, /gauge\.(.+)\.val/, /gauge\.(.+)\.avg/,  /gauge\.(.+)\.min/,  /gauge\.(.+)\.max/,  /gauge\.(.+)\.count/,   /gauge\.(.+)\.alpha/,  /gauge\.(.+)/], 
   						[ function (metric, match, value) { $scope.counterData[0].values.push([ match[1], value]); },
   						function (metric, match, value) { $scope.gaugeData[0].values.push([ match[1], value]); },
@@ -121,6 +130,8 @@ angular.module('springBootAdmin')
   					}
   				}
 
+  			}).error( function(error) {
+  				$scope.error = error;
   			});
   		});
   		
@@ -153,19 +164,37 @@ angular.module('springBootAdmin')
   	.controller('detailsEnvCtrl',  ['$scope', '$stateParams', 'Application', 'ApplicationDetails', 
   	                                function ($scope, $stateParams, Application, ApplicationDetails) {
   		$scope.application = Application.query({id: $stateParams.id}, function(application) {
-  			ApplicationDetails.getEnv(application);
+  			ApplicationDetails.getEnv(application).success(function(env) {
+  				$scope.env = env;
+  			}).error( function(error) {
+  				$scope.error = error;
+  			});
   		});
   	}])
   	.controller('detailsPropsCtrl', ['$scope', '$stateParams', 'Application', 'ApplicationDetails', 
   			function ($scope, $stateParams, Application, ApplicationDetails) {
   		$scope.application = Application.query({id: $stateParams.id}, function(application) {
-  			ApplicationDetails.getProps(application);
+  			ApplicationDetails.getEnv(application).success(function(env) {
+  				$scope.props = [];
+  				for (var attr in env) {
+  					if (attr.indexOf('[') != -1 && attr.indexOf('.properties]') != -1) {
+  						$scope.props.push({ key : attr, value: env[attr] });
+  					}
+  				}
+  			}).error( function(error) {
+  				$scope.error = error;
+  			});
   		});
   	}])
   	.controller('detailsClasspathCtrl',  ['$scope', '$stateParams', 'Application', 'ApplicationDetails', 'Abbreviator', 
   	                                      function ($scope, $stateParams, Application, ApplicationDetails, Abbreviator) {
   		$scope.application = Application.query({id: $stateParams.id}, function(application) {
-  			ApplicationDetails.getClasspath(application);
+  			ApplicationDetails.getEnv(application).success(function(env) {
+  				var separator =  env['systemProperties']['path.separator'];
+  				$scope.classpath = env['systemProperties']['java.class.path'].split(separator);
+  			}).error( function(error) {
+  				$scope.error = error;
+  			});
   		});
   	}])
   	.controller('loggingCtrl',  ['$scope', '$stateParams', 'Application', 'ApplicationLogging', 

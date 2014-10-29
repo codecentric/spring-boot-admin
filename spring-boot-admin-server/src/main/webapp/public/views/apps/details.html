@@ -1,11 +1,52 @@
+<div class="alert alert-error" ng-if="error">
+	<b>Error:</b> {{ error }}
+</div>
+
 <div class="span6">
     <table class="table">
      <thead><tr><th>Application</th><th><small class="pull-right"><a href="{{ application.url }}/info">raw JSON</a></small></th></tr></thead>
     <tbody>
-      <tr ng-repeat="(key, value) in application.info" >
+      <tr ng-repeat="(key, value) in info" >
         <td>{{ key }}</td><td>{{ value }}</td>
       </tr>
     </tbody>
+   </table>
+</div>
+
+<div class="span6">
+  <table class="table">
+    <thead><tr><th colspan="2">Memory</th></tr></thead>
+    <tbody>
+      <tr>
+        <td colspan="2">
+          <span>Total Memory ({{ metrics['mem.used'] / 1024 | number:2 }}M / {{ metrics['mem'] / 1024 | number:2 }}M)</span>
+          <div class="progress" style="margin-bottom: 0px;">
+            <div class="bar" style="width:{{ memPercentage = (metrics['mem.used'] / metrics['mem'] * 100 | number:0) }}%;"
+               ng-class="{'bar-success': memPercentage < 75, 'bar-warning': memPercentage >= 75 && memPercentage < 95, 'bar-danger': memPercentage >= 95}">
+              {{memPercentage}}%
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <span>Heap Memory ({{ metrics['heap.used'] / 1024 | number:2 }}M / {{ metrics['heap.committed'] / 1024 | number:2 }}M)</span>
+          <div class="progress" style="margin-bottom: 0px;">
+            <div class="bar" style="width:{{ heapPercentage = (metrics['heap.used'] / metrics['heap.committed'] * 100 | number:0) }}%;"
+               ng-class="{'bar-success': heapPercentage < 75, 'bar-warning': heapPercentage >= 75 && heapPercentage < 95, 'bar-danger': heapPercentage >= 95}">
+              {{heapPercentage}}%
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>Initial Heap (-Xms)</td>
+        <td>{{metrics['heap.init'] / 1024 | number:2}}M</td>
+      </tr>
+      <tr>
+        <td>Maximum Heap (-Xmx)</td>
+        <td>{{metrics['heap'] / 1024 | number:2}}M</td>
+      </tr>
    </table>
 </div>
 
@@ -15,67 +56,30 @@
     <tbody>
       <tr>
         <td>Uptime</td>
-        <td>{{ application.metrics['uptime'] + ticks | timeInterval }} [d:h:m:s]</td>
+        <td>{{ metrics['uptime'] + ticks | timeInterval }} [d:h:m:s]</td>
       </tr>
       <tr>
         <td>Available Processors</td>
-        <td>{{ application.metrics['processors'] }}</td>
+        <td>{{ metrics['processors'] }}</td>
       </tr>
       <tr>
         <td>Current loaded Classes</td>
-        <td>{{ application.metrics['classes']}}</td>
+        <td>{{ metrics['classes']}}</td>
       </tr>
       <tr>
         <td> Total loaded Classes</td>
-        <td>{{ application.metrics['classes.loaded']}}</td>
+        <td>{{ metrics['classes.loaded']}}</td>
       </tr>
       <tr>
         <td> Unloaded Classes</td>
-        <td>{{ application.metrics['classes.unloaded']}}</td>
+        <td>{{ metrics['classes.unloaded']}}</td>
       </tr>
       <tr>
         <td> Threads</td>
-        <td>{{ application.metrics['threads'] }} total / {{ application.metrics['threads.daemon'] }} daemon / {{ application.metrics['threads.peak'] }} peak </td>
+        <td>{{ metrics['threads'] }} total / {{ metrics['threads.daemon'] }} daemon / {{ metrics['threads.peak'] }} peak </td>
       </tr>
     </tbody>
   </table>
-</div>
-
-<div class="span6">
-  <table class="table">
-    <thead><tr><th colspan="2">Memory</th></tr></thead>
-    <tbody>
-      <tr>
-        <td colspan="2">
-          <span>Total Memory ({{ application.metrics['mem.used'] / 1024 | number:2 }}M / {{ application.metrics['mem'] / 1024 | number:2 }}M)</span>
-          <div class="progress" style="margin-bottom: 0px;">
-            <div class="bar" style="width:{{ memPercentage = (application.metrics['mem.used'] / application.metrics['mem'] * 100 | number:0) }}%;"
-               ng-class="{'bar-success': memPercentage < 75, 'bar-warning': memPercentage >= 75 && memPercentage < 95, 'bar-danger': memPercentage >= 95}">
-              {{memPercentage}}%
-            </div>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td colspan="2">
-          <span>Heap Memory ({{ application.metrics['heap.used'] / 1024 | number:2 }}M / {{ application.metrics['heap.committed'] / 1024 | number:2 }}M)</span>
-          <div class="progress" style="margin-bottom: 0px;">
-            <div class="bar" style="width:{{ heapPercentage = (application.metrics['heap.used'] / application.metrics['heap.committed'] * 100 | number:0) }}%;"
-               ng-class="{'bar-success': heapPercentage < 75, 'bar-warning': heapPercentage >= 75 && heapPercentage < 95, 'bar-danger': heapPercentage >= 95}">
-              {{heapPercentage}}%
-            </div>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td>Initial Heap (-Xms)</td>
-        <td>{{application.metrics['heap.init'] / 1024 | number:2}}M</td>
-      </tr>
-      <tr>
-        <td>Maximum Heap (-Xmx)</td>
-        <td>{{application.metrics['heap'] / 1024 | number:2}}M</td>
-      </tr>
-   </table>
 </div>
 
 <div class="span6">

@@ -70,39 +70,13 @@ angular.module('springBootAdmin.services', ['ngResource'])
   	}])
   	.service('ApplicationDetails', ['$http', function($http) {
   		this.getInfo = function(app) {
-  			return $http.get(app.url + '/info').success(function(response) {
-  				app.info = response;
-  			});
+  			return $http.get(app.url + '/info');
   		}
-  		this.getMetrics = function(app, success) {
-  			return $http.get(app.url + '/metrics').success(function(response) {
-  				app.metrics = response;
-  				success(app);
-  			});
+  		this.getMetrics = function(app) {
+  			return $http.get(app.url + '/metrics');
   		}
   		this.getEnv = function(app) {
-  			return $http.get(app.url + '/env').success(function(response) {
-  				app.env = response;
-  			});
-  		}
-  		this.getProps = function(app) {
-  			return $http.get(app.url + '/env').success(function(response) {
-  				app.props = [];
-  				for (var attr in response) {
-  					if (attr.indexOf('[') != -1 && attr.indexOf('.properties]') != -1) {
-  						var prop = new Object();
-  						prop.key = attr;
-  						prop.value = response[attr];
-  						app.props.push(prop);
-  					}
-  				}
-  			});
-  		}
-  		this.getClasspath = function(app) {
-  			return $http.get(app.url + '/env').success(function(response) {
-  				var seperator =  response['systemProperties']['path.separator'];
-  				app.classpath = response['systemProperties']['java.class.path'].split(seperator);
-  			});
+  			return $http.get(app.url + '/env');
   		}
   	}])
   	.service('ApplicationLogging', ['$http' , 'Jolokia', function($http, jolokia) {
