@@ -21,7 +21,7 @@ angular.module('springBootAdmin')
 
   		$scope.loadData = function() {
   			Applications.query(function(applications) {
-	  			for (var i in applications) {
+  				for (var i = 0; i< applications.length; i++) {
 	  				var app = applications[i];
 	  				ApplicationOverview.getVersion(app);
 	  				ApplicationOverview.getHealth(app);
@@ -55,6 +55,12 @@ angular.module('springBootAdmin')
   				$scope.info = info;
   			}).error( function(error) {
   				$scope.error = error;
+  			});
+  			
+  			ApplicationDetails.getHealth(application).success(function(health) {
+  				$scope.health = health;
+  			}).error( function(health) {
+  				$scope.health = health;
   			});
   			
   			ApplicationDetails.getMetrics(application).success( function(metrics) {

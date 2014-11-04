@@ -19,15 +19,9 @@
 			<tr ng-repeat="application in applications track by application.id">
 				<td>{{ application.id }}</td>
 				<td>{{ application.version }}</td>
+				<td><span class="status-{{application.status}}">{{ application.status }}</span></td>
 				<td>
-					<span ng-show="application.up" class="up">UP</span>
-					<span ng-show="application.down" class="down">DOWN</span>
-					<span ng-show="application.outofservice" class="oufofservice">OUT OF SERVICE</span>
-					<span ng-show="application.unknown" class="unknown">UNKNOWN</span>
-					<span ng-show="application.offline" class="offline">OFFLINE</span>
-				</td>
-				<td>
-					<span ng-show="application.up" style="float:right">
+					<span class="pull-right" ng-hide="application.status == null || application.status == 'OFFLINE'">
 						<a ng-disabled="!application.providesLogfile" target="_self" class="btn btn-success" ng-href="{{application.urlLogfile}}"><i class="icon-file icon-white"></i>Logfile</a>
 						<a ui-sref="apps.details.metrics({id: application.id})" class="btn btn-success">Details</a>
 						<a ui-sref="apps.logging({id: application.id})" class="btn btn-success">Logging</a>

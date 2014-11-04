@@ -150,24 +150,26 @@ a:hover.spring-boot-logo span {
 
 /** Status in Application Overview-View **/
 
-span.up {
+span.status-UP {
 	color: #00AA00;
+	font-weight: bold;
 }
-
-span.offline {
+ 
+span.status-OFFLINE {
+	color: #000000;
+	font-weight: bold;
+}
+ 
+span.status-DOWN,
+span.status-OUT_OF_SERVICE {
 	color: #DD0000;
 	font-weight: bold;
 }
-
-span.down, span.outofservice {
-	color: #FF8800;
+ 
+span.status-UNKNOWN {
 	font-weight: bold;
+	color: #FF8800;
 }
-
-span.unknown {
-	color: #DDDDDD;
-}
-
 
 /** Headings and Tabs in Detail-View  **/
 .accordion-heading ,

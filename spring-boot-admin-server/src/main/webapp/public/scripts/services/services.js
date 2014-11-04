@@ -39,20 +39,16 @@ angular.module('springBootAdmin.services', ['ngResource'])
   			});
   		}
   		this.getHealth = function(app) {
-  			return $http.get(app.url + '/health').success(function(response) {
-  				if (typeof(response) === 'string' && response.indexOf('ok') != -1 
-  						|| typeof(response.status) === 'string' && 
-							(response.status.indexOf('ok') != -1 || response.status.indexOf('UP') != -1)) { 
-  					app.up = true;
-  				} else if (typeof(response.status) === 'string' && response.status.indexOf('DOWN') != -1) { 
-  					app.down = true;
-  				} else if (typeof(response.status) === 'string' && response.status.indexOf('OUT-OF-SERVICE') != -1) { 
-  					app.outofservice = true;
+  			return $http.get(app.url + '/health').success(function (response) {
+  				app.status = response.status;
+  			}).error(function (response, httpStatus) {
+  				if (httpStatus === 503) {
+  					app.status = response.status;
+  				} else if (httpStatus === 404) {
+  					app.status = 'OFFLINE';
   				} else {
-  					app.unknown = true;
+  					app.status = 'UNKNOWN'; 
   				}
-  			}).error(function() {
-  				app.offline = true;
   			});
   		}
   		this.getLogfile = function(app) {
@@ -78,6 +74,10 @@ angular.module('springBootAdmin.services', ['ngResource'])
   		this.getEnv = function(app) {
   			return $http.get(app.url + '/env');
   		}
+  		this.getHealth = function(app) {
+  			return $http.get(app.url + '/health');
+  		}
+
   	}])
   	.service('ApplicationLogging', ['$http' , 'Jolokia', function($http, jolokia) {
   		var LOGBACK_MBEAN = 'ch.qos.logback.classic:Name=default,Type=ch.qos.logback.classic.jmx.JMXConfigurator';
