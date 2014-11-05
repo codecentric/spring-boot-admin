@@ -17,7 +17,7 @@
 		</thead>
 		<tbody>
 			<tr ng-repeat="application in applications track by application.id">
-				<td>{{ application.id }}</td>
+				<td><span title="{{application.url}}">{{ application.id }}</span></td>
 				<td>{{ application.version }}</td>
 				<td><span class="status-{{application.status}}">{{ application.status }}</span></td>
 				<td>
@@ -26,6 +26,9 @@
 						<a ui-sref="apps.details.metrics({id: application.id})" class="btn btn-success">Details</a>
 						<a ui-sref="apps.logging({id: application.id})" class="btn btn-success">Logging</a>
 						<a ui-sref="apps.jmx({id: application.id})" class="btn btn-success">JMX</a>
+					</span>
+					<span class="pull-right" ng-show="application.status == null || application.status != 'UP'">
+						<a class="btn btn-danger" ng-click="remove(application)"><i class="icon-remove icon-white"></i>Remove</a>
 					</span>
 				</td>
 			</tr>

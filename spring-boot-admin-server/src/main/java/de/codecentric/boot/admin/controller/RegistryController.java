@@ -20,10 +20,12 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.codecentric.boot.admin.model.Application;
@@ -64,6 +66,18 @@ public class RegistryController {
 	public Application get(@PathVariable String id) {
 		LOGGER.debug("Deliver registered application with ID '{}'", id);
 		return registry.getApplication(id);
+	}
+
+	/**
+	 * Deregister an application within this admin application.
+	 *
+	 * @param id The application id.
+	 */
+	@ResponseStatus(value = HttpStatus.OK)
+	@RequestMapping(value = "/api/application/{id}", method = RequestMethod.DELETE)
+	public void unregister(@PathVariable String id) {
+		LOGGER.info("Deregister application with ID '{}'", id);
+		registry.unregister(id);
 	}
 
 	/**

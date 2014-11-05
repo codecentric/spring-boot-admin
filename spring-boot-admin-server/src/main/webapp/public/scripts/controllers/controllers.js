@@ -16,8 +16,8 @@
 'use strict';
 
 angular.module('springBootAdmin')
-  	.controller('overviewCtrl', ['$scope', '$location', '$interval', 'Applications', 'ApplicationOverview', 
-  	                             function ($scope, $location, $interval, Applications, ApplicationOverview) {
+       .controller('overviewCtrl', ['$scope', '$location', '$interval', 'Applications', 'ApplicationOverview', 'Application',
+                                    function ($scope, $location, $interval, Applications, ApplicationOverview, Application) {
 
   		$scope.loadData = function() {
   			Applications.query(function(applications) {
@@ -35,6 +35,16 @@ angular.module('springBootAdmin')
   		$scope.refresh = function(application) {
   			ApplicationOverview.refresh(application);
   		};
+  		
+  		$scope.remove = function(application) {
+  			Application.remove({ id: application.id }, function () {
+  				var index = $scope.applications.indexOf(application); 
+  				if (index > -1) {
+  					$scope.applications.splice(index, 1);
+  				}
+  			});
+  		}
+
   		
   		// reload site every 30 seconds
   		var task = $interval(function() {
