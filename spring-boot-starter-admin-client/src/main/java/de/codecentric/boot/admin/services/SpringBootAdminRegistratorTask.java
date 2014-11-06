@@ -69,13 +69,16 @@ public class SpringBootAdminRegistratorTask implements Runnable {
 				}
 			}
 			// register the application with the used URL and port
-			String url = new URL("http", InetAddress.getLocalHost().getCanonicalHostName(), port, "").toString();
+			String managementPath = env.getProperty("management.context-path", "");
+			String url = new URL("http", InetAddress.getLocalHost().getCanonicalHostName(), port, managementPath)
+			.toString();
 			Application app = new Application();
 			app.setId(id);
 			app.setUrl(url);
 			template.postForObject(adminUrl + "/api/applications", app, String.class);
 			LOGGER.info("Application registered itself at the admin application with ID '{}' and URL '{}'", id, url);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOGGER.warn("Failed to register application at spring-boot-admin, message={}", e.getMessage());
 		}
 	}
