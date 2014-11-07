@@ -21,7 +21,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
 import de.codecentric.boot.admin.controller.LogfileController;
-import de.codecentric.boot.admin.controller.RefreshController;
 import de.codecentric.boot.admin.services.SpringBootAdminRegistratorTask;
 import de.codecentric.boot.admin.web.SimpleCORSFilter;
 
@@ -66,14 +65,6 @@ public class SpringBootAdminClientAutoConfiguration {
 	@ConditionalOnProperty("logging.file")
 	public LogfileController logfileController() {
 		return new LogfileController();
-	}
-
-	/**
-	 * Controller to do a refresh on the application.
-	 */
-	@Bean
-	public RefreshController refreshController() {
-		return new RefreshController();
 	}
 
 }
