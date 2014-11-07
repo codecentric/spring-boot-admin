@@ -15,7 +15,6 @@
  */
 package de.codecentric.boot.admin.services;
 
-import java.net.InetAddress;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -56,8 +55,10 @@ public class SpringBootAdminRegistratorTask implements Runnable {
 	public void run() {
 		try {
 			String id = env.getProperty("info.id");
-			int port = env.getProperty("server.port", Integer.class);
+			int port = env.getProperty("spring.boot.admin.port", Integer.class);
 			String adminUrl = env.getProperty("spring.boot.admin.url");
+			String host = env.getProperty("spring.boot.admin.host");
+			
 			RestTemplate template = new RestTemplate();
 			template.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 			ApplicationList list = template.getForObject(adminUrl + "/api/applications", ApplicationList.class);
@@ -70,7 +71,7 @@ public class SpringBootAdminRegistratorTask implements Runnable {
 			}
 			// register the application with the used URL and port
 			String managementPath = env.getProperty("management.context-path", "");
-			String url = new URL("http", InetAddress.getLocalHost().getCanonicalHostName(), port, managementPath)
+			String url = new URL("http", host, port, managementPath)
 			.toString();
 			Application app = new Application();
 			app.setId(id);
