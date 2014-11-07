@@ -32,9 +32,11 @@ angular.module('springBootAdmin.services', ['ngResource'])
   		}
   	])
   	.service('ApplicationOverview', ['$http', function($http) {
-  		this.getVersion = function(app) {
+  		this.getInfo = function(app) {
   			return $http.get(app.url + '/info').success(function(response) {
   				app.version = response.version;
+  				delete response.version;
+  				app.info = response;
   			}).error(function() {
   				app.version = '---';
   			});
@@ -60,9 +62,6 @@ angular.module('springBootAdmin.services', ['ngResource'])
   				app.providesLogfile = false;
   				app.urlLogfile = null;
   			});
-  		}
-  		this.refresh = function(app) {
-  			return $http.post(app.url + '/refresh');
   		}
   	}])
   	.service('ApplicationDetails', ['$http', function($http) {

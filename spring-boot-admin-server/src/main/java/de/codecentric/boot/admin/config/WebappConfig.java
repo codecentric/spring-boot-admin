@@ -17,6 +17,7 @@ package de.codecentric.boot.admin.config;
 
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -25,6 +26,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 import de.codecentric.boot.admin.controller.RegistryController;
 import de.codecentric.boot.admin.service.ApplicationRegistry;
+import de.codecentric.boot.admin.service.SimpleApplicationRegistry;
 
 @Configuration
 public class WebappConfig extends WebMvcConfigurerAdapter {
@@ -41,16 +43,17 @@ public class WebappConfig extends WebMvcConfigurerAdapter {
 	 * Controller with REST-API for spring-boot applications to register itself.
 	 */
 	@Bean
-	public RegistryController registryController() {
-		return new RegistryController();
+	public RegistryController registryController(ApplicationRegistry registry) {
+		return new RegistryController(registry);
 	}
 
 	/**
-	 * Registry for all registered application.
+	 * Default registry for all registered application.
 	 */
 	@Bean
+	@ConditionalOnMissingBean
 	public ApplicationRegistry applicationRegistry() {
-		return new ApplicationRegistry();
+		return new SimpleApplicationRegistry();
 	}
 
 }

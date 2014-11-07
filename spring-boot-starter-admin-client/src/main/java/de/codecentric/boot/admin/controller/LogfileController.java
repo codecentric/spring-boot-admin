@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,8 +56,9 @@ public class LogfileController {
 			LOGGER.error("Logfile download failed for missing file at path=" + path);
 			return "Logfile download failed for missing file at path=" + path;
 		}
-		response.setContentType("application/octet-stream");
+		response.setContentType(MediaType.TEXT_PLAIN_VALUE);
 		response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getFilename() + "\"");
+
 		try {
 			FileCopyUtils.copy(file.getInputStream(), response.getOutputStream());
 		} catch (IOException e) {

@@ -50,7 +50,6 @@ See also the [example project](https://github.com/codecentric/spring-boot-admin/
 #### Client applications
 
 Each application that want to register itself to the admin application has to include the [spring-boot-starter-admin-client](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-starter-admin-client) as dependency. This starter JAR includes some [AutoConfiguration](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#using-boot-auto-configuration "Spring Boot docu") features that includes registering tasks, controller, etc.
-
 ```
 <dependency>
 	<groupId>de.codecentric</groupId>
@@ -59,11 +58,13 @@ Each application that want to register itself to the admin application has to in
 </dependency>
 ```
 
-Inside your application.properties you also have to define the URL of the Spring Boot Admin Server, e.g.
-
+Inside your configuration (e.g. application.properties) you also have to define the URL of the Spring Boot Admin Server, e.g.
 ```
 spring.boot.admin.url=http://localhost:8080
 ```
+
+For all configuration options see [spring-boot-starter-admin-client](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-starter-admin-client)
+
 
 #### Screenshots
 

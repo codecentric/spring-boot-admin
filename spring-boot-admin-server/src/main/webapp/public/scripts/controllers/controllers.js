@@ -18,12 +18,11 @@
 angular.module('springBootAdmin')
        .controller('overviewCtrl', ['$scope', '$location', '$interval', 'Applications', 'ApplicationOverview', 'Application',
                                     function ($scope, $location, $interval, Applications, ApplicationOverview, Application) {
-
   		$scope.loadData = function() {
   			Applications.query(function(applications) {
   				for (var i = 0; i< applications.length; i++) {
 	  				var app = applications[i];
-	  				ApplicationOverview.getVersion(app);
+	  				ApplicationOverview.getInfo(app);
 	  				ApplicationOverview.getHealth(app);
 	  				ApplicationOverview.getLogfile(app);
 	  			}	
@@ -51,105 +50,97 @@ angular.module('springBootAdmin')
   			$scope.loadData();
   		}, 30000);
   	}])
-  	.controller('navCtrl', ['$scope', '$location', function ($scope, $location) {
-  	}])
-  	.controller('appsCtrl',  ['$scope', '$stateParams', function ($scope,  $stateParams) {
-  		$scope.applicationId = $stateParams.id;
+  	.controller('appsCtrl',  ['$scope', 'application', function ($scope, application) {
+  		$scope.application = application;
   	}])  	
-  	.controller('detailsCtrl', ['$scope', '$stateParams', '$interval', 'Application', 'ApplicationDetails', 'MetricsHelper',
-  	                            function ($scope, $stateParams, $interval, Application, ApplicationDetails, MetricsHelper) {
-  		
-  		
-  		$scope.application = Application.query({id: $stateParams.id}, function(application) {
-  			ApplicationDetails.getInfo(application).success(function(info) {
-  				$scope.info = info;
-  			}).error( function(error) {
-  				$scope.error = error;
-  			});
+  	.controller('detailsCtrl', ['$scope', '$interval', 'application', 'ApplicationDetails', 'MetricsHelper',
+  	                            function ($scope, $interval, application, ApplicationDetails, MetricsHelper) {
+  		$scope.application = application;
+  		ApplicationDetails.getInfo(application).success(function(info) {
+			$scope.info = info;
+		}).error( function(error) {
+			$scope.error = error;
+		});
   			
-  			ApplicationDetails.getHealth(application).success(function(health) {
-  				$scope.health = health;
-  			}).error( function(health) {
-  				$scope.health = health;
-  			});
+		ApplicationDetails.getHealth(application).success(function(health) {
+			$scope.health = health;
+		}).error( function(health) {
+			$scope.health = health;
+		});
   			
-  			ApplicationDetails.getMetrics(application).success( function(metrics) {
-  				$scope.metrics = metrics;
-  				$scope.metrics["mem.used"] = $scope.metrics["mem"] - $scope.metrics["mem.free"];
+		ApplicationDetails.getMetrics(application).success(function(metrics) {
+			$scope.metrics = metrics;
+			$scope.metrics["mem.used"] = $scope.metrics["mem"] - $scope.metrics["mem.free"];
   				
-  				$scope.gcInfos = {};
-  				$scope.datasources = {}
+			$scope.gcInfos = {};
+			$scope.datasources = {}
   				
-  				function createOrGet(map, key, factory) {
-  					return map[key] || (map[key] = factory());
-  				}
+			function createOrGet(map, key, factory) {
+				return map[key] || (map[key] = factory());
+			}
   				
-  				MetricsHelper.find(metrics,
-  						[ /gc\.(.+)\.time/, /gc\.(.+)\.count/, /datasource\.(.+)\.active/,  /datasource\.(.+)\.usage/ ],
-  						[ function(metric, match, value) {
-  							createOrGet($scope.gcInfos, match[1], function() {return {time: 0, count: 0};}).time = value;
-  						 },
-  						function(metric, match, value) {
-   							createOrGet($scope.gcInfos, match[1], function() {return {time: 0, count: 0};}).count = value;
-   						 },
-  						function(metric, match, value) {
-   							$scope.hasDatasources = true;
-   							createOrGet($scope.datasources, match[1], function() {return {min: 0, max:0, active: 0, usage: 0};}).active = value;
-   						 },
-  						function(metric, match, value) {
-   							$scope.hasDatasources = true;
-   							createOrGet($scope.datasources, match[1], function() {return {min: 0, max:0, active: 0, usage: 0};}).usage = value;
-   						 }]);
-  			}).error( function(error) {
-  				$scope.error = error;
-  			});
-  		});
+			MetricsHelper.find(metrics,
+					[ /gc\.(.+)\.time/, /gc\.(.+)\.count/, /datasource\.(.+)\.active/,  /datasource\.(.+)\.usage/ ],
+					[ function(metric, match, value) {
+						createOrGet($scope.gcInfos, match[1], function() {return {time: 0, count: 0};}).time = value;
+					 },
+					function(metric, match, value) {
+						createOrGet($scope.gcInfos, match[1], function() {return {time: 0, count: 0};}).count = value;
+					 },
+					function(metric, match, value) {
+						$scope.hasDatasources = true;
+						createOrGet($scope.datasources, match[1], function() {return {min: 0, max:0, active: 0, usage: 0};}).active = value;
+					 },
+					function(metric, match, value) {
+						$scope.hasDatasources = true;
+						createOrGet($scope.datasources, match[1], function() {return {min: 0, max:0, active: 0, usage: 0};}).usage = value;
+			 }]);
+		}).error( function(error) {
+			$scope.error = error;
+		});
   		
   		var start = Date.now();
   		var tick = $interval(function() {
   			$scope.ticks = Date.now() - start;
   		},1000);
   	}])
-  	.controller('detailsMetricsCtrl',  ['$scope', '$stateParams', 'Application', 'ApplicationDetails', 'Abbreviator', 'MetricsHelper',
-  	                                    function ($scope, $stateParams, Application, ApplicationDetails, Abbreviator, MetricsHelper) {
+  	.controller('detailsMetricsCtrl',  ['$scope', 'application', 'ApplicationDetails', 'Abbreviator', 'MetricsHelper',
+  	                                    function ($scope, application, ApplicationDetails, Abbreviator, MetricsHelper) {
   		$scope.memoryData = [];
   		$scope.heapMemoryData = [];
   		$scope.counterData = [];
   		$scope.gaugeData = [];
   		
-  		$scope.application = Application.query({id: $stateParams.id}, function(application) {
-  			ApplicationDetails.getMetrics(application).success( function(metrics) {
-  				//*** Extract data for Counter-Chart and Gauge-Chart
-  				$scope.counterData = [ { key : "value", values: [] } ];
-  				$scope.gaugeData = [ { key : "value", values: []   }, 
-  				                     { key : "average", values: [] },
-  									 { key : "min", values: []     },
-  									 { key : "max", values: []     },
-  				                     { key : "count", values: []   } ];
-  			
-  				MetricsHelper.find(metrics, 
-  						[ /counter\.(.+)/, /gauge\.(.+)\.val/, /gauge\.(.+)\.avg/,  /gauge\.(.+)\.min/,  /gauge\.(.+)\.max/,  /gauge\.(.+)\.count/,   /gauge\.(.+)\.alpha/,  /gauge\.(.+)/], 
-  						[ function (metric, match, value) { $scope.counterData[0].values.push([ match[1], value]); },
-  						function (metric, match, value) { $scope.gaugeData[0].values.push([ match[1], value]); },
-  						function (metric, match, value) { $scope.gaugeData[1].values.push([ match[1], value]); },
-  						function (metric, match, value) { $scope.gaugeData[2].values.push([ match[1], value]); },
-  						function (metric, match, value) { $scope.gaugeData[3].values.push([ match[1], value]); },
-  						function (metric, match, value) { $scope.gaugeData[4].values.push([ match[1], value]); },
-  						function (metric, match, value) { /*NOP*/ },
-  						function (metric, match, value) { $scope.gaugeData[0].values.push([ match[1], value]); }]);
-  			
-  				//in case no richGauges are present remove empty groups
-  				var i = $scope.gaugeData.length;
-  				while (--i) {
-  					if ($scope.gaugeData[i].values.length === 0) {
-  						$scope.gaugeData.splice(i, 1);
-  					}
-  				}
-
-  			}).error( function(error) {
-  				$scope.error = error;
-  			});
-  		});
+		ApplicationDetails.getMetrics(application).success(function(metrics) {
+			//*** Extract data for Counter-Chart and Gauge-Chart
+			$scope.counterData = [ { key : "value", values: [] } ];
+			$scope.gaugeData = [ { key : "value", values: []   }, 
+			                     { key : "average", values: [] },
+								 { key : "min", values: []     },
+								 { key : "max", values: []     },
+			                     { key : "count", values: []   } ];
+		
+			MetricsHelper.find(metrics, 
+					[ /counter\.(.+)/, /gauge\.(.+)\.val/, /gauge\.(.+)\.avg/,  /gauge\.(.+)\.min/,  /gauge\.(.+)\.max/,  /gauge\.(.+)\.count/,   /gauge\.(.+)\.alpha/,  /gauge\.(.+)/], 
+					[ function (metric, match, value) { $scope.counterData[0].values.push([ match[1], value]); },
+					function (metric, match, value) { $scope.gaugeData[0].values.push([ match[1], value]); },
+					function (metric, match, value) { $scope.gaugeData[1].values.push([ match[1], value]); },
+					function (metric, match, value) { $scope.gaugeData[2].values.push([ match[1], value]); },
+					function (metric, match, value) { $scope.gaugeData[3].values.push([ match[1], value]); },
+					function (metric, match, value) { $scope.gaugeData[4].values.push([ match[1], value]); },
+					function (metric, match, value) { /*NOP*/ },
+					function (metric, match, value) { $scope.gaugeData[0].values.push([ match[1], value]); }]);
+		
+			//in case no richGauges are present remove empty groups
+			var i = $scope.gaugeData.length;
+			while (--i) {
+				if ($scope.gaugeData[i].values.length === 0) {
+					$scope.gaugeData.splice(i, 1);
+				}
+			}
+		}).error( function(error) {
+			$scope.error = error;
+		});
   		
    		var colorArray = ['#6db33f', '#a5b2b9', '#34302d'  , '#fec600' ,'#4e681e' ];
   		$scope.colorFunction = function() {
@@ -177,44 +168,41 @@ angular.module('springBootAdmin')
   		}
   		
   	}])
-  	.controller('detailsEnvCtrl',  ['$scope', '$stateParams', 'Application', 'ApplicationDetails', 
-  	                                function ($scope, $stateParams, Application, ApplicationDetails) {
-  		$scope.application = Application.query({id: $stateParams.id}, function(application) {
-  			ApplicationDetails.getEnv(application).success(function(env) {
-  				$scope.env = env;
-  			}).error( function(error) {
-  				$scope.error = error;
-  			});
+  	.controller('detailsEnvCtrl',  ['$scope', 'application', 'ApplicationDetails', 
+  	                                function ($scope, application, ApplicationDetails) {
+  		$scope.application = application;
+  		ApplicationDetails.getEnv(application).success(function(env) {
+			$scope.env = env;
+		}).error( function(error) {
+			$scope.error = error;
   		});
   	}])
-  	.controller('detailsPropsCtrl', ['$scope', '$stateParams', 'Application', 'ApplicationDetails', 
-  			function ($scope, $stateParams, Application, ApplicationDetails) {
-  		$scope.application = Application.query({id: $stateParams.id}, function(application) {
-  			ApplicationDetails.getEnv(application).success(function(env) {
-  				$scope.props = [];
-  				for (var attr in env) {
-  					if (attr.indexOf('[') != -1 && attr.indexOf('.properties]') != -1) {
-  						$scope.props.push({ key : attr, value: env[attr] });
-  					}
-  				}
-  			}).error( function(error) {
-  				$scope.error = error;
-  			});
-  		});
+  	.controller('detailsPropsCtrl', ['$scope', 'application', 'ApplicationDetails', 
+  			function ($scope, application, ApplicationDetails) {
+  		$scope.application = application;
+  		ApplicationDetails.getEnv(application).success(function(env) {
+			$scope.props = [];
+			for (var attr in env) {
+				if (attr.indexOf('[') != -1 && attr.indexOf('.properties]') != -1) {
+					$scope.props.push({ key : attr, value: env[attr] });
+				}
+			}
+		}).error( function(error) {
+			$scope.error = error;
+		});
   	}])
-  	.controller('detailsClasspathCtrl',  ['$scope', '$stateParams', 'Application', 'ApplicationDetails', 'Abbreviator', 
-  	                                      function ($scope, $stateParams, Application, ApplicationDetails, Abbreviator) {
-  		$scope.application = Application.query({id: $stateParams.id}, function(application) {
-  			ApplicationDetails.getEnv(application).success(function(env) {
-  				var separator =  env['systemProperties']['path.separator'];
-  				$scope.classpath = env['systemProperties']['java.class.path'].split(separator);
-  			}).error( function(error) {
-  				$scope.error = error;
-  			});
-  		});
+  	.controller('detailsClasspathCtrl',  ['$scope', 'application', 'ApplicationDetails', 'Abbreviator', 
+  	                                      function ($scope, application, ApplicationDetails, Abbreviator) {
+  		$scope.application = application;
+  		ApplicationDetails.getEnv(application).success(function(env) {
+			var separator =  env['systemProperties']['path.separator'];
+			$scope.classpath = env['systemProperties']['java.class.path'].split(separator);
+		}).error( function(error) {
+			$scope.error = error;
+		});
   	}])
-  	.controller('loggingCtrl',  ['$scope', '$stateParams', 'Application', 'ApplicationLogging', 
-  	                             function ($scope, $stateParams, Application, ApplicationLogging) {
+  	.controller('loggingCtrl',  ['$scope', 'application', 'ApplicationLogging', 
+  	                             function ($scope, application, ApplicationLogging) {
   		$scope.loggers = [];
   		$scope.filteredLoggers = [];
   		$scope.limit = 10;
@@ -228,7 +216,7 @@ angular.module('springBootAdmin')
   		}
   		
 		$scope.setLogLevel = function(name, level) {
-			ApplicationLogging.setLoglevel($scope.application, name, level).then(function(response){
+			ApplicationLogging.setLoglevel(application, name, level).then(function(response){
 				$scope.reload(name);
 			}).catch(function(response){
 				$scope.error = response.error;
@@ -257,7 +245,7 @@ angular.module('springBootAdmin')
 
   			if (toLoad.length == 0) return;
   			
-  			ApplicationLogging.getLoglevel($scope.application, toLoad).then(
+  			ApplicationLogging.getLoglevel(application, toLoad).then(
   					function(responses) {
   						for (var i in responses) {
   							var name = responses[i].request.arguments[0];
@@ -275,42 +263,39 @@ angular.module('springBootAdmin')
   					});
   		} 
   		
-  		$scope.application = Application.query({id: $stateParams.id}, function(application) {
-  			ApplicationLogging.getAllLoggers(application).then( function (response) {
-  				$scope.loggers  = [];
-  				for (var i in response.value) {
-  					$scope.loggers .push({name: response.value[i], level: null});
-  				}
-  				
-  		  		$scope.$watchCollection('filteredLoggers', function() {
-  		  			$scope.refreshLevels();
-  		  		});
+		ApplicationLogging.getAllLoggers(application).then( function (response) {
+			$scope.loggers  = [];
+			for (var i in response.value) {
+				$scope.loggers .push({name: response.value[i], level: null});
+			}
+			
+	  		$scope.$watchCollection('filteredLoggers', function() {
+	  			$scope.refreshLevels();
+	  		});
 
-  		  		$scope.$watch('limit', function() {
-		  			$scope.refreshLevels();
-		  		});
-  			}).catch(function(response) {
-  				$scope.error = response.error;
-  				console.log(response.stacktrace);
-  			})
-  		});
+	  		$scope.$watch('limit', function() {
+	  			$scope.refreshLevels();
+	  		});
+		}).catch(function(response) {
+			$scope.error = response.error;
+			console.log(response.stacktrace);
+		})
   	}])
-  	.controller('jmxCtrl',  ['$scope', '$stateParams', '$modal', 'Application', 'ApplicationJMX', 
-  	                         function ($scope, $stateParams, $modal, Application, ApplicationJMX) {
-  		$scope.application = Application.query({id: $stateParams.id}, function(application) {
-  			$scope.error = null;
-  			$scope.domains = [];
-  			ApplicationJMX.list(application).then(function(domains){
-  				$scope.domains = domains;
-  			}).catch(function(response) {
-  				$scope.error = response.error;
-  				console.log(response.stacktrace);  				
-  			})
-  		});
+  	.controller('jmxCtrl',  ['$scope', '$modal', 'application', 'ApplicationJMX', 
+  	                         function ($scope, $modal, application, ApplicationJMX) {
+		$scope.error = null;
+		$scope.domains = [];
+		
+		ApplicationJMX.list(application).then(function(domains){
+			$scope.domains = domains;
+		}).catch(function(response) {
+			$scope.error = response.error;
+			console.log(response.stacktrace);  				
+		})
   		
   		$scope.readAllAttr = function(bean) {
   			bean.error = null;
-  			ApplicationJMX.readAllAttr($scope.application, bean).then(
+  			ApplicationJMX.readAllAttr(application, bean).then(
   					function(response) {
 		  				for (var name in response.value) {
 		  					bean.attributes[name].error = null;
@@ -325,7 +310,7 @@ angular.module('springBootAdmin')
   		
   		$scope.writeAttr = function(bean, name, attr) {
   			attr.error = null;
-  			ApplicationJMX.writeAttr($scope.application, bean, name, attr.value).catch(
+  			ApplicationJMX.writeAttr(application, bean, name, attr.value).catch(
   					function(response) {
   						attr.error = response.error;
   						console.log(response.stacktrace);
@@ -335,7 +320,7 @@ angular.module('springBootAdmin')
   		$scope.invoke = function() {
   			$scope.invocation.state = 'executing';
   			
-  			ApplicationJMX.invoke($scope.application, $scope.invocation.bean, $scope.invocation.opname, $scope.invocation.args).then(
+  			ApplicationJMX.invoke(application, $scope.invocation.bean, $scope.invocation.opname, $scope.invocation.args).then(
   					function(response) {
   						$scope.invocation.state = 'success';
   						$scope.invocation.result = response.value;
@@ -390,12 +375,10 @@ angular.module('springBootAdmin')
   			}
   		}
   	}])
-  	.controller('threadsCtrl',  ['$scope', '$stateParams', 'Application', 'ApplicationThreads',
-  	                                function ($scope, $stateParams, Application, ApplicationThreads) {
-  		$scope.application = Application.query({id: $stateParams.id});
-  		
+  	.controller('threadsCtrl',  ['$scope', 'application', 'ApplicationThreads',
+  	                                function ($scope, application, ApplicationThreads) {
   		$scope.dumpThreads = function() {
-  			ApplicationThreads.getDump($scope.application).success(function(dump) {
+  			ApplicationThreads.getDump(application).success(function(dump) {
 	  			$scope.dump = dump;
 	  			
 	  			var threadStats = { NEW: 0, RUNNABLE: 0, BLOCKED: 0, WAITING: 0, TIMED_WAITING: 0, TERMINATED: 0};
@@ -409,5 +392,4 @@ angular.module('springBootAdmin')
 	  			$scope.error = error;
 	  		});
   		}
-  		
   	}]);
