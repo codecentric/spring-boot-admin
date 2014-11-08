@@ -29,16 +29,16 @@ angular.module('springBootAdmin')
   		}
   		$scope.loadData();
   		// callback for ng-click 'showDetails':
-  		$scope.showDetails = function(id) {
-  			$location.path('/apps/details/' + id + '/infos');
+  		$scope.showDetails = function(name) {
+  			$location.path('/apps/details/' + name + '/infos');
   		};
   		// callback for ng-click 'showLogging':
-  		$scope.showLogging = function(id) {
-  			$location.path('/apps/logging/' + id + '/read');
+  		$scope.showLogging = function(name) {
+  			$location.path('/apps/logging/' + name + '/read');
   		};
   		// callback for ng-click 'refresh':
-  		$scope.refresh = function(id) {
-  			$scope.application = Application.query({id: id}, function(application) {
+  		$scope.refresh = function(name) {
+  			$scope.application = Application.query({name: name}, function(application) {
   				ApplicationOverview.refresh(application);
   	  		});
   		};
@@ -54,10 +54,10 @@ angular.module('springBootAdmin')
   		};
   	})
   	.controller('detailsCtrl', function ($scope, $stateParams, Application) {
-  		$scope.application = Application.query({id: $stateParams.id});
+  		$scope.application = Application.query({name: $stateParams.name});
   	})
   	.controller('detailsInfosCtrl', function ($scope, $stateParams, Application, ApplicationDetails) {
-  		$scope.application = Application.query({id: $stateParams.id}, function(application) {
+  		$scope.application = Application.query({name: $stateParams.name}, function(application) {
   			ApplicationDetails.getInfo(application);
   		});
   	})
@@ -67,7 +67,7 @@ angular.module('springBootAdmin')
   		$scope.counterData = [];
   		$scope.gaugeData = [];
   		
-  		$scope.application = Application.query({id: $stateParams.id}, function(application) {
+  		$scope.application = Application.query({name: $stateParams.name}, function(application) {
   			ApplicationDetails.getMetrics(application, function(application) {
   				//*** Extract data for JVM-Memory-Chart
   				application.metrics["mem.used"] = application.metrics["mem"] - $scope.application.metrics["mem.free"];
@@ -125,17 +125,17 @@ angular.module('springBootAdmin')
   		
   	})
   	.controller('detailsEnvCtrl', function ($scope, $stateParams, Application, ApplicationDetails) {
-  		$scope.application = Application.query({id: $stateParams.id}, function(application) {
+  		$scope.application = Application.query({name: $stateParams.name}, function(application) {
   			ApplicationDetails.getEnv(application);
   		});
   	})
   	.controller('detailsPropsCtrl', function ($scope, $stateParams, Application, ApplicationDetails) {
-  		$scope.application = Application.query({id: $stateParams.id}, function(application) {
+  		$scope.application = Application.query({name: $stateParams.name}, function(application) {
   			ApplicationDetails.getProps(application);
   		});
   	})
   	.controller('loggingCtrl', function ($scope, $stateParams, Application) {
-  		$scope.application = Application.query({id: $stateParams.id});
+  		$scope.application = Application.query({name: $stateParams.name});
   	})
   	.controller('loggingReadCtrl', function ($scope, $stateParams, Application, ApplicationLogging) {
   		$scope.$parent.application.logger = new Object(); 

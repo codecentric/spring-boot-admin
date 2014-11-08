@@ -44,9 +44,10 @@ public class SpringBootAdminRegistratorTask implements Runnable {
 	@PostConstruct
 	public void check() {
 		Assert.notNull(env.getProperty("spring.boot.admin.url"),
-				"The URL of the spring-boot-admin application is mandatory");
-		Assert.notNull(env.getProperty("server.port"), "The server port of the application is mandatory");
-		Assert.notNull(env.getProperty("spring.application.name"), "The id of the application is mandatory");
+				"The URL of the spring-boot-admin application (spring.boot.admin.url) is mandatory");
+		Assert.notNull(env.getProperty("server.port"), "The server port (server.port) of the application is mandatory");
+		Assert.notNull(env.getProperty("spring.application.name"), "The application name (spring.application.name) is mandatory");
+		Assert.notNull(env.getProperty("info.id"), "The application id (info.id) is mandatory.");
 	}
 
 	/**
@@ -55,6 +56,7 @@ public class SpringBootAdminRegistratorTask implements Runnable {
 	@Override
 	public void run() {
 		try {
+			String name = env.getProperty("spring.application.name");
 			String id = env.getProperty("info.id");
 			int port = env.getProperty("server.port", Integer.class);
 			String adminUrl = env.getProperty("spring.boot.admin.url");
@@ -62,19 +64,20 @@ public class SpringBootAdminRegistratorTask implements Runnable {
 			template.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 			ApplicationList list = template.getForObject(adminUrl + "/api/applications", ApplicationList.class);
 			for (Application app : list) {
-				if (id.equals(app.getId())) {
+				if (name.equals(app.getName())) {
 					// the application is already registered at the admin tool
-					LOGGER.debug("Application already registered with ID '{}'", id);
+					LOGGER.debug("Application already registered with Name '{}'", name);
 					return;
 				}
 			}
 			// register the application with the used URL and port
-			String url = new URL("http", InetAddress.getLocalHost().getCanonicalHostName(), port, "").toString();
+			String clientUrl = new URL("http", InetAddress.getLocalHost().getCanonicalHostName(), port, "").toString();
 			Application app = new Application();
+			app.setName(name);
 			app.setId(id);
-			app.setUrl(url);
+			app.setUrl(clientUrl);
 			template.postForObject(adminUrl + "/api/applications", app, String.class);
-			LOGGER.info("Application registered itself at the admin application with ID '{}' and URL '{}'", id, url);
+			LOGGER.info("Application registered itself at the admin application with ID '{}' and URL '{}'", id, clientUrl);
 		} catch (Exception e) {
 			LOGGER.warn("Failed to register application at spring-boot-admin, message={}", e.getMessage());
 		}

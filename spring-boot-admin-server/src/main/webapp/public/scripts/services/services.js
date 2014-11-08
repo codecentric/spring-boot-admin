@@ -25,7 +25,7 @@ angular.module('springBootAdmin.services', ['ngResource'])
   	])
   	.factory('Application', ['$resource', function($resource) {
   		return $resource(
-  			'/api/application/:id', {}, {
+  			'/api/application/:name', {}, {
   				query: { method:'GET'}
   			});
   		}
