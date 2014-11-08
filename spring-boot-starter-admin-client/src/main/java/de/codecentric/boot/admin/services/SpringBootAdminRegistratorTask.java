@@ -71,7 +71,9 @@ public class SpringBootAdminRegistratorTask implements Runnable {
 				}
 			}
 			// register the application with the used URL and port
-			String clientUrl = new URL("http", InetAddress.getLocalHost().getCanonicalHostName(), port, "").toString();
+			String managementPath = env.getProperty("management.context-path", "");
+			String clientUrl = new URL("http", InetAddress.getLocalHost()
+					.getCanonicalHostName(), port, managementPath).toString();
 			Application app = new Application();
 			app.setName(name);
 			app.setId(id);
