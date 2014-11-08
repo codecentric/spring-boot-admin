@@ -28,7 +28,7 @@ Add the following dependency to your pom.xml.
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-server</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.5</version>
 </dependency>
 ```
 
@@ -55,14 +55,23 @@ Each application that want to register itself to the admin application has to in
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-starter-admin-client</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.5</version>
 </dependency>
 ```
 
-Inside your application.properties you also have to define the URL of the Spring Boot Admin Server, e.g.
+The following need to be available to the Spring Environment (via application.properties, command-line argument, etc):
 
+- <b>spring.boot.admin.url</b> - URL of the Spring Boot Admin Server
+- <b>spring.application.name</b> - the unique identifier for this client application (cannot be used by another client)
+- <b>info.id</b> - an ID that identifies this application (shared by all instances of the same application; <u>recommended</u>: <i>@pom.artifactId@</i>)
+- <b>info.version</b> - the version of this application (<u>recommended</u>: <i>@pom.version@</i>)
+
+E.g., in application.properties
 ```
 spring.boot.admin.url=http://localhost:8080
+spring.application.name=spring-boot-admin-example
+info.id=@pom.artifactId@
+info.version=@pom.version@
 ```
 
 #### Screenshots
@@ -70,7 +79,7 @@ spring.boot.admin.url=http://localhost:8080
 ##### Dashboard
 
 [](url "title") 
-<img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot.png">
+<img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot.jpg">
 
 ##### Metrics
 
