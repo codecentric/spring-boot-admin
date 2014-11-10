@@ -1,6 +1,6 @@
 <div class="row-fluid">
 	<div class="span12">
-		<h1 class="index-page--title">{{ application.id }}</h1>
+		<h1 class="index-page--title">{{ application.name }}</h1>
 		<p class="index-page--subtitle">Show information provided by the Spring-Boot Actuators.</p>
 	</div>
 </div>
@@ -8,10 +8,10 @@
 	<div class="main-template">
 		<div id="xd-jobs" class="tab-pane active col-md-12">
 			<ul class="nav nav-tabs">
-				<li ui-sref-active="active"><a ui-sref="apps.details.infos({id: application.id})">Infos</a></li>
-				<li ui-sref-active="active"><a ui-sref="apps.details.metrics({id: application.id})">Metrics</a></li>
-				<li ui-sref-active="active"><a ui-sref="apps.details.env({id: application.id})">Environment</a></li>
-				<li ui-sref-active="active"><a ui-sref="apps.details.props({id: application.id})">Properties</a></li>
+				<li ui-sref-active="active"><a ui-sref="apps.details.infos({name: application.name})">Infos</a></li>
+				<li ui-sref-active="active"><a ui-sref="apps.details.metrics({name: application.name})">Metrics</a></li>
+				<li ui-sref-active="active"><a ui-sref="apps.details.env({name: application.name})">Environment</a></li>
+				<li ui-sref-active="active"><a ui-sref="apps.details.props({name: application.name})">Properties</a></li>
 			</ul>
 			<div class="tab-content">
 				<div ui-view></div>

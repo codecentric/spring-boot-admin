@@ -39,15 +39,15 @@ public class ApplicationRegistry {
 	/**
 	 * Register application.
 	 * 
-	 * @param app
-	 *            The Application.
+	 * @param app The Application.
 	 */
 	public Application register(Application app) {
 		Validate.notNull(app, "Application must not be null");
+		Validate.notNull(app.getName(), "Application Name must not be null");
 		Validate.notNull(app.getId(), "ID must not be null");
 		Validate.notNull(app.getUrl(), "URL must not be null");
 		Validate.isTrue(checkUrl(app.getUrl()), "URL is not valid");
-		return registry.put(app.getId(), app);
+		return registry.put(app.getName(), app);
 	}
 
 	/**
@@ -67,14 +67,13 @@ public class ApplicationRegistry {
 	}
 
 	/**
-	 * Checks, if an application is already registerd.
+	 * Checks, if an application is already registered.
 	 * 
-	 * @param id
-	 *            The application ID.
+	 * @param name The application name.
 	 * @return exists?
 	 */
-	public boolean isRegistered(String id) {
-		return registry.containsKey(id);
+	public boolean isRegistered(String name) {
+		return registry.containsKey(name);
 	}
 
 	/**
@@ -89,15 +88,14 @@ public class ApplicationRegistry {
 	/**
 	 * Get a specific application inside the registry.
 	 * 
-	 * @param id
-	 *            Id.
+	 * @param name the name of the Application to retrieve.
 	 * @return Application.
 	 */
-	public Application getApplication(String id) {
-		if (!isRegistered(id)) {
-			throw new IllegalArgumentException("Application with ID " + id + " is not registered");
+	public Application getApplication(String name) {
+		if (!isRegistered(name)) {
+			throw new IllegalArgumentException("Application with Name '" + name + "' is not registered");
 		}
-		return registry.get(id);
+		return registry.get(name);
 	}
 
 }

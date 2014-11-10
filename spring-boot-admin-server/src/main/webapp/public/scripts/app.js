@@ -42,7 +42,7 @@ angular.module('springBootAdmin', [
   				controller: 'overviewCtrl'
   			})
   			.state('apps.details', {
-  				url: '/details/:id',
+  				url: '/details/:name',
   				abstract: true,
   				templateUrl: 'views/apps/details.html',
   				controller: 'detailsCtrl'
@@ -68,7 +68,7 @@ angular.module('springBootAdmin', [
   				controller: 'detailsPropsCtrl'
   			})
   			.state('apps.logging', {
-  				url: '/logging/:id',
+  				url: '/logging/:name',
   				abstract: true,
   				templateUrl: 'views/apps/logging.html',
   				controller: 'detailsCtrl'

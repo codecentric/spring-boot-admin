@@ -43,27 +43,26 @@ public class RegistryController {
 	/**
 	 * Register an application within this admin application.
 	 * 
-	 * @param app
-	 *            The application infos.
+	 * @param app The application info.
 	 * @return The registered application.
 	 */
 	@RequestMapping(value = "/api/applications", method = RequestMethod.POST)
 	public Application register(@RequestBody Application app) {
-		LOGGER.info("Register application with ID '{}' and URL '{}'", app.getId(), app.getUrl());
+		LOGGER.info("Register application with Name '{}' ID '{}' and URL '{}'",
+				app.getName(), app.getId(), app.getUrl());
 		return registry.register(app);
 	}
 
 	/**
 	 * Get a single application out of the registry.
 	 * 
-	 * @param id
-	 *            The application identifier.
+	 * @param name The application name.
 	 * @return The registered application.
 	 */
-	@RequestMapping(value = "/api/application/{id}", method = RequestMethod.GET)
-	public Application get(@PathVariable String id) {
-		LOGGER.debug("Deliver registered application with ID '{}'", id);
-		return registry.getApplication(id);
+	@RequestMapping(value = "/api/application/{name}", method = RequestMethod.GET)
+	public Application get(@PathVariable String name) {
+		LOGGER.debug("Deliver registered application with Name '{}'", name);
+		return registry.getApplication(name);
 	}
 
 	/**
