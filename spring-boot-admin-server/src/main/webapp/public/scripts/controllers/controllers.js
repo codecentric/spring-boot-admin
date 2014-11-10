@@ -389,4 +389,25 @@ angular.module('springBootAdmin')
   				}
   			}
   		}
+  	}])
+  	.controller('threadsCtrl',  ['$scope', '$stateParams', 'Application', 'ApplicationThreads',
+  	                                function ($scope, $stateParams, Application, ApplicationThreads) {
+  		$scope.application = Application.query({id: $stateParams.id});
+  		
+  		$scope.dumpThreads = function() {
+  			ApplicationThreads.getDump($scope.application).success(function(dump) {
+	  			$scope.dump = dump;
+	  			
+	  			var threadStats = { NEW: 0, RUNNABLE: 0, BLOCKED: 0, WAITING: 0, TIMED_WAITING: 0, TERMINATED: 0};
+	  			for (var i = 0; i < dump.length; i++) {
+	  				threadStats[dump[i].threadState]++;
+	  			}
+	  			threadStats.total = dump.length;
+	  			$scope.threadStats = threadStats;
+	  			
+	  		}).error( function(error) {
+	  			$scope.error = error;
+	  		});
+  		}
+  		
   	}]);

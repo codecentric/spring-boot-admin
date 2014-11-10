@@ -3,10 +3,6 @@
 </h2>
 <div class="span12">
 	<table class="table table-striped">
-		<colgroup style="width: 40%;"/>
-		<colgroup style="width: 15%;"/>
-		<colgroup style="width: 10%;"/>
-		<colgroup style="width: 35%;"/>
 		<thead>
 			<tr>
 				<th>Application</th>
@@ -26,8 +22,9 @@
 						<a ui-sref="apps.details.metrics({id: application.id})" class="btn btn-success">Details</a>
 						<a ui-sref="apps.logging({id: application.id})" class="btn btn-success">Logging</a>
 						<a ui-sref="apps.jmx({id: application.id})" class="btn btn-success">JMX</a>
+						<a ui-sref="apps.threads({id: application.id})" class="btn btn-success">Threads</a>						
 					</span>
-					<span class="pull-right" ng-show="application.status == null || application.status != 'UP'">
+					<span class="pull-right" ng-show="application.status == null || application.status == 'OFFLINE'">
 						<a class="btn btn-danger" ng-click="remove(application)"><i class="icon-remove icon-white"></i>Remove</a>
 					</span>
 				</td>

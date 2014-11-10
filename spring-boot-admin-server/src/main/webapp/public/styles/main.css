@@ -30,6 +30,10 @@ a:active {
     color: #5fa134;
 }
 
+pre {
+	white-space: pre;
+}
+
 /** NVD3 **/
 .nvd3 text, div.nvtooltip {
 	font-size: 14px;

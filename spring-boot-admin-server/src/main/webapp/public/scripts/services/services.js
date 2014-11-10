@@ -328,4 +328,9 @@ angular.module('springBootAdmin.services', ['ngResource'])
 					}
 				}
 			}
+  	}])
+  	.service('ApplicationThreads', ['$http', function($http) {
+  		this.getDump = function(app) {
+  			return $http.get(app.url + '/dump');
+  		}
   	}]);
