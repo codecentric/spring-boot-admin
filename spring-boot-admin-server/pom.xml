@@ -53,6 +53,14 @@
 			<groupId>org.webjars</groupId>
 			<artifactId>nvd3</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>jolokia.js</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>org.webjars</groupId>
+		    <artifactId>angular-ui-bootstrap</artifactId>
+		</dependency>		
 		<!-- Test -->
 		<dependency>
 			<groupId>junit</groupId>

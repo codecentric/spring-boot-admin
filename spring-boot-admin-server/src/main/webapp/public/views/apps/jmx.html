@@ -1,0 +1,150 @@
+<div class="alert alert-error" ng-if="error">
+	<b>Error:</b> {{ error }}
+</div>
+<div class="container">
+	<accordion close-others="true">
+		<accordion-group ng-repeat="domain in domains track by domain.name">
+			<accordion-heading>
+				<small class="muted">Domain</small> {{domain.name}}
+			</accordion-heading>
+
+			<tabset class="tabs-left" ng-init="visible = []">
+				<tab ng-repeat="bean in domain.beans track by bean.id" select="visible[bean.id] =  true" deselect="visible[bean.id] = false">
+					<tab-heading>
+						<small class="muted">MBean</small> {{bean.name }}
+					</tab-heading>
+					<div ng-if="visible[bean.id]">
+						<h2>
+							{{bean.name}}<br/><small>{{bean.description}}</small>
+						</h2>
+						<dl>
+							<dt>Id</dt>
+							<dd style="word-break: break-all;">{{ bean.id }}</dd>
+							<dt ng-repeat-start="(name, value) in bean.nameProps">{{ name }}</dt>
+							<dd ng-repeat-end>{{ value }}</dd>
+						</dl>
+	
+						<form class="form-horizontal" ng-if="bean.attributes !== undefinded">
+							<legend>
+								Attributes
+								<button class="btn" type="button" ng-click="readAllAttr(bean)">read</button>
+							</legend>
+							<div ng-show="bean.error" class="alert alert-error">
+	  							<b>Error:</b> {{ bean.error }}
+	  						</div>
+							<div class="control-group" ng-repeat="(name, attr) in bean.attributes track by name" ng-class="{error: attr.error}">
+								<label class="control-label" for="{{name}}"	style="word-break: break-all;">
+									{{name}}<br/>
+									<small class="muted">{{attr.type}}</small>
+								</label>
+								<div class="controls">
+									<div class="input-prepend" ng-switch="attr.type.toLowerCase()">
+										<button class="btn" type="button" ng-click="writeAttr(bean, name, attr)" ng-disabled="!attr.rw">write</button>
+										<input ng-switch-when="java.lang.string" class="span5" type="text" ng-model="attr.value" ng-disabled="!attr.rw" />
+										<input ng-switch-when="long" class="span5" type="number" ng-model="attr.value" ng-disabled="!attr.rw" />
+										<input ng-switch-when="int"  class="span5" type="number" ng-model="attr.value" ng-disabled="!attr.rw" />
+										<input ng-switch-when="double" class="span5" type="number" ng-model="attr.value" ng-disabled="!attr.rw" />
+										<select ng-switch-when="boolean" class="span5" ng-model="attr.value" ng-disabled="!attr.rw" ng-options="val for val in [true, false]" />
+										<textarea ng-switch-default style="word-break: break-all;" class="span5" ng-model="attr.jsonValue" ng-disabled="!attr.rw" />
+									</div>
+									<span class="help-block">{{attr.desc}}</span>
+									<span class="help-inline">{{attr.error}}</span>
+								</div>
+							</div>
+						</form>
+	
+						<form class="form" ng-if="bean.operations !== undefinded">
+							<legend>Operations</legend>
+							<div class="control-group" ng-repeat="(name, op) in bean.operations track by name">
+								<button class="btn span6" style="text-align: left; padding-left: 5px;" ng-click="prepareInvoke(bean, name, op)">
+									{{name}}<br/>
+									<small class="muted" style="word-break: break-all;">{{op.ret}}</small>
+									<span class="help-block">{{op.desc}}</span>
+								</button>
+							</div>
+						</form>
+					</div>
+				</tab>
+			</tabset>	
+		</accordion-group>
+	</accordion>
+</div>
+<script type="text/ng-template" id="invocationPrepareDialog.html">
+	<div class="modal-header">
+		<h3>Arguments for {{ invocation.opname }}</h3>
+	</div>
+ 	<div class="modal-body">
+ 		<p>Please input the arguments</p>
+		<form class="form">
+			<div class="control-group" ng-repeat="arg in invocation.opdesc.args">
+				<label class="control-label" for="{{arg.name}}"	style="word-break: break-all;">
+					{{arg.name}} <small class="muted" style="word-break: break-all;">{{arg.type}}</small>
+				</label>
+				<div class="controls" ng-switch="arg.type.toLowerCase()" >
+					<input ng-switch-when="java.lang.string" class="span6" type="text" ng-model="invocation.args[$index]"/>
+					<input ng-switch-when="long" class="span6" type="number" ng-model="invocation.args[$index]" />
+					<input ng-switch-when="int"  class="span6" type="number" ng-model="invocation.args[$index]" />
+					<input ng-switch-when="double" class="span6" type="number" ng-model="invocation.args[$index]" />
+					<select ng-switch-when="boolean" class="span6" ng-model="invocation.args[$index]" ng-options="val for val in [true, false]" />
+					<textarea ng-switch-default style="word-break: break-all;" class="span6" ng-model="invocation.args[$index]" />
+					<span class="help-block">{{arg.desc}}</span>
+				</div>
+			</div>
+		</form>
+ 	</div>
+ 	<div class="modal-footer">
+   		<button class="btn" ng-click="$dismiss()" >Abort</button>
+   		<button class="btn btn-inverse" ng-click="$close()">Execute</button>
+ 	</div>
+</script>
+	
+<script type="text/ng-template" id="invocationVariantDialog.html">
+ 	<div class="modal-header">
+   		<h3>Variant for {{ invocation.opname }}</h3>
+ 	</div>
+ 	<div class="modal-body">
+ 		<p>The method is overloaded. Please choose a variant.</p>
+		<form>
+			<div class="control-group" >
+				<button class="btn btn-block" style="text-align: left; padding-left: 5px;" ng-repeat="op in invocation.opdesc" ng-click="$close(op)">
+					<b>{{invocation.opname}}</b> (
+						<span ng-repeat-start="arg in op.args" data-toggle="tooltip" title="{{arg.desc}}">{{arg.type}} {{arg.name}}</span>
+						<span ng-repeat-end ng-if="!$last">, </span> 
+					)<br/><small class="muted">{{op.ret}}</small>
+					<span class="help-block">{{op.desc}}</span>
+				</button>
+			</div>
+		</form>
+ 	</div>
+ 	<div class="modal-footer">
+   		<button class="btn" ng-click="$dismiss()">Abort</button>
+ 	</div>  		
+</script>
+	
+<script type="text/ng-template" id="invocationResultDialog.html">
+ 	<div class="modal-header">
+   		<h3>Executing {{ invocation.opname }}</h3>
+ 	</div>
+ 	<div class="modal-body" ng-switch="invocation.state">
+ 		<div ng-switch-when="executing" class="progress progress-striped active">
+ 			<div class="bar">executing ... </div>
+		</div>
+		<div ng-switch-when="success" >
+  			<div class="alert alert-success">
+	  			<b>Success</b>
+  			</div>
+  			<h4>Result <small class="muted"> {{invocation.opdesc.ret}}</small></h4>
+  			<pre>{{ invocation.result | json }}</pre>
+		</div>
+ 		<div ng-switch-when="error">
+  			<div class="alert alert-error">
+  				<b>Error:</b> {{ invocation.error }}
+  			</div>
+  			<h4>Stacktrace:</h4>
+			<pre>{{ invocation.stacktrace }}</pre>
+ 		</div>
+ 	</div>
+ 	<div class="modal-footer">
+   		<button class="btn" ng-click="$close()">Close</button>
+ 	</div>  		
+</script>

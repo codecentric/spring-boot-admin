@@ -100,4 +100,12 @@ public class ApplicationRegistry {
 		return registry.get(id);
 	}
 
+	/**
+	 * Remove a specific application from registry
+	 * @param id
+	 */
+	public void unregister(String id) {
+		registry.remove(id);
+	}
+
 }

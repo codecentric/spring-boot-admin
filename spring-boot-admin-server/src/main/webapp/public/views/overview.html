@@ -1,0 +1,34 @@
+<h2 >Spring-Boot applications<br>
+<small>Here you'll find all Spring-Boot applications that registered itself at this admin application.</small>
+</h2>
+<div class="span12">
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>Application</th>
+				<th>Version</th>
+				<th>Status</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="application in applications track by application.id">
+				<td><span title="{{application.url}}">{{ application.id }}</span></td>
+				<td>{{ application.version }}</td>
+				<td><span class="status-{{application.status}}">{{ application.status }}</span></td>
+				<td>
+					<span class="pull-right" ng-hide="application.status == null || application.status == 'OFFLINE'">
+						<a ng-disabled="!application.providesLogfile" target="_self" class="btn btn-success" ng-href="{{application.urlLogfile}}"><i class="icon-file icon-white"></i>Logfile</a>
+						<a ui-sref="apps.details.metrics({id: application.id})" class="btn btn-success">Details</a>
+						<a ui-sref="apps.logging({id: application.id})" class="btn btn-success">Logging</a>
+						<a ui-sref="apps.jmx({id: application.id})" class="btn btn-success">JMX</a>
+						<a ui-sref="apps.threads({id: application.id})" class="btn btn-success">Threads</a>						
+					</span>
+					<span class="pull-right" ng-show="application.status == null || application.status == 'OFFLINE'">
+						<a class="btn btn-danger" ng-click="remove(application)"><i class="icon-remove icon-white"></i>Remove</a>
+					</span>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

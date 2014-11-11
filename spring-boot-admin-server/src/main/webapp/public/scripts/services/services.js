@@ -26,7 +26,8 @@ angular.module('springBootAdmin.services', ['ngResource'])
   	.factory('Application', ['$resource', function($resource) {
   		return $resource(
   			'/api/application/:id', {}, {
-  				query: { method:'GET'}
+  				query: { method:'GET'},
+  				remove: {method: 'DELETE'}
   			});
   		}
   	])
@@ -39,20 +40,16 @@ angular.module('springBootAdmin.services', ['ngResource'])
   			});
   		}
   		this.getHealth = function(app) {
-  			return $http.get(app.url + '/health').success(function(response) {
-  				if (typeof(response) === 'string' && response.indexOf('ok') != -1 
-  						|| typeof(response.status) === 'string' && 
-							(response.status.indexOf('ok') != -1 || response.status.indexOf('UP') != -1)) { 
-  					app.up = true;
-  				} else if (typeof(response.status) === 'string' && response.status.indexOf('DOWN') != -1) { 
-  					app.down = true;
-  				} else if (typeof(response.status) === 'string' && response.status.indexOf('OUT-OF-SERVICE') != -1) { 
-  					app.outofservice = true;
+  			return $http.get(app.url + '/health').success(function (response) {
+  				app.status = response.status;
+  			}).error(function (response, httpStatus) {
+  				if (httpStatus === 503) {
+  					app.status = response.status;
+  				} else if (httpStatus === 404) {
+  					app.status = 'OFFLINE';
   				} else {
-  					app.unknown = true;
+  					app.status = 'UNKNOWN'; 
   				}
-  			}).error(function() {
-  				app.offline = true;
   			});
   		}
   		this.getLogfile = function(app) {
@@ -70,69 +67,118 @@ angular.module('springBootAdmin.services', ['ngResource'])
   	}])
   	.service('ApplicationDetails', ['$http', function($http) {
   		this.getInfo = function(app) {
-  			return $http.get(app.url + '/info').success(function(response) {
-  				app.info = response;
-  			});
+  			return $http.get(app.url + '/info');
   		}
-  		this.getMetrics = function(app, success) {
-  			return $http.get(app.url + '/metrics').success(function(response) {
-  				app.metrics = response;
-  				success(app);
-  			});
+  		this.getMetrics = function(app) {
+  			return $http.get(app.url + '/metrics');
   		}
   		this.getEnv = function(app) {
-  			return $http.get(app.url + '/env').success(function(response) {
-  				app.env = response;
-  			});
+  			return $http.get(app.url + '/env');
   		}
-  		this.getProps = function(app) {
-  			return $http.get(app.url + '/env').success(function(response) {
-  				app.props = [];
-  				for (var attr in response) {
-  					if (attr.indexOf('[') != -1 && attr.indexOf('.properties]') != -1) {
-  						var prop = new Object();
-  						prop.key = attr;
-  						prop.value = response[attr];
-  						app.props.push(prop);
-  					}
-  				}
-  			});
+  		this.getHealth = function(app) {
+  			return $http.get(app.url + '/health');
+  		}
+
+  	}])
+  	.service('ApplicationLogging', ['$http' , 'Jolokia', function($http, jolokia) {
+  		var LOGBACK_MBEAN = 'ch.qos.logback.classic:Name=default,Type=ch.qos.logback.classic.jmx.JMXConfigurator';
+  		
+  		this.getLoglevel = function(app, loggers) {
+  			var requests = [];
+  			for (var j in loggers) {
+  				requests.push({ type: 'exec', mbean: LOGBACK_MBEAN, operation: 'getLoggerEffectiveLevel', arguments: [ loggers[j].name ] })
+  			}
+  			return jolokia.bulkRequest(app.url + '/jolokia', requests);
+  		}
+  		
+  		this.setLoglevel = function(app, logger, level) {
+  			return jolokia.exec(app.url + '/jolokia', LOGBACK_MBEAN, 'setLoggerLevel' , [ logger, level] );
+  		}
+  		
+  		this.getAllLoggers = function(app) {
+  			return jolokia.readAttr(app.url + '/jolokia', LOGBACK_MBEAN, 'LoggerList'); 
   		}
   	}])
-  	.service('ApplicationLogging', ['$http', function($http) {
-  		this.getLoglevel = function(app) {
-  			return $http.get(app.url + 
-  					'/jolokia/exec/ch.qos.logback.classic:Name=default,Type=ch.qos.logback.classic.jmx.JMXConfigurator/getLoggerLevel/' + 
-  					app.logger.name)
-  				.success(function(response) {
-  					if (response['value'].length > 0) {
-  						app.logger.loglevel = response['value'];
-  					} else {
-  						app.logger.loglevel = '<unknown>';
+  	.service('ApplicationJMX', ['$rootScope', 'Abbreviator', 'Jolokia', function($rootScope, Abbreviator, jolokia) {
+  		this.list = function(app) {
+  			return jolokia.list(app.url + '/jolokia/').then(function(response) {
+  					var domains = [];
+  					for (var rDomainName in response.value) {
+  						var rDomain = response.value[rDomainName];
+  						var domain = {name : rDomainName, beans: [] };
+  						
+  						for (var rBeanName in rDomain ) {
+  							var rBean = rDomain[rBeanName];
+  							var bean = { id : domain.name + ':' + rBeanName,
+  									     name : '', 
+  									     nameProps: {},
+  										 description : rBean.desc,
+  										 operations : rBean.op,
+  										 attributes : rBean.attr
+  										 };
+  						
+  							var name = '';
+  							var type = '';
+  							var parts = rBeanName.split(',');
+  							for (var i in parts ) {
+  								var tokens = parts[i].split('=');
+								if (tokens[0].toLowerCase() === 'name') {
+									name = tokens[1];
+								} else{
+									bean.nameProps[tokens[0]] = tokens[1];
+									if ((tokens[0].toLowerCase() === 'type' || tokens[0].toLowerCase() == 'j2eetype') && type.length ==0 ) {
+										type = tokens[1];
+									}
+								}
+  							}
+  							
+  							if (name.length !== 0) {
+  								bean.name = name;
+  							} 
+  							if ( type.length !== 0) {
+  								if (bean.name  !== 0) {
+  									bean.name += ' ';
+  								}
+  								bean.name += '[' + Abbreviator.abbreviate(type, '.', 25, 1, 1) + ']';
+  							} 
+  							
+  							if (bean.name.length === 0) {
+  								bean.name = rBeanName;
+  							}
+  						
+	  						domain.beans.push(bean);
+  						}
+  						
+  						domains.push(domain);
   					}
+  					
+  					return domains;
+  				}, function(response) {
+  					return response;
   				});
   		}
-  		this.setLoglevel = function(app) {
-  			return $http.get(app.url + 
-  					'/jolokia/exec/ch.qos.logback.classic:Name=default,Type=ch.qos.logback.classic.jmx.JMXConfigurator/setLoggerLevel/' + 
-  					app.logger.name + '/' + app.logger.loglevel)
-  				.success(function(response) {
-  					if (response['status'] == 200) {
-  						app.logger.success = true;
-  					} else {
-  						app.logger.success = false;
-  					}
-  				});
+  		
+  		this.readAllAttr = function(app, bean) { 			
+  			return jolokia.read(app.url + '/jolokia', bean.id)
   		}
+  		
+  		this.writeAttr = function(app, bean, attr, val) {
+  			return jolokia.writeAttr(app.url + '/jolokia', bean.id, attr, val);
+  		}
+  		
+  		this.invoke = function(app, bean, opname, args) {
+  			return jolokia.exec(app.url + '/jolokia', bean.id, opname, args);
+		}
+  		
   	}])
   	.service('Abbreviator', [function() {
-  		  function _computeDotIndexes(fqName, preserveLast) {
+  		  function _computeDotIndexes(fqName, delimiter, preserveLast) {
 		    var dotArray = [];
 		    
 		    //iterate over String and find dots
 		    var lastIndex = -1;
 		    do {
-		      lastIndex = fqName.indexOf('.', lastIndex + 1);
+		      lastIndex = fqName.indexOf(delimiter, lastIndex + 1);
 		      if (lastIndex !== -1) {
 		        dotArray.push(lastIndex);
 		      }
@@ -169,12 +215,12 @@ angular.module('springBootAdmin.services', ['ngResource'])
 		    return lengthArray;
 		  }
   		
-  		this.abbreviate = function(fqName, targetLength, preserveLast, shortenThreshold) {
+  		this.abbreviate = function(fqName, delimiter, targetLength, preserveLast, shortenThreshold) {
   		    if (fqName.length < targetLength) {
   		      return fqName;
   		    }
 
-  		    var dotIndexesArray = _computeDotIndexes(fqName, preserveLast);
+  		    var dotIndexesArray = _computeDotIndexes(fqName, delimiter, preserveLast);
 
   		    if (dotIndexesArray.length === 0) {
   		      return fqName;
@@ -192,5 +238,99 @@ angular.module('springBootAdmin.services', ['ngResource'])
   		    }
   		    
   		    return result;
+  		}
+  	}])
+  	.service('Jolokia', [ '$q' , '$rootScope', function($q){
+  		var outer = this;
+  		var j4p = new Jolokia();
+  		
+  		
+  		this.bulkRequest = function(url, requests) {
+  			var deferred = $q.defer();
+  			deferred.notify(requests);
+
+  			var hasError = false;
+  			var responses = [];
+  			
+  			j4p.request( requests,
+  					 {	url: url,
+  						method: 'post',
+  						success: function (response) {
+  							responses.push(response);
+  							if (responses.length >= requests.length) {
+  								if (!hasError) {
+  									deferred.resolve(responses);
+  								} else {
+  									deferred.resolve(responses);
+  								}
+  							}
+  						},
+  						error: function (response) {
+  							hasError = true;
+  							responses.push(response);
+  							if (responses.length >= requests.length) {
+  								deferred.reject(responses);
+  							}
+  						}
+  					 });
+  			
+  			return deferred.promise;
+  		}
+  		
+  		
+  		this.request = function(url, request) {
+  			var deferred = $q.defer();
+  			deferred.notify(request);
+
+  			j4p.request( request,
+  					 {	url: url,
+  						method: 'post',
+  						success: function (response) {
+  							deferred.resolve(response);
+  						},
+  						error: function (response) {
+  							deferred.reject(response);
+  						}
+  					 });
+  			
+  			return deferred.promise;
+  		}
+  		
+  		this.exec = function(url, mbean, op, args) {
+  			return outer.request(url, { type: 'exec', mbean: mbean, operation: op, arguments: args });
+  		}
+  		
+  		this.read = function(url, mbean) {
+  			return outer.request(url, { type: 'read', mbean: mbean });
+  		}
+  		
+  		this.readAttr = function(url, mbean, attr) {
+  			return outer.request(url, { type: 'read', mbean: mbean, attribute: attr });
+  		}
+  		
+  		this.writeAttr = function(url, mbean, attr, val) {
+  			return outer.request(url, { type: 'write', mbean: mbean, attribute: attr, value: val });
+  		}
+  		
+  		this.list = function(url) {
+  			return outer.request(url, { type: 'list' });
+  		}
+  	}])
+  	.service('MetricsHelper', [function() {
+  		this.find = function (metrics, regexes, callbacks) {
+  			for (var metric in metrics) {
+  				for (var i in regexes) {
+  						var match = regexes[i].exec(metric);
+						if (match != null) {
+							callbacks[i](metric, match, metrics[metric]);
+							break;
+						}
+					}
+				}
+			}
+  	}])
+  	.service('ApplicationThreads', ['$http', function($http) {
+  		this.getDump = function(app) {
+  			return $http.get(app.url + '/dump');
   		}
   	}]);

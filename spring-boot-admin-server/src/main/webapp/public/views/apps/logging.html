@@ -1,19 +1,37 @@
-<div class="row-fluid">
-	<div class="span12">
-		<h1 class="index-page--title">{{ application.id }}</h1>
-		<p class="index-page--subtitle">Read and write log levels of specified loggers.</p>
-	</div>
-</div>
 <div class="container">
-	<div class="main-template">
-		<div id="xd-jobs" class="tab-pane active col-md-12">
-			<ul class="nav nav-tabs">
-				<li ui-sref-active="active"><a ui-sref="apps.logging.read({id: application.id})">Read</a></li>
-				<li ui-sref-active="active"><a ui-sref="apps.logging.write({id: application.id})">Write</a></li>
-			</ul>
-			<div class="tab-content">
-				<div ui-view></div>
-			</div>
+	<form ng-init="showPackageLoggers = false">
+		<div class="input-prepend input-append">
+			<button class="btn" title="Show package-level loggers" ng-class="{'btn-inverse': showPackageLoggers}" ng-model="showPackageLoggers" btn-checkbox ><i class="icon-folder-open"  ng-class="{'icon-white': showPackageLoggers}"></i></button>
+			<input placeholder="Filter by name ..." class="span10" type="search" ng-model="filterLogger.name" />
+			<button class="btn" title="reload list" ng-click="reload()"><i class="icon-refresh"></i></button>
+			<span title="filtered / total" class="add-on">{{ filteredLoggers.length }}/{{ loggers.length }}</span>
 		</div>
-	</div>
+	</form>
+	<table class="table">
+		<tbody>
+			<tr ng-repeat="logger in (filteredLoggers = (loggers | classNameLoggerOnly:!showPackageLoggers | filter:filterLogger) ) | limitTo: limit track by logger.name">
+				<td>
+					{{ logger.name }}
+				    <div class="btn-group pull-right">
+				        <label class="btn btn-small" ng-class="{'active btn-danger': logger.level== 'TRACE'}"   ng-click="setLogLevel(logger.name, 'TRACE')">TRACE</label>
+				        <label class="btn btn-small" ng-class="{'active btn-warning': logger.level=='DEBUG'}"   ng-click="setLogLevel(logger.name, 'DEBUG')">DEBUG</label>
+				        <label class="btn btn-small" ng-class="{'active btn-info': logger.level=='INFO'}"       ng-click="setLogLevel(logger.name, 'INFO')">INFO</label>
+				        <label class="btn btn-small" ng-class="{'active btn-success': logger.level == 'WARN'}"  ng-click="setLogLevel(logger.name, 'WARN')">WARN</label>
+				        <label class="btn btn-small" ng-class="{'active btn-primary': logger.level == 'ERROR'}" ng-click="setLogLevel(logger.name, 'ERROR')">ERROR</label>
+				        <label class="btn btn-small" ng-class="{'active btn-inverse': logger.level == 'OFF'}"   ng-click="setLogLevel(logger.name, 'OFF')">OFF</label>
+				    </div>
+	    		</td>
+			</tr>
+			<tr ng-show="limit < loggers.length" >
+				<td>
+					<button class="btn btn-link btn-block" ng-click="limit = limit + 10">show more</button>
+				</td>
+			</tr>
+			<tr ng-show="limit < loggers.length" >
+				<td>
+					<button class="btn btn-link btn-block" ng-click="limit = loggers.length">show all</button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
 </div>

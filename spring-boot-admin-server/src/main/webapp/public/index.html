@@ -22,7 +22,7 @@
 	<div class="viewport">
 		<header class="navbar header--navbar desktop-only">
 			<div class="navbar-inner">
-				<div class="container-fluid">
+				<div class="container-fluid" >
 					<div class="spring-logo--container">
 						<a class="spring-logo" href="/"><span></span></a>
 					</div>
@@ -30,30 +30,22 @@
 						<a class="spring-boot-logo" href="/"><span></span></a>
 					</div>
 					<ul class="nav pull-right" ng-controller='navCtrl'>
-						<li class="navbar-link" ng-class="{active: $state.includes('apps')}"><a ui-sref="apps.overview">Applications</a></li>
+						<li class="navbar-link" ng-class="{active: $state.includes('apps') ||  $state.includes('overview')  }"><a ui-sref="overview">Applications</a></li>
 						<li class="navbar-link" ng-class="{active: $state.includes('about')}"><a ui-sref="about">About</a></li>
-						<li class="navbar-link" ng-if="authenticationEnabled" class="dropdown"><a data-target="#" class="dropdown-toggle"
-							data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span><b class="caret"></b></a>
-							<ul class="dropdown-menu">
-								<li ng-if="user.isAuthenticated"><a ui-sref="logout">Logout</a></li>
-								<li ng-if="!user.isAuthenticated"><a ui-sref="login">Login</a></li>
-							</ul></li>
 					</ul>
 				</div>
 			</div>
 		</header>
-		<div class="body--container container-fluid ">
+		<div class="container-fluid ">
 			<div class="main-body--wrapper">
 				<div ui-view></div>
 			</div>
-			<div id="footer-push-down"></div>
 		</div>
 		<footer class="footer">
 			<div class="container">
 				Code licensed under <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache Open Source</a>
 			</div>
 		</footer>
-		<div id="scrim"></div>
 	</div>
 	<script src="/webjars/jquery/${jquery.version}/jquery.min.js"></script>
 	<script src="/webjars/angularjs/${angularjs.version}/angular.min.js"></script>
@@ -61,9 +53,12 @@
 	<script src="/webjars/angularjs/${angularjs.version}/angular-resource.min.js"></script>
 	<script src="/webjars/angularjs/${angularjs.version}/angular-route.min.js"></script>
 	<script src="/webjars/angular-ui-router/0.2.10/angular-ui-router.min.js"></script>
+	<script src="/webjars/angular-ui-bootstrap/${angular-ui-bootstrap.version}/ui-bootstrap.min.js"></script>
+	<script src="/webjars/angular-ui-bootstrap/${angular-ui-bootstrap.version}/ui-bootstrap-tpls.min.js"></script>	
 	<script src="/webjars/d3js/${d3js.version}/d3.min.js"></script>
 	<script src="/webjars/nvd3/${nvd3.version}/nv.d3.min.js"></script>
 	<script src="/webjars/angularjs-nvd3-directives/0.0.7/angularjs-nvd3-directives.js"></script>
+	<script src="/webjars/jolokia.js/${jolokia-js.version}/jolokia.js"></script>
 	<script src="/scripts/app.js"></script>
 	<script src="/scripts/controllers/controllers.js"></script>
 	<script src="/scripts/services/services.js"></script>

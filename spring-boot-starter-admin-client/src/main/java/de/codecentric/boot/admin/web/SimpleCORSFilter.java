@@ -36,15 +36,19 @@ public class SimpleCORSFilter implements Filter {
 	@Value("${http.filter.cors.origin:*}")
 	private String origin;
 
+	@Value("${http.filter.cors.headers:'Origin, X-Requested-With, Content-Type, Accept'}")
+	private String headers;
+
 	/**
-	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse,
-	 *      javax.servlet.FilterChain)
+	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
+	 * javax.servlet.ServletResponse, javax.servlet.FilterChain)
 	 */
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-			ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response,
+			FilterChain chain) throws IOException, ServletException {
 		HttpServletResponse res = (HttpServletResponse) response;
 		res.setHeader("Access-Control-Allow-Origin", origin);
+		res.setHeader("Access-Control-Allow-Headers", headers);
 		chain.doFilter(request, res);
 	}
 

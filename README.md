@@ -72,10 +72,20 @@ spring.boot.admin.url=http://localhost:8080
 [](url "title") 
 <img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot.png">
 
-##### Metrics
+##### Details
 
 [](url "title") 
-<img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-metrics.png">
+<img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-details.png">
+
+##### Logging
+
+[](url "title") 
+<img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-logging.png">
+
+##### JMX
+
+[](url "title") 
+<img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-jmx.png">
 
 #### Build
 

@@ -19,38 +19,33 @@ angular.module('springBootAdmin', [
   'ngResource',
   'ngRoute',
   'ui.router',
+  'ui.bootstrap',
   'springBootAdmin.services',
   'nvd3ChartDirectives'
 ])
   	.config(function ($stateProvider, $urlRouterProvider) {
   		$urlRouterProvider
-  			.when('/', '/apps/overview')
+  			.when('/', '/overview')
   			.otherwise('/')
   		$stateProvider
-  			.state('apps', {
-  				url: '/apps',
-  				abstract: true,
-  				templateUrl: 'views/apps.html',
-  			})
+	  		.state('overview', {
+	  			url: '/overview',
+	  			templateUrl: 'views/overview.html',
+	  			controller: 'overviewCtrl'
+	  		})
   			.state('about', {
   				url: '/about',
   				templateUrl: 'views/about.html'
   			})
-  			.state('apps.overview', {
-  				url: '/overview',
-  				templateUrl: 'views/apps/overview.html',
-  				controller: 'overviewCtrl'
+  			.state('apps', {
+  				url: '/apps/:id',
+  				controller: 'appsCtrl',
+  				templateUrl: 'views/apps.html',
   			})
   			.state('apps.details', {
-  				url: '/details/:id',
-  				abstract: true,
+  				url: '/details',
   				templateUrl: 'views/apps/details.html',
   				controller: 'detailsCtrl'
-  			})
-  			.state('apps.details.infos', {
-  				url: '/infos',
-  				templateUrl: 'views/apps/details/infos.html',
-  				controller: 'detailsInfosCtrl'
   			})
   			.state('apps.details.metrics', {
   				url: '/metrics',
@@ -67,22 +62,26 @@ angular.module('springBootAdmin', [
   				templateUrl: 'views/apps/details/props.html',
   				controller: 'detailsPropsCtrl'
   			})
+  			.state('apps.details.classpath', {
+  				url: '/classpath',
+  				templateUrl: 'views/apps/details/classpath.html',
+  				controller: 'detailsClasspathCtrl'
+  			})
   			.state('apps.logging', {
-  				url: '/logging/:id',
-  				abstract: true,
+  				url: '/logging',
   				templateUrl: 'views/apps/logging.html',
-  				controller: 'detailsCtrl'
+  				controller: 'loggingCtrl'
   			})
-  			.state('apps.logging.read', {
-  				url: '/read',
-  				templateUrl: 'views/apps/logging/read.html',
-  				controller: 'loggingReadCtrl'
+  			.state('apps.jmx', {
+  				url: '/jmx',
+  				templateUrl: 'views/apps/jmx.html',
+  				controller: 'jmxCtrl'
   			})
-  			.state('apps.logging.write', {
-  				url: '/write',
-  				templateUrl: 'views/apps/logging/write.html',
-  				controller: 'loggingWriteCtrl'
-  			});
+  			.state('apps.threads', {
+  				url: '/threads',
+  				templateUrl: 'views/apps/threads.html',
+  				controller: 'threadsCtrl'
+  			});    			
   	})
   	.run(function ($rootScope, $state, $stateParams, $log) {
   		$rootScope.$state = $state;
