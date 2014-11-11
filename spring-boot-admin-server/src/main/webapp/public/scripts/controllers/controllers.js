@@ -36,6 +36,10 @@ angular.module('springBootAdmin')
   		$scope.showLogging = function(id) {
   			$location.path('/apps/logging/' + id + '/read');
   		};
+  		// callback for ng-click 'shutdownApp':
+  		$scope.shutdownApp = function(id) {
+  			alert("Shutting down microservice not configured yet");
+  		};
   		// callback for ng-click 'refresh':
   		$scope.refresh = function(id) {
   			$scope.application = Application.query({id: id}, function(application) {
