@@ -1,4 +1,4 @@
-package de.telekom.spica.framework.swagger.annotation;
+package de.codecentric.boot.admin.swagger.annotation;
 
 /**
  *
@@ -6,7 +6,7 @@ package de.telekom.spica.framework.swagger.annotation;
  *
  */
 
-import de.telekom.spica.framework.swagger.config.SwaggerConfig;
+import de.codecentric.boot.admin.swagger.config.SwaggerConfig;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;

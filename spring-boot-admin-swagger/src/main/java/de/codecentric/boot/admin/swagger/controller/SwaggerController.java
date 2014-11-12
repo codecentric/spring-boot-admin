@@ -1,4 +1,4 @@
-package de.telekom.spica.framework.swagger.controller;
+package de.codecentric.boot.admin.swagger.controller;
 
 import com.mangofactory.swagger.annotations.ApiIgnore;
 import org.springframework.stereotype.Controller;

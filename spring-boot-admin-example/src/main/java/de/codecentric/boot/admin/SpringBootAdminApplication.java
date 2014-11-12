@@ -15,7 +15,7 @@
  */
 package de.codecentric.boot.admin;
 
-import de.telekom.spica.framework.swagger.annotation.EnableAdminServerSwagger;
+import de.codecentric.boot.admin.swagger.annotation.EnableAdminServerSwagger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
