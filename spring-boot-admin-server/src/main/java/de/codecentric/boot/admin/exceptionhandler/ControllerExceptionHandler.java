@@ -1,7 +1,3 @@
-// Project:   Deutsche Telekom - SPICA
-// Author:    Josef Fuchshuber <josef.fuchshuber@qaware.de>
-// Copyright: QAware GmbH
-
 package de.codecentric.boot.admin.exceptionhandler;
 
 import de.codecentric.boot.admin.exception.ApplicationNotFoundException;
