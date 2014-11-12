@@ -1,0 +1,7 @@
+spring:
+    application.name: spring-boot-admin
+
+cache:
+    clusterPassword: 2342jhgkasdfasdf
+    multicastEnabled: true
+    tcpipEnabled: false

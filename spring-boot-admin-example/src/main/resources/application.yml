@@ -1,0 +1,29 @@
+spring:
+    application.name: @pom.artifactId@
+    main.show_banner: false
+    resources.cachePeriod: 3600
+    boot:
+        admin.url: http://localhost:9080
+
+server:
+    port: 9080
+
+management:
+    contextPath: /management
+
+logging.file: /tmp/log.log
+
+info:
+    id: @pom.artifactId@
+    name: @pom.artifactId@
+    description: Spring Boot Admin Example
+    version: @pom.version@
+
+security:
+    basic.realm: @pom.artifactId@
+
+cache:
+    clusterPassword: EvtAERdG3oMmqH3rjsGF
+    localPassword: 56tzghbn
+    multicastEnabled: true
+    tcpipEnabled: false
