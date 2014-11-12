@@ -38,9 +38,15 @@ angular.module('springBootAdmin', [
   				templateUrl: 'views/about.html'
   			})
   			.state('apps', {
+  				abstract:true,
   				url: '/apps/:id',
   				controller: 'appsCtrl',
   				templateUrl: 'views/apps.html',
+  				resolve: {
+  			      application: ['$stateParams', 'Application' , function($stateParams, Application){
+  			          return Application.query({id: $stateParams.id}).$promise;
+  			      }]
+  			   }
   			})
   			.state('apps.details', {
   				url: '/details',

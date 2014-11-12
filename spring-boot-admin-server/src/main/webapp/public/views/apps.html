@@ -1,9 +1,18 @@
-<h2>{{ applicationId }}
-	<div class="btn-group">
-		<a class="btn " ng-class="{active: $state.includes('apps.details')}" ui-sref="apps.details.metrics({id: applicationId})">Details</a>
-		<a class="btn " ui-sref-active="active" ui-sref="apps.logging({id: applicationId})" >Logging</a></label>
-		<a class="btn " ui-sref-active="active" ui-sref="apps.jmx({id: applicationId})">JMX</a></label>
-		<a class="btn " ui-sref-active="active" ui-sref="apps.threads({id: applicationId})">Threads</a></label>		
+<div class="container" style="margin-bottom: 20px;">
+	<div class="row">
+		<div class="span12">
+			<h2 style="display: inline-block;">{{ application.name }}
+			<small>{{ application.url }}</small>
+			</h2>
+		</div>
 	</div>
-</h2>
+	<div class="row">		
+		<div class="span12 btn-group text-center">
+			<a class="btn" ng-class="{active: $state.includes('apps.details')}" ui-sref="apps.details.metrics({id: application.id})">Details</a>
+			<a class="btn" ui-sref-active="active" ui-sref="apps.logging({id: application.id})" >Logging</a></label>
+			<a class="btn" ui-sref-active="active" ui-sref="apps.jmx({id: application.id})">JMX</a></label>
+			<a class="btn" ui-sref-active="active" ui-sref="apps.threads({id: application.id})">Threads</a></label>		
+		</div>
+	</div>
+</div>
 <div ui-view></div>

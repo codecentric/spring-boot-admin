@@ -16,12 +16,15 @@
 package de.codecentric.boot.admin.config;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.controller.LogfileController;
-import de.codecentric.boot.admin.services.SpringBootAdminRegistratorTask;
+import de.codecentric.boot.admin.services.SpringBootAdminRegistrator;
 import de.codecentric.boot.admin.web.SimpleCORSFilter;
 
 /**
@@ -30,14 +33,24 @@ import de.codecentric.boot.admin.web.SimpleCORSFilter;
  */
 @Configuration
 @ConditionalOnProperty("spring.boot.admin.url")
+@EnableConfigurationProperties({ AdminProperties.class, AdminClientProperties.class })
 public class SpringBootAdminClientAutoConfiguration {
 
 	/**
 	 * Task that registers the application at the spring-boot-admin application.
 	 */
 	@Bean
-	public Runnable registrator() {
-		return new SpringBootAdminRegistratorTask();
+	public SpringBootAdminRegistrator registrator(AdminProperties adminProps,
+			AdminClientProperties clientProps) {
+		return new SpringBootAdminRegistrator(restTemplate(), adminProps, clientProps);
+	}
+
+
+	@Bean
+	public RestTemplate restTemplate() {
+		RestTemplate template = new RestTemplate();
+		template.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+		return template;
 	}
 
 	/**
@@ -52,9 +65,17 @@ public class SpringBootAdminClientAutoConfiguration {
 	 * TaskRegistrar that triggers the RegistratorTask every ten seconds.
 	 */
 	@Bean
-	public ScheduledTaskRegistrar taskRegistrar() {
+	public ScheduledTaskRegistrar taskRegistrar(final SpringBootAdminRegistrator registrator, AdminProperties adminProps) {
 		ScheduledTaskRegistrar registrar = new ScheduledTaskRegistrar();
-		registrar.addFixedRateTask(registrator(), 10000);
+
+		Runnable registratorTask = new Runnable() {
+			@Override
+			public void run() {
+				registrator.register();
+			}
+		};
+
+		registrar.addFixedRateTask(registratorTask, adminProps.getPeriod());
 		return registrar;
 	}
 
