@@ -3,14 +3,8 @@
 </h2>
 <div class="span12">
 	<table class="table table-striped">
-		<colgroup style="width: 10%;"/>
-        <colgroup style="width: 15%;"/>
-		<colgroup style="width: 15%;"/>
-		<colgroup style="width: 10%;"/>
-		<colgroup style="width: 35%;"/>
 		<thead>
 			<tr>
-                <th>ID</th>
 				<th>Application</th>
 				<th>Version</th>
 				<th>Status</th>
@@ -19,8 +13,7 @@
 		</thead>
 		<tbody>
 			<tr ng-repeat="application in applications track by application.id">
-				<td>{{ application.id }}</td>
-                <td>{{ application.name }}</td>
+				<td><span title="{{application.url}}">{{ application.id }}</span></td>
 				<td>{{ application.version }}</td>
 				<td><span class="status-{{application.status}}">{{ application.status }}</span></td>
 				<td>
@@ -29,6 +22,10 @@
 						<a ui-sref="apps.details.metrics({id: application.id})" class="btn btn-success">Details</a>
 						<a ui-sref="apps.logging({id: application.id})" class="btn btn-success">Logging</a>
 						<a ui-sref="apps.jmx({id: application.id})" class="btn btn-success">JMX</a>
+						<a ui-sref="apps.threads({id: application.id})" class="btn btn-success">Threads</a>						
+					</span>
+					<span class="pull-right" ng-show="application.status == null || application.status == 'OFFLINE'">
+						<a class="btn btn-danger" ng-click="remove(application)"><i class="icon-remove icon-white"></i>Remove</a>
 					</span>
 				</td>
 			</tr>
