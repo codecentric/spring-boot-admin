@@ -15,12 +15,7 @@
  */
 package de.codecentric.boot.admin.services;
 
-import java.net.InetAddress;
-import java.net.URL;
-import java.util.ArrayList;
-
-import javax.annotation.PostConstruct;
-
+import de.codecentric.boot.admin.model.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +24,11 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
-import de.codecentric.boot.admin.model.Application;
+import javax.annotation.PostConstruct;
+import java.net.InetAddress;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Scheduler that checks the registration of the application at the spring-boot-admin.
@@ -41,12 +40,14 @@ public class SpringBootAdminRegistratorTask implements Runnable {
 	@Autowired
 	private Environment env;
 
+    private AtomicLong applicationId = new AtomicLong(-1);
+
 	@PostConstruct
 	public void check() {
-		Assert.notNull(env.getProperty("spring.boot.admin.url"),
-				"The URL of the spring-boot-admin application is mandatory");
-		Assert.notNull(env.getProperty("server.port"), "The server port of the application is mandatory");
-		Assert.notNull(env.getProperty("spring.application.name"), "The id of the application is mandatory");
+        Assert.notNull(env.getProperty("server.port"), "The server port of the application is mandatory. Please customize server.port");
+        Assert.notNull(env.getProperty("spring.application.name"), "The name of the application is mandatory. Please customize spring.application.name");
+        Assert.notNull(env.getProperty("spring.boot.admin.url"),
+                "The URL of the spring-boot-admin application is mandatory. Please customize spring.boot.admin.url");
 	}
 
 	/**
@@ -55,12 +56,18 @@ public class SpringBootAdminRegistratorTask implements Runnable {
 	@Override
 	public void run() {
 		try {
-			String id = env.getProperty("info.id");
-			int port = env.getProperty("server.port", Integer.class);
-			String adminUrl = env.getProperty("spring.boot.admin.url");
+            String applicationName = env.getProperty("spring.application.name");
+            int port = env.getProperty("server.port", Integer.class);
+            URL adminUrl = new URL(env.getProperty("spring.boot.admin.url"));
+            String managementPath = env.getProperty("management.contextPath", "");
+            URL clientUrl = new URL("http", InetAddress.getLocalHost().getCanonicalHostName(), port, managementPath);
+            Application application = new Application.ApplicationBuilder(applicationName, clientUrl).build();
+
 			RestTemplate template = new RestTemplate();
 			template.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+
 			ApplicationList list = template.getForObject(adminUrl + "/api/applications", ApplicationList.class);
+            Long id = applicationId.get();
 			for (Application app : list) {
 				if (id.equals(app.getId())) {
 					// the application is already registered at the admin tool
@@ -69,14 +76,8 @@ public class SpringBootAdminRegistratorTask implements Runnable {
 				}
 			}
 			// register the application with the used URL and port
-			String managementPath = env.getProperty("management.context-path", "");
-			String url = new URL("http", InetAddress.getLocalHost().getCanonicalHostName(), port, managementPath)
-			.toString();
-			Application app = new Application();
-			app.setId(id);
-			app.setUrl(url);
-			template.postForObject(adminUrl + "/api/applications", app, String.class);
-			LOGGER.info("Application registered itself at the admin application with ID '{}' and URL '{}'", id, url);
+			template.postForObject(adminUrl + "/api/applications", application, String.class);
+			LOGGER.info("Application registered itself at the admin application with NAME '{}' and URL '{}'", applicationName, clientUrl);
 		}
 		catch (Exception e) {
 			LOGGER.warn("Failed to register application at spring-boot-admin, message={}", e.getMessage());

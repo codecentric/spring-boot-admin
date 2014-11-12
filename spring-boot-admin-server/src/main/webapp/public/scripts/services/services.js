@@ -26,8 +26,7 @@ angular.module('springBootAdmin.services', ['ngResource'])
   	.factory('Application', ['$resource', function($resource) {
   		return $resource(
   			'/api/application/:id', {}, {
-  				query: { method:'GET'},
-  				remove: {method: 'DELETE'}
+  				query: { method:'GET'}
   			});
   		}
   	])
@@ -328,9 +327,4 @@ angular.module('springBootAdmin.services', ['ngResource'])
 					}
 				}
 			}
-  	}])
-  	.service('ApplicationThreads', ['$http', function($http) {
-  		this.getDump = function(app) {
-  			return $http.get(app.url + '/dump');
-  		}
   	}]);

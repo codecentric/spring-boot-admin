@@ -5,6 +5,8 @@
 
 	<jmxConfigurator/>
 	<logger name="de.codecentric" level="DEBUG" />
-	<logger name="org.springframework.data" level="INFO" />
+	<logger name="org.springframework.data" level="INFO" />+
+    <logger name="org.springframework.web.client" level="DEBUG" />+
+
 
 </configuration>

@@ -76,12 +76,7 @@ angular.module('springBootAdmin', [
   				url: '/jmx',
   				templateUrl: 'views/apps/jmx.html',
   				controller: 'jmxCtrl'
-  			})
-  			.state('apps.threads', {
-  				url: '/threads',
-  				templateUrl: 'views/apps/threads.html',
-  				controller: 'threadsCtrl'
-  			});    			
+  			});
   	})
   	.run(function ($rootScope, $state, $stateParams, $log) {
   		$rootScope.$state = $state;

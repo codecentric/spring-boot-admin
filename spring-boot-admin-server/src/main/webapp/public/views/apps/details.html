@@ -37,7 +37,7 @@
 				</td>
 			</tr>
 			<tr ng-repeat-end ng-if="db.error"><td colspan="2" class="alert alert-error" >{{ db.error }}</td></tr>
-			<tr ng-if="health.diskSpace">
+			<tr>
 				<td>Diskspace</td><td><span class="status-{{health.diskSpace.status}}">{{ health.diskSpace.status }}</span><br>
 					{{ health.diskSpace.free / 1024 / 1024 | number:0 }}M free / {{ health.diskSpace.threshold / 1024 / 1024 | number:0 }}M threshold
 				</td>

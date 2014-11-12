@@ -1,0 +1,25 @@
+spring:
+    application.name: spring-boot-admin-test
+    main.show_banner: false
+    resources.cachePeriod: 3600
+    boot:
+        admin.url: http://localhost:9080
+
+server:
+    port: 9080
+
+logging.file: /tmp/log.log
+
+info:
+    name: spring-boot-admin-test
+    description: Spring Boot Admin Example
+    version: 1.0.0
+
+security:
+    basic.realm: spring-boot-admin-test
+
+cache:
+    clusterPassword: EvtAERdG3oMmqH3rjsGF
+    localPassword: 56tzghbn
+    multicastEnabled: true
+    tcpipEnabled: false

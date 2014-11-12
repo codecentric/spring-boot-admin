@@ -35,7 +35,7 @@ public class AdminServerCacheConfig {
 
     @Bean(destroyMethod="shutdown")
     public HazelcastInstance hazelcastInstance() {
-        return HazelcastInstanceFactory.newHazelcastInstance(HazelcastConfigFactory.newHazelcastConfig(cacheProperties(), environment));
+        return HazelcastInstanceFactory.getOrCreateHazelcastInstance(HazelcastConfigFactory.newHazelcastConfig(cacheProperties(), environment));
     }
 
     @Bean

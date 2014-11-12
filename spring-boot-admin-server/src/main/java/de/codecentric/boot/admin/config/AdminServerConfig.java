@@ -15,27 +15,21 @@
  */
 package de.codecentric.boot.admin.config;
 
-import java.util.List;
-
+import de.codecentric.boot.admin.cache.config.AdminServerCacheConfig;
+import de.codecentric.boot.admin.controller.RegistryController;
+import de.codecentric.boot.admin.exceptionhandler.ControllerExceptionHandler;
+import de.codecentric.boot.admin.service.impl.CachedRegistryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-
-import de.codecentric.boot.admin.controller.RegistryController;
-import de.codecentric.boot.admin.service.ApplicationRegistry;
+import org.springframework.context.annotation.Import;
 
 @Configuration
-public class WebappConfig extends WebMvcConfigurerAdapter {
+@Import(AdminServerCacheConfig.class)
+public class AdminServerConfig{
 
-	/**
-	 * Add JSON MessageConverter to send JSON objects to web clients.
-	 */
-	@Override
-	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-		converters.add(new MappingJackson2HttpMessageConverter());
-	}
+    @Autowired
+    private AdminServerCacheConfig adminServerCacheConfig;
 
 	/**
 	 * Controller with REST-API for spring-boot applications to register itself.
@@ -49,8 +43,16 @@ public class WebappConfig extends WebMvcConfigurerAdapter {
 	 * Registry for all registered application.
 	 */
 	@Bean
-	public ApplicationRegistry applicationRegistry() {
-		return new ApplicationRegistry();
+	public CachedRegistryService applicationRegistry() {
+		return new CachedRegistryService(adminServerCacheConfig.applicationRegistry(), adminServerCacheConfig.applicationIdGenerator());
 	}
+
+    /**
+     * Global exception handler which handles exceptions thrown by {@link org.springframework.stereotype.Controller}.
+     */
+    @Bean
+    public ControllerExceptionHandler controllerExceptionHandler() {
+        return new ControllerExceptionHandler();
+    }
 
 }
