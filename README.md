@@ -33,11 +33,14 @@ Add the following dependency to your pom.xml.
 ```
 
 Create the Spring Boot Admin Server with only one single Annotation.
-
+Enable the Swagger API documentation UI with the Annotation @EnableAdminServerSwagger. The UI is accessible under /api-ui.
+Enable Spring Security with the Annotation @EnableAdminServerSecurity. The Registry API is accessible for clients with ROLE_CLIENT. Sensitive Spring Actuator endpoints are accessible for clients with ROLE_ADMIN.
 ```
 @Configuration
 @EnableAutoConfiguration
 @EnableAdminServer
+@EnableAdminServerSwagger
+@EnableAdminServerSecurity
 public class Application {
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
@@ -86,6 +89,11 @@ spring.boot.admin.url=http://localhost:8080
 
 [](url "title") 
 <img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-jmx.png">
+
+##### Swagger UI
+
+[](url "title")
+<img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/telekom/screenshot-swagger.png">
 
 #### Build
 
