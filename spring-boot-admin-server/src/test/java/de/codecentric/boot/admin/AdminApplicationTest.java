@@ -115,9 +115,6 @@ public class AdminApplicationTest {
             }else if(application.getId().equals(idAndLocationPair2.getLeft())){
                 Assert.assertEquals("Application name is wrong!", "appId2", application.getName());
             }
-            else{
-                fail("Should never happen!");
-            }
         }
     }
 
