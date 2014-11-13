@@ -13,17 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.codecentric.boot.admin.service;
+package de.codecentric.boot.admin.registry;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
 import de.codecentric.boot.admin.model.Application;
+import de.codecentric.boot.admin.registry.ApplicationRegistry;
+import de.codecentric.boot.admin.registry.HashingApplicationUrlIdGenerator;
+import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
 
-public class SimpleApplicationRegistryTest {
+public class ApplicationRegistryTest {
 
-	private ApplicationRegistry registry = new SimpleApplicationRegistry();
+	private ApplicationRegistry registry = new ApplicationRegistry(new SimpleApplicationStore(),
+			new HashingApplicationUrlIdGenerator());
 
 	@Test(expected = NullPointerException.class)
 	public void registerFailed1() throws Exception {
@@ -45,14 +50,17 @@ public class SimpleApplicationRegistryTest {
 	@Test
 	public void register() throws Exception {
 		Application app = new Application("http://localhost:8080", "abc");
-		registry.register(app);
-	}
+		Application response = registry.register(app);
 
+		assertEquals("http://localhost:8080", response.getUrl());
+		assertEquals("abc", response.getName());
+		assertNotNull(response.getId());
+	}
 
 	@Test
 	public void getApplication() throws Exception {
 		Application app = new Application("http://localhost:8080", "abc");
-		registry.register(app);
+		app = registry.register(app);
 
 		assertEquals(app, registry.getApplication(app.getId()));
 	}
@@ -60,10 +68,10 @@ public class SimpleApplicationRegistryTest {
 	@Test
 	public void getApplications() throws Exception {
 		Application app = new Application("http://localhost:8080", "abc");
-		registry.register(app);
+		app = registry.register(app);
 
 		assertEquals(1, registry.getApplications().size());
-		assertEquals(app, registry.getApplications().get(0));
+		assertEquals("http://localhost:8080", registry.getApplications().get(0).getUrl());
+		assertEquals("abc", registry.getApplications().get(0).getName());
 	}
-
 }

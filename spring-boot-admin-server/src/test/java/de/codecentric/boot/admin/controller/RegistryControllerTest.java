@@ -17,7 +17,6 @@ package de.codecentric.boot.admin.controller;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
@@ -26,7 +25,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import de.codecentric.boot.admin.model.Application;
-import de.codecentric.boot.admin.service.SimpleApplicationRegistry;
+import de.codecentric.boot.admin.registry.ApplicationRegistry;
+import de.codecentric.boot.admin.registry.HashingApplicationUrlIdGenerator;
+import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
 
 public class RegistryControllerTest {
 
@@ -34,25 +35,27 @@ public class RegistryControllerTest {
 
 	@Before
 	public void setup() {
-		controller = new RegistryController(new SimpleApplicationRegistry());
+		controller = new RegistryController(new ApplicationRegistry(new SimpleApplicationStore(),
+				new HashingApplicationUrlIdGenerator()));
 	}
 
 	@Test
 	public void register() {
-		ResponseEntity<?> response = controller.register(new Application("http://localhost", "test"));
+		ResponseEntity<Application> response = controller.register(new Application("http://localhost", "test"));
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-		assertEquals(new Application("http://localhost", "test"), response.getBody());
+		assertEquals("http://localhost", response.getBody().getUrl());
+		assertEquals("test", response.getBody().getName());
 	}
 
 	@Test
 	public void register_twice() {
 		controller.register(new Application("http://localhost", "test"));
 		Application app = new Application("http://localhost", "test");
-		ResponseEntity<?> response = controller.register(app);
+		ResponseEntity<Application> response = controller.register(app);
 
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-		assertEquals(new Application("http://localhost", "test"), response.getBody());
-
+		assertEquals("http://localhost", response.getBody().getUrl());
+		assertEquals("test", response.getBody().getName());
 	}
 
 	@Test
@@ -65,11 +68,12 @@ public class RegistryControllerTest {
 	@Test
 	public void get() {
 		Application app = new Application("http://localhost", "FOO");
-		controller.register(app);
+		app = controller.register(app).getBody();
 
-		ResponseEntity<?> response = controller.get(app.getId());
+		ResponseEntity<Application> response = controller.get(app.getId());
 		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertEquals(app, response.getBody());
+		assertEquals("http://localhost", response.getBody().getUrl());
+		assertEquals("FOO", response.getBody().getName());
 	}
 
 	@Test
@@ -80,11 +84,10 @@ public class RegistryControllerTest {
 		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 	}
 
-
 	@Test
 	public void unregister() {
 		Application app = new Application("http://localhost", "FOO");
-		controller.register(app);
+		app = controller.register(app).getBody();
 
 		ResponseEntity<?> response = controller.unregister(app.getId());
 		assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -107,7 +110,9 @@ public class RegistryControllerTest {
 		controller.register(app);
 
 		List<Application> applications = controller.applications();
-		assertEquals(Collections.singletonList(app), applications);
+		assertEquals(1, applications.size());
+
+		assertEquals(app.getName(), applications.get(0).getName());
+		assertEquals(app.getUrl(), applications.get(0).getUrl());
 	}
 }
-

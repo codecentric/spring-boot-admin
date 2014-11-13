@@ -16,8 +16,6 @@
 package de.codecentric.boot.admin.model;
 
 import java.io.Serializable;
-import java.nio.charset.Charset;
-import java.security.MessageDigest;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -34,13 +32,14 @@ public class Application implements Serializable {
 	private final String url;
 	private final String name;
 
-	@JsonCreator
-	public Application(@JsonProperty("url") String url, @JsonProperty("name") String name) {
-		this(url.replaceFirst("/+$", ""), name, generateId(url.replaceFirst("/+$", "")));
+	public Application(String url, String name) {
+		this(url, name, null);
 	}
 
-	protected Application(String url, String name, String id) {
-		this.url = url;
+	@JsonCreator
+	public Application(@JsonProperty(value = "url", required = true) String url,
+			@JsonProperty(value = "name", required = true) String name, @JsonProperty("id") String id) {
+		this.url = url.replaceFirst("/+$", "");
 		this.name = name;
 		this.id = id;
 	}
@@ -66,6 +65,7 @@ public class Application implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((url == null) ? 0 : url.hashCode());
 		return result;
@@ -83,46 +83,28 @@ public class Application implements Serializable {
 			return false;
 		}
 		Application other = (Application) obj;
+		if (id == null) {
+			if (other.id != null) {
+				return false;
+			}
+		} else if (!id.equals(other.id)) {
+			return false;
+		}
 		if (name == null) {
 			if (other.name != null) {
 				return false;
 			}
-		}
-		else if (!name.equals(other.name)) {
+		} else if (!name.equals(other.name)) {
 			return false;
 		}
 		if (url == null) {
 			if (other.url != null) {
 				return false;
 			}
-		}
-		else if (!url.equals(other.url)) {
+		} else if (!url.equals(other.url)) {
 			return false;
 		}
 		return true;
 	}
 
-	private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
-		'e', 'f' };
-
-	private static String generateId(String url) {
-		try {
-			MessageDigest digest = MessageDigest.getInstance("SHA-1");
-			byte[] bytes = digest.digest(url.getBytes(Charset.forName("UTF-8")));
-			return new String(encodeHex(bytes, 0, 8));
-		}
-		catch (Exception e) {
-			throw new IllegalStateException(e);
-		}
-	}
-
-	private static char[] encodeHex(byte[] bytes, int offset, int length) {
-		char chars[] = new char[length];
-		for (int i = 0; i < length; i = i + 2) {
-			byte b = bytes[offset + (i / 2)];
-			chars[i] = HEX_CHARS[(b >>> 0x4) & 0xf];
-			chars[i + 1] = HEX_CHARS[b & 0xf];
-		}
-		return chars;
-	}
 }

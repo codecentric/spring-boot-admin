@@ -25,8 +25,11 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import de.codecentric.boot.admin.controller.RegistryController;
-import de.codecentric.boot.admin.service.ApplicationRegistry;
-import de.codecentric.boot.admin.service.SimpleApplicationRegistry;
+import de.codecentric.boot.admin.registry.ApplicationIdGenerator;
+import de.codecentric.boot.admin.registry.ApplicationRegistry;
+import de.codecentric.boot.admin.registry.HashingApplicationUrlIdGenerator;
+import de.codecentric.boot.admin.registry.store.ApplicationStore;
+import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
 
 @Configuration
 public class WebappConfig extends WebMvcConfigurerAdapter {
@@ -52,8 +55,27 @@ public class WebappConfig extends WebMvcConfigurerAdapter {
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public ApplicationRegistry applicationRegistry() {
-		return new SimpleApplicationRegistry();
+	public ApplicationRegistry applicationRegistry(ApplicationStore applicationStore,
+			ApplicationIdGenerator applicationIdGenerator) {
+		return new ApplicationRegistry(applicationStore, applicationIdGenerator);
+	}
+
+	/**
+	 * Default applicationId Generator
+	 */
+	@Bean
+	@ConditionalOnMissingBean
+	public HashingApplicationUrlIdGenerator applicationIdGenerator() {
+		return new HashingApplicationUrlIdGenerator();
+	}
+
+	/**
+	 * Default applicationId Generator
+	 */
+	@Bean
+	@ConditionalOnMissingBean
+	public ApplicationStore applicationStore() {
+		return new SimpleApplicationStore();
 	}
 
 }

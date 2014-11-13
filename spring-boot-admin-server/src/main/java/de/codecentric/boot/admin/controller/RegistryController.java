@@ -28,7 +28,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.codecentric.boot.admin.model.Application;
-import de.codecentric.boot.admin.service.ApplicationRegistry;
+import de.codecentric.boot.admin.registry.ApplicationRegistry;
+import de.codecentric.boot.admin.registry.ApplicationRegistryConflictException;
 
 /**
  * REST controller for controlling registration of managed applications.
@@ -46,28 +47,24 @@ public class RegistryController {
 
 	/**
 	 * Register an application within this admin application.
-	 *
+	 * 
 	 * @param app The application infos.
 	 * @return The registered application.
 	 */
 	@RequestMapping(value = "/api/applications", method = RequestMethod.POST)
 	public ResponseEntity<Application> register(@RequestBody Application app) {
 		LOGGER.debug("Register application {}", app.toString());
-
-		Application registered = registry.getApplication(app.getId());
-		if (registered == null || registered.equals(app)) {
-			LOGGER.info("Application {} registered.", app.toString());
-			registry.register(app);
-			return new ResponseEntity<Application>(app, HttpStatus.CREATED);
-		}
-		else {
+		try {
+			Application registeredApp = registry.register(app);
+			return new ResponseEntity<Application>(registeredApp, HttpStatus.CREATED);
+		} catch (ApplicationRegistryConflictException ex) {
 			return new ResponseEntity<Application>(HttpStatus.CONFLICT);
 		}
 	}
 
 	/**
 	 * Get a single application out of the registry.
-	 *
+	 * 
 	 * @param id The application identifier.
 	 * @return The registered application.
 	 */
@@ -77,32 +74,30 @@ public class RegistryController {
 		Application application = registry.getApplication(id);
 		if (application != null) {
 			return new ResponseEntity<Application>(application, HttpStatus.OK);
-		}
-		else {
+		} else {
 			return new ResponseEntity<Application>(application, HttpStatus.NOT_FOUND);
 		}
 	}
 
 	/**
 	 * Unregister an application within this admin application.
-	 *
+	 * 
 	 * @param id The application id.
 	 */
 	@RequestMapping(value = "/api/application/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Application> unregister(@PathVariable String id) {
-		LOGGER.info("Unregister application with ID '{}'", id);
+		LOGGER.debug("Unregister application with ID '{}'", id);
 		Application app = registry.unregister(id);
 		if (app != null) {
 			return new ResponseEntity<Application>(app, HttpStatus.NO_CONTENT);
-		}
-		else {
+		} else {
 			return new ResponseEntity<Application>(HttpStatus.NOT_FOUND);
 		}
 	}
 
 	/**
 	 * List all registered applications.
-	 *
+	 * 
 	 * @return List.
 	 */
 	@RequestMapping(value = "/api/applications", method = RequestMethod.GET)
