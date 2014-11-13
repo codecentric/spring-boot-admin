@@ -4,8 +4,7 @@
 <table class="table table-striped">
 	<thead>
 		<tr>
-			<th>Application</th>
-			<th>URL</th>
+			<th>Application / URL</th>
 			<th>Version</th>
 			<th>Info</th>
 			<th>Status</th>
@@ -14,14 +13,13 @@
 	</thead>
 	<tbody>
 		<tr ng-repeat="application in applications track by application.id">
-			<td>{{ application.name }}</td>
-			<td>{{ application.url }}</td>
+			<td>{{ application.name }}<br/><span class="muted">{{ application.url }}</span></td>
 			<td>{{ application.version }}</td>
 			<td><span ng-repeat="(name, value) in application.info track by name">{{name}}: {{value}}<br></span></td>
 			<td><span class="status-{{application.status}}">{{ application.status }}</span></td>
 			<td>
 				<div class="btn-group pull-right" ng-hide="application.status == null || application.status == 'OFFLINE'">
-					<a ng-disabled="!application.providesLogfile" target="_self" class="btn btn-success" ng-href="{{application.urlLogfile}}"><i class="icon-file icon-white"></i>Log</a>
+					<a ng-disabled="!application.providesLogfile" target="_self" class="btn btn-success" ng-href="{{application.providesLogfile ? application.url + '/logfile' :''}}"><i class="icon-file icon-white"></i>Log</a>
 					<a ui-sref="apps.details.metrics({id: application.id})" class="btn btn-success">Details</a>
 					<a ui-sref="apps.logging({id: application.id})" class="btn btn-success">Logging</a>
 					<a ui-sref="apps.jmx({id: application.id})" class="btn btn-success">JMX</a>

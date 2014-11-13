@@ -55,12 +55,10 @@ angular.module('springBootAdmin.services', ['ngResource'])
   			});
   		}
   		this.getLogfile = function(app) {
-  			return $http.get(app.url + '/logfile').success(function(response) {
+  			return $http.head(app.url + '/logfile').success(function(response) {
   				app.providesLogfile = true;
-  				app.urlLogfile = app.url + '/logfile';
   			}).error(function() {
   				app.providesLogfile = false;
-  				app.urlLogfile = null;
   			});
   		}
   	}])

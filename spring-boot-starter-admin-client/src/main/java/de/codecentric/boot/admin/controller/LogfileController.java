@@ -21,51 +21,71 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller that provides an API for logfiles, i.e. downloading the main logfile configured in environment property
  * 'logging.file' that is standard, but optional property for spring-boot applications.
  */
-@Controller
+@RestController
 public class LogfileController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LogfileController.class);
 
-	@Autowired
-	private Environment env;
+	@Value("${logging.file}")
+	private String logfile;
 
-	@RequestMapping("/logfile")
-	@ResponseBody
+	@RequestMapping(value = "/logfile", method = { RequestMethod.GET })
 	public String getLogfile(HttpServletResponse response) {
-		String path = env.getProperty("logging.file");
-		if (path == null) {
+		if (logfile == null) {
 			LOGGER.error("Logfile download failed for missing property 'logging.file'");
+			response.setStatus(HttpStatus.NOT_FOUND.value());
 			return "Logfile download failed for missing property 'logging.file'";
 		}
-		Resource file = new FileSystemResource(path);
+
+		Resource file = new FileSystemResource(logfile);
 		if (!file.exists()) {
-			LOGGER.error("Logfile download failed for missing file at path=" + path);
-			return "Logfile download failed for missing file at path=" + path;
+			LOGGER.error("Logfile download failed for missing file at path={}", logfile);
+			response.setStatus(HttpStatus.NOT_FOUND.value());
+			return "Logfile download failed for missing file at path=" + logfile;
 		}
 		response.setContentType(MediaType.TEXT_PLAIN_VALUE);
 		response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getFilename() + "\"");
 
 		try {
 			FileCopyUtils.copy(file.getInputStream(), response.getOutputStream());
-		} catch (IOException e) {
-			LOGGER.error("Logfile download failed for path=" + path);
-			return "Logfile download failed for path=" + path;
+		} catch (IOException ex) {
+			LOGGER.error("Logfile download failed for path={}. Reasond: {}", logfile, ex.getMessage());
+			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			return "Logfile download failed for path=" + logfile;
 		}
 		return null;
 	}
 
+	@RequestMapping(value = "/logfile", method = { RequestMethod.HEAD })
+	public ResponseEntity<?> hasLogfile() {
+		if (logfile == null) {
+			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+		}
+
+		Resource file = new FileSystemResource(logfile);
+		if (!file.exists()) {
+			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+		}
+
+		return new ResponseEntity<Void>(HttpStatus.OK);
+	}
+
+	public void setLogfile(String logfile) {
+		this.logfile = logfile;
+	}
 }

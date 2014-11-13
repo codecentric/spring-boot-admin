@@ -74,4 +74,22 @@ public class SpringBootAdminRegistratorTest {
 		assertFalse(result);
 	}
 
+	@Test
+	public void register_failed_conflict() {
+		AdminProperties adminProps = new AdminProperties();
+		adminProps.setUrl("http://sba:8080");
+		AdminClientProperties clientProps = new AdminClientProperties();
+		clientProps.setUrl("http://localhost:8080");
+		clientProps.setName("AppName");
+
+		RestTemplate restTemplate = mock(RestTemplate.class);
+		when(restTemplate.postForEntity(isA(String.class), isA(Application.class), eq(Application.class))).thenReturn(
+				new ResponseEntity<Application>(HttpStatus.CONFLICT));
+
+		SpringBootAdminRegistrator registrator = new SpringBootAdminRegistrator(restTemplate, adminProps, clientProps);
+		boolean result = registrator.register();
+
+		assertFalse(result);
+	}
+
 }
