@@ -1,0 +1,18 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:hz="http://www.hazelcast.com/schema/spring"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd 
+	http://www.hazelcast.com/schema/spring 
+	http://www.hazelcast.com/schema/spring/hazelcast-spring-3.3.xsd">
+
+	<hz:config id="hazelcastConfig">
+		<hz:instance-name>${hz.instance.name}</hz:instance-name>
+
+		<hz:properties>
+			<hz:property name="hazelcast.jmx">true</hz:property>
+		</hz:properties>
+
+		<hz:map name="spring-boot-admin-application-store" backup-count="1" eviction-policy="NONE" />
+	</hz:config>
+</beans>

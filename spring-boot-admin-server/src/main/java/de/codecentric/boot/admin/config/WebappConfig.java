@@ -17,6 +17,10 @@ package de.codecentric.boot.admin.config;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,11 +28,17 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import com.hazelcast.config.Config;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
+
 import de.codecentric.boot.admin.controller.RegistryController;
+import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.registry.ApplicationIdGenerator;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.registry.HashingApplicationUrlIdGenerator;
 import de.codecentric.boot.admin.registry.store.ApplicationStore;
+import de.codecentric.boot.admin.registry.store.HazelcastApplicationStore;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
 
 @Configuration
@@ -54,7 +64,6 @@ public class WebappConfig extends WebMvcConfigurerAdapter {
 	 * Default registry for all registered application.
 	 */
 	@Bean
-	@ConditionalOnMissingBean
 	public ApplicationRegistry applicationRegistry(ApplicationStore applicationStore,
 			ApplicationIdGenerator applicationIdGenerator) {
 		return new ApplicationRegistry(applicationStore, applicationIdGenerator);
@@ -65,17 +74,45 @@ public class WebappConfig extends WebMvcConfigurerAdapter {
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public HashingApplicationUrlIdGenerator applicationIdGenerator() {
+	public ApplicationIdGenerator applicationIdGenerator() {
 		return new HashingApplicationUrlIdGenerator();
 	}
 
-	/**
-	 * Default applicationId Generator
-	 */
-	@Bean
-	@ConditionalOnMissingBean
-	public ApplicationStore applicationStore() {
-		return new SimpleApplicationStore();
+	@Configuration
+	public static class SimpleConfig {
+		@Bean
+		@ConditionalOnMissingBean
+		public ApplicationStore applicationStore() {
+			return new SimpleApplicationStore();
+		}
+	}
+
+	@Configuration
+	@ConditionalOnClass({ Hazelcast.class })
+	@ConditionalOnExpression("${spring.boot.admin.hazelcast.enable:true}")
+	@AutoConfigureBefore(SimpleConfig.class)
+	public static class HazelcastConfig {
+
+		@Value("${spring.boot.admin.hazelcast.map:spring-boot-admin-application-store}")
+		private String hazelcastMapName;
+
+		@Bean
+		@ConditionalOnMissingBean
+		public Config hazelcastConfig() {
+			return new Config();
+		}
+
+		@Bean(destroyMethod = "shutdown")
+		@ConditionalOnMissingBean
+		public HazelcastInstance hazelcastInstance(Config hazelcastConfig) {
+			return Hazelcast.newHazelcastInstance(hazelcastConfig);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public ApplicationStore applicationStore(HazelcastInstance hazelcast) {
+			return new HazelcastApplicationStore(hazelcast.<String, Application> getMap(hazelcastMapName));
+		}
 	}
 
 }

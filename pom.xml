@@ -18,6 +18,7 @@
 	<properties>
 		<spring-boot.version>1.1.7.RELEASE</spring-boot.version>
 		<spring.version>4.0.7.RELEASE</spring.version>
+		<hazelcast.version>3.3.3</hazelcast.version>
 		<bootstrap.version>2.3.2</bootstrap.version>
 		<jquery.version>1.11.0</jquery.version>
 		<angularjs.version>1.2.12</angularjs.version>
@@ -32,8 +33,8 @@
 	</properties>
 	<modules>
 		<module>spring-boot-admin-server</module>
+		<module>spring-boot-admin-samples</module>
 		<module>spring-boot-starter-admin-client</module>
-		<module>spring-boot-admin-example</module>
 	</modules>
 	<organization>
 		<name>codecentric AG</name>
@@ -187,6 +188,16 @@
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
 				<version>3.3.2</version>
+			</dependency>
+			<dependency>
+				<groupId>com.hazelcast</groupId>
+				<artifactId>hazelcast</artifactId>
+				<version>${hazelcast.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.hazelcast</groupId>
+				<artifactId>hazelcast-spring</artifactId>
+				<version>${hazelcast.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.webjars</groupId>

@@ -18,20 +18,16 @@ package de.codecentric.boot.admin;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 
 import de.codecentric.boot.admin.config.EnableAdminServer;
 
 @Configuration
 @EnableAutoConfiguration
 @EnableAdminServer
+@ImportResource({ "classpath:hazelcast-config.xml" })
 public class SpringBootAdminApplication {
 
-	/**
-	 * Starting point for application to boot.
-	 * 
-	 * @param args
-	 *            Passed arguments.
-	 */
 	public static void main(String[] args) {
 		SpringApplication.run(SpringBootAdminApplication.class, args);
 	}

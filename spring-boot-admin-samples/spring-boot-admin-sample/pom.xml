@@ -3,11 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>de.codecentric</groupId>
-		<artifactId>spring-boot-admin</artifactId>
+		<artifactId>spring-boot-admin-samples</artifactId>
 		<version>1.0.6-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>	
-	<artifactId>spring-boot-admin-example</artifactId>
+	<artifactId>spring-boot-admin-sample</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>de.codecentric</groupId>

@@ -24,16 +24,10 @@ import de.codecentric.boot.admin.config.EnableAdminServer;
 @Configuration
 @EnableAutoConfiguration
 @EnableAdminServer
-public class TestAdminApplication {
+public class SpringBootAdminApplication {
 
-	/**
-	 * Starting point for application to boot.
-	 * 
-	 * @param args
-	 *            Passed arguments.
-	 */
 	public static void main(String[] args) {
-		SpringApplication.run(TestAdminApplication.class, args);
+		SpringApplication.run(SpringBootAdminApplication.class, args);
 	}
 
 }
