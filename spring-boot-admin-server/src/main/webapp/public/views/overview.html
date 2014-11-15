@@ -7,8 +7,7 @@
 			<th>Application / URL</th>
 			<th>Version</th>
 			<th>Info</th>
-			<th>Status</th>
-			<th></th>
+			<th colspan="2">Status</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -16,7 +15,8 @@
 			<td>{{ application.name }}<br/><span class="muted">{{ application.url }}</span></td>
 			<td>{{ application.version }}</td>
 			<td><span ng-repeat="(name, value) in application.info track by name">{{name}}: {{value}}<br></span></td>
-			<td><span class="status-{{application.status}}">{{ application.status }}</span></td>
+			<td><span class="status-{{application.status}}">{{ application.status }}</span>
+			<span ng-show="application.refreshing" class="refresh"></span></td>
 			<td>
 				<div class="btn-group pull-right" ng-hide="application.status == null || application.status == 'OFFLINE'">
 					<a ng-disabled="!application.providesLogfile" target="_self" class="btn btn-success" ng-href="{{application.providesLogfile ? application.url + '/logfile' :''}}"><i class="icon-file icon-white"></i>Log</a>

@@ -16,25 +16,36 @@
 'use strict';
 
 angular.module('springBootAdmin')
-       .controller('overviewCtrl', ['$scope', '$location', '$interval', 'Applications', 'ApplicationOverview', 'Application',
-                                    function ($scope, $location, $interval, Applications, ApplicationOverview, Application) {
-  		$scope.loadData = function() {
+       .controller('overviewCtrl', ['$scope', '$location', '$interval', '$q', 'Applications', 'ApplicationOverview', 'Application',
+                                    function ($scope, $location, $interval, $q, Applications, ApplicationOverview, Application) {
+  		
+    	   $scope.loadData = function() {
   			Applications.query(function(applications) {
   				for (var i = 0; i< applications.length; i++) {
-	  				var app = applications[i];
-	  				ApplicationOverview.getInfo(app);
-	  				ApplicationOverview.getHealth(app);
-	  				ApplicationOverview.getLogfile(app);
+  					(function(app) {
+  						//find application in known applications and copy state --> less flickering
+  						for ( var j = 0; $scope.applications != null && j < $scope.applications.length; j++ ) {
+  							if (app.id === $scope.applications[j].id ) {
+  								app.info = $scope.applications[j].info;
+  								app.version= $scope.applications[j].version;
+  								app.status = $scope.applications[j].status;
+  								app.providesLogfile = $scope.applications[j].providesLogfile;
+  								break;
+  							}
+  						}
+  						app.refreshing = true;
+  						$q.all(ApplicationOverview.getInfo(app), 
+  								ApplicationOverview.getHealth(app), 
+  								ApplicationOverview.getLogfile(app)).finally(function() {
+  							app.refreshing = false;
+  						});
+  					})(applications[i]);
 	  			}	
 	  			$scope.applications = applications;
 	  		});
   		}
   		$scope.loadData();
 
-  		$scope.refresh = function(application) {
-  			ApplicationOverview.refresh(application);
-  		};
-  		
   		$scope.remove = function(application) {
   			Application.remove({ id: application.id }, function () {
   				var index = $scope.applications.indexOf(application); 
@@ -43,7 +54,6 @@ angular.module('springBootAdmin')
   				}
   			});
   		}
-
   		
   		// reload site every 30 seconds
   		var task = $interval(function() {
