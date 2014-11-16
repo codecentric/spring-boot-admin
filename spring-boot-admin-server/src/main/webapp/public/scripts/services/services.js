@@ -18,22 +18,22 @@
 angular.module('springBootAdmin.services', ['ngResource'])
   	.factory('Applications', ['$resource', function($resource) {
   		return $resource(
-  			'/api/applications', {}, {
+  			'api/applications', {}, {
   				query: { method:'GET', isArray:true }
   			});
   		}
   	])
   	.factory('Application', ['$resource', function($resource) {
   		return $resource(
-  			'/api/application/:id', {}, {
+  			'api/application/:id', {}, {
   				query: { method:'GET'},
-  				remove: {method: 'DELETE'}
+  				remove: {method:'DELETE'}
   			});
   		}
   	])
   	.service('ApplicationOverview', ['$http', function($http) {
   		this.getInfo = function(app) {
-  			return $http.get(app.url + '/info').success(function(response) {
+  			return $http.get(app.url + '/info/').success(function(response) {
   				app.version = response.version;
   				delete response.version;
   				app.info = response;
@@ -42,7 +42,7 @@ angular.module('springBootAdmin.services', ['ngResource'])
   			});
   		}
   		this.getHealth = function(app) {
-  			return $http.get(app.url + '/health').success(function (response) {
+  			return $http.get(app.url + '/health/').success(function (response) {
   				app.status = response.status;
   			}).error(function (response, httpStatus) {
   				if (httpStatus === 503) {
@@ -55,7 +55,7 @@ angular.module('springBootAdmin.services', ['ngResource'])
   			});
   		}
   		this.getLogfile = function(app) {
-  			return $http.head(app.url + '/logfile').success(function(response) {
+  			return $http.head(app.url + '/logfile/').success(function(response) {
   				app.providesLogfile = true;
   			}).error(function() {
   				app.providesLogfile = false;
@@ -64,16 +64,16 @@ angular.module('springBootAdmin.services', ['ngResource'])
   	}])
   	.service('ApplicationDetails', ['$http', function($http) {
   		this.getInfo = function(app) {
-  			return $http.get(app.url + '/info');
+  			return $http.get(app.url + '/info/');
   		}
   		this.getMetrics = function(app) {
-  			return $http.get(app.url + '/metrics');
+  			return $http.get(app.url + '/metrics/');
   		}
   		this.getEnv = function(app) {
-  			return $http.get(app.url + '/env');
+  			return $http.get(app.url + '/env/');
   		}
   		this.getHealth = function(app) {
-  			return $http.get(app.url + '/health');
+  			return $http.get(app.url + '/health/');
   		}
 
   	}])
@@ -85,15 +85,15 @@ angular.module('springBootAdmin.services', ['ngResource'])
   			for (var j in loggers) {
   				requests.push({ type: 'exec', mbean: LOGBACK_MBEAN, operation: 'getLoggerEffectiveLevel', arguments: [ loggers[j].name ] })
   			}
-  			return jolokia.bulkRequest(app.url + '/jolokia', requests);
+  			return jolokia.bulkRequest(app.url + '/jolokia/', requests);
   		}
   		
   		this.setLoglevel = function(app, logger, level) {
-  			return jolokia.exec(app.url + '/jolokia', LOGBACK_MBEAN, 'setLoggerLevel' , [ logger, level] );
+  			return jolokia.exec(app.url + '/jolokia/', LOGBACK_MBEAN, 'setLoggerLevel' , [ logger, level] );
   		}
   		
   		this.getAllLoggers = function(app) {
-  			return jolokia.readAttr(app.url + '/jolokia', LOGBACK_MBEAN, 'LoggerList'); 
+  			return jolokia.readAttr(app.url + '/jolokia/', LOGBACK_MBEAN, 'LoggerList'); 
   		}
   	}])
   	.service('ApplicationJMX', ['$rootScope', 'Abbreviator', 'Jolokia', function($rootScope, Abbreviator, jolokia) {
@@ -156,15 +156,15 @@ angular.module('springBootAdmin.services', ['ngResource'])
   		}
   		
   		this.readAllAttr = function(app, bean) { 			
-  			return jolokia.read(app.url + '/jolokia', bean.id)
+  			return jolokia.read(app.url + '/jolokia/', bean.id)
   		}
   		
   		this.writeAttr = function(app, bean, attr, val) {
-  			return jolokia.writeAttr(app.url + '/jolokia', bean.id, attr, val);
+  			return jolokia.writeAttr(app.url + '/jolokia/', bean.id, attr, val);
   		}
   		
   		this.invoke = function(app, bean, opname, args) {
-  			return jolokia.exec(app.url + '/jolokia', bean.id, opname, args);
+  			return jolokia.exec(app.url + '/jolokia/', bean.id, opname, args);
 		}
   		
   	}])
@@ -328,6 +328,6 @@ angular.module('springBootAdmin.services', ['ngResource'])
   	}])
   	.service('ApplicationThreads', ['$http', function($http) {
   		this.getDump = function(app) {
-  			return $http.get(app.url + '/dump');
+  			return $http.get(app.url + '/dump/');
   		}
   	}]);

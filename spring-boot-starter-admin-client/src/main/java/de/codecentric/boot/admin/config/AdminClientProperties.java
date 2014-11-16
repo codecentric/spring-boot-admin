@@ -21,15 +21,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.boot.admin.client")
 public class AdminClientProperties {
 
-	@Value("http://#{T(java.net.InetAddress).localHost.canonicalHostName}:${server.port:${management.port:8080}}${management.context-path:/}")
+	@Value("http://#{T(java.net.InetAddress).localHost.canonicalHostName}:${server.port:${management.port:8080}}${server.contextPath}${management.context-path:/}")
 	private String url;
 
 	@Value("${spring.application.name:spring-boot-application}")
 	private String name;
 
 	/**
-	 * @return Client-management-URL to register with. Can be overriden in case the
-	 * reachable URL is different (e.g. Docker). Must be unique in registry.
+	 * @return Client-management-URL to register with. Can be overriden in case the reachable URL is different (e.g.
+	 *         Docker). Must be unique in registry.
 	 */
 	public String getUrl() {
 		return url;
