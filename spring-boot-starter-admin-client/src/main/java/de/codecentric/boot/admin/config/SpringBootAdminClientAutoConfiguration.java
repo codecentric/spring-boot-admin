@@ -15,6 +15,7 @@
  */
 package de.codecentric.boot.admin.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +24,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.web.client.RestTemplate;
 
-import de.codecentric.boot.admin.controller.LogfileController;
+import de.codecentric.boot.admin.actuate.LogfileMvcEndpoint;
 import de.codecentric.boot.admin.services.SpringBootAdminRegistrator;
 import de.codecentric.boot.admin.web.SimpleCORSFilter;
 
@@ -79,13 +80,16 @@ public class SpringBootAdminClientAutoConfiguration {
 		return registrar;
 	}
 
-	/**
-	 * Controller to do something with the application logfile(s).
-	 */
-	@Bean
-	@ConditionalOnProperty("logging.file")
-	public LogfileController logfileController() {
-		return new LogfileController();
+	@Configuration
+	@ConditionalOnExpression("${endpoints.logfile.enabled:true}")
+	public static class LogfileEndpointAutoConfiguration {
+		/**
+		 * Exposes the logfile as acutator endpoint
+		 */
+		@Bean
+		public LogfileMvcEndpoint logfileEndpoint() {
+			return new LogfileMvcEndpoint();
+		}
 	}
 
 }
