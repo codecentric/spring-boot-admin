@@ -102,6 +102,7 @@ public class LogfileMvcEndpoint implements MvcEndpoint {
 
 		Resource file = new FileSystemResource(logfile);
 		response.setContentType(MediaType.TEXT_PLAIN_VALUE);
+		response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getFilename() + "\"");
 		FileCopyUtils.copy(file.getInputStream(), response.getOutputStream());
 	}
 

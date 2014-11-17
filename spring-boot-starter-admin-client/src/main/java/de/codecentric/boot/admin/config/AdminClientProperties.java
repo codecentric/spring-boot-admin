@@ -18,7 +18,7 @@ package de.codecentric.boot.admin.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "spring.boot.admin.client")
+@ConfigurationProperties(prefix = "spring.boot.admin.client", ignoreUnknownFields = false)
 public class AdminClientProperties {
 
 	@Value("http://#{T(java.net.InetAddress).localHost.canonicalHostName}:${server.port:${management.port:8080}}${management.context-path:/}")
@@ -29,7 +29,7 @@ public class AdminClientProperties {
 
 	/**
 	 * @return Client-management-URL to register with. Can be overriden in case the
-	 * reachable URL is different (e.g. Docker). Must be unique in registry.
+	 *         reachable URL is different (e.g. Docker). Must be unique in registry.
 	 */
 	public String getUrl() {
 		return url;

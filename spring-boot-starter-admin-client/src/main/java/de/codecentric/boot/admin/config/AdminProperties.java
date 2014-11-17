@@ -26,18 +26,21 @@ public class AdminProperties {
 
 	private int period = 10000;
 
+	private String username;
+
+	private String password;
+
 	public void setUrl(String url) {
 		this.url = url;
 	}
 
 	/**
-	 *
+	 * 
 	 * @return the Spring Boot Admin Server's url.
 	 */
 	public String getUrl() {
 		return url;
 	}
-
 
 	/**
 	 * @return the Spring Boot Admin Server's context path.
@@ -51,7 +54,7 @@ public class AdminProperties {
 	}
 
 	/**
-	 *
+	 * 
 	 * @return the time interval (in ms) the registration is repeated.
 	 */
 	public int getPeriod() {
@@ -60,5 +63,28 @@ public class AdminProperties {
 
 	public void setPeriod(int period) {
 		this.period = period;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	/**
+	 * @return username for basic authentication .
+	 */
+	public String getUsername() {
+		return username;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	/**
+	 * 
+	 * @return password for basic authentication.
+	 */
+	public String getPassword() {
+		return password;
 	}
 }

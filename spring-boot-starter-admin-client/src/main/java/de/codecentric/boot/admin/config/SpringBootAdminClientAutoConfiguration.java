@@ -15,17 +15,22 @@
  */
 package de.codecentric.boot.admin.config;
 
+import java.util.Arrays;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.actuate.LogfileMvcEndpoint;
 import de.codecentric.boot.admin.services.SpringBootAdminRegistrator;
+import de.codecentric.boot.admin.web.BasicAuthHttpRequestInterceptor;
 import de.codecentric.boot.admin.web.SimpleCORSFilter;
 
 /**
@@ -41,16 +46,20 @@ public class SpringBootAdminClientAutoConfiguration {
 	 * Task that registers the application at the spring-boot-admin application.
 	 */
 	@Bean
-	public SpringBootAdminRegistrator registrator(AdminProperties adminProps,
-			AdminClientProperties clientProps) {
-		return new SpringBootAdminRegistrator(restTemplate(), adminProps, clientProps);
+	@ConditionalOnMissingBean
+	public SpringBootAdminRegistrator registrator(AdminProperties adminProps, AdminClientProperties clientProps) {
+		return new SpringBootAdminRegistrator(createRestTemplate(adminProps), adminProps, clientProps);
 	}
 
-
-	@Bean
-	public RestTemplate restTemplate() {
+	protected RestTemplate createRestTemplate(AdminProperties adminProps) {
 		RestTemplate template = new RestTemplate();
 		template.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+
+		if (adminProps.getUsername() != null) {
+			template.setInterceptors(Arrays.<ClientHttpRequestInterceptor> asList(new BasicAuthHttpRequestInterceptor(
+					adminProps.getUsername(), adminProps.getPassword())));
+		}
+
 		return template;
 	}
 
