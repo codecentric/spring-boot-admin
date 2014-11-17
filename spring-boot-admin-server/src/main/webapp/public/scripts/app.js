@@ -92,5 +92,4 @@ angular.module('springBootAdmin', [
   	.run(function ($rootScope, $state, $stateParams, $log) {
   		$rootScope.$state = $state;
   		$rootScope.$stateParams = $stateParams;
-  		$rootScope.springBootAdminServerUrl = window.location.protocol + '//' + window.location.host;
   	});
