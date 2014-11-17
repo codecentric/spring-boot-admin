@@ -15,7 +15,7 @@
  */
 package de.codecentric.boot.admin.registry;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
 import de.codecentric.boot.admin.model.Application;
@@ -31,7 +31,7 @@ public class HashingApplicationUrlIdGenerator implements ApplicationIdGenerator 
 	public String generateId(Application a) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-1");
-			byte[] bytes = digest.digest(a.getUrl().getBytes(Charset.forName("UTF-8")));
+			byte[] bytes = digest.digest(a.getUrl().getBytes(StandardCharsets.UTF_8));
 			return new String(encodeHex(bytes, 0, 8));
 		} catch (Exception e) {
 			throw new IllegalStateException(e);

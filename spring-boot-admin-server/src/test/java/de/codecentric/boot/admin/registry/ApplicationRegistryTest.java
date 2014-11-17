@@ -16,13 +16,15 @@
 package de.codecentric.boot.admin.registry;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Collection;
 
 import org.junit.Test;
 
 import de.codecentric.boot.admin.model.Application;
-import de.codecentric.boot.admin.registry.ApplicationRegistry;
-import de.codecentric.boot.admin.registry.HashingApplicationUrlIdGenerator;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
 
 public class ApplicationRegistryTest {
@@ -70,8 +72,24 @@ public class ApplicationRegistryTest {
 		Application app = new Application("http://localhost:8080", "abc");
 		app = registry.register(app);
 
-		assertEquals(1, registry.getApplications().size());
-		assertEquals("http://localhost:8080", registry.getApplications().get(0).getUrl());
-		assertEquals("abc", registry.getApplications().get(0).getName());
+		Collection<Application> applications = registry.getApplications();
+		assertEquals(1, applications.size());
+		assertTrue(applications.contains(app));
+	}
+
+	@Test
+	public void getApplicationsByName() throws Exception {
+		Application app = new Application("http://localhost:8080", "abc");
+		app = registry.register(app);
+		Application app2 = new Application("http://localhost:8081", "abc");
+		app2 = registry.register(app2);
+		Application app3 = new Application("http://localhost:8082", "cba");
+		app3 = registry.register(app3);
+
+		Collection<Application> applications = registry.getApplicationsByName("abc");
+		assertEquals(2, applications.size());
+		assertTrue(applications.contains(app));
+		assertTrue(applications.contains(app2));
+		assertFalse(applications.contains(app3));
 	}
 }

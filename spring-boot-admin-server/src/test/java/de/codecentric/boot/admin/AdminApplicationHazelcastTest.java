@@ -16,14 +16,20 @@
 package de.codecentric.boot.admin;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
+import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -41,16 +47,22 @@ import de.codecentric.boot.admin.model.Application;
  */
 public class AdminApplicationHazelcastTest {
 
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableAdminServer
+	public static class TestAdminApplication {
+	}
+
 	private RestTemplate template = new TestRestTemplate();
-	private AnnotationConfigEmbeddedWebApplicationContext instance1;
-	private AnnotationConfigEmbeddedWebApplicationContext instance2;
+	private EmbeddedWebApplicationContext instance1;
+	private EmbeddedWebApplicationContext instance2;
 
 	@Before
 	public void setup() {
-		instance1 = (AnnotationConfigEmbeddedWebApplicationContext) SpringApplication.run(TestAdminApplication.class,
-				new String[] { "--server.port=0", "--spring.jmx.enabled=false" });
-		instance2 = (AnnotationConfigEmbeddedWebApplicationContext) SpringApplication.run(TestAdminApplication.class,
-				new String[] { "--server.port=0", "--spring.jmx.enabled=false" });
+		instance1 = (EmbeddedWebApplicationContext) SpringApplication.run(TestAdminApplication.class, new String[] {
+				"--server.port=0", "--spring.jmx.enabled=false" });
+		instance2 = (EmbeddedWebApplicationContext) SpringApplication.run(TestAdminApplication.class, new String[] {
+				"--server.port=0", "--spring.jmx.enabled=false" });
 	}
 
 	@After
@@ -62,26 +74,58 @@ public class AdminApplicationHazelcastTest {
 	@Test
 	public void test() {
 		Application app = new Application("http://127.0.0.1", "Hazelcast Test");
+		Application app2 = new Application("http://127.0.0.1:2", "Hazelcast Test");
+		Application app3 = new Application("http://127.0.0.1:3", "Do not find");
 
-		// publish application on instance1
-		int port1 = instance1.getEmbeddedServletContainer().getPort();
-		ResponseEntity<Application> postResponse = template.postForEntity("http://localhost:" + port1
-				+ "/api/applications", app, Application.class);
+		// publish app on instance1
+		ResponseEntity<Application> postResponse = registerApp(app, instance1);
+		app = postResponse.getBody();
 		assertEquals(HttpStatus.CREATED, postResponse.getStatusCode());
-		assertNotNull(postResponse.getBody().getId());
+		assertNotNull(app.getId());
 
-		// retrieve application from instance2
-		int port2 = instance2.getEmbeddedServletContainer().getPort();
-		ResponseEntity<Application> getResponse = template.getForEntity("http://localhost:" + port2
-				+ "/api/application/" + postResponse.getBody().getId(), Application.class);
+		// publish app2 on instance2
+		ResponseEntity<Application> postResponse2 = registerApp(app2, instance2);
+		app2 = postResponse2.getBody();
+		assertEquals(HttpStatus.CREATED, postResponse.getStatusCode());
+		assertNotNull(app2.getId());
 
+		// retrieve app from instance2
+		ResponseEntity<Application> getResponse = getApp(app.getId(), instance2);
 		assertEquals(HttpStatus.OK, getResponse.getStatusCode());
-		assertEquals(postResponse.getBody(), getResponse.getBody());
+		assertEquals(app, getResponse.getBody());
+
+		// retrieve app and app2 from instance1 (but not app3)
+		app3 = registerApp(app3, instance1).getBody();
+		Collection<Application> apps = getAppByName("Hazelcast Test", instance1).getBody();
+		assertEquals(2, apps.size());
+		assertTrue(apps.contains(app));
+		assertTrue(apps.contains(app2));
+		assertFalse(apps.contains(app3));
 	}
 
-	@Configuration
-	@EnableAutoConfiguration
-	@EnableAdminServer
-	public static class TestAdminApplication {
+	private ResponseEntity<Application> getApp(String id, EmbeddedWebApplicationContext context) {
+		int port = context.getEmbeddedServletContainer().getPort();
+		ResponseEntity<Application> getResponse = template.getForEntity("http://localhost:" + port
+				+ "/api/application/" + id, Application.class);
+		return getResponse;
 	}
+
+	private ResponseEntity<Application> registerApp(Application app, EmbeddedWebApplicationContext context) {
+		int port = context.getEmbeddedServletContainer().getPort();
+		return template.postForEntity("http://localhost:" + port + "/api/applications", app, Application.class);
+	}
+
+	@SuppressWarnings("unchecked")
+	private ResponseEntity<Collection<Application>> getAppByName(String name, EmbeddedWebApplicationContext context) {
+		int port = context.getEmbeddedServletContainer().getPort();
+		ResponseEntity<?> getResponse = template.getForEntity("http://localhost:" + port
+				+ "/api/applications?name={name}", ApplicationList.class, Collections.singletonMap("name", name));
+		return (ResponseEntity<Collection<Application>>) getResponse;
+	}
+
+	public static class ApplicationList extends ArrayList<Application> {
+		private static final long serialVersionUID = 1L;
+		// needed for JSON deserialization
+	}
+
 }

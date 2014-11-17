@@ -15,7 +15,7 @@
  */
 package de.codecentric.boot.admin.controller;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.codecentric.boot.admin.model.Application;
@@ -96,14 +97,17 @@ public class RegistryController {
 	}
 
 	/**
-	 * List all registered applications.
+	 * List all registered applications with name
 	 * 
 	 * @return List.
 	 */
 	@RequestMapping(value = "/api/applications", method = RequestMethod.GET)
-	public List<Application> applications() {
-		LOGGER.debug("Deliver all registered applications");
-		return registry.getApplications();
+	public Collection<Application> applications(@RequestParam(value = "name", required = false) String name) {
+		LOGGER.debug("Deliver registered applications with name= {}", name);
+		if (name == null || name.isEmpty()) {
+			return registry.getApplications();
+		} else {
+			return registry.getApplicationsByName(name);
+		}
 	}
-
 }

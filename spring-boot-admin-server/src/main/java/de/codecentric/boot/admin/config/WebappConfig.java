@@ -31,6 +31,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IMap;
 
 import de.codecentric.boot.admin.controller.RegistryController;
 import de.codecentric.boot.admin.model.Application;
@@ -111,7 +112,9 @@ public class WebappConfig extends WebMvcConfigurerAdapter {
 		@Bean
 		@ConditionalOnMissingBean
 		public ApplicationStore applicationStore(HazelcastInstance hazelcast) {
-			return new HazelcastApplicationStore(hazelcast.<String, Application> getMap(hazelcastMapName));
+			IMap<String, Application> map = hazelcast.<String, Application> getMap(hazelcastMapName);
+			map.addIndex("name", false);
+			return new HazelcastApplicationStore(map);
 		}
 	}
 

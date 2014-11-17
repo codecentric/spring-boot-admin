@@ -16,8 +16,10 @@
 package de.codecentric.boot.admin.controller;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -107,12 +109,26 @@ public class RegistryControllerTest {
 	@Test
 	public void applications() {
 		Application app = new Application("http://localhost", "FOO");
-		controller.register(app);
+		app = controller.register(app).getBody();
 
-		List<Application> applications = controller.applications();
+		Collection<Application> applications = controller.applications(null);
 		assertEquals(1, applications.size());
+		assertTrue(applications.contains(app));
+	}
 
-		assertEquals(app.getName(), applications.get(0).getName());
-		assertEquals(app.getUrl(), applications.get(0).getUrl());
+	@Test
+	public void applicationsByName() {
+		Application app = new Application("http://localhost:2", "FOO");
+		app = controller.register(app).getBody();
+		Application app2 = new Application("http://localhost:1", "FOO");
+		app2 = controller.register(app2).getBody();
+		Application app3 = new Application("http://localhost:3", "BAR");
+		controller.register(app3).getBody();
+
+		Collection<Application> applications = controller.applications("FOO");
+		assertEquals(2, applications.size());
+		assertTrue(applications.contains(app));
+		assertTrue(applications.contains(app2));
+		assertFalse(applications.contains(app3));
 	}
 }

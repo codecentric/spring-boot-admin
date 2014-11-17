@@ -1,9 +1,9 @@
 package de.codecentric.boot.admin.registry.store;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import com.hazelcast.core.IMap;
+import com.hazelcast.query.Predicates;
 
 import de.codecentric.boot.admin.model.Application;
 
@@ -16,22 +16,27 @@ public class HazelcastApplicationStore implements ApplicationStore {
 	}
 
 	@Override
-	public Application put(Application app) {
+	public Application save(Application app) {
 		return store.putIfAbsent(app.getId(), app);
 	}
 
 	@Override
-	public List<Application> getAll() {
-		return new ArrayList<Application>(store.values());
+	public Collection<Application> findAll() {
+		return store.values();
 	}
 
 	@Override
-	public Application get(String id) {
+	public Application find(String id) {
 		return store.get(id);
 	}
 
 	@Override
-	public Application remove(String id) {
+	public Collection<Application> findByName(String name) {
+		return store.values(Predicates.equal("name", name));
+	}
+
+	@Override
+	public Application delete(String id) {
 		return store.remove(id);
 	}
 

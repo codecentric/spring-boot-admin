@@ -15,7 +15,7 @@
  */
 package de.codecentric.boot.admin.registry.store;
 
-import java.util.List;
+import java.util.Collection;
 
 import de.codecentric.boot.admin.model.Application;
 
@@ -30,22 +30,28 @@ public interface ApplicationStore {
 	 * @param app Application to store
 	 * @return the Application associated previosly with the applications id.
 	 */
-	Application put(Application app);
+	Application save(Application app);
 
 	/**
 	 * @return all Applications in the store;
 	 */
-	List<Application> getAll();
+	Collection<Application> findAll();
 
 	/**
 	 * @param id the applications id
 	 * @return the Application with the specified id;
 	 */
-	Application get(String id);
+	Application find(String id);
+
+	/**
+	 * @param name the applications name
+	 * @return all Applications with the specified name;
+	 */
+	Collection<Application> findByName(String name);
 
 	/**
 	 * @param id id of the Application to be removed
 	 * @return the Application associated previosly with the applications id.
 	 */
-	Application remove(String id);
+	Application delete(String id);
 }

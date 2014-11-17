@@ -16,6 +16,7 @@
 package de.codecentric.boot.admin.registry.store;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,22 +30,33 @@ public class SimpleApplicationStore implements ApplicationStore {
 	private final ConcurrentHashMap<String, Application> map = new ConcurrentHashMap<>();
 
 	@Override
-	public Application put(Application app) {
+	public Application save(Application app) {
 		return map.putIfAbsent(app.getId(), app);
 	}
 
 	@Override
-	public List<Application> getAll() {
-		return new ArrayList<Application>(map.values());
+	public Collection<Application> findAll() {
+		return map.values();
 	}
 
 	@Override
-	public Application get(String id) {
+	public Application find(String id) {
 		return map.get(id);
 	}
 
 	@Override
-	public Application remove(String id) {
+	public Collection<Application> findByName(String name) {
+		List<Application> result = new ArrayList<Application>();
+		for (Application a : map.values()) {
+			if (name.equals(a.getName())) {
+				result.add(a);
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public Application delete(String id) {
 		return map.remove(id);
 	}
 

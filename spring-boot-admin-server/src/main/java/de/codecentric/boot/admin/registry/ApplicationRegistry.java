@@ -17,7 +17,7 @@ package de.codecentric.boot.admin.registry;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
+import java.util.Collection;
 
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -55,7 +55,7 @@ public class ApplicationRegistry {
 		Validate.notNull(applicationId, "ID must not be null");
 
 		Application newApp = new Application(app.getUrl(), app.getName(), applicationId);
-		Application oldApp = store.put(newApp);
+		Application oldApp = store.save(newApp);
 
 		if (oldApp == null) {
 			LOGGER.info("New Application {} registered ", newApp);
@@ -90,8 +90,17 @@ public class ApplicationRegistry {
 	 * 
 	 * @return List.
 	 */
-	public List<Application> getApplications() {
-		return store.getAll();
+	public Collection<Application> getApplications() {
+		return store.findAll();
+	}
+
+	/**
+	 * Get a list of all registered applications.
+	 * 
+	 * @return List.
+	 */
+	public Collection<Application> getApplicationsByName(String name) {
+		return store.findByName(name);
 	}
 
 	/**
@@ -101,7 +110,7 @@ public class ApplicationRegistry {
 	 * @return Application.
 	 */
 	public Application getApplication(String id) {
-		return store.get(id);
+		return store.find(id);
 	}
 
 	/**
@@ -111,7 +120,7 @@ public class ApplicationRegistry {
 	 * @return the unregistered Application
 	 */
 	public Application unregister(String id) {
-		Application app = store.remove(id);
+		Application app = store.delete(id);
 		LOGGER.info("Application {} unregistered ", app);
 		return app;
 	}

@@ -45,7 +45,7 @@ import de.codecentric.boot.admin.config.EnableAdminServer;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = TestAdminApplication.class)
 @WebAppConfiguration
-@IntegrationTest({ "server.port=0", "spring.boot.admin.hazelcast.enable=false" })
+@IntegrationTest({ "server.port=0" })
 public class AdminApplicationTest {
 
 	RestTemplate restTemplate = new TestRestTemplate();
