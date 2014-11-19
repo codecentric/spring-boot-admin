@@ -15,23 +15,30 @@
  */
 package de.codecentric.boot.admin.config;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.List;
 
+import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.handler.AbstractHandlerMapping;
 
 import de.codecentric.boot.admin.actuate.LogfileMvcEndpoint;
 import de.codecentric.boot.admin.services.SpringBootAdminRegistrator;
 import de.codecentric.boot.admin.web.BasicAuthHttpRequestInterceptor;
-import de.codecentric.boot.admin.web.SimpleCORSFilter;
+import de.codecentric.boot.admin.web.SimpleCORSHandlerInterceptor;
 
 /**
  * This configuration adds a registrator bean to the spring context. This bean checks periodicaly, if the using
@@ -64,14 +71,6 @@ public class SpringBootAdminClientAutoConfiguration {
 	}
 
 	/**
-	 * HTTP filter to enable Cross-Origin Resource Sharing.
-	 */
-	@Bean
-	public SimpleCORSFilter corsFilter() {
-		return new SimpleCORSFilter();
-	}
-
-	/**
 	 * TaskRegistrar that triggers the RegistratorTask every ten seconds.
 	 */
 	@Bean
@@ -89,8 +88,46 @@ public class SpringBootAdminClientAutoConfiguration {
 		return registrar;
 	}
 
+	/**
+	 * HTTP filter to enable Cross-Origin Resource Sharing.
+	 */
+	@Bean
+	@ConditionalOnMissingBean
+	public SimpleCORSHandlerInterceptor endpointCorsFilter() {
+		SimpleCORSHandlerInterceptor endpointCorsFilter = new SimpleCORSHandlerInterceptor();
+		return endpointCorsFilter;
+	}
+
+	@Bean
+	public ApplicationListener<EmbeddedServletContainerInitializedEvent> listener() {
+		return new  ApplicationListener<EmbeddedServletContainerInitializedEvent>() {
+			@Override
+			public void onApplicationEvent(EmbeddedServletContainerInitializedEvent event) {
+				// We have to register the CORSHandler in this nasty way.
+				// With Spring Boot < 1.2.0.RC2 there is no elegant way to register
+				// HandlerInterceptors for the EndpointMapping
+				for (EndpointHandlerMapping endpointMappingHandler : event.getApplicationContext()
+						.getBeansOfType(EndpointHandlerMapping.class).values()) {
+
+					try {
+						Field interceptorsField = AbstractHandlerMapping.class.getDeclaredField("adaptedInterceptors");
+						interceptorsField.setAccessible(true);
+						@SuppressWarnings("unchecked")
+						List<HandlerInterceptor> adaptedInterceptors = (List<HandlerInterceptor>) interceptorsField
+						.get(endpointMappingHandler);
+						adaptedInterceptors.add(endpointCorsFilter());
+					}
+					catch (Exception ex) {
+						throw new RuntimeException("Couldn't register CORS-Filter for endpoints", ex);
+					}
+				}
+			}
+		};
+	}
+
 	@Configuration
 	@ConditionalOnExpression("${endpoints.logfile.enabled:true}")
+	@ConditionalOnProperty("logging.file")
 	public static class LogfileEndpointAutoConfiguration {
 		/**
 		 * Exposes the logfile as acutator endpoint
