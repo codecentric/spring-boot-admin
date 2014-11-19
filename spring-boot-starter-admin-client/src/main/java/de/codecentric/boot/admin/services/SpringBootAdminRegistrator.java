@@ -51,10 +51,10 @@ public class SpringBootAdminRegistrator {
 	 */
 	public boolean register() {
 		Application app = createApplication();
+		String adminUrl = adminProps.getUrl() + '/' + adminProps.getContextPath();
 
 		try {
-			ResponseEntity<Application> response = template.postForEntity(
-					adminProps.getUrl() + '/' + adminProps.getContextPath(), app, Application.class);
+			ResponseEntity<Application> response = template.postForEntity(adminUrl, app, Application.class);
 
 			if (response.getStatusCode().equals(HttpStatus.CREATED)) {
 				LOGGER.info("Application registered itself as {}", response.getBody());
@@ -68,7 +68,8 @@ public class SpringBootAdminRegistrator {
 			}
 		}
 		catch (Exception ex) {
-			LOGGER.warn("Failed to register application as {} at spring-boot-admin: {}", app, ex.getMessage());
+			LOGGER.warn("Failed to register application as {} at spring-boot-admin ({}): {}", app, adminUrl,
+					ex.getMessage());
 		}
 
 		return false;
