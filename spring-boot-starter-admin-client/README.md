@@ -13,6 +13,8 @@ The main service that is used is a registrar that registeres the application at 
 | --------------------- | ----------- |
 | spring.boot.admin.url | URL of the spring-boot-admin application to register at.<br>_Mandatory_. | |
 | spring.boot.admin.contextPath | Context-path of registration point.<br>Default: api/applications |
+| spring.boot.admin.username | Username for Http-Basic authentication. Default: empty |
+| spring.boot.admin.password | Password for Http-Basic authentication. Default: empty |
 | spring.boot.admin.period | Time period for registration repeat.<br>Default: 10000 |
 | spring.boot.admin.client.url | Client-management-URL to register with. Can be overriden in case the reachable URL is different (e.g. Docker). Must be unique in registry.<br>Default: http://_hostname_:_${management.port}_/_${management.context-path}_ |
 | spring.boot.admin.client.name | Name to register with. Defaults to the ApplicationContexts name. Only set when it should differ.<br>Default: _${spring.application.name}_ if set, spring-boot-application otherwise. |
