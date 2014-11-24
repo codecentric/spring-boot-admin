@@ -57,7 +57,7 @@ public class SpringBootAdminRegistrator {
 			ResponseEntity<Application> response = template.postForEntity(adminUrl, app, Application.class);
 
 			if (response.getStatusCode().equals(HttpStatus.CREATED)) {
-				LOGGER.info("Application registered itself as {}", response.getBody());
+				LOGGER.debug("Application registered itself as {}", response.getBody());
 				return true;
 			}
 			else if (response.getStatusCode().equals(HttpStatus.CONFLICT)) {

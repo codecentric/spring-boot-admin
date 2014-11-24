@@ -43,7 +43,7 @@ public class ApplicationRegistry {
 
 	/**
 	 * Register application.
-	 * 
+	 *
 	 * @param app The Application.
 	 */
 	public Application register(Application app) {
@@ -61,7 +61,7 @@ public class ApplicationRegistry {
 			LOGGER.info("New Application {} registered ", newApp);
 		} else {
 			if ((app.getUrl().equals(oldApp.getUrl()) && app.getName().equals(oldApp.getName()))) {
-				LOGGER.info("Application {} refreshed", newApp);
+				LOGGER.debug("Application {} refreshed", newApp);
 			} else {
 				LOGGER.warn("Application {} not registered because of conflict with {}", newApp, oldApp);
 				throw new ApplicationRegistryConflictException(oldApp, app);
@@ -72,7 +72,7 @@ public class ApplicationRegistry {
 
 	/**
 	 * Checks the syntax of the given URL.
-	 * 
+	 *
 	 * @param url The URL.
 	 * @return true, if valid.
 	 */
@@ -87,7 +87,7 @@ public class ApplicationRegistry {
 
 	/**
 	 * Get a list of all registered applications.
-	 * 
+	 *
 	 * @return List.
 	 */
 	public Collection<Application> getApplications() {
@@ -96,7 +96,7 @@ public class ApplicationRegistry {
 
 	/**
 	 * Get a list of all registered applications.
-	 * 
+	 *
 	 * @return List.
 	 */
 	public Collection<Application> getApplicationsByName(String name) {
@@ -105,7 +105,7 @@ public class ApplicationRegistry {
 
 	/**
 	 * Get a specific application inside the registry.
-	 * 
+	 *
 	 * @param id Id.
 	 * @return Application.
 	 */
@@ -115,7 +115,7 @@ public class ApplicationRegistry {
 
 	/**
 	 * Remove a specific application from registry
-	 * 
+	 *
 	 * @param id
 	 * @return the unregistered Application
 	 */
