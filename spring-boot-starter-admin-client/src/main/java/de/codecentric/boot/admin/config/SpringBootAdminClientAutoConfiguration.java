@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
+import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -32,8 +33,10 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.handler.AbstractHandlerMapping;
+import org.springframework.web.servlet.mvc.ServletWrappingController;
 
 import de.codecentric.boot.admin.actuate.LogfileMvcEndpoint;
 import de.codecentric.boot.admin.services.SpringBootAdminRegistrator;
@@ -98,9 +101,12 @@ public class SpringBootAdminClientAutoConfiguration {
 		return endpointCorsFilter;
 	}
 
+	/**
+	 * This method applies several workarounds to apply CORS-Headers corretcly to all Endpoints
+	 */
 	@Bean
 	public ApplicationListener<EmbeddedServletContainerInitializedEvent> listener() {
-		return new  ApplicationListener<EmbeddedServletContainerInitializedEvent>() {
+		return new ApplicationListener<EmbeddedServletContainerInitializedEvent>() {
 			@Override
 			public void onApplicationEvent(EmbeddedServletContainerInitializedEvent event) {
 				// We have to register the CORSHandler in this nasty way.
@@ -114,11 +120,34 @@ public class SpringBootAdminClientAutoConfiguration {
 						interceptorsField.setAccessible(true);
 						@SuppressWarnings("unchecked")
 						List<HandlerInterceptor> adaptedInterceptors = (List<HandlerInterceptor>) interceptorsField
-						.get(endpointMappingHandler);
+								.get(endpointMappingHandler);
 						adaptedInterceptors.add(endpointCorsFilter());
 					}
 					catch (Exception ex) {
 						throw new RuntimeException("Couldn't register CORS-Filter for endpoints", ex);
+					}
+				}
+
+				// Options request must be forwarded to jolokias servlet
+				// @see https://github.com/spring-projects/spring-boot/issues/1987
+				for (DispatcherServlet dispatcher : event.getApplicationContext()
+						.getBeansOfType(DispatcherServlet.class).values()) {
+					dispatcher.setDispatchOptionsRequest(true);
+				}
+
+				// Options request must be forwarded to jolokias servlet
+				// @see https://github.com/spring-projects/spring-boot/issues/1987
+				// Since JolokiasMvcEndpoint can't be substituted easily this workaround is needed
+				for (JolokiaMvcEndpoint jolokiaMvcEndpoint : event.getApplicationContext()
+						.getBeansOfType(JolokiaMvcEndpoint.class).values()) {
+					try {
+						Field controllerField = JolokiaMvcEndpoint.class.getDeclaredField("controller");
+						controllerField.setAccessible(true);
+						ServletWrappingController controller = (ServletWrappingController) controllerField
+								.get(jolokiaMvcEndpoint);
+						controller.setSupportedMethods("GET", "HEAD", "POST", "OPTIONS");
+					} catch (Exception ex) {
+						throw new RuntimeException("Couldn't reconfigure servletWrappingController for Jolokia", ex);
 					}
 				}
 			}
