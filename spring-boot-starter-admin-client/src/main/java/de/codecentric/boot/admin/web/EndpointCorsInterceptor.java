@@ -21,10 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-/**
- * Request filter to allow Cross-Origin Resource Sharing.
- */
-public class SimpleCORSHandlerInterceptor extends HandlerInterceptorAdapter {
+public class EndpointCorsInterceptor extends HandlerInterceptorAdapter {
 
 	// Configurable origin for CORS - default: * (all)
 	@Value("${http.filter.cors.origin:*}")
@@ -33,12 +30,27 @@ public class SimpleCORSHandlerInterceptor extends HandlerInterceptorAdapter {
 	@Value("${http.filter.cors.headers:Origin, X-Requested-With, Content-Type, Accept}")
 	private String headers;
 
-
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		response.setHeader("Access-Control-Allow-Origin", origin);
 		response.setHeader("Access-Control-Allow-Headers", headers);
-		return true;
+		return super.preHandle(request, response, handler);
+	}
+
+	public void setOrigin(String origin) {
+		this.origin = origin;
+	}
+
+	public String getOrigin() {
+		return origin;
+	}
+
+	public String getHeaders() {
+		return headers;
+	}
+
+	public void setHeaders(String headers) {
+		this.headers = headers;
 	}
 
 }
