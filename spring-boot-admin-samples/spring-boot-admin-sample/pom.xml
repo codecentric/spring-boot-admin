@@ -13,6 +13,10 @@
 			<groupId>de.codecentric</groupId>
 			<artifactId>spring-boot-admin-server</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>de.codecentric</groupId>
+			<artifactId>spring-boot-admin-server-ui</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>${project.artifactId}</finalName>

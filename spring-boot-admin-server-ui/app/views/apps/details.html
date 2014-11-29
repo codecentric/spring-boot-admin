@@ -1,0 +1,178 @@
+<div class="alert alert-error" ng-if="error">
+	<b>Error:</b> {{ error }}
+</div>
+
+<div class="container-fluid" style="margin: 0 auto; width: 960px;">
+	<div class="span6">
+	    <table class="table">
+	     <thead><tr><th>Application</th><th><small class="pull-right"><a href="{{ application.url }}/info">raw JSON</a></small></th></tr></thead>
+	    <tbody>
+	      <tr ng-repeat="(key, value) in info" >
+	        <td>{{ key }}</td><td>{{ value }}</td>
+	      </tr>
+	    </tbody>
+	   </table>
+	</div>
+	
+	 <div class="span6">
+		<table class="table">
+			<thead>
+				<tr><th>Health Checks</th><th><small class="pull-right"><a href="{{ application.url }}/health">raw JSON</a></small></th></tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Application</td><td><span class="status-{{health.status}}">{{ health.status }}</span></td>
+				</tr>
+			
+				<tr ng-if="health.db">
+					<td>Datasources</td>
+					<td><span class="status-{{health.db.status}}">{{ health.db.status }}</span><br>
+						{{health.db.database}}
+					</td>
+				</tr>
+				<tr ng-if="health.db.error" colspan="2" class="alert alert-error" >{{ health.db.error }}</td></tr>
+		
+				<tr ng-repeat-start="(dbname, db) in health.db" ng-if="dbname != 'status' && dbname != 'error' && dbname != 'database' && dbname != 'hello'" >
+					<td>{{ dbname | capitalize }} Datasource</td><td><span class="status-{{db.status}}">{{ db.status }}</span><br>
+						{{db.database}}
+					</td>
+				</tr>
+				<tr ng-repeat-end ng-if="db.error"><td colspan="2" class="alert alert-error" >{{ db.error }}</td></tr>
+				<tr ng-if="health.diskSpace">
+					<td>Diskspace</td><td><span class="status-{{health.diskSpace.status}}">{{ health.diskSpace.status }}</span><br>
+						{{ health.diskSpace.free | humanBytes }} free / {{ health.diskSpace.threshold | humanBytes }} threshold
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+	
+	<div class="span6">
+	  <table class="table">
+	    <thead><tr><th colspan="2">Memory</th></tr></thead>
+	    <tbody>
+	      <tr>
+	        <td colspan="2">
+	          <span>Total Memory ({{ metrics['mem.used'] | humanBytes:'K' }} / {{ metrics['mem'] | humanBytes:'K' }})</span>
+	          <div class="progress" style="margin-bottom: 0px;">
+	            <div class="bar" style="width:{{ memPercentage = (metrics['mem.used'] / metrics['mem'] * 100 | number:2) }}%;"
+	               ng-class="{'bar-success': memPercentage < 75, 'bar-warning': memPercentage >= 75 && memPercentage < 95, 'bar-danger': memPercentage >= 95}">
+	              {{memPercentage}}%
+	            </div>
+	          </div>
+	        </td>
+	      </tr>
+	      <tr>
+	        <td colspan="2">
+	          <span>Heap Memory ({{ metrics['heap.used'] | humanBytes:'K' }} / {{ metrics['heap.committed'] | humanBytes:'K' }})</span>
+	          <div class="progress" style="margin-bottom: 0px;">
+	            <div class="bar" style="width:{{ heapPercentage = (metrics['heap.used'] / metrics['heap.committed'] * 100 | number:2) }}%;"
+	               ng-class="{'bar-success': heapPercentage < 75, 'bar-warning': heapPercentage >= 75 && heapPercentage < 95, 'bar-danger': heapPercentage >= 95}">
+	              {{heapPercentage}}%
+	            </div>
+	          </div>
+	        </td>
+	      </tr>
+	      <tr>
+	        <td>Initial Heap (-Xms)</td>
+	        <td>{{metrics['heap.init'] | humanBytes:'K' }}</td>
+	      </tr>
+	      <tr>
+	        <td>Maximum Heap (-Xmx)</td>
+	        <td>{{metrics['heap'] | humanBytes:'K' }}</td>
+	      </tr>
+	   </table>
+	</div>
+	
+	<div class="span6">
+	  <table class="table">
+	    <thead><tr><th>JVM</th><th><small class="pull-right"><a href="{{ application.url }}/metrics">raw JSON</a></small></th></tr></thead>
+	    <tbody>
+	      <tr ng-if="metrics['systemload.average'] != null && metrics['systemload.average'] >= 0.0">
+	        <td colspan="2">Systemload (last minute average)
+	        	<div class="progress" style="margin-bottom: 0px;">
+	            	<div class="bar" style="width:{{ metrics['systemloadverage'] * 100 | number:2 }}%;"
+	               		ng-class="{'bar-success': metrics['systemload.average'] < 0.75, 'bar-warning': metrics['systemload.average'] >= 0.75 && metrics['systemload.average'] < 0.95, 'bar-danger': metrics['systemload.average'] >= 0.95}">
+	              		{{metrics['systemload.average'] * 100 | number:0}}%
+	            	</div>
+	          	</div>
+	        </td>
+	      </tr>
+	      <tr>
+	        <td>Uptime</td>
+	        <td>{{ metrics['uptime'] + ticks | timeInterval }} [d:h:m:s]</td>
+	      </tr>
+	      <tr>
+	        <td>Available Processors</td>
+	        <td>{{ metrics['processors'] }}</td>
+	      </tr>
+	      <tr>
+	        <td>Current loaded Classes</td>
+	        <td>{{ metrics['classes']}}</td>
+	      </tr>
+	      <tr>
+	        <td> Total loaded Classes</td>
+	        <td>{{ metrics['classes.loaded']}}</td>
+	      </tr>
+	      <tr>
+	        <td> Unloaded Classes</td>
+	        <td>{{ metrics['classes.unloaded']}}</td>
+	      </tr>
+	      <tr>
+	        <td> Threads</td>
+	        <td>{{ metrics['threads'] }} total / {{ metrics['threads.daemon'] }} daemon / {{ metrics['threads.peak'] }} peak </td>
+	      </tr>
+	    </tbody>
+	  </table>
+	</div>
+	
+	<div class="span6">
+	  <table class="table">
+	    <thead><tr><th colspan="2">Garbage Collection</th></tr></thead>
+	      <tr ng-repeat-start="(name, value) in gcInfos track by name">
+	        <td>{{name | capitalize}} GC Count</td>
+	        <td>{{value.count}}</td>
+	      </tr>
+	      <tr ng-repeat-end>
+	        <td>{{name | capitalize}} GC Time</td>
+	        <td>{{value.time}} ms</td>
+	      </tr>
+	    </tbody>
+	   </table>
+	</div>
+	
+	<div class="span6" ng-show="hasDatasources">
+	  <table class="table">
+	    <thead><tr><th colspan="2">Datasources</th></tr></thead>
+	      <tr ng-repeat = "(name, value) in datasources track by name">
+	         <td colspan="2">
+	          <span>{{name | capitalize}} Datasource Connections (active: {{ value.active }})</span>
+	          <div class="progress" style="margin-bottom: 0px;">
+	            <div class="bar" style="width:{{ value.usage * 100 | number:2 }}%;"
+	               ng-class="{'bar-success': value.usage < 0.75, 'bar-warning': value.usage >= 0.75 && value.usage < 0.95, 'bar-danger': value.usage >= 0.95}">
+	              {{value.usage * 100 | number}}%
+	            </div>
+	          </div>
+	        </td>
+	      </tr>
+	    </tbody>
+	   </table>
+	</div>
+	
+	<div class="span12">
+	  <div class="main-template">
+	    <div class="tab-pane active col-md-12">
+	      <ul class="nav nav-tabs">
+	        <li ui-sref-active="active"><a ui-sref="apps.details.metrics({id: application.id})">Metrics</a></li>
+	        <li ui-sref-active="active"><a ui-sref="apps.details.env({id: application.id})">Environment</a></li>
+	        <li ui-sref-active="active"><a ui-sref="apps.details.props({id: application.id})">Properties</a></li>
+	        <li ui-sref-active="active"><a ui-sref="apps.details.classpath({id: application.id})">Classpath</a></li>
+	      </ul>
+	      <div class="tab-content" style="overflow: visible;">
+	        <div ui-view></div>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+</div>

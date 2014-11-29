@@ -1,0 +1,253 @@
+/** main classes **/
+
+body {
+  background-color: #f1f1f1;
+  font-family: "Varela Round",sans-serif;
+}
+
+.container-fluid {
+  margin: 0 auto;
+}
+
+.main-body--wrapper {
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+.center-block {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+a {
+    color: #5fa134;
+}
+
+a:hover,
+a:active {
+    color: #5fa134;
+}
+
+pre {
+	white-space: pre;
+}
+
+/** HEADER **/
+.header--navbar {
+  margin: 0;
+}
+.header--navbar .navbar-inner {
+  font-family: Montserrat,sans-serif;
+  position: absolute;
+  z-index: 999;
+  background-image: none;
+  filter: none;
+  background-color: #34302d;
+  border: none;
+  border-top: 4px solid #6db33f;
+  box-shadow: none;
+  position: relative;
+  border-radius: 0;
+  padding: 0;
+}
+.header--navbar .navbar-inner .spring-logo--container {
+  display: inline-block;
+}
+.header--navbar .navbar-inner .spring-logo--container .spring-logo {
+  margin: 12px 0 6px;
+  width: 160px;
+  height: 46px;
+  display: inline-block;
+  text-decoration: none;
+}
+.header--navbar .navbar-inner .navbar-link.active a {
+  background-color: #6db33f;
+  box-shadow: none;
+}
+.header--navbar .navbar-inner .navbar-link a {
+  color: #eeeeee;
+  text-transform: uppercase;
+  text-shadow: none;
+  font-size: 14px;
+  line-height: 14px;
+  padding: 28px 20px;
+  transition: all 0.15s;
+  -webkit-transition: all 0.15s;
+  -moz-transition: all 0.15s;
+  -o-transition: all 0.15s;
+  -ms-transition: all 0.15s;
+}
+.header--navbar .navbar-inner .navbar-link:hover a {
+  color: #eeeeee;
+  background-color: #6db33f;
+}
+.header--navbar .navbar-inner .navbar-link.nav-search {
+  padding: 20px 0 23px;
+}
+.header--navbar .navbar-inner .navbar-link.nav-search .navbar-search--icon {
+  color: #eeeeee;
+  font-size: 24px;
+  padding: 3px 16px 3px 18px;
+  cursor: pointer;
+}
+.header--navbar .navbar-inner .navbar-link.nav-search:hover .navbar-search--icon {
+  text-shadow: 0 0 10px #6db33f;
+}
+.header--navbar .navbar-inner .navbar-link.nav-search .search-input-close {
+  display: none;
+}
+.header--navbar .navbar-inner .navbar-link.nav-search.js-highlight {
+  background-color: #6db33f;
+}
+
+a.spring-logo {
+  background: url("../img/spring-logo.png") -1px -1px no-repeat;
+}
+
+a.spring-logo span {
+  display: block;
+  width: 160px;
+  height: 46px;
+  background: url("../img/spring-logo.png") -1px -48px no-repeat;
+  opacity: 0;
+  -moz-transition: opacity 0.12s ease-in-out;
+  -webkit-transition: opacity 0.12s ease-in-out;
+  -o-transition: opacity 0.12s ease-in-out;
+}
+
+a:hover.spring-logo span {
+  opacity: 1;
+}
+
+/** FOOTER **/
+.footer {
+  background-color: #34302d;
+  color: #eeeeee;
+  padding: 30px 0;
+}
+.footer a {
+  color: #6db33f;
+}
+
+/** LOGOS **/
+a.spring-boot-logo {
+  background: url("../img/platform-spring-boot.png") -1px -1px no-repeat;
+}
+
+a.spring-boot-logo span {
+  display: block;
+  width: 160px;
+  height: 50px;
+  background: url("../img/platform-spring-boot.png") 20px -6px no-repeat;
+}
+
+a:hover.spring-boot-logo span {
+  opacity: 1;
+}
+
+/** Status in Application Overview-View **/
+
+span.status-UP {
+	color: #00AA00;
+	font-weight: bold;
+}
+ 
+span.status-OFFLINE {
+	color: #000000;
+	font-weight: bold;
+}
+ 
+span.status-DOWN,
+span.status-OUT_OF_SERVICE {
+	color: #DD0000;
+	font-weight: bold;
+}
+ 
+span.status-UNKNOWN {
+	font-weight: bold;
+	color: #FF8800;
+}
+
+span.refresh {
+	display: block;
+	width: 16px;
+	height: 16px;
+	background: url("../img/refresh.gif")  no-repeat;
+}
+
+/** Headings and Tabs in Detail-View  **/
+.accordion-heading ,
+.accordion-heading > a,
+.accordion-heading > a:hover,
+.accordion-heading > a:focus,
+.nav-tabs > .active > a, 
+.nav-tabs > .active > a:hover, 
+.nav-tabs > .active > a:focus,
+.table > thead > tr > th {
+	background-color: #34302D; 
+	border-color: #34302D; 
+	color: #f1f1f1; 
+}
+
+.nav > li > a {
+  color: #838789;
+}
+
+.nav {
+  margin-bottom: 0;
+}
+
+/** highlighted rows on Detail-Environment-View **/
+.table tr.highlight > td {
+  background-color: #999 !important;
+  font-weight: bold;
+}
+
+/** Tabs-list in domain-section in JMX-View **/
+.tabs-left > ul {
+	max-width: 30%; 
+	overflow: hidden;
+}
+
+/** Metric Bars **/
+.bar-offset {
+    float: left; 
+    box-sizing: border-box; 
+    height: 100%;
+}
+
+.with-marks {
+    position: relative;
+}
+
+.bar-scale {
+    position: relative;
+    margin-top: -20px;
+    margin-bottom: 40px;
+}
+
+.pitch-line {
+    position: absolute;
+    width: 1px;
+    background-image: linear-gradient(to bottom, #333333 5px, transparent 5px);
+    background-repeat: repeat-x;
+}
+
+.value-mark {
+    position: absolute;
+    border-left: 1px solid #ee5f5b;
+    font-size: 12px;
+    color: #fff;
+    text-align: center;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+}
+
+.mark-current {
+    width: 1px;
+    height: 20px;
+    position: absolute; 
+    background-color: #dd514c;
+    background-image: linear-gradient(to bottom, #ee5f5b, #c43c35);
+    background-repeat: repeat-x;
+}

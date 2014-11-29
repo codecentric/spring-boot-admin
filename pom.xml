@@ -18,20 +18,12 @@
 	<properties>
 		<spring-boot.version>1.1.9.RELEASE</spring-boot.version>
 		<hazelcast.version>3.3.3</hazelcast.version>
-		<bootstrap.version>2.3.2</bootstrap.version>
-		<jquery.version>1.11.0</jquery.version>
-		<angularjs.version>1.2.12</angularjs.version>
-		<angular-ui-router.version>0.2.10-1</angular-ui-router.version>
-		<angular-ui-bootstrap.version>0.8.0</angular-ui-bootstrap.version>
-		<angularjs-nvd3-directives.version>0.0.7-1</angularjs-nvd3-directives.version>
-		<d3js.version>3.4.11</d3js.version>
-		<nvd3.version>1.1.15-beta</nvd3.version>
-		<jolokia-js.version>1.2.2</jolokia-js.version>
 		<main.basedir>${basedir}</main.basedir>
 		<passphrase>${gpg.passphrase}</passphrase>
 	</properties>
 	<modules>
 		<module>spring-boot-admin-server</module>
+		<module>spring-boot-admin-server-ui</module>
 		<module>spring-boot-admin-samples</module>
 		<module>spring-boot-starter-admin-client</module>
 	</modules>
@@ -113,6 +105,11 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.17</version>
 				</plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>1.3.2</version>
+                </plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -165,6 +162,11 @@
 			</dependency>
 			<dependency>
 				<groupId>de.codecentric</groupId>
+				<artifactId>spring-boot-admin-server-ui</artifactId>
+				<version>1.1.1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>de.codecentric</groupId>
 				<artifactId>spring-boot-starter-admin-client</artifactId>
 				<version>1.1.1-SNAPSHOT</version>
 			</dependency>
@@ -197,51 +199,6 @@
 				<groupId>com.hazelcast</groupId>
 				<artifactId>hazelcast-spring</artifactId>
 				<version>${hazelcast.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.webjars</groupId>
-				<artifactId>bootstrap</artifactId>
-				<version>${bootstrap.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.webjars</groupId>
-				<artifactId>jquery</artifactId>
-				<version>${jquery.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.webjars</groupId>
-				<artifactId>angularjs</artifactId>
-				<version>${angularjs.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.webjars</groupId>
-				<artifactId>angular-ui-router</artifactId>
-				<version>${angular-ui-router.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.webjars</groupId>
-				<artifactId>angular-ui-bootstrap</artifactId>
-				<version>${angular-ui-bootstrap.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.webjars</groupId>
-				<artifactId>angularjs-nvd3-directives</artifactId>
-				<version>${angularjs-nvd3-directives.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.webjars</groupId>
-				<artifactId>d3js</artifactId>
-				<version>${d3js.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.webjars</groupId>
-				<artifactId>nvd3</artifactId>
-				<version>${nvd3.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.webjars</groupId>
-				<artifactId>jolokia.js</artifactId>
-				<version>${jolokia-js.version}</version>
 			</dependency>
 			<!-- Test -->
 			<dependency>
