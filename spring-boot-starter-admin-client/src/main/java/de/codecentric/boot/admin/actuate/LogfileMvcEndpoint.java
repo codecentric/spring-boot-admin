@@ -109,12 +109,12 @@ public class LogfileMvcEndpoint implements MvcEndpoint {
 
 	@RequestMapping(method = RequestMethod.HEAD)
 	@ResponseBody
-	public ResponseEntity<Void> available() {
+	public ResponseEntity<Object> available() {
 		if (isAvailable()) {
-			return new ResponseEntity<Void>(HttpStatus.OK);
+			return new ResponseEntity<Object>(HttpStatus.OK);
 		}
 		else {
-			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
 		}
 	}
 
