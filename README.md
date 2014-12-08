@@ -25,7 +25,7 @@ Add the following dependency to your pom.xml.
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-server</artifactId>
-	<version>1.0.6</version>
+	<version>1.1.0</version>
 </dependency>
 ```
 
@@ -51,7 +51,7 @@ Each application that want to register itself to the admin application has to in
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-starter-admin-client</artifactId>
-	<version>1.0.6</version>
+	<version>1.1.0</version>
 </dependency>
 ```
 
