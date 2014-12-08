@@ -1,0 +1,19 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:hz="http://www.hazelcast.com/schema/spring"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd 
+	http://www.hazelcast.com/schema/spring 
+	http://www.hazelcast.com/schema/spring/hazelcast-spring-3.3.xsd">
+
+	<hz:config id="hazelcastConfig">
+		<hz:network port="5701">
+			<hz:join>
+				<hz:multicast enabled="false"/>
+				<hz:tcp-ip enabled="true">
+					<hz:member>localhost</hz:member>
+				</hz:tcp-ip>
+			</hz:join>
+		</hz:network>
+	</hz:config>
+</beans>

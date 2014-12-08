@@ -33,6 +33,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -51,19 +52,21 @@ public class AdminApplicationHazelcastTest {
 	@Configuration
 	@EnableAutoConfiguration
 	@EnableAdminServer
+	@ImportResource("classpath:hazelcast-test.xml")
 	public static class TestAdminApplication {
 	}
 
 	private RestTemplate template = new TestRestTemplate();
 	private EmbeddedWebApplicationContext instance1;
 	private EmbeddedWebApplicationContext instance2;
-
+	
 	@Before
-	public void setup() {
+	public void setup() throws InterruptedException {
+		System.setProperty("hazelcast.wait.seconds.before.join", "0");
 		instance1 = (EmbeddedWebApplicationContext) SpringApplication.run(TestAdminApplication.class, new String[] {
-				"--server.port=0", "--spring.jmx.enabled=false" });
+				"--server.port=0", "--spring.jmx.enabled=false", "--spring.boot.admin.hazelcast.enable=true" });
 		instance2 = (EmbeddedWebApplicationContext) SpringApplication.run(TestAdminApplication.class, new String[] {
-				"--server.port=0", "--spring.jmx.enabled=false" });
+				"--server.port=0", "--spring.jmx.enabled=false", "--spring.boot.admin.hazelcast.enable=true" });
 	}
 
 	@After
@@ -73,7 +76,6 @@ public class AdminApplicationHazelcastTest {
 	}
 
 	@Test
-	@Ignore("Testcase does not work properly in all environments, so it's ignored in the build.")
 	public void test() {
 		Application app = new Application("http://127.0.0.1", "Hazelcast Test");
 		Application app2 = new Application("http://127.0.0.1:2", "Hazelcast Test");

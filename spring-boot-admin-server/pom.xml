@@ -31,6 +31,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast-spring</artifactId>
+			<optional>true</optional>
+		</dependency>			
+		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>bootstrap</artifactId>
 		</dependency>
