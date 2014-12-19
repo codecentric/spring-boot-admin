@@ -21,7 +21,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.boot.admin.client", ignoreUnknownFields = false)
 public class AdminClientProperties {
 
-	@Value("http://#{T(java.net.InetAddress).localHost.canonicalHostName}:${management.port:${server.port:8080}}${server.contextPath:/}${management.context-path:/}")
+	@Value("http://#{T(java.net.InetAddress).localHost.canonicalHostName}:${management.port:${server.port:8080}}${server.context-path:/}${management.context-path:/}")
 	private String url;
 
 	@Value("${spring.application.name:spring-boot-application}")
