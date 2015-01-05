@@ -1,0 +1,72 @@
+<div class="alert alert-error" ng-if="error">
+	<b>Error:</b> {{ error }}
+</div>
+<div class="container">
+	<div class="row">
+		<div class="span12 text-center" >
+			<form>
+				<button class="btn" ng-click="dumpThreads()"><i class="icon-screenshot"></i> Dump all threads!</button>
+			</form>
+		</div>
+	</div>
+	<div class="row" ng-show="threadStats" >	
+		<div class="span12">
+			<div class="progress">
+				<div ng-if="threadStats.NEW  &gt; 0" class="bar bar-info" style="width:{{ threadStats.NEW / threadStats.total * 100 | number:2 }}%;">
+		              New {{ threadStats.NEW }}
+				</div>
+				<div ng-if="threadStats.RUNNABLE &gt; 0" class="bar bar-success" style="width:{{ threadStats.RUNNABLE / threadStats.total * 100 | number:2 }}%;">
+		              Runnable {{ threadStats.RUNNABLE }}
+				</div>
+				<div ng-if="threadStats.BLOCKED &gt; 0" class="bar bar-danger" style="width:{{ threadStats.BLOCKED / threadStats.total * 100 | number:2 }}%;">
+		              Blocked {{ threadStats.BLOCKED }}
+				</div>
+				<div ng-if="threadStats.WAITING &gt; 0" class="bar bar-warning" style="width:{{ threadStats.WAITING / threadStats.total * 100 | number:2 }}%;">
+		              Waiting {{ threadStats.WAITING }}
+				</div>
+				<div ng-if="threadStats.TIMED_WAITING &gt; 0" class="bar bar-warning bar-striped" style="width:{{ threadStats.TIMED_WAITING / threadStats.total * 100 | number:2 }}%;">
+		             Timed waiting {{ threadStats.TIMED_WAITING }}
+				</div>
+				<div ng-if="threadStats.TERMINATED &gt; 0" class="bar bar-info" style="width:{{ threadStats.TERMINATED / threadStats.total * 100 | number:2 }}%;">
+		             Terminated {{ threadStats.TERMINATED }}
+				</div>
+			</div>
+		</div>
+	</div>	
+	<div class="row" ng-show="dump">
+		<div class="span12">	
+			<accordion close-others="true">
+				<accordion-group ng-repeat="thread in dump | orderBy:'threadName' track by thread.threadId">
+					<accordion-heading>
+						<small class="muted">{{thread.threadId}}</small>
+						{{thread.threadName}}
+						<span class="pull-right label" ng-class="{ 'label-info': thread.threadState == 'NEW', 'label-success': thread.threadState == 'RUNNABLE', 'label-important': thread.threadState == 'BLOCKED', 'label-warning': thread.threadState == 'TIMED_WAITING' ||  thread.threadState == 'WAITING', 'label-info': thread.threadState == 'TERMINATED'}">{{thread.threadState}}</span> <span class="label label-warning"  ng-if="thread.suspended">suspended</span>
+					</accordion-heading>
+					<div class="container">
+						<div class="row" >
+								<table class="span6">
+									<colgroup>
+										<col style="min-width: 10em;"/>
+									</colgroup>
+									<tr><td>Blocked count</td><td>{{thread.blockedCount}}</td></tr>
+									<tr><td>Blocked time</td><td>{{thread.blockedTime}}</td></tr>		
+									<tr><td>Waited count</td><td>{{thread.waitedCount}}</td></tr>
+									<tr><td>Waited time</td><td>{{thread.waitedTime}}</td></tr>
+								</table>
+								<table class="span6">
+									<colgroup>
+										<col style="min-width: 10em;"/>
+									</colgroup>
+									<tr><td>Lock name</td><td style="word-break: break-word;">{{thread.lockName}}</td></tr>
+									<tr><td>Lock owner id</td><td>{{thread.lockOwnerId}}</td></tr>				
+									<tr><td>Lock owner name</td><td style="word-break: break-word;">{{thread.lockOwnerName}}</td></tr>
+								</table>
+							</div>
+						</div>
+<pre style="overflow: auto; max-height: 20em" ng-if="thread.stackTrace"><span ng-repeat="el in thread.stackTrace">{{el.className}}.{{el.methodName}}({{el.fileName}}:{{el.lineNumber}}) <span class="label" ng-if="el.nativeMethod">native</span>
+</span></pre>
+				</accordion-group>
+			</accordion>
+		</div>
+	</div>
+</div>

@@ -21,16 +21,24 @@ This application provides a simple GUI to administrate Spring Boot applications 
 
 #### Server application
 Add the following dependency to your pom.xml.
-```
+```xml
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-server</artifactId>
-	<version>1.1.0</version>
+	<version>1.1.1</version>
+</dependency>
+```
+If you have built your own snapshot-release from git you have to enable the UI seperately by adding one additional dependency
+```xml
+<dependency>
+	<groupId>de.codecentric</groupId>
+	<artifactId>spring-boot-admin-server-ui</artifactId>
+	<version>1.1.1</version>
 </dependency>
 ```
 
 Create the Spring Boot Admin Server with only one single Annotation.
-```
+```java
 @Configuration
 @EnableAutoConfiguration
 @EnableAdminServer
@@ -47,11 +55,11 @@ For configuring Hazelcast support see [spring-boot-admin-server](https://github.
 
 #### Client applications
 Each application that want to register itself to the admin application has to include the [spring-boot-starter-admin-client](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-starter-admin-client) as dependency. This starter JAR includes some [AutoConfiguration](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#using-boot-auto-configuration "Spring Boot documentation") features that includes registering tasks, controller, etc.
-```
+```xml
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-starter-admin-client</artifactId>
-	<version>1.1.0</version>
+	<version>1.1.1</version>
 </dependency>
 ```
 
@@ -86,6 +94,7 @@ For all configuration options see [spring-boot-starter-admin-client](https://git
 <img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-jmx.png">
 
 #### Build
+In order to build spring-boot-admin you need to have node.js and npm on your PATH.
 
 ```shell
 mvn clean package

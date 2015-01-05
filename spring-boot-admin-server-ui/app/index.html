@@ -1,0 +1,52 @@
+<!doctype html>
+<html class="no-js">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Spring Boot Admin</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width">
+<link rel="shortcut icon" type="image/x-icon" href="img/favicon.png" />
+<link href="https://fonts.googleapis.com/css?family=Varela+Round|Montserrat:400,700" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="css/main.css" />
+</head>
+<body ng-app="springBootAdmin">
+	<script type="text/javascript">
+		// Work around Google font rendering issues in webkit browsers on Windows 7
+		if (navigator.userAgent.indexOf("NT 6.1") != -1) {
+			document.body.style.WebkitTextStroke = "0.5px";
+		}
+	</script>
+	<div class="viewport">
+		<header class="navbar header--navbar desktop-only">
+			<div class="navbar-inner">
+				<div class="container-fluid" >
+					<div class="spring-logo--container">
+						<a class="spring-logo" href="/"><span></span></a>
+					</div>
+					<div class="spring-logo--container">
+						<a class="spring-boot-logo" href="/"><span></span></a>
+					</div>
+					<ul class="nav pull-right">
+						<li class="navbar-link" ng-class="{active: $state.includes('apps') ||  $state.includes('overview')  }"><a ui-sref="overview">Applications</a></li>
+						<li class="navbar-link" ng-class="{active: $state.includes('about')}"><a ui-sref="about">About</a></li>
+					</ul>
+				</div>
+			</div>
+		</header>
+		<div class="container-fluid ">
+			<div class="main-body--wrapper">
+				<div ui-view></div>
+			</div>
+		</div>
+		<footer class="footer"> 
+			<div class="container">
+				Code licensed under <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache Open Source</a>
+			</div>
+		</footer>
+	</div>
+	
+	<script src="js/app.js" type="text/javascript"></script>
+</body>
+</html>
