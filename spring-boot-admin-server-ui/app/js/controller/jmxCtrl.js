@@ -102,20 +102,20 @@ module.exports = function ($scope, $modal, $log, application, ApplicationJMX) {
                     $scope.invocation = null;
                 });
         } else {
+            var signature = '(';
+            for (var i in op.args) {
+                if (i > 0) {
+                    signature += ',';
+                }
+                signature += op.args[i].type;
+                $scope.invocation.args[i] = null;
+            }
+            signature += ')';
+            $scope.invocation.opname = name + signature;
+
             if (op.args.length === 0) {
                 $scope.invoke();
             } else {
-                var signature = '(';
-                for (var i in op.args) {
-                    if (i > 0) {
-                        signature += ',';
-                    }
-                    signature += op.args[i].type;
-                    $scope.invocation.args[i] = null;
-                }
-                signature += ')';
-                $scope.invocation.opname = name + signature;
-
                 $modal.open({
                         templateUrl: 'invocationPrepareDialog.html',
                         scope: $scope
