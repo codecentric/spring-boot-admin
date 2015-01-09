@@ -117,9 +117,9 @@ module.exports = function ($scope, $modal, $log, application, ApplicationJMX) {
                 $scope.invoke();
             } else {
                 $modal.open({
-                        templateUrl: 'invocationPrepareDialog.html',
-                        scope: $scope
-                    })
+                    templateUrl: 'invocationPrepareDialog.html',
+                    scope: $scope
+                })
                     .result.then(function () {
                         $scope.invoke();
                     })
