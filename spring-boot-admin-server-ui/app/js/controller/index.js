@@ -5,6 +5,7 @@ var springBootAdmin = angular.module('springBootAdmin');
 
 springBootAdmin.controller('overviewCtrl', require('./overviewCtrl'));
 springBootAdmin.controller('appsCtrl', require('./appsCtrl'));
+springBootAdmin.controller('authCtrl', require('./authCtrl'));
 springBootAdmin.controller('detailsCtrl', require('./detailsCtrl'));
 springBootAdmin.controller('detailsMetricsCtrl', require('./detailsMetricsCtrl'));
 springBootAdmin.controller('detailsEnvCtrl', require('./detailsEnvCtrl'));

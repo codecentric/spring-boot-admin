@@ -38,8 +38,10 @@ require('./controller');
 require('./service');
 require('./filter');
 require('./directive');
+require('./interceptor');
 
-springBootAdmin.config(function ($stateProvider, $urlRouterProvider) {
+springBootAdmin.config(function ($stateProvider, $urlRouterProvider, $httpProvider) {
+    $httpProvider.interceptors.push('AuthInterceptor');
     $urlRouterProvider
         .when('/', '/overview')
         .otherwise('/');
@@ -53,6 +55,11 @@ springBootAdmin.config(function ($stateProvider, $urlRouterProvider) {
         .state('about', {
             url: '/about',
             templateUrl: 'views/about.html'
+        })
+        .state('auth', {
+            url: '/auth',
+            templateUrl: 'views/auth.html',
+            controller: 'authCtrl'
         })
         .state('apps', {
             abstract: true,
