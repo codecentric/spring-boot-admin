@@ -17,6 +17,6 @@
 
 module.exports = function ($http) {
     this.getDump = function (app) {
-        return $http.get(app.url + '/dump/');
+        return $http.get(app.url + '/dump');
     };
 };

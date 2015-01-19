@@ -17,7 +17,7 @@
 
 module.exports = function ($http) {
     this.getInfo = function (app) {
-        return $http.get(app.url + '/info/')
+        return $http.get(app.url + '/info')
             .success(function (response) {
                 app.version = response.version;
                 delete response.version;
@@ -28,7 +28,7 @@ module.exports = function ($http) {
             });
     };
     this.getHealth = function (app) {
-        return $http.get(app.url + '/health/')
+        return $http.get(app.url + '/health')
             .success(function (response) {
                 app.status = response.status;
             })
@@ -43,7 +43,7 @@ module.exports = function ($http) {
             });
     };
     this.getLogfile = function (app) {
-        return $http.head(app.url + '/logfile/')
+        return $http.head(app.url + '/logfile')
             .success(function () {
                 app.providesLogfile = true;
             })

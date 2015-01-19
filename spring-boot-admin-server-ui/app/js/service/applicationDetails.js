@@ -17,18 +17,18 @@
 
 module.exports = function ($http) {
     this.getInfo = function (app) {
-        return $http.get(app.url + '/info/');
+        return $http.get(app.url + '/info');
     };
 
     this.getMetrics = function (app) {
-        return $http.get(app.url + '/metrics/');
+        return $http.get(app.url + '/metrics');
     };
 
     this.getEnv = function (app) {
-        return $http.get(app.url + '/env/');
+        return $http.get(app.url + '/env');
     };
 
     this.getHealth = function (app) {
-        return $http.get(app.url + '/health/');
+        return $http.get(app.url + '/health');
     };
 };
