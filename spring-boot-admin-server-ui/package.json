@@ -7,14 +7,12 @@
     "test": "./node_modules/gulp/bin/gulp.js"
   },
   "dependencies": {
-    "angular": "~1.2.27",
+    "es5-shim": "^3.0.2",
+    "jquery": "~2.1.1",
+    "angular-ui-router": "~0.2.11",
     "angular-resource": "~1.2.27",
     "angular-route": "~1.2.27",
-    "angular-ui-router": "~0.2.11",
-    "es5-shim": "^3.0.2",
-    "gulp-cli": "^0.1.5",
-    "gulp-install": "^0.2.0",
-    "jquery": "~2.1.1"
+    "angular": "~1.2.27"
   },
   "devDependencies": {
     "browserify": "^3.44.2",
