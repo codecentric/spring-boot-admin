@@ -5,6 +5,7 @@ var springBootAdmin = angular.module('springBootAdmin');
 
 springBootAdmin.factory('Applications', require('./applications'));
 springBootAdmin.factory('Application', require('./application'));
+springBootAdmin.factory('Auth', require('./auth'));
 
 springBootAdmin.service('ApplicationOverview', require('./applicationOverview'));
 springBootAdmin.service('ApplicationDetails', require('./applicationDetails'));
