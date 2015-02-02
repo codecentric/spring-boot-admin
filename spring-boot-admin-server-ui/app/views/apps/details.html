@@ -90,14 +90,8 @@
 	    <thead><tr><th>JVM</th><th><small class="pull-right"><a href="{{ application.url }}/metrics">raw JSON</a></small></th></tr></thead>
 	    <tbody>
 	      <tr ng-if="metrics['systemload.average'] != null && metrics['systemload.average'] >= 0.0">
-	        <td colspan="2">Systemload (last minute average)
-	        	<div class="progress" style="margin-bottom: 0px;">
-	            	<div class="bar" style="width:{{ metrics['systemloadverage'] * 100 | number:2 }}%;"
-	               		ng-class="{'bar-success': metrics['systemload.average'] < 0.75, 'bar-warning': metrics['systemload.average'] >= 0.75 && metrics['systemload.average'] < 0.95, 'bar-danger': metrics['systemload.average'] >= 0.95}">
-	              		{{metrics['systemload.average'] * 100 | number:0}}%
-	            	</div>
-	          	</div>
-	        </td>
+	        <td>Systemload</td>
+	        <td>{{metrics['systemload.average'] | number:2}} (last min. &#x2300; runq-sz)</td>
 	      </tr>
 	      <tr>
 	        <td>Uptime</td>
