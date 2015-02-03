@@ -190,6 +190,22 @@ span.refresh {
 	color: #f1f1f1; 
 }
 
+.sortable {
+  cursor: pointer;
+}
+
+.sorted-ascending,
+.sorted-descending {
+  color: #6db33f;
+}
+
+.sorted-ascending::after {
+    content: " \25b2";
+}
+.sorted-descending::after {
+    content: " \25bc";
+}
+
 .nav > li > a {
   color: #838789;
 }

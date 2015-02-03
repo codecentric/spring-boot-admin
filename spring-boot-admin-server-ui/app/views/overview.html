@@ -4,14 +4,17 @@
 <table class="table table-striped">
 	<thead>
 		<tr>
-			<th>Application / URL</th>
-			<th>Version</th>
+			<th><span class="sortable" ng-class="orderByCssClass('name')" ng-click="orderBy('name')">Application</span>
+			    /
+			    <span class="sortable" ng-class="orderByCssClass('url')" ng-click="orderBy('url')">URL</span>
+			</th>
+			<th><span class="sortable" ng-class="orderByCssClass('version')" ng-click="orderBy('version')">Version</span></th>
 			<th>Info</th>
-			<th colspan="2">Status</th>
+			<th colspan="2"><span class="sortable" ng-class="orderByCssClass('status')" ng-click="orderBy('status')">Status</span></th>
 		</tr>
 	</thead>
 	<tbody>
-		<tr ng-repeat="application in applications track by application.id">
+		<tr ng-repeat="application in applications|orderBy:order.column:order.descending track by application.id">
 			<td>{{ application.name }}<br/><span class="muted">{{ application.url }}</span></td>
 			<td>{{ application.version }}</td>
 			<td><span ng-repeat="(name, value) in application.info track by name">{{name}}: {{value}}<br></span></td>

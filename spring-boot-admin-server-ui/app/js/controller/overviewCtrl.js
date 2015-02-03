@@ -63,4 +63,26 @@ module.exports = function ($scope, $location, $interval, $q, Applications, Appli
     $interval(function () {
         $scope.loadData();
     }, 30000);
+
+    $scope.order = {
+        column: 'name',
+        descending: false
+    };
+
+    $scope.orderBy = function (column) {
+        if (column === $scope.order.column) {
+            $scope.order.descending = !$scope.order.descending;
+        } else {
+            $scope.order.column = column;
+            $scope.order.descending = false;
+        }
+    };
+
+    $scope.orderByCssClass = function (column) {
+        if (column === $scope.order.column) {
+            return 'sorted-' + ($scope.order.descending ? 'descending' : 'ascending');
+        } else {
+            return '';
+        }
+    };
 };
