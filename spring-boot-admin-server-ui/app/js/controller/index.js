@@ -13,3 +13,4 @@ springBootAdmin.controller('detailsClasspathCtrl', require('./detailsClasspathCt
 springBootAdmin.controller('loggingCtrl', require('./loggingCtrl'));
 springBootAdmin.controller('jmxCtrl', require('./jmxCtrl'));
 springBootAdmin.controller('threadsCtrl', require('./threadsCtrl'));
+springBootAdmin.controller('traceCtrl', require('./traceCtrl'));

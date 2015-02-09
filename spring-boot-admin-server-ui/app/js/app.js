@@ -107,6 +107,11 @@ springBootAdmin.config(function ($stateProvider, $urlRouterProvider) {
             url: '/threads',
             templateUrl: 'views/apps/threads.html',
             controller: 'threadsCtrl'
+        })
+        .state('apps.trace', {
+            url: '/trace',
+            templateUrl: 'views/apps/trace.html',
+            controller: 'traceCtrl'
         });
 });
 springBootAdmin.run(function ($rootScope, $state) {

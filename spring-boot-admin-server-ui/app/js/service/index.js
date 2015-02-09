@@ -14,3 +14,4 @@ springBootAdmin.service('Abbreviator', require('./abbreviator'));
 springBootAdmin.service('jolokia', require('./jolokia'));
 springBootAdmin.service('MetricsHelper', require('./metricsHelper'));
 springBootAdmin.service('ApplicationThreads', require('./applicationThreads'));
+springBootAdmin.service('ApplicationTrace', require('./applicationTrace'));
