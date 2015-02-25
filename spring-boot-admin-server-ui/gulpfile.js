@@ -161,7 +161,11 @@ gulp.task('backend-server', shell.task([
 ]));
 
 gulp.task('server', ['browserify', 'copy'], function () {
-    gulp.start('backend-server');
+    if (argv.nobackend === true) {
+        process.stdout.write('Running UI only\n');
+    } else {
+        gulp.start('backend-server');
+    }
     connect.server({
         root: target('/dist'),
         livereload: liveReload,

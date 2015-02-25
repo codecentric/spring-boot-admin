@@ -36,6 +36,7 @@ import de.codecentric.boot.admin.registry.ApplicationRegistryConflictException;
  * REST controller for controlling registration of managed applications.
  */
 @RestController
+@RequestMapping(value = "/api/applications")
 public class RegistryController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RegistryController.class);
@@ -48,11 +49,11 @@ public class RegistryController {
 
 	/**
 	 * Register an application within this admin application.
-	 * 
+	 *
 	 * @param app The application infos.
 	 * @return The registered application.
 	 */
-	@RequestMapping(value = "/api/applications", method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Application> register(@RequestBody Application app) {
 		LOGGER.debug("Register application {}", app.toString());
 		try {
@@ -64,12 +65,28 @@ public class RegistryController {
 	}
 
 	/**
+	 * List all registered applications with name
+	 *
+	 * @return List.
+	 */
+	@RequestMapping(method = RequestMethod.GET)
+	public Collection<Application> applications(@RequestParam(value = "name", required = false) String name) {
+		LOGGER.debug("Deliver registered applications with name= {}", name);
+		if (name == null || name.isEmpty()) {
+			return registry.getApplications();
+		}
+		else {
+			return registry.getApplicationsByName(name);
+		}
+	}
+
+	/**
 	 * Get a single application out of the registry.
-	 * 
+	 *
 	 * @param id The application identifier.
 	 * @return The registered application.
 	 */
-	@RequestMapping(value = "/api/application/{id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Application> get(@PathVariable String id) {
 		LOGGER.debug("Deliver registered application with ID '{}'", id);
 		Application application = registry.getApplication(id);
@@ -82,10 +99,10 @@ public class RegistryController {
 
 	/**
 	 * Unregister an application within this admin application.
-	 * 
+	 *
 	 * @param id The application id.
 	 */
-	@RequestMapping(value = "/api/application/{id}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Application> unregister(@PathVariable String id) {
 		LOGGER.debug("Unregister application with ID '{}'", id);
 		Application app = registry.unregister(id);
@@ -96,18 +113,4 @@ public class RegistryController {
 		}
 	}
 
-	/**
-	 * List all registered applications with name
-	 * 
-	 * @return List.
-	 */
-	@RequestMapping(value = "/api/applications", method = RequestMethod.GET)
-	public Collection<Application> applications(@RequestParam(value = "name", required = false) String name) {
-		LOGGER.debug("Deliver registered applications with name= {}", name);
-		if (name == null || name.isEmpty()) {
-			return registry.getApplications();
-		} else {
-			return registry.getApplicationsByName(name);
-		}
-	}
 }

@@ -15,14 +15,14 @@
  */
 'use strict';
 
-module.exports = function ($scope, application, ApplicationTrace, $interval) {
+module.exports = function ($scope, application, $interval) {
     $scope.lastTraceTime = 0;
     $scope.traces = [];
     $scope.refresher = null;
     $scope.refreshInterval = 5;
 
     $scope.refresh = function () {
-        ApplicationTrace.getTraces(application)
+        application.getTraces()
             .success(function (traces) {
                 for (var i = 0; i < traces.length; i++) {
                     if (traces[i].timestamp > $scope.lastTraceTime) {

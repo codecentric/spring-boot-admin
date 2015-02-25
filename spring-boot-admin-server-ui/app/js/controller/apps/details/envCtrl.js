@@ -15,12 +15,12 @@
  */
 'use strict';
 
-module.exports = function ($scope, application, ApplicationDetails) {
+module.exports = function ($scope, application) {
     $scope.application = application;
-    ApplicationDetails.getEnv(application)
+
+    application.getEnv(application)
         .success(function (env) {
-            var separator = env.systemProperties['path.separator'];
-            $scope.classpath = env.systemProperties['java.class.path'].split(separator);
+            $scope.env = env;
         })
         .error(function (error) {
             $scope.error = error;

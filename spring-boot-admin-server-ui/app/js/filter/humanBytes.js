@@ -15,7 +15,7 @@
  */
 'use strict';
 
-module.exports = function() {
+module.exports = function () {
     var units = { B: Math.pow(1024, 0)
                 , K: Math.pow(1024, 1)
                 , M: Math.pow(1024, 2)

@@ -15,12 +15,22 @@
  */
 'use strict';
 
-module.exports = function ($resource) {
-    return $resource(
-        'api/applications', {}, {
-            query: {
-                method: 'GET',
-                isArray: true
+module.exports = function ($scope, application) {
+    $scope.application = application;
+
+    application.getEnv()
+        .success(function (env) {
+            $scope.props = [];
+            for (var attr in env) {
+                if (attr.indexOf('[') !== -1 && attr.indexOf('.properties]') !== -1) {
+                    $scope.props.push({
+                        key: attr,
+                        value: env[attr]
+                    });
+                }
             }
+        })
+        .error(function (error) {
+            $scope.error = error;
         });
 };

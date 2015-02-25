@@ -15,7 +15,7 @@
  */
 'use strict';
 
-module.exports = function ($scope, $interval, application, ApplicationDetails, MetricsHelper) {
+module.exports = function ($scope, $interval, application, MetricsHelper) {
     $scope.application = application;
 
     var start = Date.now();
@@ -23,7 +23,7 @@ module.exports = function ($scope, $interval, application, ApplicationDetails, M
         $scope.ticks = Date.now() - start;
     }, 1000);
 
-    ApplicationDetails.getInfo(application)
+    application.getInfo()
         .success(function (info) {
             $scope.info = info;
         })
@@ -31,7 +31,7 @@ module.exports = function ($scope, $interval, application, ApplicationDetails, M
             $scope.error = error;
         });
 
-    ApplicationDetails.getHealth(application)
+    application.getHealth()
         .success(function (health) {
             $scope.health = health;
         })
@@ -39,7 +39,7 @@ module.exports = function ($scope, $interval, application, ApplicationDetails, M
             $scope.health = health;
         });
 
-    ApplicationDetails.getMetrics(application)
+    application.getMetrics()
         .success(function (metrics) {
             $scope.metrics = metrics;
             $scope.metrics['mem.used'] = $scope.metrics.mem - $scope.metrics['mem.free'];

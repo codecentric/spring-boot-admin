@@ -15,10 +15,45 @@
  */
 'use strict';
 
-module.exports = function ($scope, $location, $interval, $q, Applications, ApplicationOverview,
-    Application) {
+module.exports = function ($scope, $location, $interval, $q, Application) {
+    var getInfo = function (app) {
+        return app.getInfo()
+            .success(function (response) {
+                app.version = response.version;
+                delete response.version;
+                app.info = response;
+            })
+            .error(function () {
+                app.version = '---';
+            });
+    };
+    var getHealth = function (app) {
+        return app.getHealth()
+            .success(function (response) {
+                app.status = response.status;
+            })
+            .error(function (response, httpStatus) {
+                if (httpStatus === 503) {
+                    app.status = response.status;
+                } else if (httpStatus === 404 || httpStatus === 0) {
+                    app.status = 'OFFLINE';
+                } else {
+                    app.status = 'UNKNOWN';
+                }
+            });
+    };
+    var getLogfile = function (app) {
+        return app.hasLogfile()
+            .success(function () {
+                app.providesLogfile = true;
+            })
+            .error(function () {
+                app.providesLogfile = false;
+            });
+    };
+
     $scope.loadData = function () {
-        Applications.query(function (applications) {
+        Application.query(function (applications) {
             function refresh(app) {
                 //find application in known applications and copy state --> less flickering
                 for (var j = 0; $scope.applications != null && j < $scope.applications
@@ -32,9 +67,7 @@ module.exports = function ($scope, $location, $interval, $q, Applications, Appli
                     }
                 }
                 app.refreshing = true;
-                $q.all(ApplicationOverview.getInfo(app),
-                        ApplicationOverview.getHealth(app),
-                        ApplicationOverview.getLogfile(app))
+                $q.all(getInfo(app), getHealth(app), getLogfile(app))
                     .finally(function () {
                         app.refreshing = false;
                     });
@@ -46,23 +79,15 @@ module.exports = function ($scope, $location, $interval, $q, Applications, Appli
             $scope.applications = applications;
         });
     };
-    $scope.loadData();
 
     $scope.remove = function (application) {
-        Application.remove({
-            id: application.id
-        }, function () {
+        application.$remove(function () {
             var index = $scope.applications.indexOf(application);
             if (index > -1) {
                 $scope.applications.splice(index, 1);
             }
         });
     };
-
-    // reload site every 30 seconds
-    $interval(function () {
-        $scope.loadData();
-    }, 30000);
 
     $scope.order = {
         column: 'name',
@@ -85,4 +110,12 @@ module.exports = function ($scope, $location, $interval, $q, Applications, Appli
             return '';
         }
     };
+
+    //initial load
+    $scope.loadData();
+
+    // reload site every 30 seconds
+    $interval(function () {
+        $scope.loadData();
+    }, 30000);
 };

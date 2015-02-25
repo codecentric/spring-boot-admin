@@ -15,14 +15,14 @@
  */
 'use strict';
 
-module.exports = function ($scope, application, ApplicationDetails, Abbreviator, MetricsHelper) {
+module.exports = function ($scope, application, Abbreviator, MetricsHelper) {
     $scope.counters = [];
     $scope.countersMax = 0;
     $scope.gauges = [];
     $scope.gaugesMax = 0;
     $scope.showRichGauges = false;
 
-    ApplicationDetails.getMetrics(application)
+    application.getMetrics()
         .success(function (metrics) {
             function merge(array, obj) {
                 for (var i = 0; i < array.length; i++) {

@@ -26,7 +26,6 @@ import java.util.Collections;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -42,9 +41,9 @@ import de.codecentric.boot.admin.config.EnableAdminServer;
 import de.codecentric.boot.admin.model.Application;
 
 /**
- * 
+ *
  * Integration test to verify the correct functionality of the REST API with Hazelcast
- * 
+ *
  * @author Dennis Schulte
  */
 public class AdminApplicationHazelcastTest {
@@ -59,14 +58,14 @@ public class AdminApplicationHazelcastTest {
 	private RestTemplate template = new TestRestTemplate();
 	private EmbeddedWebApplicationContext instance1;
 	private EmbeddedWebApplicationContext instance2;
-	
+
 	@Before
 	public void setup() throws InterruptedException {
 		System.setProperty("hazelcast.wait.seconds.before.join", "0");
 		instance1 = (EmbeddedWebApplicationContext) SpringApplication.run(TestAdminApplication.class, new String[] {
-				"--server.port=0", "--spring.jmx.enabled=false", "--spring.boot.admin.hazelcast.enable=true" });
+			"--server.port=0", "--spring.jmx.enabled=false", "--spring.boot.admin.hazelcast.enable=true" });
 		instance2 = (EmbeddedWebApplicationContext) SpringApplication.run(TestAdminApplication.class, new String[] {
-				"--server.port=0", "--spring.jmx.enabled=false", "--spring.boot.admin.hazelcast.enable=true" });
+			"--server.port=0", "--spring.jmx.enabled=false", "--spring.boot.admin.hazelcast.enable=true" });
 	}
 
 	@After
@@ -110,7 +109,7 @@ public class AdminApplicationHazelcastTest {
 	private ResponseEntity<Application> getApp(String id, EmbeddedWebApplicationContext context) {
 		int port = context.getEmbeddedServletContainer().getPort();
 		ResponseEntity<Application> getResponse = template.getForEntity("http://localhost:" + port
-				+ "/api/application/" + id, Application.class);
+				+ "/api/applications/" + id, Application.class);
 		return getResponse;
 	}
 

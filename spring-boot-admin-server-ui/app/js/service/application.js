@@ -15,14 +15,49 @@
  */
 'use strict';
 
-module.exports = function ($resource) {
-    return $resource(
-        'api/application/:id', {}, {
-            query: {
-                method: 'GET'
-            },
-            remove: {
-                method: 'DELETE'
+module.exports = function ($resource, $http, $rootScope) {
+    var Application = $resource(
+        'api/applications/:id', { id: '@id' }, {
+            query: { method: 'GET', isArray: true },
+            get: { method: 'GET' },
+            remove: { method: 'DELETE' }
+    });
+
+    var AuthInterceptor = function (application) {
+        return function (data, status, headers) {
+            if (status === 401) {
+                $rootScope.$emit('application-auth-required', application, headers('WWW-Authenticate').split(' ')[0]);
             }
-        });
+        };
+    };
+
+    Application.prototype.getHealth = function () {
+        return $http.get(this.url + '/health').error(new AuthInterceptor(this));
+    };
+
+    Application.prototype.getInfo = function () {
+        return $http.get(this.url + '/info').error(new AuthInterceptor(this));
+    };
+
+    Application.prototype.getMetrics = function () {
+        return $http.get(this.url + '/metrics').error(new AuthInterceptor(this));
+    };
+
+    Application.prototype.getEnv = function () {
+        return $http.get(this.url + '/env').error(new AuthInterceptor(this));
+    };
+
+    Application.prototype.getThreadDump = function () {
+        return $http.get(this.url + '/dump').error(new AuthInterceptor(this));
+    };
+
+    Application.prototype.getTraces = function () {
+        return $http.get(this.url + '/trace').error(new AuthInterceptor(this));
+    };
+
+    Application.prototype.hasLogfile = function () {
+        return $http.head(this.url + '/logfile').error(new AuthInterceptor(this));
+    };
+
+    return Application;
 };

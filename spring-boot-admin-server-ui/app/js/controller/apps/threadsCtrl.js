@@ -15,9 +15,9 @@
  */
 'use strict';
 
-module.exports = function ($scope, application, ApplicationThreads) {
+module.exports = function ($scope, application) {
     $scope.dumpThreads = function () {
-        ApplicationThreads.getDump(application)
+        application.getThreadDump()
             .success(function (dump) {
                 $scope.dump = dump;
 
