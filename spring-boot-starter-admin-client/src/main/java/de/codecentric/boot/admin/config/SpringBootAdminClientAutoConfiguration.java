@@ -17,10 +17,10 @@ package de.codecentric.boot.admin.config;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
+import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCustomizer;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -37,14 +37,11 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.handler.AbstractHandlerMapping;
 import org.springframework.web.servlet.mvc.ServletWrappingController;
 
 import de.codecentric.boot.admin.actuate.LogfileMvcEndpoint;
 import de.codecentric.boot.admin.services.SpringBootAdminRegistrator;
 import de.codecentric.boot.admin.web.BasicAuthHttpRequestInterceptor;
-import de.codecentric.boot.admin.web.EndpointCorsFilter;
 import de.codecentric.boot.admin.web.EndpointCorsInterceptor;
 
 /**
@@ -108,14 +105,19 @@ public class SpringBootAdminClientAutoConfiguration {
 		}
 	}
 
-
-	/**
-	 * HTTP filter to enable Cross-Origin Resource Sharing.
-	 */
 	@Bean
-	@ConditionalOnMissingBean
-	public EndpointCorsFilter endpointCorsFilter(EndpointHandlerMapping endpointHandlerMapping) {
-		return new EndpointCorsFilter(endpointHandlerMapping);
+	protected EndpointCorsInterceptor endpointCorsInterceptor() {
+		return new EndpointCorsInterceptor();
+	}
+
+	@Bean
+	protected EndpointHandlerMappingCustomizer endpointHandlerMappingCustomizer() {
+		return new EndpointHandlerMappingCustomizer() {
+			@Override
+			public void customize(EndpointHandlerMapping mapping) {
+				mapping.setInterceptors(new Object[] { endpointCorsInterceptor() });
+			}
+		};
 	}
 
 	@Autowired
@@ -124,55 +126,32 @@ public class SpringBootAdminClientAutoConfiguration {
 	@Bean
 	public ApplicationListener<EmbeddedServletContainerInitializedEvent> appListener() {
 		/*
-		 * In case a second servletContainer is fired up (because server.port !=
-		 * managament port), there is no viable way to register the endpointCorsFilter.
-		 *
-		 * Instead we register an HandlerInterceptor for the Endpoint handler mapping and
 		 * Set jolokias AgentServlet to support Options request and the Dispatcher servlet
-		 * to forward such.
-		 * Also @see https://github.com/spring-projects/spring-boot/issues/1987
+		 * to forward such. Done in this nasty way in case a second servlet-container is
+		 * spun up, when management.port != server.port Also @see
+		 * https://github.com/spring-projects/spring-boot/issues/1987
 		 */
 		return new ApplicationListener<EmbeddedServletContainerInitializedEvent>() {
 			@Override
 			public void onApplicationEvent(EmbeddedServletContainerInitializedEvent event) {
-				if ("management".equals(event.getApplicationContext().getNamespace())) {
-					// register HandlerIntercepor
-					for (EndpointHandlerMapping handlerMapping : event.getApplicationContext()
-							.getBeansOfType(EndpointHandlerMapping.class).values()) {
-						try {
-							Field interceptorsField = AbstractHandlerMapping.class.getDeclaredField("adaptedInterceptors");
-							interceptorsField.setAccessible(true);
-							@SuppressWarnings("unchecked")
-							List<HandlerInterceptor> adaptedInterceptors = (List<HandlerInterceptor>) interceptorsField
-							.get(handlerMapping);
-							EndpointCorsInterceptor interceptor = new EndpointCorsInterceptor();
-							event.getApplicationContext().getBeanFactory().autowireBean(interceptor);
-							adaptedInterceptors.add(interceptor);
-						}
-						catch (Exception ex) {
-							throw new RuntimeException("Couldn't add handlerInterceptor for cors", ex);
-						}
-					}
+				// set DispatcherServlet to forward OptionsRequest
+				for (DispatcherServlet servlet : event.getApplicationContext()
+						.getBeansOfType(DispatcherServlet.class).values()) {
+					servlet.setDispatchOptionsRequest(true);
+				}
 
-					// set DispatcherServlet to forward OptionsRequest
-					for (DispatcherServlet servlet : event.getApplicationContext()
-							.getBeansOfType(DispatcherServlet.class).values()) {
-						servlet.setDispatchOptionsRequest(true);
+				// set Jolokias ServletWrappingController to support OPTIONS
+				for (JolokiaMvcEndpoint jolokiaMvcEndpoint : SpringBootAdminClientAutoConfiguration.this.applicationContext
+						.getBeansOfType(JolokiaMvcEndpoint.class).values()) {
+					try {
+						Field controllerField = JolokiaMvcEndpoint.class.getDeclaredField("controller");
+						ReflectionUtils.makeAccessible(controllerField);
+						ServletWrappingController controller = (ServletWrappingController) controllerField
+								.get(jolokiaMvcEndpoint);
+						controller.setSupportedMethods("GET", "HEAD", "POST", "OPTIONS");
 					}
-
-					// set Jolokias ServletWrappingController to support OPTIONS
-					for (JolokiaMvcEndpoint jolokiaMvcEndpoint : SpringBootAdminClientAutoConfiguration.this.applicationContext
-							.getBeansOfType(JolokiaMvcEndpoint.class).values()) {
-						try {
-							Field controllerField = JolokiaMvcEndpoint.class.getDeclaredField("controller");
-							ReflectionUtils.makeAccessible(controllerField);
-							ServletWrappingController controller = (ServletWrappingController) controllerField
-									.get(jolokiaMvcEndpoint);
-							controller.setSupportedMethods("GET", "HEAD", "POST", "OPTIONS");
-						}
-						catch (Exception ex) {
-							throw new RuntimeException("Couldn't reconfigure servletWrappingController for Jolokia", ex);
-						}
+					catch (Exception ex) {
+						throw new RuntimeException("Couldn't reconfigure servletWrappingController for Jolokia", ex);
 					}
 				}
 			}
