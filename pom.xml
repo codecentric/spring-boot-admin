@@ -20,7 +20,15 @@
 		<hazelcast.version>3.3.3</hazelcast.version>
 		<main.basedir>${basedir}</main.basedir>
 		<passphrase>${gpg.passphrase}</passphrase>
-	</properties>
+        <commons-lang3.version>3.3.2</commons-lang3.version>
+
+        <!-- build plugins -->
+        <build-plugin.jacoco.version>0.7.3.201502191951</build-plugin.jacoco.version>
+        <build-plugin.coveralls.version>3.0.1</build-plugin.coveralls.version>
+        <build-plugin.gpg.version>1.5</build-plugin.gpg.version>
+        <build-plugin.surefire.version>2.17</build-plugin.surefire.version>
+        <build-plugin.execmaven.version>1.3.2</build-plugin.execmaven.version>
+    </properties>
 	<modules>
 		<module>spring-boot-admin-server</module>
 		<module>spring-boot-admin-server-ui</module>
@@ -92,23 +100,41 @@
 					</execution>
 				</executions>
 			</plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.eluder.coveralls</groupId>
+                <artifactId>coveralls-maven-plugin</artifactId>
+            </plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${build-plugin.jacoco.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.eluder.coveralls</groupId>
+                    <artifactId>coveralls-maven-plugin</artifactId>
+                    <version>${build-plugin.coveralls.version}</version>
+                </plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-gpg-plugin</artifactId>
-					<version>1.5</version>
+					<version>${build-plugin.gpg.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.17</version>
+					<version>${build-plugin.surefire.version}</version>
 				</plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
-                    <version>1.3.2</version>
+                    <version>${build-plugin.execmaven.version}</version>
                 </plugin>
 			</plugins>
 		</pluginManagement>
@@ -158,22 +184,22 @@
 			<dependency>
 				<groupId>de.codecentric</groupId>
 				<artifactId>spring-boot-admin-server</artifactId>
-				<version>1.1.3-SNAPSHOT</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.codecentric</groupId>
 				<artifactId>spring-boot-admin-server-ui</artifactId>
-				<version>1.1.3-SNAPSHOT</version>
+                <version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.codecentric</groupId>
 				<artifactId>spring-boot-starter-admin-client</artifactId>
-				<version>1.1.3-SNAPSHOT</version>
+                <version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.codecentric</groupId>
 				<artifactId>spring-boot-admin-example</artifactId>
-				<version>1.1.1-SNAPSHOT</version>
+                <version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
@@ -183,7 +209,7 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
-				<version>3.3.2</version>
+				<version>${commons-lang3.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.hazelcast</groupId>
