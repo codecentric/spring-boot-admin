@@ -1,6 +1,7 @@
 spring-boot-admin
 =================
 [![Build Status](https://travis-ci.org/codecentric/spring-boot-admin.png?branch=master)](https://travis-ci.org/codecentric/spring-boot-admin)
+[![Coverage Status](https://coveralls.io/repos/codecentric/spring-boot-admin/badge.svg)](https://coveralls.io/r/codecentric/spring-boot-admin)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.codecentric/spring-boot-admin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.codecentric/spring-boot-admin/)
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/codecentric/spring-boot-admin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
@@ -73,22 +74,22 @@ For all configuration options see [spring-boot-starter-admin-client](https://git
 
 ##### Dashboard
 
-[](url "title") 
+[](url "title")
 <img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot.png">
 
 ##### Details
 
-[](url "title") 
+[](url "title")
 <img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-details.png">
 
 ##### Logging
 
-[](url "title") 
+[](url "title")
 <img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-logging.png">
 
 ##### JMX
 
-[](url "title") 
+[](url "title")
 <img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-jmx.png">
 
 #### Build
@@ -112,5 +113,3 @@ Example:
 ```shell
 mvn build-helper:parse-version versions:set versions:commit -DnewVersion=1.0.0-SNAPSHOT
 ```
-
-
