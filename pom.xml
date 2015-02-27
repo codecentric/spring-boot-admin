@@ -140,6 +140,50 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>travis</id>
+			<activation>
+				<property>
+					<name>env.TRAVIS</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>0.7.3.201502191951</version>
+						<executions>
+							<!-- Prepares the property pointing to the JaCoCo
+							runtime agent which is passed as VM argument when Maven the Surefire plugin
+							is executed. -->
+							<execution>
+								<id>pre-unit-test</id>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+							</execution>
+
+							<!-- Ensures that the code coverage report for
+							unit tests is created after unit tests have been run. -->
+							<execution>
+								<id>post-unit-test</id>
+								<phase>test</phase>
+								<goals>
+									<goal>report</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.eluder.coveralls</groupId>
+						<artifactId>coveralls-maven-plugin</artifactId>
+						<version>3.0.1</version>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 	<distributionManagement>
 		<snapshotRepository>

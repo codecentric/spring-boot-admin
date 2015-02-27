@@ -5,3 +5,6 @@ before_install:
   - "sh -e /etc/init.d/xvfb start"
 
 script: mvn clean install
+
+after_success:
+  - mvn jacoco:report coveralls:report
