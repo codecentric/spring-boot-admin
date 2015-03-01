@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.2.1.RELEASE</version>
+		<version>1.2.2.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>de.codecentric</groupId>
@@ -16,7 +16,7 @@
 	<description>Spring Boot Admin</description>
 	<url>https://github.com/codecentric/spring-boot-admin/</url>
 	<properties>
-		<spring-boot.version>1.2.1.RELEASE</spring-boot.version>
+		<spring-boot.version>1.2.2.RELEASE</spring-boot.version>
 		<hazelcast.version>3.3.3</hazelcast.version>
 		<main.basedir>${basedir}</main.basedir>
 		<passphrase>${gpg.passphrase}</passphrase>
