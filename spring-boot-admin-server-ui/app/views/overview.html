@@ -2,36 +2,42 @@
 <small>Here you'll find all Spring-Boot applications that registered themselves at this admin application.</small>
 </h2>
 <table class="table table-striped">
-	<thead>
-		<tr>
-			<th><span class="sortable" ng-class="orderByCssClass('name')" ng-click="orderBy('name')">Application</span>
-			    /
-			    <span class="sortable" ng-class="orderByCssClass('url')" ng-click="orderBy('url')">URL</span>
-			</th>
-			<th><span class="sortable" ng-class="orderByCssClass('version')" ng-click="orderBy('version')">Version</span></th>
-			<th>Info</th>
-			<th colspan="2"><span class="sortable" ng-class="orderByCssClass('status')" ng-click="orderBy('status')">Status</span></th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr ng-repeat="application in applications|orderBy:order.column:order.descending track by application.id">
-			<td>{{ application.name }}<br/><span class="muted">{{ application.url }}</span></td>
-			<td>{{ application.version }}</td>
-			<td><span ng-repeat="(name, value) in application.info track by name">{{name}}: {{value}}<br></span></td>
-			<td><span class="status-{{application.status}}">{{ application.status }}</span>
-			<span ng-show="application.refreshing" class="refresh"></span></td>
-			<td>
-				<div class="btn-group pull-right" ng-hide="application.status == null || application.status == 'OFFLINE'">
-					<a ng-disabled="!application.providesLogfile" target="_self" class="btn btn-success" ng-href="{{application.providesLogfile ? application.url + '/logfile' :''}}"><i class="icon-file icon-white"></i>Log</a>
-					<a ui-sref="apps.details.metrics({id: application.id})" class="btn btn-success">Details</a>
-					<a ui-sref="apps.logging({id: application.id})" class="btn btn-success">Logging</a>
-					<a ui-sref="apps.jmx({id: application.id})" class="btn btn-success">JMX</a>
-					<a ui-sref="apps.threads({id: application.id})" class="btn btn-success">Threads</a>						
-				</div>	
-				<div class="btn-group pull-right" ng-show="application.status == 'UNKNOWN' || application.status == 'OFFLINE'">
-					<a class="btn btn-danger" ng-click="remove(application)"><i class="icon-remove icon-white"></i>Remove</a>
-				</div>
-			</td>
-		</tr>
-	</tbody>
+    <thead>
+        <tr>
+            <th><span class="sortable" ng-class="orderByCssClass('name')" ng-click="orderBy('name')">Application</span>
+                /
+                <span class="sortable" ng-class="orderByCssClass('url')" ng-click="orderBy('url')">URL</span>
+            </th>
+            <th><span class="sortable" ng-class="orderByCssClass('version')" ng-click="orderBy('version')">Version</span></th>
+            <th>Info</th>
+            <th colspan="2"><span class="sortable" ng-class="orderByCssClass('status')" ng-click="orderBy('status')">Status</span></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="application in applications|orderBy:order.column:order.descending track by application.id">
+            <td>{{ application.name }}<br/><span class="muted">{{ application.url }}</span></td>
+            <td>{{ application.version }}</td>
+            <td><span ng-repeat="(name, value) in application.info track by name">{{name}}: {{value}}<br></span></td>
+            <td><span class="status-{{application.status}}">{{ application.status }}</span>
+            <span ng-show="application.refreshing" class="refresh"></span></td>
+            <td>
+                <div class="btn-group pull-right" ng-hide="application.status == null || application.status == 'OFFLINE'">
+                    <a ng-disabled="!application.providesLogfile" target="_self" class="btn btn-success" ng-href="{{application.providesLogfile ? application.url + '/logfile' :''}}"><i class="icon-file icon-white"></i>Log</a>
+                    <a ui-sref="apps.details.metrics({id: application.id})" class="btn btn-success">Details</a>
+                    <a class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a ui-sref="apps.logging({id: application.id})" >Logging</a></li>
+                        <li><a ui-sref="apps.jmx({id: application.id})" >JMX</a></li>
+                        <li><a ui-sref="apps.threads({id: application.id})" >Threads</a></li>
+                        <li><a ui-sref="apps.trace({id: application.id})" >Trace</a></li>
+                    </ul>
+                </div>
+                <div class="btn-group pull-right" ng-show="application.status == 'UNKNOWN' || application.status == 'OFFLINE'">
+                    <a class="btn btn-danger" ng-click="remove(application)"><i class="icon-remove icon-white"></i>Remove</a>
+                </div>
+            </td>
+        </tr>
+    </tbody>
 </table>
