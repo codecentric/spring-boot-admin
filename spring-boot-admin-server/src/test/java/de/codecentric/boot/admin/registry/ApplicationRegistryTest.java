@@ -23,6 +23,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collection;
 
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.context.ApplicationContext;
 
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
@@ -31,6 +33,10 @@ public class ApplicationRegistryTest {
 
 	private ApplicationRegistry registry = new ApplicationRegistry(new SimpleApplicationStore(),
 			new HashingApplicationUrlIdGenerator());
+
+	public ApplicationRegistryTest() {
+		registry.setApplicationContext(Mockito.mock(ApplicationContext.class));
+	}
 
 	@Test(expected = NullPointerException.class)
 	public void registerFailed1() throws Exception {

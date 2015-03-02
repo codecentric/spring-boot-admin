@@ -16,12 +16,33 @@
 package de.codecentric.boot.admin.config;
 
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.netflix.zuul.RoutesEndpoint;
+import org.springframework.cloud.netflix.zuul.ZuulFilterInitializer;
+import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
+import org.springframework.cloud.netflix.zuul.filters.ProxyRouteLocator;
+import org.springframework.cloud.netflix.zuul.filters.RouteLocator;
+import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
+import org.springframework.cloud.netflix.zuul.filters.post.SendErrorFilter;
+import org.springframework.cloud.netflix.zuul.filters.post.SendResponseFilter;
+import org.springframework.cloud.netflix.zuul.filters.pre.DebugFilter;
+import org.springframework.cloud.netflix.zuul.filters.pre.FormBodyWrapperFilter;
+import org.springframework.cloud.netflix.zuul.filters.pre.PreDecorationFilter;
+import org.springframework.cloud.netflix.zuul.filters.pre.Servlet30WrapperFilter;
+import org.springframework.cloud.netflix.zuul.filters.route.SimpleHostRoutingFilter;
+import org.springframework.cloud.netflix.zuul.web.ZuulController;
+import org.springframework.cloud.netflix.zuul.web.ZuulHandlerMapping;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -29,9 +50,13 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.hazelcast.config.Config;
+import com.hazelcast.core.EntryEvent;
+import com.hazelcast.core.EntryListener;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
+import com.hazelcast.core.MapEvent;
+import com.netflix.zuul.ZuulFilter;
 
 import de.codecentric.boot.admin.controller.RegistryController;
 import de.codecentric.boot.admin.model.Application;
@@ -41,6 +66,8 @@ import de.codecentric.boot.admin.registry.HashingApplicationUrlIdGenerator;
 import de.codecentric.boot.admin.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.registry.store.HazelcastApplicationStore;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
+import de.codecentric.boot.admin.zuul.ApplicationRouteLocator;
+import de.codecentric.boot.admin.zuul.ApplicationRouteRefreshListener;
 
 @Configuration
 public class WebappConfig extends WebMvcConfigurerAdapter {
@@ -89,6 +116,115 @@ public class WebappConfig extends WebMvcConfigurerAdapter {
 	}
 
 	@Configuration
+	@EnableConfigurationProperties(ZuulProperties.class)
+	public static class RevereseZuulProxyConfiguration {
+
+		@Autowired(required = false)
+		private TraceRepository traces;
+
+		@Autowired
+		private ZuulProperties zuulProperties;
+
+		@Autowired
+		private ServerProperties server;
+
+		@Autowired
+		private ApplicationRegistry registry;
+
+		@Bean
+		public ApplicationRouteLocator routeLocator() {
+			return new ApplicationRouteLocator(this.server.getServletPrefix(), registry, this.zuulProperties,
+					RegistryController.PATH);
+		}
+
+		@Bean
+		public PreDecorationFilter preDecorationFilter() {
+			return new PreDecorationFilter(routeLocator(), this.zuulProperties.isAddProxyHeaders());
+		}
+
+		@Bean
+		public SimpleHostRoutingFilter simpleHostRoutingFilter() {
+			ProxyRequestHelper helper = new ProxyRequestHelper();
+			if (this.traces != null) {
+				helper.setTraces(this.traces);
+			}
+			return new SimpleHostRoutingFilter(helper);
+		}
+
+		@Bean
+		public ZuulController zuulController() {
+			return new ZuulController();
+		}
+
+		@Bean
+		public ZuulHandlerMapping zuulHandlerMapping(RouteLocator routes) {
+			return new ZuulHandlerMapping(routes, zuulController());
+		}
+
+		// pre filters
+
+		@Bean
+		public FormBodyWrapperFilter formBodyWrapperFilter() {
+			return new FormBodyWrapperFilter();
+		}
+
+		@Bean
+		public DebugFilter debugFilter() {
+			return new DebugFilter();
+		}
+
+		@Bean
+		public Servlet30WrapperFilter servlet30WrapperFilter() {
+			return new Servlet30WrapperFilter();
+		}
+
+		// post filters
+
+		@Bean
+		public SendResponseFilter sendResponseFilter() {
+			return new SendResponseFilter();
+		}
+
+		@Bean
+		public SendErrorFilter sendErrorFilter() {
+			return new SendErrorFilter();
+		}
+
+		@Configuration
+		protected static class ZuulFilterConfiguration {
+
+			@Autowired
+			private Map<String, ZuulFilter> filters;
+
+			@Bean
+			public ZuulFilterInitializer zuulFilterInitializer() {
+				return new ZuulFilterInitializer(this.filters);
+			}
+
+		}
+
+		@Bean
+		ApplicationRouteRefreshListener applicationRouteRefreshListener() {
+			return new ApplicationRouteRefreshListener(routeLocator(), zuulHandlerMapping(routeLocator()));
+		}
+
+		@Configuration
+		@ConditionalOnClass(Endpoint.class)
+		protected static class RoutesEndpointConfiguration {
+
+			@Autowired
+			private ProxyRouteLocator routeLocator;
+
+			@Bean
+			public RoutesEndpoint zuulEndpoint() {
+				return new RoutesEndpoint(this.routeLocator);
+			}
+
+		}
+
+	}
+
+	@Configuration
 	@ConditionalOnClass({ Hazelcast.class })
 	@ConditionalOnExpression("${spring.boot.admin.hazelcast.enable:true}")
 	@AutoConfigureBefore(SimpleConfig.class)
@@ -114,7 +250,56 @@ public class WebappConfig extends WebMvcConfigurerAdapter {
 		public ApplicationStore applicationStore(HazelcastInstance hazelcast) {
 			IMap<String, Application> map = hazelcast.<String, Application> getMap(hazelcastMapName);
 			map.addIndex("name", false);
+			map.addEntryListener(entryListener(), false);
 			return new HazelcastApplicationStore(map);
+		}
+
+		@Bean
+		public EntryListener<String, Application> entryListener() {
+			return new ApplicationEntryListener();
+		}
+
+		private static class ApplicationEntryListener implements EntryListener<String, Application> {
+			@Autowired
+			private ZuulHandlerMapping zuulHandlerMapping;
+
+			@Autowired
+			private ApplicationRouteLocator routeLocator;
+
+			private void reset() {
+				routeLocator.resetRoutes();
+				zuulHandlerMapping.registerHandlers();
+			}
+
+			@Override
+			public void entryAdded(EntryEvent<String, Application> event) {
+				reset();
+			}
+
+			@Override
+			public void entryRemoved(EntryEvent<String, Application> event) {
+				reset();
+			}
+
+			@Override
+			public void entryUpdated(EntryEvent<String, Application> event) {
+				reset();
+			}
+
+			@Override
+			public void entryEvicted(EntryEvent<String, Application> event) {
+				reset();
+			}
+
+			@Override
+			public void mapEvicted(MapEvent event) {
+				reset();
+			}
+
+			@Override
+			public void mapCleared(MapEvent event) {
+				reset();
+			}
 		}
 	}
 

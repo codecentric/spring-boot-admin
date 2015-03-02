@@ -70,8 +70,8 @@ public class AdminApplicationHazelcastTest {
 
 	@After
 	public void shutdown() {
-		instance1.stop();
-		instance2.stop();
+		instance1.close();
+		instance2.close();
 	}
 
 	@Test

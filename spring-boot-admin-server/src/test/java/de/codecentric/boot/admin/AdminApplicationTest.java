@@ -18,37 +18,34 @@ package de.codecentric.boot.admin;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.AdminApplicationTest.TestAdminApplication;
 import de.codecentric.boot.admin.config.EnableAdminServer;
+import de.codecentric.boot.admin.model.Application;
 
 /**
- * 
+ *
  * Integration test to verify the correct functionality of the REST API.
- * 
+ *
  * @author Dennis Schulte
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = TestAdminApplication.class)
-@WebAppConfiguration
-@IntegrationTest({ "server.port=0" })
+@WebIntegrationTest({ "server.port=0" })
 public class AdminApplicationTest {
-
-	RestTemplate restTemplate = new TestRestTemplate();
 
 	@Value("${local.server.port}")
 	private int port = 0;
@@ -60,6 +57,20 @@ public class AdminApplicationTest {
 				+ "/api/applications", List.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 	}
+
+	@Test
+	public void testReverseProxy() {
+		String apiBaseUrl = "http://localhost:" + port + "/api/applications";
+
+		ResponseEntity<Application> entity = new TestRestTemplate().postForEntity(apiBaseUrl, new Application(
+				"http://localhost:" + port, "TestApp"), Application.class);
+
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> health = new TestRestTemplate().getForEntity(apiBaseUrl + "/" + entity.getBody().getId()
+				+ "/info", Map.class);
+		assertEquals(HttpStatus.OK, health.getStatusCode());
+	}
+
 
 	@Configuration
 	@EnableAutoConfiguration
