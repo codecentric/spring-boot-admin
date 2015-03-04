@@ -21,7 +21,7 @@ public interface ApplicationIdGenerator {
 
 	/**
 	 * Generate an id based on the given Application
-	 * 
+	 *
 	 * @param a the application the id is computed for.
 	 * @return the application id
 	 */

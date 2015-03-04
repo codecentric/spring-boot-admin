@@ -69,8 +69,7 @@ public class ApplicationRegistry implements ApplicationContextAware {
 			if ((app.getUrl().equals(oldApp.getUrl()) && app.getName().equals(oldApp.getName()))) {
 				LOGGER.debug("Application {} refreshed", newApp);
 			} else {
-				LOGGER.warn("Application {} not registered because of conflict with {}", newApp, oldApp);
-				throw new ApplicationRegistryConflictException(oldApp, app);
+				LOGGER.warn("Application {} replaced by Application {}", newApp, oldApp);
 			}
 		}
 		return newApp;

@@ -31,7 +31,7 @@ public class SimpleApplicationStore implements ApplicationStore {
 
 	@Override
 	public Application save(Application app) {
-		return map.putIfAbsent(app.getId(), app);
+		return map.put(app.getId(), app);
 	}
 
 	@Override

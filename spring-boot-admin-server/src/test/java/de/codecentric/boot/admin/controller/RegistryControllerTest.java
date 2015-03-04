@@ -69,7 +69,7 @@ public class RegistryControllerTest {
 	public void register_sameUrl() {
 		controller.register(new Application("http://localhost", "FOO"));
 		ResponseEntity<?> response = controller.register(new Application("http://localhost", "BAR"));
-		assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 	}
 
 	@Test

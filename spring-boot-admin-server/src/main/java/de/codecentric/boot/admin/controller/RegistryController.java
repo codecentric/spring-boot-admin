@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
-import de.codecentric.boot.admin.registry.ApplicationRegistryConflictException;
 
 /**
  * REST controller for controlling registration of managed applications.
@@ -57,12 +56,8 @@ public class RegistryController {
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Application> register(@RequestBody Application app) {
 		LOGGER.debug("Register application {}", app.toString());
-		try {
 			Application registeredApp = registry.register(app);
 			return new ResponseEntity<Application>(registeredApp, HttpStatus.CREATED);
-		} catch (ApplicationRegistryConflictException ex) {
-			return new ResponseEntity<Application>(HttpStatus.CONFLICT);
-		}
 	}
 
 	/**
