@@ -224,6 +224,11 @@
 
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter</artifactId>
+                <version>${spring-cloud.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-zuul</artifactId>
                 <version>${spring-cloud.version}</version>
             </dependency>
@@ -235,6 +240,11 @@
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-commons</artifactId>
+                <version>${spring-cloud.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-eureka</artifactId>
                 <version>${spring-cloud.version}</version>
             </dependency>
 
@@ -262,6 +272,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
     <repositories>
         <repository>
             <id>spring-release</id>

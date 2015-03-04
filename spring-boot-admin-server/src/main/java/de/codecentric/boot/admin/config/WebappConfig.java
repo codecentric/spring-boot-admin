@@ -22,12 +22,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.trace.TraceRepository;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.cloud.client.discovery.noop.NoopDiscoveryClientAutoConfiguration;
 import org.springframework.cloud.netflix.zuul.RoutesEndpoint;
 import org.springframework.cloud.netflix.zuul.ZuulFilterInitializer;
 import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
@@ -43,6 +46,8 @@ import org.springframework.cloud.netflix.zuul.filters.pre.Servlet30WrapperFilter
 import org.springframework.cloud.netflix.zuul.filters.route.SimpleHostRoutingFilter;
 import org.springframework.cloud.netflix.zuul.web.ZuulController;
 import org.springframework.cloud.netflix.zuul.web.ZuulHandlerMapping;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -59,6 +64,7 @@ import com.hazelcast.core.MapEvent;
 import com.netflix.zuul.ZuulFilter;
 
 import de.codecentric.boot.admin.controller.RegistryController;
+import de.codecentric.boot.admin.discovery.ApplicationDiscoveryListener;
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.registry.ApplicationIdGenerator;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
@@ -81,7 +87,8 @@ public class WebappConfig extends WebMvcConfigurerAdapter {
 	}
 
 	/**
-	 * Controller with REST-API for spring-boot applications to register itself.
+	 * @param registry the backing Application registry.
+	 * @return Controller with REST-API for spring-boot applications to register itself.
 	 */
 	@Bean
 	public RegistryController registryController(ApplicationRegistry registry) {
@@ -89,7 +96,9 @@ public class WebappConfig extends WebMvcConfigurerAdapter {
 	}
 
 	/**
-	 * Default registry for all registered application.
+	 * @param applicationStore the backing store
+	 * @param applicationIdGenerator the id generator to use
+	 * @return Default registry for all registered application.
 	 */
 	@Bean
 	public ApplicationRegistry applicationRegistry(ApplicationStore applicationStore,
@@ -98,7 +107,7 @@ public class WebappConfig extends WebMvcConfigurerAdapter {
 	}
 
 	/**
-	 * Default applicationId Generator
+	 * @return Default applicationId Generator
 	 */
 	@Bean
 	@ConditionalOnMissingBean
@@ -107,7 +116,7 @@ public class WebappConfig extends WebMvcConfigurerAdapter {
 	}
 
 	@Configuration
-	public static class SimpleConfig {
+	public static class SimpleStoreConfig {
 		@Bean
 		@ConditionalOnMissingBean
 		public ApplicationStore applicationStore() {
@@ -226,9 +235,9 @@ public class WebappConfig extends WebMvcConfigurerAdapter {
 
 	@Configuration
 	@ConditionalOnClass({ Hazelcast.class })
-	@ConditionalOnExpression("${spring.boot.admin.hazelcast.enable:true}")
-	@AutoConfigureBefore(SimpleConfig.class)
-	public static class HazelcastConfig {
+	@ConditionalOnProperty(prefix = "spring.boot.admin.hazelcast", name = "enable", matchIfMissing = true)
+	@AutoConfigureBefore(SimpleStoreConfig.class)
+	public static class HazelcastStoreConfig {
 
 		@Value("${spring.boot.admin.hazelcast.map:spring-boot-admin-application-store}")
 		private String hazelcastMapName;
@@ -303,4 +312,29 @@ public class WebappConfig extends WebMvcConfigurerAdapter {
 		}
 	}
 
+	@Configuration
+	@ConditionalOnClass({ DiscoveryClient.class })
+	@ConditionalOnProperty(prefix = "spring.boot.admin.discovery", name = "enabled", matchIfMissing = true)
+	@AutoConfigureAfter({ NoopDiscoveryClientAutoConfiguration.class })
+	public static class DiscoveryConfig {
+
+		@Value("${spring.boot.admin.discovery.management.context-path:}")
+		private String managementPath;
+
+		@Autowired
+		private DiscoveryClient discoveryClient;
+
+		@Autowired
+		private ApplicationRegistry registry;
+
+		@Bean
+		ApplicationListener<ApplicationEvent> applicationDiscoveryListener() {
+			ApplicationDiscoveryListener listener = new ApplicationDiscoveryListener(
+					discoveryClient,
+					registry);
+			listener.setManagementContextPath(managementPath);
+			return listener;
+		}
+
+	}
 }

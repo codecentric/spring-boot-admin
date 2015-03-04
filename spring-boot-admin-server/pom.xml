@@ -59,8 +59,14 @@
 			<version>4.3.6</version>
 		</dependency>
 
+		<!-- Optional Discovery Client -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter</artifactId>
+			<optional>true</optional>
+		</dependency>
 
-		<!-- Hazelcast-Support -->
+		<!-- Optional Hazelcast-Support -->
 		<dependency>
 			<groupId>com.hazelcast</groupId>
 			<artifactId>hazelcast</artifactId>
@@ -71,6 +77,7 @@
 			<artifactId>hazelcast-spring</artifactId>
 			<optional>true</optional>
 		</dependency>
+
 		<!-- Test -->
 		<dependency>
 			<groupId>junit</groupId>

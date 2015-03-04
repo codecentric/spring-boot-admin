@@ -56,14 +56,14 @@ public class RegistryController {
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Application> register(@RequestBody Application app) {
 		LOGGER.debug("Register application {}", app.toString());
-			Application registeredApp = registry.register(app);
-			return new ResponseEntity<Application>(registeredApp, HttpStatus.CREATED);
+		Application registeredApp = registry.register(app);
+		return new ResponseEntity<Application>(registeredApp, HttpStatus.CREATED);
 	}
 
 	/**
 	 * List all registered applications with name
-	 *
-	 * @return List.
+	 * @param name the name to search for
+	 * @return List
 	 */
 	@RequestMapping(method = RequestMethod.GET)
 	public Collection<Application> applications(@RequestParam(value = "name", required = false) String name) {
@@ -97,6 +97,7 @@ public class RegistryController {
 	 * Unregister an application within this admin application.
 	 *
 	 * @param id The application id.
+	 * @return the unregistered application.
 	 */
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Application> unregister(@PathVariable String id) {

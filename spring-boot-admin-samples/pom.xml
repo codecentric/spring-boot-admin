@@ -20,6 +20,7 @@
 	</properties>
 	<modules>
 		<module>spring-boot-admin-sample</module>
+		<module>spring-boot-admin-sample-discovery</module>
 		<module>spring-boot-admin-sample-hazelcast</module>
 	</modules>
 </project>

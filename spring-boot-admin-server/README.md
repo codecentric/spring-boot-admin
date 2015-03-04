@@ -30,8 +30,18 @@ public class Application {
 }
 ```
 
-## Hazelcast Support
+## Spring Cloud DiscoveryClient support
+The Spring Boot Admin Server is capable of using  Spring Clouds DiscoveryClient to discover applications. When you do this the clients don't have to include the spring-boot-starter-admin-client. You just have to configure a DiscoveryClient - everything else is done by AutoConfiguration.
+See the [discovery sample project](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-discovery) in this repository.
 
+One note: If you omit the Spring Boot Admin Client in you Client Applications you can't download the logfile (but hopefully my pull request will make it into Spring Boot 1.3.0);
+
+### Further configuration
+Since the DiscoveryClient doesn't tell the management.context-path you can suffix the url for all discovered clients by setting ``spring.boot.admin.discovery.management.context-path``.
+
+Explictly disable DiscoveryClient support by setting ``spring.boot.admin.discover.enable=false``.
+
+## Hazelcast Support
 Spring Boot Admin Server supports cluster replication with Hazelcast.
 It is automatically enabled when its found on the classpath.
 
@@ -47,7 +57,7 @@ Just add Hazelcast to your dependencies:
 And thats it! The server is going to use the default Hazelcast configuration.
 
 ### Custom Hazelcast configuration
-To change the configuration add a com.hazelcast.config.Config bean to your application context (for example with hazelcast-spring):
+To change the configuration add a ``com.hazelcast.config.Config``-bean to your application context (for example with hazelcast-spring):
 
 Add hazelcast-spring to dependencies:
 ```xml
@@ -83,6 +93,6 @@ Write xml-config hazelcast-config.xml:
 ```
 
 ### Further configuration
-To disable Hazelcast support by setting ``spring.boot.admin.hazelcast.enable=false``.
+Disable Hazelcast support by setting ``spring.boot.admin.hazelcast.enable=false``.
 
 To alter the name of the Hazelcast-Map set ``spring.boot.admin.hazelcast.map= my-own-map-name``.

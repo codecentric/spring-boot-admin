@@ -13,19 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.codecentric.boot.admin.event;
+package de.codecentric.boot.admin;
 
-import de.codecentric.boot.admin.model.Application;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.context.annotation.Configuration;
 
-/**
- * * This event gets emitted when an application is registered.
- * @author Johannes Stelzer
- */
-public class ClientApplicationRegisteredEvent extends ClientApplicationEvent {
-	public ClientApplicationRegisteredEvent(Object source, Application application) {
-		super(source, application);
+import de.codecentric.boot.admin.config.EnableAdminServer;
+
+@Configuration
+@EnableAutoConfiguration
+@EnableDiscoveryClient
+@EnableAdminServer
+public class SpringBootAdminApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringBootAdminApplication.class, args);
 	}
-
-	private static final long serialVersionUID = 1L;
 
 }

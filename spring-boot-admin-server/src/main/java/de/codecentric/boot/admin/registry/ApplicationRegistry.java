@@ -49,7 +49,8 @@ public class ApplicationRegistry implements ApplicationContextAware {
 	/**
 	 * Register application.
 	 *
-	 * @param app The Application.
+	 * @param app application to be registered.
+	 * @return the registered application.
 	 */
 	public Application register(Application app) {
 		Validate.notNull(app, "Application must not be null");
@@ -93,7 +94,7 @@ public class ApplicationRegistry implements ApplicationContextAware {
 	/**
 	 * Get a list of all registered applications.
 	 *
-	 * @return List.
+	 * @return List of all applications.
 	 */
 	public Collection<Application> getApplications() {
 		return store.findAll();
@@ -102,7 +103,8 @@ public class ApplicationRegistry implements ApplicationContextAware {
 	/**
 	 * Get a list of all registered applications.
 	 *
-	 * @return List.
+	 * @param name the name to search for.
+	 * @return List of applications with the given name.
 	 */
 	public Collection<Application> getApplicationsByName(String name) {
 		return store.findByName(name);
@@ -121,7 +123,7 @@ public class ApplicationRegistry implements ApplicationContextAware {
 	/**
 	 * Remove a specific application from registry
 	 *
-	 * @param id
+	 * @param id the applications id to unregister
 	 * @return the unregistered Application
 	 */
 	public Application unregister(String id) {
