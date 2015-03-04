@@ -29,16 +29,16 @@ module.exports = function ($http, jolokia) {
                 arguments: [loggers[j].name]
             });
         }
-        return jolokia.bulkRequest(app.url + '/jolokia/', requests);
+        return jolokia.bulkRequest('/api/applications/' + app.id + '/jolokia/', requests);
     };
 
     this.setLoglevel = function (app, logger, level) {
-        return jolokia.exec(app.url + '/jolokia/', LOGBACK_MBEAN, 'setLoggerLevel', [logger,
+        return jolokia.exec('/api/applications/' + app.id + '/jolokia/', LOGBACK_MBEAN, 'setLoggerLevel', [logger,
             level
         ]);
     };
 
     this.getAllLoggers = function (app) {
-        return jolokia.readAttr(app.url + '/jolokia/', LOGBACK_MBEAN, 'LoggerList');
+        return jolokia.readAttr('/api/applications/' + app.id + '/jolokia/', LOGBACK_MBEAN, 'LoggerList');
     };
 };

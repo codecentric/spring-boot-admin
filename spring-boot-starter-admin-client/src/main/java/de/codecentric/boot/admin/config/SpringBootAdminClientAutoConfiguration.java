@@ -15,34 +15,22 @@
  */
 package de.codecentric.boot.admin.config;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
-import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCustomizer;
-import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.mvc.ServletWrappingController;
 
 import de.codecentric.boot.admin.actuate.LogfileMvcEndpoint;
 import de.codecentric.boot.admin.services.SpringBootAdminRegistrator;
 import de.codecentric.boot.admin.web.BasicAuthHttpRequestInterceptor;
-import de.codecentric.boot.admin.web.EndpointCorsInterceptor;
 
 /**
  * This configuration adds a registrator bean to the spring context. This bean checks periodicaly, if the using
@@ -103,59 +91,6 @@ public class SpringBootAdminClientAutoConfiguration {
 		public LogfileMvcEndpoint logfileEndpoint() {
 			return new LogfileMvcEndpoint();
 		}
-	}
-
-	@Bean
-	protected EndpointCorsInterceptor endpointCorsInterceptor() {
-		return new EndpointCorsInterceptor();
-	}
-
-	@Bean
-	protected EndpointHandlerMappingCustomizer endpointHandlerMappingCustomizer() {
-		return new EndpointHandlerMappingCustomizer() {
-			@Override
-			public void customize(EndpointHandlerMapping mapping) {
-				mapping.setInterceptors(new Object[] { endpointCorsInterceptor() });
-			}
-		};
-	}
-
-	@Autowired
-	private ApplicationContext applicationContext;
-
-	@Bean
-	public ApplicationListener<EmbeddedServletContainerInitializedEvent> appListener() {
-		/*
-		 * Set jolokias AgentServlet to support Options request and the Dispatcher servlet
-		 * to forward such. Done in this nasty way in case a second servlet-container is
-		 * spun up, when management.port != server.port Also @see
-		 * https://github.com/spring-projects/spring-boot/issues/1987
-		 */
-		return new ApplicationListener<EmbeddedServletContainerInitializedEvent>() {
-			@Override
-			public void onApplicationEvent(EmbeddedServletContainerInitializedEvent event) {
-				// set DispatcherServlet to forward OptionsRequest
-				for (DispatcherServlet servlet : event.getApplicationContext()
-						.getBeansOfType(DispatcherServlet.class).values()) {
-					servlet.setDispatchOptionsRequest(true);
-				}
-
-				// set Jolokias ServletWrappingController to support OPTIONS
-				for (JolokiaMvcEndpoint jolokiaMvcEndpoint : SpringBootAdminClientAutoConfiguration.this.applicationContext
-						.getBeansOfType(JolokiaMvcEndpoint.class).values()) {
-					try {
-						Field controllerField = JolokiaMvcEndpoint.class.getDeclaredField("controller");
-						ReflectionUtils.makeAccessible(controllerField);
-						ServletWrappingController controller = (ServletWrappingController) controllerField
-								.get(jolokiaMvcEndpoint);
-						controller.setSupportedMethods("GET", "HEAD", "POST", "OPTIONS");
-					}
-					catch (Exception ex) {
-						throw new RuntimeException("Couldn't reconfigure servletWrappingController for Jolokia", ex);
-					}
-				}
-			}
-		};
 	}
 
 }

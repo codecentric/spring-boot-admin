@@ -32,31 +32,31 @@ module.exports = function ($resource, $http, $rootScope) {
     };
 
     Application.prototype.getHealth = function () {
-        return $http.get(this.url + '/health').error(new AuthInterceptor(this));
+        return $http.get('api/applications/' + this.id + '/health').error(new AuthInterceptor(this));
     };
 
     Application.prototype.getInfo = function () {
-        return $http.get(this.url + '/info').error(new AuthInterceptor(this));
+        return $http.get('api/applications/' + this.id + '/info').error(new AuthInterceptor(this));
     };
 
     Application.prototype.getMetrics = function () {
-        return $http.get(this.url + '/metrics').error(new AuthInterceptor(this));
+        return $http.get('api/applications/' + this.id + '/metrics').error(new AuthInterceptor(this));
     };
 
     Application.prototype.getEnv = function () {
-        return $http.get(this.url + '/env').error(new AuthInterceptor(this));
+        return $http.get('api/applications/' + this.id + '/env').error(new AuthInterceptor(this));
     };
 
     Application.prototype.getThreadDump = function () {
-        return $http.get(this.url + '/dump').error(new AuthInterceptor(this));
+        return $http.get('api/applications/' + this.id + '/dump').error(new AuthInterceptor(this));
     };
 
     Application.prototype.getTraces = function () {
-        return $http.get(this.url + '/trace').error(new AuthInterceptor(this));
+        return $http.get('api/applications/' + this.id + '/trace').error(new AuthInterceptor(this));
     };
 
     Application.prototype.hasLogfile = function () {
-        return $http.head(this.url + '/logfile').error(new AuthInterceptor(this));
+        return $http.head('api/applications/' + this.id + '/logfile').error(new AuthInterceptor(this));
     };
 
     return Application;

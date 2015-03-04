@@ -36,8 +36,9 @@ import de.codecentric.boot.admin.registry.ApplicationRegistryConflictException;
  * REST controller for controlling registration of managed applications.
  */
 @RestController
-@RequestMapping(value = "/api/applications")
+@RequestMapping(value = RegistryController.PATH)
 public class RegistryController {
+	public static final String PATH = "/api/applications";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RegistryController.class);
 

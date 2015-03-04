@@ -22,7 +22,11 @@ import java.util.Collection;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
+import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
+import de.codecentric.boot.admin.event.ClientApplicationUnregisteredEvent;
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.registry.store.ApplicationStore;
 
@@ -30,11 +34,12 @@ import de.codecentric.boot.admin.registry.store.ApplicationStore;
  * Registry for all applications that should be managed/administrated by the Spring Boot Admin application.
  * Backed by an ApplicationStore for persistence and an ApplicationIdGenerator for id generation.
  */
-public class ApplicationRegistry {
+public class ApplicationRegistry implements ApplicationContextAware {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationRegistry.class);
 
 	private final ApplicationStore store;
 	private final ApplicationIdGenerator generator;
+	private ApplicationContext context;
 
 	public ApplicationRegistry(ApplicationStore store, ApplicationIdGenerator generator) {
 		this.store = store;
@@ -59,6 +64,7 @@ public class ApplicationRegistry {
 
 		if (oldApp == null) {
 			LOGGER.info("New Application {} registered ", newApp);
+			context.publishEvent(new ClientApplicationRegisteredEvent(this, newApp));
 		} else {
 			if ((app.getUrl().equals(oldApp.getUrl()) && app.getName().equals(oldApp.getName()))) {
 				LOGGER.debug("Application {} refreshed", newApp);
@@ -121,7 +127,15 @@ public class ApplicationRegistry {
 	 */
 	public Application unregister(String id) {
 		Application app = store.delete(id);
-		LOGGER.info("Application {} unregistered ", app);
+		if (app != null) {
+			LOGGER.info("Application {} unregistered ", app);
+			context.publishEvent(new ClientApplicationUnregisteredEvent(this, app));
+		}
 		return app;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) {
+		this.context = applicationContext;
 	}
 }

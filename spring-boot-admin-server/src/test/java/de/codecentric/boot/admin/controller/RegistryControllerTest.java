@@ -23,6 +23,8 @@ import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -34,11 +36,14 @@ import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
 public class RegistryControllerTest {
 
 	private RegistryController controller;
+	private ApplicationRegistry registry;
 
 	@Before
 	public void setup() {
-		controller = new RegistryController(new ApplicationRegistry(new SimpleApplicationStore(),
-				new HashingApplicationUrlIdGenerator()));
+		registry = new ApplicationRegistry(new SimpleApplicationStore(),
+				new HashingApplicationUrlIdGenerator());
+		registry.setApplicationContext(Mockito.mock(ApplicationContext.class));
+		controller = new RegistryController(registry);
 	}
 
 	@Test
