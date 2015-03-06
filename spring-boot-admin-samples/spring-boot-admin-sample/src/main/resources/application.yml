@@ -9,7 +9,7 @@ spring:
     name: @pom.artifactId@
   boot:
     admin:
-      url=http://localhost:8080
+      url: http://localhost:8080
   cloud:
     config:
       enabled: false
