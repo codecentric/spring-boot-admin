@@ -37,7 +37,7 @@
         <module>spring-boot-admin-server</module>
         <module>spring-boot-admin-server-ui</module>
         <module>spring-boot-admin-samples</module>
-        <module>spring-boot-starter-admin-client</module>
+        <module>spring-boot-admin-starter-client</module>
     </modules>
 
     <organization>
@@ -208,7 +208,7 @@
             </dependency>
             <dependency>
                 <groupId>de.codecentric</groupId>
-                <artifactId>spring-boot-starter-admin-client</artifactId>
+                <artifactId>spring-boot-admin-starter-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

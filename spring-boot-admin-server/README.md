@@ -31,7 +31,7 @@ public class Application {
 ```
 
 ## Spring Cloud DiscoveryClient support
-The Spring Boot Admin Server is capable of using  Spring Clouds DiscoveryClient to discover applications. When you do this the clients don't have to include the spring-boot-starter-admin-client. You just have to configure a DiscoveryClient - everything else is done by AutoConfiguration.
+The Spring Boot Admin Server is capable of using  Spring Clouds DiscoveryClient to discover applications. When you do this the clients don't have to include the spring-boot-admin-starter-client. You just have to configure a DiscoveryClient - everything else is done by AutoConfiguration.
 See the [discovery sample project](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-discovery) in this repository.
 
 One note: If you omit the Spring Boot Admin Client in you Client Applications you can't download the logfile (but hopefully my pull request will make it into Spring Boot 1.3.0);
