@@ -39,6 +39,14 @@ module.exports = function ($scope, $interval, application, MetricsHelper) {
             $scope.health = health;
         });
 
+    $scope.isHealthDetail = function (key, value) {
+        return key !== 'status' && value !== null && (Array.isArray(value) || typeof value !== 'object');
+    };
+
+    $scope.isChildHealth = function (key, health) {
+        return health !== null && !Array.isArray(health) && typeof health === 'object';
+    };
+
     application.getMetrics()
         .success(function (metrics) {
             $scope.metrics = metrics;

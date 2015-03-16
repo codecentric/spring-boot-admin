@@ -5,7 +5,7 @@
 <div class="container-fluid" style="margin: 0 auto; width: 960px;">
     <div class="span6">
         <table class="table">
-         <thead><tr><th>Application</th><th><small class="pull-right"><a href="{{ application.url }}/info">raw JSON</a></small></th></tr></thead>
+         <thead><tr><th colspan="2">Application <small class="pull-right"><a href="{{ application.url }}/info">raw JSON</a></small></th></tr></thead>
         <tbody>
           <tr ng-repeat="(key, value) in info" >
             <td>{{ key }}</td><td>{{ value }}</td>
@@ -17,34 +17,10 @@
      <div class="span6">
         <table class="table">
             <thead>
-                <tr><th>Health Checks</th><th><small class="pull-right"><a href="{{ application.url }}/health">raw JSON</a></small></th></tr>
+                <tr><th colspan="2">Health Checks <small class="pull-right"><a href="{{ application.url }}/health">raw JSON</a></small></th></tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Application</td><td><span class="status-{{health.status}}">{{ health.status }}</span></td>
-                </tr>
-
-                <tr ng-repeat-start="(indicator, details) in health" ng-if="indicator != 'status'">
-                    <td ng-if="indicator != 'db'">{{indicator | capitalize}}</td>
-                    <td ng-if="indicator == 'db'">Datasource</td>
-
-                    <td><span class="status-{{details.status}}">{{ details.status }}</span><br>
-                        <span ng-repeat="(key, value) in details" ng-if="indicator != 'db' && indicator != 'diskSpace' && key != 'status' && key != 'error'">{{ key | capitalize }}: {{value}}<br></span>
-                        <span ng-if="indicator == 'db' && details.database">{{ details.database }}</span>
-                        <span ng-if="indicator == 'diskSpace'">{{ health.diskSpace.free | humanBytes }} free / {{ health.diskSpace.threshold | humanBytes }} threshold</span>
-                    </td>
-                </tr>
-
-                <tr ng-repeat-start="(dbname, dbhealth) in details" ng-if="indicator == 'db' && dbname != 'status'  && dbname != 'error' && dbname != 'database' && dbname != 'hello'" >
-                   <td>- {{ dbname | capitalize }}</td>
-                   <td><span class="status-{{dbhealth.status}}">{{ dbhealth.status }}</span><br>
-                       {{dbhealth.database}}
-                   </td>
-                </tr>
-                <tr ng-repeat-end ng-if="dbhealth.error"><td colspan="2" class="alert alert-error" >{{ dbhealth.error }}</td></tr>
-
-                <tr ng-repeat-end ng-if="details.error"><td colspan="2" class="alert alert-error" >{{ details.error }}</td></tr>
-
+                <tr><td ng-init="name= 'Application'" ng-include="'health.html'"></td></tr>
             </tbody>
         </table>
     </div>
@@ -88,7 +64,7 @@
 
     <div class="span6">
       <table class="table">
-        <thead><tr><th>JVM</th><th><small class="pull-right"><a href="{{ application.url }}/metrics">raw JSON</a></small></th></tr></thead>
+        <thead><tr><th colspan="2">JVM <small class="pull-right"><a href="{{ application.url }}/metrics">raw JSON</a></small></th></tr></thead>
         <tbody>
           <tr ng-if="metrics['systemload.average'] != null && metrics['systemload.average'] >= 0.0">
             <td>Systemload</td>
@@ -171,3 +147,38 @@
       </div>
     </div>
 </div>
+
+<script type="text/ng-template" id="health.html">
+<dl class="health-status">
+    <dt>{{name | capitalize}} <span class="status-{{health.status}} pull-right">{{ health.status }}</span></dt>
+
+    <dd>
+        <table style="width:100%;">
+            <tr ng-repeat="(key, value) in health" ng-if="isHealthDetail(key, value)" ng-class="{'error': key == 'error'}">
+                <td>{{key | capitalize}}</td><td>{{value | joinArray:', '}}</td>
+            </tr>
+        </table>
+    </dd>
+
+    <dd ng-repeat="(name, health) in health" ng-if="isChildHealth(name, health)" >
+        <ng-include src="'health.html'" ng-if="name != 'diskSpace'"></ng-include>
+        <ng-include src="'health-diskSpace.html'" ng-if="name == 'diskSpace'"></ng-include>
+    </dd>
+</dl>
+</script>
+
+<script type="text/ng-template" id="health-diskSpace.html">
+<dl class="health-status">
+    <dt>{{name | capitalize}} <span class="status-{{health.status}} pull-right">{{ health.status }}</span></dt>
+    <dd>
+        <table style="width:100%;">
+            <tr>
+                <td>Free</td><td>{{ health.free | humanBytes }}</td>
+            </tr>
+            <tr>
+                <td>Threshold</td><td>{{ health.threshold | humanBytes }}</td>
+            </tr>
+        </table>
+    </dd>
+</dl>
+</script>
