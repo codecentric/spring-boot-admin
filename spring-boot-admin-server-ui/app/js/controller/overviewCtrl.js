@@ -35,7 +35,7 @@ module.exports = function ($scope, $location, $interval, $q, Application) {
             .error(function (response, httpStatus) {
                 if (httpStatus === 503) {
                     app.status = response.status;
-                } else if (httpStatus === 404 || httpStatus === 0) {
+                } else if (httpStatus === 404 || httpStatus === 0 || (httpStatus === 500 && response.exception === 'java.net.ConnectException')) {
                     app.status = 'OFFLINE';
                 } else {
                     app.status = 'UNKNOWN';
