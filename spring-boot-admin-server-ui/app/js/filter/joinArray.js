@@ -17,7 +17,7 @@
 
 module.exports = function () {
     return function (input, separator) {
-        if (! Array.isArray(input) ) {
+        if (!Array.isArray(input) ) {
             return input;
         } else {
             return input.join(separator);

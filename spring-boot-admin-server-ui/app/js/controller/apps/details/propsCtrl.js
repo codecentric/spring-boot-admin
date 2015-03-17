@@ -22,7 +22,7 @@ module.exports = function ($scope, application) {
         .success(function (env) {
             $scope.props = [];
             for (var attr in env) {
-                if (attr.indexOf('[') !== -1 && attr.indexOf('.properties]') !== -1) {
+                if (attr.indexOf('[') !== -1 && (attr.indexOf('.properties]') !== -1 || attr.indexOf('.yml]'))) {
                     $scope.props.push({
                         key: attr,
                         value: env[attr]
