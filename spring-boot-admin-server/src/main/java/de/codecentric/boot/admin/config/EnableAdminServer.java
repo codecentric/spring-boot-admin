@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Import;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(WebappConfig.class)
+@Import(AdminServerWebConfiguration.class)
 public @interface EnableAdminServer {
 
 }

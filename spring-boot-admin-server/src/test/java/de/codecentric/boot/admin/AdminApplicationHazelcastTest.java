@@ -63,9 +63,9 @@ public class AdminApplicationHazelcastTest {
 	public void setup() throws InterruptedException {
 		System.setProperty("hazelcast.wait.seconds.before.join", "0");
 		instance1 = (EmbeddedWebApplicationContext) SpringApplication.run(TestAdminApplication.class, new String[] {
-			"--server.port=0", "--spring.jmx.enabled=false", "--spring.boot.admin.hazelcast.enable=true" });
+				"--server.port=0", "--spring.jmx.enabled=false", "--spring.boot.admin.hazelcast.enabled=true" });
 		instance2 = (EmbeddedWebApplicationContext) SpringApplication.run(TestAdminApplication.class, new String[] {
-			"--server.port=0", "--spring.jmx.enabled=false", "--spring.boot.admin.hazelcast.enable=true" });
+				"--server.port=0", "--spring.jmx.enabled=false", "--spring.boot.admin.hazelcast.enabled=true" });
 	}
 
 	@After

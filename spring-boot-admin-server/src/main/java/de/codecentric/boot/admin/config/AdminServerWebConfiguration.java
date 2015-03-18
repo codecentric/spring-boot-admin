@@ -46,6 +46,7 @@ import org.springframework.cloud.netflix.zuul.filters.pre.Servlet30WrapperFilter
 import org.springframework.cloud.netflix.zuul.filters.route.SimpleHostRoutingFilter;
 import org.springframework.cloud.netflix.zuul.web.ZuulController;
 import org.springframework.cloud.netflix.zuul.web.ZuulHandlerMapping;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
@@ -65,6 +66,8 @@ import com.netflix.zuul.ZuulFilter;
 
 import de.codecentric.boot.admin.controller.RegistryController;
 import de.codecentric.boot.admin.discovery.ApplicationDiscoveryListener;
+import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
+import de.codecentric.boot.admin.event.ClientApplicationUnregisteredEvent;
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.registry.ApplicationIdGenerator;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
@@ -76,7 +79,7 @@ import de.codecentric.boot.admin.zuul.ApplicationRouteLocator;
 import de.codecentric.boot.admin.zuul.ApplicationRouteRefreshListener;
 
 @Configuration
-public class WebappConfig extends WebMvcConfigurerAdapter {
+public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter {
 
 	/**
 	 * Add JSON MessageConverter to send JSON objects to web clients.
@@ -213,7 +216,7 @@ public class WebappConfig extends WebMvcConfigurerAdapter {
 		}
 
 		@Bean
-		ApplicationRouteRefreshListener applicationRouteRefreshListener() {
+		public ApplicationRouteRefreshListener applicationRouteRefreshListener() {
 			return new ApplicationRouteRefreshListener(routeLocator(), zuulHandlerMapping(routeLocator()));
 		}
 
@@ -235,9 +238,9 @@ public class WebappConfig extends WebMvcConfigurerAdapter {
 
 	@Configuration
 	@ConditionalOnClass({ Hazelcast.class })
-	@ConditionalOnProperty(prefix = "spring.boot.admin.hazelcast", name = "enable", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.boot.admin.hazelcast", name = "enabled", matchIfMissing = true)
 	@AutoConfigureBefore(SimpleStoreConfig.class)
-	public static class HazelcastStoreConfig {
+	public static class HazelcastStoreConfiguration {
 
 		@Value("${spring.boot.admin.hazelcast.map:spring-boot-admin-application-store}")
 		private String hazelcastMapName;
@@ -270,44 +273,36 @@ public class WebappConfig extends WebMvcConfigurerAdapter {
 
 		private static class ApplicationEntryListener implements EntryListener<String, Application> {
 			@Autowired
-			private ZuulHandlerMapping zuulHandlerMapping;
-
-			@Autowired
-			private ApplicationRouteLocator routeLocator;
-
-			private void reset() {
-				routeLocator.resetRoutes();
-				zuulHandlerMapping.registerHandlers();
-			}
+			ApplicationContext context;
 
 			@Override
 			public void entryAdded(EntryEvent<String, Application> event) {
-				reset();
+				context.publishEvent(new ClientApplicationRegisteredEvent(this,event.getValue()));
 			}
 
 			@Override
 			public void entryRemoved(EntryEvent<String, Application> event) {
-				reset();
+				context.publishEvent(new ClientApplicationUnregisteredEvent(this,event.getValue()));
 			}
 
 			@Override
 			public void entryUpdated(EntryEvent<String, Application> event) {
-				reset();
+				context.publishEvent(new ClientApplicationRegisteredEvent(this,event.getValue()));
 			}
 
 			@Override
 			public void entryEvicted(EntryEvent<String, Application> event) {
-				reset();
+				context.publishEvent(new ClientApplicationRegisteredEvent(this,null));
 			}
 
 			@Override
 			public void mapEvicted(MapEvent event) {
-				reset();
+				context.publishEvent(new ClientApplicationRegisteredEvent(this,null));
 			}
 
 			@Override
 			public void mapCleared(MapEvent event) {
-				reset();
+				context.publishEvent(new ClientApplicationRegisteredEvent(this,null));
 			}
 		}
 	}
@@ -316,7 +311,7 @@ public class WebappConfig extends WebMvcConfigurerAdapter {
 	@ConditionalOnClass({ DiscoveryClient.class })
 	@ConditionalOnProperty(prefix = "spring.boot.admin.discovery", name = "enabled", matchIfMissing = true)
 	@AutoConfigureAfter({ NoopDiscoveryClientAutoConfiguration.class })
-	public static class DiscoveryConfig {
+	public static class DiscoveryClientConfiguration {
 
 		@Value("${spring.boot.admin.discovery.management.context-path:}")
 		private String managementPath;
@@ -329,12 +324,10 @@ public class WebappConfig extends WebMvcConfigurerAdapter {
 
 		@Bean
 		ApplicationListener<ApplicationEvent> applicationDiscoveryListener() {
-			ApplicationDiscoveryListener listener = new ApplicationDiscoveryListener(
-					discoveryClient,
-					registry);
+			ApplicationDiscoveryListener listener = new ApplicationDiscoveryListener(discoveryClient, registry);
 			listener.setManagementContextPath(managementPath);
 			return listener;
 		}
-
 	}
+
 }

@@ -39,7 +39,7 @@ One note: If you omit the Spring Boot Admin Client in you Client Applications yo
 ### Further configuration
 Since the DiscoveryClient doesn't tell the management.context-path you can suffix the url for all discovered clients by setting ``spring.boot.admin.discovery.management.context-path``.
 
-Explictly disable DiscoveryClient support by setting ``spring.boot.admin.discover.enable=false``.
+Explictly disable DiscoveryClient support by setting ``spring.boot.admin.discover.enabled=false``.
 
 ## Hazelcast Support
 Spring Boot Admin Server supports cluster replication with Hazelcast.
@@ -93,6 +93,6 @@ Write xml-config hazelcast-config.xml:
 ```
 
 ### Further configuration
-Disable Hazelcast support by setting ``spring.boot.admin.hazelcast.enable=false``.
+Disable Hazelcast support by setting ``spring.boot.admin.hazelcast.enabled=false``.
 
 To alter the name of the Hazelcast-Map set ``spring.boot.admin.hazelcast.map= my-own-map-name``.
