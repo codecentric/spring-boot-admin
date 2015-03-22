@@ -8,12 +8,12 @@ Add the following dependency to your pom.xml.
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-server</artifactId>
-	<version>1.1.2</version>
+	<version>1.2.0</version>
 </dependency>
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-server-ui</artifactId>
-	<version>1.1.2</version>
+	<version>1.2.0</version>
 </dependency>
 ```
 

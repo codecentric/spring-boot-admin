@@ -20,6 +20,7 @@ This application provides a simple GUI to administrate Spring Boot applications 
 * Easy loggerlevel management
 * Interact with JMX-Beans
 * View Threaddump
+* View Traces
 
 #### Server application
 Add the following dependency to your pom.xml.
@@ -27,12 +28,12 @@ Add the following dependency to your pom.xml.
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-server</artifactId>
-	<version>1.1.2</version>
+	<version>1.2.0</version>
 </dependency>
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-server-ui</artifactId>
-	<version>1.1.2</version>
+	<version>1.2.0</version>
 </dependency>
 ```
 
@@ -52,22 +53,54 @@ See also the [example project](https://github.com/codecentric/spring-boot-admin/
 
 For configuring Hazelcast support see [spring-boot-admin-server](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-server/README.md) or [hazelcast-example project](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-hazelcast)
 
-#### Client applications
-Each application that want to register itself to the admin application has to include the [spring-boot-starter-admin-client](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-starter-admin-client) as dependency. This starter JAR includes some [AutoConfiguration](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#using-boot-auto-configuration "Spring Boot documentation") features that includes registering tasks, controller, etc.
+#### Register / Discover client applications
+To get all your boot applications shown in spring boot admin you have two choices:
+
+1) either you include the spring-boot-admint-starter-client into your applications
+
+or
+
+2) you add a DiscoveryClient (e.g. Eureka) to your spring boot admin server.
+
+**Note:** If you don't include the spring-boot-admin-starter-client the logfile won't be availible, due to the fact that the logfile endpoint won't be exposed.
+
+##### Register client applications via spring-boot-admin-starter-client
+Each application that want to register itself to the admin application has to include the [spring-boot-admin-starter-client](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-starter-client) as dependency. This starter JAR includes some [AutoConfiguration](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#using-boot-auto-configuration "Spring Boot documentation") features that includes registering tasks, controller, etc.
 ```xml
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-starter-admin-client</artifactId>
-	<version>1.1.2</version>
+	<version>1.2.0</version>
 </dependency>
 ```
-
 Inside your configuration (e.g. application.properties) you also have to define the URL of the Spring Boot Admin Server, e.g.
 ```
 spring.boot.admin.url=http://localhost:8080
 ```
+For all configuration options see [spring-boot-starter-admin-client](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-starter-client/README.md)
 
-For all configuration options see [spring-boot-starter-admin-client](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-starter-admin-client/README.md)
+##### Discover client applications via DiscoveryClient
+Just add spring-clouds ``@EnableDiscoveryClient`` annotation and include an appropriate implementation (e.g. Eureka) to your classpath.
+```java
+@Configuration
+@EnableAutoConfiguration
+@EnableDiscoveryClient
+@EnableAdminServer
+public class SpringBootAdminApplication {
+	public static void main(String[] args) {
+		SpringApplication.run(SpringBootAdminApplication.class, args);
+	}
+}
+```
+
+```xml
+<dependency>
+	<groupId>org.springframework.cloud</groupId>
+	<artifactId>spring-cloud-starter-eureka</artifactId>
+	<verion>1.0.0.RELEASE</version>
+</dependency>
+```
+See the sample [discovery sample project](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-discovery)
 
 
 #### Screenshots
