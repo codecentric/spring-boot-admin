@@ -69,7 +69,7 @@ Each application that want to register itself to the admin application has to in
 ```xml
 <dependency>
 	<groupId>de.codecentric</groupId>
-	<artifactId>spring-boot-starter-admin-client</artifactId>
+	<artifactId>spring-boot-admin-starter-client</artifactId>
 	<version>1.2.0</version>
 </dependency>
 ```
