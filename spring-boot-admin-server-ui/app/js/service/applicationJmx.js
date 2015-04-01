@@ -17,7 +17,7 @@
 
 module.exports = function ($rootScope, Abbreviator, jolokia) {
     this.list = function (app) {
-        return jolokia.list('/api/applications/' + app.id + '/jolokia/')
+        return jolokia.list('api/applications/' + app.id + '/jolokia/')
             .then(function (response) {
                 var domains = [];
                 for (var rDomainName in response.value) {
@@ -81,14 +81,14 @@ module.exports = function ($rootScope, Abbreviator, jolokia) {
     };
 
     this.readAllAttr = function (app, bean) {
-        return jolokia.read('/api/applications/' + app.id + '/jolokia/', bean.id);
+        return jolokia.read('api/applications/' + app.id + '/jolokia/', bean.id);
     };
 
     this.writeAttr = function (app, bean, attr, val) {
-        return jolokia.writeAttr('/api/applications/' + app.id + '/jolokia/', bean.id, attr, val);
+        return jolokia.writeAttr('api/applications/' + app.id + '/jolokia/', bean.id, attr, val);
     };
 
     this.invoke = function (app, bean, opname, args) {
-        return jolokia.exec('/api/applications/' + app.id + '/jolokia/', bean.id, opname, args);
+        return jolokia.exec('api/applications/' + app.id + '/jolokia/', bean.id, opname, args);
     };
 };
