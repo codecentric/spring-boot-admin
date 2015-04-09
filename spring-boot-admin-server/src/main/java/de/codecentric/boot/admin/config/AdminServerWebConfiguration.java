@@ -47,14 +47,17 @@ import org.springframework.cloud.netflix.zuul.filters.route.SimpleHostRoutingFil
 import org.springframework.cloud.netflix.zuul.web.ZuulController;
 import org.springframework.cloud.netflix.zuul.web.ZuulHandlerMapping;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hazelcast.config.Config;
 import com.hazelcast.core.EntryEvent;
 import com.hazelcast.core.EntryListener;
@@ -79,14 +82,32 @@ import de.codecentric.boot.admin.zuul.ApplicationRouteLocator;
 import de.codecentric.boot.admin.zuul.ApplicationRouteRefreshListener;
 
 @Configuration
-public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter {
+public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter implements ApplicationContextAware {
 
-	/**
-	 * Add JSON MessageConverter to send JSON objects to web clients.
-	 */
+	private ApplicationContext applicationContext;
+
 	@Override
-	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-		converters.add(new MappingJackson2HttpMessageConverter());
+	public void setApplicationContext(ApplicationContext applicationContext) {
+		this.applicationContext = applicationContext;
+	}
+
+	@Override
+	public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+		if (!hasConverter(converters, MappingJackson2HttpMessageConverter.class)) {
+			ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().applicationContext(this.applicationContext)
+					.build();
+			converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
+		}
+	}
+
+	private boolean hasConverter(List<HttpMessageConverter<?>> converters,
+			Class<? extends HttpMessageConverter<?>> clazz) {
+		for (HttpMessageConverter<?> converter : converters) {
+			if (clazz.isInstance(converter)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
