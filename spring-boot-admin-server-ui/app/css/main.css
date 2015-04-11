@@ -5,14 +5,12 @@ body {
   font-family: "Varela Round",sans-serif;
 }
 
-.container-fluid {
-  margin: 0 auto;
-}
 
-.main-body--wrapper {
+.content {
   margin-top: 50px;
   margin-bottom: 50px;
 }
+
 
 .center-block {
   display: block;
@@ -21,16 +19,16 @@ body {
 }
 
 a {
-    color: #5fa134;
+  color: #5fa134;
 }
 
 a:hover,
 a:active {
-    color: #5fa134;
+  color: #5fa134;
 }
 
 pre {
-	white-space: pre;
+  white-space: pre;
 }
 
 /** HEADER **/
@@ -82,24 +80,6 @@ pre {
   color: #eeeeee;
   background-color: #6db33f;
 }
-.header--navbar .navbar-inner .navbar-link.nav-search {
-  padding: 20px 0 23px;
-}
-.header--navbar .navbar-inner .navbar-link.nav-search .navbar-search--icon {
-  color: #eeeeee;
-  font-size: 24px;
-  padding: 3px 16px 3px 18px;
-  cursor: pointer;
-}
-.header--navbar .navbar-inner .navbar-link.nav-search:hover .navbar-search--icon {
-  text-shadow: 0 0 10px #6db33f;
-}
-.header--navbar .navbar-inner .navbar-link.nav-search .search-input-close {
-  display: none;
-}
-.header--navbar .navbar-inner .navbar-link.nav-search.js-highlight {
-  background-color: #6db33f;
-}
 
 a.spring-logo {
   background: url("../img/spring-logo.png") -1px -1px no-repeat;
@@ -119,6 +99,7 @@ a.spring-logo span {
 a:hover.spring-logo span {
   opacity: 1;
 }
+
 
 /** FOOTER **/
 .footer {

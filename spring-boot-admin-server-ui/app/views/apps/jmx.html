@@ -1,7 +1,7 @@
-<div class="alert alert-error" ng-if="error">
-	<b>Error:</b> {{ error }}
-</div>
-<div class="container">
+<div class="container content">
+	<div class="alert alert-error" ng-if="error">
+		<b>Error:</b> {{ error }}
+	</div>
 	<accordion close-others="true">
 		<accordion-group ng-repeat="domain in domains track by domain.name">
 			<accordion-heading>
@@ -30,8 +30,8 @@
 								<button class="btn" type="button" ng-click="readAllAttr(bean)">read</button>
 							</legend>
 							<div ng-show="bean.error" class="alert alert-error">
-	  							<b>Error:</b> {{ bean.error }}
-	  						</div>
+								<b>Error:</b> {{ bean.error }}
+							</div>
 							<div class="control-group" ng-repeat="(name, attr) in bean.attributes track by name" ng-class="{error: attr.error}">
 								<label class="control-label" for="{{name}}"	style="word-break: break-all;">
 									{{name}}<br/>
@@ -91,19 +91,19 @@
 				</div>
 			</div>
 		</form>
- 	</div>
- 	<div class="modal-footer">
-   		<button class="btn" ng-click="$dismiss()" >Abort</button>
-   		<button class="btn btn-inverse" ng-click="$close()">Execute</button>
- 	</div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn" ng-click="$dismiss()" >Abort</button>
+		<button class="btn btn-inverse" ng-click="$close()">Execute</button>
+	</div>
 </script>
 	
 <script type="text/ng-template" id="invocationVariantDialog.html">
- 	<div class="modal-header">
-   		<h3>Variant for {{ invocation.opname }}</h3>
- 	</div>
- 	<div class="modal-body">
- 		<p>The method is overloaded. Please choose a variant.</p>
+	<div class="modal-header">
+		<h3>Variant for {{ invocation.opname }}</h3>
+	</div>
+	<div class="modal-body">
+		<p>The method is overloaded. Please choose a variant.</p>
 		<form>
 			<div class="control-group" >
 				<button class="btn btn-block" style="text-align: left; padding-left: 5px;" ng-repeat="op in invocation.opdesc" ng-click="$close(op)">
@@ -115,36 +115,36 @@
 				</button>
 			</div>
 		</form>
- 	</div>
- 	<div class="modal-footer">
-   		<button class="btn" ng-click="$dismiss()">Abort</button>
- 	</div>  		
+	</div>
+	<div class="modal-footer">
+		<button class="btn" ng-click="$dismiss()">Abort</button>
+	</div>
 </script>
 	
 <script type="text/ng-template" id="invocationResultDialog.html">
- 	<div class="modal-header">
-   		<h3>Executing {{ invocation.opname }}</h3>
- 	</div>
- 	<div class="modal-body" ng-switch="invocation.state">
- 		<div ng-switch-when="executing" class="progress progress-striped active">
- 			<div class="bar">executing ... </div>
+	<div class="modal-header">
+		<h3>Executing {{ invocation.opname }}</h3>
+	</div>
+	<div class="modal-body" ng-switch="invocation.state">
+		<div ng-switch-when="executing" class="progress progress-striped active">
+			<div class="bar">executing ... </div>
 		</div>
 		<div ng-switch-when="success" >
-  			<div class="alert alert-success">
-	  			<b>Success</b>
-  			</div>
-  			<h4>Result <small class="muted"> {{invocation.opdesc.ret}}</small></h4>
-  			<pre>{{ invocation.result | json }}</pre>
+			<div class="alert alert-success">
+				<b>Success</b>
+			</div>
+			<h4>Result <small class="muted"> {{invocation.opdesc.ret}}</small></h4>
+			<pre>{{ invocation.result | json }}</pre>
 		</div>
- 		<div ng-switch-when="error">
-  			<div class="alert alert-error">
-  				<b>Error:</b> {{ invocation.error }}
-  			</div>
-  			<h4>Stacktrace:</h4>
+		<div ng-switch-when="error">
+			<div class="alert alert-error">
+				<b>Error:</b> {{ invocation.error }}
+			</div>
+			<h4>Stacktrace:</h4>
 			<pre>{{ invocation.stacktrace }}</pre>
- 		</div>
- 	</div>
- 	<div class="modal-footer">
-   		<button class="btn" ng-click="$close()">Close</button>
- 	</div>  		
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn" ng-click="$close()">Close</button>
+	</div>
 </script>

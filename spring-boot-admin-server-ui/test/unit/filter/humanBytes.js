@@ -1,9 +1,7 @@
 'use strict';
 
 var chai = require('chai')
-  , expect = chai.expect
-  , sinon = require('sinon')
-  , sinonChai = require('sinon-chai');
+  , expect = chai.expect;
 
 var humanBytesFilter = require('../../../app/js/filter/humanBytes')();
 

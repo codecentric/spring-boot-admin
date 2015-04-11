@@ -1,7 +1,7 @@
-<div class="alert alert-error" ng-if="error">
-	<b>Error:</b> {{ error }}
-</div>
-<div class="container">
+<div class="container content">
+	<div class="alert alert-error" ng-if="error">
+		<b>Error:</b> {{ error }}
+	</div>
 	<div class="row">
 		<div class="span12 text-center" >
 			<form>
@@ -13,22 +13,22 @@
 		<div class="span12">
 			<div class="progress">
 				<div ng-if="threadStats.NEW  &gt; 0" class="bar bar-info" style="width:{{ threadStats.NEW / threadStats.total * 100 | number:2 }}%;">
-		              New {{ threadStats.NEW }}
+					New {{ threadStats.NEW }}
 				</div>
 				<div ng-if="threadStats.RUNNABLE &gt; 0" class="bar bar-success" style="width:{{ threadStats.RUNNABLE / threadStats.total * 100 | number:2 }}%;">
-		              Runnable {{ threadStats.RUNNABLE }}
+					Runnable {{ threadStats.RUNNABLE }}
 				</div>
 				<div ng-if="threadStats.BLOCKED &gt; 0" class="bar bar-danger" style="width:{{ threadStats.BLOCKED / threadStats.total * 100 | number:2 }}%;">
-		              Blocked {{ threadStats.BLOCKED }}
+					Blocked {{ threadStats.BLOCKED }}
 				</div>
 				<div ng-if="threadStats.WAITING &gt; 0" class="bar bar-warning" style="width:{{ threadStats.WAITING / threadStats.total * 100 | number:2 }}%;">
-		              Waiting {{ threadStats.WAITING }}
+					Waiting {{ threadStats.WAITING }}
 				</div>
 				<div ng-if="threadStats.TIMED_WAITING &gt; 0" class="bar bar-warning bar-striped" style="width:{{ threadStats.TIMED_WAITING / threadStats.total * 100 | number:2 }}%;">
-		             Timed waiting {{ threadStats.TIMED_WAITING }}
+					Timed waiting {{ threadStats.TIMED_WAITING }}
 				</div>
 				<div ng-if="threadStats.TERMINATED &gt; 0" class="bar bar-info" style="width:{{ threadStats.TERMINATED / threadStats.total * 100 | number:2 }}%;">
-		             Terminated {{ threadStats.TERMINATED }}
+					Terminated {{ threadStats.TERMINATED }}
 				</div>
 			</div>
 		</div>

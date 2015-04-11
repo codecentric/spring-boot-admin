@@ -5,9 +5,9 @@
 		</tr>
 	</thead>
 	<tbody>
-        <tr ng-repeat="counter in counters">
-            <td><simple-metric-bar for-metric="counter"  global-max="countersMax" ></simple-metric-bar></td>
-        </tr>
+		<tr ng-repeat="counter in counters">
+			<td><simple-metric-bar for-metric="counter"  global-max="countersMax" ></simple-metric-bar></td>
+		</tr>
 	</tbody>
 </table>
 <table class="table" ng-if="gauges.length > 0">
@@ -17,11 +17,11 @@
 		</tr>
 	</thead>
 	<tbody>
-        <tr ng-if="showRichGauges" ng-repeat="gauge in gauges">
-            <td><rich-metric-bar for-metric="gauge"  global-max="gaugesMax" ></rich-metric-bar></td>
-        </tr>
-        <tr ng-if="!showRichGauges" ng-repeat="gauge in gauges">
-            <td><simple-metric-bar for-metric="gauge"  global-max="gaugesMax" ></simple-metric-bar></td>
-        </tr>
+		<tr ng-if="showRichGauges" ng-repeat="gauge in gauges">
+			<td><rich-metric-bar for-metric="gauge"  global-max="gaugesMax" ></rich-metric-bar></td>
+		</tr>
+		<tr ng-if="!showRichGauges" ng-repeat="gauge in gauges">
+			<td><simple-metric-bar for-metric="gauge"  global-max="gaugesMax" ></simple-metric-bar></td>
+		</tr>
 	</tbody>
 </table>

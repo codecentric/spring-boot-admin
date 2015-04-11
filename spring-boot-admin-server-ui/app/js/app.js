@@ -31,7 +31,7 @@ var springBootAdmin = angular.module('springBootAdmin', [
     'ngResource',
     'ngRoute',
     'ui.router',
-    'ui.bootstrap',
+    'ui.bootstrap'
 ]);
 
 require('./controller');

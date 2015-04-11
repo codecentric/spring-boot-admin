@@ -1,19 +1,14 @@
-<div class="container" style="margin-bottom: 20px;">
-	<div class="row">
-		<div class="span12">
-			<h2 style="display: inline-block;">{{ application.name }}
-			<small>{{ application.url }}</small>
-			</h2>
-		</div>
-	</div>
-	<div class="row">		
-		<div class="span12 btn-group text-center">
-			<a class="btn" ng-class="{active: $state.includes('apps.details')}" ui-sref="apps.details.metrics({id: application.id})">Details</a>
-			<a class="btn" ui-sref-active="active" ui-sref="apps.logging({id: application.id})" >Logging</a></label>
-			<a class="btn" ui-sref-active="active" ui-sref="apps.jmx({id: application.id})">JMX</a></label>
-			<a class="btn" ui-sref-active="active" ui-sref="apps.threads({id: application.id})">Threads</a></label>
-			<a class="btn" ui-sref-active="active" ui-sref="apps.trace({id: application.id})">Trace</a></label>
-		</div>
+<div class="navbar">
+	<div class="navbar-inner">
+		<span class="brand">{{ application.name }}</span>
+		<ul class="nav pull-right">
+			<li class="navbar-link" ng-class="{active: $state.includes('apps.details')}"> <a ui-sref="apps.details.metrics({id: application.id})">Details</a></li>
+			<li class="navbar-link" ui-sref-active="active" ><a ui-sref="apps.logging({id: application.id})" >Logging</a></li>
+			<li class="navbar-link" ui-sref-active="active" ><a ui-sref="apps.jmx({id: application.id})">JMX</a></li>
+			<li class="navbar-link" ui-sref-active="active" ><a ui-sref="apps.threads({id: application.id})">Threads</a></li>
+			<li class="navbar-link" ui-sref-active="active" ><a ui-sref="apps.trace({id: application.id})">Trace</a></li>
+		</ul>
+		<small class="navbar-text">{{ application.url }}</small>
 	</div>
 </div>
 <div ui-view></div>
