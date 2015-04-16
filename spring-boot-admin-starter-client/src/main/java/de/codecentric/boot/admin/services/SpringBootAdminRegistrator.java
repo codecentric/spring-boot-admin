@@ -17,8 +17,13 @@ package de.codecentric.boot.admin.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.config.AdminClientProperties;
@@ -37,6 +42,9 @@ public class SpringBootAdminRegistrator {
 		this.clientProps = clientProps;
 		this.adminProps = adminProps;
 		this.template = template;
+		// Configure jackson to parse jaxb annotation in order to generate xml doc
+		MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+		template.getMessageConverters().add(converter);
 	}
 
 	private AdminClientProperties clientProps;
@@ -54,7 +62,14 @@ public class SpringBootAdminRegistrator {
 		String adminUrl = adminProps.getUrl() + '/' + adminProps.getContextPath();
 
 		try {
-			ResponseEntity<Application> response = template.postForEntity(adminUrl, app, Application.class);
+			// set headers
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<Application> entity = new HttpEntity<Application>(app, headers);
+
+
+			//ResponseEntity<Application> response = template.postForEntity(adminUrl, app, Application.class);
+			ResponseEntity<Application> response = template.exchange(adminUrl, HttpMethod.POST, entity, Application.class);
 
 			if (response.getStatusCode().equals(HttpStatus.CREATED)) {
 				LOGGER.debug("Application registered itself as {}", response.getBody());
