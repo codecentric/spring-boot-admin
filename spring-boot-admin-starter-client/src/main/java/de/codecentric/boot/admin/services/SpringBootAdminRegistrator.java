@@ -15,9 +15,14 @@
  */
 package de.codecentric.boot.admin.services;
 
+import java.util.Collections;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -32,6 +37,14 @@ public class SpringBootAdminRegistrator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SpringBootAdminRegistrator.class);
 
+	private static HttpHeaders HTTP_HEADERS = createHttpHeaders();
+
+	private AdminClientProperties clientProps;
+
+	private AdminProperties adminProps;
+
+	private final RestTemplate template;
+
 	public SpringBootAdminRegistrator(RestTemplate template, AdminProperties adminProps,
 			AdminClientProperties clientProps) {
 		this.clientProps = clientProps;
@@ -39,11 +52,12 @@ public class SpringBootAdminRegistrator {
 		this.template = template;
 	}
 
-	private AdminClientProperties clientProps;
-
-	private AdminProperties adminProps;
-
-	private final RestTemplate template;
+	private static HttpHeaders createHttpHeaders() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+		return HttpHeaders.readOnlyHttpHeaders(headers);
+	}
 
 	/**
 	 * Registers the client application at spring-boot-admin-server.
@@ -54,7 +68,8 @@ public class SpringBootAdminRegistrator {
 		String adminUrl = adminProps.getUrl() + '/' + adminProps.getContextPath();
 
 		try {
-			ResponseEntity<Application> response = template.postForEntity(adminUrl, app, Application.class);
+			ResponseEntity<Application> response = template.postForEntity(adminUrl,
+					new HttpEntity<Application>(app, HTTP_HEADERS), Application.class);
 
 			if (response.getStatusCode().equals(HttpStatus.CREATED)) {
 				LOGGER.debug("Application registered itself as {}", response.getBody());
