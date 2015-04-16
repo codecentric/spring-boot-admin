@@ -51,6 +51,15 @@ module.exports = function ($scope, $location, $interval, $q, Application) {
                 app.providesLogfile = false;
             });
     };
+    var getActiviti = function (app) {
+        return app.getActiviti()
+            .success(function () {
+                app.providesActiviti = true;
+            })
+            .error(function () {
+                app.providesActiviti = false;
+            });
+    };
 
     $scope.loadData = function () {
         Application.query(function (applications) {
@@ -63,11 +72,12 @@ module.exports = function ($scope, $location, $interval, $q, Application) {
                         app.version = $scope.applications[j].version;
                         app.status = $scope.applications[j].status;
                         app.providesLogfile = $scope.applications[j].providesLogfile;
+                        app.providesActiviti = $scope.applications[j].providesActiviti;
                         break;
                     }
                 }
                 app.refreshing = true;
-                $q.all(getInfo(app), getHealth(app), getLogfile(app))
+                $q.all(getInfo(app), getHealth(app), getLogfile(app), getActiviti(app))
                     .finally(function () {
                         app.refreshing = false;
                     });
