@@ -23,8 +23,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
+
 import org.junit.Test;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -45,15 +50,23 @@ public class SpringBootAdminRegistratorTest {
 		clientProps.setName("AppName");
 
 		RestTemplate restTemplate = mock(RestTemplate.class);
-		when(restTemplate.postForEntity(isA(String.class), isA(Application.class), eq(Application.class))).thenReturn(
-				new ResponseEntity<Application>(HttpStatus.CREATED));
+		when(
+				restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class),
+						eq(Application.class))).thenReturn(
+								new ResponseEntity<Application>(HttpStatus.CREATED));
 
 		SpringBootAdminRegistrator registrator = new SpringBootAdminRegistrator(restTemplate, adminProps, clientProps);
 		boolean result = registrator.register();
 
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
 		assertTrue(result);
 		verify(restTemplate).postForEntity("http://sba:8080/api/applications",
-				new Application("http://localhost:8080", "AppName"), Application.class);
+				new HttpEntity<Application>(new Application("http://localhost:8080",
+						"AppName"),
+						headers), Application.class);
 	}
 
 	@Test
