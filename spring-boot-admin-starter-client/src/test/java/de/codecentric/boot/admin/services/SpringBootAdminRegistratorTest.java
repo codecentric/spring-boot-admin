@@ -17,6 +17,7 @@ package de.codecentric.boot.admin.services;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
@@ -24,7 +25,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Test;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -45,15 +50,23 @@ public class SpringBootAdminRegistratorTest {
 		clientProps.setName("AppName");
 
 		RestTemplate restTemplate = mock(RestTemplate.class);
-		when(restTemplate.postForEntity(isA(String.class), isA(Application.class), eq(Application.class))).thenReturn(
+		when(restTemplate.exchange(isA(String.class), eq(HttpMethod.POST), isA(HttpEntity.class), eq(Application.class))).thenReturn(
 				new ResponseEntity<Application>(HttpStatus.CREATED));
+
 
 		SpringBootAdminRegistrator registrator = new SpringBootAdminRegistrator(restTemplate, adminProps, clientProps);
 		boolean result = registrator.register();
 
 		assertTrue(result);
-		verify(restTemplate).postForEntity("http://sba:8080/api/applications",
-				new Application("http://localhost:8080", "AppName"), Application.class);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<Application> entity = new HttpEntity<Application>(new Application("http://localhost:8080", "AppName"), headers);
+		verify(restTemplate).exchange("http://sba:8080/api/applications",
+									  HttpMethod.POST,
+									  entity,
+									  Application.class);
+
 	}
 
 	@Test
@@ -65,7 +78,7 @@ public class SpringBootAdminRegistratorTest {
 		clientProps.setName("AppName");
 
 		RestTemplate restTemplate = mock(RestTemplate.class);
-		when(restTemplate.postForEntity(isA(String.class), isA(Application.class), eq(Application.class))).thenThrow(
+		when(restTemplate.exchange(isA(String.class), isA(HttpMethod.class), isA(HttpEntity.class), eq(Application.class))).thenThrow(
 				new RestClientException("Error"));
 
 		SpringBootAdminRegistrator registrator = new SpringBootAdminRegistrator(restTemplate, adminProps, clientProps);
@@ -84,6 +97,8 @@ public class SpringBootAdminRegistratorTest {
 
 		RestTemplate restTemplate = mock(RestTemplate.class);
 		when(restTemplate.postForEntity(isA(String.class), isA(Application.class), eq(Application.class))).thenReturn(
+				new ResponseEntity<Application>(HttpStatus.CONFLICT));
+		when(restTemplate.exchange(isA(String.class), isA(HttpMethod.class), isA(HttpEntity.class), eq(Application.class))).thenReturn(
 				new ResponseEntity<Application>(HttpStatus.CONFLICT));
 
 		SpringBootAdminRegistrator registrator = new SpringBootAdminRegistrator(restTemplate, adminProps, clientProps);
