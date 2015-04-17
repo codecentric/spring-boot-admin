@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -38,10 +39,16 @@ import de.codecentric.boot.admin.config.AdminClientProperties;
 import de.codecentric.boot.admin.config.AdminProperties;
 import de.codecentric.boot.admin.model.Application;
 
-public class SpringBootAdminRegistratorTest {
+public class ApplicationRegistratorTest {
 
-	@Test
-	public void register_successful() {
+	private ApplicationRegistrator registrator;
+	private RestTemplate restTemplate;
+	private HttpHeaders headers;
+
+	@Before
+	public void setup() {
+		restTemplate = mock(RestTemplate.class);
+
 		AdminProperties adminProps = new AdminProperties();
 		adminProps.setUrl("http://sba:8080");
 
@@ -49,18 +56,21 @@ public class SpringBootAdminRegistratorTest {
 		clientProps.setUrl("http://localhost:8080");
 		clientProps.setName("AppName");
 
-		RestTemplate restTemplate = mock(RestTemplate.class);
+		registrator = new ApplicationRegistrator(restTemplate, adminProps, clientProps);
+
+		headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+	}
+
+	@Test
+	public void register_successful() {
 		when(
 				restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class),
 						eq(Application.class))).thenReturn(
 								new ResponseEntity<Application>(HttpStatus.CREATED));
 
-		SpringBootAdminRegistrator registrator = new SpringBootAdminRegistrator(restTemplate, adminProps, clientProps);
 		boolean result = registrator.register();
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
 		assertTrue(result);
 		verify(restTemplate).postForEntity("http://sba:8080/api/applications",
@@ -71,38 +81,26 @@ public class SpringBootAdminRegistratorTest {
 
 	@Test
 	public void register_failed() {
-		AdminProperties adminProps = new AdminProperties();
-		adminProps.setUrl("http://sba:8080");
-		AdminClientProperties clientProps = new AdminClientProperties();
-		clientProps.setUrl("http://localhost:8080");
-		clientProps.setName("AppName");
-
-		RestTemplate restTemplate = mock(RestTemplate.class);
 		when(restTemplate.postForEntity(isA(String.class), isA(Application.class), eq(Application.class))).thenThrow(
 				new RestClientException("Error"));
 
-		SpringBootAdminRegistrator registrator = new SpringBootAdminRegistrator(restTemplate, adminProps, clientProps);
 		boolean result = registrator.register();
 
 		assertFalse(result);
 	}
 
 	@Test
-	public void register_failed_conflict() {
-		AdminProperties adminProps = new AdminProperties();
-		adminProps.setUrl("http://sba:8080");
-		AdminClientProperties clientProps = new AdminClientProperties();
-		clientProps.setUrl("http://localhost:8080");
-		clientProps.setName("AppName");
+	public void deregister() {
+		when(
+				restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class),
+				eq(Application.class))).thenReturn(
+						new ResponseEntity<Application>(new Application("http://test", "url",
+								"-id-"), HttpStatus.CREATED));
 
-		RestTemplate restTemplate = mock(RestTemplate.class);
-		when(restTemplate.postForEntity(isA(String.class), isA(Application.class), eq(Application.class))).thenReturn(
-				new ResponseEntity<Application>(HttpStatus.CONFLICT));
+		registrator.register();
+		registrator.deregister();
 
-		SpringBootAdminRegistrator registrator = new SpringBootAdminRegistrator(restTemplate, adminProps, clientProps);
-		boolean result = registrator.register();
-
-		assertFalse(result);
+		verify(restTemplate).delete("http://sba:8080/api/applications/-id-");
 	}
 
 }

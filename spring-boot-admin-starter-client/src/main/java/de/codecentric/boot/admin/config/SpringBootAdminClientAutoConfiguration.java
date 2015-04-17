@@ -29,7 +29,7 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.actuate.LogfileMvcEndpoint;
-import de.codecentric.boot.admin.services.SpringBootAdminRegistrator;
+import de.codecentric.boot.admin.services.ApplicationRegistrator;
 import de.codecentric.boot.admin.web.BasicAuthHttpRequestInterceptor;
 
 /**
@@ -46,8 +46,8 @@ public class SpringBootAdminClientAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public SpringBootAdminRegistrator registrator(AdminProperties adminProps, AdminClientProperties clientProps) {
-		return new SpringBootAdminRegistrator(createRestTemplate(adminProps), adminProps, clientProps);
+	public ApplicationRegistrator registrator(AdminProperties adminProps, AdminClientProperties clientProps) {
+		return new ApplicationRegistrator(createRestTemplate(adminProps), adminProps, clientProps);
 	}
 
 	protected RestTemplate createRestTemplate(AdminProperties adminProps) {
@@ -66,7 +66,7 @@ public class SpringBootAdminClientAutoConfiguration {
 	 * TaskRegistrar that triggers the RegistratorTask every ten seconds.
 	 */
 	@Bean
-	public ScheduledTaskRegistrar taskRegistrar(final SpringBootAdminRegistrator registrator, AdminProperties adminProps) {
+	public ScheduledTaskRegistrar taskRegistrar(final ApplicationRegistrator registrator, AdminProperties adminProps) {
 		ScheduledTaskRegistrar registrar = new ScheduledTaskRegistrar();
 
 		Runnable registratorTask = new Runnable() {

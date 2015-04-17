@@ -16,6 +16,7 @@
 package de.codecentric.boot.admin.services;
 
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,22 +34,25 @@ import de.codecentric.boot.admin.model.Application;
 /**
  * Registers the client application at spring-boot-admin-server
  */
-public class SpringBootAdminRegistrator {
+public class ApplicationRegistrator {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SpringBootAdminRegistrator.class);
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(ApplicationRegistrator.class);
 
 	private static HttpHeaders HTTP_HEADERS = createHttpHeaders();
 
-	private AdminClientProperties clientProps;
+	private final AtomicReference<Application> registeredSelf = new AtomicReference<Application>();
 
-	private AdminProperties adminProps;
+	private AdminClientProperties client;
+
+	private AdminProperties admin;
 
 	private final RestTemplate template;
 
-	public SpringBootAdminRegistrator(RestTemplate template, AdminProperties adminProps,
-			AdminClientProperties clientProps) {
-		this.clientProps = clientProps;
-		this.adminProps = adminProps;
+	public ApplicationRegistrator(RestTemplate template, AdminProperties admin,
+			AdminClientProperties client) {
+		this.client = client;
+		this.admin = admin;
 		this.template = template;
 	}
 
@@ -64,34 +68,59 @@ public class SpringBootAdminRegistrator {
 	 * @return true if successful
 	 */
 	public boolean register() {
-		Application app = createApplication();
-		String adminUrl = adminProps.getUrl() + '/' + adminProps.getContextPath();
+		Application self = createApplication();
+		String adminUrl = admin.getUrl() + '/' + admin.getContextPath();
 
 		try {
 			ResponseEntity<Application> response = template.postForEntity(adminUrl,
-					new HttpEntity<Application>(app, HTTP_HEADERS), Application.class);
+					new HttpEntity<Application>(self, HTTP_HEADERS), Application.class);
 
 			if (response.getStatusCode().equals(HttpStatus.CREATED)) {
-				LOGGER.debug("Application registered itself as {}", response.getBody());
+				if (registeredSelf.get() == null) {
+					if (registeredSelf.compareAndSet(null, response.getBody())) {
+						LOGGER.info("Application registered itself as {}", response.getBody());
+						return true;
+					}
+				}
+
+				LOGGER.debug("Application refreshed itself as {}", response.getBody());
 				return true;
 			}
-			else if (response.getStatusCode().equals(HttpStatus.CONFLICT)) {
-				LOGGER.warn("Application failed to registered itself as {} because of conflict in registry.", app);
-			}
 			else {
-				LOGGER.warn("Application failed to registered itself as {}. Response: {}", app, response.toString());
+				LOGGER.warn(
+						"Application failed to registered itself as {}. Response: {}",
+						self, response.toString());
 			}
 		}
 		catch (Exception ex) {
-			LOGGER.warn("Failed to register application as {} at spring-boot-admin ({}): {}", app, adminUrl,
-					ex.getMessage());
+			LOGGER.warn(
+					"Failed to register application as {} at spring-boot-admin ({}): {}",
+					self, adminUrl, ex.getMessage());
 		}
 
 		return false;
 	}
 
+	public void deregister() {
+		Application self = registeredSelf.get();
+		if (self != null) {
+			String adminUrl = admin.getUrl() + '/' + admin.getContextPath() + "/"
+					+ self.getId();
+
+			registeredSelf.set(null);
+
+			try {
+				template.delete(adminUrl);
+			}
+			catch (Exception ex) {
+				LOGGER.warn(
+						"Failed to deregister application as {} at spring-boot-admin ({}): {}",
+						self, adminUrl, ex.getMessage());
+			}
+		}
+	}
+
 	protected Application createApplication() {
-		Application app = new Application(clientProps.getUrl(), clientProps.getName());
-		return app;
+		return new Application(client.getUrl(), client.getName());
 	}
 }
