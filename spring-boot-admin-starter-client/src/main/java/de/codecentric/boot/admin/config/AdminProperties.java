@@ -30,12 +30,14 @@ public class AdminProperties {
 
 	private String password;
 
+	private boolean autoDeregistration;
+
 	public void setUrl(String url) {
 		this.url = url;
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the Spring Boot Admin Server's url.
 	 */
 	public String getUrl() {
@@ -54,7 +56,7 @@ public class AdminProperties {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the time interval (in ms) the registration is repeated.
 	 */
 	public int getPeriod() {
@@ -81,10 +83,23 @@ public class AdminProperties {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return password for basic authentication.
 	 */
 	public String getPassword() {
 		return password;
 	}
+
+	/**
+	 *
+	 * @return wether the application deregisters automatically on shutdown.
+	 */
+	public boolean isAutoDeregistration() {
+		return autoDeregistration;
+	}
+
+	public void setAutoDeregistration(boolean autoDeregistration) {
+		this.autoDeregistration = autoDeregistration;
+	}
+
 }

@@ -21,8 +21,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.ApplicationContextEvent;
+import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.ContextStartedEvent;
+import org.springframework.context.event.ContextStoppedEvent;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
@@ -46,17 +53,18 @@ public class SpringBootAdminClientAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public ApplicationRegistrator registrator(AdminProperties adminProps, AdminClientProperties clientProps) {
-		return new ApplicationRegistrator(createRestTemplate(adminProps), adminProps, clientProps);
+	public ApplicationRegistrator registrator(AdminProperties admin,
+			AdminClientProperties client) {
+		return new ApplicationRegistrator(createRestTemplate(admin), admin, client);
 	}
 
-	protected RestTemplate createRestTemplate(AdminProperties adminProps) {
+	protected RestTemplate createRestTemplate(AdminProperties admin) {
 		RestTemplate template = new RestTemplate();
 		template.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 
-		if (adminProps.getUsername() != null) {
+		if (admin.getUsername() != null) {
 			template.setInterceptors(Arrays.<ClientHttpRequestInterceptor> asList(new BasicAuthHttpRequestInterceptor(
-					adminProps.getUsername(), adminProps.getPassword())));
+					admin.getUsername(), admin.getPassword())));
 		}
 
 		return template;
@@ -66,19 +74,44 @@ public class SpringBootAdminClientAutoConfiguration {
 	 * TaskRegistrar that triggers the RegistratorTask every ten seconds.
 	 */
 	@Bean
-	public ScheduledTaskRegistrar taskRegistrar(final ApplicationRegistrator registrator, AdminProperties adminProps) {
+	public ScheduledTaskRegistrar taskRegistrar(final ApplicationRegistrator registrator,
+			final ConfigurableApplicationContext context,
+			AdminProperties admin) {
 		ScheduledTaskRegistrar registrar = new ScheduledTaskRegistrar();
 
 		Runnable registratorTask = new Runnable() {
 			@Override
 			public void run() {
-				registrator.register();
+				if (context.isActive()) {
+					registrator.register();
+				}
 			}
 		};
 
-		registrar.addFixedRateTask(registratorTask, adminProps.getPeriod());
+		registrar.addFixedRateTask(registratorTask, admin.getPeriod());
 		return registrar;
 	}
+
+	/**
+	 * ApplicationListener triggering rigestration after refresh/shutdown
+	 */
+	@Bean
+	public ApplicationListener<ApplicationContextEvent> RegistrationListener(
+			final ApplicationRegistrator registrator, final AdminProperties admin) {
+		return new ApplicationListener<ApplicationContextEvent>() {
+			public void onApplicationEvent(ApplicationContextEvent event) {
+				if (event instanceof ContextRefreshedEvent
+						|| event instanceof ContextStartedEvent) {
+					registrator.register();
+				}
+				else if (admin.isAutoDeregistration()
+						&& (event instanceof ContextClosedEvent || event instanceof ContextStoppedEvent)) {
+					registrator.deregister();
+				}
+			}
+		};
+	}
+
 
 	@Configuration
 	@ConditionalOnExpression("${endpoints.logfile.enabled:true}")

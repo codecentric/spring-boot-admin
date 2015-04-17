@@ -68,10 +68,11 @@ public class ApplicationRegistrator {
 	 * @return true if successful
 	 */
 	public boolean register() {
-		Application self = createApplication();
+		Application self = null;
 		String adminUrl = admin.getUrl() + '/' + admin.getContextPath();
-
 		try {
+			self = createApplication();
+
 			ResponseEntity<Application> response = template.postForEntity(adminUrl,
 					new HttpEntity<Application>(self, HTTP_HEADERS), Application.class);
 
