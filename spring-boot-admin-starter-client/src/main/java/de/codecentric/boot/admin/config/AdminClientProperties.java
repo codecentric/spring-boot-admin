@@ -23,12 +23,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
+import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ApplicationContextEvent;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.util.StringUtils;
 
 @ConfigurationProperties(prefix = "spring.boot.admin.client", ignoreUnknownFields = false)
-public class AdminClientProperties implements ApplicationListener<EmbeddedServletContainerInitializedEvent>{
+@Order(Ordered.LOWEST_PRECEDENCE - 100)
+public class AdminClientProperties implements ApplicationListener<ApplicationEvent> {
 
 	private String url;
 
@@ -45,16 +52,39 @@ public class AdminClientProperties implements ApplicationListener<EmbeddedServle
 
 	private int managementPort = -1;
 
+	private boolean serverInitialized = false;
 
 	@Override
-	public void onApplicationEvent(
-			EmbeddedServletContainerInitializedEvent event) {
-		if ("management".equals(event.getApplicationContext().getNamespace())) {
-			managementPort = event.getEmbeddedServletContainer().getPort();
-		} else {
-			serverPort = event.getEmbeddedServletContainer().getPort();
+	public void onApplicationEvent(ApplicationEvent event) {
+		if (event instanceof EmbeddedServletContainerInitializedEvent) {
+			EmbeddedServletContainerInitializedEvent initEvent = (EmbeddedServletContainerInitializedEvent) event;
+			serverInitialized = true;
+			if ("management".equals(initEvent.getApplicationContext().getNamespace())) {
+				managementPort = initEvent.getEmbeddedServletContainer().getPort();
+			} else {
+				serverPort = initEvent.getEmbeddedServletContainer().getPort();
+			}
+		} else if (startedDeployedWar(event)) {
+			serverInitialized = true;
+			if (!StringUtils.hasText(url)) {
+				throw new RuntimeException(
+						"spring.boot.admin.client.url must be set for deployed war files!");
+			}
 		}
 	}
+
+	private boolean startedDeployedWar(ApplicationEvent event) {
+		if (event instanceof ContextRefreshedEvent) {
+			ApplicationContextEvent contextEvent = (ApplicationContextEvent) event;
+			if (contextEvent.getApplicationContext() instanceof EmbeddedWebApplicationContext) {
+				EmbeddedWebApplicationContext context = (EmbeddedWebApplicationContext) contextEvent
+						.getApplicationContext();
+				return context.getEmbeddedServletContainer() == null;
+			}
+		}
+		return false;
+	}
+
 
 	/**
 	 * @return Client-management-URL to register with. Can be overriden in case the
@@ -63,12 +93,12 @@ public class AdminClientProperties implements ApplicationListener<EmbeddedServle
 	public String getUrl() {
 		if (url == null) {
 			if (managementPort != -1) {
-				url = "http://"
+				return "http://"
 						+ (getHostname() + ':' + managementPort + toPathFragment(management
 								.getContextPath()))
 								.replaceAll("//+", "/");
 			} else if (serverPort != -1){
-				url = "http://"
+				return "http://"
 						+ (getHostname()
 								+ ':'
 								+ serverPort
@@ -85,6 +115,10 @@ public class AdminClientProperties implements ApplicationListener<EmbeddedServle
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public boolean isServerInitialized() {
+		return serverInitialized;
 	}
 
 	/**

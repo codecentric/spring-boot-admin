@@ -21,15 +21,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.ApplicationContextEvent;
-import org.springframework.context.event.ContextClosedEvent;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.ContextStartedEvent;
-import org.springframework.context.event.ContextStoppedEvent;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
@@ -37,6 +30,7 @@ import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.actuate.LogfileMvcEndpoint;
 import de.codecentric.boot.admin.services.ApplicationRegistrator;
+import de.codecentric.boot.admin.services.RegistrationApplicationListener;
 import de.codecentric.boot.admin.web.BasicAuthHttpRequestInterceptor;
 
 /**
@@ -75,14 +69,13 @@ public class SpringBootAdminClientAutoConfiguration {
 	 */
 	@Bean
 	public ScheduledTaskRegistrar taskRegistrar(final ApplicationRegistrator registrator,
-			final ConfigurableApplicationContext context,
-			AdminProperties admin) {
+			AdminProperties admin, final AdminClientProperties client) {
 		ScheduledTaskRegistrar registrar = new ScheduledTaskRegistrar();
 
 		Runnable registratorTask = new Runnable() {
 			@Override
 			public void run() {
-				if (context.isActive()) {
+				if (client.isServerInitialized()) {
 					registrator.register();
 				}
 			}
@@ -93,25 +86,13 @@ public class SpringBootAdminClientAutoConfiguration {
 	}
 
 	/**
-	 * ApplicationListener triggering rigestration after refresh/shutdown
+	 * ApplicationListener triggering registration after refresh/shutdown
 	 */
 	@Bean
-	public ApplicationListener<ApplicationContextEvent> RegistrationListener(
+	public RegistrationApplicationListener registrationListener(
 			final ApplicationRegistrator registrator, final AdminProperties admin) {
-		return new ApplicationListener<ApplicationContextEvent>() {
-			public void onApplicationEvent(ApplicationContextEvent event) {
-				if (event instanceof ContextRefreshedEvent
-						|| event instanceof ContextStartedEvent) {
-					registrator.register();
-				}
-				else if (admin.isAutoDeregistration()
-						&& (event instanceof ContextClosedEvent || event instanceof ContextStoppedEvent)) {
-					registrator.deregister();
-				}
-			}
-		};
+		return new RegistrationApplicationListener(admin, registrator);
 	}
-
 
 	@Configuration
 	@ConditionalOnExpression("${endpoints.logfile.enabled:true}")
