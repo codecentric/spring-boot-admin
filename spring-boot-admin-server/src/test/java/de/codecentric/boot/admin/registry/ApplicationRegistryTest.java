@@ -38,45 +38,60 @@ public class ApplicationRegistryTest {
 		registry.setApplicationContext(Mockito.mock(ApplicationContext.class));
 	}
 
-	@Test(expected = NullPointerException.class)
-	public void registerFailed1() throws Exception {
-		registry.register(new Application(null, null));
-	}
-
-	@Test(expected = NullPointerException.class)
-	public void registerFailed2() throws Exception {
-		Application app = new Application(null, "abc");
-		registry.register(app);
+	@Test(expected = IllegalArgumentException.class)
+	public void registerFailed_null() throws Exception {
+		registry.register(null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void registerFailed3() throws Exception {
-		Application app = new Application("not-an-url", "abc");
-		registry.register(app);
+	public void registerFailed_no_name() throws Exception {
+		registry.register(new Application("http://localhost/health", "", "", ""));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void registerFailed_no_healthUrl() throws Exception {
+		registry.register(new Application("", "", "", "name"));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void registerFailed_invalid_healthUrl() throws Exception {
+		registry.register(new Application("not-an-url", "", "", "name"));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void registerFailed_invalid_mgmtUrl() throws Exception {
+		registry.register(new Application("http://localhost/health", "not-a-url", "",
+				"name"));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void registerFailed_invalid_svcUrl() throws Exception {
+		registry.register(new Application("http://localhost/health", "", "not-a-url",
+				"name"));
 	}
 
 	@Test
 	public void register() throws Exception {
-		Application app = new Application("http://localhost:8080", "abc");
-		Application response = registry.register(app);
+		Application app = registry.register(new Application(
+				"http://localhost:8080/health", "", "", "abc"));
 
-		assertEquals("http://localhost:8080", response.getUrl());
-		assertEquals("abc", response.getName());
-		assertNotNull(response.getId());
+		assertEquals("http://localhost:8080/health", app.getHealthUrl());
+		assertEquals("abc", app.getName());
+		assertNotNull(app.getId());
 	}
 
 	@Test
 	public void getApplication() throws Exception {
-		Application app = new Application("http://localhost:8080", "abc");
-		app = registry.register(app);
-
+		Application app = registry.register(new Application(
+				"http://localhost:8080/health", "http://localhost:8080/", "", "abc"));
 		assertEquals(app, registry.getApplication(app.getId()));
+		assertEquals("http://localhost:8080/", app.getManagementUrl());
 	}
 
 	@Test
 	public void getApplications() throws Exception {
-		Application app = new Application("http://localhost:8080", "abc");
-		app = registry.register(app);
+		Application app = registry.register(new Application(
+				"http://localhost:8080/health", "", "", "abc"));
 
 		Collection<Application> applications = registry.getApplications();
 		assertEquals(1, applications.size());
@@ -85,12 +100,12 @@ public class ApplicationRegistryTest {
 
 	@Test
 	public void getApplicationsByName() throws Exception {
-		Application app = new Application("http://localhost:8080", "abc");
-		app = registry.register(app);
-		Application app2 = new Application("http://localhost:8081", "abc");
-		app2 = registry.register(app2);
-		Application app3 = new Application("http://localhost:8082", "cba");
-		app3 = registry.register(app3);
+		Application app = registry.register(new Application(
+				"http://localhost:8080/health", "", "", "abc"));
+		Application app2 = registry.register(new Application(
+				"http://localhost:8081/health", "", "", "abc"));
+		Application app3 = registry.register(new Application(
+				"http://localhost:8082/health", "", "", "cba"));
 
 		Collection<Application> applications = registry.getApplicationsByName("abc");
 		assertEquals(2, applications.size());

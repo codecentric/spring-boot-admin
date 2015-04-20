@@ -17,57 +17,95 @@ package de.codecentric.boot.admin.model;
 
 import java.io.Serializable;
 
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * The domain model for all registered application at the spring boot admin application.
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Application implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private final String id;
-	private final String url;
 	private final String name;
+	private final String managementUrl;
+	private final String healthUrl;
+	private final String serviceUrl;
 
-	public Application(String url, String name) {
-		this(url, name, null);
+	public Application(String healthUrl, String managementUrl, String serviceUrl,
+			String name) {
+		this(healthUrl, managementUrl, serviceUrl, name, null);
+	}
+
+	public Application(String healthUrl, String managementUrl, String serviceUrl,
+			String name, String id) {
+		this.healthUrl = healthUrl;
+		this.managementUrl = managementUrl;
+		this.serviceUrl = serviceUrl;
+		this.name = name;
+		this.id = id;
 	}
 
 	@JsonCreator
-	public Application(@JsonProperty(value = "url", required = true) String url,
-			@JsonProperty(value = "name", required = true) String name, @JsonProperty("id") String id) {
-		this.url = url.replaceFirst("/+$", "");
-		this.name = name;
-		this.id = id;
+	public static Application create(@JsonProperty("url") String url,
+			@JsonProperty("managementUrl") String managementUrl,
+			@JsonProperty("healthUrl") String healthUrl,
+			@JsonProperty("serviceUrl") String serviceUrl,
+			@JsonProperty("name") String name,
+			@JsonProperty("id") String id) {
+
+		Assert.hasText(name, "name must not be empty!");
+		if (StringUtils.hasText(url)) {
+			// old format
+			return new Application(url.replaceFirst("/+$", "") + "/health", url, null,
+					name, id);
+		}
+		else {
+			Assert.hasText(healthUrl, "healthUrl must not be empty!");
+			return new Application(healthUrl, managementUrl, serviceUrl, name, id);
+		}
 	}
 
 	public String getId() {
 		return id;
 	}
 
-	public String getUrl() {
-		return url;
+	public String getName() {
+		return name;
+	}
+
+	public String getManagementUrl() {
+		return managementUrl;
+	}
+
+	public String getHealthUrl() {
+		return healthUrl;
+	}
+
+	public String getServiceUrl() {
+		return serviceUrl;
 	}
 
 	@Override
 	public String toString() {
-		return "[id=" + id + ", url=" + url + ", name=" + name + "]";
-	}
-
-	public String getName() {
-		return name;
+		return "Application [id=" + id + ", name=" + name + ", managementUrl="
+				+ managementUrl + ", healthUrl=" + healthUrl + ", serviceUrl="
+				+ serviceUrl + "]";
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((healthUrl == null) ? 0 : healthUrl.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result
+				+ ((managementUrl == null) ? 0 : managementUrl.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((url == null) ? 0 : url.hashCode());
+		result = prime * result + ((serviceUrl == null) ? 0 : serviceUrl.hashCode());
 		return result;
 	}
 
@@ -83,25 +121,44 @@ public class Application implements Serializable {
 			return false;
 		}
 		Application other = (Application) obj;
+		if (healthUrl == null) {
+			if (other.healthUrl != null) {
+				return false;
+			}
+		}
+		else if (!healthUrl.equals(other.healthUrl)) {
+			return false;
+		}
 		if (id == null) {
 			if (other.id != null) {
 				return false;
 			}
-		} else if (!id.equals(other.id)) {
+		}
+		else if (!id.equals(other.id)) {
+			return false;
+		}
+		if (managementUrl == null) {
+			if (other.managementUrl != null) {
+				return false;
+			}
+		}
+		else if (!managementUrl.equals(other.managementUrl)) {
 			return false;
 		}
 		if (name == null) {
 			if (other.name != null) {
 				return false;
 			}
-		} else if (!name.equals(other.name)) {
+		}
+		else if (!name.equals(other.name)) {
 			return false;
 		}
-		if (url == null) {
-			if (other.url != null) {
+		if (serviceUrl == null) {
+			if (other.serviceUrl != null) {
 				return false;
 			}
-		} else if (!url.equals(other.url)) {
+		}
+		else if (!serviceUrl.equals(other.serviceUrl)) {
 			return false;
 		}
 		return true;

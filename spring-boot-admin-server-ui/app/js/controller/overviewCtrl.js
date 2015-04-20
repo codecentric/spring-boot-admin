@@ -30,7 +30,7 @@ module.exports = function ($scope, $location, $interval, $q, Application) {
     var getHealth = function (app) {
         return app.getHealth()
             .success(function (response) {
-                app.status = response.status;
+                app.status = response.status || 'UP';
             })
             .error(function (response, httpStatus) {
                 if (httpStatus === 503) {

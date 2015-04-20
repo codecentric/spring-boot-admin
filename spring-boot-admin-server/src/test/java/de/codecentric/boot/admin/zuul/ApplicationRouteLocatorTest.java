@@ -15,7 +15,9 @@
  */
 package de.codecentric.boot.admin.zuul;
 
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,21 +39,55 @@ public class ApplicationRouteLocatorTest {
 	@Before
 	public void setup() {
 		registry = mock(ApplicationRegistry.class);
-		locator = new ApplicationRouteLocator("/", registry, new ZuulProperties(), "/api/applications");
+		locator = new ApplicationRouteLocator("/", registry, new ZuulProperties(),
+				"/api/applications");
+	}
+
+	@Test
+	public void locateRoutes_healthOnly() {
+		when(registry.getApplications()).thenReturn(
+				Collections.singletonList(new Application("http://localhost/health", "",
+						"", "app1", "1234")));
+
+		locator.resetRoutes();
+
+		assertEquals(1, locator.getRoutes().size());
+		assertEquals(Collections.singleton("/api/applications/1234/health/**"),
+				locator.getRoutePaths());
+
+		assertEquals("http://localhost/health",
+				locator.getRoutes().get("/api/applications/1234/health/**"));
+		assertEquals(new ProxyRouteLocator.ProxyRouteSpec("api/applications/1234/health",
+				"", "http://localhost/health", "/api/applications/1234/health",
+				null), locator.getMatchingRoute("/api/applications/1234/health"));
 	}
 
 	@Test
 	public void locateRoutes() {
 		when(registry.getApplications()).thenReturn(
-				Collections.singletonList(new Application("http://localhost", "app1", "1234")));
+				Collections.singletonList(new Application("http://localhost/health",
+						"http://localhost", "", "app1", "1234")));
 
 		locator.resetRoutes();
 
-		assertEquals(1, locator.getRoutes().size());
-		assertEquals("http://localhost", locator.getRoutes().get("/api/applications/1234/*/**"));
-		assertEquals(Collections.singleton("/api/applications/1234/*/**"), locator.getRoutePaths());
-		assertEquals(new ProxyRouteLocator.ProxyRouteSpec("api/applications/1234", "/*/**", "http://localhost",
-				"/api/applications/1234", null), locator.getMatchingRoute("/api/applications/1234/*/**"));
+		assertEquals(2, locator.getRoutes().size());
+
+		assertThat(locator.getRoutePaths(),
+				hasItems(
+						"/api/applications/1234/health/**",
+						"/api/applications/1234/*/**"));
+
+		assertEquals("http://localhost/health",
+				locator.getRoutes().get("/api/applications/1234/health/**"));
+		assertEquals(new ProxyRouteLocator.ProxyRouteSpec("api/applications/1234/health",
+				"", "http://localhost/health", "/api/applications/1234/health",
+				null), locator.getMatchingRoute("/api/applications/1234/health"));
+
+		assertEquals("http://localhost",
+				locator.getRoutes().get("/api/applications/1234/*/**"));
+		assertEquals(new ProxyRouteLocator.ProxyRouteSpec("api/applications/1234",
+				"/*/**", "http://localhost", "/api/applications/1234", null),
+				locator.getMatchingRoute("/api/applications/1234/*/**"));
 	}
 
 }

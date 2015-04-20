@@ -1,4 +1,4 @@
-<div class="navbar">
+<div class="navbar" style="margin-bottom: 0px;">
 	<div class="navbar-inner">
 		<span class="brand">{{ application.name }}</span>
 		<ul class="nav pull-right">
@@ -8,7 +8,15 @@
 			<li class="navbar-link" ui-sref-active="active" ><a ui-sref="apps.threads({id: application.id})">Threads</a></li>
 			<li class="navbar-link" ui-sref-active="active" ><a ui-sref="apps.trace({id: application.id})">Trace</a></li>
 		</ul>
-		<small class="navbar-text">{{ application.url }}</small>
+	</div>
+</div>
+<div class="navbar">
+	<div class="navbar-inner">
+		<ul class="nav" style="width: 100%;">
+			<li style="width: 33%; text-align: center;"><a href="{{ application.serviceUrl }}" title="Service URL"><i class="icon-home" ></i> {{ application.serviceUrl }}</a></li>
+			<li style="width: 33%; text-align: center;"><a href="{{ application.healthUrl }}" title="Health URL"><i class="icon-heart" ></i> {{ application.healthUrl }}</a></li>
+			<li style="width: 33%; text-align: center;"><a href="{{ application.managementUrl }}"  title="Management URL"><i class="icon-wrench"></i> {{ application.managementUrl }}</a></li>
+		</ul>
 	</div>
 </div>
 <div ui-view></div>

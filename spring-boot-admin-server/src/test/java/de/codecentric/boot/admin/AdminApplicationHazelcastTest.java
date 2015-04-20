@@ -63,9 +63,9 @@ public class AdminApplicationHazelcastTest {
 	public void setup() throws InterruptedException {
 		System.setProperty("hazelcast.wait.seconds.before.join", "0");
 		instance1 = (EmbeddedWebApplicationContext) SpringApplication.run(TestAdminApplication.class, new String[] {
-				"--server.port=0", "--spring.jmx.enabled=false", "--spring.boot.admin.hazelcast.enabled=true" });
+			"--server.port=0", "--spring.jmx.enabled=false", "--spring.boot.admin.hazelcast.enabled=true" });
 		instance2 = (EmbeddedWebApplicationContext) SpringApplication.run(TestAdminApplication.class, new String[] {
-				"--server.port=0", "--spring.jmx.enabled=false", "--spring.boot.admin.hazelcast.enabled=true" });
+			"--server.port=0", "--spring.jmx.enabled=false", "--spring.boot.admin.hazelcast.enabled=true" });
 	}
 
 	@After
@@ -76,9 +76,12 @@ public class AdminApplicationHazelcastTest {
 
 	@Test
 	public void test() {
-		Application app = new Application("http://127.0.0.1", "Hazelcast Test");
-		Application app2 = new Application("http://127.0.0.1:2", "Hazelcast Test");
-		Application app3 = new Application("http://127.0.0.1:3", "Do not find");
+		Application app = new Application("http://127.0.0.1/health", "", "",
+				"Hazelcast Test");
+		Application app2 = new Application("http://127.0.0.1:2/health", "", "",
+				"Hazelcast Test");
+		Application app3 = new Application("http://127.0.0.1:3/health", "", "",
+				"Do not find");
 
 		// publish app on instance1
 		ResponseEntity<Application> postResponse = registerApp(app, instance1);

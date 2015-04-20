@@ -24,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.event.ClientApplicationUnregisteredEvent;
@@ -53,21 +55,30 @@ public class ApplicationRegistry implements ApplicationContextAware {
 	 * @return the registered application.
 	 */
 	public Application register(Application app) {
-		Validate.notNull(app, "Application must not be null");
-		Validate.notNull(app.getUrl(), "URL must not be null");
-		Validate.isTrue(checkUrl(app.getUrl()), "URL is not valid");
+		Assert.notNull(app, "Application must not be null");
+		Assert.hasText(app.getName(), "Name must not be null");
+		Assert.hasText(app.getHealthUrl(), "Health-URL must not be null");
+		Assert.isTrue(checkUrl(app.getHealthUrl()), "Health-URL is not valid");
+		Assert.isTrue(
+				StringUtils.isEmpty(app.getManagementUrl())
+				|| checkUrl(app.getManagementUrl()), "URL is not valid");
+		Assert.isTrue(
+				StringUtils.isEmpty(app.getServiceUrl()) || checkUrl(app.getServiceUrl()),
+				"URL is not valid");
 
 		String applicationId = generator.generateId(app);
 		Validate.notNull(applicationId, "ID must not be null");
 
-		Application newApp = new Application(app.getUrl(), app.getName(), applicationId);
+		Application newApp = new Application(app.getHealthUrl(), app.getManagementUrl(),
+				app.getServiceUrl(), app.getName(), applicationId);
 		Application oldApp = store.save(newApp);
 
 		if (oldApp == null) {
 			LOGGER.info("New Application {} registered ", newApp);
 			context.publishEvent(new ClientApplicationRegisteredEvent(this, newApp));
 		} else {
-			if ((app.getUrl().equals(oldApp.getUrl()) && app.getName().equals(oldApp.getName()))) {
+			if ((newApp.getId().equals(oldApp.getId()) && app.getName().equals(
+					oldApp.getName()))) {
 				LOGGER.debug("Application {} refreshed", newApp);
 			} else {
 				LOGGER.warn("Application {} replaced by Application {}", newApp, oldApp);

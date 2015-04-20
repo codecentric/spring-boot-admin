@@ -37,10 +37,15 @@ import org.springframework.util.StringUtils;
 @Order(Ordered.LOWEST_PRECEDENCE - 100)
 public class AdminClientProperties implements ApplicationListener<ApplicationEvent> {
 
-	private String url;
+	private String managementUrl;
+	private String serviceUrl;
+	private String healthUrl;
 
 	@Value("${spring.application.name:spring-boot-application}")
 	private String name;
+
+	@Value("${endpoints.health.id:health}")
+	private String healthEndpointId;
 
 	@Autowired
 	private ManagementServerProperties management;
@@ -66,9 +71,9 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 			}
 		} else if (startedDeployedWar(event)) {
 			serverInitialized = true;
-			if (!StringUtils.hasText(url)) {
+			if (!StringUtils.hasText(serviceUrl)) {
 				throw new RuntimeException(
-						"spring.boot.admin.client.url must be set for deployed war files!");
+						"spring.boot.admin.client.serviceUrl must be set for deployed war files!");
 			}
 		}
 	}
@@ -88,33 +93,61 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 
 	/**
 	 * @return Client-management-URL to register with. Can be overriden in case the
-	 *         reachable URL is different (e.g. Docker). Must be unique in registry.
+	 * reachable URL is different (e.g. Docker). Must be unique in registry.
 	 */
-	public String getUrl() {
-		if (url == null) {
+	public String getManagementUrl() {
+		if (managementUrl == null) {
 			if (managementPort != -1) {
-				return "http://"
-						+ (getHostname() + ':' + managementPort + toPathFragment(management
-								.getContextPath()))
-								.replaceAll("//+", "/");
-			} else if (serverPort != -1){
-				return "http://"
-						+ (getHostname()
-								+ ':'
-								+ serverPort
-								+ toPathFragment(server.getContextPath()) + toPathFragment(management
-										.getContextPath())).replaceAll("//+", "/");
+				return createLocalUri(managementPort,
+						management.getContextPath());
+			}
+			else {
+				return append(getServiceUrl(), management.getContextPath());
+			}
+		}
+
+		return managementUrl;
+	}
+
+	public void setManagementUrl(String managementUrl) {
+		this.managementUrl = managementUrl;
+	}
+
+	/**
+	 * @return Client-health-URL to register with. Can be overriden in case the reachable
+	 * URL is different (e.g. Docker). Must be unique in registry.
+	 */
+
+	public String getHealthUrl() {
+		if (healthUrl == null) {
+			return append(getManagementUrl(), healthEndpointId);
+		}
+		return healthUrl;
+	}
+
+	public void setHealthUrl(String healthUrl) {
+		this.healthUrl = healthUrl;
+	}
+
+	/**
+	 * @return Client-service-URL to register with. Can be overriden in case the reachable
+	 * URL is different (e.g. Docker). Must be unique in registry.
+	 */
+	public String getServiceUrl() {
+		if (serviceUrl == null) {
+			if (serverPort != -1){
+				return createLocalUri(serverPort, server.getContextPath());
 			} else {
 				throw new IllegalStateException(
 						"EmbeddedServletContainer has not been initialized yet!");
 			}
 		}
 
-		return url;
+		return serviceUrl;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
+	public void setServiceUrl(String serviceUrl) {
+		this.serviceUrl = serviceUrl;
 	}
 
 	public boolean isServerInitialized() {
@@ -137,16 +170,21 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 			return InetAddress.getLocalHost().getCanonicalHostName();
 		}
 		catch (UnknownHostException ex) {
-			throw new IllegalStateException("Couldn't get hostname", ex);
+			throw new IllegalArgumentException(ex.getMessage(), ex);
 		}
 	}
 
-	private String toPathFragment(String fragment) {
-		if (StringUtils.isEmpty(fragment)) {
-			return "";
+	private String createLocalUri(int port, String path) {
+		return append("http://" + getHostname() + ":" + port + "/", path);
+	}
+
+	private String append(String uri, String path) {
+		if (StringUtils.isEmpty(path)) {
+			return uri;
 		}
-		else {
-			return "/" + fragment;
-		}
+
+		String baseUri = uri.endsWith("/") ? uri.replaceFirst("/+$", "") : uri;
+		return baseUri + (path.startsWith("/") ? "" : "/") + path
+				+ (path.endsWith("/") ? "" : "/");
 	}
 }

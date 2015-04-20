@@ -44,7 +44,7 @@ import de.codecentric.boot.admin.model.Application;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = TestAdminApplication.class)
-@WebIntegrationTest({ "server.port=0" })
+@WebIntegrationTest({ "server.port=0", "spring.cloud.config.enabled=false" })
 public class AdminApplicationTest {
 
 	@Value("${local.server.port}")
@@ -53,8 +53,8 @@ public class AdminApplicationTest {
 	@Test
 	public void testGetApplications() {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<List> entity = new TestRestTemplate().getForEntity("http://localhost:" + port
-				+ "/api/applications", List.class);
+		ResponseEntity<List> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + port + "/api/applications", List.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 	}
 
@@ -62,15 +62,21 @@ public class AdminApplicationTest {
 	public void testReverseProxy() {
 		String apiBaseUrl = "http://localhost:" + port + "/api/applications";
 
-		ResponseEntity<Application> entity = new TestRestTemplate().postForEntity(apiBaseUrl, new Application(
-				"http://localhost:" + port, "TestApp"), Application.class);
+		ResponseEntity<Application> entity = new TestRestTemplate().postForEntity(
+				apiBaseUrl, new Application("http://localhost:" + port + "/health",
+						"http://localhost:" + port, "", "TestApp"), Application.class);
 
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> health = new TestRestTemplate().getForEntity(apiBaseUrl + "/" + entity.getBody().getId()
-				+ "/info", Map.class);
-		assertEquals(HttpStatus.OK, health.getStatusCode());
-	}
+		ResponseEntity<Map> info = new TestRestTemplate().getForEntity(apiBaseUrl + "/"
+				+ entity.getBody().getId() + "/info", Map.class);
+		assertEquals(HttpStatus.OK, info.getStatusCode());
 
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> health = new TestRestTemplate().getForEntity(apiBaseUrl + "/"
+				+ entity.getBody().getId() + "/health", Map.class);
+		assertEquals(HttpStatus.OK, health.getStatusCode());
+
+	}
 
 	@Configuration
 	@EnableAutoConfiguration

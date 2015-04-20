@@ -32,7 +32,8 @@ public class HashingApplicationUrlIdGenerator implements ApplicationIdGenerator 
 	public String generateId(Application a) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-1");
-			byte[] bytes = digest.digest(a.getUrl().getBytes(StandardCharsets.UTF_8));
+			byte[] bytes = digest.digest(a.getHealthUrl()
+					.getBytes(StandardCharsets.UTF_8));
 			return new String(encodeHex(bytes, 0, 8));
 		}
 		catch (NoSuchAlgorithmException e) {

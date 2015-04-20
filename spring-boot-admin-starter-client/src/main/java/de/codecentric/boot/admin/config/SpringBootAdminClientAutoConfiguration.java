@@ -71,7 +71,6 @@ public class SpringBootAdminClientAutoConfiguration {
 	public ScheduledTaskRegistrar taskRegistrar(final ApplicationRegistrator registrator,
 			AdminProperties admin, final AdminClientProperties client) {
 		ScheduledTaskRegistrar registrar = new ScheduledTaskRegistrar();
-
 		Runnable registratorTask = new Runnable() {
 			@Override
 			public void run() {
@@ -98,6 +97,7 @@ public class SpringBootAdminClientAutoConfiguration {
 	@ConditionalOnExpression("${endpoints.logfile.enabled:true}")
 	@ConditionalOnProperty("logging.file")
 	public static class LogfileEndpointAutoConfiguration {
+
 		/**
 		 * Exposes the logfile as acutator endpoint
 		 */

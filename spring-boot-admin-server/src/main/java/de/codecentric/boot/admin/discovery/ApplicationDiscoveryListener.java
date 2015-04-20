@@ -40,6 +40,10 @@ public class ApplicationDiscoveryListener implements ApplicationListener<Applica
 
 	private String managementContextPath = "";
 
+	private String serviceContextPath = "";
+
+	private String healthEndpoint = "health";
+
 
 	public ApplicationDiscoveryListener(DiscoveryClient discoveryClient, ApplicationRegistry registry) {
 		this.discoveryClient = discoveryClient;
@@ -77,13 +81,28 @@ public class ApplicationDiscoveryListener implements ApplicationListener<Applica
 	}
 
 	private Application convert(ServiceInstance instance) {
-		String url = instance.getUri()
-				.resolve(managementContextPath.startsWith("/") ? managementContextPath : "/" + managementContextPath)
+		String managementUrl = instance.getUri()
+				.resolve(managementContextPath)
 				.toString();
-		return new Application(url, instance.getServiceId());
+		String serviceUrl = instance.getUri()
+				.resolve(serviceContextPath)
+				.toString();
+		String healthUrl = managementUrl + "/" + healthEndpoint;
+
+		return new Application(healthUrl, managementUrl, serviceUrl, instance.getServiceId());
 	}
 
 	public void setManagementContextPath(String managementContextPath) {
-		this.managementContextPath = managementContextPath;
+		this.managementContextPath = managementContextPath.startsWith("/") ? managementContextPath
+				: "/" + managementContextPath;
+	}
+
+	public void setServiceContextPath(String serviceContextPath) {
+		this.serviceContextPath = serviceContextPath.startsWith("/") ? serviceContextPath
+				: "/" + serviceContextPath;
+	}
+
+	public void setHealthEndpoint(String healthEndpoint) {
+		this.healthEndpoint = healthEndpoint;
 	}
 }

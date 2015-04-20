@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
+import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
@@ -40,7 +41,7 @@ public class AdminClientPropertiesTest {
 	@Test
 	public void test_isServerStarted_true_embedded() {
 		AdminClientProperties clientProperties = new AdminClientProperties();
-		clientProperties.setUrl("http://localhost");
+		clientProperties.setServiceUrl("http://localhost");
 		publishServletContainerInitializedEvent(clientProperties, 8080, null);
 		assertTrue(clientProperties.isServerInitialized());
 	}
@@ -48,7 +49,7 @@ public class AdminClientPropertiesTest {
 	@Test
 	public void test_isServerStarted_true_war() {
 		AdminClientProperties clientProperties = new AdminClientProperties();
-		clientProperties.setUrl("http://localhost");
+		clientProperties.setServiceUrl("http://localhost");
 		publishContextRefreshedEvent(clientProperties);
 		assertTrue(clientProperties.isServerInitialized());
 	}
@@ -61,15 +62,19 @@ public class AdminClientPropertiesTest {
 
 	@Test
 	public void test_mgmtPortPath() {
-		load("management.contextPath=/admin");
+		load("management.contextPath=/admin", "endpoints.health.id=alive");
 		AdminClientProperties clientProperties = new AdminClientProperties();
 		context.getAutowireCapableBeanFactory().autowireBean(clientProperties);
 
 		publishServletContainerInitializedEvent(clientProperties, 8080, null);
 		publishServletContainerInitializedEvent(clientProperties, 8081, "management");
 
-		assertThat(clientProperties.getUrl(), is("http://" + getHostname()
-				+ ":8081/admin"));
+		assertThat(clientProperties.getManagementUrl(), is("http://" + getHostname()
+				+ ":8081/admin/"));
+		assertThat(clientProperties.getHealthUrl(), is("http://" + getHostname()
+				+ ":8081/admin/alive/"));
+		assertThat(clientProperties.getServiceUrl(), is("http://" + getHostname()
+				+ ":8080/"));
 	}
 
 	@Test
@@ -81,7 +86,12 @@ public class AdminClientPropertiesTest {
 		publishServletContainerInitializedEvent(clientProperties, 8080, null);
 		publishServletContainerInitializedEvent(clientProperties, 8081, "management");
 
-		assertThat(clientProperties.getUrl(), is("http://" + getHostname() + ":8081"));
+		assertThat(clientProperties.getManagementUrl(), is("http://" + getHostname()
+				+ ":8081/"));
+		assertThat(clientProperties.getHealthUrl(), is("http://" + getHostname()
+				+ ":8081/health/"));
+		assertThat(clientProperties.getServiceUrl(), is("http://" + getHostname()
+				+ ":8080/"));
 	}
 
 	@Test
@@ -93,8 +103,12 @@ public class AdminClientPropertiesTest {
 
 		publishServletContainerInitializedEvent(clientProperties, 8080, null);
 
-		assertThat(clientProperties.getUrl(), is("http://" + getHostname()
-				+ ":8080/app/admin"));
+		assertThat(clientProperties.getManagementUrl(), is("http://" + getHostname()
+				+ ":8080/app/admin/"));
+		assertThat(clientProperties.getHealthUrl(), is("http://" + getHostname()
+				+ ":8080/app/admin/health/"));
+		assertThat(clientProperties.getServiceUrl(), is("http://" + getHostname()
+				+ ":8080/app/"));
 	}
 
 
@@ -104,10 +118,16 @@ public class AdminClientPropertiesTest {
 		AdminClientProperties clientProperties = new AdminClientProperties();
 		context.getAutowireCapableBeanFactory().autowireBean(clientProperties);
 
-		publishServletContainerInitializedEvent(clientProperties, 8080, null);
+		publishServletContainerInitializedEvent(clientProperties, 80, null);
 
-		assertThat(clientProperties.getUrl(), is("http://" + getHostname() + ":8080/app"));
+		assertThat(clientProperties.getManagementUrl(), is("http://" + getHostname()
+				+ ":80/app/"));
+		assertThat(clientProperties.getHealthUrl(), is("http://" + getHostname()
+				+ ":80/app/health/"));
+		assertThat(clientProperties.getServiceUrl(), is("http://" + getHostname()
+				+ ":80/app/"));
 	}
+
 
 
 	@Test
@@ -118,7 +138,12 @@ public class AdminClientPropertiesTest {
 
 		publishServletContainerInitializedEvent(clientProperties, 8080, null);
 
-		assertThat(clientProperties.getUrl(), is("http://" + getHostname() + ":8080"));
+		assertThat(clientProperties.getManagementUrl(), is("http://" + getHostname()
+				+ ":8080/"));
+		assertThat(clientProperties.getHealthUrl(), is("http://" + getHostname()
+				+ ":8080/health/"));
+		assertThat(clientProperties.getServiceUrl(), is("http://" + getHostname()
+				+ ":8080/"));
 	}
 
 	private String getHostname() {
@@ -136,6 +161,7 @@ public class AdminClientPropertiesTest {
 		when(eventSource.getPort()).thenReturn(port);
 		EmbeddedWebApplicationContext eventContext = mock(EmbeddedWebApplicationContext.class);
 		when(eventContext.getNamespace()).thenReturn(namespace);
+
 		when(eventContext.getEmbeddedServletContainer()).thenReturn(eventSource);
 		client.onApplicationEvent(new EmbeddedServletContainerInitializedEvent(
 				eventContext,
@@ -149,6 +175,7 @@ public class AdminClientPropertiesTest {
 
 	private void load(String... environment) {
 		AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
+		applicationContext.register(PropertyPlaceholderAutoConfiguration.class);
 		applicationContext.register(ServerPropertiesAutoConfiguration.class);
 		applicationContext.register(ManagementServerPropertiesAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);

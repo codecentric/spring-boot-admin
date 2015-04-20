@@ -6,7 +6,7 @@
 	<div class="row">
 		<div class="span6">
 			<table class="table">
-				<thead><tr><th colspan="2">Application <small class="pull-right"><a href="{{ application.url }}/info">raw JSON</a></small></th></tr></thead>
+				<thead><tr><th colspan="2">Application <small class="pull-right"><a href="{{ application.managementUrl }}/info">raw JSON</a></small></th></tr></thead>
 				<tbody>
 					<tr ng-repeat="(key, value) in info" >
 						<td>{{ key }}</td><td>{{ value }}</td>
@@ -17,7 +17,7 @@
 		<div class="span6">
 			<table class="table">
 				<thead>
-					<tr><th colspan="2">Health Checks <small class="pull-right"><a href="{{ application.url }}/health">raw JSON</a></small></th></tr>
+					<tr><th colspan="2">Health Checks <small class="pull-right"><a href="{{ application.healthUrl }}">raw JSON</a></small></th></tr>
 				</thead>
 				<tbody>
 					<tr><td ng-init="name= 'Application'" ng-include="'health.html'"></td></tr>
@@ -63,7 +63,7 @@
 
 		<div class="span6">
 			<table class="table">
-				<thead><tr><th colspan="2">JVM <small class="pull-right"><a href="{{ application.url }}/metrics">raw JSON</a></small></th></tr></thead>
+				<thead><tr><th colspan="2">JVM <small class="pull-right"><a href="{{ application.managementUrl }}/metrics">raw JSON</a></small></th></tr></thead>
 				<tbody>
 					<tr ng-if="metrics['systemload.average'] != null && metrics['systemload.average'] >= 0.0">
 						<td>Systemload</td>

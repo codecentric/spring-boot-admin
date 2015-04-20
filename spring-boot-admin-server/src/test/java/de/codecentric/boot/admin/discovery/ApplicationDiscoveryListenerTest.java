@@ -62,7 +62,9 @@ public class ApplicationDiscoveryListenerTest {
 		assertEquals(1, registry.getApplications().size());
 		Application application = registry.getApplications().iterator().next();
 
-		assertEquals("http://localhost:80", application.getUrl());
+		assertEquals("http://localhost:80/health", application.getHealthUrl());
+		assertEquals("http://localhost:80", application.getManagementUrl());
+		assertEquals("http://localhost:80", application.getServiceUrl());
 		assertEquals("service", application.getName());
 	}
 
@@ -74,12 +76,16 @@ public class ApplicationDiscoveryListenerTest {
 						false)));
 
 		listener.setManagementContextPath("/mgmt");
+		listener.setServiceContextPath("/service");
+		listener.setHealthEndpoint("alive");
 		listener.onApplicationEvent(new InstanceRegisteredEvent<>(new Object(), null));
 
 		assertEquals(1, registry.getApplications().size());
 		Application application = registry.getApplications().iterator().next();
 
-		assertEquals("http://localhost:80/mgmt", application.getUrl());
+		assertEquals("http://localhost:80/mgmt/alive", application.getHealthUrl());
+		assertEquals("http://localhost:80/mgmt", application.getManagementUrl());
+		assertEquals("http://localhost:80/service", application.getServiceUrl());
 		assertEquals("service", application.getName());
 	}
 
