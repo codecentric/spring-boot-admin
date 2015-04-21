@@ -44,7 +44,7 @@
 					<artifactId>spring-cloud-starter-ribbon</artifactId>
 				</exclusion>
 				<exclusion>
-					<!-- ships old hamcres matchers -->
+					<!-- ships old hamcrest matchers -->
 					<groupId>org.mockito</groupId>
 					<artifactId>mockito-all</artifactId>
 				</exclusion>

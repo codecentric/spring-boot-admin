@@ -3,7 +3,7 @@ info:
   stage: test
 
 logging:
-  file: boot-admin-sample.log
+  file: target/boot-admin-sample.log
 
 spring:
   application:

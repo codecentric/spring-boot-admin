@@ -29,7 +29,8 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.actuate.LogfileMvcEndpoint;
-import de.codecentric.boot.admin.services.SpringBootAdminRegistrator;
+import de.codecentric.boot.admin.services.ApplicationRegistrator;
+import de.codecentric.boot.admin.services.RegistrationApplicationListener;
 import de.codecentric.boot.admin.web.BasicAuthHttpRequestInterceptor;
 
 /**
@@ -46,17 +47,18 @@ public class SpringBootAdminClientAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public SpringBootAdminRegistrator registrator(AdminProperties adminProps, AdminClientProperties clientProps) {
-		return new SpringBootAdminRegistrator(createRestTemplate(adminProps), adminProps, clientProps);
+	public ApplicationRegistrator registrator(AdminProperties admin,
+			AdminClientProperties client) {
+		return new ApplicationRegistrator(createRestTemplate(admin), admin, client);
 	}
 
-	protected RestTemplate createRestTemplate(AdminProperties adminProps) {
+	protected RestTemplate createRestTemplate(AdminProperties admin) {
 		RestTemplate template = new RestTemplate();
 		template.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 
-		if (adminProps.getUsername() != null) {
+		if (admin.getUsername() != null) {
 			template.setInterceptors(Arrays.<ClientHttpRequestInterceptor> asList(new BasicAuthHttpRequestInterceptor(
-					adminProps.getUsername(), adminProps.getPassword())));
+					admin.getUsername(), admin.getPassword())));
 		}
 
 		return template;
@@ -66,18 +68,30 @@ public class SpringBootAdminClientAutoConfiguration {
 	 * TaskRegistrar that triggers the RegistratorTask every ten seconds.
 	 */
 	@Bean
-	public ScheduledTaskRegistrar taskRegistrar(final SpringBootAdminRegistrator registrator, AdminProperties adminProps) {
+	public ScheduledTaskRegistrar taskRegistrar(final ApplicationRegistrator registrator,
+			AdminProperties admin, final AdminClientProperties client) {
 		ScheduledTaskRegistrar registrar = new ScheduledTaskRegistrar();
 
 		Runnable registratorTask = new Runnable() {
 			@Override
 			public void run() {
-				registrator.register();
+				if (client.isServerInitialized()) {
+					registrator.register();
+				}
 			}
 		};
 
-		registrar.addFixedRateTask(registratorTask, adminProps.getPeriod());
+		registrar.addFixedRateTask(registratorTask, admin.getPeriod());
 		return registrar;
+	}
+
+	/**
+	 * ApplicationListener triggering registration after refresh/shutdown
+	 */
+	@Bean
+	public RegistrationApplicationListener registrationListener(
+			final ApplicationRegistrator registrator, final AdminProperties admin) {
+		return new RegistrationApplicationListener(admin, registrator);
 	}
 
 	@Configuration
