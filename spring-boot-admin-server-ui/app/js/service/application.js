@@ -55,6 +55,10 @@ module.exports = function ($resource, $http, $rootScope) {
         return $http.get('api/applications/' + this.id + '/trace').error(new AuthInterceptor(this));
     };
 
+    Application.prototype.getActiviti = function () {
+        return $http.get('api/applications/' + this.id + '/activiti').error(new AuthInterceptor(this));
+    };
+
     Application.prototype.hasLogfile = function () {
         return $http.head('api/applications/' + this.id + '/logfile').error(new AuthInterceptor(this));
     };
