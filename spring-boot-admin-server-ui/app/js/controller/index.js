@@ -10,6 +10,7 @@ springBootAdmin.controller('detailsMetricsCtrl', require('./apps/details/metrics
 springBootAdmin.controller('detailsEnvCtrl', require('./apps/details/envCtrl'));
 springBootAdmin.controller('detailsPropsCtrl', require('./apps/details/propsCtrl'));
 springBootAdmin.controller('detailsClasspathCtrl', require('./apps/details/classpathCtrl'));
+springBootAdmin.controller('activitiCtrl', require('./apps/activitiCtrl'));
 springBootAdmin.controller('loggingCtrl', require('./apps/loggingCtrl'));
 springBootAdmin.controller('jmxCtrl', require('./apps/jmxCtrl'));
 springBootAdmin.controller('threadsCtrl', require('./apps/threadsCtrl'));

@@ -17,4 +17,12 @@
 
 module.exports = function ($scope, application) {
     $scope.application = application;
+
+    application.getActiviti()
+            .success(function () {
+                $scope.application.providesActiviti = true;
+            })
+            .error(function () {
+                $scope.application.providesActiviti = false;
+            });
 };

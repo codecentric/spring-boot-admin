@@ -21,3 +21,23 @@ npm install
 gulp watch
 ```
 
+#### Building on windows
+
+Install gulp globally  - http://omcfarlane.co.uk/install-gulp-js-windows/
+
+Update the maven pom to run gulp directly
+```shell
+    <configuration>
+        <executable>gulp</executable>
+        <arguments>
+            <argument>--skipTests=${skipTests}</argument>
+        </arguments>
+    </configuration>
+```
+
+Update the packages json
+```shell
+    "postinstall": "node node_modules/protractor/bin/webdriver-manager update",
+    "pretest": "node node_modules/protractor/bin/webdriver-manager start &",
+    "test": "node node_modules/gulp/bin/gulp.js"
+```

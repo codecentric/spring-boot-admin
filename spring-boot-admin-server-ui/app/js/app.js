@@ -93,6 +93,11 @@ springBootAdmin.config(function ($stateProvider, $urlRouterProvider) {
             templateUrl: 'views/apps/details/classpath.html',
             controller: 'detailsClasspathCtrl'
         })
+        .state('apps.activiti', {
+            url: '/activiti',
+            templateUrl: 'views/apps/activiti.html',
+            controller: 'activitiCtrl'
+        })
         .state('apps.logging', {
             url: '/logging',
             templateUrl: 'views/apps/logging.html',
