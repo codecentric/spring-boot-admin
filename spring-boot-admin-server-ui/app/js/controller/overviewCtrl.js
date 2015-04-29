@@ -15,7 +15,17 @@
  */
 'use strict';
 
-module.exports = function ($scope, $location, $interval, $q, Application) {
+module.exports = function ($scope, $location, $interval, $q, $state, Application, Notification) {
+    var createNote = function(app) {
+        var title = app.name + (app.status === 'UP' ? ' is back ' : ' went ') + app.status;
+        var options = { tag: app.id,
+                        body: 'Instance ' + app.id,
+                        icon: (app.status === 'UP' ? 'img/ok.png' : 'img/error.png'),
+                        timeout: 150000,
+                        url: $state.href('apps.details', {id: app.id}, {absolute: true}) };
+        Notification.notify(title, options);
+    };
+
     var getInfo = function (app) {
         return app.getInfo()
             .success(function (response) {
@@ -28,9 +38,14 @@ module.exports = function ($scope, $location, $interval, $q, Application) {
             });
     };
     var getHealth = function (app) {
+        var oldstatus = app.status;
+
         return app.getHealth()
             .success(function (response) {
                 app.status = response.status || 'UP';
+                if (oldstatus !== undefined && oldstatus !== app.status) {
+                    createNote(app);
+                }
             })
             .error(function (response, httpStatus) {
                 if (httpStatus === 503) {
@@ -39,6 +54,9 @@ module.exports = function ($scope, $location, $interval, $q, Application) {
                     app.status = 'OFFLINE';
                 } else {
                     app.status = 'UNKNOWN';
+                }
+                if (oldstatus !== undefined && oldstatus !== app.status) {
+                    createNote(app);
                 }
             });
     };
@@ -65,8 +83,7 @@ module.exports = function ($scope, $location, $interval, $q, Application) {
         Application.query(function (applications) {
             function refresh(app) {
                 //find application in known applications and copy state --> less flickering
-                for (var j = 0; $scope.applications != null && j < $scope.applications
-                    .length; j++) {
+                for (var j = 0; $scope.applications != null && j < $scope.applications.length; j++) {
                     if (app.id === $scope.applications[j].id) {
                         app.info = $scope.applications[j].info;
                         app.version = $scope.applications[j].version;
