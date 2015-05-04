@@ -1,0 +1,35 @@
+{"groups": [
+  {
+    "name": "spring.boot.admin.hazelcast",
+    "sourceType": "de.codecentric.boot.admin.config.AdminServerWebConfiguration.HazelcastStoreConfiguration"
+  },
+  {
+    "name": "spring.boot.admin.discovery",
+    "sourceType": "de.codecentric.boot.admin.config.AdminServerWebConfiguration.DiscoveryClientConfiguration"
+  }
+],"properties": [
+  {
+    "name": "spring.boot.admin.hazelcast.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Hazelcast support.",
+    "defaultValue": "true"
+  },
+  {
+    "name": "spring.boot.admin.hazelcast.map",
+    "type": "java.lang.String",
+    "description": "Name of backing Hazelcast-Map",
+    "defaultValue": "spring-boot-admin-application-store"
+  },
+  {
+    "name": "spring.boot.admin.discovery.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Spring Cloud Discovery support.",
+    "defaultValue": "true"
+  },
+  {
+    "name": "spring.boot.admin.discovery.management.context-path",
+    "type": "java.lang.String",
+    "description": "management-path suffix for discovered applications",
+    "defaultValue": ""
+  }
+]

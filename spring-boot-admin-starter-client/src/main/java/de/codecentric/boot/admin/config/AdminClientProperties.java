@@ -37,10 +37,27 @@ import org.springframework.util.StringUtils;
 @Order(Ordered.LOWEST_PRECEDENCE - 100)
 public class AdminClientProperties implements ApplicationListener<ApplicationEvent> {
 
+	/**
+	 * Client-management-URL to register with. Inferred at runtime, can be overriden in
+	 * case the reachable URL is different (e.g. Docker).
+	 */
 	private String managementUrl;
+
+	/**
+	 * Client-service-URL register with. Inferred at runtime, can be overriden in case the
+	 * reachable URL is different (e.g. Docker).
+	 */
 	private String serviceUrl;
+
+	/**
+	 * Client-health-URL to register with. Inferred at runtime, can be overriden in case
+	 * the reachable URL is different (e.g. Docker). Must be unique in registry.
+	 */
 	private String healthUrl;
 
+	/**
+	 * Name to register with. Defaults to ${spring.application.name}
+	 */
 	@Value("${spring.application.name:spring-boot-application}")
 	private String name;
 
@@ -90,11 +107,6 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 		return false;
 	}
 
-
-	/**
-	 * @return Client-management-URL to register with. Can be overriden in case the
-	 * reachable URL is different (e.g. Docker). Must be unique in registry.
-	 */
 	public String getManagementUrl() {
 		if (managementUrl == null) {
 			if (managementPort != -1) {
@@ -113,11 +125,6 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 		this.managementUrl = managementUrl;
 	}
 
-	/**
-	 * @return Client-health-URL to register with. Can be overriden in case the reachable
-	 * URL is different (e.g. Docker). Must be unique in registry.
-	 */
-
 	public String getHealthUrl() {
 		if (healthUrl == null) {
 			return append(getManagementUrl(), healthEndpointId);
@@ -129,10 +136,6 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 		this.healthUrl = healthUrl;
 	}
 
-	/**
-	 * @return Client-service-URL to register with. Can be overriden in case the reachable
-	 * URL is different (e.g. Docker). Must be unique in registry.
-	 */
 	public String getServiceUrl() {
 		if (serviceUrl == null) {
 			if (serverPort != -1){
@@ -154,9 +157,6 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 		return serverInitialized;
 	}
 
-	/**
-	 * @return Name to register with.
-	 */
 	public String getName() {
 		return name;
 	}
@@ -176,7 +176,7 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 
 	private String createLocalUri(int port, String path) {
 		String scheme = server.getSsl() != null && server.getSsl().isEnabled() ? "https" : "http";
-	    return append(scheme + "://" + getHostname() + ":" + port + "/", path);
+		return append(scheme + "://" + getHostname() + ":" + port + "/", path);
 	}
 
 	private String append(String uri, String path) {

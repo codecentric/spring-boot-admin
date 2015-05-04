@@ -20,32 +20,43 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.boot.admin")
 public class AdminProperties {
 
+	/**
+	 * The admin servers url to register at
+	 */
 	private String url;
 
+	/**
+	 * The admin servers context path.
+	 */
 	private String contextPath = "api/applications";
 
+	/**
+	 * Time interval (in ms) the registration is repeated
+	 */
 	private int period = 10000;
 
+	/**
+	 * Username for basic authentication on admin server
+	 */
 	private String username;
 
+	/**
+	 * Password for basic authentication on admin server
+	 */
 	private String password;
 
+	/**
+	 * Enable automatic deregistration on shutdown
+	 */
 	private boolean autoDeregistration;
 
 	public void setUrl(String url) {
 		this.url = url;
 	}
-
-	/**
-	 * @return the Spring Boot Admin Server's url.
-	 */
 	public String getUrl() {
 		return url;
 	}
 
-	/**
-	 * @return the Spring Boot Admin Server's context path.
-	 */
 	public String getContextPath() {
 		return contextPath;
 	}
@@ -54,9 +65,6 @@ public class AdminProperties {
 		this.contextPath = contextPath;
 	}
 
-	/**
-	 * @return the time interval (in ms) the registration is repeated.
-	 */
 	public int getPeriod() {
 		return period;
 	}
@@ -69,9 +77,6 @@ public class AdminProperties {
 		this.username = username;
 	}
 
-	/**
-	 * @return username for basic authentication .
-	 */
 	public String getUsername() {
 		return username;
 	}
@@ -80,16 +85,10 @@ public class AdminProperties {
 		this.password = password;
 	}
 
-	/**
-	 * @return password for basic authentication.
-	 */
 	public String getPassword() {
 		return password;
 	}
 
-	/**
-	 * @return wether the application deregisters automatically on shutdown.
-	 */
 	public boolean isAutoDeregistration() {
 		return autoDeregistration;
 	}

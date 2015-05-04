@@ -44,13 +44,25 @@ public class LogfileMvcEndpoint implements MvcEndpoint {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LogfileMvcEndpoint.class);
 
+	/**
+	 * Logfile to serve at this endpoint. Defaults to ${logging.file}.
+	 */
 	@Value("${logging.file}")
 	private String logfile;
 
+	/**
+	 * Path of the logfile-endpoint
+	 */
 	private String path = "/logfile";
 
+	/**
+	 * Is the logfile endpoint sensitive
+	 */
 	private boolean sensitive = true;
 
+	/**
+	 * Enable the logfile endpoint
+	 */
 	private boolean enabled = true;
 
 	@Override
