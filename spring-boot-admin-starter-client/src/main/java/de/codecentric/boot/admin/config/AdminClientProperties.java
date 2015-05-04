@@ -175,7 +175,8 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 	}
 
 	private String createLocalUri(int port, String path) {
-		return append("http://" + getHostname() + ":" + port + "/", path);
+		String scheme = server.getSsl() != null && server.getSsl().isEnabled() ? "https" : "http";
+	    return append(scheme + "://" + getHostname() + ":" + port + "/", path);
 	}
 
 	private String append(String uri, String path) {
