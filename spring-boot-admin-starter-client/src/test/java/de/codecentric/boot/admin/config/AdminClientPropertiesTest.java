@@ -145,6 +145,22 @@ public class AdminClientPropertiesTest {
 		assertThat(clientProperties.getServiceUrl(), is("http://" + getHostname()
 				+ ":8080/"));
 	}
+	
+	@Test
+	public void testSsl() {
+		load("server.ssl.key-store=somefile.jks", "server.ssl.key-store-password=password");
+		AdminClientProperties clientProperties = new AdminClientProperties();
+		context.getAutowireCapableBeanFactory().autowireBean(clientProperties);
+
+		publishServletContainerInitializedEvent(clientProperties, 8080, null);
+
+		assertThat(clientProperties.getManagementUrl(), is("https://" + getHostname()
+				+ ":8080/"));
+		assertThat(clientProperties.getHealthUrl(), is("https://" + getHostname()
+				+ ":8080/health/"));
+		assertThat(clientProperties.getServiceUrl(), is("https://" + getHostname()
+				+ ":8080/"));
+	}
 
 	private String getHostname() {
 		try {
