@@ -195,12 +195,6 @@ span.refresh {
   margin-bottom: 0;
 }
 
-/** highlighted rows on Detail-Environment-View **/
-.table tr.highlight > td {
-  background-color: #999 !important;
-  font-weight: bold;
-}
-
 /** Tabs-list in domain-section in JMX-View **/
 .tabs-left > ul {
 	max-width: 30%; 

@@ -3,6 +3,7 @@
 		<span class="brand">{{ application.name }}</span>
 		<ul class="nav pull-right">
 			<li class="navbar-link" ng-class="{active: $state.includes('apps.details')}"> <a ui-sref="apps.details.metrics({id: application.id})">Details</a></li>
+			<li class="navbar-link" ui-sref-active="active" ><a ui-sref="apps.env({id: application.id})" >Environment</a></li>
 			<li class="navbar-link" ui-sref-active="active" ><a ui-sref="apps.logging({id: application.id})" >Logging</a></li>
 			<li class="navbar-link" ui-sref-active="active" ><a ui-sref="apps.jmx({id: application.id})">JMX</a></li>
 			<li class="navbar-link" ui-sref-active="active" ><a ui-sref="apps.threads({id: application.id})">Threads</a></li>

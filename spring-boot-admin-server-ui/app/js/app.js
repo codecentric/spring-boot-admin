@@ -78,20 +78,15 @@ springBootAdmin.config(function ($stateProvider, $urlRouterProvider) {
             templateUrl: 'views/apps/details/metrics.html',
             controller: 'detailsMetricsCtrl'
         })
-        .state('apps.details.env', {
-            url: '/env',
-            templateUrl: 'views/apps/details/env.html',
-            controller: 'detailsEnvCtrl'
-        })
-        .state('apps.details.props', {
-            url: '/props',
-            templateUrl: 'views/apps/details/props.html',
-            controller: 'detailsPropsCtrl'
-        })
         .state('apps.details.classpath', {
             url: '/classpath',
             templateUrl: 'views/apps/details/classpath.html',
             controller: 'detailsClasspathCtrl'
+        })
+        .state('apps.env', {
+            url: '/env',
+            templateUrl: 'views/apps/environment.html',
+            controller: 'environmentCtrl'
         })
         .state('apps.activiti', {
             url: '/activiti',

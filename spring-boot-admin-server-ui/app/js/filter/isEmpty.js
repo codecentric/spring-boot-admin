@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2014 the original author or authors.
  *
@@ -15,22 +16,13 @@
  */
 'use strict';
 
-module.exports = function ($scope, application) {
-    $scope.application = application;
-
-    application.getEnv()
-        .success(function (env) {
-            $scope.props = [];
-            for (var attr in env) {
-                if (attr.indexOf('[') !== -1 && (attr.indexOf('.properties]') !== -1 || attr.indexOf('.yml]'))) {
-                    $scope.props.push({
-                        key: attr,
-                        value: env[attr]
-                    });
-                }
+module.exports = function () {
+    return function (obj) {
+        for (var bar in obj) {
+            if (obj.hasOwnProperty(bar)) {
+                return false;
             }
-        })
-        .error(function (error) {
-            $scope.error = error;
-        });
+        }
+        return true;
+    };
 };

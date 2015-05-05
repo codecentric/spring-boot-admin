@@ -1,0 +1,22 @@
+<div class="container content">
+	<div class="alert alert-error" ng-if="error">
+		<b>Error:</b> {{ error }}
+	</div>
+	<div class="row">
+		<accordion close-others="false">
+			<accordion-group is-open="true" ng-repeat="(envkey, envvalue) in env track by envkey" heading="{{envkey}}" ng-hide="envvalue | isEmpty">
+					<small class="pull-right"><a href="{{ application.managementUrl }}/env">raw JSON</a></small>
+					<table class="table table-striped">
+						<col >
+						<col width="62%">
+						<tbody>
+							<tr ng-repeat-end ng-repeat="(key, value) in envvalue" >
+								<td style="word-break: break-all;" >{{ key }}</td>
+								<td style="word-break: break-all;" >{{ value }}</td>
+							</tr>
+						</tbody>
+					</table>
+			</accordion-group>
+		</accordion>
+	</div>
+</div>
