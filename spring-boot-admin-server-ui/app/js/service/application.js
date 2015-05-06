@@ -14,53 +14,73 @@
  * limitations under the License.
  */
 'use strict';
+var angular = require('angular');
 
-module.exports = function ($resource, $http, $rootScope) {
+module.exports = function ($resource, $http) {
+
+    var isEndpointEnabled = function(endpoint, configprops) {
+        if (configprops[endpoint]) {
+           return configprops[endpoint].properties.enabled;
+        }
+        return false;
+    };
+
+    var getCapabilities = function(application) {
+        application.capabilities = {};
+        $http.get('api/applications/' + application.id + '/configprops').success(function(configprops) {
+            application.capabilities.logfile = isEndpointEnabled('logfileEndpoint', configprops);
+            application.capabilities.activiti = isEndpointEnabled('processEngineEndpoint', configprops);
+        });
+    };
+
     var Application = $resource(
         'api/applications/:id', { id: '@id' }, {
-            query: { method: 'GET', isArray: true },
-            get: { method: 'GET' },
+            query: { method: 'GET',
+                     isArray: true,
+                     transformResponse: function(data) {
+                         var apps = angular.fromJson(data);
+                         for (var i = 0; i < apps.length; i++) {
+                           getCapabilities(apps[i]);
+                         }
+                         return apps;
+                     }
+                   },
+            get: { method: 'GET',
+                   transformResponse: function(data) {
+                       var app = angular.fromJson(data);
+                       getCapabilities(app);
+                       return app;
+                   }
+                 },
             remove: { method: 'DELETE' }
     });
 
-    var AuthInterceptor = function (application) {
-        return function (data, status, headers) {
-            if (status === 401) {
-                $rootScope.$emit('application-auth-required', application, headers('WWW-Authenticate').split(' ')[0]);
-            }
-        };
-    };
-
     Application.prototype.getHealth = function () {
-        return $http.get('api/applications/' + this.id + '/health').error(new AuthInterceptor(this));
+        return $http.get('api/applications/' + this.id + '/health');
     };
 
     Application.prototype.getInfo = function () {
-        return $http.get('api/applications/' + this.id + '/info').error(new AuthInterceptor(this));
+        return $http.get('api/applications/' + this.id + '/info');
     };
 
     Application.prototype.getMetrics = function () {
-        return $http.get('api/applications/' + this.id + '/metrics').error(new AuthInterceptor(this));
+        return $http.get('api/applications/' + this.id + '/metrics');
     };
 
     Application.prototype.getEnv = function () {
-        return $http.get('api/applications/' + this.id + '/env').error(new AuthInterceptor(this));
+        return $http.get('api/applications/' + this.id + '/env');
     };
 
     Application.prototype.getThreadDump = function () {
-        return $http.get('api/applications/' + this.id + '/dump').error(new AuthInterceptor(this));
+        return $http.get('api/applications/' + this.id + '/dump');
     };
 
     Application.prototype.getTraces = function () {
-        return $http.get('api/applications/' + this.id + '/trace').error(new AuthInterceptor(this));
+        return $http.get('api/applications/' + this.id + '/trace');
     };
 
     Application.prototype.getActiviti = function () {
-        return $http.get('api/applications/' + this.id + '/activiti').error(new AuthInterceptor(this));
-    };
-
-    Application.prototype.hasLogfile = function () {
-        return $http.head('api/applications/' + this.id + '/logfile').error(new AuthInterceptor(this));
+        return $http.get('api/applications/' + this.id + '/activiti');
     };
 
     return Application;

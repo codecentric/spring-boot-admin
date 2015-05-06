@@ -23,7 +23,7 @@
 				<span ng-show="application.refreshing" class="refresh"></span></td>
 				<td style="text-align: right;">
 					<div class="btn-group" ng-hide="application.managementUrl == null || application.status == null || application.status == 'OFFLINE'">
-						<a ng-disabled="!application.providesLogfile" target="_self" class="btn btn-success" ng-href="{{application.providesLogfile ? application.url + '/logfile' :''}}"><i class="icon-file icon-white"></i>Log</a>
+						<a ng-disabled="!application.capabilities.logfile" target="_self" class="btn btn-success" ng-href="{{application.capabilities.logfile ? application.managementUrl + '/logfile' :''}}"><i class="icon-file icon-white"></i>Log</a>
 						<a ui-sref="apps.details.metrics({id: application.id})" class="btn btn-success">Details</a>
 						<a class="btn btn-success dropdown-toggle" data-toggle="dropdown">
 							<span class="caret"></span>
@@ -34,7 +34,7 @@
 							<li><a ui-sref="apps.jmx({id: application.id})" >JMX</a></li>
 							<li><a ui-sref="apps.threads({id: application.id})" >Threads</a></li>
 							<li><a ui-sref="apps.trace({id: application.id})" >Trace</a></li>
-							<li ng-show="application.providesActiviti"><a ui-sref="apps.activiti({id: application.id})" >Activiti</a></li>
+							<li ng-show="application.capabilities.activiti"><a ui-sref="apps.activiti({id: application.id})" >Activiti</a></li>
 						</ul>
 					</div>
 					<div class="btn-group" title="remove">

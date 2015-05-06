@@ -8,7 +8,7 @@
 			<li class="navbar-link" ui-sref-active="active" ><a ui-sref="apps.jmx({id: application.id})">JMX</a></li>
 			<li class="navbar-link" ui-sref-active="active" ><a ui-sref="apps.threads({id: application.id})">Threads</a></li>
 			<li class="navbar-link" ui-sref-active="active" ><a ui-sref="apps.trace({id: application.id})">Trace</a></li>
-			<li ng-show="application.providesActiviti" class="navbar-link" ui-sref-active="active" ><a ui-sref="apps.activiti({id: application.id})">Activiti</a></li>
+			<li ng-show="application.capabilities.activiti" class="navbar-link" ui-sref-active="active" ><a ui-sref="apps.activiti({id: application.id})">Activiti</a></li>
 		</ul>
 	</div>
 </div>
