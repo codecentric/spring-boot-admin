@@ -18,18 +18,23 @@ var angular = require('angular');
 
 module.exports = function ($resource, $http) {
 
-    var isEndpointEnabled = function(endpoint, configprops) {
+    var isEndpointPresent = function(endpoint, configprops) {
         if (configprops[endpoint]) {
-           return configprops[endpoint].properties.enabled;
+           return true;
+        } else {
+           return false;
         }
-        return false;
     };
 
     var getCapabilities = function(application) {
         application.capabilities = {};
         $http.get('api/applications/' + application.id + '/configprops').success(function(configprops) {
-            application.capabilities.logfile = isEndpointEnabled('logfileEndpoint', configprops);
-            application.capabilities.activiti = isEndpointEnabled('processEngineEndpoint', configprops);
+            application.capabilities.logfile = isEndpointPresent('logfileEndpoint', configprops);
+            application.capabilities.activiti = isEndpointPresent('processEngineEndpoint', configprops);
+            application.capabilities.restart = isEndpointPresent('restartEndpoint', configprops);
+            application.capabilities.refresh = isEndpointPresent('refreshEndpoint', configprops);
+            application.capabilities.pause = isEndpointPresent('pauseEndpoint', configprops);
+            application.capabilities.resume = isEndpointPresent('resumeEndpoint', configprops);
         });
     };
 
@@ -67,8 +72,16 @@ module.exports = function ($resource, $http) {
         return $http.get('api/applications/' + this.id + '/metrics');
     };
 
-    Application.prototype.getEnv = function () {
-        return $http.get('api/applications/' + this.id + '/env');
+    Application.prototype.getEnv = function (key) {
+        return $http.get('api/applications/' + this.id + '/env' + (key ? '/' + key : '' ));
+    };
+
+    Application.prototype.setEnv = function (map) {
+        return $http.post('api/applications/' + this.id + '/env', '', {params: map});
+    };
+
+    Application.prototype.resetEnv = function () {
+        return $http.post('api/applications/' + this.id + '/env/reset');
     };
 
     Application.prototype.getThreadDump = function () {

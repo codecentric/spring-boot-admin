@@ -7,7 +7,7 @@
 			<span title="filtered / total" class="add-on">{{ filteredLoggers.length }}/{{ loggers.length }}</span>
 		</div>
 	</form>
-	<table class="table">
+	<table class="table table-hover">
 		<tbody>
 			<tr ng-repeat="logger in (filteredLoggers = (loggers | classNameLoggerOnly:!showPackageLoggers | filter:filterLogger) ) | limitTo: limit track by logger.name">
 				<td>
