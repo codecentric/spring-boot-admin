@@ -26,7 +26,7 @@
         <spring-boot.version>1.2.3.RELEASE</spring-boot.version>
         <hazelcast.version>3.3.3</hazelcast.version>
         <commons-lang3.version>3.3.2</commons-lang3.version>
-        <spring-cloud.version>1.0.0.RELEASE</spring-cloud.version>
+        <spring-cloud.version>1.0.1.RELEASE</spring-cloud.version>
 
         <build-plugin.jacoco.version>0.7.3.201502191951</build-plugin.jacoco.version>
         <build-plugin.coveralls.version>3.0.1</build-plugin.coveralls.version>
