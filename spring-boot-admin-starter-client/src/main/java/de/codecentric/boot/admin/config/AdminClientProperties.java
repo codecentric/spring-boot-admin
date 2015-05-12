@@ -176,16 +176,16 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 
 	private String createLocalUri(int port, String path) {
 		String scheme = server.getSsl() != null && server.getSsl().isEnabled() ? "https" : "http";
-		return append(scheme + "://" + getHostname() + ":" + port + "/", path);
+		return append(scheme + "://" + getHostname() + ":" + port, path);
 	}
 
 	private String append(String uri, String path) {
+		String baseUri = uri.replaceFirst("/+$", "");
 		if (StringUtils.isEmpty(path)) {
-			return uri;
+			return baseUri;
 		}
 
-		String baseUri = uri.endsWith("/") ? uri.replaceFirst("/+$", "") : uri;
-		return baseUri + (path.startsWith("/") ? "" : "/") + path
-				+ (path.endsWith("/") ? "" : "/");
+		String normPath = path.replaceFirst("^/+", "").replaceFirst("/+$", "");
+		return baseUri + "/" + normPath;
 	}
 }

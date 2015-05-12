@@ -70,11 +70,11 @@ public class AdminClientPropertiesTest {
 		publishServletContainerInitializedEvent(clientProperties, 8081, "management");
 
 		assertThat(clientProperties.getManagementUrl(), is("http://" + getHostname()
-				+ ":8081/admin/"));
+				+ ":8081/admin"));
 		assertThat(clientProperties.getHealthUrl(), is("http://" + getHostname()
-				+ ":8081/admin/alive/"));
+				+ ":8081/admin/alive"));
 		assertThat(clientProperties.getServiceUrl(), is("http://" + getHostname()
-				+ ":8080/"));
+				+ ":8080"));
 	}
 
 	@Test
@@ -87,11 +87,11 @@ public class AdminClientPropertiesTest {
 		publishServletContainerInitializedEvent(clientProperties, 8081, "management");
 
 		assertThat(clientProperties.getManagementUrl(), is("http://" + getHostname()
-				+ ":8081/"));
+				+ ":8081"));
 		assertThat(clientProperties.getHealthUrl(), is("http://" + getHostname()
-				+ ":8081/health/"));
+				+ ":8081/health"));
 		assertThat(clientProperties.getServiceUrl(), is("http://" + getHostname()
-				+ ":8080/"));
+				+ ":8080"));
 	}
 
 	@Test
@@ -104,11 +104,11 @@ public class AdminClientPropertiesTest {
 		publishServletContainerInitializedEvent(clientProperties, 8080, null);
 
 		assertThat(clientProperties.getManagementUrl(), is("http://" + getHostname()
-				+ ":8080/app/admin/"));
+				+ ":8080/app/admin"));
 		assertThat(clientProperties.getHealthUrl(), is("http://" + getHostname()
-				+ ":8080/app/admin/health/"));
+				+ ":8080/app/admin/health"));
 		assertThat(clientProperties.getServiceUrl(), is("http://" + getHostname()
-				+ ":8080/app/"));
+				+ ":8080/app"));
 	}
 
 
@@ -121,11 +121,11 @@ public class AdminClientPropertiesTest {
 		publishServletContainerInitializedEvent(clientProperties, 80, null);
 
 		assertThat(clientProperties.getManagementUrl(), is("http://" + getHostname()
-				+ ":80/app/"));
+				+ ":80/app"));
 		assertThat(clientProperties.getHealthUrl(), is("http://" + getHostname()
-				+ ":80/app/health/"));
+				+ ":80/app/health"));
 		assertThat(clientProperties.getServiceUrl(), is("http://" + getHostname()
-				+ ":80/app/"));
+				+ ":80/app"));
 	}
 
 
@@ -139,11 +139,11 @@ public class AdminClientPropertiesTest {
 		publishServletContainerInitializedEvent(clientProperties, 8080, null);
 
 		assertThat(clientProperties.getManagementUrl(), is("http://" + getHostname()
-				+ ":8080/"));
+				+ ":8080"));
 		assertThat(clientProperties.getHealthUrl(), is("http://" + getHostname()
-				+ ":8080/health/"));
+				+ ":8080/health"));
 		assertThat(clientProperties.getServiceUrl(), is("http://" + getHostname()
-				+ ":8080/"));
+				+ ":8080"));
 	}
 	
 	@Test
@@ -155,11 +155,11 @@ public class AdminClientPropertiesTest {
 		publishServletContainerInitializedEvent(clientProperties, 8080, null);
 
 		assertThat(clientProperties.getManagementUrl(), is("https://" + getHostname()
-				+ ":8080/"));
+				+ ":8080"));
 		assertThat(clientProperties.getHealthUrl(), is("https://" + getHostname()
-				+ ":8080/health/"));
+				+ ":8080/health"));
 		assertThat(clientProperties.getServiceUrl(), is("https://" + getHostname()
-				+ ":8080/"));
+				+ ":8080"));
 	}
 
 	private String getHostname() {

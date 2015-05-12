@@ -22,6 +22,7 @@ import org.springframework.cloud.client.discovery.event.InstanceRegisteredEvent;
 import org.springframework.cloud.client.discovery.event.ParentHeartbeatEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.util.StringUtils;
 
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
@@ -81,28 +82,32 @@ public class ApplicationDiscoveryListener implements ApplicationListener<Applica
 	}
 
 	private Application convert(ServiceInstance instance) {
-		String managementUrl = instance.getUri()
-				.resolve(managementContextPath)
-				.toString();
-		String serviceUrl = instance.getUri()
-				.resolve(serviceContextPath)
-				.toString();
-		String healthUrl = managementUrl + "/" + healthEndpoint;
+		String serviceUrl = append(instance.getUri().toString(), serviceContextPath);
+		String managementUrl = append(instance.getUri().toString(), managementContextPath);
+		String healthUrl = append(managementUrl, healthEndpoint);
 
 		return new Application(healthUrl, managementUrl, serviceUrl, instance.getServiceId());
 	}
 
 	public void setManagementContextPath(String managementContextPath) {
-		this.managementContextPath = managementContextPath.startsWith("/") ? managementContextPath
-				: "/" + managementContextPath;
+		this.managementContextPath = managementContextPath;
 	}
 
 	public void setServiceContextPath(String serviceContextPath) {
-		this.serviceContextPath = serviceContextPath.startsWith("/") ? serviceContextPath
-				: "/" + serviceContextPath;
+		this.serviceContextPath = serviceContextPath;
 	}
 
 	public void setHealthEndpoint(String healthEndpoint) {
 		this.healthEndpoint = healthEndpoint;
+	}
+
+	private String append(String uri, String path) {
+		String baseUri = uri.replaceFirst("/+$", "");
+		if (StringUtils.isEmpty(path)) {
+			return baseUri;
+		}
+
+		String normPath = path.replaceFirst("^/+", "").replaceFirst("/+$", "");
+		return baseUri + "/" + normPath;
 	}
 }
