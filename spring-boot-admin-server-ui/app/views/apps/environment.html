@@ -25,7 +25,7 @@
 					<td style="word-break: break-all;" >{{ key }}</td>
 					<td style="word-break: break-all;" >{{ value }}</td>
 				</tr>
-				<tr ng-repeat="item in override.values">
+				<tr ng-repeat="item in overrides.values">
 					<td >
 						<input type="text" class="input-xlarge" list="allkeys" placeholder="key" ng-model="item.key" ng-change="onChangeOverrideItem(item)"></input>
 						<datalist id="allkeys">
@@ -41,11 +41,17 @@
 			<tfoot>
 				<tr>
 					<td colspan="2">
-						<div class="control-group pull-right">
-							<button class="btn btn-warning" ng-click="overrideValue()">Overrride Values!</button>
-							<button class="btn" ng-click="reset()">Reset Values!</button>
+						<div class="control-group pull-left">
+							<button class="btn btn-info" ng-click="refresh()">Refresh beans</button>
 						</div>
-						<div class="alert alert-error" ng-if="override.error">
+						<div class="control-group pull-right">
+							<button class="btn btn-warning" ng-click="override()">Overrride values!</button>
+							<button class="btn" ng-click="reset()">Reset overrides</button>
+						</div>
+						<div class="alert alert-info" ng-if="overrides.changes">
+							<pre>{{ override.changes }}</pre>
+						</div>
+						<div class="alert alert-error" ng-if="overrides.error">
 							<b>Error:</b> {{ override.error }}
 						</div>
 					</td>

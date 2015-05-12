@@ -17,7 +17,7 @@
 
 module.exports = function ($scope, application) {
     $scope.application = application;
-    $scope.override = { values: [{key: '', value: '' }], error: null};
+    $scope.overrides = { values: [{key: '', value: '' }], error: null};
 
     var toArray = function(map) {
         var array = [];
@@ -71,37 +71,53 @@ module.exports = function ($scope, application) {
     $scope.onChangeOverrideItem = function(item) {
         getValue(item);
 
-        if ($scope.override.values[$scope.override.values.length - 1].key) {
-            $scope.override.values.push({key: '', value: '' });
+        if ($scope.overrides.values[$scope.overrides.values.length - 1].key) {
+            $scope.overrides.values.push({key: '', value: '' });
         }
     };
 
-    $scope.overrideValue = function() {
+    $scope.override = function() {
         var map = {};
-        for (var i = 0; i < $scope.override.values.length; i++) {
-            if ($scope.override.values[i].key) {
-                map[$scope.override.values[i].key] = $scope.override.values[i].value;
+        for (var i = 0; i < $scope.overrides.values.length; i++) {
+            if ($scope.overrides.values[i].key) {
+                map[$scope.overrides.values[i].key] = $scope.overrides.values[i].value;
             }
         }
 
-        $scope.override.error = null;
+        $scope.overrides.error = null;
         application.setEnv(map).success(function () {
-            $scope.override = { values: [{key: '', value: '' }], error: null};
+            $scope.overrides = { values: [{key: '', value: '' }], error: null, changes: null};
             $scope.reload();
          })
         .error(function (error) {
-            $scope.override.error = error;
+            $scope.overrides.error = error;
+            $scope.overrides.changes = null;
             $scope.reload();
         });
     };
 
     $scope.reset = function() {
-        $scope.override.error = null;
+        $scope.overrides.error = null;
+        $scope.overrides.changes = null;
         application.resetEnv().success(function () {
             $scope.reload();
          })
         .error(function (error) {
-            $scope.override.error = error;
+            $scope.overrides.error = error;
+            $scope.reload();
+        });
+
+    };
+
+    $scope.refresh = function() {
+        $scope.overrides.error = null;
+        $scope.overrides.changes = null;
+        application.refresh().success(function (changes) {
+            $scope.overrides.changes = changes;
+            $scope.reload();
+         })
+        .error(function (error) {
+            $scope.overrides.error = error;
             $scope.reload();
         });
 

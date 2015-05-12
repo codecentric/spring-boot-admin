@@ -84,6 +84,10 @@ module.exports = function ($resource, $http) {
         return $http.post('api/applications/' + this.id + '/env/reset');
     };
 
+    Application.prototype.refresh = function () {
+        return $http.post('api/applications/' + this.id + '/refresh');
+    };
+
     Application.prototype.getThreadDump = function () {
         return $http.get('api/applications/' + this.id + '/dump');
     };
