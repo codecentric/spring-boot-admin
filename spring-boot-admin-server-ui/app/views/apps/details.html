@@ -82,15 +82,15 @@
 						<td>{{ metrics['classes']}}</td>
 					</tr>
 					<tr>
-						<td> Total loaded Classes</td>
+						<td>Total loaded Classes</td>
 						<td>{{ metrics['classes.loaded']}}</td>
 					</tr>
 					<tr>
-						<td> Unloaded Classes</td>
+						<td>Unloaded Classes</td>
 						<td>{{ metrics['classes.unloaded']}}</td>
 					</tr>
 					<tr>
-						<td> Threads</td>
+						<td>Threads</td>
 						<td>{{ metrics['threads'] }} total / {{ metrics['threads.daemon'] }} daemon / {{ metrics['threads.peak'] }} peak </td>
 					</tr>
 				</tbody>
@@ -109,6 +109,18 @@
 					<tr ng-repeat-end>
 						<td>{{name | capitalize}} GC Time</td>
 						<td>{{value.time}} ms</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="span6" ng-show="metrics['httpsessions.active'] != null">
+			<table class="table">
+				<thead><tr><th colspan="2">Servlet Container</th></tr></thead>
+				<tbody>
+					<tr>
+						<td>Http sessions</td>
+						<td>{{ metrics['httpsessions.active'] }} active / {{ metrics['httpsessions.max'] == -1 ? 'unlimited' : metrics['httpsessions.max'] + ' max' }}</td>
 					</tr>
 				</tbody>
 			</table>
