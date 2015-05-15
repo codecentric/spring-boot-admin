@@ -15,17 +15,16 @@
  */
 'use strict';
 
-module.exports = function ($scope, $modal, $log, application, ApplicationJMX) {
+module.exports = function ($scope, $modal, application, ApplicationJMX) {
     $scope.error = null;
     $scope.domains = [];
 
     ApplicationJMX.list(application)
         .then(function (domains) {
             $scope.domains = domains;
-        })
-        .catch(function (response) {
-            $scope.error = response.error;
-            $log.error(response.stacktrace);
+        }, function (response) {
+            $scope.error = response;
+            $scope.errorWhileListing = true;
         });
 
     $scope.readAllAttr = function (bean) {
@@ -39,10 +38,8 @@ module.exports = function ($scope, $modal, $log, application, ApplicationJMX) {
                         bean.attributes[name].jsonValue = JSON.stringify(response.value[
                             name], null, '   ');
                     }
-                })
-            .catch(function (response) {
+                }, function (response) {
                 bean.error = response.error;
-                $log.error(response.stacktrace);
             });
     };
 
@@ -52,7 +49,6 @@ module.exports = function ($scope, $modal, $log, application, ApplicationJMX) {
             .catch(
                 function (response) {
                     attr.error = response.error;
-                    $log.error(response.stacktrace);
                 });
     };
 
@@ -65,8 +61,7 @@ module.exports = function ($scope, $modal, $log, application, ApplicationJMX) {
                 function (response) {
                     $scope.invocation.state = 'success';
                     $scope.invocation.result = response.value;
-                })
-            .catch(function (response) {
+                }, function (response) {
                 $scope.invocation.state = 'error';
                 $scope.invocation.error = response.error;
                 $scope.invocation.stacktrace = response.stacktrace;
@@ -97,8 +92,7 @@ module.exports = function ($scope, $modal, $log, application, ApplicationJMX) {
                 })
                 .result.then(function (chosenOp) {
                     $scope.prepareInvoke(bean, name, chosenOp);
-                })
-                .catch(function () {
+                }, function () {
                     $scope.invocation = null;
                 });
         } else {
@@ -122,8 +116,7 @@ module.exports = function ($scope, $modal, $log, application, ApplicationJMX) {
                     })
                     .result.then(function () {
                         $scope.invoke();
-                    })
-                    .catch(function () {
+                    }, function () {
                         $scope.invocation = null;
                     });
             }

@@ -15,6 +15,7 @@
  */
 'use strict';
 
+var angular = require('angular');
 module.exports = function ($q) {
     var outer = this;
     var j4p = new Jolokia();
@@ -45,6 +46,13 @@ module.exports = function ($q) {
                 if (responses.length >= requests.length) {
                     deferred.reject(responses);
                 }
+            },
+            ajaxError: function (response) {
+                hasError = true;
+                responses.push(angular.fromJson(response.responseText));
+                if (responses.length >= requests.length) {
+                    deferred.reject(responses, response.status);
+                }
             }
         });
 
@@ -63,6 +71,9 @@ module.exports = function ($q) {
             },
             error: function (response) {
                 deferred.reject(response);
+            },
+            ajaxError: function (response) {
+                deferred.reject(angular.fromJson(response.responseText), response.status);
             }
         });
 

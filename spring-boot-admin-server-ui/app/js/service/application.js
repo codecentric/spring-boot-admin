@@ -28,14 +28,16 @@ module.exports = function ($resource, $http) {
 
     var getCapabilities = function(application) {
         application.capabilities = {};
-        $http.get('api/applications/' + application.id + '/configprops').success(function(configprops) {
-            application.capabilities.logfile = isEndpointPresent('logfileEndpoint', configprops);
-            application.capabilities.activiti = isEndpointPresent('processEngineEndpoint', configprops);
-            application.capabilities.restart = isEndpointPresent('restartEndpoint', configprops);
-            application.capabilities.refresh = isEndpointPresent('refreshEndpoint', configprops);
-            application.capabilities.pause = isEndpointPresent('pauseEndpoint', configprops);
-            application.capabilities.resume = isEndpointPresent('resumeEndpoint', configprops);
-        });
+        if (application.managementUrl) {
+            $http.get('api/applications/' + application.id + '/configprops').success(function(configprops) {
+                application.capabilities.logfile = isEndpointPresent('logfileEndpoint', configprops);
+                application.capabilities.activiti = isEndpointPresent('processEngineEndpoint', configprops);
+                application.capabilities.restart = isEndpointPresent('restartEndpoint', configprops);
+                application.capabilities.refresh = isEndpointPresent('refreshEndpoint', configprops);
+                application.capabilities.pause = isEndpointPresent('pauseEndpoint', configprops);
+                application.capabilities.resume = isEndpointPresent('resumeEndpoint', configprops);
+            });
+        }
     };
 
     var Application = $resource(

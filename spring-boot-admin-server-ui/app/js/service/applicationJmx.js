@@ -15,7 +15,7 @@
  */
 'use strict';
 
-module.exports = function ($rootScope, Abbreviator, jolokia) {
+module.exports = function ($rootScope, Abbreviator, jolokia, $q) {
     this.list = function (app) {
         return jolokia.list('api/applications/' + app.id + '/jolokia/')
             .then(function (response) {
@@ -76,7 +76,7 @@ module.exports = function ($rootScope, Abbreviator, jolokia) {
 
                 return domains;
             }, function (response) {
-                return response;
+                return $q.reject(response);
             });
     };
 

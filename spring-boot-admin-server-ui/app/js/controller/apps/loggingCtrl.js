@@ -15,27 +15,25 @@
  */
 'use strict';
 
-module.exports = function ($scope, application, ApplicationLogging, $log) {
+module.exports = function ($scope, application, ApplicationLogging) {
     $scope.loggers = [];
     $scope.filteredLoggers = [];
     $scope.limit = 10;
 
-    function findLogger(loggers, name) {
+    var findLogger = function (loggers, name) {
         for (var i in loggers) {
             if (loggers[i].name === name) {
                 return loggers[i];
             }
         }
-    }
+    };
 
     $scope.setLogLevel = function (name, level) {
         ApplicationLogging.setLoglevel(application, name, level)
             .then(function () {
                 $scope.reload(name);
-            })
-            .catch(function (response) {
-                $scope.error = response.error;
-                $log.error(response.stacktrace);
+            }, function (response) {
+                $scope.error = response;
                 $scope.reload(name);
             });
     };
@@ -72,12 +70,10 @@ module.exports = function ($scope, application, ApplicationLogging, $log) {
                         findLogger($scope.loggers, name)
                             .level = level;
                     }
-                })
-            .catch(function (responses) {
+                }, function (responses) {
                 for (var j in responses) {
                     if (responses[j].error != null) {
-                        $scope.error = responses[j].error;
-                        $log.error(responses[j].stacktrace);
+                        $scope.error = responses[j];
                         break;
                     }
                 }
@@ -101,9 +97,8 @@ module.exports = function ($scope, application, ApplicationLogging, $log) {
             $scope.$watch('limit', function () {
                 $scope.refreshLevels();
             });
-        })
-        .catch(function (response) {
-            $scope.error = response.error;
-            $log.error(response.stacktrace);
+        }, function (response) {
+            $scope.error = response;
+            $scope.errorWhileListing = true;
         });
 };
