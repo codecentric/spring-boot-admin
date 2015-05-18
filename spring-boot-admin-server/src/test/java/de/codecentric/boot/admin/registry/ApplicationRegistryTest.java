@@ -24,7 +24,7 @@ import java.util.Collection;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
 
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
@@ -35,7 +35,7 @@ public class ApplicationRegistryTest {
 			new HashingApplicationUrlIdGenerator());
 
 	public ApplicationRegistryTest() {
-		registry.setApplicationContext(Mockito.mock(ApplicationContext.class));
+		registry.setApplicationEventPublisher(Mockito.mock(ApplicationEventPublisher.class));
 	}
 
 	@Test(expected = IllegalArgumentException.class)

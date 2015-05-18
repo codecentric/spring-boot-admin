@@ -22,8 +22,8 @@ import java.util.Collection;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -36,14 +36,15 @@ import de.codecentric.boot.admin.registry.store.ApplicationStore;
  * Registry for all applications that should be managed/administrated by the Spring Boot Admin application.
  * Backed by an ApplicationStore for persistence and an ApplicationIdGenerator for id generation.
  */
-public class ApplicationRegistry implements ApplicationContextAware {
+public class ApplicationRegistry implements ApplicationEventPublisherAware {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationRegistry.class);
 
 	private final ApplicationStore store;
 	private final ApplicationIdGenerator generator;
-	private ApplicationContext context;
+	private ApplicationEventPublisher publisher;
 
-	public ApplicationRegistry(ApplicationStore store, ApplicationIdGenerator generator) {
+	public ApplicationRegistry(ApplicationStore store,
+			ApplicationIdGenerator generator) {
 		this.store = store;
 		this.generator = generator;
 	}
@@ -75,10 +76,10 @@ public class ApplicationRegistry implements ApplicationContextAware {
 
 		if (oldApp == null) {
 			LOGGER.info("New Application {} registered ", newApp);
-			context.publishEvent(new ClientApplicationRegisteredEvent(this, newApp));
+			publisher.publishEvent(new ClientApplicationRegisteredEvent(this, newApp));
 		} else {
-			if ((newApp.getId().equals(oldApp.getId()) && app.getName().equals(
-					oldApp.getName()))) {
+			if ((newApp.getId().equals(oldApp.getId()) && app.getHealthUrl().equals(
+					oldApp.getHealthUrl()))) {
 				LOGGER.debug("Application {} refreshed", newApp);
 			} else {
 				LOGGER.warn("Application {} replaced by Application {}", newApp, oldApp);
@@ -141,13 +142,14 @@ public class ApplicationRegistry implements ApplicationContextAware {
 		Application app = store.delete(id);
 		if (app != null) {
 			LOGGER.info("Application {} unregistered ", app);
-			context.publishEvent(new ClientApplicationUnregisteredEvent(this, app));
+			publisher.publishEvent(new ClientApplicationUnregisteredEvent(this, app));
 		}
 		return app;
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) {
-		this.context = applicationContext;
+	public void setApplicationEventPublisher(
+			ApplicationEventPublisher applicationEventPublisher) {
+		publisher = applicationEventPublisher;
 	}
 }

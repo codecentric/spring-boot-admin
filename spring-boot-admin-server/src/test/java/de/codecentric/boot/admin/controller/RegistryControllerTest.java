@@ -24,7 +24,7 @@ import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -42,7 +42,7 @@ public class RegistryControllerTest {
 	public void setup() {
 		registry = new ApplicationRegistry(new SimpleApplicationStore(),
 				new HashingApplicationUrlIdGenerator());
-		registry.setApplicationContext(Mockito.mock(ApplicationContext.class));
+		registry.setApplicationEventPublisher(Mockito.mock(ApplicationEventPublisher.class));
 		controller = new RegistryController(registry);
 	}
 
