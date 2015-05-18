@@ -25,7 +25,7 @@ import de.codecentric.boot.admin.model.Application;
 public interface ApplicationStore {
 
 	/**
-	 * Inserts a new Application into the store. If the Id is already present in the store the Application is NOT stored.
+	 * Inserts a new Application into the store. If the Id is already present in the store the old Application is replaced.
 	 * 
 	 * @param app Application to store
 	 * @return the Application associated previosly with the applications id.
