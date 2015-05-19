@@ -4,7 +4,7 @@
 	</div>
 	<div class="row">
 		<table class="table table-hover boxed">
-			<thead><tr><th>Profiles <small class="pull-right"><small class="pull-right"><a href="{{ application.managementUrl }}/env">raw JSON</a></small></th></tr></thead>
+			<thead><tr><th>Profiles <small class="pull-right"><small class="pull-right"><a href="api/applications/{{ application.id }}/env">raw JSON</a></small></th></tr></thead>
 			<tbody>
 				<tr ng-repeat="profile in env.profiles" >
 					<td style="word-break: break-all;" >{{ profile }}</td>
