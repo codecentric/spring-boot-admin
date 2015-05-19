@@ -15,69 +15,43 @@
  */
 'use strict';
 
+var angular = require('angular');
+
 module.exports = function ($scope, $location, $interval, $q, $state, Application, Notification) {
     var createNote = function(app) {
-        var title = app.name + (app.status === 'UP' ? ' is back ' : ' went ') + app.status;
+        var title = app.name + (app.statusInfo.status === 'UP' ? ' is back ' : ' went ') + app.statusInfo.status;
         var options = { tag: app.id,
                         body: 'Instance ' + app.id,
-                        icon: (app.status === 'UP' ? 'img/ok.png' : 'img/error.png'),
-                        timeout: 150000,
+                        icon: (app.statusInfo.status === 'UP' ? 'img/ok.png' : 'img/error.png'),
+                        timeout: 15000,
                         url: $state.href('apps.details', {id: app.id}, {absolute: true}) };
         Notification.notify(title, options);
-    };
-
-    var getInfo = function (app) {
-        return app.getInfo()
-            .success(function (response) {
-                app.version = response.version;
-                delete response.version;
-                app.info = response;
-            })
-            .error(function () {
-                app.version = '---';
-            });
-    };
-    var getHealth = function (app) {
-        var oldstatus = app.status;
-
-        return app.getHealth()
-            .success(function (response) {
-                app.status = response.status || 'UP';
-                if (oldstatus !== undefined && oldstatus !== app.status) {
-                    createNote(app);
-                }
-            })
-            .error(function (response, httpStatus) {
-                if (httpStatus === 503) {
-                    app.status = response.status;
-                } else if (httpStatus === 404 || httpStatus === 0 || (httpStatus === 500 && response.exception === 'java.net.ConnectException')) {
-                    app.status = 'OFFLINE';
-                } else {
-                    app.status = 'UNKNOWN';
-                }
-                if (oldstatus !== undefined && oldstatus !== app.status) {
-                    createNote(app);
-                }
-            });
     };
 
     $scope.loadData = function () {
         Application.query(function (applications) {
             function refresh(app) {
+                app.refreshing = true;
+                app.info = {};
+
                 //find application in known applications and copy state --> less flickering
                 for (var j = 0; $scope.applications != null && j < $scope.applications.length; j++) {
                     if (app.id === $scope.applications[j].id) {
                         app.info = $scope.applications[j].info;
-                        app.version = $scope.applications[j].version;
-                        app.status = $scope.applications[j].status;
+
+                        //issue notifiaction on state change
+                        if (app.statusInfo.status !== $scope.applications[j].statusInfo.status) {
+                            createNote(app);
+                        }
                         break;
                     }
                 }
-                app.refreshing = true;
-                $q.all(getInfo(app), getHealth(app))
-                    .finally(function () {
-                        app.refreshing = false;
-                    });
+
+                app.getInfo().success(function(info) {
+                    angular.copy(info, app.info);
+                }).finally(function(){
+                    app.refreshing = false;
+                });
             }
 
             for (var i = 0; i < applications.length; i++) {
@@ -124,5 +98,5 @@ module.exports = function ($scope, $location, $interval, $q, $state, Application
     // reload site every 30 seconds
     $interval(function () {
         $scope.loadData();
-    }, 30000);
+    }, 10000);
 };

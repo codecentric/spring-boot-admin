@@ -46,8 +46,9 @@ public class ApplicationRouteLocatorTest {
 	@Test
 	public void locateRoutes_healthOnly() {
 		when(registry.getApplications()).thenReturn(
-				Collections.singletonList(new Application("http://localhost/health", "",
-						"", "app1", "1234")));
+				Collections.singletonList(Application.create("app1")
+						.withHealthUrl("http://localhost/health")
+						.withId("1234").build()));
 
 		locator.resetRoutes();
 
@@ -65,8 +66,10 @@ public class ApplicationRouteLocatorTest {
 	@Test
 	public void locateRoutes() {
 		when(registry.getApplications()).thenReturn(
-				Collections.singletonList(new Application("http://localhost/health",
-						"http://localhost", "", "app1", "1234")));
+				Collections.singletonList(Application.create("app1")
+						.withHealthUrl("http://localhost/health")
+						.withManagementUrl("http://localhost").withId("1234")
+						.build()));
 
 		locator.resetRoutes();
 

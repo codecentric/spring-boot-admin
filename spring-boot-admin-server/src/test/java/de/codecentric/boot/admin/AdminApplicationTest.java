@@ -62,9 +62,11 @@ public class AdminApplicationTest {
 	public void testReverseProxy() {
 		String apiBaseUrl = "http://localhost:" + port + "/api/applications";
 
-		ResponseEntity<Application> entity = new TestRestTemplate().postForEntity(
-				apiBaseUrl, new Application("http://localhost:" + port + "/health",
-						"http://localhost:" + port, "", "TestApp"), Application.class);
+		ResponseEntity<Application> entity = new TestRestTemplate()
+				.postForEntity(apiBaseUrl, Application.create("TestApp")
+				.withHealthUrl("http://localhost:" + port + "/health")
+				.withManagementUrl("http://localhost:" + port).build(),
+				Application.class);
 
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> info = new TestRestTemplate().getForEntity(apiBaseUrl + "/"

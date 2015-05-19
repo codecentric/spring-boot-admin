@@ -17,28 +17,36 @@ package de.codecentric.boot.admin.config;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.codecentric.boot.admin.controller.RegistryController;
+import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.registry.ApplicationIdGenerator;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.registry.HashingApplicationUrlIdGenerator;
+import de.codecentric.boot.admin.registry.StatusUpdater;
 import de.codecentric.boot.admin.registry.store.ApplicationStore;
 
 @Configuration
 @Import({RevereseZuulProxyConfiguration.class, HazelcastStoreConfiguration.class, SimpleStoreConfig.class, DiscoveryClientConfiguration.class})
 public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter implements ApplicationContextAware {
+
 
 	private ApplicationContext applicationContext;
 
@@ -93,6 +101,44 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter impleme
 	@ConditionalOnMissingBean
 	public ApplicationIdGenerator applicationIdGenerator() {
 		return new HashingApplicationUrlIdGenerator();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConfigurationProperties("spring.boot.admin.monitor")
+	public StatusUpdater statusUpdater(ApplicationStore store) {
+		RestTemplate template = new RestTemplate();
+		template.getMessageConverters().add(
+				new MappingJackson2HttpMessageConverter());
+		return new StatusUpdater(template, store);
+	}
+
+	@Bean
+	public ApplicationListener<ClientApplicationRegisteredEvent> updateRegistrationListener(
+			final StatusUpdater updater) {
+		return new ApplicationListener<ClientApplicationRegisteredEvent>() {
+			@Override
+			public void onApplicationEvent(
+					ClientApplicationRegisteredEvent event) {
+				updater.updateStatus(event.getApplication());
+			}
+		};
+	}
+
+	@Bean
+	public ScheduledTaskRegistrar updateTaskRegistrar(
+			final StatusUpdater updater,
+			@Value("${spring.boot.admin.monitor.period:10000}") long monitorPeriod) {
+		ScheduledTaskRegistrar registrar = new ScheduledTaskRegistrar();
+		Runnable registratorTask = new Runnable() {
+			@Override
+			public void run() {
+				updater.updateStatusForAllApplications();
+			}
+		};
+
+		registrar.addFixedRateTask(registratorTask, monitorPeriod);
+		return registrar;
 	}
 
 }

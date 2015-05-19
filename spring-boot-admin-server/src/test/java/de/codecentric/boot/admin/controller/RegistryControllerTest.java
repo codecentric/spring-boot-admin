@@ -48,9 +48,10 @@ public class RegistryControllerTest {
 
 	@Test
 	public void register() {
-		ResponseEntity<Application> response = controller.register(new Application(
-				"http://localhost/mgmt/health", "http://localhost/mgmt",
-				"http://localhost/", "test"));
+		ResponseEntity<Application> response = controller.register(Application
+				.create("test").withHealthUrl("http://localhost/mgmt/health")
+				.withManagementUrl("http://localhost/mgmt")
+				.withServiceUrl("http://localhost/").build());
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertEquals("http://localhost/mgmt/health", response.getBody().getHealthUrl());
 		assertEquals("http://localhost/mgmt", response.getBody().getManagementUrl());
@@ -60,7 +61,8 @@ public class RegistryControllerTest {
 
 	@Test
 	public void register_twice() {
-		Application app = new Application("http://localhost/health", "", "", "test");
+		Application app = Application.create("test")
+				.withHealthUrl("http://localhost/health").build();
 		controller.register(app);
 		ResponseEntity<Application> response = controller.register(app);
 
@@ -71,16 +73,20 @@ public class RegistryControllerTest {
 
 	@Test
 	public void register_sameUrl() {
-		controller.register(new Application("http://localhost/health", "", "", "FOO"));
-		ResponseEntity<?> response = controller.register(new Application(
-				"http://localhost/health", "", "", "BAR"));
+		controller.register(Application.create("FOO")
+				.withHealthUrl("http://localhost/mgmt/health").build());
+		ResponseEntity<?> response = controller.register(Application
+				.create("BAR").withHealthUrl("http://localhost/mgmt/health")
+				.build());
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 	}
 
 	@Test
 	public void get() {
 		Application app = controller.register(
-				new Application("http://localhost/health", "", "", "FOO")).getBody();
+				Application.create("FOO")
+						.withHealthUrl("http://localhost/health").build())
+				.getBody();
 
 		ResponseEntity<Application> response = controller.get(app.getId());
 		assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -90,7 +96,8 @@ public class RegistryControllerTest {
 
 	@Test
 	public void get_notFound() {
-		controller.register(new Application("http://localhost/health", "", "", "FOO"));
+		controller.register(Application.create("FOO")
+				.withHealthUrl("http://localhost/mgmt/health").build());
 
 		ResponseEntity<?> response = controller.get("unknown");
 		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -99,7 +106,9 @@ public class RegistryControllerTest {
 	@Test
 	public void unregister() {
 		Application app = controller.register(
-				new Application("http://localhost/health", "", "", "FOO")).getBody();
+				Application.create("FOO")
+				.withHealthUrl("http://localhost/mgmt/health").build())
+				.getBody();
 
 		ResponseEntity<?> response = controller.unregister(app.getId());
 		assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -110,7 +119,8 @@ public class RegistryControllerTest {
 
 	@Test
 	public void unregister_notFound() {
-		controller.register(new Application("http://localhost/health", "", "", "FOO"));
+		controller.register(Application.create("FOO")
+				.withHealthUrl("http://localhost/mgmt/health").build());
 
 		ResponseEntity<?> response = controller.unregister("unknown");
 		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -119,7 +129,9 @@ public class RegistryControllerTest {
 	@Test
 	public void applications() {
 		Application app = controller.register(
-				new Application("http://localhost/health", "", "", "FOO")).getBody();
+				Application.create("FOO")
+				.withHealthUrl("http://localhost/mgmt/health").build())
+				.getBody();
 
 		Collection<Application> applications = controller.applications(null);
 		assertEquals(1, applications.size());
@@ -129,11 +141,17 @@ public class RegistryControllerTest {
 	@Test
 	public void applicationsByName() {
 		Application app = controller.register(
-				new Application("http://localhost:2/health", "", "", "FOO")).getBody();
+				Application.create("FOO")
+				.withHealthUrl("http://localhost1/mgmt/health")
+				.build()).getBody();
 		Application app2 = controller.register(
-				new Application("http://localhost:1/health", "", "", "FOO")).getBody();
+				Application.create("FOO")
+				.withHealthUrl("http://localhost2/mgmt/health")
+				.build()).getBody();
 		Application app3 = controller.register(
-				new Application("http://localhost:3/health", "", "", "BAR")).getBody();
+				Application.create("BAR")
+				.withHealthUrl("http://localhost3/mgmt/health")
+				.build()).getBody();
 
 		Collection<Application> applications = controller.applications("FOO");
 		assertEquals(2, applications.size());

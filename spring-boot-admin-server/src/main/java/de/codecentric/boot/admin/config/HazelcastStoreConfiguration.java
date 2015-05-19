@@ -33,7 +33,7 @@ import com.hazelcast.core.IMap;
 import com.hazelcast.core.MapEvent;
 
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
-import de.codecentric.boot.admin.event.ClientApplicationUnregisteredEvent;
+import de.codecentric.boot.admin.event.ClientApplicationDeregisteredEvent;
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.registry.store.HazelcastApplicationStore;
@@ -83,7 +83,7 @@ public  class HazelcastStoreConfiguration {
 
 		@Override
 		public void entryRemoved(EntryEvent<String, Application> event) {
-			publisher.publishEvent(new ClientApplicationUnregisteredEvent(this,event.getValue()));
+			publisher.publishEvent(new ClientApplicationDeregisteredEvent(this,event.getValue()));
 		}
 
 		@Override

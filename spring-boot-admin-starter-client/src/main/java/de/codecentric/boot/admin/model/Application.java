@@ -34,19 +34,17 @@ public class Application implements Serializable {
 	private final String managementUrl;
 	private final String healthUrl;
 	private final String serviceUrl;
+	private final StatusInfo statusInfo;
 
-	public Application(String healthUrl, String managementUrl, String serviceUrl,
-			String name) {
-		this(healthUrl, managementUrl, serviceUrl, name, null);
-	}
-
-	public Application(String healthUrl, String managementUrl, String serviceUrl,
-			String name, String id) {
+	private Application(String healthUrl, String managementUrl,
+			String serviceUrl, String name, String id, StatusInfo statusInfo) {
 		this.healthUrl = healthUrl;
 		this.managementUrl = managementUrl;
 		this.serviceUrl = serviceUrl;
 		this.name = name;
 		this.id = id;
+		this.statusInfo = statusInfo != null ? statusInfo : StatusInfo
+				.ofUnknown();
 	}
 
 	@JsonCreator
@@ -54,18 +52,84 @@ public class Application implements Serializable {
 			@JsonProperty("managementUrl") String managementUrl,
 			@JsonProperty("healthUrl") String healthUrl,
 			@JsonProperty("serviceUrl") String serviceUrl,
-			@JsonProperty("name") String name,
-			@JsonProperty("id") String id) {
+			@JsonProperty("name") String name, @JsonProperty("id") String id,
+			@JsonProperty("statusInfo") StatusInfo statusInfo) {
 
 		Assert.hasText(name, "name must not be empty!");
 		if (StringUtils.hasText(url)) {
 			// old format
 			return new Application(url.replaceFirst("/+$", "") + "/health", url, null,
-					name, id);
+					name, id, statusInfo);
 		}
 		else {
 			Assert.hasText(healthUrl, "healthUrl must not be empty!");
-			return new Application(healthUrl, managementUrl, serviceUrl, name, id);
+			return new Application(healthUrl, managementUrl, serviceUrl, name,
+					id, statusInfo);
+		}
+	}
+
+	public static Builder create(String name) {
+		return new Builder(name);
+	}
+
+	public static Builder create(Application application) {
+		return new Builder(application);
+	}
+
+	public static class Builder {
+		private String id;
+		private String name;
+		private String managementUrl;
+		private String healthUrl;
+		private String serviceUrl;
+		private StatusInfo statusInfo;
+
+		private Builder(String name) {
+			this.name = name;
+		}
+
+		private Builder(Application application) {
+			this.healthUrl = application.healthUrl;
+			this.managementUrl = application.managementUrl;
+			this.serviceUrl = application.serviceUrl;
+			this.name = application.name;
+			this.id = application.id;
+			this.statusInfo = application.statusInfo;
+		}
+
+		public Builder withName(String name) {
+			this.name = name;
+			return this;
+		}
+
+		public Builder withId(String id) {
+			this.id = id;
+			return this;
+		}
+
+		public Builder withServiceUrl(String serviceUrl) {
+			this.serviceUrl = serviceUrl;
+			return this;
+		}
+
+		public Builder withHealthUrl(String healthUrl) {
+			this.healthUrl = healthUrl;
+			return this;
+		}
+
+		public Builder withManagementUrl(String managementUrl) {
+			this.managementUrl = managementUrl;
+			return this;
+		}
+
+		public Builder withStatusInfo(StatusInfo statusInfo) {
+			this.statusInfo = statusInfo;
+			return this;
+		}
+
+		public Application build() {
+			return new Application(healthUrl, managementUrl, serviceUrl, name,
+					id, statusInfo);
 		}
 	}
 
@@ -87,6 +151,10 @@ public class Application implements Serializable {
 
 	public String getServiceUrl() {
 		return serviceUrl;
+	}
+
+	public StatusInfo getStatusInfo() {
+		return statusInfo;
 	}
 
 	@Override

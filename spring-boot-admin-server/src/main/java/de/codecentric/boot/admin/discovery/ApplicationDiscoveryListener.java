@@ -86,7 +86,9 @@ public class ApplicationDiscoveryListener implements ApplicationListener<Applica
 		String managementUrl = append(instance.getUri().toString(), managementContextPath);
 		String healthUrl = append(managementUrl, healthEndpoint);
 
-		return new Application(healthUrl, managementUrl, serviceUrl, instance.getServiceId());
+		return Application.create(instance.getServiceId())
+				.withHealthUrl(healthUrl).withManagementUrl(managementUrl)
+				.withServiceUrl(serviceUrl).build();
 	}
 
 	public void setManagementContextPath(String managementContextPath) {

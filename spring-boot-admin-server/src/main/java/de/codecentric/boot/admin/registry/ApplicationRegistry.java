@@ -19,7 +19,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 
-import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -28,8 +27,9 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
-import de.codecentric.boot.admin.event.ClientApplicationUnregisteredEvent;
+import de.codecentric.boot.admin.event.ClientApplicationDeregisteredEvent;
 import de.codecentric.boot.admin.model.Application;
+import de.codecentric.boot.admin.model.StatusInfo;
 import de.codecentric.boot.admin.registry.store.ApplicationStore;
 
 /**
@@ -52,40 +52,54 @@ public class ApplicationRegistry implements ApplicationEventPublisherAware {
 	/**
 	 * Register application.
 	 *
-	 * @param app application to be registered.
+	 * @param application
+	 *            application to be registered.
 	 * @return the registered application.
 	 */
-	public Application register(Application app) {
-		Assert.notNull(app, "Application must not be null");
-		Assert.hasText(app.getName(), "Name must not be null");
-		Assert.hasText(app.getHealthUrl(), "Health-URL must not be null");
-		Assert.isTrue(checkUrl(app.getHealthUrl()), "Health-URL is not valid");
+	public Application register(Application application) {
+		Assert.notNull(application, "Application must not be null");
+		Assert.hasText(application.getName(), "Name must not be null");
+		Assert.hasText(application.getHealthUrl(), "Health-URL must not be null");
+		Assert.isTrue(checkUrl(application.getHealthUrl()), "Health-URL is not valid");
 		Assert.isTrue(
-				StringUtils.isEmpty(app.getManagementUrl())
-				|| checkUrl(app.getManagementUrl()), "URL is not valid");
+				StringUtils.isEmpty(application.getManagementUrl())
+				|| checkUrl(application.getManagementUrl()), "URL is not valid");
 		Assert.isTrue(
-				StringUtils.isEmpty(app.getServiceUrl()) || checkUrl(app.getServiceUrl()),
+				StringUtils.isEmpty(application.getServiceUrl()) || checkUrl(application.getServiceUrl()),
 				"URL is not valid");
 
-		String applicationId = generator.generateId(app);
-		Validate.notNull(applicationId, "ID must not be null");
+		String applicationId = generator.generateId(application);
+		Assert.notNull(applicationId, "ID must not be null");
 
-		Application newApp = new Application(app.getHealthUrl(), app.getManagementUrl(),
-				app.getServiceUrl(), app.getName(), applicationId);
-		Application oldApp = store.save(newApp);
+		StatusInfo existingStatusInfo = getExistingStatusInfo(applicationId);
 
-		if (oldApp == null) {
-			LOGGER.info("New Application {} registered ", newApp);
-			publisher.publishEvent(new ClientApplicationRegisteredEvent(this, newApp));
+		Application registering = Application
+				.create(application)
+				.withId(applicationId)
+				.withStatusInfo(existingStatusInfo)
+				.build();
+
+		Application replaced = store.save(registering);
+
+		if (replaced == null) {
+			LOGGER.info("New Application {} registered ", registering);
+			publisher.publishEvent(new ClientApplicationRegisteredEvent(this, registering));
 		} else {
-			if ((newApp.getId().equals(oldApp.getId()) && app.getHealthUrl().equals(
-					oldApp.getHealthUrl()))) {
-				LOGGER.debug("Application {} refreshed", newApp);
+			if (registering.getId().equals(replaced.getId())) {
+				LOGGER.debug("Application {} refreshed", registering);
 			} else {
-				LOGGER.warn("Application {} replaced by Application {}", newApp, oldApp);
+				LOGGER.warn("Application {} replaced by Application {}", registering, replaced);
 			}
 		}
-		return newApp;
+		return registering;
+	}
+
+	private StatusInfo getExistingStatusInfo(String applicationId) {
+		Application existing = getApplication(applicationId);
+		if(existing != null) {
+			return existing.getStatusInfo();
+		}
+		return null;
 	}
 
 	/**
@@ -138,11 +152,11 @@ public class ApplicationRegistry implements ApplicationEventPublisherAware {
 	 * @param id the applications id to unregister
 	 * @return the unregistered Application
 	 */
-	public Application unregister(String id) {
+	public Application deregister(String id) {
 		Application app = store.delete(id);
 		if (app != null) {
 			LOGGER.info("Application {} unregistered ", app);
-			publisher.publishEvent(new ClientApplicationUnregisteredEvent(this, app));
+			publisher.publishEvent(new ClientApplicationDeregisteredEvent(this, app));
 		}
 		return app;
 	}

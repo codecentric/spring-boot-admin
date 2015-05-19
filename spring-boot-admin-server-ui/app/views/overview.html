@@ -3,42 +3,49 @@
 	<small>Here you'll find all Spring-Boot applications that registered themselves at this admin application.</small>
 	</h2>
 	<table class="table table-striped">
+		<col>
+		<col>
+		<col>
+		<col>
+		<col style="width: 250px;">
 		<thead>
 			<tr>
 				<th><span class="sortable" ng-class="orderByCssClass('name')" ng-click="orderBy('name')">Application</span>
 					/
-					<span class="sortable" ng-class="orderByCssClass('url')" ng-click="orderBy('url')">URL</span>
+					<span class="sortable" ng-class="orderByCssClass('healthUrl')" ng-click="orderBy('healthUrl')">URL</span>
 				</th>
-				<th><span class="sortable" ng-class="orderByCssClass('version')" ng-click="orderBy('version')">Version</span></th>
+				<th><span class="sortable" ng-class="orderByCssClass('info.version')" ng-click="orderBy('info.version')">Version</span></th>
 				<th>Info</th>
 				<th colspan="2">Status</th>
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="application in applications|orderBy:order.column:order.descending|orderBy:'status':false track by application.id">
+			<tr ng-repeat="application in applications|orderBy:order.column:order.descending|orderBy:'statusInfo.status':false track by application.id">
 				<td>{{ application.name }}<br/><span class="muted">{{ application.serviceUrl || application.managementUrl || application.healthUrl }}</span></td>
-				<td>{{ application.version }}</td>
-				<td><span ng-repeat="(name, value) in application.info track by name">{{name}}: {{value}}<br></span></td>
-				<td><span class="status-{{application.status}}">{{ application.status }}</span>
+				<td>{{ application.info.version }}</td>
+				<td><span ng-repeat="(name, value) in application.info track by name" ng-if="name != 'version'">{{name}}: {{value}}<br></span></td>
+				<td><span class="status-{{application.statusInfo.status}}" title="{{application.statusInfo.timestamp  | date:'dd.MM.yyyy HH:mm:ss' }}">{{ application.statusInfo.status }}</span>
 				<span ng-show="application.refreshing" class="refresh"></span></td>
-				<td style="text-align: right;">
-					<div class="btn-group" ng-hide="application.managementUrl == null || application.status == null || application.status == 'OFFLINE'">
-						<a ng-disabled="!application.capabilities.logfile" target="_self" class="btn btn-success" ng-href="{{application.capabilities.logfile ? 'api/applications/' + application.id + '/logfile' :''}}"><i class="icon-file icon-white"></i>Log</a>
-						<a ui-sref="apps.details.metrics({id: application.id})" class="btn btn-success">Details</a>
-						<a class="btn btn-success dropdown-toggle" data-toggle="dropdown">
-							<span class="caret"></span>
-						</a>
-						<ul class="dropdown-menu">
-							<li><a ui-sref="apps.env({id: application.id})" >Environment</a></li>
-							<li><a ui-sref="apps.logging({id: application.id})" >Logging</a></li>
-							<li><a ui-sref="apps.jmx({id: application.id})" >JMX</a></li>
-							<li><a ui-sref="apps.threads({id: application.id})" >Threads</a></li>
-							<li><a ui-sref="apps.trace({id: application.id})" >Trace</a></li>
-							<li ng-show="application.capabilities.activiti"><a ui-sref="apps.activiti({id: application.id})" >Activiti</a></li>
-						</ul>
-					</div>
-					<div class="btn-group" title="remove">
-						<a class="btn btn-danger" ng-click="remove(application)"><i class="icon-remove icon-white"></i></a>
+				<td>
+					<div class="pull-right">
+						<div class="btn-group" ng-hide="application.managementUrl == null || application.statusInfo.status == null || application.statusInfo.status == 'OFFLINE'">
+							<a ng-disabled="!application.capabilities.logfile" target="_self" class="btn btn-success" ng-href="{{application.capabilities.logfile ? 'api/applications/' + application.id + '/logfile' :''}}"><i class="icon-file icon-white"></i>Log</a>
+							<a ui-sref="apps.details.metrics({id: application.id})" class="btn btn-success">Details</a>
+							<a class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+								<span class="caret"></span>
+							</a>
+							<ul class="dropdown-menu">
+								<li><a ui-sref="apps.env({id: application.id})" >Environment</a></li>
+								<li><a ui-sref="apps.logging({id: application.id})" >Logging</a></li>
+								<li><a ui-sref="apps.jmx({id: application.id})" >JMX</a></li>
+								<li><a ui-sref="apps.threads({id: application.id})" >Threads</a></li>
+								<li><a ui-sref="apps.trace({id: application.id})" >Trace</a></li>
+								<li ng-show="application.capabilities.activiti"><a ui-sref="apps.activiti({id: application.id})" >Activiti</a></li>
+							</ul>
+						</div>
+						<div class="btn-group" title="remove">
+							<a class="btn btn-danger" ng-click="remove(application)"><i class="icon-remove icon-white"></i></a>
+						</div>
 					</div>
 				</td>
 			</tr>

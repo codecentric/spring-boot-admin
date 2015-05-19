@@ -76,12 +76,12 @@ public class AdminApplicationHazelcastTest {
 
 	@Test
 	public void test() {
-		Application app = new Application("http://127.0.0.1/health", "", "",
-				"Hazelcast Test");
-		Application app2 = new Application("http://127.0.0.1:2/health", "", "",
-				"Hazelcast Test");
-		Application app3 = new Application("http://127.0.0.1:3/health", "", "",
-				"Do not find");
+		Application app = Application.create("Hazelcast Test")
+				.withHealthUrl("http://127.0.0.1/health").build();
+		Application app2 = Application.create("Hazelcast Test")
+				.withHealthUrl("http://127.0.0.1:2/health").build();
+		Application app3 = Application.create("Do not find")
+				.withHealthUrl("http://127.0.0.1:3/health").build();
 
 		// publish app on instance1
 		ResponseEntity<Application> postResponse = registerApp(app, instance1);

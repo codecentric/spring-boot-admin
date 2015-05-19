@@ -102,7 +102,7 @@ public class RegistryController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Application> unregister(@PathVariable String id) {
 		LOGGER.debug("Unregister application with ID '{}'", id);
-		Application app = registry.unregister(id);
+		Application app = registry.deregister(id);
 		if (app != null) {
 			return new ResponseEntity<Application>(app, HttpStatus.NO_CONTENT);
 		} else {
