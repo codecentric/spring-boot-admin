@@ -16,7 +16,10 @@ The main service that is used is a registrar that registeres the application at 
 | spring.boot.admin.username | Username for Http-Basic authentication. Default: empty |
 | spring.boot.admin.password | Password for Http-Basic authentication. Default: empty |
 | spring.boot.admin.period | Time period for registration repeat.<br>Default: 10000 |
-| spring.boot.admin.client.url | Client-management-URL to register with. Can be overriden in case the reachable URL is different (e.g. Docker). Must be unique in registry.<br>Default: http://_hostname_:_${management.port}_/_${management.context-path}_ |
+| spring.boot.admin.autoDeregistration | Swtich to enable auto-deregistration at admin when context is closed<br>Default: false |
+| spring.boot.admin.client.serviceUrl | Client-management-URL to register with. Can be overriden in case the reachable URL is different (e.g. Docker). Must be unique in registry.<br>Default: is guessed based on hostname, server.port and server.context-path |
+| spring.boot.admin.client.managemntUrl | Client-management-URL to register with. Can be overriden in case the reachable URL is different (e.g. Docker). Must be unique in registry.<br>Default: is guessed based on serviceUrl management.port and management.context-path|
+| spring.boot.admin.client.healthUrl | Client-management-URL to register with. Can be overriden in case the reachable URL is different (e.g. Docker). Must be unique in registry.<br>Default: is guessed based on managementUrl and endpoints.health.id |
 | spring.boot.admin.client.name | Name to register with. Defaults to the ApplicationContexts name. Only set when it should differ.<br>Default: _${spring.application.name}_ if set, spring-boot-application otherwise. |
 
 

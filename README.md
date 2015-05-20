@@ -14,14 +14,16 @@ This application provides a simple GUI to administrate Spring Boot applications 
 * Show health status
 * Download main logfile
 * Show details, like
- * Java System- / Environment- / Spring properties
  * JVM & memory metrics
  * Counter & gauge Metrics
  * Datasource Metrics
-* Easy loggerlevel management
+* View Java, System- & Environment-properties
+* Support for Spring Clouds postable /env- &/refresh-endpoint
+* Easy loggerlevel management (for Logback)
 * Interact with JMX-Beans
 * View Threaddump
 * View Traces
+* Desktop notification on status change
 
 #### Server application
 Add the following dependency to your pom.xml.
@@ -29,12 +31,12 @@ Add the following dependency to your pom.xml.
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-server</artifactId>
-	<version>1.2.0</version>
+	<version>1.2.1</version>
 </dependency>
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-server-ui</artifactId>
-	<version>1.2.0</version>
+	<version>1.2.1</version>
 </dependency>
 ```
 
@@ -71,7 +73,7 @@ Each application that want to register itself to the admin application has to in
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-starter-client</artifactId>
-	<version>1.2.0</version>
+	<version>1.2.1</version>
 </dependency>
 ```
 Inside your configuration (e.g. application.properties) you also have to define the URL of the Spring Boot Admin Server, e.g.
@@ -98,7 +100,7 @@ public class SpringBootAdminApplication {
 <dependency>
 	<groupId>org.springframework.cloud</groupId>
 	<artifactId>spring-cloud-starter-eureka</artifactId>
-	<verion>1.0.0.RELEASE</version>
+	<verion>1.0.1.RELEASE</version>
 </dependency>
 ```
 See the sample [discovery sample project](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-discovery)
