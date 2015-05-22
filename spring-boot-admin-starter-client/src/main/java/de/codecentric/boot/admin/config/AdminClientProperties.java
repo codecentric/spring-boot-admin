@@ -16,6 +16,9 @@
 package de.codecentric.boot.admin.config;
 
 import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +66,12 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 
 	@Value("${endpoints.health.id:health}")
 	private String healthEndpointId;
+
+	/**
+	 * If set, the address of the specified interface is used in url inference
+	 * instead of the hostname.
+	 */
+	private String useIpAddressOf = null;
 
 	@Autowired
 	private ManagementServerProperties management;
@@ -165,18 +174,14 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 		this.name = name;
 	}
 
-	private String getHostname() {
-		try {
-			return InetAddress.getLocalHost().getCanonicalHostName();
-		}
-		catch (UnknownHostException ex) {
-			throw new IllegalArgumentException(ex.getMessage(), ex);
-		}
+	public void setUseIpAddressOf(String useIpAddressOf) {
+		this.useIpAddressOf = useIpAddressOf;
 	}
 
 	private String createLocalUri(int port, String path) {
-		String scheme = server.getSsl() != null && server.getSsl().isEnabled() ? "https" : "http";
-		return append(scheme + "://" + getHostname() + ":" + port, path);
+		String scheme = server.getSsl() != null && server.getSsl().isEnabled() ? "https"
+				: "http";
+		return append(scheme + "://" + getHost() + ":" + port, path);
 	}
 
 	private String append(String uri, String path) {
@@ -187,5 +192,66 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 
 		String normPath = path.replaceFirst("^/+", "").replaceFirst("/+$", "");
 		return baseUri + "/" + normPath;
+	}
+
+	private String getHost() {
+		if (useIpAddressOf == null) {
+			return getHostname();
+		} else {
+			return getHostIp();
+
+		}
+	}
+
+	private String getHostname() {
+		try {
+			return InetAddress.getLocalHost().getCanonicalHostName();
+		} catch (UnknownHostException ex) {
+			throw new IllegalArgumentException(ex.getMessage(), ex);
+		}
+	}
+
+	private String getHostIp() {
+		NetworkInterface nic;
+		try {
+			nic = NetworkInterface.getByName(useIpAddressOf);
+		} catch (SocketException ex) {
+			throw new IllegalArgumentException(ex.getMessage(), ex);
+		}
+
+		if (nic != null) {
+			InetAddress address = findIp(nic);
+			if (address != null) {
+				return address.getHostAddress();
+			}
+
+			throw new IllegalStateException(
+					"Couldn't determin InetAdress for network interface '"
+							+ useIpAddressOf + "'");
+		} else {
+			throw new IllegalArgumentException(
+					"Network interface"
+							+ useIpAddressOf
+							+ " not found! Please specify correct interface for spring.boot.admin.client.useIpAddressOf");
+		}
+	}
+
+	private InetAddress findIp(NetworkInterface nic) {
+		InetAddress candidate = null;
+
+		for (InterfaceAddress address : nic.getInterfaceAddresses()) {
+			if (!address.getAddress().isLoopbackAddress()) {
+				if (address.getAddress().isSiteLocalAddress()) {
+					return address.getAddress();
+				}
+				candidate = address.getAddress();
+			}
+		}
+
+		if (candidate != null) {
+			return candidate;
+		}
+
+		return null;
 	}
 }

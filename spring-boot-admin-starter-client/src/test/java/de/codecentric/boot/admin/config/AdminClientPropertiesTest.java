@@ -111,7 +111,6 @@ public class AdminClientPropertiesTest {
 				+ ":8080/app"));
 	}
 
-
 	@Test
 	public void test_contextPath() {
 		load("server.context-path=app");
@@ -128,8 +127,6 @@ public class AdminClientPropertiesTest {
 				+ ":80/app"));
 	}
 
-
-
 	@Test
 	public void test_default() {
 		load();
@@ -145,7 +142,7 @@ public class AdminClientPropertiesTest {
 		assertThat(clientProperties.getServiceUrl(), is("http://" + getHostname()
 				+ ":8080"));
 	}
-	
+
 	@Test
 	public void testSsl() {
 		load("server.ssl.key-store=somefile.jks", "server.ssl.key-store-password=password");
@@ -160,6 +157,18 @@ public class AdminClientPropertiesTest {
 				+ ":8080/health"));
 		assertThat(clientProperties.getServiceUrl(), is("https://" + getHostname()
 				+ ":8080"));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void test_preferIpAddress_nic_not_exsts() {
+		load();
+		AdminClientProperties clientProperties = new AdminClientProperties();
+		clientProperties.setUseIpAddressOf("eth-not-exist");
+		context.getAutowireCapableBeanFactory().autowireBean(clientProperties);
+
+		publishServletContainerInitializedEvent(clientProperties, 8080, null);
+
+		clientProperties.getManagementUrl();
 	}
 
 	private String getHostname() {
