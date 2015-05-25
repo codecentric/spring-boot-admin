@@ -35,8 +35,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.codecentric.boot.admin.controller.JournalController;
 import de.codecentric.boot.admin.controller.RegistryController;
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
+import de.codecentric.boot.admin.journal.ApplicationEventJournal;
+import de.codecentric.boot.admin.journal.store.JournaledEventStore;
+import de.codecentric.boot.admin.journal.store.SimpleJournaledEventStore;
 import de.codecentric.boot.admin.registry.ApplicationIdGenerator;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.registry.HashingApplicationUrlIdGenerator;
@@ -139,6 +143,26 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter impleme
 
 		registrar.addFixedRateTask(registratorTask, monitorPeriod);
 		return registrar;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public ApplicationEventJournal applicationEventJournal(
+			JournaledEventStore store) {
+		return new ApplicationEventJournal(store);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public JournaledEventStore journaledEventStore() {
+		return new SimpleJournaledEventStore();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public JournalController journalController(
+			ApplicationEventJournal eventJournal) {
+		return new JournalController(eventJournal);
 	}
 
 }
