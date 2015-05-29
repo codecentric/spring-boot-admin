@@ -48,7 +48,9 @@ import de.codecentric.boot.admin.registry.StatusUpdater;
 import de.codecentric.boot.admin.registry.store.ApplicationStore;
 
 @Configuration
-@Import({RevereseZuulProxyConfiguration.class, HazelcastStoreConfiguration.class, SimpleStoreConfig.class, DiscoveryClientConfiguration.class})
+@Import({ RevereseZuulProxyConfiguration.class, MailNotifierConfiguration.class,
+		HazelcastStoreConfiguration.class, SimpleStoreConfig.class,
+		DiscoveryClientConfiguration.class })
 public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter implements ApplicationContextAware {
 
 

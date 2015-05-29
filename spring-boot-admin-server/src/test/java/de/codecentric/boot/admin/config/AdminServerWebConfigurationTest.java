@@ -20,6 +20,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import de.codecentric.boot.admin.discovery.ApplicationDiscoveryListener;
+import de.codecentric.boot.admin.notify.MailNotifier;
 import de.codecentric.boot.admin.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.registry.store.HazelcastApplicationStore;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
@@ -65,6 +66,14 @@ public class AdminServerWebConfigurationTest {
 		load("spring.boot.admin.hazelcast.enabled:false", "spring.boot.admin.discovery.enabled:false");
 		assertTrue(context.getBean(ApplicationStore.class) instanceof SimpleApplicationStore);
 		assertTrue(context.getBeansOfType(ApplicationDiscoveryListener.class).isEmpty());
+		assertTrue(context.getBeansOfType(MailNotifier.class).isEmpty());
+	}
+
+	@Test
+	public void simpleConfig_mail() {
+		load("spring.mail.host:localhost", "spring.boot.admin.hazelcast.enabled:false",
+				"spring.boot.admin.discovery.enabled:false");
+		assertTrue(context.getBean(MailNotifier.class) instanceof MailNotifier);
 	}
 
 	@Test

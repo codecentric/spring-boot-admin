@@ -6,10 +6,6 @@
   {
     "name": "spring.boot.admin.discovery",
     "sourceType": "de.codecentric.boot.admin.config.DiscoveryClientConfiguration"
-  },
-  {
-    "name": "spring.boot.admin.monitor",
-    "sourceType": "de.codecentric.boot.admin.config.AdminServerWebConfiguration"
   }
 ],"properties": [
   {
