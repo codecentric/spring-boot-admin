@@ -100,7 +100,7 @@ public class SpringBootAdminApplication {
 <dependency>
 	<groupId>org.springframework.cloud</groupId>
 	<artifactId>spring-cloud-starter-eureka</artifactId>
-	<verion>1.0.1.RELEASE</version>
+	<version>1.0.1.RELEASE</version>
 </dependency>
 ```
 See the sample [discovery sample project](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-discovery)
