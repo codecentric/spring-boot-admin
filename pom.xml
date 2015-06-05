@@ -23,7 +23,7 @@
         <main.basedir>${basedir}</main.basedir>
         <passphrase>${gpg.passphrase}</passphrase>
 
-        <spring-boot.version>1.2.3.RELEASE</spring-boot.version>
+        <spring-boot.version>1.2.4.RELEASE</spring-boot.version>
         <hazelcast.version>3.3.3</hazelcast.version>
         <commons-lang3.version>3.3.2</commons-lang3.version>
         <spring-cloud.version>1.0.1.RELEASE</spring-cloud.version>
