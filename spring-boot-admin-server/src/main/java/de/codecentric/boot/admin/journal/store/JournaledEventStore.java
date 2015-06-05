@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.codecentric.boot.admin.event;
+package de.codecentric.boot.admin.journal.store;
 
-import de.codecentric.boot.admin.model.Application;
+import java.util.Collection;
+
+import de.codecentric.boot.admin.journal.JournaledEvent;
 
 /**
- * This event gets emitted when an application is registered.
+ * Interface for storing JournaledEvent
  *
  * @author Johannes Stelzer
+ *
  */
-public class ClientApplicationRegisteredEvent extends ClientApplicationEvent {
-	public ClientApplicationRegisteredEvent(Object source, Application application) {
-		super(source, application);
-	}
+public interface JournaledEventStore {
 
-	private static final long serialVersionUID = 1L;
+	Collection<JournaledEvent> findAll();
 
+	void store(JournaledEvent event);
 }

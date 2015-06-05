@@ -122,8 +122,10 @@ public class ApplicationRegistrator {
 	}
 
 	protected Application createApplication() {
-		return new Application(client.getHealthUrl(),
-				client.getManagementUrl(), client.getServiceUrl(), client.getName());
+		return Application.create(client.getName())
+				.withHealthUrl(client.getHealthUrl())
+				.withManagementUrl(client.getManagementUrl())
+				.withServiceUrl(client.getServiceUrl()).build();
 	}
 }
 

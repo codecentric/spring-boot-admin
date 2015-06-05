@@ -21,8 +21,8 @@ import de.codecentric.boot.admin.model.Application;
  * This event gets emitted when an application is unregistered.
  * @author Johannes Stelzer
  */
-public class ClientApplicationUnregisteredEvent extends ClientApplicationEvent {
-	public ClientApplicationUnregisteredEvent(Object source, Application application) {
+public class ClientApplicationDeregisteredEvent extends ClientApplicationEvent {
+	public ClientApplicationDeregisteredEvent(Object source, Application application) {
 		super(source, application);
 	}
 

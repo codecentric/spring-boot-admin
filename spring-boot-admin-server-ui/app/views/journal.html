@@ -1,0 +1,31 @@
+<div class="container content">
+	<h2 >Journal</h2>
+	<div class="alert alert-error" ng-if="error">
+		<b>Error:</b> {{ error }}
+	</div>
+	<div class="row">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>Time</th>
+					<th>Application</th>
+					<th>Event</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="event in journal | orderBy:'timestamp':true" >
+					<td>{{ event.timestamp | date:'yyyy-MM-dd-HH.mm.ss.sss' }}</td>
+					<td>{{ event.application.name }} ({{ event.application.id }})<br/>
+						<span class="muted">{{ event.application.serviceUrl || event.application.managementUrl || event.application.healthUrl }}</span>
+					</td>
+					<td>{{ event.type }}<br/>
+						<span ng-if="event.type == 'STATUS_CHANGE'">
+							<span class="status-{{event.data.from}}">{{ event.data.from }}</span>
+							-&gt; 	<span class="status-{{event.data.to}}">{{ event.data.to }}</span>
+						</span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

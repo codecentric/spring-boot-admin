@@ -53,7 +53,7 @@ public class ApplicationRegistratorTest {
 		adminProps.setUrl("http://sba:8080");
 
 		AdminClientProperties clientProps = new AdminClientProperties();
-		clientProps.setManagementUrl("http://localhost:8080");
+		clientProps.setManagementUrl("http://localhost:8080/mgmt");
 		clientProps.setHealthUrl("http://localhost:8080/health");
 		clientProps.setServiceUrl("http://localhost:8080");
 		clientProps.setName("AppName");
@@ -75,10 +75,13 @@ public class ApplicationRegistratorTest {
 		boolean result = registrator.register();
 
 		assertTrue(result);
-		verify(restTemplate).postForEntity("http://sba:8080/api/applications",
-				new HttpEntity<Application>(new Application(
-						"http://localhost:8080/health", "http://localhost:8080",
-						"http://localhost:8080", "AppName"), headers), Application.class);
+		verify(restTemplate).postForEntity(
+				"http://sba:8080/api/applications",
+				new HttpEntity<Application>(Application.create("AppName")
+						.withHealthUrl("http://localhost:8080/health")
+						.withManagementUrl("http://localhost:8080/mgmt")
+						.withServiceUrl("http://localhost:8080").build(),
+						headers), Application.class);
 	}
 
 	@Test
@@ -96,10 +99,12 @@ public class ApplicationRegistratorTest {
 	@Test
 	public void deregister() {
 		when(
-				restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class),
-						eq(Application.class))).thenReturn(
-				new ResponseEntity<Application>(new Application("", "", "", "name",
-						"-id-"), HttpStatus.CREATED));
+				restTemplate.postForEntity(isA(String.class),
+						isA(HttpEntity.class), eq(Application.class)))
+						.thenReturn(
+								new ResponseEntity<Application>(Application
+										.create("foo").withId("-id-").build(),
+										HttpStatus.CREATED));
 		registrator.register();
 		registrator.deregister();
 

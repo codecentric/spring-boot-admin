@@ -13,20 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.codecentric.boot.admin.event;
+'use strict';
 
-import de.codecentric.boot.admin.model.Application;
-
-/**
- * This event gets emitted when an application is registered.
- *
- * @author Johannes Stelzer
- */
-public class ClientApplicationRegisteredEvent extends ClientApplicationEvent {
-	public ClientApplicationRegisteredEvent(Object source, Application application) {
-		super(source, application);
-	}
-
-	private static final long serialVersionUID = 1L;
-
-}
+module.exports = function ($scope, $http) {
+    $http.get('/api/journal').success(function(journal) {
+        $scope.journal = journal;
+    }).error(function(error) {
+        $scope.error = error;
+    });
+};

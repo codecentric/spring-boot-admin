@@ -29,7 +29,7 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.event.HeartbeatEvent;
 import org.springframework.cloud.client.discovery.event.InstanceRegisteredEvent;
 import org.springframework.cloud.client.discovery.event.ParentHeartbeatEvent;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
 
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
@@ -44,8 +44,9 @@ public class ApplicationDiscoveryListenerTest {
 
 	@Before
 	public void setup() {
-		registry = new ApplicationRegistry(new SimpleApplicationStore(), new HashingApplicationUrlIdGenerator());
-		registry.setApplicationContext(mock(ApplicationContext.class));
+		registry = new ApplicationRegistry(new SimpleApplicationStore(),
+				new HashingApplicationUrlIdGenerator());
+		registry.setApplicationEventPublisher(mock(ApplicationEventPublisher.class));
 		discovery = mock(DiscoveryClient.class);
 		listener = new ApplicationDiscoveryListener(discovery, registry);
 	}

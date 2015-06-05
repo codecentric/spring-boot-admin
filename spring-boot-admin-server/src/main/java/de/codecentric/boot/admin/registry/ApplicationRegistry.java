@@ -19,31 +19,32 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 
-import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
-import de.codecentric.boot.admin.event.ClientApplicationUnregisteredEvent;
+import de.codecentric.boot.admin.event.ClientApplicationDeregisteredEvent;
 import de.codecentric.boot.admin.model.Application;
+import de.codecentric.boot.admin.model.StatusInfo;
 import de.codecentric.boot.admin.registry.store.ApplicationStore;
 
 /**
  * Registry for all applications that should be managed/administrated by the Spring Boot Admin application.
  * Backed by an ApplicationStore for persistence and an ApplicationIdGenerator for id generation.
  */
-public class ApplicationRegistry implements ApplicationContextAware {
+public class ApplicationRegistry implements ApplicationEventPublisherAware {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationRegistry.class);
 
 	private final ApplicationStore store;
 	private final ApplicationIdGenerator generator;
-	private ApplicationContext context;
+	private ApplicationEventPublisher publisher;
 
-	public ApplicationRegistry(ApplicationStore store, ApplicationIdGenerator generator) {
+	public ApplicationRegistry(ApplicationStore store,
+			ApplicationIdGenerator generator) {
 		this.store = store;
 		this.generator = generator;
 	}
@@ -51,40 +52,54 @@ public class ApplicationRegistry implements ApplicationContextAware {
 	/**
 	 * Register application.
 	 *
-	 * @param app application to be registered.
+	 * @param application
+	 *            application to be registered.
 	 * @return the registered application.
 	 */
-	public Application register(Application app) {
-		Assert.notNull(app, "Application must not be null");
-		Assert.hasText(app.getName(), "Name must not be null");
-		Assert.hasText(app.getHealthUrl(), "Health-URL must not be null");
-		Assert.isTrue(checkUrl(app.getHealthUrl()), "Health-URL is not valid");
+	public Application register(Application application) {
+		Assert.notNull(application, "Application must not be null");
+		Assert.hasText(application.getName(), "Name must not be null");
+		Assert.hasText(application.getHealthUrl(), "Health-URL must not be null");
+		Assert.isTrue(checkUrl(application.getHealthUrl()), "Health-URL is not valid");
 		Assert.isTrue(
-				StringUtils.isEmpty(app.getManagementUrl())
-				|| checkUrl(app.getManagementUrl()), "URL is not valid");
+				StringUtils.isEmpty(application.getManagementUrl())
+				|| checkUrl(application.getManagementUrl()), "URL is not valid");
 		Assert.isTrue(
-				StringUtils.isEmpty(app.getServiceUrl()) || checkUrl(app.getServiceUrl()),
+				StringUtils.isEmpty(application.getServiceUrl()) || checkUrl(application.getServiceUrl()),
 				"URL is not valid");
 
-		String applicationId = generator.generateId(app);
-		Validate.notNull(applicationId, "ID must not be null");
+		String applicationId = generator.generateId(application);
+		Assert.notNull(applicationId, "ID must not be null");
 
-		Application newApp = new Application(app.getHealthUrl(), app.getManagementUrl(),
-				app.getServiceUrl(), app.getName(), applicationId);
-		Application oldApp = store.save(newApp);
+		StatusInfo existingStatusInfo = getExistingStatusInfo(applicationId);
 
-		if (oldApp == null) {
-			LOGGER.info("New Application {} registered ", newApp);
-			context.publishEvent(new ClientApplicationRegisteredEvent(this, newApp));
+		Application registering = Application
+				.create(application)
+				.withId(applicationId)
+				.withStatusInfo(existingStatusInfo)
+				.build();
+
+		Application replaced = store.save(registering);
+
+		if (replaced == null) {
+			LOGGER.info("New Application {} registered ", registering);
+			publisher.publishEvent(new ClientApplicationRegisteredEvent(this, registering));
 		} else {
-			if ((newApp.getId().equals(oldApp.getId()) && app.getName().equals(
-					oldApp.getName()))) {
-				LOGGER.debug("Application {} refreshed", newApp);
+			if (registering.getId().equals(replaced.getId())) {
+				LOGGER.debug("Application {} refreshed", registering);
 			} else {
-				LOGGER.warn("Application {} replaced by Application {}", newApp, oldApp);
+				LOGGER.warn("Application {} replaced by Application {}", registering, replaced);
 			}
 		}
-		return newApp;
+		return registering;
+	}
+
+	private StatusInfo getExistingStatusInfo(String applicationId) {
+		Application existing = getApplication(applicationId);
+		if(existing != null) {
+			return existing.getStatusInfo();
+		}
+		return null;
 	}
 
 	/**
@@ -137,17 +152,18 @@ public class ApplicationRegistry implements ApplicationContextAware {
 	 * @param id the applications id to unregister
 	 * @return the unregistered Application
 	 */
-	public Application unregister(String id) {
+	public Application deregister(String id) {
 		Application app = store.delete(id);
 		if (app != null) {
 			LOGGER.info("Application {} unregistered ", app);
-			context.publishEvent(new ClientApplicationUnregisteredEvent(this, app));
+			publisher.publishEvent(new ClientApplicationDeregisteredEvent(this, app));
 		}
 		return app;
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) {
-		this.context = applicationContext;
+	public void setApplicationEventPublisher(
+			ApplicationEventPublisher applicationEventPublisher) {
+		publisher = applicationEventPublisher;
 	}
 }

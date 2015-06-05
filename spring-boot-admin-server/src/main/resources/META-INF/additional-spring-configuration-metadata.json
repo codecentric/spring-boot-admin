@@ -1,11 +1,11 @@
 {"groups": [
   {
     "name": "spring.boot.admin.hazelcast",
-    "sourceType": "de.codecentric.boot.admin.config.AdminServerWebConfiguration.HazelcastStoreConfiguration"
+    "sourceType": "de.codecentric.boot.admin.config.HazelcastStoreConfiguration"
   },
   {
     "name": "spring.boot.admin.discovery",
-    "sourceType": "de.codecentric.boot.admin.config.AdminServerWebConfiguration.DiscoveryClientConfiguration"
+    "sourceType": "de.codecentric.boot.admin.config.DiscoveryClientConfiguration"
   }
 ],"properties": [
   {
@@ -31,5 +31,11 @@
     "type": "java.lang.String",
     "description": "management-path suffix for discovered applications",
     "defaultValue": ""
+  },
+  {
+    "name": "spring.boot.admin.discovery.monitor.period",
+    "type": "long",
+    "description": "time interval in ms to update the status of applications with expired statusInfo",
+    "defaultValue": "10000"
   }
 ]
