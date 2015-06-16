@@ -53,8 +53,8 @@ import de.codecentric.boot.admin.registry.store.ApplicationStore;
 @Import({ RevereseZuulProxyConfiguration.class, MailNotifierConfiguration.class,
 		HazelcastStoreConfiguration.class, SimpleStoreConfig.class,
 		DiscoveryClientConfiguration.class })
-public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter implements ApplicationContextAware {
-
+public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter implements
+		ApplicationContextAware {
 
 	private ApplicationContext applicationContext;
 
@@ -66,8 +66,8 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter impleme
 	@Override
 	public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
 		if (!hasConverter(converters, MappingJackson2HttpMessageConverter.class)) {
-			ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().applicationContext(this.applicationContext)
-					.build();
+			ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json()
+					.applicationContext(this.applicationContext).build();
 			converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
 		}
 	}
@@ -131,16 +131,14 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter impleme
 			final StatusUpdater updater) {
 		return new ApplicationListener<ClientApplicationRegisteredEvent>() {
 			@Override
-			public void onApplicationEvent(
-					ClientApplicationRegisteredEvent event) {
+			public void onApplicationEvent(ClientApplicationRegisteredEvent event) {
 				updater.updateStatus(event.getApplication());
 			}
 		};
 	}
 
 	@Bean
-	public ScheduledTaskRegistrar updateTaskRegistrar(
-			final StatusUpdater updater,
+	public ScheduledTaskRegistrar updateTaskRegistrar(final StatusUpdater updater,
 			@Value("${spring.boot.admin.monitor.period:10000}") long monitorPeriod) {
 		ScheduledTaskRegistrar registrar = new ScheduledTaskRegistrar();
 		Runnable registratorTask = new Runnable() {
@@ -156,8 +154,7 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter impleme
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ApplicationEventJournal applicationEventJournal(
-			JournaledEventStore store) {
+	public ApplicationEventJournal applicationEventJournal(JournaledEventStore store) {
 		return new ApplicationEventJournal(store);
 	}
 
@@ -169,8 +166,7 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter impleme
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JournalController journalController(
-			ApplicationEventJournal eventJournal) {
+	public JournalController journalController(ApplicationEventJournal eventJournal) {
 		return new JournalController(eventJournal);
 	}
 
