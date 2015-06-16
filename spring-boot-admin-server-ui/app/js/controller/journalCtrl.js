@@ -16,7 +16,7 @@
 'use strict';
 
 module.exports = function ($scope, $http) {
-    $http.get('/api/journal').success(function(journal) {
+    $http.get('api/journal').success(function(journal) {
         $scope.journal = journal;
     }).error(function(error) {
         $scope.error = error;
