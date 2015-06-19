@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 package de.codecentric.boot.admin.discovery;
+
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.event.HeartbeatEvent;
 import org.springframework.cloud.client.discovery.event.HeartbeatMonitor;
 import org.springframework.cloud.client.discovery.event.InstanceRegisteredEvent;
 import org.springframework.cloud.client.discovery.event.ParentHeartbeatEvent;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.EventListener;
 import org.springframework.util.StringUtils;
 
 import de.codecentric.boot.admin.model.Application;
@@ -29,9 +29,10 @@ import de.codecentric.boot.admin.registry.ApplicationRegistry;
 
 /**
  * Listener for Heartbeats events to publish all services to the application registry.
+ *
  * @author Johannes Stelzer
  */
-public class ApplicationDiscoveryListener implements ApplicationListener<ApplicationEvent> {
+public class ApplicationDiscoveryListener {
 
 	private final DiscoveryClient discoveryClient;
 
@@ -45,26 +46,25 @@ public class ApplicationDiscoveryListener implements ApplicationListener<Applica
 
 	private String healthEndpoint = "health";
 
-
-	public ApplicationDiscoveryListener(DiscoveryClient discoveryClient, ApplicationRegistry registry) {
+	public ApplicationDiscoveryListener(DiscoveryClient discoveryClient,
+			ApplicationRegistry registry) {
 		this.discoveryClient = discoveryClient;
 		this.registry = registry;
 	}
 
-	@Override
-	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof InstanceRegisteredEvent) {
-			discover();
-		}
-		else if (event instanceof ParentHeartbeatEvent) {
-			ParentHeartbeatEvent e = (ParentHeartbeatEvent) event;
-			discoverIfNeeded(e.getValue());
-		}
-		else if (event instanceof HeartbeatEvent) {
-			HeartbeatEvent e = (HeartbeatEvent) event;
-			discoverIfNeeded(e.getValue());
-		}
+	@EventListener
+	public void onInstanceRegistered(InstanceRegisteredEvent<?> event) {
+		discover();
+	}
 
+	@EventListener
+	public void onParentHeartbeat(ParentHeartbeatEvent event) {
+		discoverIfNeeded(event.getValue());
+	}
+
+	@EventListener
+	public void onApplicationEvent(HeartbeatEvent event) {
+		discoverIfNeeded(event.getValue());
 	}
 
 	private void discoverIfNeeded(Object value) {
@@ -86,9 +86,8 @@ public class ApplicationDiscoveryListener implements ApplicationListener<Applica
 		String managementUrl = append(instance.getUri().toString(), managementContextPath);
 		String healthUrl = append(managementUrl, healthEndpoint);
 
-		return Application.create(instance.getServiceId())
-				.withHealthUrl(healthUrl).withManagementUrl(managementUrl)
-				.withServiceUrl(serviceUrl).build();
+		return Application.create(instance.getServiceId()).withHealthUrl(healthUrl)
+				.withManagementUrl(managementUrl).withServiceUrl(serviceUrl).build();
 	}
 
 	public void setManagementContextPath(String managementContextPath) {

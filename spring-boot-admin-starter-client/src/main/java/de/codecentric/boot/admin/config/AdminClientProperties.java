@@ -25,10 +25,8 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ApplicationContextEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.Assert;
@@ -36,7 +34,8 @@ import org.springframework.util.StringUtils;
 
 @ConfigurationProperties(prefix = "spring.boot.admin.client", ignoreUnknownFields = false)
 @Order(Ordered.LOWEST_PRECEDENCE - 100)
-public class AdminClientProperties implements ApplicationListener<ApplicationEvent> {
+public class AdminClientProperties {
+
 	/**
 	 * Client-management-URL to register with. Inferred at runtime, can be overriden in case the
 	 * reachable URL is different (e.g. Docker).
@@ -81,35 +80,29 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 
 	private boolean serverInitialized = false;
 
-	@Override
-	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof EmbeddedServletContainerInitializedEvent) {
-			EmbeddedServletContainerInitializedEvent initEvent = (EmbeddedServletContainerInitializedEvent) event;
-			serverInitialized = true;
-			if ("management".equals(initEvent.getApplicationContext().getNamespace())) {
-				managementPort = initEvent.getEmbeddedServletContainer().getPort();
-			} else {
-				serverPort = initEvent.getEmbeddedServletContainer().getPort();
-			}
-		} else if (startedDeployedWar(event)) {
-			serverInitialized = true;
-			if (!StringUtils.hasText(serviceUrl)) {
-				throw new RuntimeException(
-						"spring.boot.admin.client.serviceUrl must be set for deployed war files!");
-			}
+	@EventListener
+	public void onStartedEmbeddedContainer(EmbeddedServletContainerInitializedEvent event) {
+		if ("management".equals(event.getApplicationContext().getNamespace())) {
+			managementPort = event.getEmbeddedServletContainer().getPort();
+		} else {
+			serverPort = event.getEmbeddedServletContainer().getPort();
 		}
+		serverInitialized = true;
 	}
 
-	private boolean startedDeployedWar(ApplicationEvent event) {
-		if (event instanceof ContextRefreshedEvent) {
-			ApplicationContextEvent contextEvent = (ApplicationContextEvent) event;
-			if (contextEvent.getApplicationContext() instanceof EmbeddedWebApplicationContext) {
-				EmbeddedWebApplicationContext context = (EmbeddedWebApplicationContext) contextEvent
-						.getApplicationContext();
-				return context.getEmbeddedServletContainer() == null;
+	@EventListener
+	public void onStartedDeployedWar(ContextRefreshedEvent event) {
+		if (event.getApplicationContext() instanceof EmbeddedWebApplicationContext) {
+			EmbeddedWebApplicationContext context = (EmbeddedWebApplicationContext) event
+					.getApplicationContext();
+			if (context.getEmbeddedServletContainer() == null) {
+				if (!StringUtils.hasText(serviceUrl)) {
+					throw new RuntimeException(
+							"spring.boot.admin.client.serviceUrl must be set for deployed war files!");
+				}
+				serverInitialized = true;
 			}
 		}
-		return false;
 	}
 
 	public String getManagementUrl() {
@@ -210,5 +203,4 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 			throw new IllegalArgumentException(ex.getMessage(), ex);
 		}
 	}
-
 }

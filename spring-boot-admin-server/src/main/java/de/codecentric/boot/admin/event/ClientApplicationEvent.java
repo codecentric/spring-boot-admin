@@ -15,25 +15,44 @@
  */
 package de.codecentric.boot.admin.event;
 
-import org.springframework.context.ApplicationEvent;
+import java.io.Serializable;
 
 import de.codecentric.boot.admin.model.Application;
 
 /**
  * Abstract Event regearding spring boot admin clients
+ *
  * @author Johannes Stelzer
  */
-public abstract class ClientApplicationEvent extends ApplicationEvent {
+public abstract class ClientApplicationEvent implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private final Application application;
 
-	public ClientApplicationEvent(Object source, Application application) {
-		super(source);
+	private final long timestamp;
+
+	public ClientApplicationEvent(Application application) {
 		this.application = application;
+		this.timestamp = System.currentTimeMillis();
 	}
 
+	/**
+	 * Return the system time in milliseconds when the event happened.
+	 */
+	public final long getTimestamp() {
+		return this.timestamp;
+	}
+
+	/**
+	 * Return the affected application.
+	 */
 	public Application getApplication() {
 		return application;
 	}
+
+	/**
+	 * Return the event type (for JSON).
+	 */
+	public abstract String getType();
+
 }

@@ -22,8 +22,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.noop.NoopDiscoveryClientAutoConfiguration;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -34,7 +32,7 @@ import de.codecentric.boot.admin.registry.ApplicationRegistry;
 @ConditionalOnClass({ DiscoveryClient.class })
 @ConditionalOnProperty(prefix = "spring.boot.admin.discovery", name = "enabled", matchIfMissing = true)
 @AutoConfigureAfter({ NoopDiscoveryClientAutoConfiguration.class })
-public  class DiscoveryClientConfiguration {
+public class DiscoveryClientConfiguration {
 
 	@Value("${spring.boot.admin.discovery.management.context-path:}")
 	private String managementPath;
@@ -46,8 +44,9 @@ public  class DiscoveryClientConfiguration {
 	private ApplicationRegistry registry;
 
 	@Bean
-	ApplicationListener<ApplicationEvent> applicationDiscoveryListener() {
-		ApplicationDiscoveryListener listener = new ApplicationDiscoveryListener(discoveryClient, registry);
+	public ApplicationDiscoveryListener applicationDiscoveryListener() {
+		ApplicationDiscoveryListener listener = new ApplicationDiscoveryListener(discoveryClient,
+				registry);
 		listener.setManagementContextPath(managementPath);
 		return listener;
 	}

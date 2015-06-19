@@ -25,7 +25,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.util.FileCopyUtils;
 
-
 public class LogfileMvcEndpointTest {
 
 	private LogfileMvcEndpoint controller = new LogfileMvcEndpoint();
@@ -62,8 +61,7 @@ public class LogfileMvcEndpointTest {
 			controller.invoke(response);
 			assertEquals(HttpStatus.OK.value(), response.getStatus());
 			assertEquals("--TEST--", response.getContentAsString());
-		}
-		finally {
+		} finally {
 			new File("test.log").delete();
 		}
 	}

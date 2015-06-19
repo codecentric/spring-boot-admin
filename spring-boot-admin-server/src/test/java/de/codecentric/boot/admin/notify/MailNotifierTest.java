@@ -32,9 +32,10 @@ public class MailNotifierTest {
 
 	@Test
 	public void test_onApplicationEvent() {
-		notifier.onApplicationEvent(new ClientApplicationStatusChangedEvent(new Object(),
-				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
-				StatusInfo.ofDown(), StatusInfo.ofUp()));
+		notifier.onClientApplicationStatusChanged(new ClientApplicationStatusChangedEvent(
+				Application.create("App").withId("-id-")
+						.withHealthUrl("http://health").build(), StatusInfo.ofDown(), StatusInfo
+						.ofUp()));
 
 		SimpleMailMessage expected = new SimpleMailMessage();
 		expected.setTo(new String[] { "foo@bar.com" });
@@ -49,18 +50,20 @@ public class MailNotifierTest {
 	@Test
 	public void test_onApplicationEvent_disbaled() {
 		notifier.setEnabled(false);
-		notifier.onApplicationEvent(new ClientApplicationStatusChangedEvent(new Object(),
-				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
-				StatusInfo.ofDown(), StatusInfo.ofUp()));
+		notifier.onClientApplicationStatusChanged(new ClientApplicationStatusChangedEvent(
+				Application.create("App").withId("-id-")
+						.withHealthUrl("http://health").build(), StatusInfo.ofDown(), StatusInfo
+						.ofUp()));
 
 		verify(sender, never()).send(isA(SimpleMailMessage.class));
 	}
 
 	@Test
 	public void test_onApplicationEvent_noSend() {
-		notifier.onApplicationEvent(new ClientApplicationStatusChangedEvent(new Object(),
-				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
-				StatusInfo.ofUnknown(), StatusInfo.ofUp()));
+		notifier.onClientApplicationStatusChanged(new ClientApplicationStatusChangedEvent(
+				Application.create("App").withId("-id-")
+						.withHealthUrl("http://health").build(), StatusInfo.ofUnknown(), StatusInfo
+						.ofUp()));
 
 		verify(sender, never()).send(isA(SimpleMailMessage.class));
 	}
@@ -69,9 +72,10 @@ public class MailNotifierTest {
 	public void test_onApplicationEvent_noSend_wildcard() {
 		notifier.setIgnoreChanges(new String[] { "*:UP" });
 
-		notifier.onApplicationEvent(new ClientApplicationStatusChangedEvent(new Object(),
-				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
-				StatusInfo.ofOffline(), StatusInfo.ofUp()));
+		notifier.onClientApplicationStatusChanged(new ClientApplicationStatusChangedEvent(
+				Application.create("App").withId("-id-")
+						.withHealthUrl("http://health").build(), StatusInfo.ofOffline(), StatusInfo
+						.ofUp()));
 
 		verify(sender, never()).send(isA(SimpleMailMessage.class));
 	}

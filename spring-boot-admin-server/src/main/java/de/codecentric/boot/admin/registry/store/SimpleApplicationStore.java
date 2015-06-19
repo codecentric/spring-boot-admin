@@ -46,7 +46,7 @@ public class SimpleApplicationStore implements ApplicationStore {
 
 	@Override
 	public Collection<Application> findByName(String name) {
-		List<Application> result = new ArrayList<Application>();
+		List<Application> result = new ArrayList<>();
 		for (Application a : map.values()) {
 			if (name.equals(a.getName())) {
 				result.add(a);

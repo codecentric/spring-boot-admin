@@ -56,18 +56,15 @@ public class ApplicationTest {
 	@Test
 	public void test_equals_hashCode() {
 		Application a1 = Application.create("foo").withHealthUrl("healthUrl")
-				.withManagementUrl("mgmt").withServiceUrl("svc").withId("id")
-				.build();
+				.withManagementUrl("mgmt").withServiceUrl("svc").withId("id").build();
 		Application a2 = Application.create("foo").withHealthUrl("healthUrl")
-				.withManagementUrl("mgmt").withServiceUrl("svc").withId("id")
-				.build();
+				.withManagementUrl("mgmt").withServiceUrl("svc").withId("id").build();
 
 		assertThat(a1, is(a2));
 		assertThat(a1.hashCode(), is(a2.hashCode()));
 
 		Application a3 = Application.create("foo").withHealthUrl("healthUrl2")
-				.withManagementUrl("mgmt").withServiceUrl("svc")
-				.withId("other").build();
+				.withManagementUrl("mgmt").withServiceUrl("svc").withId("other").build();
 
 		assertThat(a1, not(is(a3)));
 		assertThat(a2, not(is(a3)));

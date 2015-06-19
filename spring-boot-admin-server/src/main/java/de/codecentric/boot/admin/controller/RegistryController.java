@@ -57,21 +57,22 @@ public class RegistryController {
 	public ResponseEntity<Application> register(@RequestBody Application app) {
 		LOGGER.debug("Register application {}", app.toString());
 		Application registeredApp = registry.register(app);
-		return new ResponseEntity<Application>(registeredApp, HttpStatus.CREATED);
+		return ResponseEntity.status(HttpStatus.CREATED).body(registeredApp);
 	}
 
 	/**
 	 * List all registered applications with name
+	 *
 	 * @param name the name to search for
 	 * @return List
 	 */
 	@RequestMapping(method = RequestMethod.GET)
-	public Collection<Application> applications(@RequestParam(value = "name", required = false) String name) {
+	public Collection<Application> applications(
+			@RequestParam(value = "name", required = false) String name) {
 		LOGGER.debug("Deliver registered applications with name= {}", name);
 		if (name == null || name.isEmpty()) {
 			return registry.getApplications();
-		}
-		else {
+		} else {
 			return registry.getApplicationsByName(name);
 		}
 	}
@@ -83,13 +84,13 @@ public class RegistryController {
 	 * @return The registered application.
 	 */
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	public ResponseEntity<Application> get(@PathVariable String id) {
+	public ResponseEntity<?> get(@PathVariable String id) {
 		LOGGER.debug("Deliver registered application with ID '{}'", id);
 		Application application = registry.getApplication(id);
 		if (application != null) {
-			return new ResponseEntity<Application>(application, HttpStatus.OK);
+			return ResponseEntity.ok(application);
 		} else {
-			return new ResponseEntity<Application>(application, HttpStatus.NOT_FOUND);
+			return ResponseEntity.notFound().build();
 		}
 	}
 
@@ -100,13 +101,13 @@ public class RegistryController {
 	 * @return the unregistered application.
 	 */
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<Application> unregister(@PathVariable String id) {
+	public ResponseEntity<?> unregister(@PathVariable String id) {
 		LOGGER.debug("Unregister application with ID '{}'", id);
-		Application app = registry.deregister(id);
-		if (app != null) {
-			return new ResponseEntity<Application>(app, HttpStatus.NO_CONTENT);
+		Application application = registry.deregister(id);
+		if (application != null) {
+			return ResponseEntity.ok(application);
 		} else {
-			return new ResponseEntity<Application>(HttpStatus.NOT_FOUND);
+			return ResponseEntity.notFound().build();
 		}
 	}
 

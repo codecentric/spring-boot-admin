@@ -17,17 +17,16 @@ package de.codecentric.boot.admin.journal.store;
 
 import java.util.Collection;
 
-import de.codecentric.boot.admin.journal.JournaledEvent;
+import de.codecentric.boot.admin.event.ClientApplicationEvent;
 
 /**
  * Interface for storing JournaledEvent
  *
  * @author Johannes Stelzer
- *
  */
 public interface JournaledEventStore {
 
-	Collection<JournaledEvent> findAll();
+	Collection<ClientApplicationEvent> findAll();
 
-	void store(JournaledEvent event);
+	void store(ClientApplicationEvent event);
 }

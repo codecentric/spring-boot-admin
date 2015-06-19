@@ -47,8 +47,7 @@ public class ApplicationRouteLocatorTest {
 	public void locateRoutes_healthOnly() {
 		when(registry.getApplications()).thenReturn(
 				Collections.singletonList(Application.create("app1")
-						.withHealthUrl("http://localhost/health")
-						.withId("1234").build()));
+						.withHealthUrl("http://localhost/health").withId("1234").build()));
 
 		locator.resetRoutes();
 
@@ -58,9 +57,9 @@ public class ApplicationRouteLocatorTest {
 
 		assertEquals("http://localhost/health",
 				locator.getRoutes().get("/api/applications/1234/health/**"));
-		assertEquals(new ProxyRouteLocator.ProxyRouteSpec("api/applications/1234/health",
-				"", "http://localhost/health", "/api/applications/1234/health",
-				null), locator.getMatchingRoute("/api/applications/1234/health"));
+		assertEquals(new ProxyRouteLocator.ProxyRouteSpec("api/applications/1234/health", "",
+				"http://localhost/health", "/api/applications/1234/health", null),
+				locator.getMatchingRoute("/api/applications/1234/health"));
 	}
 
 	@Test
@@ -68,28 +67,24 @@ public class ApplicationRouteLocatorTest {
 		when(registry.getApplications()).thenReturn(
 				Collections.singletonList(Application.create("app1")
 						.withHealthUrl("http://localhost/health")
-						.withManagementUrl("http://localhost").withId("1234")
-						.build()));
+						.withManagementUrl("http://localhost").withId("1234").build()));
 
 		locator.resetRoutes();
 
 		assertEquals(2, locator.getRoutes().size());
 
 		assertThat(locator.getRoutePaths(),
-				hasItems(
-						"/api/applications/1234/health/**",
-						"/api/applications/1234/*/**"));
+				hasItems("/api/applications/1234/health/**", "/api/applications/1234/*/**"));
 
 		assertEquals("http://localhost/health",
 				locator.getRoutes().get("/api/applications/1234/health/**"));
-		assertEquals(new ProxyRouteLocator.ProxyRouteSpec("api/applications/1234/health",
-				"", "http://localhost/health", "/api/applications/1234/health",
-				null), locator.getMatchingRoute("/api/applications/1234/health"));
+		assertEquals(new ProxyRouteLocator.ProxyRouteSpec("api/applications/1234/health", "",
+				"http://localhost/health", "/api/applications/1234/health", null),
+				locator.getMatchingRoute("/api/applications/1234/health"));
 
-		assertEquals("http://localhost",
-				locator.getRoutes().get("/api/applications/1234/*/**"));
-		assertEquals(new ProxyRouteLocator.ProxyRouteSpec("api/applications/1234",
-				"/*/**", "http://localhost", "/api/applications/1234", null),
+		assertEquals("http://localhost", locator.getRoutes().get("/api/applications/1234/*/**"));
+		assertEquals(new ProxyRouteLocator.ProxyRouteSpec("api/applications/1234", "/*/**",
+				"http://localhost", "/api/applications/1234", null),
 				locator.getMatchingRoute("/api/applications/1234/*/**"));
 	}
 

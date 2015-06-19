@@ -17,16 +17,17 @@ package de.codecentric.boot.admin.config;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
+import org.springframework.context.event.EventListener;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -82,24 +83,26 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter impleme
 		return false;
 	}
 
+	@Autowired
+	private ApplicationStore applicationStore;
+
+	@Value("${spring.boot.admin.monitor.period:10000}")
+	private long monitorPeriod;
+
 	/**
-	 * @param registry the backing Application registry.
 	 * @return Controller with REST-API for spring-boot applications to register itself.
 	 */
 	@Bean
-	public RegistryController registryController(ApplicationRegistry registry) {
-		return new RegistryController(registry);
+	public RegistryController registryController() {
+		return new RegistryController(applicationRegistry());
 	}
 
 	/**
-	 * @param applicationStore the backing store
-	 * @param applicationIdGenerator the id generator to use
 	 * @return Default registry for all registered application.
 	 */
 	@Bean
-	public ApplicationRegistry applicationRegistry(ApplicationStore applicationStore,
-			ApplicationIdGenerator applicationIdGenerator) {
-		return new ApplicationRegistry(applicationStore, applicationIdGenerator);
+	public ApplicationRegistry applicationRegistry() {
+		return new ApplicationRegistry(applicationStore, applicationIdGenerator());
 	}
 
 	/**
@@ -114,7 +117,7 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter impleme
 	@Bean
 	@ConditionalOnMissingBean
 	@ConfigurationProperties("spring.boot.admin.monitor")
-	public StatusUpdater statusUpdater(ApplicationStore store) {
+	public StatusUpdater statusUpdater() {
 		RestTemplate template = new RestTemplate();
 		template.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 		template.setErrorHandler(new DefaultResponseErrorHandler() {
@@ -123,39 +126,32 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter impleme
 				return false;
 			}
 		});
-		return new StatusUpdater(template, store);
+		return new StatusUpdater(template, applicationStore);
+	}
+
+	@EventListener
+	public void onClientApplicationRegistered(ClientApplicationRegisteredEvent event) {
+		statusUpdater().updateStatus(event.getApplication());
 	}
 
 	@Bean
-	public ApplicationListener<ClientApplicationRegisteredEvent> updateRegistrationListener(
-			final StatusUpdater updater) {
-		return new ApplicationListener<ClientApplicationRegisteredEvent>() {
-			@Override
-			public void onApplicationEvent(ClientApplicationRegisteredEvent event) {
-				updater.updateStatus(event.getApplication());
-			}
-		};
-	}
-
-	@Bean
-	public ScheduledTaskRegistrar updateTaskRegistrar(final StatusUpdater updater,
-			@Value("${spring.boot.admin.monitor.period:10000}") long monitorPeriod) {
+	public ScheduledTaskRegistrar updateTaskRegistrar() {
 		ScheduledTaskRegistrar registrar = new ScheduledTaskRegistrar();
-		Runnable registratorTask = new Runnable() {
+
+		registrar.addFixedRateTask(new Runnable() {
 			@Override
 			public void run() {
-				updater.updateStatusForAllApplications();
+				statusUpdater().updateStatusForAllApplications();
 			}
-		};
+		}, monitorPeriod);
 
-		registrar.addFixedRateTask(registratorTask, monitorPeriod);
 		return registrar;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ApplicationEventJournal applicationEventJournal(JournaledEventStore store) {
-		return new ApplicationEventJournal(store);
+	public ApplicationEventJournal applicationEventJournal() {
+		return new ApplicationEventJournal(journaledEventStore());
 	}
 
 	@Bean
@@ -166,8 +162,8 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter impleme
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JournalController journalController(ApplicationEventJournal eventJournal) {
-		return new JournalController(eventJournal);
+	public JournalController journalController() {
+		return new JournalController(applicationEventJournal());
 	}
 
 }

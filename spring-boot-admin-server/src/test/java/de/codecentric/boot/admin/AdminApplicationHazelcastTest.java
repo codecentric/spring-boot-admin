@@ -41,7 +41,6 @@ import de.codecentric.boot.admin.config.EnableAdminServer;
 import de.codecentric.boot.admin.model.Application;
 
 /**
- *
  * Integration test to verify the correct functionality of the REST API with Hazelcast
  *
  * @author Dennis Schulte
@@ -62,10 +61,14 @@ public class AdminApplicationHazelcastTest {
 	@Before
 	public void setup() throws InterruptedException {
 		System.setProperty("hazelcast.wait.seconds.before.join", "0");
-		instance1 = (EmbeddedWebApplicationContext) SpringApplication.run(TestAdminApplication.class, new String[] {
-			"--server.port=0", "--spring.jmx.enabled=false", "--spring.boot.admin.hazelcast.enabled=true" });
-		instance2 = (EmbeddedWebApplicationContext) SpringApplication.run(TestAdminApplication.class, new String[] {
-			"--server.port=0", "--spring.jmx.enabled=false", "--spring.boot.admin.hazelcast.enabled=true" });
+		instance1 = (EmbeddedWebApplicationContext) SpringApplication.run(
+				TestAdminApplication.class,
+				new String[] { "--server.port=0", "--spring.jmx.enabled=false",
+						"--spring.boot.admin.hazelcast.enabled=true" });
+		instance2 = (EmbeddedWebApplicationContext) SpringApplication.run(
+				TestAdminApplication.class,
+				new String[] { "--server.port=0", "--spring.jmx.enabled=false",
+						"--spring.boot.admin.hazelcast.enabled=true" });
 	}
 
 	@After
@@ -116,16 +119,20 @@ public class AdminApplicationHazelcastTest {
 		return getResponse;
 	}
 
-	private ResponseEntity<Application> registerApp(Application app, EmbeddedWebApplicationContext context) {
+	private ResponseEntity<Application> registerApp(Application app,
+			EmbeddedWebApplicationContext context) {
 		int port = context.getEmbeddedServletContainer().getPort();
-		return template.postForEntity("http://localhost:" + port + "/api/applications", app, Application.class);
+		return template.postForEntity("http://localhost:" + port + "/api/applications", app,
+				Application.class);
 	}
 
 	@SuppressWarnings("unchecked")
-	private ResponseEntity<Collection<Application>> getAppByName(String name, EmbeddedWebApplicationContext context) {
+	private ResponseEntity<Collection<Application>> getAppByName(String name,
+			EmbeddedWebApplicationContext context) {
 		int port = context.getEmbeddedServletContainer().getPort();
 		ResponseEntity<?> getResponse = template.getForEntity("http://localhost:" + port
-				+ "/api/applications?name={name}", ApplicationList.class, Collections.singletonMap("name", name));
+				+ "/api/applications?name={name}", ApplicationList.class,
+				Collections.singletonMap("name", name));
 		return (ResponseEntity<Collection<Application>>) getResponse;
 	}
 

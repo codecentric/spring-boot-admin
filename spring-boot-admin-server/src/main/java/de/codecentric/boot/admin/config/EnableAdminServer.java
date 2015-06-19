@@ -25,7 +25,6 @@ import org.springframework.context.annotation.Import;
 
 /**
  * @author Dennis Schulte
- *
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

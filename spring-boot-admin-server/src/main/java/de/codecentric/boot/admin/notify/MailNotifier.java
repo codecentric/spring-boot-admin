@@ -21,7 +21,7 @@ import javax.mail.MessagingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.EventListener;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
@@ -33,7 +33,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
 
-public class MailNotifier implements ApplicationListener<ClientApplicationStatusChangedEvent> {
+public class MailNotifier {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MailNotifier.class);
 	private final String DEFAULT_SUBJECT = "#{application.name} (#{application.id}) is #{to.status}";
@@ -69,8 +69,8 @@ public class MailNotifier implements ApplicationListener<ClientApplicationStatus
 	private Expression subject;
 
 	/**
-	 * List of changes to ignore. Must be in Format OLD:NEW, for any status use
-	 * * as wildcard, e.g. *:UP or OFFLINE:*
+	 * List of changes to ignore. Must be in Format OLD:NEW, for any status use * as wildcard, e.g.
+	 * *:UP or OFFLINE:*
 	 */
 	private String[] ignoreChanges = { "UNKNOWN:UP" };
 
@@ -85,8 +85,8 @@ public class MailNotifier implements ApplicationListener<ClientApplicationStatus
 		this.text = parser.parseExpression(DEFAULT_TEXT, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
-	@Override
-	public void onApplicationEvent(ClientApplicationStatusChangedEvent event) {
+	@EventListener
+	public void onClientApplicationStatusChanged(ClientApplicationStatusChangedEvent event) {
 		if (enabled && shouldSendMail(event.getFrom().getStatus(), event.getTo().getStatus())) {
 			try {
 				sendMail(event);

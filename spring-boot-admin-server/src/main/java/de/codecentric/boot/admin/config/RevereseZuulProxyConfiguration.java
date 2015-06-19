@@ -27,7 +27,6 @@ import org.springframework.cloud.netflix.zuul.RoutesEndpoint;
 import org.springframework.cloud.netflix.zuul.ZuulFilterInitializer;
 import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
 import org.springframework.cloud.netflix.zuul.filters.ProxyRouteLocator;
-import org.springframework.cloud.netflix.zuul.filters.RouteLocator;
 import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.cloud.netflix.zuul.filters.post.SendErrorFilter;
 import org.springframework.cloud.netflix.zuul.filters.post.SendResponseFilter;
@@ -66,8 +65,8 @@ public class RevereseZuulProxyConfiguration {
 
 	@Bean
 	public ApplicationRouteLocator routeLocator() {
-		return new ApplicationRouteLocator(this.server.getServletPrefix(), registry, this.zuulProperties,
-				RegistryController.PATH);
+		return new ApplicationRouteLocator(this.server.getServletPrefix(), registry,
+				this.zuulProperties, RegistryController.PATH);
 	}
 
 	@Bean
@@ -90,8 +89,8 @@ public class RevereseZuulProxyConfiguration {
 	}
 
 	@Bean
-	public ZuulHandlerMapping zuulHandlerMapping(RouteLocator routes) {
-		return new ZuulHandlerMapping(routes, zuulController());
+	public ZuulHandlerMapping zuulHandlerMapping() {
+		return new ZuulHandlerMapping(routeLocator(), zuulController());
 	}
 
 	// pre filters
@@ -138,7 +137,7 @@ public class RevereseZuulProxyConfiguration {
 
 	@Bean
 	public ApplicationRouteRefreshListener applicationRouteRefreshListener() {
-		return new ApplicationRouteRefreshListener(routeLocator(), zuulHandlerMapping(routeLocator()));
+		return new ApplicationRouteRefreshListener(routeLocator(), zuulHandlerMapping());
 	}
 
 	@Configuration

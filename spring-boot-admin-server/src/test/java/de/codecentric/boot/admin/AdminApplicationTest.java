@@ -37,7 +37,6 @@ import de.codecentric.boot.admin.config.EnableAdminServer;
 import de.codecentric.boot.admin.model.Application;
 
 /**
- *
  * Integration test to verify the correct functionality of the REST API.
  *
  * @author Dennis Schulte
@@ -53,8 +52,8 @@ public class AdminApplicationTest {
 	@Test
 	public void testGetApplications() {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<List> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + port + "/api/applications", List.class);
+		ResponseEntity<List> entity = new TestRestTemplate().getForEntity("http://localhost:"
+				+ port + "/api/applications", List.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 	}
 
@@ -62,11 +61,11 @@ public class AdminApplicationTest {
 	public void testReverseProxy() {
 		String apiBaseUrl = "http://localhost:" + port + "/api/applications";
 
-		ResponseEntity<Application> entity = new TestRestTemplate()
-				.postForEntity(apiBaseUrl, Application.create("TestApp")
+		Application application = Application.create("TestApp")
 				.withHealthUrl("http://localhost:" + port + "/health")
-				.withManagementUrl("http://localhost:" + port).build(),
-				Application.class);
+				.withManagementUrl("http://localhost:" + port).build();
+		ResponseEntity<Application> entity = new TestRestTemplate().postForEntity(apiBaseUrl,
+				application, Application.class);
 
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> info = new TestRestTemplate().getForEntity(apiBaseUrl + "/"

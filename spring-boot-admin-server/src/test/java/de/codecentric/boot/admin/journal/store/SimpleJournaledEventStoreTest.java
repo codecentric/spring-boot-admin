@@ -27,9 +27,8 @@ import java.util.List;
 import org.junit.Test;
 
 import de.codecentric.boot.admin.event.ClientApplicationDeregisteredEvent;
+import de.codecentric.boot.admin.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
-import de.codecentric.boot.admin.journal.JournaledEvent;
-import de.codecentric.boot.admin.journal.store.SimpleJournaledEventStore;
 import de.codecentric.boot.admin.model.Application;
 
 public class SimpleJournaledEventStoreTest {
@@ -38,25 +37,18 @@ public class SimpleJournaledEventStoreTest {
 
 	@Test
 	public void test_store() {
-		List<JournaledEvent> events = Arrays.asList(JournaledEvent
-				.fromEvent(new ClientApplicationRegisteredEvent(new Object(),
-						Application.create("foo").withId("bar").build())),
-						JournaledEvent
-						.fromEvent(new ClientApplicationDeregisteredEvent(
-								new Object(), Application.create("foo")
-								.withId("bar").build()))
-				);
+		Application application = Application.create("foo").withId("bar").build();
+		List<ClientApplicationEvent> events = Arrays.asList(new ClientApplicationRegisteredEvent(
+				application), new ClientApplicationDeregisteredEvent(application));
 
-		for (JournaledEvent event : events) {
+		for (ClientApplicationEvent event : events) {
 			store.store(event);
 		}
 
 		// Items are stored in reverse order
-		List<JournaledEvent> reversed = new ArrayList<JournaledEvent>(
-				events);
+		List<ClientApplicationEvent> reversed = new ArrayList<>(events);
 		Collections.reverse(reversed);
 
-		assertThat(store.findAll(),
-				is((Collection<JournaledEvent>) reversed));
+		assertThat(store.findAll(), is((Collection<ClientApplicationEvent>) reversed));
 	}
 }

@@ -20,14 +20,13 @@ import java.util.Collection;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import de.codecentric.boot.admin.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.journal.ApplicationEventJournal;
-import de.codecentric.boot.admin.journal.JournaledEvent;
 
 /**
  * REST-Controller for querying all client application events.
  *
  * @author Johannes Stelzer
- *
  */
 @RestController
 @RequestMapping("/api/journal")
@@ -40,7 +39,7 @@ public class JournalController {
 	}
 
 	@RequestMapping
-	public Collection<JournaledEvent> getJournal() {
+	public Collection<ClientApplicationEvent> getJournal() {
 		return eventJournal.getEvents();
 	}
 

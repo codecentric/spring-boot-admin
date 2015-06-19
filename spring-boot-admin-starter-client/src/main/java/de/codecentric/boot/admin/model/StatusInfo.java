@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Represents a certain status a certain time.
  *
  * @author Johannes Stelzer
- *
  */
 public class StatusInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -18,7 +17,7 @@ public class StatusInfo implements Serializable {
 	private final long timestamp;
 
 	protected StatusInfo(String status, long timestamp) {
-		this.status= status.toUpperCase();
+		this.status = status.toUpperCase();
 		this.timestamp = timestamp;
 	}
 
@@ -27,7 +26,8 @@ public class StatusInfo implements Serializable {
 	}
 
 	@JsonCreator
-	public static StatusInfo valueOf(@JsonProperty("status") String statusCode, @JsonProperty("timestamp") long timestamp) {
+	public static StatusInfo valueOf(@JsonProperty("status") String statusCode,
+			@JsonProperty("timestamp") long timestamp) {
 		return new StatusInfo(statusCode, timestamp);
 	}
 

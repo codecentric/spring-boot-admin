@@ -27,6 +27,7 @@ import de.codecentric.boot.admin.registry.ApplicationRegistry;
 
 /**
  * RouteLocator to register all applications' routes to zuul
+ *
  * @author Johannes Stelzer
  */
 public class ApplicationRouteLocator extends ProxyRouteLocator {
@@ -34,8 +35,8 @@ public class ApplicationRouteLocator extends ProxyRouteLocator {
 	private ApplicationRegistry registry;
 	private String prefix;
 
-	public ApplicationRouteLocator(String servletPath, ApplicationRegistry registry, ZuulProperties properties,
-			String prefix) {
+	public ApplicationRouteLocator(String servletPath, ApplicationRegistry registry,
+			ZuulProperties properties, String prefix) {
 		super(servletPath, null, properties);
 		this.registry = registry;
 		this.prefix = prefix;
@@ -60,8 +61,7 @@ public class ApplicationRouteLocator extends ProxyRouteLocator {
 		return locateRoutes;
 	}
 
-	private void addRoute(LinkedHashMap<String, ZuulRoute> locateRoutes, String path,
-			String url) {
+	private void addRoute(LinkedHashMap<String, ZuulRoute> locateRoutes, String path, String url) {
 		locateRoutes.put(path, new ZuulRoute(path, url));
 	}
 

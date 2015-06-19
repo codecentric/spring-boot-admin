@@ -202,13 +202,13 @@ public class AdminClientPropertiesTest {
 		when(eventContext.getNamespace()).thenReturn(namespace);
 
 		when(eventContext.getEmbeddedServletContainer()).thenReturn(eventSource);
-		client.onApplicationEvent(
-				new EmbeddedServletContainerInitializedEvent(eventContext, eventSource));
+		client.onStartedEmbeddedContainer(new EmbeddedServletContainerInitializedEvent(
+				eventContext, eventSource));
 	}
 
 	private void publishContextRefreshedEvent(AdminClientProperties client) {
-		client.onApplicationEvent(
-				new ContextRefreshedEvent(mock(EmbeddedWebApplicationContext.class)));
+		client.onStartedDeployedWar(new ContextRefreshedEvent(
+				mock(EmbeddedWebApplicationContext.class)));
 	}
 
 	private void load(String... environment) {

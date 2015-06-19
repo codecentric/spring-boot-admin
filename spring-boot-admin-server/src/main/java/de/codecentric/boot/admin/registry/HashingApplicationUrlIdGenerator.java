@@ -25,18 +25,16 @@ import de.codecentric.boot.admin.model.Application;
  * Generates an SHA-1 Hash based on the applications url.
  */
 public class HashingApplicationUrlIdGenerator implements ApplicationIdGenerator {
-	private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
-		'e', 'f' };
+	private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+			'a', 'b', 'c', 'd', 'e', 'f' };
 
 	@Override
 	public String generateId(Application a) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-1");
-			byte[] bytes = digest.digest(a.getHealthUrl()
-					.getBytes(StandardCharsets.UTF_8));
+			byte[] bytes = digest.digest(a.getHealthUrl().getBytes(StandardCharsets.UTF_8));
 			return new String(encodeHex(bytes, 0, 8));
-		}
-		catch (NoSuchAlgorithmException e) {
+		} catch (NoSuchAlgorithmException e) {
 			throw new IllegalStateException(e);
 		}
 	}

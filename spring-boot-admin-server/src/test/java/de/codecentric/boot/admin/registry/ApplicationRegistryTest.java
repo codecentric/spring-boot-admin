@@ -45,8 +45,7 @@ public class ApplicationRegistryTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void registerFailed_no_name() throws Exception {
-		registry.register(Application.create("")
-				.withHealthUrl("http://localhost/health").build());
+		registry.register(Application.create("").withHealthUrl("http://localhost/health").build());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -56,21 +55,18 @@ public class ApplicationRegistryTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void registerFailed_invalid_healthUrl() throws Exception {
-		registry.register(Application.create("name").withHealthUrl("not-a-url")
-				.build());
+		registry.register(Application.create("name").withHealthUrl("not-a-url").build());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void registerFailed_invalid_mgmtUrl() throws Exception {
-		registry.register(Application.create("")
-				.withHealthUrl("http://localhost/health")
+		registry.register(Application.create("").withHealthUrl("http://localhost/health")
 				.withManagementUrl("not-a-url").build());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void registerFailed_invalid_svcUrl() throws Exception {
-		registry.register(Application.create("")
-				.withHealthUrl("http://localhost/health")
+		registry.register(Application.create("").withHealthUrl("http://localhost/health")
 				.withServiceUrl("not-a-url").build());
 	}
 

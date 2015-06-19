@@ -36,8 +36,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * Controller that provides an API for logfiles, i.e. downloading the main logfile configured in environment property
- * 'logging.file' that is standard, but optional property for spring-boot applications.
+ * Controller that provides an API for logfiles, i.e. downloading the main logfile configured in
+ * environment property 'logging.file' that is standard, but optional property for spring-boot
+ * applications.
  */
 @ConfigurationProperties(prefix = "endpoints.logfile")
 public class LogfileMvcEndpoint implements MvcEndpoint {
@@ -81,10 +82,10 @@ public class LogfileMvcEndpoint implements MvcEndpoint {
 		return null;
 	}
 
-
 	public void setLogfile(String logfile) {
 		this.logfile = logfile;
 	}
+
 	public String getLogfile() {
 		return logfile;
 	}
@@ -114,19 +115,18 @@ public class LogfileMvcEndpoint implements MvcEndpoint {
 
 		Resource file = new FileSystemResource(logfile);
 		response.setContentType(MediaType.TEXT_PLAIN_VALUE);
-		response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getFilename() + "\"");
+		response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getFilename()
+				+ "\"");
 		FileCopyUtils.copy(file.getInputStream(), response.getOutputStream());
 	}
-
 
 	@RequestMapping(method = RequestMethod.HEAD)
 	@ResponseBody
 	public ResponseEntity<Object> available() {
 		if (isAvailable()) {
-			return new ResponseEntity<Object>(HttpStatus.OK);
-		}
-		else {
-			return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 
@@ -148,6 +148,5 @@ public class LogfileMvcEndpoint implements MvcEndpoint {
 
 		return true;
 	}
-
 
 }

@@ -23,10 +23,14 @@ import de.codecentric.boot.admin.model.Application;
  * @author Johannes Stelzer
  */
 public class ClientApplicationRegisteredEvent extends ClientApplicationEvent {
-	public ClientApplicationRegisteredEvent(Object source, Application application) {
-		super(source, application);
-	}
-
 	private static final long serialVersionUID = 1L;
 
+	public ClientApplicationRegisteredEvent(Application application) {
+		super(application);
+	}
+
+	@Override
+	public String getType() {
+		return "REGISTRATION";
+	}
 }

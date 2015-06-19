@@ -16,12 +16,13 @@ public class BasicAuthHttpRequestInterceptor implements ClientHttpRequestInterce
 
 	public BasicAuthHttpRequestInterceptor(String username, String password) {
 		String auth = username + ":" + password;
-		encodedAuth = "Basic " + Base64Variants.MIME_NO_LINEFEEDS.encode(auth.getBytes(StandardCharsets.US_ASCII));
+		encodedAuth = "Basic "
+				+ Base64Variants.MIME_NO_LINEFEEDS.encode(auth.getBytes(StandardCharsets.US_ASCII));
 	}
 
 	@Override
-	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
-			throws IOException {
+	public ClientHttpResponse intercept(HttpRequest request, byte[] body,
+			ClientHttpRequestExecution execution) throws IOException {
 		request.getHeaders().add("Authorization", encodedAuth);
 		return execution.execute(request, body);
 	}

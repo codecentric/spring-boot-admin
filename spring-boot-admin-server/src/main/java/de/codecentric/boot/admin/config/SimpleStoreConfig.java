@@ -24,8 +24,8 @@ import de.codecentric.boot.admin.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
 
 @Configuration
-@AutoConfigureAfter({HazelcastStoreConfiguration.class})
-public  class SimpleStoreConfig {
+@AutoConfigureAfter({ HazelcastStoreConfiguration.class })
+public class SimpleStoreConfig {
 	@Bean
 	@ConditionalOnMissingBean
 	public ApplicationStore applicationStore() {

@@ -16,15 +16,16 @@
 package de.codecentric.boot.admin.controller;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
 import java.util.Collection;
 
 import org.junit.Test;
 
+import de.codecentric.boot.admin.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.journal.ApplicationEventJournal;
-import de.codecentric.boot.admin.journal.JournaledEvent;
 import de.codecentric.boot.admin.journal.store.SimpleJournaledEventStore;
 import de.codecentric.boot.admin.model.Application;
 
@@ -36,15 +37,15 @@ public class JournalControllerTest {
 
 	@Test
 	public void test_getJournal() {
-		journal.onApplicationEvent(new ClientApplicationRegisteredEvent(
-				new Object(), Application.create("foo").withId("bar").build()));
+		ClientApplicationEvent emittedEvent = new ClientApplicationRegisteredEvent(Application
+				.create("foo").withId("bar").build());
+		journal.onClientApplicationEvent(emittedEvent);
 
-		Collection<JournaledEvent> history = controller.getJournal();
+		Collection<ClientApplicationEvent> history = controller.getJournal();
 
 		assertThat(history.size(), is(1));
 
-		JournaledEvent event = history.iterator().next();
-		assertThat(event.getType(), is(JournaledEvent.Type.REGISTRATION));
-
+		ClientApplicationEvent event = history.iterator().next();
+		assertThat(event, sameInstance(emittedEvent));
 	}
 }

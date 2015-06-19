@@ -40,20 +40,19 @@ public class AdminServerWebConfigurationTest {
 	public void jacksonMapperPresentFromDefault() {
 		AdminServerWebConfiguration config = new AdminServerWebConfiguration();
 
-		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
+		List<HttpMessageConverter<?>> converters = new ArrayList<>();
 		converters.add(new MappingJackson2HttpMessageConverter());
 
 		config.extendMessageConverters(converters);
 
-		assertThat(converters,
-				hasItem(isA(MappingJackson2HttpMessageConverter.class)));
+		assertThat(converters, hasItem(isA(MappingJackson2HttpMessageConverter.class)));
 		assertThat(converters.size(), is(1));
 	}
 
 	@Test
 	public void jacksonMapperPresentNeedExtend() {
 		AdminServerWebConfiguration config = new AdminServerWebConfiguration();
-		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
+		List<HttpMessageConverter<?>> converters = new ArrayList<>();
 
 		config.extendMessageConverters(converters);
 
@@ -63,7 +62,8 @@ public class AdminServerWebConfigurationTest {
 
 	@Test
 	public void simpleConfig() {
-		load("spring.boot.admin.hazelcast.enabled:false", "spring.boot.admin.discovery.enabled:false");
+		load("spring.boot.admin.hazelcast.enabled:false",
+				"spring.boot.admin.discovery.enabled:false");
 		assertTrue(context.getBean(ApplicationStore.class) instanceof SimpleApplicationStore);
 		assertTrue(context.getBeansOfType(ApplicationDiscoveryListener.class).isEmpty());
 		assertTrue(context.getBeansOfType(MailNotifier.class).isEmpty());
@@ -78,14 +78,16 @@ public class AdminServerWebConfigurationTest {
 
 	@Test
 	public void hazelcastConfig() {
-		load("spring.boot.admin.hazelcast.enabled:true", "spring.boot.admin.discovery.enabled:false");
+		load("spring.boot.admin.hazelcast.enabled:true",
+				"spring.boot.admin.discovery.enabled:false");
 		assertTrue(context.getBean(ApplicationStore.class) instanceof HazelcastApplicationStore);
 		assertTrue(context.getBeansOfType(ApplicationDiscoveryListener.class).isEmpty());
 	}
 
 	@Test
 	public void discoveryConfig() {
-		load("spring.boot.admin.hazelcast.enabled:false", "spring.boot.admin.discovery.enabled:true");
+		load("spring.boot.admin.hazelcast.enabled:false",
+				"spring.boot.admin.discovery.enabled:true");
 		assertTrue(context.getBean(ApplicationStore.class) instanceof SimpleApplicationStore);
 		context.getBean(ApplicationDiscoveryListener.class);
 	}

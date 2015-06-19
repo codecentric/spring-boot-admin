@@ -16,27 +16,38 @@
 package de.codecentric.boot.admin.zuul;
 
 import org.springframework.cloud.netflix.zuul.web.ZuulHandlerMapping;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.EventListener;
 
-import de.codecentric.boot.admin.event.ClientApplicationEvent;
+import de.codecentric.boot.admin.event.ClientApplicationDeregisteredEvent;
+import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
 
 /**
  * Listener to trigger recomputation of the applications' routes.
- * @author Johannes Stelzer
  *
+ * @author Johannes Stelzer
  */
-public class ApplicationRouteRefreshListener implements ApplicationListener<ClientApplicationEvent> {
+public class ApplicationRouteRefreshListener {
 
 	private final ApplicationRouteLocator routeLocator;
 	private final ZuulHandlerMapping zuulHandlerMapping;
 
-	public ApplicationRouteRefreshListener(ApplicationRouteLocator routeLocator, ZuulHandlerMapping zuulHandlerMapping) {
+	public ApplicationRouteRefreshListener(ApplicationRouteLocator routeLocator,
+			ZuulHandlerMapping zuulHandlerMapping) {
 		this.routeLocator = routeLocator;
 		this.zuulHandlerMapping = zuulHandlerMapping;
 	}
 
-	@Override
-	public void onApplicationEvent(ClientApplicationEvent event) {
+	@EventListener
+	public void onClientApplicationDeregistered(ClientApplicationDeregisteredEvent event) {
+		refreshRoutes();
+	}
+
+	@EventListener
+	public void onClientApplicationRegistered(ClientApplicationRegisteredEvent event) {
+		refreshRoutes();
+	}
+
+	private void refreshRoutes() {
 		this.routeLocator.resetRoutes();
 		this.zuulHandlerMapping.registerHandlers();
 	}

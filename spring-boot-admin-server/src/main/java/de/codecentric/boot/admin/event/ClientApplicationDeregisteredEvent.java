@@ -19,13 +19,18 @@ import de.codecentric.boot.admin.model.Application;
 
 /**
  * This event gets emitted when an application is unregistered.
+ *
  * @author Johannes Stelzer
  */
 public class ClientApplicationDeregisteredEvent extends ClientApplicationEvent {
-	public ClientApplicationDeregisteredEvent(Object source, Application application) {
-		super(source, application);
-	}
-
 	private static final long serialVersionUID = 1L;
 
+	public ClientApplicationDeregisteredEvent(Application application) {
+		super(application);
+	}
+
+	@Override
+	public String getType() {
+		return "DEREGISTRATION";
+	}
 }

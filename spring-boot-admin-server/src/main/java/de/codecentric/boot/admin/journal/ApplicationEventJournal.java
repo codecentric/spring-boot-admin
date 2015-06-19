@@ -17,20 +17,17 @@ package de.codecentric.boot.admin.journal;
 
 import java.util.Collection;
 
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.EventListener;
 
 import de.codecentric.boot.admin.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.journal.store.JournaledEventStore;
 
 /**
- * Listens for all ClientApplicationEvents and stores them as JournaledEvents in
- * a store.
+ * Listens for all ClientApplicationEvents and stores them as JournaledEvents in a store.
  *
  * @author Johannes Stelzer
- *
  */
-public class ApplicationEventJournal implements
-		ApplicationListener<ClientApplicationEvent> {
+public class ApplicationEventJournal {
 
 	private final JournaledEventStore store;
 
@@ -38,12 +35,12 @@ public class ApplicationEventJournal implements
 		this.store = store;
 	}
 
-	@Override
-	public void onApplicationEvent(ClientApplicationEvent event) {
-		store.store(JournaledEvent.fromEvent(event));
+	@EventListener
+	public void onClientApplicationEvent(ClientApplicationEvent event) {
+		store.store(event);
 	}
 
-	public Collection<JournaledEvent> getEvents() {
+	public Collection<ClientApplicationEvent> getEvents() {
 		return store.findAll();
 	}
 }

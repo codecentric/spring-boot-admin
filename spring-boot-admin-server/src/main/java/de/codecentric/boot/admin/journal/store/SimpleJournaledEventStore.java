@@ -20,29 +20,27 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import de.codecentric.boot.admin.journal.JournaledEvent;
+import de.codecentric.boot.admin.event.ClientApplicationEvent;
 
 /**
  * Simple, non-persistent Store for JournaledEvent
  *
  * @author Johannes Stelzer
- *
  */
 public class SimpleJournaledEventStore implements JournaledEventStore {
 
-	private final List<JournaledEvent> store = Collections
-			.synchronizedList(new ArrayList<JournaledEvent>(1000));
+	private final List<ClientApplicationEvent> store = Collections
+			.synchronizedList(new ArrayList<ClientApplicationEvent>(1000));
 
 	@Override
-	public Collection<JournaledEvent> findAll() {
-		ArrayList<JournaledEvent> list = new ArrayList<JournaledEvent>(
-				store);
+	public Collection<ClientApplicationEvent> findAll() {
+		ArrayList<ClientApplicationEvent> list = new ArrayList<>(store);
 		Collections.reverse(list);
 		return list;
 	}
 
 	@Override
-	public void store(JournaledEvent event) {
+	public void store(ClientApplicationEvent event) {
 		store.add(event);
 	}
 

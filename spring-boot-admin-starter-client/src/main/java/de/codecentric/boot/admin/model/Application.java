@@ -36,35 +36,31 @@ public class Application implements Serializable {
 	private final String serviceUrl;
 	private final StatusInfo statusInfo;
 
-	protected Application(String healthUrl, String managementUrl,
-			String serviceUrl, String name, String id, StatusInfo statusInfo) {
+	protected Application(String healthUrl, String managementUrl, String serviceUrl, String name,
+			String id, StatusInfo statusInfo) {
 		this.healthUrl = healthUrl;
 		this.managementUrl = managementUrl;
 		this.serviceUrl = serviceUrl;
 		this.name = name;
 		this.id = id;
-		this.statusInfo = statusInfo != null ? statusInfo : StatusInfo
-				.ofUnknown();
+		this.statusInfo = statusInfo != null ? statusInfo : StatusInfo.ofUnknown();
 	}
 
 	@JsonCreator
 	public static Application create(@JsonProperty("url") String url,
 			@JsonProperty("managementUrl") String managementUrl,
 			@JsonProperty("healthUrl") String healthUrl,
-			@JsonProperty("serviceUrl") String serviceUrl,
-			@JsonProperty("name") String name, @JsonProperty("id") String id,
-			@JsonProperty("statusInfo") StatusInfo statusInfo) {
+			@JsonProperty("serviceUrl") String serviceUrl, @JsonProperty("name") String name,
+			@JsonProperty("id") String id, @JsonProperty("statusInfo") StatusInfo statusInfo) {
 
 		Assert.hasText(name, "name must not be empty!");
 		if (StringUtils.hasText(url)) {
 			// old format
-			return new Application(url.replaceFirst("/+$", "") + "/health", url, null,
-					name, id, statusInfo);
-		}
-		else {
+			return new Application(url.replaceFirst("/+$", "") + "/health", url, null, name, id,
+					statusInfo);
+		} else {
 			Assert.hasText(healthUrl, "healthUrl must not be empty!");
-			return new Application(healthUrl, managementUrl, serviceUrl, name,
-					id, statusInfo);
+			return new Application(healthUrl, managementUrl, serviceUrl, name, id, statusInfo);
 		}
 	}
 
@@ -128,8 +124,7 @@ public class Application implements Serializable {
 		}
 
 		public Application build() {
-			return new Application(healthUrl, managementUrl, serviceUrl, name,
-					id, statusInfo);
+			return new Application(healthUrl, managementUrl, serviceUrl, name, id, statusInfo);
 		}
 	}
 
@@ -159,9 +154,8 @@ public class Application implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Application [id=" + id + ", name=" + name + ", managementUrl="
-				+ managementUrl + ", healthUrl=" + healthUrl + ", serviceUrl="
-				+ serviceUrl + "]";
+		return "Application [id=" + id + ", name=" + name + ", managementUrl=" + managementUrl
+				+ ", healthUrl=" + healthUrl + ", serviceUrl=" + serviceUrl + "]";
 	}
 
 	@Override
@@ -170,8 +164,7 @@ public class Application implements Serializable {
 		int result = 1;
 		result = prime * result + ((healthUrl == null) ? 0 : healthUrl.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result
-				+ ((managementUrl == null) ? 0 : managementUrl.hashCode());
+		result = prime * result + ((managementUrl == null) ? 0 : managementUrl.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((serviceUrl == null) ? 0 : serviceUrl.hashCode());
 		return result;
@@ -193,40 +186,35 @@ public class Application implements Serializable {
 			if (other.healthUrl != null) {
 				return false;
 			}
-		}
-		else if (!healthUrl.equals(other.healthUrl)) {
+		} else if (!healthUrl.equals(other.healthUrl)) {
 			return false;
 		}
 		if (id == null) {
 			if (other.id != null) {
 				return false;
 			}
-		}
-		else if (!id.equals(other.id)) {
+		} else if (!id.equals(other.id)) {
 			return false;
 		}
 		if (managementUrl == null) {
 			if (other.managementUrl != null) {
 				return false;
 			}
-		}
-		else if (!managementUrl.equals(other.managementUrl)) {
+		} else if (!managementUrl.equals(other.managementUrl)) {
 			return false;
 		}
 		if (name == null) {
 			if (other.name != null) {
 				return false;
 			}
-		}
-		else if (!name.equals(other.name)) {
+		} else if (!name.equals(other.name)) {
 			return false;
 		}
 		if (serviceUrl == null) {
 			if (other.serviceUrl != null) {
 				return false;
 			}
-		}
-		else if (!serviceUrl.equals(other.serviceUrl)) {
+		} else if (!serviceUrl.equals(other.serviceUrl)) {
 			return false;
 		}
 		return true;

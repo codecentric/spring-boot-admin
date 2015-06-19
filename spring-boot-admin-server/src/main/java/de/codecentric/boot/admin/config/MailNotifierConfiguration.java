@@ -38,7 +38,6 @@ import de.codecentric.boot.admin.notify.MailNotifier;
 @EnableConfigurationProperties(MailProperties.class)
 public class MailNotifierConfiguration extends MailSenderAutoConfiguration {
 
-
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify", name = "enabled", matchIfMissing = true)

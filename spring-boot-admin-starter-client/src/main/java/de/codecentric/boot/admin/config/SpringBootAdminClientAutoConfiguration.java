@@ -17,6 +17,7 @@ package de.codecentric.boot.admin.config;
 
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -34,9 +35,9 @@ import de.codecentric.boot.admin.services.RegistrationApplicationListener;
 import de.codecentric.boot.admin.web.BasicAuthHttpRequestInterceptor;
 
 /**
- * This configuration adds a registrator bean to the spring context. This bean
- * checks periodicaly, if the using application is registered at the
- * spring-boot-admin application. If not, it registers itself.
+ * This configuration adds a registrator bean to the spring context. This bean checks periodicaly,
+ * if the using application is registered at the spring-boot-admin application. If not, it registers
+ * itself.
  */
 @Configuration
 public class SpringBootAdminClientAutoConfiguration {
@@ -44,13 +45,19 @@ public class SpringBootAdminClientAutoConfiguration {
 	@ConditionalOnProperty("spring.boot.admin.url")
 	@EnableConfigurationProperties({ AdminProperties.class, AdminClientProperties.class })
 	public static class AdminClientRegistrationConfig {
+
+		@Autowired
+		private AdminClientProperties client;
+
+		@Autowired
+		private AdminProperties admin;
+
 		/**
-		 * Task that registers the application at the spring-boot-admin
-		 * application.
+		 * Task that registers the application at the spring-boot-admin application.
 		 */
 		@Bean
 		@ConditionalOnMissingBean
-		public ApplicationRegistrator registrator(AdminProperties admin, AdminClientProperties client) {
+		public ApplicationRegistrator registrator() {
 			return new ApplicationRegistrator(createRestTemplate(admin), admin, client);
 		}
 
@@ -60,7 +67,8 @@ public class SpringBootAdminClientAutoConfiguration {
 
 			if (admin.getUsername() != null) {
 				template.setInterceptors(Arrays.<ClientHttpRequestInterceptor> asList(
-						new BasicAuthHttpRequestInterceptor(admin.getUsername(), admin.getPassword())));
+						new BasicAuthHttpRequestInterceptor(admin.getUsername(),
+								admin.getPassword())));
 			}
 
 			return template;
@@ -70,14 +78,13 @@ public class SpringBootAdminClientAutoConfiguration {
 		 * TaskRegistrar that triggers the RegistratorTask every ten seconds.
 		 */
 		@Bean
-		public ScheduledTaskRegistrar taskRegistrar(final ApplicationRegistrator registrator, AdminProperties admin,
-				final AdminClientProperties client) {
+		public ScheduledTaskRegistrar taskRegistrar() {
 			ScheduledTaskRegistrar registrar = new ScheduledTaskRegistrar();
 			Runnable registratorTask = new Runnable() {
 				@Override
 				public void run() {
 					if (client.isServerInitialized()) {
-						registrator.register();
+						registrator().register();
 					}
 				}
 			};
@@ -90,9 +97,11 @@ public class SpringBootAdminClientAutoConfiguration {
 		 * ApplicationListener triggering registration after refresh/shutdown
 		 */
 		@Bean
-		public RegistrationApplicationListener registrationListener(
-				ApplicationRegistrator registrator, AdminProperties admin) {
-			return new RegistrationApplicationListener(admin, registrator);
+		public RegistrationApplicationListener registrationListener() {
+			RegistrationApplicationListener listener = new RegistrationApplicationListener(
+					registrator());
+			listener.setAutoDeregister(admin.isAutoDeregistration());
+			return listener;
 		}
 
 	}
