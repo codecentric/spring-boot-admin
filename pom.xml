@@ -26,7 +26,7 @@
         <spring-boot.version>1.2.4.RELEASE</spring-boot.version>
         <hazelcast.version>3.3.3</hazelcast.version>
         <commons-lang3.version>3.3.2</commons-lang3.version>
-        <spring-cloud.version>1.0.1.RELEASE</spring-cloud.version>
+        <spring-cloud.version>Angel.SR3</spring-cloud.version>
 
         <build-plugin.jacoco.version>0.7.3.201502191951</build-plugin.jacoco.version>
         <build-plugin.coveralls.version>3.0.1</build-plugin.coveralls.version>
@@ -216,6 +216,7 @@
                 <artifactId>spring-boot-admin-example</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
@@ -224,35 +225,12 @@
 
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-starter</artifactId>
+                <artifactId>spring-cloud-starter-parent</artifactId>
                 <version>${spring-cloud.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-starter-zuul</artifactId>
-                <version>${spring-cloud.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-netflix-core</artifactId>
-                <version>${spring-cloud.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-commons</artifactId>
-                <version>${spring-cloud.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-starter-eureka</artifactId>
-                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${commons-lang3.version}</version>
-            </dependency>
             <dependency>
                 <groupId>com.hazelcast</groupId>
                 <artifactId>hazelcast</artifactId>
@@ -263,6 +241,7 @@
                 <artifactId>hazelcast-spring</artifactId>
                 <version>${hazelcast.version}</version>
             </dependency>
+
             <!-- Test -->
             <dependency>
                 <groupId>org.springframework</groupId>
