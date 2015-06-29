@@ -27,6 +27,13 @@ public class SpringBootAdminClientAutoConfigurationTest {
 	public void not_active() {
 		load();
 		assertTrue(context.getBeansOfType(ApplicationRegistrator.class).isEmpty());
+		assertTrue(context.getBeansOfType(LogfileMvcEndpoint.class).isEmpty());
+	}
+
+	public void not_active_logfile() {
+		load();
+		assertTrue(context.getBeansOfType(ApplicationRegistrator.class).isEmpty());
+		context.getBean(LogfileMvcEndpoint.class);
 	}
 
 	@Test

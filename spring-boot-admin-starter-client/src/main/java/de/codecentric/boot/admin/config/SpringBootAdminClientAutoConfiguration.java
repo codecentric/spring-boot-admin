@@ -34,63 +34,67 @@ import de.codecentric.boot.admin.services.RegistrationApplicationListener;
 import de.codecentric.boot.admin.web.BasicAuthHttpRequestInterceptor;
 
 /**
- * This configuration adds a registrator bean to the spring context. This bean checks periodicaly, if the using
- * application is registered at the spring-boot-admin application. If not, it registers itself.
+ * This configuration adds a registrator bean to the spring context. This bean
+ * checks periodicaly, if the using application is registered at the
+ * spring-boot-admin application. If not, it registers itself.
  */
 @Configuration
-@ConditionalOnProperty("spring.boot.admin.url")
 @EnableConfigurationProperties({ AdminProperties.class, AdminClientProperties.class })
 public class SpringBootAdminClientAutoConfiguration {
 
-	/**
-	 * Task that registers the application at the spring-boot-admin application.
-	 */
-	@Bean
-	@ConditionalOnMissingBean
-	public ApplicationRegistrator registrator(AdminProperties admin,
-			AdminClientProperties client) {
-		return new ApplicationRegistrator(createRestTemplate(admin), admin, client);
-	}
-
-	protected RestTemplate createRestTemplate(AdminProperties admin) {
-		RestTemplate template = new RestTemplate();
-		template.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-
-		if (admin.getUsername() != null) {
-			template.setInterceptors(Arrays.<ClientHttpRequestInterceptor> asList(new BasicAuthHttpRequestInterceptor(
-					admin.getUsername(), admin.getPassword())));
+	@ConditionalOnProperty("spring.boot.admin.url")
+	public static class AdminClientRegistrationConfig {
+		/**
+		 * Task that registers the application at the spring-boot-admin
+		 * application.
+		 */
+		@Bean
+		@ConditionalOnMissingBean
+		public ApplicationRegistrator registrator(AdminProperties admin, AdminClientProperties client) {
+			return new ApplicationRegistrator(createRestTemplate(admin), admin, client);
 		}
 
-		return template;
-	}
+		protected RestTemplate createRestTemplate(AdminProperties admin) {
+			RestTemplate template = new RestTemplate();
+			template.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 
-	/**
-	 * TaskRegistrar that triggers the RegistratorTask every ten seconds.
-	 */
-	@Bean
-	public ScheduledTaskRegistrar taskRegistrar(final ApplicationRegistrator registrator,
-			AdminProperties admin, final AdminClientProperties client) {
-		ScheduledTaskRegistrar registrar = new ScheduledTaskRegistrar();
-		Runnable registratorTask = new Runnable() {
-			@Override
-			public void run() {
-				if (client.isServerInitialized()) {
-					registrator.register();
-				}
+			if (admin.getUsername() != null) {
+				template.setInterceptors(Arrays.<ClientHttpRequestInterceptor> asList(
+						new BasicAuthHttpRequestInterceptor(admin.getUsername(), admin.getPassword())));
 			}
-		};
 
-		registrar.addFixedRateTask(registratorTask, admin.getPeriod());
-		return registrar;
-	}
+			return template;
+		}
 
-	/**
-	 * ApplicationListener triggering registration after refresh/shutdown
-	 */
-	@Bean
-	public RegistrationApplicationListener registrationListener(
-			final ApplicationRegistrator registrator, final AdminProperties admin) {
-		return new RegistrationApplicationListener(admin, registrator);
+		/**
+		 * TaskRegistrar that triggers the RegistratorTask every ten seconds.
+		 */
+		@Bean
+		public ScheduledTaskRegistrar taskRegistrar(final ApplicationRegistrator registrator, AdminProperties admin,
+				final AdminClientProperties client) {
+			ScheduledTaskRegistrar registrar = new ScheduledTaskRegistrar();
+			Runnable registratorTask = new Runnable() {
+				@Override
+				public void run() {
+					if (client.isServerInitialized()) {
+						registrator.register();
+					}
+				}
+			};
+
+			registrar.addFixedRateTask(registratorTask, admin.getPeriod());
+			return registrar;
+		}
+
+		/**
+		 * ApplicationListener triggering registration after refresh/shutdown
+		 */
+		@Bean
+		public RegistrationApplicationListener registrationListener(final ApplicationRegistrator registrator,
+				final AdminProperties admin) {
+			return new RegistrationApplicationListener(admin, registrator);
+		}
+
 	}
 
 	@Configuration
