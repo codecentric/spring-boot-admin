@@ -24,7 +24,7 @@ module.exports = function ($scope, $location, $interval, $q, $state, Application
                         body: 'Instance ' + app.id,
                         icon: (app.statusInfo.status === 'UP' ? 'img/ok.png' : 'img/error.png'),
                         timeout: 15000,
-                        url: $state.href('apps.details', {id: app.id}, {absolute: true}) };
+                        url: $state.href('apps.details', {id: app.id}) };
         Notification.notify(title, options);
     };
 
