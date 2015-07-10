@@ -61,6 +61,13 @@
 			<groupId>com.hazelcast</groupId>
 			<artifactId>hazelcast</artifactId>
 			<optional>true</optional>
+			<!-- https://github.com/spring-projects/spring-boot/issues/3418 -->
+			<exclusions>
+				<exclusion>
+					<groupId>org.freemarker</groupId>
+					<artifactId>freemarker</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.hazelcast</groupId>

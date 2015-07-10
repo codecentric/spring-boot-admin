@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfigurat
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import de.codecentric.boot.admin.actuate.LogfileMvcEndpoint;
 import de.codecentric.boot.admin.services.ApplicationRegistrator;
 
 public class SpringBootAdminClientAutoConfigurationTest {
@@ -27,35 +26,12 @@ public class SpringBootAdminClientAutoConfigurationTest {
 	public void not_active() {
 		load();
 		assertTrue(context.getBeansOfType(ApplicationRegistrator.class).isEmpty());
-		assertTrue(context.getBeansOfType(LogfileMvcEndpoint.class).isEmpty());
-	}
-
-	public void not_active_logfile() {
-		load();
-		assertTrue(context.getBeansOfType(ApplicationRegistrator.class).isEmpty());
-		context.getBean(LogfileMvcEndpoint.class);
 	}
 
 	@Test
-	public void active_nologfile() {
+	public void active() {
 		load("spring.boot.admin.url:http://localhost:8081");
 		context.getBean(ApplicationRegistrator.class);
-		assertTrue(context.getBeansOfType(LogfileMvcEndpoint.class).isEmpty());
-	}
-
-	@Test
-	public void active_logfile() {
-		load("spring.boot.admin.url:http://localhost:8081", "logging.file:spring.log");
-		context.getBean(LogfileMvcEndpoint.class);
-		context.getBean(ApplicationRegistrator.class);
-	}
-
-	@Test
-	public void active_logfile_supressed() {
-		load("spring.boot.admin.url:http://localhost:8081", "logging.file:spring.log",
-				"endpoints.logfile.enabled:false");
-		context.getBean(ApplicationRegistrator.class);
-		assertTrue(context.getBeansOfType(LogfileMvcEndpoint.class).isEmpty());
 	}
 
 	private void load(String... environment) {

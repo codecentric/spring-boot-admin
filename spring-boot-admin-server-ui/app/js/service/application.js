@@ -30,7 +30,7 @@ module.exports = function ($resource, $http) {
         application.capabilities = {};
         if (application.managementUrl) {
             $http.get('api/applications/' + application.id + '/configprops').success(function(configprops) {
-                application.capabilities.logfile = isEndpointPresent('logfileEndpoint', configprops);
+                application.capabilities.logfile = isEndpointPresent('logfileMvcEndpoint', configprops);
                 application.capabilities.activiti = isEndpointPresent('processEngineEndpoint', configprops);
                 application.capabilities.restart = isEndpointPresent('restartEndpoint', configprops);
                 application.capabilities.refresh = isEndpointPresent('refreshEndpoint', configprops);

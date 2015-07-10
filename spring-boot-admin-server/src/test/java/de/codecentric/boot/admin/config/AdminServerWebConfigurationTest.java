@@ -12,6 +12,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.cloud.client.discovery.noop.NoopDiscoveryClientAutoConfiguration;
@@ -97,6 +98,7 @@ public class AdminServerWebConfigurationTest {
 		applicationContext.register(PropertyPlaceholderAutoConfiguration.class);
 		applicationContext.register(ServerPropertiesAutoConfiguration.class);
 		applicationContext.register(NoopDiscoveryClientAutoConfiguration.class);
+		applicationContext.register(MailSenderAutoConfiguration.class);
 		applicationContext.register(AdminServerWebConfiguration.class);
 
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
