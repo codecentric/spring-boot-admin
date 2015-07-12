@@ -38,4 +38,4 @@
     "description": "time interval in ms to update the status of applications with expired statusInfo",
     "defaultValue": "10000"
   }
-]
+]}
