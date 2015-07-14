@@ -1,6 +1,6 @@
 {
   "name": "spring-boot-admin-server-ui",
-  "version": "1.2.1",
+  "version": "1.2.3",
   "scripts": {
     "postinstall": "./node_modules/protractor/bin/webdriver-manager update",
     "pretest": "./node_modules/protractor/bin/webdriver-manager start &",

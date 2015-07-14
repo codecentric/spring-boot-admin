@@ -8,12 +8,12 @@ Add the following dependency to your pom.xml.
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-server</artifactId>
-	<version>1.2.1</version>
+	<version>1.2.2</version>
 </dependency>
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-server-ui</artifactId>
-	<version>1.2.1</version>
+	<version>1.2.2</version>
 </dependency>
 ```
 
@@ -40,6 +40,18 @@ One note: If you omit the Spring Boot Admin Client in you Client Applications yo
 Since the DiscoveryClient doesn't tell the management.context-path you can suffix the url for all discovered clients by setting ``spring.boot.admin.discovery.management.context-path``.
 
 Explictly disable DiscoveryClient support by setting ``spring.boot.admin.discover.enabled=false``.
+
+## Mail notification options:
+
+| Name                  | Description |
+| --------------------- | ----------- |
+|spring.boot.admin.notify.enabled|enable mail notification (default: true)|
+|spring.boot.admin.notify.to|comma-delimited list of mail recipients (default: "root@localhost")|
+|spring.boot.admin.notify.cc|comma-delimited list of mail cc-recipients|
+|spring.boot.admin.notify.from|sender of mail|
+|spring.boot.admin.notify.subject|mail-subject; SpEL-expressions supported (default: "#{application.name} (#{application.id}) is #{to.status}") |
+|spring.boot.admin.notify.text|mail-body; SpEL-expressions supported (default: "#{application.name} (#{application.id})\nstatus changed from #{from.status} to #{to.status}\n\n#{application.healthUrl}"|
+|spring.boot.admin.notify.ignoreChanges|comma-deleiited list of status changes to be ignored. (default: "UNKNOWN:UP")|
 
 ## Hazelcast Support
 Spring Boot Admin Server supports cluster replication with Hazelcast.

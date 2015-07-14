@@ -23,7 +23,8 @@ This application provides a simple GUI to administrate Spring Boot applications 
 * Interact with JMX-Beans
 * View Threaddump
 * View Traces
-* Desktop notification on status change
+* Mail and desktop notification on status change
+* Event journal of status changes (non persistent)
 
 #### Server application
 Add the following dependency to your pom.xml.
@@ -31,12 +32,12 @@ Add the following dependency to your pom.xml.
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-server</artifactId>
-	<version>1.2.1</version>
+	<version>1.2.2</version>
 </dependency>
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-server-ui</artifactId>
-	<version>1.2.1</version>
+	<version>1.2.2</version>
 </dependency>
 ```
 
@@ -73,14 +74,14 @@ Each application that want to register itself to the admin application has to in
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-starter-client</artifactId>
-	<version>1.2.1</version>
+	<version>1.2.2</version>
 </dependency>
 ```
 Inside your configuration (e.g. application.properties) you also have to define the URL of the Spring Boot Admin Server, e.g.
 ```
 spring.boot.admin.url=http://localhost:8080
 ```
-For all configuration options see [spring-boot-starter-admin-client](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-starter-client/README.md)
+For all configuration options see [spring-boot-admin-starter-client](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-starter-client/README.md)
 
 ##### Discover client applications via DiscoveryClient
 Just add spring-clouds ``@EnableDiscoveryClient`` annotation and include an appropriate implementation (e.g. Eureka) to your classpath.
@@ -100,10 +101,27 @@ public class SpringBootAdminApplication {
 <dependency>
 	<groupId>org.springframework.cloud</groupId>
 	<artifactId>spring-cloud-starter-eureka</artifactId>
-	<version>1.0.1.RELEASE</version>
+	<version>1.0.3.RELEASE</version>
 </dependency>
 ```
 See the sample [discovery sample project](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-discovery)
+
+#### Mail notification on status change
+
+Configure a JavaMailSender using spring-boot-starter-mail and set a recipient:
+```xml
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+```
+
+```
+spring.mail.host=smtp.example.com
+spring.boot.admin.notify.to=admin@example.com
+```
+
+For all configuration options see [spring-boot-admin-server](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-server/README.md)
 
 
 #### Screenshots
@@ -118,6 +136,11 @@ See the sample [discovery sample project](https://github.com/codecentric/spring-
 [](url "title")
 <img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-details.png">
 
+##### Environment
+
+[](url "title")
+<img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-environment.png">
+
 ##### Logging
 
 [](url "title")
@@ -127,6 +150,22 @@ See the sample [discovery sample project](https://github.com/codecentric/spring-
 
 [](url "title")
 <img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-jmx.png">
+
+##### Threads
+
+[](url "title")
+<img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-threads.png">
+
+##### JMX
+
+[](url "title")
+<img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-trace.png">
+
+##### Journal
+
+[](url "title")
+<img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-journal.png">
+
 
 #### Build
 In order to build spring-boot-admin you need to have node.js and npm on your PATH.
