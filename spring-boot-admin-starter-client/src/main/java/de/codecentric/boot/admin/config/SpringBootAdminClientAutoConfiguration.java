@@ -39,10 +39,10 @@ import de.codecentric.boot.admin.web.BasicAuthHttpRequestInterceptor;
  * spring-boot-admin application. If not, it registers itself.
  */
 @Configuration
-@EnableConfigurationProperties({ AdminProperties.class, AdminClientProperties.class })
 public class SpringBootAdminClientAutoConfiguration {
 
 	@ConditionalOnProperty("spring.boot.admin.url")
+	@EnableConfigurationProperties({ AdminProperties.class, AdminClientProperties.class })
 	public static class AdminClientRegistrationConfig {
 		/**
 		 * Task that registers the application at the spring-boot-admin
