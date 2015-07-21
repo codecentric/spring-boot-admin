@@ -16,6 +16,7 @@
 package de.codecentric.boot.admin.services;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
@@ -36,12 +37,11 @@ import de.codecentric.boot.admin.model.Application;
  */
 public class ApplicationRegistrator {
 
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(ApplicationRegistrator.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationRegistrator.class);
 
 	private static HttpHeaders HTTP_HEADERS = createHttpHeaders();
 
-	private final AtomicReference<Application> registeredSelf = new AtomicReference<Application>();
+	private final AtomicReference<String> registeredId = new AtomicReference<String>();
 
 	private AdminClientProperties client;
 
@@ -65,6 +65,7 @@ public class ApplicationRegistrator {
 
 	/**
 	 * Registers the client application at spring-boot-admin-server.
+	 *
 	 * @return true if successful
 	 */
 	public boolean register() {
@@ -73,12 +74,13 @@ public class ApplicationRegistrator {
 		try {
 			self = createApplication();
 
-			ResponseEntity<Application> response = template.postForEntity(adminUrl,
-					new HttpEntity<Application>(self, HTTP_HEADERS), Application.class);
+			@SuppressWarnings("rawtypes")
+			ResponseEntity<Map> response = template.postForEntity(adminUrl,
+					new HttpEntity<Application>(self, HTTP_HEADERS), Map.class);
 
 			if (response.getStatusCode().equals(HttpStatus.CREATED)) {
-				if (registeredSelf.get() == null) {
-					if (registeredSelf.compareAndSet(null, response.getBody())) {
+				if (registeredId.get() == null) {
+					if (registeredId.compareAndSet(null, response.getBody().get("id").toString())) {
 						LOGGER.info("Application registered itself as {}", response.getBody());
 						return true;
 					}
@@ -86,46 +88,37 @@ public class ApplicationRegistrator {
 
 				LOGGER.debug("Application refreshed itself as {}", response.getBody());
 				return true;
+			} else {
+				LOGGER.warn("Application failed to registered itself as {}. Response: {}", self,
+						response.toString());
 			}
-			else {
-				LOGGER.warn(
-						"Application failed to registered itself as {}. Response: {}",
-						self, response.toString());
-			}
-		}
-		catch (Exception ex) {
-			LOGGER.warn(
-					"Failed to register application as {} at spring-boot-admin ({}): {}",
-					self, adminUrl, ex.getMessage());
+		} catch (Exception ex) {
+			LOGGER.warn("Failed to register application as {} at spring-boot-admin ({}): {}", self,
+					adminUrl, ex.getMessage());
 		}
 
 		return false;
 	}
 
 	public void deregister() {
-		Application self = registeredSelf.get();
-		if (self != null) {
-			String adminUrl = admin.getUrl() + '/' + admin.getContextPath() + "/"
-					+ self.getId();
-
-			registeredSelf.set(null);
+		String id = registeredId.get();
+		if (id != null) {
+			String adminUrl = admin.getUrl() + '/' + admin.getContextPath() + "/" + id;
 
 			try {
 				template.delete(adminUrl);
-			}
-			catch (Exception ex) {
+				registeredId.set(null);
+			} catch (Exception ex) {
 				LOGGER.warn(
-						"Failed to deregister application as {} at spring-boot-admin ({}): {}",
-						self, adminUrl, ex.getMessage());
+						"Failed to deregister application (id={}) at spring-boot-admin ({}): {}",
+						id, adminUrl, ex.getMessage());
 			}
 		}
 	}
 
 	protected Application createApplication() {
-		return Application.create(client.getName())
-				.withHealthUrl(client.getHealthUrl())
-				.withManagementUrl(client.getManagementUrl())
-				.withServiceUrl(client.getServiceUrl()).build();
+		return Application.create(client.getName()).withHealthUrl(client.getHealthUrl())
+				.withManagementUrl(client.getManagementUrl()).withServiceUrl(client.getServiceUrl())
+				.build();
 	}
 }
-

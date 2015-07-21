@@ -24,6 +24,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -65,46 +66,41 @@ public class ApplicationRegistratorTest {
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Test
 	public void register_successful() {
-		when(
-				restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class),
-						eq(Application.class))).thenReturn(
-								new ResponseEntity<Application>(HttpStatus.CREATED));
+		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class)))
+				.thenReturn(new ResponseEntity<Map>(Collections.singletonMap("id", "-id-"),
+						HttpStatus.CREATED));
 
 		boolean result = registrator.register();
 
 		assertTrue(result);
-		verify(restTemplate).postForEntity(
-				"http://sba:8080/api/applications",
-				new HttpEntity<Application>(Application.create("AppName")
-						.withHealthUrl("http://localhost:8080/health")
-						.withManagementUrl("http://localhost:8080/mgmt")
-						.withServiceUrl("http://localhost:8080").build(),
-						headers), Application.class);
+		verify(restTemplate)
+				.postForEntity("http://sba:8080/api/applications",
+						new HttpEntity<Application>(Application.create("AppName")
+								.withHealthUrl("http://localhost:8080/health")
+								.withManagementUrl("http://localhost:8080/mgmt")
+								.withServiceUrl("http://localhost:8080").build(), headers),
+				Map.class);
 	}
 
 	@Test
 	public void register_failed() {
-		when(
-				restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class),
-						eq(Application.class))).thenThrow(
-								new RestClientException("Error"));
+		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class),
+				eq(Application.class))).thenThrow(new RestClientException("Error"));
 
 		boolean result = registrator.register();
 
 		assertFalse(result);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Test
 	public void deregister() {
-		when(
-				restTemplate.postForEntity(isA(String.class),
-						isA(HttpEntity.class), eq(Application.class)))
-						.thenReturn(
-								new ResponseEntity<Application>(Application
-										.create("foo").withId("-id-").build(),
-										HttpStatus.CREATED));
+		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class)))
+				.thenReturn(new ResponseEntity<Map>(Collections.singletonMap("id", "-id-"),
+						HttpStatus.CREATED));
 		registrator.register();
 		registrator.deregister();
 
