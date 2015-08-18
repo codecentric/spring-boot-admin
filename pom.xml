@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.3.0.M3</version>
+        <version>1.3.0.M4</version>
     </parent>
     <groupId>de.codecentric</groupId>
     <artifactId>spring-boot-admin</artifactId>
@@ -18,7 +18,7 @@
         <java.version>1.7</java.version>
         <main.basedir>${basedir}</main.basedir>
         <passphrase>${gpg.passphrase}</passphrase>
-        <spring-boot.version>1.3.0.M3</spring-boot.version>
+        <spring-boot.version>1.3.0.M4</spring-boot.version>
         <spring-cloud.version>Angel.SR3</spring-cloud.version>
         <build-plugin.jacoco.version>0.7.5.201505241946</build-plugin.jacoco.version>
         <build-plugin.coveralls.version>3.0.1</build-plugin.coveralls.version>
