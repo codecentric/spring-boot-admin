@@ -36,7 +36,7 @@ public class Application implements Serializable {
 	private final String serviceUrl;
 	private final StatusInfo statusInfo;
 
-	private Application(String healthUrl, String managementUrl,
+	protected Application(String healthUrl, String managementUrl,
 			String serviceUrl, String name, String id, StatusInfo statusInfo) {
 		this.healthUrl = healthUrl;
 		this.managementUrl = managementUrl;
