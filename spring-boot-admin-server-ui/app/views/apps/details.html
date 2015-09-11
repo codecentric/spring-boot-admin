@@ -206,10 +206,10 @@
 				<td>Name</td><td>{{ repository.name }}</td>
 			</tr>
 			<tr>
-				<td>Sources</td><td>{{ repository.sources.join(", ") }}</td>
+				<td>Sources</td><td>{{ repository.sources | joinArray:', ' }}</td>
 			</tr>
 			<tr>
-				<td>Profiles</td><td>{{ repository.profiles.join(", ") }}</td>
+				<td>Profiles</td><td>{{ repository.profiles | joinArray:', ' }}</td>
 			</tr>
 			<tr>
 				<td>Label</td><td>{{ repository.label }}</td>
