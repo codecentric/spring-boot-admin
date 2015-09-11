@@ -174,8 +174,9 @@
 	</dd>
 
 	<dd ng-repeat="(name, health) in health" ng-if="isChildHealth(name, health)" >
-		<ng-include src="'health.html'" ng-if="name != 'diskSpace'"></ng-include>
+		<ng-include src="'health.html'" ng-if="name != 'diskSpace' && name != 'configServer'"></ng-include>
 		<ng-include src="'health-diskSpace.html'" ng-if="name == 'diskSpace'"></ng-include>
+		<ng-include src="'health-configServer.html'" ng-if="name == 'configServer'"></ng-include>
 	</dd>
 </dl>
 </script>
@@ -192,6 +193,37 @@
 				<td>Threshold</td><td>{{ health.threshold | humanBytes }}</td>
 			</tr>
 		</table>
+	</dd>
+</dl>
+</script>
+
+<script type="text/ng-template" id="health-configServer.html">
+<dl class="health-status">
+	<dt>{{name | capitalize}} <span class="status-{{health.status}} pull-right">{{ health.status }}</span></dt>
+	<dd ng-if="repository.error">
+		<table style="width:100%;">
+			<tr class="error">
+			<td>Error</td><td>{{ repository.error }}</td>
+			</tr>
+		</table>
+	</dd>
+	<dd>
+		<dl ng-repeat="repository in health.repositories" class="health-status">
+			<dt>{{repository.name }}</dt>
+			<dd>
+				<table style="width:100%;">
+					<tr>
+						<td>Label</td><td>{{ repository.label }}</td>
+					</tr>
+					<tr>
+						<td>Sources</td><td>{{ repository.sources | joinArray:', ' }}</td>
+					</tr>
+					<tr>
+						<td>Profiles</td><td>{{ repository.profiles | joinArray:', ' }}</td>
+					</tr>
+				</table>
+			</dd>
+		</dl>
 	</dd>
 </dl>
 </script>
