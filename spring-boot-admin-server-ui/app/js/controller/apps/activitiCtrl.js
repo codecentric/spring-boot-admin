@@ -18,7 +18,7 @@
 module.exports = function ($scope, application) {
     $scope.application = application;
     application.getActiviti()
-        .success(function (activiti){
+        .then(function (activiti){
             $scope.summary = [];
             $scope.summary.push({
                 key: 'Completed Task Count Today',
@@ -56,7 +56,7 @@ module.exports = function ($scope, application) {
                 });
             }
         })
-        .error(function (error) {
+        .catch(function (error) {
             $scope.error = error;
         });
 };

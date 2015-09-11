@@ -15,7 +15,7 @@
  */
 'use strict';
 
-module.exports = function ($scope, $location, $interval, $q, $state, $filter, Application, Notification) {
+module.exports = function ($scope, $location, $interval, $state, $filter, Application, Notification) {
     var createNote = function(app) {
         var title = app.name + (app.statusInfo.status === 'UP' ? ' is back ' : ' went ') + app.statusInfo.status;
         var options = { tag: app.id,
@@ -45,7 +45,7 @@ module.exports = function ($scope, $location, $interval, $q, $state, $filter, Ap
                         break;
                     }
                 }
-                app.getInfo().success(function(info) {
+                app.getInfo().then(function(info) {
                     app.version = info.version;
                     app.infoDetails = null;
                     app.infoShort = '';

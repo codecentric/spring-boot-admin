@@ -18,11 +18,11 @@
 module.exports = function ($scope, application) {
     $scope.application = application;
     application.getEnv()
-        .success(function (env) {
+        .then(function (env) {
             var separator = env.systemProperties['path.separator'];
             $scope.classpath = env.systemProperties['java.class.path'].split(separator);
         })
-        .error(function (error) {
+        .catch(function (error) {
             $scope.error = error;
         });
 };

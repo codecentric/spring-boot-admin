@@ -23,7 +23,7 @@ module.exports = function ($scope, application, Abbreviator, MetricsHelper) {
     $scope.showRichGauges = false;
 
     application.getMetrics()
-        .success(function (metrics) {
+        .then(function (metrics) {
             function merge(array, obj) {
                 for (var i = 0; i < array.length; i++) {
                     if (array[i].name === obj.name) {
@@ -77,7 +77,7 @@ module.exports = function ($scope, application, Abbreviator, MetricsHelper) {
             ]);
 
         })
-        .error(function (error) {
+        .catch(function (error) {
             $scope.error = error;
         });
 };

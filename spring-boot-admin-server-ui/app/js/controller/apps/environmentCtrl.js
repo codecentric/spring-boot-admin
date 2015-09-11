@@ -48,12 +48,12 @@ module.exports = function ($scope, application) {
         $scope.allKeys = [];
 
         application.getEnv()
-          .success(function (env) {
+          .then(function (env) {
             $scope.env = env;
             $scope.envArray = toArray(env);
             $scope.allKeys = collectKeys($scope.envArray);
         })
-        .error(function (error) {
+        .catch(function (error) {
             $scope.error = error;
         });
     };
@@ -62,7 +62,7 @@ module.exports = function ($scope, application) {
 
     var getValue = function(item) {
         if (item.key && $scope.allKeys.indexOf(item.key) >= 0) {
-            application.getEnv(item.key).success(function(value) {
+            application.getEnv(item.key).then(function(value) {
                 item.value = value;
             });
         }
@@ -85,11 +85,11 @@ module.exports = function ($scope, application) {
         }
 
         $scope.overrides.error = null;
-        application.setEnv(map).success(function () {
+        application.setEnv(map).then(function () {
             $scope.overrides = { values: [{key: '', value: '' }], error: null, changes: null};
             $scope.reload();
          })
-        .error(function (error) {
+        .catch(function (error) {
             $scope.overrides.error = error;
             $scope.overrides.changes = null;
             $scope.reload();
@@ -99,10 +99,10 @@ module.exports = function ($scope, application) {
     $scope.reset = function() {
         $scope.overrides.error = null;
         $scope.overrides.changes = null;
-        application.resetEnv().success(function () {
+        application.resetEnv().then(function () {
             $scope.reload();
          })
-        .error(function (error) {
+        .catch(function (error) {
             $scope.overrides.error = error;
             $scope.reload();
         });
@@ -112,11 +112,11 @@ module.exports = function ($scope, application) {
     $scope.refresh = function() {
         $scope.overrides.error = null;
         $scope.overrides.changes = null;
-        application.refresh().success(function (changes) {
+        application.refresh().then(function (changes) {
             $scope.overrides.changes = changes;
             $scope.reload();
          })
-        .error(function (error) {
+        .catch(function (error) {
             $scope.overrides.error = error;
             $scope.reload();
         });

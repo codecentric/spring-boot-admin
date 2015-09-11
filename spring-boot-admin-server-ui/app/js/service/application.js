@@ -16,7 +16,7 @@
 'use strict';
 var angular = require('angular');
 
-module.exports = function ($resource, $http) {
+module.exports = function ($resource, $http, $q) {
 
     var isEndpointPresent = function(endpoint, configprops) {
         if (configprops[endpoint]) {
@@ -62,44 +62,61 @@ module.exports = function ($resource, $http) {
             remove: { method: 'DELETE' }
     });
 
+
+    var convert = function (request, isArray) {
+        isArray = isArray || false;
+        var deferred = $q.defer();
+        request.success(function(response) {
+            var result = response;
+            delete result['_links'];
+            if (isArray) {
+                result = response.content || response;
+            }
+            deferred.resolve(result);
+        }).error(function(response) {
+            deferred.reject(response);
+        });
+        return deferred.promise;
+    };
+
     Application.prototype.getHealth = function () {
-        return $http.get('api/applications/' + this.id + '/health');
+        return convert($http.get('api/applications/' + this.id + '/health'));
     };
 
     Application.prototype.getInfo = function () {
-        return $http.get('api/applications/' + this.id + '/info');
+        return convert($http.get('api/applications/' + this.id + '/info'));
     };
 
     Application.prototype.getMetrics = function () {
-        return $http.get('api/applications/' + this.id + '/metrics');
+        return convert($http.get('api/applications/' + this.id + '/metrics'));
     };
 
     Application.prototype.getEnv = function (key) {
-        return $http.get('api/applications/' + this.id + '/env' + (key ? '/' + key : '' ));
+        return convert($http.get('api/applications/' + this.id + '/env' + (key ? '/' + key : '' )));
     };
 
     Application.prototype.setEnv = function (map) {
-        return $http.post('api/applications/' + this.id + '/env', '', {params: map});
+        return convert($http.post('api/applications/' + this.id + '/env', '', {params: map}));
     };
 
     Application.prototype.resetEnv = function () {
-        return $http.post('api/applications/' + this.id + '/env/reset');
+        return convert($http.post('api/applications/' + this.id + '/env/reset'));
     };
 
     Application.prototype.refresh = function () {
-        return $http.post('api/applications/' + this.id + '/refresh');
+        return convert($http.post('api/applications/' + this.id + '/refresh'));
     };
 
     Application.prototype.getThreadDump = function () {
-        return $http.get('api/applications/' + this.id + '/dump');
+        return convert($http.get('api/applications/' + this.id + '/dump'), true);
     };
 
     Application.prototype.getTraces = function () {
-        return $http.get('api/applications/' + this.id + '/trace');
+        return convert($http.get('api/applications/' + this.id + '/trace'), true);
     };
 
     Application.prototype.getActiviti = function () {
-        return $http.get('api/applications/' + this.id + '/activiti');
+        return convert($http.get('api/applications/' + this.id + '/activiti'));
     };
 
     return Application;

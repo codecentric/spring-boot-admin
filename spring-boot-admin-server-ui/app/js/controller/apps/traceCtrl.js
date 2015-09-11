@@ -23,7 +23,7 @@ module.exports = function ($scope, application, $interval) {
 
     $scope.refresh = function () {
         application.getTraces()
-            .success(function (traces) {
+            .then(function (traces) {
                 for (var i = 0; i < traces.length; i++) {
                     if (traces[i].timestamp > $scope.lastTraceTime) {
                         $scope.traces.push(traces[i]);
@@ -34,7 +34,7 @@ module.exports = function ($scope, application, $interval) {
                 }
 
             })
-            .error(function (error) {
+            .catch(function (error) {
                 $scope.error = error;
             });
     };

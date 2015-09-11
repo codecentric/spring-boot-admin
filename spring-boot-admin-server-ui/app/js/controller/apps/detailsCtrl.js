@@ -24,18 +24,18 @@ module.exports = function ($scope, $interval, application, MetricsHelper) {
     }, 1000);
 
     application.getInfo()
-        .success(function (info) {
+        .then(function (info) {
             $scope.info = info;
         })
-        .error(function (error) {
+        .catch(function (error) {
             $scope.error = error;
         });
 
     application.getHealth()
-        .success(function (health) {
+        .then(function (health) {
             $scope.health = health;
         })
-        .error(function (health) {
+        .catch(function (health) {
             $scope.health = health;
         });
 
@@ -48,7 +48,7 @@ module.exports = function ($scope, $interval, application, MetricsHelper) {
     };
 
     application.getMetrics()
-        .success(function (metrics) {
+        .then(function (metrics) {
             $scope.metrics = metrics;
             $scope.metrics['mem.used'] = $scope.metrics.mem - $scope.metrics['mem.free'];
 
@@ -105,7 +105,7 @@ module.exports = function ($scope, $interval, application, MetricsHelper) {
                 }
             ]);
         })
-        .error(function (error) {
+        .catch(function (error) {
             $scope.error = error;
         });
 };

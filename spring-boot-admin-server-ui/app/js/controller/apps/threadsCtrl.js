@@ -18,7 +18,7 @@
 module.exports = function ($scope, application) {
     $scope.dumpThreads = function () {
         application.getThreadDump()
-            .success(function (dump) {
+            .then(function (dump) {
                 $scope.dump = dump;
 
                 var threadStats = {
@@ -35,7 +35,7 @@ module.exports = function ($scope, application) {
                 threadStats.total = dump.length;
                 $scope.threadStats = threadStats;
             })
-            .error(function (error) {
+            .catch(function (error) {
                 $scope.error = error;
             });
     };
