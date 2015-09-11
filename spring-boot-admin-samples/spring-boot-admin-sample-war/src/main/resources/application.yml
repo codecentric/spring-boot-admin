@@ -1,0 +1,20 @@
+info:
+  version: @pom.version@
+  stage: test
+
+spring:
+  application:
+    name: @pom.artifactId@
+  boot:
+    admin:
+      url: http://localhost:8080
+  cloud:
+    config:
+      enabled: false
+  jackson:
+    serialization:
+      indent_output: true
+
+endpoints:
+  health:
+    sensitive: false

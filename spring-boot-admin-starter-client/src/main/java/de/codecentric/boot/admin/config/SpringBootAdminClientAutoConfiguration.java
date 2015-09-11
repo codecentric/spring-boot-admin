@@ -90,8 +90,8 @@ public class SpringBootAdminClientAutoConfiguration {
 		 * ApplicationListener triggering registration after refresh/shutdown
 		 */
 		@Bean
-		public RegistrationApplicationListener registrationListener(final ApplicationRegistrator registrator,
-				final AdminProperties admin) {
+		public RegistrationApplicationListener registrationListener(
+				ApplicationRegistrator registrator, AdminProperties admin) {
 			return new RegistrationApplicationListener(admin, registrator);
 		}
 
