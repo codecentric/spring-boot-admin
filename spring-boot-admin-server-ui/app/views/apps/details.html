@@ -9,7 +9,7 @@
 				<thead><tr><th colspan="2">Application <small class="pull-right"><a href="api/applications/{{ application.id }}/info">raw JSON</a></small></th></tr></thead>
 				<tbody>
 					<tr ng-repeat="(key, value) in info" >
-						<td>{{ key }}</td><td>{{ value }}</td>
+						<td>{{ key }}</td><td style="white-space: pre;">{{ value | flatten }}</td>
 					</tr>
 				</tbody>
 			</table>

@@ -23,7 +23,7 @@
 			<tr ng-repeat="application in applications|orderBy:order.column:order.descending|orderBy:'statusInfo.status':false track by application.id">
 				<td>{{ application.name }}<br/><span class="muted">{{ application.serviceUrl || application.managementUrl || application.healthUrl }}</span></td>
 				<td>{{ application.info.version }}</td>
-				<td><span ng-repeat="(name, value) in application.info track by name" ng-if="name != 'version'">{{name}}: {{value}}<br></span></td>
+				<td><span ng-repeat="(name, value) in application.info track by name" ng-if="name != 'version'" style="white-space: pre">{{value | flatten:name}}<br/></span></td>
 				<td><span class="status-{{application.statusInfo.status}}" title="{{application.statusInfo.timestamp  | date:'dd.MM.yyyy HH:mm:ss' }}">{{ application.statusInfo.status }}</span>
 				<span ng-show="application.refreshing" class="refresh"></span></td>
 				<td>
