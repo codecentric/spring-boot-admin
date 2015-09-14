@@ -84,7 +84,7 @@ public class StatusUpdaterTest {
 
 		// HTTP != 200 - DOWN
 		when(template.getForEntity("health", Map.class)).thenReturn(
-				ResponseEntity.status(500).<Map> body(null));
+				ResponseEntity.status(503).<Map> body(null));
 
 		updater.updateStatus(Application.create("foo").withId("id")
 				.withHealthUrl("health").build());

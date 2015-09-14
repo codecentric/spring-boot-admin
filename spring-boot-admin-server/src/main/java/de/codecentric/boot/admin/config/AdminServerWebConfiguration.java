@@ -26,10 +26,12 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -114,8 +116,13 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter impleme
 	@ConfigurationProperties("spring.boot.admin.monitor")
 	public StatusUpdater statusUpdater(ApplicationStore store) {
 		RestTemplate template = new RestTemplate();
-		template.getMessageConverters().add(
-				new MappingJackson2HttpMessageConverter());
+		template.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+		template.setErrorHandler(new DefaultResponseErrorHandler() {
+			@Override
+			protected boolean hasError(HttpStatus statusCode) {
+				return false;
+			}
+		});
 		return new StatusUpdater(template, store);
 	}
 
