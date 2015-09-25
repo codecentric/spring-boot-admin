@@ -71,7 +71,7 @@
 			<col width="62%">
 			<thead><tr><th colspan="2">{{item.key}}</th></tr></thead>
 			<tbody>
-				<tr ng-repeat="property in item.value | filter:searchFilter track by property.key" >
+				<tr ng-repeat="property in item.value | orderBy:'key' | filter:searchFilter track by property.key" >
 					<td style="word-break: break-all;" >{{ property.key }}</td>
 					<td style="word-break: break-all;" >{{ property.value }}</td>
 				</tr>
