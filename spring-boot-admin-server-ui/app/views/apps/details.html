@@ -60,7 +60,6 @@
 				</tr>
 			</table>
 		</div>
-
 		<div class="span6">
 			<table class="table">
 				<thead><tr><th colspan="2">JVM <small class="pull-right"><a href="api/applications/{{ application.id }}/metrics">raw JSON</a></small></th></tr></thead>
@@ -113,7 +112,6 @@
 				</tbody>
 			</table>
 		</div>
-
 		<div class="span6" ng-show="metrics['httpsessions.active'] != null">
 			<table class="table">
 				<thead><tr><th colspan="2">Servlet Container</th></tr></thead>
@@ -125,7 +123,6 @@
 				</tbody>
 			</table>
 		</div>
-
 		<div class="span6" ng-show="hasDatasources">
 			<table class="table">
 				<thead><tr><th colspan="2">Datasources</th></tr></thead>
@@ -136,6 +133,26 @@
 							<div class="progress" style="margin-bottom: 0px;">
 								<div class="bar" style="width:{{ value.usage * 100 | number:2 }}%;" ng-class="{'bar-success': value.usage < 0.75, 'bar-warning': value.usage >= 0.75 && value.usage < 0.95, 'bar-danger': value.usage >= 0.95}">
 									{{value.usage * 100 | number}}%
+								</div>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="span6" ng-show="hasCaches">
+			<table class="table">
+				<thead><tr><th colspan="2">Caches</th></tr></thead>
+				<tbody>
+					<tr ng-repeat = "(name, value) in caches track by name">
+						<td colspan="2">
+							<span>{{name | capitalize}} (size: {{ value.size }})</span>
+							<div class="progress" style="margin-bottom: 0px;">
+								<div class="bar bar-success" style="width:{{ value.hitRatio * 100 | number:2 }}%;">
+									{{value.hitRatio * 100 | number}}% hits
+								</div>
+								<div class="bar bar-danger" style="width:{{ value.missRatio * 100 | number:2 }}%;">
+									{{value.missRatio * 100 | number}}% misses
 								</div>
 							</div>
 						</td>

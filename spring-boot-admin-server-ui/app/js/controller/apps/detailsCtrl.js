@@ -54,54 +54,61 @@ module.exports = function ($scope, $interval, application, MetricsHelper) {
 
             $scope.gcInfos = {};
             $scope.datasources = {};
+            $scope.caches = {};
 
             function createOrGet(map, key, factory) {
                 return map[key] || (map[key] = factory());
             }
 
             MetricsHelper.find(metrics, [/gc\.(.+)\.time/, /gc\.(.+)\.count/,
-                /datasource\.(.+)\.active/, /datasource\.(.+)\.usage/
+                /datasource\.(.+)\.active/, /datasource\.(.+)\.usage/,
+                /cache\.(.+)\.size/, /cache\.(.+)\.miss\.ratio/, /cache\.(.+)\.hit\.ratio/
             ], [function (metric, match, value) {
                     createOrGet($scope.gcInfos, match[1], function () {
-                            return {
-                                time: 0,
-                                count: 0
-                            };
+                            return { time: 0, count: 0 };
                         })
                         .time = value;
                 },
                 function (metric, match, value) {
                     createOrGet($scope.gcInfos, match[1], function () {
-                            return {
-                                time: 0,
-                                count: 0
-                            };
+                            return { time: 0, count: 0 };
                         })
                         .count = value;
                 },
                 function (metric, match, value) {
                     $scope.hasDatasources = true;
                     createOrGet($scope.datasources, match[1], function () {
-                            return {
-                                min: 0,
-                                max: 0,
-                                active: 0,
-                                usage: 0
-                            };
+                            return { min: 0, max: 0, active: 0, usage: 0 };
                         })
                         .active = value;
                 },
                 function (metric, match, value) {
                     $scope.hasDatasources = true;
                     createOrGet($scope.datasources, match[1], function () {
-                            return {
-                                min: 0,
-                                max: 0,
-                                active: 0,
-                                usage: 0
-                            };
+                            return { min: 0, max: 0, active: 0, usage: 0 };
                         })
                         .usage = value;
+                },
+                function (metric, match, value) {
+                    $scope.hasCaches = true;
+                    createOrGet($scope.caches, match[1], function () {
+                            return { size: 0, hitRatio: 0.0, missRatio: 0.0 };
+                        })
+                        .size = value;
+                },
+                function (metric, match, value) {
+                    $scope.hasCaches = true;
+                    createOrGet($scope.caches, match[1], function () {
+                            return { size: 0, hitRatio: 0.0, missRatio: 0.0 };
+                        })
+                        .missRatio = value;
+                },
+                function (metric, match, value) {
+                    $scope.hasCaches = true;
+                    createOrGet($scope.caches, match[1], function () {
+                            return { size: 0, hitRatio: 0.0, missRatio: 0.0 };
+                        })
+                        .hitRatio = value;
                 }
             ]);
         })
