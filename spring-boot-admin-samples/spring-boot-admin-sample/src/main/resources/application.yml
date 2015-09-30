@@ -16,7 +16,7 @@ spring:
       enabled: false
   jackson:
     serialization:
-      indent_output: true
+     indent-output: true
 
 endpoints:
   health:
