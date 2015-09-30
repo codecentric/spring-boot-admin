@@ -22,10 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -74,53 +72,48 @@ public class AdminClientProperties {
 	@Autowired
 	private ServerProperties server;
 
-	private int serverPort = -1;
+	private Integer serverPort;
 
-	private int managementPort = -1;
+	private Integer managementPort;
 
-	private boolean serverInitialized = false;
-
-	@EventListener
-	public void onStartedEmbeddedContainer(EmbeddedServletContainerInitializedEvent event) {
-		if ("management".equals(event.getApplicationContext().getNamespace())) {
-			managementPort = event.getEmbeddedServletContainer().getPort();
-		} else {
-			serverPort = event.getEmbeddedServletContainer().getPort();
-		}
-		serverInitialized = true;
-	}
+	private boolean ready = false;
 
 	@EventListener
-	public void onStartedDeployedWar(ContextRefreshedEvent event) {
-		if (event.getApplicationContext() instanceof EmbeddedWebApplicationContext) {
-			EmbeddedWebApplicationContext context = (EmbeddedWebApplicationContext) event
-					.getApplicationContext();
-			if (context.getEmbeddedServletContainer() == null) {
-				if (!StringUtils.hasText(serviceUrl)) {
-					throw new RuntimeException(
-							"spring.boot.admin.client.serviceUrl must be set for deployed war files!");
-				}
-				serverInitialized = true;
-			}
-		}
+	public void onApplicationReady(ApplicationReadyEvent event) {
+		serverPort = event.getApplicationContext().getEnvironment().getProperty("local.server.port",
+				Integer.class);
+		managementPort = event.getApplicationContext().getEnvironment()
+				.getProperty("local.management.port", Integer.class, serverPort);
+		ready = true;
 	}
 
 	public String getManagementUrl() {
 		if (managementUrl != null) {
 			return managementUrl;
 		}
-		if (managementPort == -1) {
+
+		if ((managementPort == null || managementPort.equals(serverPort))
+				&& getServiceUrl() != null) {
 			return append(getServiceUrl(), management.getContextPath());
+		}
+
+		if (ready && managementPort == null) {
+			throw new IllegalStateException(
+					"serviceUrl must be set when deployed to servlet-container");
 		}
 
 		if (preferIp) {
 			Assert.notNull(management.getAddress(),
 					"management.address must be set when using preferIp");
-			return append(createLocalUri(management.getAddress().getHostAddress(), managementPort),
+			return append(
+					append(createLocalUri(management.getAddress().getHostAddress(), managementPort),
+							server.getContextPath()),
 					management.getContextPath());
 
 		}
-		return append(createLocalUri(getHostname(), managementPort), management.getContextPath());
+		return append(
+				append(createLocalUri(getHostname(), managementPort), server.getContextPath()),
+				management.getContextPath());
 	}
 
 	public void setManagementUrl(String managementUrl) {
@@ -143,9 +136,9 @@ public class AdminClientProperties {
 			return serviceUrl;
 		}
 
-		if (serverPort == -1) {
+		if (ready && serverPort == null) {
 			throw new IllegalStateException(
-					"EmbeddedServletContainer has not been initialized yet!");
+					"serviceUrl must be set when deployed to servlet-container");
 		}
 
 		if (preferIp) {
@@ -161,8 +154,8 @@ public class AdminClientProperties {
 		this.serviceUrl = serviceUrl;
 	}
 
-	public boolean isServerInitialized() {
-		return serverInitialized;
+	public boolean isReady() {
+		return ready;
 	}
 
 	public String getName() {

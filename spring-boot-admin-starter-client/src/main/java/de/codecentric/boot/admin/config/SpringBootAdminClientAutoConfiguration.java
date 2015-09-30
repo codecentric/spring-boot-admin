@@ -78,7 +78,7 @@ public class SpringBootAdminClientAutoConfiguration {
 		Runnable registratorTask = new Runnable() {
 			@Override
 			public void run() {
-				if (client.isServerInitialized()) {
+				if (client.isReady()) {
 					registrator().register();
 				}
 			}
