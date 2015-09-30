@@ -21,7 +21,7 @@ The main service that is used is a registrar that registeres the application at 
 | spring.boot.admin.client.managementUrl | Client-management-URL to register with. Can be overriden in case the reachable URL is different (e.g. Docker). Must be unique in registry.<br>Default: is guessed based on serviceUrl management.port and management.context-path|
 | spring.boot.admin.client.healthUrl | Client-management-URL to register with. Can be overriden in case the reachable URL is different (e.g. Docker). Must be unique in registry.<br>Default: is guessed based on managementUrl and endpoints.health.id |
 | spring.boot.admin.client.name | Name to register with. Defaults to the ApplicationContexts name. Only set when it should differ.<br>Default: _${spring.application.name}_ if set, spring-boot-application otherwise. |
-| spring.boot.admin.client.useIpAddressOf | If an network-interface name is specified, its ip-address wil be used for the guessed url (instead of hostname).|
+| spring.boot.admin.client.preferIpAddress | Use the ip-address rather then the hostname in the guessed urls. It's required to set `server.address` and `management.address`respectively. |
 
 ### Other configuration properties
 Options from other spring boot features. These should be set to enable all features.

@@ -16,9 +16,6 @@
 package de.codecentric.boot.admin.config;
 
 import java.net.InetAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,27 +31,27 @@ import org.springframework.context.event.ApplicationContextEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 @ConfigurationProperties(prefix = "spring.boot.admin.client", ignoreUnknownFields = false)
 @Order(Ordered.LOWEST_PRECEDENCE - 100)
 public class AdminClientProperties implements ApplicationListener<ApplicationEvent> {
-
 	/**
-	 * Client-management-URL to register with. Inferred at runtime, can be overriden in
-	 * case the reachable URL is different (e.g. Docker).
+	 * Client-management-URL to register with. Inferred at runtime, can be overriden in case the
+	 * reachable URL is different (e.g. Docker).
 	 */
 	private String managementUrl;
 
 	/**
-	 * Client-service-URL register with. Inferred at runtime, can be overriden in case the
-	 * reachable URL is different (e.g. Docker).
+	 * Client-service-URL register with. Inferred at runtime, can be overriden in case the reachable
+	 * URL is different (e.g. Docker).
 	 */
 	private String serviceUrl;
 
 	/**
-	 * Client-health-URL to register with. Inferred at runtime, can be overriden in case
-	 * the reachable URL is different (e.g. Docker). Must be unique in registry.
+	 * Client-health-URL to register with. Inferred at runtime, can be overriden in case the
+	 * reachable URL is different (e.g. Docker). Must be unique in registry.
 	 */
 	private String healthUrl;
 
@@ -68,10 +65,9 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 	private String healthEndpointId;
 
 	/**
-	 * If set, the address of the specified interface is used in url inference
-	 * instead of the hostname.
+	 * Should the registered urls be built with server.address or with hostname.
 	 */
-	private String useIpAddressOf = null;
+	private boolean preferIp = false;
 
 	@Autowired
 	private ManagementServerProperties management;
@@ -117,17 +113,21 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 	}
 
 	public String getManagementUrl() {
-		if (managementUrl == null) {
-			if (managementPort != -1) {
-				return createLocalUri(managementPort,
-						management.getContextPath());
-			}
-			else {
-				return append(getServiceUrl(), management.getContextPath());
-			}
+		if (managementUrl != null) {
+			return managementUrl;
+		}
+		if (managementPort == -1) {
+			return append(getServiceUrl(), management.getContextPath());
 		}
 
-		return managementUrl;
+		if (preferIp) {
+			Assert.notNull(management.getAddress(),
+					"management.address must be set when using preferIp");
+			return append(createLocalUri(management.getAddress().getHostAddress(), managementPort),
+					management.getContextPath());
+
+		}
+		return append(createLocalUri(getHostname(), managementPort), management.getContextPath());
 	}
 
 	public void setManagementUrl(String managementUrl) {
@@ -135,10 +135,10 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 	}
 
 	public String getHealthUrl() {
-		if (healthUrl == null) {
-			return append(getManagementUrl(), healthEndpointId);
+		if (healthUrl != null) {
+			return healthUrl;
 		}
-		return healthUrl;
+		return append(getManagementUrl(), healthEndpointId);
 	}
 
 	public void setHealthUrl(String healthUrl) {
@@ -146,16 +146,22 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 	}
 
 	public String getServiceUrl() {
-		if (serviceUrl == null) {
-			if (serverPort != -1){
-				return createLocalUri(serverPort, server.getContextPath());
-			} else {
-				throw new IllegalStateException(
-						"EmbeddedServletContainer has not been initialized yet!");
-			}
+		if (serviceUrl != null) {
+			return serviceUrl;
 		}
 
-		return serviceUrl;
+		if (serverPort == -1) {
+			throw new IllegalStateException(
+					"EmbeddedServletContainer has not been initialized yet!");
+		}
+
+		if (preferIp) {
+			Assert.notNull(server.getAddress(), "server.address must be set when using preferIp");
+			return append(createLocalUri(server.getAddress().getHostAddress(), serverPort),
+					server.getContextPath());
+
+		}
+		return append(createLocalUri(getHostname(), serverPort), server.getContextPath());
 	}
 
 	public void setServiceUrl(String serviceUrl) {
@@ -174,14 +180,13 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 		this.name = name;
 	}
 
-	public void setUseIpAddressOf(String useIpAddressOf) {
-		this.useIpAddressOf = useIpAddressOf;
+	public void setPreferIp(boolean preferIp) {
+		this.preferIp = preferIp;
 	}
 
-	private String createLocalUri(int port, String path) {
-		String scheme = server.getSsl() != null && server.getSsl().isEnabled() ? "https"
-				: "http";
-		return append(scheme + "://" + getHost() + ":" + port, path);
+	private String createLocalUri(String host, int port) {
+		String scheme = server.getSsl() != null && server.getSsl().isEnabled() ? "https" : "http";
+		return scheme + "://" + host + ":" + port;
 	}
 
 	private String append(String uri, String path) {
@@ -194,15 +199,6 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 		return baseUri + "/" + normPath;
 	}
 
-	private String getHost() {
-		if (useIpAddressOf == null) {
-			return getHostname();
-		} else {
-			return getHostIp();
-
-		}
-	}
-
 	private String getHostname() {
 		try {
 			return InetAddress.getLocalHost().getCanonicalHostName();
@@ -211,47 +207,4 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 		}
 	}
 
-	private String getHostIp() {
-		NetworkInterface nic;
-		try {
-			nic = NetworkInterface.getByName(useIpAddressOf);
-		} catch (SocketException ex) {
-			throw new IllegalArgumentException(ex.getMessage(), ex);
-		}
-
-		if (nic != null) {
-			InetAddress address = findIp(nic);
-			if (address != null) {
-				return address.getHostAddress();
-			}
-
-			throw new IllegalStateException(
-					"Couldn't determin InetAdress for network interface '"
-							+ useIpAddressOf + "'");
-		} else {
-			throw new IllegalArgumentException(
-					"Network interface"
-							+ useIpAddressOf
-							+ " not found! Please specify correct interface for spring.boot.admin.client.useIpAddressOf");
-		}
-	}
-
-	private InetAddress findIp(NetworkInterface nic) {
-		InetAddress candidate = null;
-
-		for (InterfaceAddress address : nic.getInterfaceAddresses()) {
-			if (!address.getAddress().isLoopbackAddress()) {
-				if (address.getAddress().isSiteLocalAddress()) {
-					return address.getAddress();
-				}
-				candidate = address.getAddress();
-			}
-		}
-
-		if (candidate != null) {
-			return candidate;
-		}
-
-		return null;
-	}
 }
