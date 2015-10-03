@@ -15,9 +15,7 @@
  */
 'use strict';
 
-var angular = require('angular');
-
-module.exports = function ($scope, $location, $interval, $q, $state, Application, Notification) {
+module.exports = function ($scope, $location, $interval, $q, $state, $filter, Application, Notification) {
     var createNote = function(app) {
         var title = app.name + (app.statusInfo.status === 'UP' ? ' is back ' : ' went ') + app.statusInfo.status;
         var options = { tag: app.id,
@@ -37,8 +35,9 @@ module.exports = function ($scope, $location, $interval, $q, $state, Application
                 //find application in known applications and copy state --> less flickering
                 for (var j = 0; $scope.applications != null && j < $scope.applications.length; j++) {
                     if (app.id === $scope.applications[j].id) {
-                        app.info = $scope.applications[j].info;
-
+                        app.infoShort = $scope.applications[j].infoShort;
+                        app.infoDetails = $scope.applications[j].infoDetails;
+                        app.version = $scope.applications[j].version;
                         //issue notifiaction on state change
                         if (app.statusInfo.status !== $scope.applications[j].statusInfo.status) {
                             createNote(app);
@@ -46,9 +45,18 @@ module.exports = function ($scope, $location, $interval, $q, $state, Application
                         break;
                     }
                 }
-
                 app.getInfo().success(function(info) {
-                    angular.copy(info, app.info);
+                    app.version = info.version;
+                    app.infoDetails = null;
+                    app.infoShort = '';
+                    delete info.version;
+                    var infoYml = $filter('yaml')(info);
+                    if (infoYml !== '{}\n') {
+                        app.infoShort = $filter('limitLines')(infoYml, 3);
+                        if (app.infoShort !== infoYml) {
+                           app.infoDetails = $filter('limitLines')(infoYml, 32000, 3);
+                        }
+                    }
                 }).finally(function(){
                     app.refreshing = false;
                 });

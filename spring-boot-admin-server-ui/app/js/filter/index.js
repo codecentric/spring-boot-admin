@@ -8,4 +8,5 @@ springBootAdmin.filter('classNameLoggerOnly', require('./classNameLoggerOnly'));
 springBootAdmin.filter('capitalize', require('./capitalize'));
 springBootAdmin.filter('humanBytes', require('./humanBytes'));
 springBootAdmin.filter('joinArray', require('./joinArray'));
-springBootAdmin.filter('flatten', require('./flatten'));
+springBootAdmin.filter('yaml', require('./yaml'));
+springBootAdmin.filter('limitLines', require('./limitLines'));
