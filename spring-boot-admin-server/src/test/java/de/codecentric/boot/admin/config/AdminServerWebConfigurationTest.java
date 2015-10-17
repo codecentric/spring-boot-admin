@@ -99,6 +99,9 @@ public class AdminServerWebConfigurationTest {
 		applicationContext.register(ServerPropertiesAutoConfiguration.class);
 		applicationContext.register(NoopDiscoveryClientAutoConfiguration.class);
 		applicationContext.register(MailSenderAutoConfiguration.class);
+		applicationContext.register(MailNotifierConfiguration.class);
+		applicationContext.register(HazelcastStoreConfiguration.class);
+		applicationContext.register(DiscoveryClientConfiguration.class);
 		applicationContext.register(AdminServerWebConfiguration.class);
 
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);

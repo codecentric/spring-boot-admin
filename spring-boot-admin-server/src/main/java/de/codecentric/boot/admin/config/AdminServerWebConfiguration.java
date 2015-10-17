@@ -49,11 +49,9 @@ import de.codecentric.boot.admin.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.registry.HashingApplicationUrlIdGenerator;
 import de.codecentric.boot.admin.registry.StatusUpdater;
 import de.codecentric.boot.admin.registry.store.ApplicationStore;
+import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
 
 @Configuration
-@Import({ RevereseZuulProxyConfiguration.class, MailNotifierConfiguration.class,
-		HazelcastStoreConfiguration.class, SimpleStoreConfig.class,
-		DiscoveryClientConfiguration.class })
 public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter implements
 		ApplicationContextAware {
 
@@ -165,5 +163,11 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter impleme
 	public JournalController journalController() {
 		return new JournalController(applicationEventJournal());
 	}
+
+        @Bean
+        @ConditionalOnMissingBean
+        public ApplicationStore applicationStore() {
+                return new SimpleApplicationStore();
+        }
 
 }

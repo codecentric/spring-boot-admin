@@ -19,6 +19,7 @@ import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -45,6 +46,7 @@ import de.codecentric.boot.admin.registry.store.HazelcastApplicationStore;
 @Configuration
 @ConditionalOnClass({ Hazelcast.class })
 @ConditionalOnProperty(prefix = "spring.boot.admin.hazelcast", name = "enabled", matchIfMissing = true)
+@AutoConfigureBefore(AdminServerWebConfiguration.class)
 public class HazelcastStoreConfiguration {
 
 	@Value("${spring.boot.admin.hazelcast.map:spring-boot-admin-application-store}")
@@ -83,16 +85,14 @@ public class HazelcastStoreConfiguration {
 		@Override
 		public void entryAdded(EntryEvent<String, Application> event) {
 			if (event.getValue() != null) {
-				publisher
-						.publishEvent(new ClientApplicationRegisteredEvent(event.getValue()));
+				publisher.publishEvent(new ClientApplicationRegisteredEvent(event.getValue()));
 			}
 		}
 
 		@Override
 		public void entryRemoved(EntryEvent<String, Application> event) {
 			if (event.getValue() != null) {
-				publisher.publishEvent(new ClientApplicationDeregisteredEvent(event
-						.getValue()));
+				publisher.publishEvent(new ClientApplicationDeregisteredEvent(event.getValue()));
 			}
 		}
 
@@ -100,12 +100,11 @@ public class HazelcastStoreConfiguration {
 		public void entryUpdated(EntryEvent<String, Application> event) {
 			if (!Objects.equals(event.getOldValue(), event.getValue())) {
 				if (event.getOldValue() != null) {
-					publisher.publishEvent(new ClientApplicationDeregisteredEvent(event
-							.getOldValue()));
+					publisher.publishEvent(
+							new ClientApplicationDeregisteredEvent(event.getOldValue()));
 				}
 				if (event.getValue() != null) {
-					publisher.publishEvent(new ClientApplicationRegisteredEvent(event
-							.getValue()));
+					publisher.publishEvent(new ClientApplicationRegisteredEvent(event.getValue()));
 				}
 			} else {
 				StatusInfo from = event.getOldValue() != null ? event.getOldValue().getStatusInfo()
@@ -113,8 +112,8 @@ public class HazelcastStoreConfiguration {
 				StatusInfo to = event.getValue() != null ? event.getValue().getStatusInfo()
 						: StatusInfo.ofUnknown();
 				if (!from.equals(to)) {
-					publisher.publishEvent(new ClientApplicationStatusChangedEvent(event
-							.getValue(), from, to));
+					publisher.publishEvent(
+							new ClientApplicationStatusChangedEvent(event.getValue(), from, to));
 				}
 			}
 		}
@@ -122,8 +121,7 @@ public class HazelcastStoreConfiguration {
 		@Override
 		public void entryEvicted(EntryEvent<String, Application> event) {
 			if (event.getValue() != null) {
-				publisher.publishEvent(new ClientApplicationDeregisteredEvent(event
-						.getValue()));
+				publisher.publishEvent(new ClientApplicationDeregisteredEvent(event.getValue()));
 			}
 		}
 
