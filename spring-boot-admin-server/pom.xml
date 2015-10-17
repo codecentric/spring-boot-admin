@@ -30,7 +30,6 @@
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
-
 		<!-- Use Zuul WITHOUT Hystrix/Ribbon/Config Client -->
 		<dependency>
 			<groupId>com.netflix.zuul</groupId>
@@ -48,14 +47,12 @@
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 		</dependency>
-
 		<!-- Optional Discovery Client -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter</artifactId>
 			<optional>true</optional>
 		</dependency>
-
 		<!-- Optional Hazelcast-Support -->
 		<dependency>
 			<groupId>com.hazelcast</groupId>
@@ -69,12 +66,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>com.hazelcast</groupId>
-			<artifactId>hazelcast-spring</artifactId>
-			<optional>true</optional>
-		</dependency>
-
 		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
