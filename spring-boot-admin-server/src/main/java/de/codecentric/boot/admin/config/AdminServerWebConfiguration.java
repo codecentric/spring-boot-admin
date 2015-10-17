@@ -23,11 +23,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpStatus;
 import org.springframework.context.event.EventListener;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -40,7 +40,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.codecentric.boot.admin.controller.JournalController;
 import de.codecentric.boot.admin.controller.RegistryController;
+import de.codecentric.boot.admin.event.ClientApplicationDeregisteredEvent;
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
+import de.codecentric.boot.admin.event.RoutesOutdatedEvent;
 import de.codecentric.boot.admin.journal.ApplicationEventJournal;
 import de.codecentric.boot.admin.journal.store.JournaledEventStore;
 import de.codecentric.boot.admin.journal.store.SimpleJournaledEventStore;
@@ -52,10 +54,19 @@ import de.codecentric.boot.admin.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
 
 @Configuration
-public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter implements
-		ApplicationContextAware {
+public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
+		implements ApplicationContextAware {
 
 	private ApplicationContext applicationContext;
+
+	@Autowired
+	private ApplicationEventPublisher publisher;
+
+	@Autowired
+	private ApplicationStore applicationStore;
+
+	@Value("${spring.boot.admin.monitor.period:10000}")
+	private long monitorPeriod;
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) {
@@ -80,12 +91,6 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter impleme
 		}
 		return false;
 	}
-
-	@Autowired
-	private ApplicationStore applicationStore;
-
-	@Value("${spring.boot.admin.monitor.period:10000}")
-	private long monitorPeriod;
 
 	/**
 	 * @return Controller with REST-API for spring-boot applications to register itself.
@@ -130,6 +135,12 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter impleme
 	@EventListener
 	public void onClientApplicationRegistered(ClientApplicationRegisteredEvent event) {
 		statusUpdater().updateStatus(event.getApplication());
+		publisher.publishEvent(new RoutesOutdatedEvent());
+	}
+
+	@EventListener
+	public void onClientApplicationDeregistered(ClientApplicationDeregisteredEvent event) {
+		publisher.publishEvent(new RoutesOutdatedEvent());
 	}
 
 	@Bean
@@ -164,10 +175,10 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter impleme
 		return new JournalController(applicationEventJournal());
 	}
 
-        @Bean
-        @ConditionalOnMissingBean
-        public ApplicationStore applicationStore() {
-                return new SimpleApplicationStore();
-        }
+	@Bean
+	@ConditionalOnMissingBean
+	public ApplicationStore applicationStore() {
+		return new SimpleApplicationStore();
+	}
 
 }

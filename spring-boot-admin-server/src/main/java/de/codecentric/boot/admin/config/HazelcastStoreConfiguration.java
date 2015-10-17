@@ -15,8 +15,6 @@
  */
 package de.codecentric.boot.admin.config;
 
-import java.util.Objects;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -28,18 +26,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.hazelcast.config.Config;
+import com.hazelcast.core.EntryAdapter;
 import com.hazelcast.core.EntryEvent;
 import com.hazelcast.core.EntryListener;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
 import com.hazelcast.core.MapEvent;
+import com.hazelcast.map.listener.MapListener;
 
-import de.codecentric.boot.admin.event.ClientApplicationDeregisteredEvent;
-import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
-import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.event.RoutesOutdatedEvent;
 import de.codecentric.boot.admin.model.Application;
-import de.codecentric.boot.admin.model.StatusInfo;
 import de.codecentric.boot.admin.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.registry.store.HazelcastApplicationStore;
 
@@ -51,6 +48,9 @@ public class HazelcastStoreConfiguration {
 
 	@Value("${spring.boot.admin.hazelcast.map:spring-boot-admin-application-store}")
 	private String hazelcastMapName;
+
+	@Autowired
+	private ApplicationEventPublisher publisher;
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -69,70 +69,23 @@ public class HazelcastStoreConfiguration {
 	public ApplicationStore applicationStore() {
 		IMap<String, Application> map = hazelcastInstance().getMap(hazelcastMapName);
 		map.addIndex("name", false);
-		map.addEntryListener(entryListener(), false);
+		map.addEntryListener((MapListener) entryListener(), false);
 		return new HazelcastApplicationStore(map);
 	}
 
 	@Bean
 	public EntryListener<String, Application> entryListener() {
-		return new ApplicationEntryListener();
-	}
-
-	private static class ApplicationEntryListener implements EntryListener<String, Application> {
-		@Autowired
-		private ApplicationEventPublisher publisher;
-
-		@Override
-		public void entryAdded(EntryEvent<String, Application> event) {
-			if (event.getValue() != null) {
-				publisher.publishEvent(new ClientApplicationRegisteredEvent(event.getValue()));
+		return new EntryAdapter<String, Application>() {
+			@Override
+			public void onEntryEvent(EntryEvent<String, Application> event) {
+				publisher.publishEvent(new RoutesOutdatedEvent());
 			}
-		}
 
-		@Override
-		public void entryRemoved(EntryEvent<String, Application> event) {
-			if (event.getValue() != null) {
-				publisher.publishEvent(new ClientApplicationDeregisteredEvent(event.getValue()));
+			@Override
+			public void onMapEvent(MapEvent event) {
+				publisher.publishEvent(new RoutesOutdatedEvent());
 			}
-		}
 
-		@Override
-		public void entryUpdated(EntryEvent<String, Application> event) {
-			if (!Objects.equals(event.getOldValue(), event.getValue())) {
-				if (event.getOldValue() != null) {
-					publisher.publishEvent(
-							new ClientApplicationDeregisteredEvent(event.getOldValue()));
-				}
-				if (event.getValue() != null) {
-					publisher.publishEvent(new ClientApplicationRegisteredEvent(event.getValue()));
-				}
-			} else {
-				StatusInfo from = event.getOldValue() != null ? event.getOldValue().getStatusInfo()
-						: StatusInfo.ofUnknown();
-				StatusInfo to = event.getValue() != null ? event.getValue().getStatusInfo()
-						: StatusInfo.ofUnknown();
-				if (!from.equals(to)) {
-					publisher.publishEvent(
-							new ClientApplicationStatusChangedEvent(event.getValue(), from, to));
-				}
-			}
-		}
-
-		@Override
-		public void entryEvicted(EntryEvent<String, Application> event) {
-			if (event.getValue() != null) {
-				publisher.publishEvent(new ClientApplicationDeregisteredEvent(event.getValue()));
-			}
-		}
-
-		@Override
-		public void mapEvicted(MapEvent event) {
-			publisher.publishEvent(new ClientApplicationDeregisteredEvent(null));
-		}
-
-		@Override
-		public void mapCleared(MapEvent event) {
-			publisher.publishEvent(new ClientApplicationDeregisteredEvent(null));
-		}
+		};
 	}
 }

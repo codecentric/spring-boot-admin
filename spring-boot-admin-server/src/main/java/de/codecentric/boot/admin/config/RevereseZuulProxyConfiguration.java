@@ -39,13 +39,14 @@ import org.springframework.cloud.netflix.zuul.web.ZuulController;
 import org.springframework.cloud.netflix.zuul.web.ZuulHandlerMapping;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
 
 import com.netflix.zuul.ZuulFilter;
 
 import de.codecentric.boot.admin.controller.RegistryController;
+import de.codecentric.boot.admin.event.RoutesOutdatedEvent;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.zuul.ApplicationRouteLocator;
-import de.codecentric.boot.admin.zuul.ApplicationRouteRefreshListener;
 
 @Configuration
 @EnableConfigurationProperties(ZuulProperties.class)
@@ -135,9 +136,10 @@ public class RevereseZuulProxyConfiguration {
 
 	}
 
-	@Bean
-	public ApplicationRouteRefreshListener applicationRouteRefreshListener() {
-		return new ApplicationRouteRefreshListener(routeLocator(), zuulHandlerMapping());
+	@EventListener
+	public void onRoutesOutdatedEvent(RoutesOutdatedEvent event) {
+		routeLocator().resetRoutes();
+		zuulHandlerMapping().registerHandlers();
 	}
 
 	@Configuration
