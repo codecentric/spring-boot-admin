@@ -184,6 +184,10 @@ public class AdminClientProperties implements ApplicationListener<ApplicationEve
 		this.preferIp = preferIp;
 	}
 
+	public boolean isPreferIp() {
+		return preferIp;
+	}
+
 	private String createLocalUri(String host, int port) {
 		String scheme = server.getSsl() != null && server.getSsl().isEnabled() ? "https" : "http";
 		return scheme + "://" + host + ":" + port;
