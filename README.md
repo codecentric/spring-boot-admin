@@ -156,7 +156,7 @@ For all configuration options see [spring-boot-admin-server](https://github.com/
 [](url "title")
 <img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-threads.png">
 
-##### JMX
+##### Trace
 
 [](url "title")
 <img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-trace.png">
