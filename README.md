@@ -32,12 +32,12 @@ Add the following dependency to your pom.xml.
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-server</artifactId>
-	<version>1.2.3</version>
+	<version>1.2.4</version>
 </dependency>
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-server-ui</artifactId>
-	<version>1.2.3</version>
+	<version>1.2.4</version>
 </dependency>
 ```
 
@@ -74,7 +74,7 @@ Each application that want to register itself to the admin application has to in
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-starter-client</artifactId>
-	<version>1.2.3</version>
+	<version>1.2.4</version>
 </dependency>
 ```
 Inside your configuration (e.g. application.properties) you also have to define the URL of the Spring Boot Admin Server, e.g.
