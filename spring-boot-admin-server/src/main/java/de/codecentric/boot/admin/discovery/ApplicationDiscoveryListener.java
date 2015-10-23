@@ -73,7 +73,7 @@ public class ApplicationDiscoveryListener {
 		}
 	}
 
-	public void discover() {
+	protected void discover() {
 		for (String serviceId : discoveryClient.getServices()) {
 			for (ServiceInstance instance : discoveryClient.getInstances(serviceId)) {
 				registry.register(convert(instance));
@@ -81,7 +81,7 @@ public class ApplicationDiscoveryListener {
 		}
 	}
 
-	private Application convert(ServiceInstance instance) {
+	protected Application convert(ServiceInstance instance) {
 		String serviceUrl = append(instance.getUri().toString(), serviceContextPath);
 		String managementUrl = append(instance.getUri().toString(), managementContextPath);
 		String healthUrl = append(managementUrl, healthEndpoint);
@@ -102,7 +102,7 @@ public class ApplicationDiscoveryListener {
 		this.healthEndpoint = healthEndpoint;
 	}
 
-	private String append(String uri, String path) {
+	protected final String append(String uri, String path) {
 		String baseUri = uri.replaceFirst("/+$", "");
 		if (StringUtils.isEmpty(path)) {
 			return baseUri;
