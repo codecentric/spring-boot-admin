@@ -120,11 +120,11 @@ public class MailNotifier {
 	}
 
 	public void setTo(String[] to) {
-		this.to = to;
+		this.to = Arrays.copyOf(to, to.length);
 	}
 
 	public void setCc(String[] cc) {
-		this.cc = cc;
+		this.cc = Arrays.copyOf(cc, cc.length);
 	}
 
 	public void setFrom(String from) {
