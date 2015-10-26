@@ -31,7 +31,7 @@
 				<td>
 					<div class="pull-right">
 						<div class="btn-group" ng-hide="application.managementUrl == null || application.statusInfo.status == null || application.statusInfo.status == 'OFFLINE'">
-							<a ng-disabled="!application.capabilities.logfile" target="_self" class="btn btn-success" ng-href="{{application.capabilities.logfile ? 'api/applications/' + application.id + '/logfile' :''}}"><i class="icon-file icon-white"></i>Log</a>
+							<a ng-if="application.capabilities.logfile" target="_self" class="btn btn-success" ng-href="{{application.capabilities.logfile ? 'api/applications/' + application.id + '/logfile' :''}}"><i class="icon-file icon-white"></i>Log</a>
 							<a ui-sref="apps.details.metrics({id: application.id})" class="btn btn-success">Details</a>
 							<a class="btn btn-success dropdown-toggle" data-toggle="dropdown">
 								<span class="caret"></span>
