@@ -32,7 +32,8 @@ public class AdminServerImportSelector implements DeferredImportSelector {
 				HazelcastStoreConfiguration.class.getCanonicalName(),
 				AdminServerWebConfiguration.class.getCanonicalName(),
 				DiscoveryClientConfiguration.class.getCanonicalName(),
-				RevereseZuulProxyConfiguration.class.getCanonicalName() };
+				RevereseZuulProxyConfiguration.class.getCanonicalName(),
+				PagerdutyNotifierConfiguration.class.getCanonicalName() };
 	}
 
 }

@@ -17,11 +17,6 @@ package de.codecentric.boot.admin.notify;
 
 import java.util.Arrays;
 
-import javax.mail.MessagingException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.event.EventListener;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
@@ -33,14 +28,11 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
 
-public class MailNotifier {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(MailNotifier.class);
-	private final String DEFAULT_SUBJECT = "#{application.name} (#{application.id}) is #{to.status}";
-	private final String DEFAULT_TEXT = "#{application.name} (#{application.id})\nstatus changed from #{from.status} to #{to.status}\n\n#{application.healthUrl}";
+public class MailNotifier extends AbstractNotifier {
+	private final static String DEFAULT_SUBJECT = "#{application.name} (#{application.id}) is #{to.status}";
+	private final static String DEFAULT_TEXT = "#{application.name} (#{application.id})\nstatus changed from #{from.status} to #{to.status}\n\n#{application.healthUrl}";
 
 	private final SpelExpressionParser parser = new SpelExpressionParser();
-
 	private MailSender sender;
 
 	/**
@@ -68,35 +60,14 @@ public class MailNotifier {
 	 */
 	private Expression subject;
 
-	/**
-	 * List of changes to ignore. Must be in Format OLD:NEW, for any status use * as wildcard, e.g.
-	 * *:UP or OFFLINE:*
-	 */
-	private String[] ignoreChanges = { "UNKNOWN:UP" };
-
-	/**
-	 * Enables the mail notification.
-	 */
-	private boolean enabled = true;
-
 	public MailNotifier(MailSender sender) {
 		this.sender = sender;
 		this.subject = parser.parseExpression(DEFAULT_SUBJECT, ParserContext.TEMPLATE_EXPRESSION);
 		this.text = parser.parseExpression(DEFAULT_TEXT, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
-	@EventListener
-	public void onClientApplicationStatusChanged(ClientApplicationStatusChangedEvent event) {
-		if (enabled && shouldSendMail(event.getFrom().getStatus(), event.getTo().getStatus())) {
-			try {
-				sendMail(event);
-			} catch (Exception ex) {
-				LOGGER.error("Couldn't send mail for Statuschange {} ", event, ex);
-			}
-		}
-	}
-
-	private void sendMail(ClientApplicationStatusChangedEvent event) throws MessagingException {
+	@Override
+	protected void notify(ClientApplicationStatusChangedEvent event) {
 		EvaluationContext context = new StandardEvaluationContext(event);
 
 		SimpleMailMessage message = new SimpleMailMessage();
@@ -107,12 +78,6 @@ public class MailNotifier {
 		message.setCc(cc);
 
 		sender.send(message);
-	}
-
-	private boolean shouldSendMail(String from, String to) {
-		return Arrays.binarySearch(ignoreChanges, (from + ":" + to)) < 0
-				&& Arrays.binarySearch(ignoreChanges, ("*:" + to)) < 0
-				&& Arrays.binarySearch(ignoreChanges, (from + ":*")) < 0;
 	}
 
 	public void setSender(JavaMailSender sender) {
@@ -137,16 +102,6 @@ public class MailNotifier {
 
 	public void setText(String text) {
 		this.text = parser.parseExpression(text, ParserContext.TEMPLATE_EXPRESSION);
-	}
-
-	public void setIgnoreChanges(String[] ignoreChanges) {
-		String[] copy = Arrays.copyOf(ignoreChanges, ignoreChanges.length);
-		Arrays.sort(copy);
-		this.ignoreChanges = copy;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
 	}
 
 }

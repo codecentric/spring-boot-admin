@@ -15,32 +15,23 @@
  */
 package de.codecentric.boot.admin.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.mail.MailSender;
 
-import de.codecentric.boot.admin.notify.MailNotifier;
+import de.codecentric.boot.admin.notify.PagerdutyNotifier;
 
 @Configuration
-@ConditionalOnBean(MailSender.class)
-@AutoConfigureAfter({ MailSenderAutoConfiguration.class })
-public class MailNotifierConfiguration {
-
-	@Autowired
-	private MailSender mailSender;
+@ConditionalOnProperty("spring.boot.admin.notify.pagerduty.service-key")
+public class PagerdutyNotifierConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "spring.boot.admin.notify", name = "enabled", matchIfMissing = true)
-	@ConfigurationProperties("spring.boot.admin.notify")
-	public MailNotifier mailNotifier() {
-		return new MailNotifier(mailSender);
+	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.pagerduty", name = "enabled", matchIfMissing = true)
+	@ConfigurationProperties("spring.boot.admin.notify.pagerduty")
+	public PagerdutyNotifier pagerdutyNotifier() {
+		return new PagerdutyNotifier();
 	}
 }

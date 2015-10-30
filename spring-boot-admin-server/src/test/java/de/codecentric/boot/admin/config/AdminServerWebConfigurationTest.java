@@ -31,6 +31,7 @@ import de.codecentric.boot.admin.journal.store.HazelcastJournaledEventStore;
 import de.codecentric.boot.admin.journal.store.JournaledEventStore;
 import de.codecentric.boot.admin.journal.store.SimpleJournaledEventStore;
 import de.codecentric.boot.admin.notify.MailNotifier;
+import de.codecentric.boot.admin.notify.PagerdutyNotifier;
 import de.codecentric.boot.admin.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.registry.store.HazelcastApplicationStore;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
@@ -72,7 +73,7 @@ public class AdminServerWebConfigurationTest {
 
 	@Test
 	public void simpleConfig() {
-		load("spring.boot.admin.discovery.enabled:false");
+		load();
 		assertThat(context.getBean(ApplicationStore.class),
 				is(instanceOf(SimpleApplicationStore.class)));
 		assertTrue(context.getBeansOfType(ApplicationDiscoveryListener.class).isEmpty());
@@ -84,13 +85,20 @@ public class AdminServerWebConfigurationTest {
 
 	@Test
 	public void simpleConfig_mail() {
-		load("spring.mail.host:localhost", "spring.boot.admin.discovery.enabled:false");
+		load("spring.mail.host:localhost");
 		assertThat(context.getBean(MailNotifier.class), is(instanceOf(MailNotifier.class)));
 	}
 
 	@Test
+	public void simpleConfig_pagerduty() {
+		load("spring.boot.admin.notify.pagerduty.service-key:foo");
+		assertThat(context.getBean(PagerdutyNotifier.class),
+				is(instanceOf(PagerdutyNotifier.class)));
+	}
+
+	@Test
 	public void hazelcastConfig() {
-		load(TestHazelcastConfig.class, "spring.boot.admin.discovery.enabled:false");
+		load(TestHazelcastConfig.class);
 		assertThat(context.getBean(ApplicationStore.class),
 				is(instanceOf(HazelcastApplicationStore.class)));
 		assertThat(context.getBean(JournaledEventStore.class),
@@ -100,7 +108,7 @@ public class AdminServerWebConfigurationTest {
 
 	@Test
 	public void discoveryConfig() {
-		load("spring.boot.admin.discovery.enabled:true");
+		load(NoopDiscoveryClientAutoConfiguration.class);
 		assertThat(context.getBean(ApplicationStore.class),
 				is(instanceOf(SimpleApplicationStore.class)));
 		context.getBean(ApplicationDiscoveryListener.class);
@@ -125,10 +133,10 @@ public class AdminServerWebConfigurationTest {
 		}
 		applicationContext.register(PropertyPlaceholderAutoConfiguration.class);
 		applicationContext.register(ServerPropertiesAutoConfiguration.class);
-		applicationContext.register(NoopDiscoveryClientAutoConfiguration.class);
 		applicationContext.register(MailSenderAutoConfiguration.class);
 		applicationContext.register(HazelcastAutoConfiguration.class);
 		applicationContext.register(MailNotifierConfiguration.class);
+		applicationContext.register(PagerdutyNotifierConfiguration.class);
 		applicationContext.register(HazelcastStoreConfiguration.class);
 		applicationContext.register(DiscoveryClientConfiguration.class);
 		applicationContext.register(AdminServerWebConfiguration.class);

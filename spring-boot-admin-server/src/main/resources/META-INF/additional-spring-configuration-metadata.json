@@ -1,12 +1,5 @@
 {"groups": [
-  {
-    "name": "spring.boot.admin.hazelcast",
-    "sourceType": "de.codecentric.boot.admin.config.HazelcastStoreConfiguration"
-  },
-  {
-    "name": "spring.boot.admin.discovery",
-    "sourceType": "de.codecentric.boot.admin.config.DiscoveryClientConfiguration"
-  }
+ 
 ],"properties": [
   {
     "name": "spring.boot.admin.hazelcast.enabled",

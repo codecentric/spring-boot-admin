@@ -1,9 +1,7 @@
 package de.codecentric.boot.admin.notify;
 
 import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
@@ -33,9 +31,8 @@ public class MailNotifierTest {
 	@Test
 	public void test_onApplicationEvent() {
 		notifier.onClientApplicationStatusChanged(new ClientApplicationStatusChangedEvent(
-				Application.create("App").withId("-id-")
-						.withHealthUrl("http://health").build(), StatusInfo.ofDown(), StatusInfo
-						.ofUp()));
+				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
+				StatusInfo.ofDown(), StatusInfo.ofUp()));
 
 		SimpleMailMessage expected = new SimpleMailMessage();
 		expected.setTo(new String[] { "foo@bar.com" });
@@ -47,36 +44,4 @@ public class MailNotifierTest {
 		verify(sender).send(eq(expected));
 	}
 
-	@Test
-	public void test_onApplicationEvent_disbaled() {
-		notifier.setEnabled(false);
-		notifier.onClientApplicationStatusChanged(new ClientApplicationStatusChangedEvent(
-				Application.create("App").withId("-id-")
-						.withHealthUrl("http://health").build(), StatusInfo.ofDown(), StatusInfo
-						.ofUp()));
-
-		verify(sender, never()).send(isA(SimpleMailMessage.class));
-	}
-
-	@Test
-	public void test_onApplicationEvent_noSend() {
-		notifier.onClientApplicationStatusChanged(new ClientApplicationStatusChangedEvent(
-				Application.create("App").withId("-id-")
-						.withHealthUrl("http://health").build(), StatusInfo.ofUnknown(), StatusInfo
-						.ofUp()));
-
-		verify(sender, never()).send(isA(SimpleMailMessage.class));
-	}
-
-	@Test
-	public void test_onApplicationEvent_noSend_wildcard() {
-		notifier.setIgnoreChanges(new String[] { "*:UP" });
-
-		notifier.onClientApplicationStatusChanged(new ClientApplicationStatusChangedEvent(
-				Application.create("App").withId("-id-")
-						.withHealthUrl("http://health").build(), StatusInfo.ofOffline(), StatusInfo
-						.ofUp()));
-
-		verify(sender, never()).send(isA(SimpleMailMessage.class));
-	}
 }
