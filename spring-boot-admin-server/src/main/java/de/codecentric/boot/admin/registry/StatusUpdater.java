@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
@@ -34,7 +33,7 @@ import de.codecentric.boot.admin.registry.store.ApplicationStore;
  * The StatusUpdater is responsible for updatig the status of all or a single
  * application querying the healthUrl.
  *
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
  *
  */
 public class StatusUpdater implements ApplicationEventPublisherAware {
@@ -50,7 +49,6 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
 	 */
 	private long statusLifetime = 30_000L;
 
-
 	public StatusUpdater(RestTemplate restTemplate, ApplicationStore store) {
 		this.restTemplate = restTemplate;
 		this.store = store;
@@ -59,7 +57,7 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
 	public void updateStatusForAllApplications() {
 		long now = System.currentTimeMillis();
 		for (Application application : store.findAll()) {
-			if ( now - statusLifetime > application.getStatusInfo().getTimestamp()) {
+			if (now - statusLifetime > application.getStatusInfo().getTimestamp()) {
 				updateStatus(application);
 			}
 		}
@@ -85,18 +83,18 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
 
 		try {
 			@SuppressWarnings("unchecked")
-			ResponseEntity<Map<String, String>> response = restTemplate.getForEntity(application.getHealthUrl(), (Class<Map<String, String>>)(Class<?>) Map.class);
+			ResponseEntity<Map<String, Object>> response = restTemplate.getForEntity(application.getHealthUrl(), (Class<Map<String, Object>>)(Class<?>) Map.class);
 			LOGGER.debug("/health for {} responded with {}", application, response);
 
-			if (response.hasBody() && response.getBody().get("status") != null ) {
-				return StatusInfo.valueOf(response.getBody().get("status"));
+			if (response.hasBody() && response.getBody().get("status") instanceof String) {
+				return StatusInfo.valueOf((String) response.getBody().get("status"));
 			} else if (response.getStatusCode().is2xxSuccessful()) {
 				return StatusInfo.ofUp();
 			} else {
 				return StatusInfo.ofDown();
 			}
 
-		} catch (RestClientException ex){
+		} catch (Exception ex){
 			LOGGER.warn("Couldn't retrieve status for {}", application, ex);
 			return StatusInfo.ofOffline();
 		}
@@ -110,6 +108,5 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
 	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
 		this.publisher = publisher;
 	}
-
 
 }
