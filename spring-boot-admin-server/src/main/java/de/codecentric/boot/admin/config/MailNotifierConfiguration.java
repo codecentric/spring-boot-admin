@@ -38,8 +38,8 @@ public class MailNotifierConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "spring.boot.admin.notify", name = "enabled", matchIfMissing = true)
-	@ConfigurationProperties("spring.boot.admin.notify")
+	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.mail", name = "enabled", matchIfMissing = true)
+	@ConfigurationProperties("spring.boot.admin.notify.mail")
 	public MailNotifier mailNotifier() {
 		return new MailNotifier(mailSender);
 	}
