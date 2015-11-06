@@ -5,7 +5,8 @@ before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
 
-script: mvn clean install
+script: mvn clean verify
 
 after_success:
   - mvn jacoco:report coveralls:report
+  - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} == '' ]] && mvn deploy -DreposityId=sonatype-nexus-snapshots -DskipTests --settings deploy-settings.xml"
