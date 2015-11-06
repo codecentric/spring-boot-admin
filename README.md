@@ -17,12 +17,12 @@ This application provides a simple GUI to administrate Spring Boot applications 
  * JVM & memory metrics
  * Counter & gauge Metrics
  * Datasource Metrics
-* View Java, System- & Environment-properties
+* View Java, system- & environment-properties
 * Support for Spring Clouds postable /env- &/refresh-endpoint
 * Easy loggerlevel management (for Logback)
-* Interact with JMX-Beans
-* View Threaddump
-* View Traces
+* Interact with JMX-beans
+* View threaddump
+* View traces
 * Mail and desktop notification on status change
 * Event journal of status changes (non persistent)
 
@@ -41,7 +41,7 @@ Add the following dependency to your pom.xml.
 </dependency>
 ```
 
-Create the Spring Boot Admin Server with only one single Annotation.
+Create the Spring Boot Admin server with only one single annotation.
 ```java
 @Configuration
 @EnableAutoConfiguration
@@ -55,18 +55,18 @@ public class Application {
 
 See also the [example project](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample) in this repository.
 
-For configuring Hazelcast support see [spring-boot-admin-server](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-server/README.md) or [hazelcast-example project](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-hazelcast)
+For configuring hazelcast support see [spring-boot-admin-server](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-server/README.md) or [hazelcast-example project](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-hazelcast)
 
-#### Register / Discover client applications
+#### Register / discover client applications
 To get all your boot applications shown in spring boot admin you have two choices:
 
-1) either you include the spring-boot-admint-starter-client into your applications
+1) either you include the spring-boot-admin-starter-client into your applications
 
 or
 
 2) you add a DiscoveryClient (e.g. Eureka) to your spring boot admin server.
 
-**Note:** If you don't include the spring-boot-admin-starter-client the logfile won't be availible, due to the fact that the logfile endpoint won't be exposed.
+**Note:** If you don't include the spring-boot-admin-starter-client the logfile won't be available with spring boot 1.2.x, due to the fact that the logfile endpoint won't be exposed.
 
 ##### Register client applications via spring-boot-admin-starter-client
 Each application that want to register itself to the admin application has to include the [spring-boot-admin-starter-client](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-starter-client) as dependency. This starter JAR includes some [AutoConfiguration](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#using-boot-auto-configuration "Spring Boot documentation") features that includes registering tasks, controller, etc.
@@ -77,7 +77,7 @@ Each application that want to register itself to the admin application has to in
 	<version>1.2.4</version>
 </dependency>
 ```
-Inside your configuration (e.g. application.properties) you also have to define the URL of the Spring Boot Admin Server, e.g.
+Inside your configuration (e.g. application.properties) you also have to define the URL of the Spring Boot Admin server, e.g.
 ```
 spring.boot.admin.url=http://localhost:8080
 ```
@@ -110,10 +110,10 @@ See the sample [discovery sample project](https://github.com/codecentric/spring-
 
 Configure a JavaMailSender using spring-boot-starter-mail and set a recipient:
 ```xml
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-mail</artifactId>
-		</dependency>
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-mail</artifactId>
+</dependency>
 ```
 
 ```
@@ -123,6 +123,15 @@ spring.boot.admin.notify.to=admin@example.com
 
 For all configuration options see [spring-boot-admin-server](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-server/README.md)
 
+### Snapshot builds
+You can access snapshot builds from the sonatype repository: 
+```xml
+<snapshotRepository>
+ <id>sonatype-nexus-snapshots</id>
+ <name>Sonatype Nexus Snapshots</name>
+ <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+</snapshotRepository>
+```
 
 #### Screenshots
 
