@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 'use strict';
-var angular = require('angular');
 
 module.exports = function ($resource, $http, $q) {
 
@@ -26,42 +25,13 @@ module.exports = function ($resource, $http, $q) {
         }
     };
 
-    var getCapabilities = function(application) {
-        application.capabilities = {};
-        if (application.managementUrl) {
-            $http.get('api/applications/' + application.id + '/configprops').success(function(configprops) {
-                application.capabilities.logfile = isEndpointPresent('logfileMvcEndpoint', configprops);
-                application.capabilities.activiti = isEndpointPresent('processEngineEndpoint', configprops);
-                application.capabilities.restart = isEndpointPresent('restartEndpoint', configprops);
-                application.capabilities.refresh = isEndpointPresent('refreshEndpoint', configprops);
-                application.capabilities.pause = isEndpointPresent('pauseEndpoint', configprops);
-                application.capabilities.resume = isEndpointPresent('resumeEndpoint', configprops);
-            });
-        }
-    };
 
     var Application = $resource(
         'api/applications/:id', { id: '@id' }, {
-            query: { method: 'GET',
-                     isArray: true,
-                     transformResponse: function(data) {
-                         var apps = angular.fromJson(data);
-                         for (var i = 0; i < apps.length; i++) {
-                           getCapabilities(apps[i]);
-                         }
-                         return apps;
-                     }
-                   },
-            get: { method: 'GET',
-                   transformResponse: function(data) {
-                       var app = angular.fromJson(data);
-                       getCapabilities(app);
-                       return app;
-                   }
-                 },
+            query: { method: 'GET', isArray: true },
+            get: { method: 'GET' },
             remove: { method: 'DELETE' }
     });
-
 
     var convert = function (request, isArray) {
         isArray = isArray || false;
@@ -77,6 +47,21 @@ module.exports = function ($resource, $http, $q) {
             deferred.reject(response);
         });
         return deferred.promise;
+    };
+
+    Application.prototype.getCapabilities = function() {
+        var application = this;
+        this.capabilities = {};
+        if (this.managementUrl) {
+            $http.get('api/applications/' + application.id + '/configprops').success(function(configprops) {
+                application.capabilities.logfile = isEndpointPresent('logfileMvcEndpoint', configprops);
+                application.capabilities.activiti = isEndpointPresent('processEngineEndpoint', configprops);
+                application.capabilities.restart = isEndpointPresent('restartEndpoint', configprops);
+                application.capabilities.refresh = isEndpointPresent('refreshEndpoint', configprops);
+                application.capabilities.pause = isEndpointPresent('pauseEndpoint', configprops);
+                application.capabilities.resume = isEndpointPresent('resumeEndpoint', configprops);
+            });
+        }
     };
 
     Application.prototype.getHealth = function () {

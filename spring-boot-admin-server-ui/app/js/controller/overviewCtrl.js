@@ -26,42 +26,47 @@ module.exports = function ($scope, $location, $interval, $state, $filter, Applic
         Notification.notify(title, options);
     };
 
+    var refresh = function(app) {
+        app.info = {};
+        app.needRefresh = true;
+        //find application in known applications and copy state --> less flickering
+        for (var j = 0; $scope.applications  && j < $scope.applications.length; j++) {
+            if (app.id === $scope.applications[j].id) {
+                app.infoShort = $scope.applications[j].infoShort;
+                app.infoDetails = $scope.applications[j].infoDetails;
+                app.version = $scope.applications[j].version;
+                app.capabilities = $scope.applications[j].capabilities;
+                if (app.statusInfo.status !== $scope.applications[j].statusInfo.status) {
+                    createNote(app); //issue notifiaction on state change
+                } else {
+                  app.needRefresh = false; //if state hasn't change don't fetch info
+                }
+                break;
+            }
+        }
+        if (app.needRefresh) {
+          app.refreshing = true;
+          app.getCapabilities();
+          app.getInfo().then(function(info) {
+              app.version = info.version;
+              app.infoDetails = null;
+              app.infoShort = '';
+              delete info.version;
+              var infoYml = $filter('yaml')(info);
+              if (infoYml !== '{}\n') {
+                app.infoShort = $filter('limitLines')(infoYml, 3);
+                    if (app.infoShort !== infoYml) {
+                     app.infoDetails = $filter('limitLines')(infoYml, 32000, 3);
+                  }
+              }
+          }).finally(function(){
+              app.refreshing = false;
+          });
+        }
+    };
+
     $scope.loadData = function () {
         Application.query(function (applications) {
-            function refresh(app) {
-                app.refreshing = true;
-                app.info = {};
-
-                //find application in known applications and copy state --> less flickering
-                for (var j = 0; $scope.applications  && j < $scope.applications.length; j++) {
-                    if (app.id === $scope.applications[j].id) {
-                        app.infoShort = $scope.applications[j].infoShort;
-                        app.infoDetails = $scope.applications[j].infoDetails;
-                        app.version = $scope.applications[j].version;
-                        //issue notifiaction on state change
-                        if (app.statusInfo.status !== $scope.applications[j].statusInfo.status) {
-                            createNote(app);
-                        }
-                        break;
-                    }
-                }
-                app.getInfo().then(function(info) {
-                    app.version = info.version;
-                    app.infoDetails = null;
-                    app.infoShort = '';
-                    delete info.version;
-                    var infoYml = $filter('yaml')(info);
-                    if (infoYml !== '{}\n') {
-                        app.infoShort = $filter('limitLines')(infoYml, 3);
-                        if (app.infoShort !== infoYml) {
-                           app.infoDetails = $filter('limitLines')(infoYml, 32000, 3);
-                        }
-                    }
-                }).finally(function(){
-                    app.refreshing = false;
-                });
-            }
-
             for (var i = 0; i < applications.length; i++) {
                 refresh(applications[i]);
             }
@@ -103,8 +108,10 @@ module.exports = function ($scope, $location, $interval, $state, $filter, Applic
     //initial load
     $scope.loadData();
 
-    // reload site every 30 seconds
-    $interval(function () {
+    // reload site every 10 seconds
+    var intervalPromise = $interval(function () {
         $scope.loadData();
     }, 10000);
+
+    $scope.$on('$destroy', function () { $interval.cancel(intervalPromise); });
 };
