@@ -33,7 +33,7 @@ module.exports = function ($scope, $location, $interval, $state, $filter, Applic
                 app.info = {};
 
                 //find application in known applications and copy state --> less flickering
-                for (var j = 0; $scope.applications != null && j < $scope.applications.length; j++) {
+                for (var j = 0; $scope.applications  && j < $scope.applications.length; j++) {
                     if (app.id === $scope.applications[j].id) {
                         app.infoShort = $scope.applications[j].infoShort;
                         app.infoDetails = $scope.applications[j].infoDetails;

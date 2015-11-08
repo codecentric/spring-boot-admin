@@ -40,7 +40,7 @@ module.exports = function ($scope, application, ApplicationLogging) {
 
     $scope.reload = function (prefix) {
         for (var i in $scope.loggers) {
-            if (prefix == null || prefix === 'ROOT' || $scope.loggers[i].name.indexOf(
+            if (prefix === null || prefix === 'ROOT' || $scope.loggers[i].name.indexOf(
                     prefix) === 0) {
                 $scope.loggers[i].level = null;
             }
@@ -72,7 +72,7 @@ module.exports = function ($scope, application, ApplicationLogging) {
                     }
                 }, function (responses) {
                 for (var j in responses) {
-                    if (responses[j].error != null) {
+                    if (responses[j].error !== null) {
                         $scope.error = responses[j];
                         break;
                     }

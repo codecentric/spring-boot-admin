@@ -26,7 +26,7 @@ module.exports = function () {
             if (lastIndex !== -1) {
                 dotArray.push(lastIndex);
             }
-        } while (lastIndex !== -1)
+        } while (lastIndex !== -1);
 
         // remove dots to preserve more than the last element
         for (var i = 0; i < preserveLast - 1; i++) {

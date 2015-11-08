@@ -20,7 +20,7 @@ module.exports = function () {
         for (var metric in metrics) {
             for (var i in regexes) {
                 var match = regexes[i].exec(metric);
-                if (match != null) {
+                if (match !== null) {
                     callbacks[i](metric, match, metrics[metric]);
                     break;
                 }
