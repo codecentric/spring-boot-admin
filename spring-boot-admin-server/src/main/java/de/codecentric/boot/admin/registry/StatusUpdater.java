@@ -45,7 +45,7 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
 	/**
 	 * Lifetime of status in ms. The status won't be updated as long the last status isn't expired.
 	 */
-	private long statusLifetime = 30_000L;
+	private long statusLifetime = 10_000L;
 
 	public StatusUpdater(RestTemplate restTemplate, ApplicationStore store) {
 		this.restTemplate = restTemplate;
