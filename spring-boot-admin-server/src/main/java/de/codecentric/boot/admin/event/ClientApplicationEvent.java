@@ -17,6 +17,9 @@ package de.codecentric.boot.admin.event;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import de.codecentric.boot.admin.model.Application;
 
 /**
@@ -54,5 +57,28 @@ public abstract class ClientApplicationEvent implements Serializable {
 	 * Return the event type (for JSON).
 	 */
 	public abstract String getType();
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder().append(application).append(timestamp).append(getType())
+				.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		ClientApplicationEvent other = (ClientApplicationEvent) obj;
+		return new EqualsBuilder().append(this.application, other.application)
+				.append(this.timestamp, other.timestamp).append(this.getType(), other.getType())
+				.isEquals();
+	}
 
 }

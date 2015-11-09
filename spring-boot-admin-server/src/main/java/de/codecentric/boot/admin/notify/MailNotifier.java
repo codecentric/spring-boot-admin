@@ -24,7 +24,6 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
 
@@ -33,7 +32,7 @@ public class MailNotifier extends AbstractNotifier {
 	private final static String DEFAULT_TEXT = "#{application.name} (#{application.id})\nstatus changed from #{from.status} to #{to.status}\n\n#{application.healthUrl}";
 
 	private final SpelExpressionParser parser = new SpelExpressionParser();
-	private MailSender sender;
+	private final MailSender sender;
 
 	/**
 	 * recipients of the mail
@@ -78,10 +77,6 @@ public class MailNotifier extends AbstractNotifier {
 		message.setCc(cc);
 
 		sender.send(message);
-	}
-
-	public void setSender(JavaMailSender sender) {
-		this.sender = sender;
 	}
 
 	public void setTo(String[] to) {
