@@ -69,7 +69,7 @@ public class RegistryController {
 	@RequestMapping(method = RequestMethod.GET)
 	public Collection<Application> applications(
 			@RequestParam(value = "name", required = false) String name) {
-		LOGGER.debug("Deliver registered applications with name= {}", name);
+		LOGGER.debug("Deliver registered applications with name={}", name);
 		if (name == null || name.isEmpty()) {
 			return registry.getApplications();
 		} else {

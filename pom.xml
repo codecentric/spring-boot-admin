@@ -19,7 +19,7 @@
         <main.basedir>${basedir}</main.basedir>
         <passphrase>${gpg.passphrase}</passphrase>
         <spring-boot.version>1.3.0.RC1</spring-boot.version>
-        <spring-cloud.version>Angel.SR3</spring-cloud.version>
+        <spring-cloud.version>Brixton.M2</spring-cloud.version>
         <build-plugin.jacoco.version>0.7.5.201505241946</build-plugin.jacoco.version>
         <build-plugin.coveralls.version>4.0.0</build-plugin.coveralls.version>
         <build-plugin.gpg.version>1.6</build-plugin.gpg.version>
@@ -46,6 +46,10 @@
         <url>https://github.com/codecentric/spring-boot-admin</url>
     </scm>
     <developers>
+        <developer>
+            <name>Johannes Edmeier</name>
+            <email>johannes.edmeier@gmail.com</email>
+        </developer>
         <developer>
             <name>Thomas Bosch</name>
             <email>thomas.bosch@codecentric.de</email>

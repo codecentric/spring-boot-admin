@@ -25,11 +25,6 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-configuration-processor</artifactId>
-			<optional>true</optional>
-		</dependency>
 		<!-- Use Zuul WITHOUT Hystrix/Ribbon/Config Client -->
 		<dependency>
 			<groupId>com.netflix.zuul</groupId>
@@ -58,13 +53,12 @@
 			<groupId>com.hazelcast</groupId>
 			<artifactId>hazelcast</artifactId>
 			<optional>true</optional>
-			<!-- https://github.com/spring-projects/spring-boot/issues/3418 -->
-			<exclusions>
-				<exclusion>
-					<groupId>org.freemarker</groupId>
-					<artifactId>freemarker</artifactId>
-				</exclusion>
-			</exclusions>
+		</dependency>
+		<!-- Optional Configuration Processor for metadata -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<!-- Test -->
 		<dependency>

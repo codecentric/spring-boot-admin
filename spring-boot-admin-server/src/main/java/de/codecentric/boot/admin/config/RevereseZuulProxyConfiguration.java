@@ -18,21 +18,14 @@ package de.codecentric.boot.admin.config;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.trace.TraceRepository;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.netflix.zuul.RoutesEndpoint;
 import org.springframework.cloud.netflix.zuul.ZuulFilterInitializer;
 import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
-import org.springframework.cloud.netflix.zuul.filters.ProxyRouteLocator;
-import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.cloud.netflix.zuul.filters.post.SendErrorFilter;
 import org.springframework.cloud.netflix.zuul.filters.post.SendResponseFilter;
 import org.springframework.cloud.netflix.zuul.filters.pre.DebugFilter;
 import org.springframework.cloud.netflix.zuul.filters.pre.FormBodyWrapperFilter;
-import org.springframework.cloud.netflix.zuul.filters.pre.PreDecorationFilter;
 import org.springframework.cloud.netflix.zuul.filters.pre.Servlet30WrapperFilter;
 import org.springframework.cloud.netflix.zuul.filters.route.SimpleHostRoutingFilter;
 import org.springframework.cloud.netflix.zuul.web.ZuulController;
@@ -47,16 +40,13 @@ import de.codecentric.boot.admin.controller.RegistryController;
 import de.codecentric.boot.admin.event.RoutesOutdatedEvent;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.zuul.ApplicationRouteLocator;
+import de.codecentric.boot.admin.zuul.PreDecorationFilter;
 
 @Configuration
-@EnableConfigurationProperties(ZuulProperties.class)
 public class RevereseZuulProxyConfiguration {
 
 	@Autowired(required = false)
 	private TraceRepository traces;
-
-	@Autowired
-	private ZuulProperties zuulProperties;
 
 	@Autowired
 	private ServerProperties server;
@@ -67,12 +57,12 @@ public class RevereseZuulProxyConfiguration {
 	@Bean
 	public ApplicationRouteLocator routeLocator() {
 		return new ApplicationRouteLocator(this.server.getServletPrefix(), registry,
-				this.zuulProperties, RegistryController.PATH);
+				RegistryController.PATH);
 	}
 
 	@Bean
 	public PreDecorationFilter preDecorationFilter() {
-		return new PreDecorationFilter(routeLocator(), this.zuulProperties.isAddProxyHeaders());
+		return new PreDecorationFilter(routeLocator(), true);
 	}
 
 	@Bean
@@ -125,7 +115,6 @@ public class RevereseZuulProxyConfiguration {
 
 	@Configuration
 	protected static class ZuulFilterConfiguration {
-
 		@Autowired
 		private Map<String, ZuulFilter> filters;
 
@@ -133,27 +122,12 @@ public class RevereseZuulProxyConfiguration {
 		public ZuulFilterInitializer zuulFilterInitializer() {
 			return new ZuulFilterInitializer(this.filters);
 		}
-
 	}
 
 	@EventListener
 	public void onRoutesOutdatedEvent(RoutesOutdatedEvent event) {
 		routeLocator().resetRoutes();
 		zuulHandlerMapping().registerHandlers();
-	}
-
-	@Configuration
-	@ConditionalOnClass(Endpoint.class)
-	protected static class RoutesEndpointConfiguration {
-
-		@Autowired
-		private ProxyRouteLocator routeLocator;
-
-		@Bean
-		public RoutesEndpoint zuulEndpoint() {
-			return new RoutesEndpoint(this.routeLocator);
-		}
-
 	}
 
 }

@@ -52,8 +52,8 @@ public class AdminApplicationTest {
 	@Test
 	public void testGetApplications() {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<List> entity = new TestRestTemplate().getForEntity("http://localhost:"
-				+ port + "/api/applications", List.class);
+		ResponseEntity<List> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + port + "/api/applications", List.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 	}
 
@@ -68,13 +68,19 @@ public class AdminApplicationTest {
 				application, Application.class);
 
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> info = new TestRestTemplate().getForEntity(apiBaseUrl + "/"
-				+ entity.getBody().getId() + "/info", Map.class);
+		ResponseEntity<Map> app = new TestRestTemplate()
+				.getForEntity(apiBaseUrl + "/" + entity.getBody().getId(), Map.class);
+		assertEquals(HttpStatus.OK, app.getStatusCode());
+		assertEquals("TestApp", app.getBody().get("name"));
+
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> info = new TestRestTemplate()
+				.getForEntity(apiBaseUrl + "/" + entity.getBody().getId() + "/info", Map.class);
 		assertEquals(HttpStatus.OK, info.getStatusCode());
 
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> health = new TestRestTemplate().getForEntity(apiBaseUrl + "/"
-				+ entity.getBody().getId() + "/health", Map.class);
+		ResponseEntity<Map> health = new TestRestTemplate()
+				.getForEntity(apiBaseUrl + "/" + entity.getBody().getId() + "/health", Map.class);
 		assertEquals(HttpStatus.OK, health.getStatusCode());
 
 	}

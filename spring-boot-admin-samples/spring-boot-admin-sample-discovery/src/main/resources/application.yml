@@ -11,8 +11,6 @@ spring:
 eureka:
   instance:
     leaseRenewalIntervalInSeconds: 5
-    metadataMap:
-      instanceId: ${spring.application.name}:${spring.application.instance_id:${random.value}}
     client:
       serviceUrl:
         defaultZone: http://localhost:8761/eureka/
