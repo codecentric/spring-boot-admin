@@ -26,11 +26,6 @@ public class ClientApplicationRegisteredEvent extends ClientApplicationEvent {
 	private static final long serialVersionUID = 1L;
 
 	public ClientApplicationRegisteredEvent(Application application) {
-		super(application);
-	}
-
-	@Override
-	public String getType() {
-		return "REGISTRATION";
+		super(application, "REGISTRATION");
 	}
 }

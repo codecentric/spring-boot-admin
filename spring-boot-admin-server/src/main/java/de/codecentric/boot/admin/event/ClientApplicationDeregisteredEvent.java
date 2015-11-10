@@ -26,11 +26,6 @@ public class ClientApplicationDeregisteredEvent extends ClientApplicationEvent {
 	private static final long serialVersionUID = 1L;
 
 	public ClientApplicationDeregisteredEvent(Application application) {
-		super(application);
-	}
-
-	@Override
-	public String getType() {
-		return "DEREGISTRATION";
+		super(application, "DEREGISTRATION");
 	}
 }

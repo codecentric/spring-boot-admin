@@ -30,7 +30,7 @@ public class ClientApplicationStatusChangedEvent extends ClientApplicationEvent 
 
 	public ClientApplicationStatusChangedEvent(Application application, StatusInfo from,
 			StatusInfo to) {
-		super(application);
+		super(application, "STATUS_CHANGE");
 		this.from = from;
 		this.to = to;
 	}
@@ -41,10 +41,5 @@ public class ClientApplicationStatusChangedEvent extends ClientApplicationEvent 
 
 	public StatusInfo getTo() {
 		return to;
-	}
-
-	@Override
-	public String getType() {
-		return "STATUS_CHANGE";
 	}
 }

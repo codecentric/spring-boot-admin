@@ -17,9 +17,6 @@ package de.codecentric.boot.admin.event;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-
 import de.codecentric.boot.admin.model.Application;
 
 /**
@@ -33,10 +30,12 @@ public abstract class ClientApplicationEvent implements Serializable {
 	private final Application application;
 
 	private final long timestamp;
+	private final String type;
 
-	public ClientApplicationEvent(Application application) {
+	protected ClientApplicationEvent(Application application, String type) {
 		this.application = application;
 		this.timestamp = System.currentTimeMillis();
+		this.type = type;
 	}
 
 	/**
@@ -56,12 +55,18 @@ public abstract class ClientApplicationEvent implements Serializable {
 	/**
 	 * Return the event type (for JSON).
 	 */
-	public abstract String getType();
+	public String getType() {
+		return type;
+	}
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder().append(application).append(timestamp).append(getType())
-				.toHashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((application == null) ? 0 : application.hashCode());
+		result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		return result;
 	}
 
 	@Override
@@ -76,9 +81,23 @@ public abstract class ClientApplicationEvent implements Serializable {
 			return false;
 		}
 		ClientApplicationEvent other = (ClientApplicationEvent) obj;
-		return new EqualsBuilder().append(this.application, other.application)
-				.append(this.timestamp, other.timestamp).append(this.getType(), other.getType())
-				.isEquals();
+		if (application == null) {
+			if (other.application != null) {
+				return false;
+			}
+		} else if (!application.equals(other.application)) {
+			return false;
+		}
+		if (timestamp != other.timestamp) {
+			return false;
+		}
+		if (type == null) {
+			if (other.type != null) {
+				return false;
+			}
+		} else if (!type.equals(other.type)) {
+			return false;
+		}
+		return true;
 	}
-
 }
