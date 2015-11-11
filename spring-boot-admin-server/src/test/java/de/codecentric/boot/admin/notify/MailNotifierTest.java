@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.notify;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -60,4 +61,47 @@ public class MailNotifierTest {
 		verify(sender).send(eq(expected));
 	}
 
+	// The following tests are rather for AbstractNotifier
+
+	@Test
+	public void test_onApplicationEvent_disbaled() {
+		notifier.setEnabled(false);
+		notifier.onClientApplicationStatusChanged(new ClientApplicationStatusChangedEvent(
+				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
+				StatusInfo.ofDown(), StatusInfo.ofUp()));
+
+		verifyNoMoreInteractions(sender);
+	}
+
+	@Test
+	public void test_onApplicationEvent_noSend() {
+		notifier.onClientApplicationStatusChanged(new ClientApplicationStatusChangedEvent(
+				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
+				StatusInfo.ofUnknown(), StatusInfo.ofUp()));
+
+		verifyNoMoreInteractions(sender);
+	}
+
+	@Test
+	public void test_onApplicationEvent_noSend_wildcard() {
+		notifier.setIgnoreChanges(new String[] { "*:UP" });
+		notifier.onClientApplicationStatusChanged(new ClientApplicationStatusChangedEvent(
+				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
+				StatusInfo.ofOffline(), StatusInfo.ofUp()));
+
+		verifyNoMoreInteractions(sender);
+	}
+
+	@Test
+	public void test_onApplicationEvent_throw_doesnt_propagate() {
+		AbstractNotifier notifier = new AbstractNotifier() {
+			@Override
+			protected void notify(ClientApplicationStatusChangedEvent event) throws Exception {
+				throw new RuntimeException();
+			}
+		};
+		notifier.onClientApplicationStatusChanged(new ClientApplicationStatusChangedEvent(
+				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
+				StatusInfo.ofOffline(), StatusInfo.ofUp()));
+	}
 }
