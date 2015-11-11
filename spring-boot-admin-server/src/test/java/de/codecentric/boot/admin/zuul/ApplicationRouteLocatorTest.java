@@ -19,6 +19,7 @@ import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -39,6 +40,7 @@ public class ApplicationRouteLocatorTest {
 	public void setup() {
 		registry = mock(ApplicationRegistry.class);
 		locator = new ApplicationRouteLocator("/", registry, "/api/applications");
+		locator.setProxyEndpoints(new String[] { "/env" });
 	}
 
 	@Test
@@ -71,7 +73,7 @@ public class ApplicationRouteLocatorTest {
 		assertEquals(2, locator.getRoutes().size());
 
 		assertThat(locator.getRoutePaths(),
-				hasItems("/api/applications/1234/health/**", "/api/applications/1234/*/**"));
+				hasItems("/api/applications/1234/health/**", "/api/applications/1234/env/**"));
 
 		assertEquals("http://localhost/health",
 				locator.getRoutes().get("/api/applications/1234/health/**"));
@@ -81,10 +83,12 @@ public class ApplicationRouteLocatorTest {
 		assertEquals("http://localhost/health", route.getLocation());
 		assertEquals("/api/applications/1234/health", route.getPrefix());
 
-		route = locator.getMatchingRoute("/api/applications/1234/notify");
-		assertEquals("api/applications/1234", route.getId());
-		assertEquals("/notify", route.getPath());
-		assertEquals("http://localhost", route.getLocation());
-		assertEquals("/api/applications/1234", route.getPrefix());
+		route = locator.getMatchingRoute("/api/applications/1234/env/reset");
+		assertEquals("api/applications/1234/env", route.getId());
+		assertEquals("/reset", route.getPath());
+		assertEquals("http://localhost/env", route.getLocation());
+		assertEquals("/api/applications/1234/env", route.getPrefix());
+
+		assertNull(locator.getMatchingRoute("/api/applications/1234/danger"));
 	}
 }

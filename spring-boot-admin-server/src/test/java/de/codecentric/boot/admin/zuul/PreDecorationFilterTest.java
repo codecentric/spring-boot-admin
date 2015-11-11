@@ -48,6 +48,7 @@ public class PreDecorationFilterTest {
 				.withManagementUrl("http://mgmt").build());
 		registry = new ApplicationRegistry(store, new HashingApplicationUrlIdGenerator());
 		routeLocator = new ApplicationRouteLocator("/", registry, "/proxied");
+		routeLocator.setProxyEndpoints(new String[] { "/foo" });
 		routeLocator.resetRoutes();
 		filter = new PreDecorationFilter(routeLocator, true);
 		RequestContext ctx = RequestContext.getCurrentContext();
@@ -67,10 +68,10 @@ public class PreDecorationFilterTest {
 		request.setRequestURI("/proxied/-id-/foo");
 		filter.run();
 		RequestContext ctx = RequestContext.getCurrentContext();
-		assertEquals("/foo", ctx.get("requestURI"));
-		assertEquals("http://mgmt", ctx.getRouteHost().toString());
+		assertEquals("", ctx.get("requestURI"));
+		assertEquals("http://mgmt/foo", ctx.getRouteHost().toString());
 		assertEquals("localhost:80", ctx.getZuulRequestHeaders().get("x-forwarded-host"));
 		assertEquals("http", ctx.getZuulRequestHeaders().get("x-forwarded-proto"));
-		assertEquals("/proxied/-id-", ctx.getZuulRequestHeaders().get("x-forwarded-prefix"));
+		assertEquals("/proxied/-id-/foo", ctx.getZuulRequestHeaders().get("x-forwarded-prefix"));
 	}
 }

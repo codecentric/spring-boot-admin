@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.netflix.zuul.filters.RouteLocator;
 import org.springframework.cloud.netflix.zuul.filters.ZuulProperties.ZuulRoute;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.Assert;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 
@@ -45,6 +46,8 @@ public class ApplicationRouteLocator implements RouteLocator {
 	private String prefix;
 	private PathMatcher pathMatcher = new AntPathMatcher();
 	private String servletPath;
+	private String[] proxyEndpoints = { "/env", "/metrics", "/trace", "/dump", "/jolokia", "/info",
+			"/configprops", "/trace", "/activiti", "/logfile", "/refresh" };
 
 	public ApplicationRouteLocator(String servletPath, ApplicationRegistry registry,
 			String prefix) {
@@ -56,14 +59,15 @@ public class ApplicationRouteLocator implements RouteLocator {
 	private LinkedHashMap<String, ZuulRoute> locateRoutes() {
 		LinkedHashMap<String, ZuulRoute> locateRoutes = new LinkedHashMap<String, ZuulRoute>();
 		for (Application application : registry.getApplications()) {
-			addRoute(locateRoutes, prefix + "/" + application.getId() + "/health/**",
-					application.getHealthUrl());
+			String appPath = prefix + "/" + application.getId();
+			addRoute(locateRoutes, appPath + "/health/**", application.getHealthUrl());
 			if (!StringUtils.isEmpty(application.getManagementUrl())) {
-				addRoute(locateRoutes, prefix + "/" + application.getId() + "/*/**",
-						application.getManagementUrl());
+				for (String endpoint : proxyEndpoints) {
+					addRoute(locateRoutes, appPath + endpoint + "/**",
+							application.getManagementUrl() + endpoint);
+				}
 			}
 		}
-
 		return locateRoutes;
 	}
 
@@ -72,7 +76,8 @@ public class ApplicationRouteLocator implements RouteLocator {
 	}
 
 	public ProxyRouteSpec getMatchingRoute(String path) {
-		LOGGER.info("Finding route for path: {}; servletPath={}", path, this.servletPath);
+		LOGGER.info("Finding route for path: {}", path);
+		LOGGER.debug("servletPath={}", this.servletPath);
 		if (StringUtils.hasText(this.servletPath) && !this.servletPath.equals("/")
 				&& path.startsWith(this.servletPath)) {
 			path = path.substring(this.servletPath.length());
@@ -84,7 +89,7 @@ public class ApplicationRouteLocator implements RouteLocator {
 				ZuulRoute route = entry.getValue();
 				int index = route.getPath().indexOf("*") - 1;
 				String routePrefix = route.getPath().substring(0, index);
-				String targetPath = path.replaceFirst(routePrefix, "");
+				String targetPath = path.substring(index, path.length());
 				return new ProxyRouteSpec(route.getId(), targetPath, route.getLocation(),
 						routePrefix);
 			}
@@ -116,6 +121,14 @@ public class ApplicationRouteLocator implements RouteLocator {
 	@Override
 	public Collection<String> getIgnoredPaths() {
 		return Collections.emptyList();
+	}
+
+	public void setProxyEndpoints(String[] proxyEndpoints) {
+		for (String endpoint : proxyEndpoints) {
+			Assert.hasText(endpoint, "The proxyEndpoints must not contain null");
+			Assert.isTrue(endpoint.startsWith("/"), "All proxyEndpoints must start with '/'");
+		}
+		this.proxyEndpoints = proxyEndpoints.clone();
 	}
 
 	public static class ProxyRouteSpec {
