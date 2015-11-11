@@ -15,26 +15,18 @@
  */
 package de.codecentric.boot.admin.config;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.cloud.netflix.zuul.ZuulFilterInitializer;
+import org.springframework.cloud.netflix.zuul.ZuulConfiguration;
 import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
-import org.springframework.cloud.netflix.zuul.filters.post.SendErrorFilter;
-import org.springframework.cloud.netflix.zuul.filters.post.SendResponseFilter;
-import org.springframework.cloud.netflix.zuul.filters.pre.DebugFilter;
-import org.springframework.cloud.netflix.zuul.filters.pre.FormBodyWrapperFilter;
-import org.springframework.cloud.netflix.zuul.filters.pre.Servlet30WrapperFilter;
 import org.springframework.cloud.netflix.zuul.filters.route.SimpleHostRoutingFilter;
-import org.springframework.cloud.netflix.zuul.web.ZuulController;
 import org.springframework.cloud.netflix.zuul.web.ZuulHandlerMapping;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.PayloadApplicationEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.EventListener;
-
-import com.netflix.zuul.ZuulFilter;
 
 import de.codecentric.boot.admin.controller.RegistryController;
 import de.codecentric.boot.admin.event.RoutesOutdatedEvent;
@@ -43,7 +35,7 @@ import de.codecentric.boot.admin.zuul.ApplicationRouteLocator;
 import de.codecentric.boot.admin.zuul.PreDecorationFilter;
 
 @Configuration
-public class RevereseZuulProxyConfiguration {
+public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
 
 	@Autowired(required = false)
 	private TraceRepository traces;
@@ -55,6 +47,7 @@ public class RevereseZuulProxyConfiguration {
 	private ApplicationRegistry registry;
 
 	@Bean
+	@Override
 	public ApplicationRouteLocator routeLocator() {
 		return new ApplicationRouteLocator(this.server.getServletPrefix(), registry,
 				RegistryController.PATH);
@@ -75,59 +68,25 @@ public class RevereseZuulProxyConfiguration {
 	}
 
 	@Bean
-	public ZuulController zuulController() {
-		return new ZuulController();
+	@Override
+	public ApplicationListener<ApplicationEvent> zuulRefreshRoutesListener() {
+		return new ZuulRefreshListener();
 	}
 
-	@Bean
-	public ZuulHandlerMapping zuulHandlerMapping() {
-		return new ZuulHandlerMapping(routeLocator(), zuulController());
-	}
-
-	// pre filters
-
-	@Bean
-	public FormBodyWrapperFilter formBodyWrapperFilter() {
-		return new FormBodyWrapperFilter();
-	}
-
-	@Bean
-	public DebugFilter debugFilter() {
-		return new DebugFilter();
-	}
-
-	@Bean
-	public Servlet30WrapperFilter servlet30WrapperFilter() {
-		return new Servlet30WrapperFilter();
-	}
-
-	// post filters
-
-	@Bean
-	public SendResponseFilter sendResponseFilter() {
-		return new SendResponseFilter();
-	}
-
-	@Bean
-	public SendErrorFilter sendErrorFilter() {
-		return new SendErrorFilter();
-	}
-
-	@Configuration
-	protected static class ZuulFilterConfiguration {
+	private static class ZuulRefreshListener implements ApplicationListener<ApplicationEvent> {
 		@Autowired
-		private Map<String, ZuulFilter> filters;
+		private ZuulHandlerMapping zuulHandlerMapping;
 
-		@Bean
-		public ZuulFilterInitializer zuulFilterInitializer() {
-			return new ZuulFilterInitializer(this.filters);
+		@Autowired
+		private ApplicationRouteLocator routeLocator;
+
+		@Override
+		public void onApplicationEvent(ApplicationEvent event) {
+			if (event instanceof PayloadApplicationEvent && ((PayloadApplicationEvent<?>) event)
+					.getPayload() instanceof RoutesOutdatedEvent) {
+				routeLocator.resetRoutes();
+				zuulHandlerMapping.registerHandlers();
+			}
 		}
 	}
-
-	@EventListener
-	public void onRoutesOutdatedEvent(RoutesOutdatedEvent event) {
-		routeLocator().resetRoutes();
-		zuulHandlerMapping().registerHandlers();
-	}
-
 }
