@@ -177,23 +177,13 @@ You can access snapshot builds from the sonatype repository:
 
 
 #### Build
-In order to build spring-boot-admin you need to have node.js and npm on your PATH.
+In order to build spring-boot-admin you need to have node.js and npm on your `PATH`.
 
 ```shell
 mvn clean package
 ```
 
-#### Release
-
-```shell
-mvn build-helper:parse-version versions:set -DnewVersion=${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}
-mvn -Psign-artifacts clean deploy
-```
-
-#### Increment version for next release
-
-Example:
-
+#### Set version for next release
 ```shell
 mvn build-helper:parse-version versions:set versions:commit -DnewVersion=1.0.0-SNAPSHOT
 ```

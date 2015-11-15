@@ -17,7 +17,6 @@
     <properties>
         <java.version>1.7</java.version>
         <main.basedir>${basedir}</main.basedir>
-        <passphrase>${gpg.passphrase}</passphrase>
         <spring-boot.version>1.3.0.RC1</spring-boot.version>
         <spring-cloud.version>Brixton.M2</spring-cloud.version>
         <build-plugin.jacoco.version>0.7.5.201505241946</build-plugin.jacoco.version>
@@ -102,7 +101,9 @@
         <profile>
             <id>sign-artifacts</id>
             <activation>
-                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>env.GPG_PASSPHRASE</name>
+                </property>
             </activation>
             <build>
                 <plugins>
@@ -110,7 +111,8 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                         <configuration>
-                            <passphrase>${passphrase}</passphrase>
+                            <passphrase>${env.GPG_PASSPHRASE}</passphrase>
+                            <homedir>${user.dir}/.gnupg</homedir>
                         </configuration>
                         <executions>
                             <execution>
