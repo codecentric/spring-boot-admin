@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.3.0.RC1</version>
+        <version>1.3.0.RELEASE</version>
     </parent>
     <groupId>de.codecentric</groupId>
     <artifactId>spring-boot-admin</artifactId>
@@ -17,7 +17,7 @@
     <properties>
         <java.version>1.7</java.version>
         <main.basedir>${basedir}</main.basedir>
-        <spring-boot.version>1.3.0.RC1</spring-boot.version>
+        <spring-boot.version>1.3.0.RELEASE</spring-boot.version>
         <spring-cloud.version>Brixton.M2</spring-cloud.version>
         <build-plugin.jacoco.version>0.7.5.201505241946</build-plugin.jacoco.version>
         <build-plugin.coveralls.version>4.0.0</build-plugin.coveralls.version>
