@@ -92,7 +92,11 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
 			}
 
 		} catch (Exception ex) {
-			LOGGER.warn("Couldn't retrieve status for {}", application, ex);
+			if ("OFFLINE".equals(application.getStatusInfo().getStatus())) {
+				LOGGER.debug("Couldn't retrieve status for {}", application, ex);
+			} else {
+				LOGGER.warn("Couldn't retrieve status for {}", application, ex);
+			}
 			return StatusInfo.ofOffline();
 		}
 	}
