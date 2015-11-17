@@ -15,30 +15,61 @@
  */
 'use strict';
 
-module.exports = function ($http, jolokia) {
-    var LOGBACK_MBEAN =
-        'ch.qos.logback.classic:Name=default,Type=ch.qos.logback.classic.jmx.JMXConfigurator';
-
-    this.getLoglevel = function (app, loggers) {
-        var requests = [];
-        for (var j in loggers) {
-            requests.push({
-                type: 'exec',
-                mbean: LOGBACK_MBEAN,
-                operation: 'getLoggerEffectiveLevel',
-                arguments: [loggers[j].name]
-            });
+module.exports = function ($http, $q, jolokia) {
+    var findInArray = function (a, name) {
+        for (var i = 0; i < a.length; i++) {
+            var match = /ch.qos.logback.classic:Name=([^,]+)/.exec(a[i]);
+            if (match !== null && match[1].toUpperCase() === name.toUpperCase()) {
+                return a[i];
+            }
         }
-        return jolokia.bulkRequest('api/applications/' + app.id + '/jolokia/', requests);
+        return null;
     };
 
-    this.setLoglevel = function (app, logger, level) {
-        return jolokia.exec('api/applications/' + app.id + '/jolokia/', LOGBACK_MBEAN, 'setLoggerLevel', [logger,
-            level
-        ]);
+    var findLogbackMbean = function (app) {
+        return jolokia.search('api/applications/' + app.id + '/jolokia/', 'ch.qos.logback.classic:Name=*,Type=ch.qos.logback.classic.jmx.JMXConfigurator').then(function (response) {
+            if (response.value.length === 1) {
+                return response.value[0];
+            }
+            if (response.value.length > 1) {
+                //find the one with the appname or default
+                var value = findInArray(response.value, app.name);
+                if (value === null) {
+                    value = findInArray(response.value, 'default');
+                }
+                if (value !== null) {
+                    return value;
+                }
+                return $q.reject({ error:'Ambigious Logback JMXConfigurator-MBeans found!', candidates: response.value});
+            }
+            return $q.reject({ error: 'Couldn\'t find Logback JMXConfigurator-MBean' });
+        });
     };
 
-    this.getAllLoggers = function (app) {
-        return jolokia.readAttr('api/applications/' + app.id + '/jolokia/', LOGBACK_MBEAN, 'LoggerList');
+    this.getLoggingConfigurator = function (app) {
+        return findLogbackMbean(app).then(function (logbackMbean) {
+            return {
+                getLoglevel: function (loggers) {
+                    var requests = [];
+                    for (var j in loggers) {
+                        requests.push({
+                            type: 'exec',
+                            mbean: logbackMbean,
+                            operation: 'getLoggerEffectiveLevel',
+                            arguments: [loggers[j].name]
+                        });
+                    }
+                    return jolokia.bulkRequest('api/applications/' + app.id + '/jolokia/', requests);
+                },
+                setLoglevel: function (logger, level) {
+                    return jolokia.exec('api/applications/' + app.id + '/jolokia/', logbackMbean, 'setLoggerLevel', [logger,
+                        level
+                    ]);
+                },
+                getAllLoggers: function () {
+                    return jolokia.readAttr('api/applications/' + app.id + '/jolokia/', logbackMbean, 'LoggerList');
+                }
+            };
+        });
     };
 };

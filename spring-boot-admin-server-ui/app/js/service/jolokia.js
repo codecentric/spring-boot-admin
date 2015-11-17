@@ -118,4 +118,11 @@ module.exports = function ($q) {
             type: 'list'
         });
     };
+
+    this.search = function (url, mbean) {
+        return outer.request(url, {
+            type: 'search',
+            mbean: mbean
+        });
+    };
 };
