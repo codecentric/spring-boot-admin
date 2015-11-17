@@ -76,7 +76,7 @@ public class ApplicationRouteLocator implements RouteLocator {
 	}
 
 	public ProxyRouteSpec getMatchingRoute(String path) {
-		LOGGER.info("Finding route for path: {}", path);
+		LOGGER.debug("Finding route for path: {}", path);
 		LOGGER.debug("servletPath={}", this.servletPath);
 		if (StringUtils.hasText(this.servletPath) && !this.servletPath.equals("/")
 				&& path.startsWith(this.servletPath)) {
