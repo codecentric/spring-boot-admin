@@ -1,7 +1,7 @@
 spring-boot-starter-admin-client
 ================================
 
-This [Spring-Boot starter](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#using-boot-starter-poms "Spring Boot Reference Guide") that provides services and controllers that a required if an application show be able to be administrated with the [spring-boot-admin application](https://github.com/codecentric/spring-boot-admin "GitHub project").
+This [Spring-Boot starter](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#using-boot-starter-poms "Spring Boot Reference Guide") provides services and controllers that are required if an application should be able to be administrated with the [spring-boot-admin application](https://github.com/codecentric/spring-boot-admin "GitHub project").
 
 This client uses the [AutoConfiguration](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#using-boot-auto-configuration "Spring Boot Reference Guide") feature of Spring Boot to register service and controller beans in the application context.
 
@@ -30,3 +30,13 @@ Options from other spring boot features. These should be set to enable all featu
 | ----------------------- | ----------- |
 | spring.application.name | Name to be shown in the application list. Name of the ApplicationContext. |
 | info.version            | Version number to be shown in the application list. Also published via /info-endpoint.  |
+
+### Logging Support ([Logback](http://logback.qos.ch/))
+The spring-boot-admin-server-ui allows users to manipulate logger levels dynamically. To support this, a `JMXConfigurator` must be made available by the spring boot client app. This is conveniently done by the following configuration in your logback configuration file(under the root `<configuration>` element).
+```
+<jmxConfigurator/>
+```
+Note that, the UI will intelligently try to determine the JMXConfigurator by first attempting to locate one with the application name (spring.application.name) and then falliing back to a default configuration. This is useful if you have the need  to deploy multiple spring boot applications to the same JVM. In such a case, specify a context name in your logback configuration as follows:
+```
+<contextName>your_spring_boot_application_name</contextName>
+```
