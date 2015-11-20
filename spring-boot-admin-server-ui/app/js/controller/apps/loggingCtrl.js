@@ -15,90 +15,95 @@
  */
 'use strict';
 
-module.exports = function ($scope, application, ApplicationLogging) {
+module.exports = function ($scope, application) {
     $scope.loggers = [];
     $scope.filteredLoggers = [];
     $scope.limit = 10;
 
-    var findLogger = function (loggers, name) {
-        for (var i in loggers) {
-            if (loggers[i].name === name) {
-                return loggers[i];
+    application.getLogging().then(function (logging) {
+        var findLogger = function (loggers, name) {
+            for (var i in loggers) {
+                if (loggers[i].name === name) {
+                    return loggers[i];
+                }
             }
-        }
-    };
+        };
 
-    $scope.setLogLevel = function (name, level) {
-        ApplicationLogging.setLoglevel(application, name, level)
-            .then(function () {
-                $scope.reload(name);
+        $scope.setLogLevel = function (name, level) {
+            logging.setLoglevel(name, level)
+                .then(function () {
+                    $scope.reload(name);
+                }, function (response) {
+                    $scope.error = response;
+                    $scope.reload(name);
+                });
+        };
+
+        $scope.reload = function (prefix) {
+            for (var i in $scope.loggers) {
+                if (prefix === null || prefix === 'ROOT' || $scope.loggers[i].name.indexOf(
+                        prefix) === 0) {
+                    $scope.loggers[i].level = null;
+                }
+            }
+            $scope.refreshLevels();
+        };
+
+        $scope.refreshLevels = function () {
+            var toLoad = [];
+            var slice = $scope.filteredLoggers.slice(0, $scope.limit);
+            for (var i in slice) {
+                if (slice[i].level === null) {
+                    toLoad.push(slice[i]);
+                }
+            }
+
+            if (toLoad.length === 0) {
+                return;
+            }
+
+            logging.getLoglevel(toLoad)
+                .then(
+                    function (responses) {
+                        for (var j in responses) {
+                            var name = responses[j].request.arguments[0];
+                            var level = responses[j].value;
+                            findLogger($scope.loggers, name)
+                                .level = level;
+                        }
+                    }, function (responses) {
+                    for (var j in responses) {
+                        if (responses[j].error !== null) {
+                            $scope.error = responses[j];
+                            break;
+                        }
+                    }
+                });
+        };
+
+        logging.getAllLoggers()
+            .then(function (response) {
+                $scope.loggers = [];
+                for (var i in response.value) {
+                    $scope.loggers.push({
+                        name: response.value[i],
+                        level: null
+                    });
+                }
+
+                $scope.$watchCollection('filteredLoggers', function () {
+                    $scope.refreshLevels();
+                });
+
+                $scope.$watch('limit', function () {
+                    $scope.refreshLevels();
+                });
             }, function (response) {
                 $scope.error = response;
-                $scope.reload(name);
+                $scope.errorWhileListing = true;
             });
-    };
-
-    $scope.reload = function (prefix) {
-        for (var i in $scope.loggers) {
-            if (prefix === null || prefix === 'ROOT' || $scope.loggers[i].name.indexOf(
-                    prefix) === 0) {
-                $scope.loggers[i].level = null;
-            }
-        }
-        $scope.refreshLevels();
-    };
-
-    $scope.refreshLevels = function () {
-        var toLoad = [];
-        var slice = $scope.filteredLoggers.slice(0, $scope.limit);
-        for (var i in slice) {
-            if (slice[i].level === null) {
-                toLoad.push(slice[i]);
-            }
-        }
-
-        if (toLoad.length === 0) {
-            return;
-        }
-
-        ApplicationLogging.getLoglevel(application, toLoad)
-            .then(
-                function (responses) {
-                    for (var j in responses) {
-                        var name = responses[j].request.arguments[0];
-                        var level = responses[j].value;
-                        findLogger($scope.loggers, name)
-                            .level = level;
-                    }
-                }, function (responses) {
-                for (var j in responses) {
-                    if (responses[j].error !== null) {
-                        $scope.error = responses[j];
-                        break;
-                    }
-                }
-            });
-    };
-
-    ApplicationLogging.getAllLoggers(application)
-        .then(function (response) {
-            $scope.loggers = [];
-            for (var i in response.value) {
-                $scope.loggers.push({
-                    name: response.value[i],
-                    level: null
-                });
-            }
-
-            $scope.$watchCollection('filteredLoggers', function () {
-                $scope.refreshLevels();
-            });
-
-            $scope.$watch('limit', function () {
-                $scope.refreshLevels();
-            });
-        }, function (response) {
-            $scope.error = response;
-            $scope.errorWhileListing = true;
-        });
+    }, function (response) {
+        $scope.error = response;
+        $scope.errorWhileListing = true;
+    });
 };

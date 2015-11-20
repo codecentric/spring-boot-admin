@@ -10,3 +10,6 @@ target/
 .idea/
 *.iml
 *.iws
+
+# gnupg keyring
+/.gnupg

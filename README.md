@@ -32,12 +32,12 @@ Add the following dependency to your pom.xml.
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-server</artifactId>
-	<version>1.2.4</version>
+	<version>1.3.0</version>
 </dependency>
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-server-ui</artifactId>
-	<version>1.2.4</version>
+	<version>1.3.0</version>
 </dependency>
 ```
 
@@ -74,7 +74,7 @@ Each application that want to register itself to the admin application has to in
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-starter-client</artifactId>
-	<version>1.2.4</version>
+	<version>1.3.0</version>
 </dependency>
 ```
 Inside your configuration (e.g. application.properties) you also have to define the URL of the Spring Boot Admin server, e.g.
@@ -118,7 +118,7 @@ Configure a JavaMailSender using spring-boot-starter-mail and set a recipient:
 
 ```
 spring.mail.host=smtp.example.com
-spring.boot.admin.notify.to=admin@example.com
+spring.boot.admin.notify.mail.to=admin@example.com
 ```
 
 For all configuration options see [spring-boot-admin-server](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-server/README.md)
@@ -177,23 +177,13 @@ You can access snapshot builds from the sonatype repository:
 
 
 #### Build
-In order to build spring-boot-admin you need to have node.js and npm on your PATH.
+In order to build spring-boot-admin you need to have node.js and npm on your `PATH`.
 
 ```shell
 mvn clean package
 ```
 
-#### Release
-
-```shell
-mvn build-helper:parse-version versions:set -DnewVersion=${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}
-mvn -Psign-artifacts clean deploy
-```
-
-#### Increment version for next release
-
-Example:
-
+#### Set version for next release
 ```shell
 mvn build-helper:parse-version versions:set versions:commit -DnewVersion=1.0.0-SNAPSHOT
 ```

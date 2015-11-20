@@ -1,5 +1,5 @@
 spring-boot-admin-server
-================================
+========================
 
 ## Easy Setup
 Add the following dependency to your pom.xml.
@@ -8,12 +8,12 @@ Add the following dependency to your pom.xml.
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-server</artifactId>
-	<version>1.2.4</version>
+	<version>1.3.0</version>
 </dependency>
 <dependency>
 	<groupId>de.codecentric</groupId>
 	<artifactId>spring-boot-admin-server-ui</artifactId>
-	<version>1.2.4</version>
+	<version>1.3.0</version>
 </dependency>
 ```
 
@@ -41,70 +41,69 @@ Since the DiscoveryClient doesn't tell the management.context-path you can suffi
 
 Explictly disable DiscoveryClient support by setting ``spring.boot.admin.discover.enabled=false``.
 
-## Mail notification options:
+## Mail notification:
+To enable mail-notification you just have to add a JavaMailSender to you ApplicationContext. The simplest way to achieve this is by adding the spring-boot-mail-starter to your dependencies and setting `spring.mail.host`.
 
+### Further options:
 | Name                  | Description |
 | --------------------- | ----------- |
-|spring.boot.admin.notify.enabled|enable mail notification (default: true)|
-|spring.boot.admin.notify.to|comma-delimited list of mail recipients (default: "root@localhost")|
-|spring.boot.admin.notify.cc|comma-delimited list of mail cc-recipients|
-|spring.boot.admin.notify.from|sender of mail|
-|spring.boot.admin.notify.subject|mail-subject; SpEL-expressions supported (default: "#{application.name} (#{application.id}) is #{to.status}") |
-|spring.boot.admin.notify.text|mail-body; SpEL-expressions supported (default: "#{application.name} (#{application.id})\nstatus changed from #{from.status} to #{to.status}\n\n#{application.healthUrl}"|
-|spring.boot.admin.notify.ignoreChanges|comma-deleiited list of status changes to be ignored. (default: "UNKNOWN:UP")|
+|spring.boot.admin.notify.mail.enabled|enable mail notification (default: true)|
+|spring.boot.admin.notify.mail.to|comma-delimited list of mail recipients (default: "root@localhost")|
+|spring.boot.admin.notify.mail.cc|comma-delimited list of mail cc-recipients|
+|spring.boot.admin.notify.mail.from|sender of mail|
+|spring.boot.admin.notify.mail.subject|mail-subject; SpEL-expressions supported (default: "#{application.name} (#{application.id}) is #{to.status}") |
+|spring.boot.admin.notify.mail.text|mail-body; SpEL-expressions supported (default: "#{application.name} (#{application.id})\nstatus changed from #{from.status} to #{to.status}\n\n#{application.healthUrl}"|
+|spring.boot.admin.notify.mail.ignoreChanges|comma-delimited list of status changes to be ignored. (default: "UNKNOWN:UP")|
+
+## Pagerduty notification:
+To enable pagerduty-notifications you just have to add a generic service for your pagerduty-account and set ``spring.boot.admin.notify.pagerduty.service-keya`` to the service-key.
+
+### Further options:
+| Name                   | Description |
+| ---------------------- | ----------- |
+|spring.boot.admin.notify.pagerduty.enabled|enable mail notification (default: true)|
+|spring.boot.admin.notify.pagerduty.service-key | service-key for Pagerduty |
+|spring.boot.admin.notify.pagerduty.uri | The Pagerduty-rest-api url (default: https://events.pagerduty.com/generic/2010-04-15/create_event.json) |
+|spring.boot.admin.notify.pagerduty.description | description to use in the event. SpEL-expressions supported (default: #{application.name}/#{application.id} is #{to.status}) |
+|spring.boot.admin.notify.pagerduty.client | client-name to use in the event |
+|spring.boot.admin.notify.pagerduty.clientUrl | client-url to use in the event |
+|spring.boot.admin.notify.pagerduty.ignoreChanges|comma-delimited list of status changes to be ignored. (default: "UNKNOWN:UP")|
 
 ## Hazelcast Support
-Spring Boot Admin Server supports cluster replication with Hazelcast.
-It is automatically enabled when its found on the classpath.
+Spring Boot Admin Server supports cluster replication with Hazelcast. It is automatically enabled when a HazelcastConfig- or HazelcastInstance is present.
+Also have a look at the [Spring Boot support for Hazelcast](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-hazelcast).
 
-Just add Hazelcast to your dependencies:
+1. Add Hazelcast to your dependencies:
 ```xml
 <dependency>
 	<groupId>com.hazelcast</groupId>
 	<artifactId>hazelcast</artifactId>
-	<version>3.3.3</version>
 </dependency>
 ```
-
-And thats it! The server is going to use the default Hazelcast configuration.
-
-### Custom Hazelcast configuration
-To change the configuration add a ``com.hazelcast.config.Config``-bean to your application context (for example with hazelcast-spring):
-
-Add hazelcast-spring to dependencies:
-```xml
-<dependency>
-	<groupId>com.hazelcast</groupId>
-	<artifactId>hazelcast-spring</artifactId>
-	<version>3.3.3</version>
-</dependency>
-```
-
-Import hazelcast spring configuration xml-file:
+2. Instantiate a HazelcastConfig:
 ```java
 @Configuration
 @EnableAutoConfiguration
 @EnableAdminServer
-@ImportResource({ "classpath:hazelcast-config.xml" })
-public class Application {
+public class SpringBootAdminApplication {
+	@Bean
+	public Config hazelcastConfig() {
+		return new Config().setProperty("hazelcast.jmx", "true")
+				.addMapConfig(new MapConfig("spring-boot-admin-application-store").setBackupCount(1)
+						.setEvictionPolicy(EvictionPolicy.NONE))
+				.addListConfig(new ListConfig("spring-boot-admin-event-store").setBackupCount(1)
+						.setMaxSize(1000));
+	}
+
 	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
+		SpringApplication.run(SpringBootAdminApplication.class, args);
 	}
 }
 ```
 
-Write xml-config hazelcast-config.xml:
-```xml
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:hz="http://www.hazelcast.com/schema/spring" 
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd http://www.hazelcast.com/schema/spring http://www.hazelcast.com/schema/spring/hazelcast-spring-3.3.xsd">
-	<hz:config id="hazelcastConfig">
-		<hz:instance-name>${hz.instance.name}</hz:instance-name>
-		<hz:map name="spring-boot-admin-application-store" backup-count="1" eviction-policy="NONE" />
-	</hz:config>
-</beans>
-```
 
 ### Further configuration
 Disable Hazelcast support by setting ``spring.boot.admin.hazelcast.enabled=false``.
 
-To alter the name of the Hazelcast-Map set ``spring.boot.admin.hazelcast.map= my-own-map-name``.
+To alter the name of the hazelcast-map backing the application-store set ``spring.boot.admin.hazelcast.map= my-own-map-name``.
+To alter the name of the hazelcast-list backing the event-store set ``spring.boot.admin.hazelcast.event-store=my-own-list-name``

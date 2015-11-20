@@ -15,7 +15,7 @@
  */
 'use strict';
 
-module.exports = function ($resource, $http, $q) {
+module.exports = function ($resource, $http, $q, ApplicationLogging) {
 
     var isEndpointPresent = function(endpoint, configprops) {
         if (configprops[endpoint]) {
@@ -102,6 +102,10 @@ module.exports = function ($resource, $http, $q) {
 
     Application.prototype.getActiviti = function () {
         return convert($http.get('api/applications/' + this.id + '/activiti'));
+    };
+
+    Application.prototype.getLogging = function() {
+        return ApplicationLogging.getLoggingConfigurator(this);
     };
 
     return Application;

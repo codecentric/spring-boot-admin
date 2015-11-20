@@ -1,9 +1,9 @@
 spring-boot-starter-admin-client
 ================================
 
-This [Spring-Boot starter](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#using-boot-starter-poms "Spring Boot docu") that provides services and controllers that a required if an application show be able to be administrated with the [spring-boot-admin application](https://github.com/codecentric/spring-boot-admin "GitHub project").
+This [Spring-Boot starter](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#using-boot-starter-poms "Spring Boot Reference Guide") that provides services and controllers that a required if an application show be able to be administrated with the [spring-boot-admin application](https://github.com/codecentric/spring-boot-admin "GitHub project").
 
-This client uses the [AutoConfiguration](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#using-boot-auto-configuration "Spring Boot docu") feature of Spring Boot to register service and controller beans in the application context.
+This client uses the [AutoConfiguration](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#using-boot-auto-configuration "Spring Boot Reference Guide") feature of Spring Boot to register service and controller beans in the application context.
 
 The main service that is used is a registrar that registeres the application at the spring-boot-admin application by periodically calling a REST-API to perform the registration of itself.
 
@@ -30,4 +30,3 @@ Options from other spring boot features. These should be set to enable all featu
 | ----------------------- | ----------- |
 | spring.application.name | Name to be shown in the application list. Name of the ApplicationContext. |
 | info.version            | Version number to be shown in the application list. Also published via /info-endpoint.  |
-| logging.file            | Path to the applications logfile for access via spring-boot-admin. From Spring Boot logging configuration. |
