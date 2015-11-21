@@ -2,10 +2,10 @@ language: java
 sudo: false
 
 before_install:
-  - openssl aes-256-cbc -d -pass "env:DECRYPT_KEYPHRASE" -in .gnupg.tar.enc | tar xv
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
-  - "if [[ ${TRAVIS_TAG} != '' ]]; then mvn versions:set -DnewVersion='${TRAVIS_TAG}'; fi"
+  - 'if [[ -n "$DECRYPT_KEYPHRASE" ]]; then openssl aes-256-cbc -d -pass "env:DECRYPT_KEYPHRASE" -in .gnupg.tar.enc | tar xv; fi'
+  - 'if [[ ${TRAVIS_TAG} != "" ]]; then mvn versions:set -DnewVersion="${TRAVIS_TAG}"; fi'
 
 script: mvn clean verify
 
