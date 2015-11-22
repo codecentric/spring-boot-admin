@@ -118,7 +118,6 @@ public class ApplicationRouteLocator implements RouteLocator {
 		return values;
 	}
 
-	@Override
 	public Collection<String> getIgnoredPaths() {
 		return Collections.emptyList();
 	}
