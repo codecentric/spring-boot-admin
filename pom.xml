@@ -22,12 +22,14 @@
         <build-plugin.jacoco.version>0.7.5.201505241946</build-plugin.jacoco.version>
         <build-plugin.coveralls.version>4.0.0</build-plugin.coveralls.version>
         <build-plugin.gpg.version>1.6</build-plugin.gpg.version>
+        <build-plugin.asciidoctor.version>1.5.2</build-plugin.asciidoctor.version>
     </properties>
     <modules>
         <module>spring-boot-admin-server</module>
         <module>spring-boot-admin-server-ui</module>
         <module>spring-boot-admin-samples</module>
         <module>spring-boot-admin-starter-client</module>
+        <module>spring-boot-admin-docs</module>
     </modules>
     <organization>
         <name>codecentric AG</name>
@@ -93,6 +95,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
                     <version>${build-plugin.gpg.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.asciidoctor</groupId>
+                    <artifactId>asciidoctor-maven-plugin</artifactId>
+                    <version>${build-plugin.asciidoctor.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

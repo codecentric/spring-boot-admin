@@ -14,9 +14,6 @@
     <name>Spring Boot Admin Samples</name>
     <description>Spring Boot Admin Samples</description>
     <url>https://github.com/codecentric/spring-boot-admin/</url>
-    <properties>
-        <main.basedir>${basedir}/..</main.basedir>
-    </properties>
     <modules>
         <module>spring-boot-admin-sample</module>
         <module>spring-boot-admin-sample-war</module>

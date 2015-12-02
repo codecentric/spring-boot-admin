@@ -1,0 +1,411 @@
+= Spring Boot Admin Reference Guide =
+Johannes Edmeier <https://twitter.com/joshiste[@joshiste]>
+{localdate}
+:toc: right
+:doctype: book
+:sectanchors:
+:sectlinks:
+:sectnums:
+:icons: font
+:hide-uri-scheme:
+
+== What is Spring Boot Admin? ==
+
+Spring Boot Admin is a simple application to manage and monitor your http://projects.spring.io/spring-boot/[Spring Boot Applications].
+The applications register with our Spring Boot Admin Client (via http) or are discovered using Spring Cloud (e.g. Eureka).
+The UI is just an Angular.js application on top of the Spring Boot Actuator Endpoints. In case you want to use the more advanced features (e.g. jmx-, loglevel-management), Jolokia must be included in the client application.
+
+[[getting-started]]
+== Getting started ==
+
+[[set-up-admin-server]]
+=== Set up admin server ===
+
+First you need to setup your server. To do this just setup a simple boot project (using http://start.spring.io for example).
+
+. Add Spring Boot Admin Server and the UI to your dependencies:
++
+[source,xml,subs="verbatim,attributes"]
+.pom.xml
+----
+<dependency>
+    <groupId>de.codecentric</groupId>
+    <artifactId>spring-boot-admin-server</artifactId>
+    <version>{projectversion}</version>
+</dependency>
+<dependency>
+    <groupId>de.codecentric</groupId>
+    <artifactId>spring-boot-admin-server-ui</artifactId>
+    <version>{projectversion}</version>
+</dependency>
+----
+
+. Pull in the Boot Admin Server configuration via adding `@EnableAdminServer` to your configuration:
++
+[source,java]
+----
+@Configuration
+@EnableAutoConfiguration
+@EnableAdminServer
+public class SpringBootAdminApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+}
+----
+
+See also the https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample/[spring-boot-admin-sample-project].
+
+[[register-client-applications]]
+=== Register client applications ===
+
+To register your application at the admin server (next referred as "clients").
+Either you can include the `spring-boot-admin` client or use http://projects.spring.io/spring-cloud/spring-cloud.html[Spring Cloud Discovery] (e.g. Eureka)
+
+[[register-clients-via-spring-boot-admin]]
+==== Register clients via spring-boot-admin-client ====
+
+Each application that want to register itself to the admin has to include the Spring Boot Admin Client.
+
+. Add spring-boot-admin-starter-client to your dependencies:
++
+[source,xml,subs="verbatim,attributes"]
+.pom.xml
+----
+<dependency>
+    <groupId>de.codecentric</groupId>
+    <artifactId>spring-boot-admin-starter-client</artifactId>
+    <version>{projectversion}</version>
+</dependency>
+----
+
+. Trigger the contained AutoConfiguration and tell the client where to find the admin to register at:
++
+[source]
+.application.properties
+----
+spring.boot.admin.url=http://localhost:8080
+----
+
+[[discover-clients-via-spring-cloud-discovery]]
+==== Discover clients via Spring Cloud Discovery ====
+
+If you already using Spring Cloud Discovery for your applications you don't have to add the Spring Boot Admin Client to your applications. Just make the Spring Boot Admin Server a DiscoveryClient, the rest is done by our AutoConfiguration. The following steps are for using Eureka.
+Also have a look at the http://projects.spring.io/spring-cloud/spring-cloud.html#_spring_cloud_netflix[Spring Cloud Netflix documentation].
+
+. Add spring-cloud-starter-eureka to you dependencies:
++
+[source,xml]
+.pom.xml
+----
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-eureka</artifactId>
+    <version>1.0.4.RELEASE</version>
+</dependency>
+----
+
+. Enable the Discovery by adding `@EnableDiscoveryClient` to your configuration:
++
+[source,java]
+----
+@Configuration
+@EnableAutoConfiguration
+@EnableDiscoveryClient
+@EnableAdminServer
+public class SpringBootAdminApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(SpringBootAdminApplication.class, args);
+    }
+}
+----
+
+. Tell the Eureka client to find the service registry:
++
+[source]
+.application.properties
+----
+eureka.instance.client.serviceUrl.defaultZone: http://localhost:8761/eureka/
+----
+
+See also https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-discovery/[spring-boot-admin-sample-discovery].
+
+[[client-applications]]
+== Client applications ==
+
+[[show-version-in-application-list]]
+=== Show version in application list ===
+
+To get the version show up in the admins application list you have to set `info.version`. For example using maven filtering during the build:
+
+[source]
+.application.properties
+----
+info.version=@project.version@
+----
+
+[[jmx-bean-management]]
+=== JMX-bean management ===
+
+To interact with JMX-beans in the admin UI you have to include https://jolokia.org/[Jolokia] in your application. In case you are using the `spring-boot-admin-starter-client` it will be pulled in for you, if not add Jolokia to your dependencies:
+
+[source,xml]
+.pom.xml
+----
+<dependency>
+    <groupId>org.jolokia</groupId>
+    <artifactId>jolokia-core</artifactId>
+</dependency>
+----
+
+[[loglevel-management]]
+=== Loglevel managment ===
+Currently the loglevel management is only available for http://logback.qos.ch/[Logback]. It is accessed via JMX so <<jmx-bean-management, include Jolokia>> in your application. In addition you have configure Logbacks `JMXConfigurator`:
+
+[source,xml]
+.logback.xml
+----
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <jmxConfigurator/>
+</configuration>
+----
+
+NOTE: In case you are deploying multiple applications to the same JVM and multiple Logback-JMX-beans are present, the UI will select the JMXConfigurator with the context-name equals to your applications name. In this case you need to set the `contextName` in your logback-configuration.
+
+[[spring-boot-admin-client]]
+=== Spring Boot Admin Client ===
+
+The Spring Boot Admin Client registers the application at the admin server. This is done by periodically doing a http post-request to the admin server providing informations about the application. It also adds Jolokia to your dependencies, so that JMX-beans are accessible via http, this is needed if you want to manage loglevels or JMX-beans via the admin UI.
+
+.Spring Boot Admin Client configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.url
+| URL of the spring-boot-admin application to register at. This triggers the AutoConfiguration. *Mandatory*.
+|
+
+| spring.boot.admin.context-path
+| Context-path of registration endpoint at your admin server.
+| `"api/applications"`
+
+| spring.boot.admin.username
+spring.boot.admin.password
+| Username and password for http-basic authentication. If set the registration uses http-basic-authetication when registering at the admin server.
+|
+
+| spring.boot.admin.period
+| Interval for repeating the registration (in ms).
+| `10000`
+
+| spring.boot.admin.auto-deregistration
+| Swtich to enable auto-deregistration at admin when context is closed.
+| `false`
+
+| spring.boot.admin.client.health-url
+| Client-health-url to register with. Can be overriden in case the reachable URL is different (e.g. Docker). Must be unique in registry.
+| Guessed based on management-url and `endpoints.health.id`.
+
+| spring.boot.admin.client.management-url
+| Client-management-url to register with. Can be overriden in case the reachable url is different (e.g. Docker).
+| Guessed based on service-url, `management.port` and `management.context-path`.
+
+| spring.boot.admin.client.service-url
+| Client-service-url to register with. Can be overriden in case the reachable url is different (e.g. Docker).
+| Guessed based on hostname, `server.port` and `server.context-path`.
+
+| spring.boot.admin.client.name
+| Name to register with.
+| `${spring.application.name}` if set, `"spring-boot-application"` otherwise.
+
+| spring.boot.admin.client.prefer-ip
+| Use the ip-address rather then the hostname in the guessed urls. It's required to set `server.address` and `management.address`respectively.
+| `false`
+|===
+
+[[spring-boot-admin-server]]
+== Spring Boot Admin Server ==
+
+[[spring-cloud-discovery-support]]
+=== Spring Cloud Discovery support ===
+
+The Spring Boot Admin Server is capable of using  Spring Clouds `DiscoveryClient` to discover applications. The advantage is that the clients don't have to include the `spring-boot-admin-starter-client`. You just have to add a DiscoveryClient to your admin server - everything else is done by AutoConfiguration.
+The setup is explained <<discover-clients-via-spring-cloud-discovery,above>>.
+
+.Discovery configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.discovery.enabled
+| Enables the DiscoveryClient-support for the admin server.
+| `true`
+
+| spring.boot.admin.discovery.management.context-path
+| If set this will be appended to the service-url from the discovery information.
+|
+|===
+
+NOTE: Currently the implementation is not specific to any DiscoveryClient implementation. Unfortunately the DiscoveryClient doesn't expose the health- or management-url, so if you're not sticking to the defaults and setting `spring.boot.admin.discovery.management.context-path` doesn't suffice, you can add a bean extending `ApplicationDiscoveryListener` to your admin server and provide your own conversion.
+
+[[hazelcast-support]]
+=== Hazelcast support ===
+Spring Boot Admin Server supports cluster replication with Hazelcast. It is automatically enabled when a `HazelcastConfig`- or `HazelcastInstance`-Bean is present. You can also confugure the Hazelcast instance to be persistent, to keep the status over restarts.
+Also have a look at the http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-hazelcast/[Spring Boot support for Hazelcast].
+
+. Add Hazelcast to your dependencies:
++
+[source,xml]
+.pom.xml
+----
+<dependency>
+    <groupId>com.hazelcast</groupId>
+    <artifactId>hazelcast</artifactId>
+</dependency>
+----
+
+. Instantiate a HazelcastConfig:
++
+[source,java]
+----
+@Configuration
+@EnableAutoConfiguration
+@EnableAdminServer
+public class SpringBootAdminApplication {
+    @Bean
+    public Config hazelcastConfig() {
+        return new Config().setProperty("hazelcast.jmx", "true")
+                .addMapConfig(new MapConfig("spring-boot-admin-application-store")
+                    .setBackupCount(1)
+                    .setEvictionPolicy(EvictionPolicy.NONE))
+                .addListConfig(new ListConfig("spring-boot-admin-event-store")
+                    .setBackupCount(1)
+                    .setMaxSize(1000));
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(SpringBootAdminApplication.class, args);
+    }
+}
+----
+
+.Hazelcast configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.hazelcast.enabled
+| Enables the Hazelcast support
+| `true`
+
+| spring.boot.admin.hazelcast.application-store
+| Name of the Hazelcast-map to store the applications
+| `"spring-boot-admin-application-store"`
+
+| spring.boot.admin.hazelcast.event-store
+| Name of the Hazelcast-list to store the events
+| `"spring-boot-admin-event-store"`
+|===
+
+[[mail-notifications]]
+=== Mail notifications ===
+
+Configure a `JavaMailSender` using `spring-boot-starter-mail` and set a recipient.
+
+[source,xml]
+.pom.xml
+----
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-mail</artifactId>
+</dependency>
+----
+
+.application.properties
+----
+spring.mail.host=smtp.example.com
+spring.boot.admin.notify.mail.to=admin@example.com
+----
+
+.Mail notifications configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.mail.enabled
+| Enable mail notifications
+| `true`
+
+| spring.boot.admin.notify.mail.ignore-changes
+| Comma-delimited list of status changes to be ignored. Format: "<from-status>:<to-status>". Wildcards allowed.
+| `"UNKNOWN:UP"`
+
+| spring.boot.admin.notify.mail.to
+| Comma-delimited list of mail recipients
+| `"root@localhost"`
+
+| spring.boot.admin.notify.mail.cc
+| Comma-delimited list of carbon-copy recipients
+|
+
+| spring.boot.admin.notify.mail.from
+| Mail sender
+|
+
+| spring.boot.admin.notify.mail.subject
+| Mail subject. SpEL-expressions are supported
+| `+++"#{application.name} (#{application.id}) is #{to.status}"+++`
+
+| spring.boot.admin.notify.mail.text
+| Mail body. SpEL-expressions are supported
+| `+++"#{application.name} (#{application.id})\nstatus changed from #{from.status} to #{to.status}\n\n#{application.healthUrl}"+++`
+|===
+
+
+[[pagerduty-notifications]]
+=== Pagerduty notifications ===
+To enable pagerduty notifications you just have to add a generic service to your pagerduty-account and set `spring.boot.admin.notify.pagerduty.service-key` to the service-key you recieved.
+
+.Pagerduty notifications configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.pagerduty.enabled
+| Enable mail notifications
+| `true`
+
+| spring.boot.admin.notify.pagerduty.ignore-changes
+| Comma-delimited list of status changes to be ignored. Format: "<from-status>:<to-status>". Wildcards allowed.
+| `"UNKNOWN:UP"`
+
+| spring.boot.admin.notify.pagerduty.service-key
+| Service-key to use for Pagerduty
+|
+
+| spring.boot.admin.notify.pagerduty.url
+| The Pagerduty-rest-api url
+| `+++"https://events.pagerduty.com/generic/2010-04-15/create_event.json"+++`
+
+| spring.boot.admin.notify.pagerduty.description
+| Description to use in the event. SpEL-expressions are supported
+| `+++"#{application.name}/#{application.id} is #{to.status}"+++`
+
+| spring.boot.admin.notify.pagerduty.client
+| Client-name to use in the event
+|
+
+| spring.boot.admin.notify.pagerduty.client-url
+| Client-url to use in the event
+|
+|===
+
+[[faqs]]
+== FAQs ==
+[qanda]
+Can I include spring-boot-admin into my business application?::
+  *tl;dr* you shouldn't. +
+  In general it is possible but be aware that the admin-ui is serverd on `/` so most likely you will get conflicts here. On the other hand in my opinion it makes no sense for an application to monitor itself. In case your application goes down your monitioring tool also does.
+
+How do I disable Spring Boot Admin Client for my unit tests?::
+  The AutoConfiguration is triggered by the presence of the `spring.boot.admin.url`. So if you don't set this property for your tests, the Spring Boot Admin Client is not active.
+
+How do I customize the UI?::
+  You can only customize the UI by copying and modifying the source of `spring-boot-admin-ui` and adding your own module to your classpath.
