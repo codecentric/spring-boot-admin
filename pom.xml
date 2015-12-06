@@ -23,6 +23,7 @@
         <build-plugin.coveralls.version>4.0.0</build-plugin.coveralls.version>
         <build-plugin.gpg.version>1.6</build-plugin.gpg.version>
         <build-plugin.asciidoctor.version>1.5.2</build-plugin.asciidoctor.version>
+        <build-plugin.exec.version>1.4.0</build-plugin.exec.version>
     </properties>
     <modules>
         <module>spring-boot-admin-server</module>
@@ -100,6 +101,11 @@
                     <groupId>org.asciidoctor</groupId>
                     <artifactId>asciidoctor-maven-plugin</artifactId>
                     <version>${build-plugin.asciidoctor.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>${build-plugin.exec.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
