@@ -187,8 +187,8 @@ The Spring Boot Admin Client registers the application at the admin server. This
 | URL of the spring-boot-admin application to register at. This triggers the AutoConfiguration. *Mandatory*.
 |
 
-| spring.boot.admin.context-path
-| Context-path of registration endpoint at your admin server.
+| spring.boot.admin.api-path
+| Http-path of registration endpoint at your admin server.
 | `"api/applications"`
 
 | spring.boot.admin.username

@@ -70,12 +70,11 @@ public class ApplicationRegistrator {
 	 */
 	public boolean register() {
 		Application self = null;
-		String adminUrl = admin.getUrl() + '/' + admin.getContextPath();
 		try {
 			self = createApplication();
 
 			@SuppressWarnings("rawtypes")
-			ResponseEntity<Map> response = template.postForEntity(adminUrl,
+			ResponseEntity<Map> response = template.postForEntity(admin.getAdminUrl(),
 					new HttpEntity<Application>(self, HTTP_HEADERS), Map.class);
 
 			if (response.getStatusCode().equals(HttpStatus.CREATED)) {
@@ -94,7 +93,7 @@ public class ApplicationRegistrator {
 			}
 		} catch (Exception ex) {
 			LOGGER.warn("Failed to register application as {} at spring-boot-admin ({}): {}", self,
-					adminUrl, ex.getMessage());
+					admin.getAdminUrl(), ex.getMessage());
 		}
 
 		return false;
@@ -103,15 +102,13 @@ public class ApplicationRegistrator {
 	public void deregister() {
 		String id = registeredId.get();
 		if (id != null) {
-			String adminUrl = admin.getUrl() + '/' + admin.getContextPath() + "/" + id;
-
 			try {
-				template.delete(adminUrl);
+				template.delete(admin.getAdminUrl() + "/" + id);
 				registeredId.set(null);
 			} catch (Exception ex) {
 				LOGGER.warn(
 						"Failed to deregister application (id={}) at spring-boot-admin ({}): {}",
-						id, adminUrl, ex.getMessage());
+						id, admin.getAdminUrl(), ex.getMessage());
 			}
 		}
 	}

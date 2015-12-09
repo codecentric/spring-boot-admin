@@ -26,9 +26,9 @@ public class AdminProperties {
 	private String url;
 
 	/**
-	 * The admin servers context path.
+	 * The admin rest-apis path.
 	 */
-	private String contextPath = "api/applications";
+	private String apiPath = "api/applications";
 
 	/**
 	 * Time interval (in ms) the registration is repeated
@@ -58,12 +58,16 @@ public class AdminProperties {
 		return url;
 	}
 
-	public String getContextPath() {
-		return contextPath;
+	public void setApiPath(String apiPath) {
+		this.apiPath = apiPath;
 	}
 
-	public void setContextPath(String contextPath) {
-		this.contextPath = contextPath;
+	public String getApiPath() {
+		return apiPath;
+	}
+
+	public String getAdminUrl() {
+		return url + "/" + apiPath;
 	}
 
 	public int getPeriod() {
