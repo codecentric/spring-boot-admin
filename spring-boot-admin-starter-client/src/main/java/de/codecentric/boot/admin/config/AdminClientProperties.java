@@ -94,7 +94,8 @@ public class AdminClientProperties {
 
 		if ((managementPort == null || managementPort.equals(serverPort))
 				&& getServiceUrl() != null) {
-			return append(getServiceUrl(), management.getContextPath());
+			return append(append(getServiceUrl(), server.getServletPrefix()),
+					management.getContextPath());
 		}
 
 		if (ready && managementPort == null) {

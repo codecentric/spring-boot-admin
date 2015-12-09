@@ -91,6 +91,21 @@ public class AdminClientPropertiesTest {
 	}
 
 	@Test
+	public void test_servletPath() {
+		load("server.servlet-path=app", "server.context-path=srv", "local.server.port=80");
+		AdminClientProperties clientProperties = new AdminClientProperties();
+		context.getAutowireCapableBeanFactory().autowireBean(clientProperties);
+
+		publishApplicationReadyEvent(clientProperties);
+
+		assertThat(clientProperties.getManagementUrl(),
+				is("http://" + getHostname() + ":80/srv/app"));
+		assertThat(clientProperties.getHealthUrl(),
+				is("http://" + getHostname() + ":80/srv/app/health"));
+		assertThat(clientProperties.getServiceUrl(), is("http://" + getHostname() + ":80/srv"));
+	}
+
+	@Test
 	public void test_default() {
 		load("local.server.port=8080");
 		AdminClientProperties clientProperties = new AdminClientProperties();
