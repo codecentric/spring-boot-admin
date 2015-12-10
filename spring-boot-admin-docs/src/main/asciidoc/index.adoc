@@ -8,6 +8,7 @@ Johannes Edmeier <https://twitter.com/joshiste[@joshiste]>
 :sectnums:
 :icons: font
 :hide-uri-scheme:
+:last-update-label!:
 
 == What is Spring Boot Admin? ==
 
