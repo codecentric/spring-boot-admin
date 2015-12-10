@@ -19,7 +19,7 @@ module.exports = function ($scope, $location, $interval, $state, $filter, Applic
     var createNote = function(app) {
         var title = app.name + (app.statusInfo.status === 'UP' ? ' is back ' : ' went ') + app.statusInfo.status;
         var options = { tag: app.id,
-                        body: 'Instance ' + app.id,
+                        body: 'Instance ' + app.id + '\n' + app.healthUrl,
                         icon: (app.statusInfo.status === 'UP' ? 'img/ok.png' : 'img/error.png'),
                         timeout: 15000,
                         url: $state.href('apps.details', {id: app.id}) };
