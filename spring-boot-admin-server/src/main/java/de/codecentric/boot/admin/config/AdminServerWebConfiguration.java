@@ -18,9 +18,8 @@ package de.codecentric.boot.admin.config;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEventPublisher;
@@ -54,6 +53,7 @@ import de.codecentric.boot.admin.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
 
 @Configuration
+@EnableConfigurationProperties
 public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 		implements ApplicationContextAware {
 
@@ -65,8 +65,11 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 	@Autowired
 	private ApplicationStore applicationStore;
 
-	@Value("${spring.boot.admin.monitor.period:10000}")
-	private long monitorPeriod;
+	@Bean
+	@ConditionalOnMissingBean
+	public AdminServerProperties adminServerProperties() {
+		return new AdminServerProperties();
+	}
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) {
@@ -119,7 +122,6 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConfigurationProperties("spring.boot.admin.monitor")
 	public StatusUpdater statusUpdater() {
 		RestTemplate template = new RestTemplate();
 		template.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
@@ -129,7 +131,9 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 				return false;
 			}
 		});
-		return new StatusUpdater(template, applicationStore);
+		StatusUpdater statusUpdater = new StatusUpdater(template, applicationStore);
+		statusUpdater.setStatusLifetime(adminServerProperties().getMonitor().getStatusLifetime());
+		return statusUpdater;
 	}
 
 	@EventListener
@@ -152,7 +156,7 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 			public void run() {
 				statusUpdater().updateStatusForAllApplications();
 			}
-		}, monitorPeriod);
+		}, adminServerProperties().getMonitor().getPeriod());
 
 		return registrar;
 	}

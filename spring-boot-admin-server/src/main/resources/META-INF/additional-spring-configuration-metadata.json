@@ -14,7 +14,7 @@
     "defaultValue": "spring-boot-admin-application-store"
   },
   {
-    "name": "spring.boot.admin.hazelcast.map",
+    "name": "spring.boot.admin.hazelcast.application-store",
     "type": "java.lang.String",
     "description": "Name of backing Hazelcast-List for storing the journal",
     "defaultValue": "spring-boot-admin-event-store"
@@ -30,11 +30,5 @@
     "type": "java.lang.String",
     "description": "management-path suffix for discovered applications",
     "defaultValue": ""
-  },
-  {
-    "name": "spring.boot.admin.discovery.monitor.period",
-    "type": "long",
-    "description": "time interval in ms to update the status of applications with expired statusInfo",
-    "defaultValue": "10000"
   }
 ]}
