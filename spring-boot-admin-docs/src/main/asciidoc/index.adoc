@@ -232,11 +232,16 @@ spring.boot.admin.password
 |===
 | Property name |Description |Default value
 
+=======
+| spring.boot.admin.context-path
+| The context-path prefixes the path where the Admin Servers statics assets and api should be served. Relative to the Dispatcher-Servlet.
+|
+
 | spring.boot.admin.monitor.period
 | Time interval in ms to update the status of applications with expired status-informations.
 | 10.000
 
-| spring.boot.admin.status-lifetime
+| spring.boot.admin.monitor.status-lifetime
 | Lifetime of iapplication statuses in ms. The applications /health-endpoint will not be queried until the lifetime has expired.
 | 10.000
 |===
@@ -416,8 +421,8 @@ To enable pagerduty notifications you just have to add a generic service to your
 == FAQs ==
 [qanda]
 Can I include spring-boot-admin into my business application?::
-  *tl;dr* you shouldn't. +
-  In general it is possible but be aware that the admin-ui is serverd on `/` so most likely you will get conflicts here. On the other hand in my opinion it makes no sense for an application to monitor itself. In case your application goes down your monitioring tool also does.
+  *tl;dr* You can, but you shouldn't. +
+  You can set `spring.boot.admin.context-path` to alter the path where the UI and REST-api is served, but depending on the complexity of your application you might get in trouble. On the other hand in my opinion it makes no sense for an application to monitor itself. In case your application goes down your monitioring tool also does.
 
 How do I disable Spring Boot Admin Client for my unit tests?::
   The AutoConfiguration is triggered by the presence of the `spring.boot.admin.url`. So if you don't set this property for your tests, the Spring Boot Admin Client is not active.

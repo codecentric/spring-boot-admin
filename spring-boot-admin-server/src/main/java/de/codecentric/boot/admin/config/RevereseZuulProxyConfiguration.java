@@ -17,6 +17,7 @@ package de.codecentric.boot.admin.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.trace.TraceRepository;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.cloud.netflix.zuul.ZuulConfiguration;
 import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
@@ -28,13 +29,13 @@ import org.springframework.context.PayloadApplicationEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import de.codecentric.boot.admin.controller.RegistryController;
 import de.codecentric.boot.admin.event.RoutesOutdatedEvent;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.zuul.ApplicationRouteLocator;
 import de.codecentric.boot.admin.zuul.PreDecorationFilter;
 
 @Configuration
+@AutoConfigureAfter({ AdminServerWebConfiguration.class })
 public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
 
 	@Autowired(required = false)
@@ -46,11 +47,14 @@ public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
 	@Autowired
 	private ApplicationRegistry registry;
 
+	@Autowired
+	private AdminServerProperties adminServer;
+
 	@Bean
 	@Override
 	public ApplicationRouteLocator routeLocator() {
 		return new ApplicationRouteLocator(this.server.getServletPrefix(), registry,
-				RegistryController.PATH);
+				adminServer.getContextPath() + "/api/applications");
 	}
 
 	@Bean

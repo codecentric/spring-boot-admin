@@ -18,7 +18,7 @@ package de.codecentric.boot.admin.controller;
 import java.util.Collection;
 
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import de.codecentric.boot.admin.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.journal.ApplicationEventJournal;
@@ -26,10 +26,9 @@ import de.codecentric.boot.admin.journal.ApplicationEventJournal;
 /**
  * REST-Controller for querying all client application events.
  *
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
  */
-@RestController
-@RequestMapping("/api/journal")
+@ResponseBody
 public class JournalController {
 
 	private ApplicationEventJournal eventJournal;
@@ -38,7 +37,7 @@ public class JournalController {
 		this.eventJournal = eventJournal;
 	}
 
-	@RequestMapping
+	@RequestMapping("/api/journal")
 	public Collection<ClientApplicationEvent> getJournal() {
 		return eventJournal.getEvents();
 	}

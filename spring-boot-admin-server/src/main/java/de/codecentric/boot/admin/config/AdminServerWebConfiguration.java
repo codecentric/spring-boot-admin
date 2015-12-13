@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -31,8 +32,11 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,6 +55,7 @@ import de.codecentric.boot.admin.registry.HashingApplicationUrlIdGenerator;
 import de.codecentric.boot.admin.registry.StatusUpdater;
 import de.codecentric.boot.admin.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
+import de.codecentric.boot.admin.web.PrefixHandlerMapping;
 
 @Configuration
 @EnableConfigurationProperties
@@ -64,6 +69,9 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 
 	@Autowired
 	private ApplicationStore applicationStore;
+
+	@Autowired
+	private ServerProperties server;
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -93,6 +101,30 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler(adminServerProperties().getContextPath() + "/**")
+				.addResourceLocations("classpath:/META-INF/spring-boot-admin-server-ui/");
+	}
+
+	@Override
+	public void addViewControllers(ViewControllerRegistry registry) {
+		if (StringUtils.hasText(adminServerProperties().getContextPath())) {
+			registry.addRedirectViewController(adminServerProperties().getContextPath(),
+					server.getPath(adminServerProperties().getContextPath()) + "/");
+		}
+		registry.addViewController(adminServerProperties().getContextPath() + "/")
+				.setViewName("forward:index.html");
+	}
+
+	@Bean
+	public PrefixHandlerMapping prefixHandlerMapping() {
+		PrefixHandlerMapping prefixHandlerMapping = new PrefixHandlerMapping(registryController(),
+				journalController());
+		prefixHandlerMapping.setPrefix(adminServerProperties().getContextPath());
+		return prefixHandlerMapping;
 	}
 
 	/**

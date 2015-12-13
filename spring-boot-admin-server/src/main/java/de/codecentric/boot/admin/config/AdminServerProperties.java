@@ -5,7 +5,25 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("spring.boot.admin")
 public class AdminServerProperties {
 
+	/**
+	 * The context-path prefixes the path where the Admin Servers statics assets and api should be
+	 * served. Relative to the Dispatcher-Servlet.
+	 */
+	private String contextPath = "";
+
 	private MonitorProperties monitor = new MonitorProperties();
+
+	public void setContextPath(String pathPrefix) {
+		if (!pathPrefix.startsWith("/") || pathPrefix.endsWith("/")) {
+			throw new IllegalArgumentException(
+					"ContextPath must start with '/' and not end with '/'");
+		}
+		this.contextPath = pathPrefix;
+	}
+
+	public String getContextPath() {
+		return contextPath;
+	}
 
 	public MonitorProperties getMonitor() {
 		return monitor;
