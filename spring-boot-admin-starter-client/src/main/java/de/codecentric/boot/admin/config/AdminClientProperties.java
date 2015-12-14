@@ -25,13 +25,10 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.event.EventListener;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-@ConfigurationProperties(prefix = "spring.boot.admin.client", ignoreUnknownFields = false)
-@Order(Ordered.LOWEST_PRECEDENCE - 100)
+@ConfigurationProperties(prefix = "spring.boot.admin.client")
 public class AdminClientProperties {
 
 	/**
