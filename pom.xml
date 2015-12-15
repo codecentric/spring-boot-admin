@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -24,6 +23,7 @@
         <build-plugin.gpg.version>1.6</build-plugin.gpg.version>
         <build-plugin.asciidoctor.version>1.5.2</build-plugin.asciidoctor.version>
         <build-plugin.exec.version>1.4.0</build-plugin.exec.version>
+        <build-plugin.git-commit-id.version>2.2.0</build-plugin.git-commit-id.version>
     </properties>
     <modules>
         <module>spring-boot-admin-server</module>
@@ -107,6 +107,11 @@
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>${build-plugin.exec.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>pl.project13.maven</groupId>
+                    <artifactId>git-commit-id-plugin</artifactId>
+                    <version>${build-plugin.git-commit-id.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -164,7 +169,6 @@
                                     <goal>prepare-agent</goal>
                                 </goals>
                             </execution>
-
                             <!-- Ensures that the code coverage report for
                             unit tests is created after unit tests have been run. -->
                             <execution>

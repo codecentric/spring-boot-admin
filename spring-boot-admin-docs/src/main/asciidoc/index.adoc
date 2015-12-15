@@ -1,6 +1,7 @@
 = Spring Boot Admin Reference Guide =
 Johannes Edmeier <https://twitter.com/joshiste[@joshiste]>
-{docdate}
+:revnumber: {project-version} 
+:revdate: {commit-time}
 :toc: right
 :doctype: book
 :sectanchors:
@@ -32,12 +33,12 @@ First you need to setup your server. To do this just setup a simple boot project
 <dependency>
     <groupId>de.codecentric</groupId>
     <artifactId>spring-boot-admin-server</artifactId>
-    <version>{projectversion}</version>
+    <version>{project-version}</version>
 </dependency>
 <dependency>
     <groupId>de.codecentric</groupId>
     <artifactId>spring-boot-admin-server-ui</artifactId>
-    <version>{projectversion}</version>
+    <version>{project-version}</version>
 </dependency>
 ----
 
@@ -76,7 +77,7 @@ Each application that want to register itself to the admin has to include the Sp
 <dependency>
     <groupId>de.codecentric</groupId>
     <artifactId>spring-boot-admin-starter-client</artifactId>
-    <version>{projectversion}</version>
+    <version>{project-version}</version>
 </dependency>
 ----
 
