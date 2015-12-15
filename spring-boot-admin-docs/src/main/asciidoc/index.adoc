@@ -107,7 +107,7 @@ Also have a look at the http://projects.spring.io/spring-cloud/spring-cloud.html
 </dependency>
 ----
 
-. Enable the Discovery by adding `@EnableDiscoveryClient` to your configuration:
+. Enable discovery by adding `@EnableDiscoveryClient` to your configuration:
 +
 [source,java]
 ----
@@ -122,7 +122,7 @@ public class SpringBootAdminApplication {
 }
 ----
 
-. Tell the Eureka client to find the service registry:
+. Tell the Eureka client where to find the service registry:
 +
 [source]
 .application.properties
@@ -131,6 +131,8 @@ eureka.instance.client.serviceUrl.defaultZone: http://localhost:8761/eureka/
 ----
 
 See also https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-discovery/[spring-boot-admin-sample-discovery].
+
+NOTE: You can include the Spring Boot Admin to your Eureka server. Add the dependencies, add `@EnableAdminServer` to your configuration and set `spring.boot.admin.context-path` to something different than `"/"` so that the Spring Boot Admin Server UI won't clash with Eurekas one.
 
 [[client-applications]]
 == Client applications ==
@@ -199,7 +201,7 @@ spring.boot.admin.password
 
 | spring.boot.admin.period
 | Interval for repeating the registration (in ms).
-| `10000`
+| `10.000`
 
 | spring.boot.admin.auto-deregistration
 | Swtich to enable auto-deregistration at admin when context is closed.
