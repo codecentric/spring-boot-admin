@@ -17,7 +17,7 @@ package de.codecentric.boot.admin.journal.store;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.codecentric.boot.admin.event.ClientApplicationEvent;
@@ -28,20 +28,28 @@ import de.codecentric.boot.admin.event.ClientApplicationEvent;
  * @author Johannes Stelzer
  */
 public class SimpleJournaledEventStore implements JournaledEventStore {
+	private final List<ClientApplicationEvent> store = new LinkedList<ClientApplicationEvent>();
 
-	private final List<ClientApplicationEvent> store = Collections
-			.synchronizedList(new ArrayList<ClientApplicationEvent>(1000));
+	private int capacity = 1_000;
 
 	@Override
 	public Collection<ClientApplicationEvent> findAll() {
-		ArrayList<ClientApplicationEvent> list = new ArrayList<>(store);
-		Collections.reverse(list);
-		return list;
+		synchronized (this.store) {
+			return new ArrayList<>(store);
+		}
 	}
 
 	@Override
 	public void store(ClientApplicationEvent event) {
-		store.add(event);
+		synchronized (this.store) {
+			while (store.size() >= capacity) {
+				store.remove(capacity - 1);
+			}
+			store.add(0, event);
+		}
 	}
 
+	public void setCapacity(int capacity) {
+		this.capacity = capacity;
+	}
 }

@@ -18,10 +18,8 @@ package de.codecentric.boot.admin.journal.store;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -33,22 +31,39 @@ import de.codecentric.boot.admin.model.Application;
 
 public class SimpleJournaledEventStoreTest {
 
-	private SimpleJournaledEventStore store = new SimpleJournaledEventStore();
-
 	@Test
 	public void test_store() {
+		SimpleJournaledEventStore store = new SimpleJournaledEventStore();
 		Application application = Application.create("foo").withId("bar").build();
-		List<ClientApplicationEvent> events = Arrays.asList(new ClientApplicationRegisteredEvent(
-				application), new ClientApplicationDeregisteredEvent(application));
+		List<ClientApplicationEvent> events = Arrays.asList(
+				new ClientApplicationRegisteredEvent(application),
+				new ClientApplicationDeregisteredEvent(application));
 
 		for (ClientApplicationEvent event : events) {
 			store.store(event);
 		}
 
-		// Items are stored in reverse order
-		List<ClientApplicationEvent> reversed = new ArrayList<>(events);
-		Collections.reverse(reversed);
-
-		assertThat(store.findAll(), is((Collection<ClientApplicationEvent>) reversed));
+		assertThat(store.findAll(), is(
+				(Collection<ClientApplicationEvent>) Arrays.asList(events.get(1), events.get(0))));
 	}
+
+	@Test
+	public void test_store_capacity() {
+		SimpleJournaledEventStore store = new SimpleJournaledEventStore();
+		store.setCapacity(2);
+
+		Application application = Application.create("foo").withId("bar").build();
+		List<ClientApplicationEvent> events = Arrays.asList(
+				new ClientApplicationRegisteredEvent(application),
+				new ClientApplicationDeregisteredEvent(application),
+				new ClientApplicationDeregisteredEvent(application));
+
+		for (ClientApplicationEvent event : events) {
+			store.store(event);
+		}
+
+		assertThat(store.findAll(), is(
+				(Collection<ClientApplicationEvent>) Arrays.asList(events.get(2), events.get(1))));
+	}
+
 }
