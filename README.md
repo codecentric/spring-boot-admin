@@ -34,6 +34,7 @@ This application provides a simple GUI to administrate Spring Boot applications 
 ## Reference Guide
 
 [Version 1.3.2](http://codecentric.github.io/spring-boot-admin/1.3.2/)
+
 [Version 1.3.0](http://codecentric.github.io/spring-boot-admin/1.3.0/)
 
 ## Screenshots
