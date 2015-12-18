@@ -29,7 +29,7 @@ mkdir -p "$TEMPDIR"/"${PROJECT_VERSION}"
 cp -r target/generated-docs/* "$TEMPDIR"/"${PROJECT_VERSION}"/
 
 pushd "$TEMPDIR" >/dev/null
-git add .
+git add --all .
 
 if git diff-index --quiet HEAD; then
   echo "No changes detected."
