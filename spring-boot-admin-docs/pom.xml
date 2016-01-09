@@ -24,6 +24,7 @@
                             <goal>revision</goal>
                         </goals>
                         <configuration>
+                            <failOnNoGitDirectory>false</failOnNoGitDirectory>
                             <skipPoms>false</skipPoms>
                             <generateGitPropertiesFile>false</generateGitPropertiesFile>
                             <dateFormat>dd.MM.yyyy</dateFormat>
