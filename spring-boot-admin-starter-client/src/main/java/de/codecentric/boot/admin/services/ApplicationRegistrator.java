@@ -69,31 +69,33 @@ public class ApplicationRegistrator {
 	 * @return true if successful
 	 */
 	public boolean register() {
-		Application self = null;
-		try {
-			self = createApplication();
+		Application self = createApplication();
 
-			@SuppressWarnings("rawtypes")
-			ResponseEntity<Map> response = template.postForEntity(admin.getAdminUrl(),
-					new HttpEntity<Application>(self, HTTP_HEADERS), Map.class);
+		for (String adminUrl : admin.getAdminUrl()) {
+			try {
+				@SuppressWarnings("rawtypes")
+				ResponseEntity<Map> response = template.postForEntity(adminUrl,
+						new HttpEntity<Application>(self, HTTP_HEADERS), Map.class);
 
-			if (response.getStatusCode().equals(HttpStatus.CREATED)) {
-				if (registeredId.get() == null) {
-					if (registeredId.compareAndSet(null, response.getBody().get("id").toString())) {
-						LOGGER.info("Application registered itself as {}", response.getBody());
-						return true;
+				if (response.getStatusCode().equals(HttpStatus.CREATED)) {
+					if (registeredId.get() == null) {
+						if (registeredId.compareAndSet(null,
+								response.getBody().get("id").toString())) {
+							LOGGER.info("Application registered itself as {}", response.getBody());
+							return true;
+						}
 					}
-				}
 
-				LOGGER.debug("Application refreshed itself as {}", response.getBody());
-				return true;
-			} else {
-				LOGGER.warn("Application failed to registered itself as {}. Response: {}", self,
-						response.toString());
+					LOGGER.debug("Application refreshed itself as {}", response.getBody());
+					return true;
+				} else {
+					LOGGER.warn("Application failed to registered itself as {}. Response: {}", self,
+							response.toString());
+				}
+			} catch (Exception ex) {
+				LOGGER.warn("Failed to register application as {} at spring-boot-admin ({}): {}",
+						self, admin.getAdminUrl(), ex.getMessage());
 			}
-		} catch (Exception ex) {
-			LOGGER.warn("Failed to register application as {} at spring-boot-admin ({}): {}", self,
-					admin.getAdminUrl(), ex.getMessage());
 		}
 
 		return false;
@@ -102,13 +104,16 @@ public class ApplicationRegistrator {
 	public void deregister() {
 		String id = registeredId.get();
 		if (id != null) {
-			try {
-				template.delete(admin.getAdminUrl() + "/" + id);
-				registeredId.set(null);
-			} catch (Exception ex) {
-				LOGGER.warn(
-						"Failed to deregister application (id={}) at spring-boot-admin ({}): {}",
-						id, admin.getAdminUrl(), ex.getMessage());
+			for (String adminUrl : admin.getAdminUrl()) {
+				try {
+					template.delete(adminUrl + "/" + id);
+					registeredId.set(null);
+					return;
+				} catch (Exception ex) {
+					LOGGER.warn(
+							"Failed to deregister application (id={}) at spring-boot-admin ({}): {}",
+							id, adminUrl, ex.getMessage());
+				}
 			}
 		}
 	}

@@ -51,7 +51,7 @@ public class ApplicationRegistratorTest {
 		restTemplate = mock(RestTemplate.class);
 
 		AdminProperties adminProps = new AdminProperties();
-		adminProps.setUrl("http://sba:8080");
+		adminProps.setUrl(new String[] { "http://sba:8080", "http://sba2:8080" });
 
 		AdminClientProperties clientProps = new AdminClientProperties();
 		clientProps.setManagementUrl("http://localhost:8080/mgmt");
@@ -73,9 +73,7 @@ public class ApplicationRegistratorTest {
 				.thenReturn(new ResponseEntity<Map>(Collections.singletonMap("id", "-id-"),
 						HttpStatus.CREATED));
 
-		boolean result = registrator.register();
-
-		assertTrue(result);
+		assertTrue(registrator.register());
 		verify(restTemplate)
 				.postForEntity("http://sba:8080/api/applications",
 						new HttpEntity<Application>(Application.create("AppName")
@@ -90,9 +88,19 @@ public class ApplicationRegistratorTest {
 		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class),
 				eq(Application.class))).thenThrow(new RestClientException("Error"));
 
-		boolean result = registrator.register();
+		assertFalse(registrator.register());
+	}
 
-		assertFalse(result);
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void register_retry() {
+		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class),
+				eq(Application.class))).thenThrow(new RestClientException("Error"));
+		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class)))
+				.thenReturn(new ResponseEntity<Map>(Collections.singletonMap("id", "-id-"),
+						HttpStatus.CREATED));
+
+		assertTrue(registrator.register());
 	}
 
 	@SuppressWarnings("rawtypes")

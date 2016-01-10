@@ -187,7 +187,7 @@ The Spring Boot Admin Client registers the application at the admin server. This
 | Property name |Description |Default value
 
 | spring.boot.admin.url
-| URL of the spring-boot-admin application to register at. This triggers the AutoConfiguration. *Mandatory*.
+| List of URLs of the Spring Boot Admin server to register at. This triggers the AutoConfiguration. *Mandatory*.
 |
 
 | spring.boot.admin.api-path
@@ -204,19 +204,19 @@ spring.boot.admin.password
 | `10.000`
 
 | spring.boot.admin.auto-deregistration
-| Swtich to enable auto-deregistration at admin when context is closed.
+| Switch to enable auto-deregistration at Spring Boot Admin server when context is closed.
 | `false`
 
 | spring.boot.admin.client.health-url
-| Client-health-url to register with. Can be overriden in case the reachable URL is different (e.g. Docker). Must be unique in registry.
+| Client-health-url to register with. Can be overridden in case the reachable URL is different (e.g. Docker). Must be unique in registry.
 | Guessed based on management-url and `endpoints.health.id`.
 
 | spring.boot.admin.client.management-url
-| Client-management-url to register with. Can be overriden in case the reachable url is different (e.g. Docker).
+| Client-management-url to register with. Can be overridden in case the reachable url is different (e.g. Docker).
 | Guessed based on service-url, `server.servlet-path`, `management.port` and `management.context-path`.
 
 | spring.boot.admin.client.service-url
-| Client-service-url to register with. Can be overriden in case the reachable url is different (e.g. Docker).
+| Client-service-url to register with. Can be overridden in case the reachable url is different (e.g. Docker).
 | Guessed based on hostname, `server.port` and `server.context-path`.
 
 | spring.boot.admin.client.name
@@ -236,7 +236,7 @@ spring.boot.admin.password
 | Property name |Description |Default value
 
 | spring.boot.admin.context-path
-| The context-path prefixes the path where the Admin Servers statics assets and api should be served. Relative to the Dispatcher-Servlet.
+| The context-path prefixes the path where the Admin Servers statics assets and API should be served. Relative to the Dispatcher-Servlet.
 |
 
 | spring.boot.admin.monitor.period
@@ -244,7 +244,7 @@ spring.boot.admin.password
 | 10.000
 
 | spring.boot.admin.monitor.status-lifetime
-| Lifetime of iapplication statuses in ms. The applications /health-endpoint will not be queried until the lifetime has expired.
+| Lifetime of application statuses in ms. The applications /health-endpoint will not be queried until the lifetime has expired.
 | 10.000
 |===
 
@@ -384,7 +384,7 @@ spring.boot.admin.notify.mail.to=admin@example.com
 
 [[pagerduty-notifications]]
 === Pagerduty notifications ===
-To enable pagerduty notifications you just have to add a generic service to your pagerduty-account and set `spring.boot.admin.notify.pagerduty.service-key` to the service-key you recieved.
+To enable pagerduty notifications you just have to add a generic service to your pagerduty-account and set `spring.boot.admin.notify.pagerduty.service-key` to the service-key you received.
 
 .Pagerduty notifications configuration options
 |===
@@ -424,7 +424,7 @@ To enable pagerduty notifications you just have to add a generic service to your
 [qanda]
 Can I include spring-boot-admin into my business application?::
   *tl;dr* You can, but you shouldn't. +
-  You can set `spring.boot.admin.context-path` to alter the path where the UI and REST-api is served, but depending on the complexity of your application you might get in trouble. On the other hand in my opinion it makes no sense for an application to monitor itself. In case your application goes down your monitioring tool also does.
+  You can set `spring.boot.admin.context-path` to alter the path where the UI and REST-API is served, but depending on the complexity of your application you might get in trouble. On the other hand in my opinion it makes no sense for an application to monitor itself. In case your application goes down your monitoring tool also does.
 
 How do I disable Spring Boot Admin Client for my unit tests?::
   The AutoConfiguration is triggered by the presence of the `spring.boot.admin.url`. So if you don't set this property for your tests, the Spring Boot Admin Client is not active.

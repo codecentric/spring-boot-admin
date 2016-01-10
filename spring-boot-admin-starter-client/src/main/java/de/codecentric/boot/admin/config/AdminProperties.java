@@ -23,7 +23,7 @@ public class AdminProperties {
 	/**
 	 * The admin servers url to register at
 	 */
-	private String url;
+	private String[] url;
 
 	/**
 	 * The admin rest-apis path.
@@ -50,12 +50,12 @@ public class AdminProperties {
 	 */
 	private boolean autoDeregistration;
 
-	public void setUrl(String url) {
-		this.url = url;
+	public void setUrl(String[] url) {
+		this.url = url.clone();
 	}
 
-	public String getUrl() {
-		return url;
+	public String[] getUrl() {
+		return url.clone();
 	}
 
 	public void setApiPath(String apiPath) {
@@ -66,8 +66,12 @@ public class AdminProperties {
 		return apiPath;
 	}
 
-	public String getAdminUrl() {
-		return url + "/" + apiPath;
+	public String[] getAdminUrl() {
+		String adminUrls[] = url.clone();
+		for (int i = 0; i < adminUrls.length; i++) {
+			adminUrls[i] += "/" + apiPath;
+		}
+		return adminUrls;
 	}
 
 	public int getPeriod() {
