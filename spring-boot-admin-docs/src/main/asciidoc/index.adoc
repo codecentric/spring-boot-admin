@@ -196,7 +196,7 @@ The Spring Boot Admin Client registers the application at the admin server. This
 
 | spring.boot.admin.username
 spring.boot.admin.password
-| Username and password for http-basic authentication. If set the registration uses http-basic-authetication when registering at the admin server.
+| Username and password for http-basic authentication. If set the registration uses http-basic-authentication when registering at the admin server.
 |
 
 | spring.boot.admin.period
