@@ -4,7 +4,8 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.3.1.RELEASE</version>
+        <version>1.3.2.RELEASE</version>
+        <relativePath/>
     </parent>
     <groupId>de.codecentric</groupId>
     <artifactId>spring-boot-admin</artifactId>
@@ -16,8 +17,8 @@
     <properties>
         <java.version>1.7</java.version>
         <main.basedir>${basedir}</main.basedir>
-        <spring-boot.version>1.3.1.RELEASE</spring-boot.version>
-        <spring-cloud.version>Angel.SR4</spring-cloud.version>
+        <spring-boot.version>1.3.2.RELEASE</spring-boot.version>
+        <spring-cloud.version>Angel.SR6</spring-cloud.version>
         <build-plugin.jacoco.version>0.7.5.201505241946</build-plugin.jacoco.version>
         <build-plugin.coveralls.version>4.0.0</build-plugin.coveralls.version>
         <build-plugin.gpg.version>1.6</build-plugin.gpg.version>
@@ -239,6 +240,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+<!-- Removed for release
     <repositories>
         <repository>
             <id>spring-release</id>
@@ -271,4 +273,5 @@
             <url>http://repo.spring.io/milestone</url>
         </pluginRepository>
     </pluginRepositories>
+-->
 </project>
