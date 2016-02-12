@@ -186,6 +186,10 @@ The Spring Boot Admin Client registers the application at the admin server. This
 |===
 | Property name |Description |Default value
 
+| spring.boot.admin.client.enabled
+| Enables the Spring Boot Admin Client.
+| true
+
 | spring.boot.admin.url
 | List of URLs of the Spring Boot Admin server to register at. This triggers the AutoConfiguration. *Mandatory*.
 |

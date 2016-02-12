@@ -34,6 +34,13 @@ public class SpringBootAdminClientAutoConfigurationTest {
 		context.getBean(ApplicationRegistrator.class);
 	}
 
+	@Test
+	public void disabled() {
+		load("spring.boot.admin.url:http://localhost:8081",
+				"spring.boot.admin.client.enabled:false");
+		assertTrue(context.getBeansOfType(ApplicationRegistrator.class).isEmpty());
+	}
+
 	private void load(String... environment) {
 		AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
 		applicationContext.register(ServerPropertiesAutoConfiguration.class);

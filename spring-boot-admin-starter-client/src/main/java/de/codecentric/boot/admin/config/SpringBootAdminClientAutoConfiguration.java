@@ -19,9 +19,9 @@ import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -39,7 +39,7 @@ import de.codecentric.boot.admin.web.BasicAuthHttpRequestInterceptor;
  */
 @Configuration
 @EnableConfigurationProperties({ AdminProperties.class, AdminClientProperties.class })
-@ConditionalOnProperty("spring.boot.admin.url")
+@Conditional(SpringBootAdminClientEnabledCondition.class)
 public class SpringBootAdminClientAutoConfiguration {
 
 	@Autowired

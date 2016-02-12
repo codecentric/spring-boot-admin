@@ -1,0 +1,10 @@
+{"groups": [
+
+],"properties": [
+  {
+    "name": "spring.boot.admin.client.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Spring Admin Client.",
+    "defaultValue": "true"
+  }
+]}
