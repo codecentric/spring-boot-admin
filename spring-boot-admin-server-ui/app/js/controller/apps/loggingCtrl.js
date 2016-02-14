@@ -27,6 +27,7 @@ module.exports = function ($scope, application) {
                     return loggers[i];
                 }
             }
+            return null;
         };
 
         $scope.setLogLevel = function (name, level) {
