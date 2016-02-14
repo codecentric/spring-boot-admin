@@ -16,12 +16,14 @@
 package de.codecentric.boot.admin.controller;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
 import java.util.Collection;
 
 import org.junit.Test;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import de.codecentric.boot.admin.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
@@ -37,8 +39,8 @@ public class JournalControllerTest {
 
 	@Test
 	public void test_getJournal() {
-		ClientApplicationEvent emittedEvent = new ClientApplicationRegisteredEvent(Application
-				.create("foo").withId("bar").build());
+		ClientApplicationEvent emittedEvent = new ClientApplicationRegisteredEvent(
+				Application.create("foo").withId("bar").build());
 		journal.onClientApplicationEvent(emittedEvent);
 
 		Collection<ClientApplicationEvent> history = controller.getJournal();
@@ -47,5 +49,16 @@ public class JournalControllerTest {
 
 		ClientApplicationEvent event = history.iterator().next();
 		assertThat(event, sameInstance(emittedEvent));
+	}
+
+	@Test
+	public void test_getJournal_sse() {
+		ClientApplicationEvent emittedEvent = new ClientApplicationRegisteredEvent(
+				Application.create("foo").withId("bar").build());
+
+		SseEmitter emitter = controller.getJournalEvents();
+		journal.onClientApplicationEvent(emittedEvent);
+
+		assertThat(emitter, notNullValue());
 	}
 }

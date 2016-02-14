@@ -11,9 +11,6 @@ spring:
   cloud:
     config:
       enabled: false
-  jackson:
-    serialization:
-      indent-output: true
 
 endpoints:
   health:
