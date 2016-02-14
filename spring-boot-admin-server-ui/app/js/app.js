@@ -62,9 +62,8 @@ springBootAdmin.config(function ($stateProvider, $urlRouterProvider) {
             resolve: {
                 application: function ($stateParams, Application) {
                     return Application.get({
-                            id: $stateParams.id
-                        })
-                        .$promise;
+                        id: $stateParams.id
+                    }).$promise;
                 }
             }
         })
@@ -119,6 +118,95 @@ springBootAdmin.config(function ($stateProvider, $urlRouterProvider) {
             controller: 'journalCtrl'
         });
 });
-springBootAdmin.run(function ($rootScope, $state) {
+
+springBootAdmin.run(function ($rootScope, $state, $log, $filter, Notification, Application ) {
     $rootScope.$state = $state;
+    $rootScope.applications = [];
+    $rootScope.indexOfApplication = function (id) {
+       for (var i = 0; i <  $rootScope.applications.length; i++) {
+            if ($rootScope.applications[i].id === id) {
+                return i;
+            }
+       }
+       return -1;
+    };
+
+    var refresh = function(application) {
+        application.info = {};
+        application.refreshing = true;
+        application.getCapabilities();
+        application.getInfo().then(function(info) {
+            application.version = info.version;
+            application.infoDetails = null;
+            application.infoShort = '';
+            delete info.version;
+            var infoYml = $filter('yaml')(info);
+            if (infoYml !== '{}\n') {
+                application.infoShort = $filter('limitLines')(infoYml, 3);
+                if (application.infoShort !== infoYml) {
+                     application.infoDetails = $filter('limitLines')(infoYml, 32000, 3);
+                }
+            }
+          }).finally(function(){
+              application.refreshing = false;
+          });
+    };
+
+    Application.query(function (applications) {
+        for (var i = 0; i < applications.length; i++) {
+                refresh(applications[i]);
+        }
+        $rootScope.applications = applications;
+    });
+
+
+    //setups up the sse-reciever
+    var journalEventSource = new EventSource('api/journal');
+    journalEventSource.onmessage = function(message) {
+        var event = JSON.parse(message.data);
+        Object.setPrototypeOf(event.application, Application.prototype);
+
+        var options = { tag: event.application.id,
+                        body: 'Instance ' + event.application.id + '\n' + event.application.healthUrl,
+                        icon: 'img/unknown.png',
+                        timeout: 10000,
+                        url: $state.href('apps.details', {id: event.application.id}) };
+        var title = event.application.name;
+        var index = $rootScope.indexOfApplication(event.application.id);
+
+        if (event.type === 'REGISTRATION') {
+            if (index === -1) {
+                $rootScope.applications.push(event.application);
+            }
+
+            title += ' instance registered.';
+            options.tag = event.application.id + '-REGISTRY';
+        } else if (event.type === 'DEREGISTRATION') {
+            if (index > -1) {
+                $rootScope.applications.splice(index, 1);
+            }
+
+            title += ' instance removed.';
+            options.tag = event.application.id + '-REGISTRY';
+        } else if (event.type === 'STATUS_CHANGE') {
+            refresh(event.application);
+            if (index > -1) {
+                $rootScope.applications[index] = event.application;
+            } else {
+                $rootScope.applications.push(event.application);
+            }
+
+            title += ' instance is ' + event.to.status;
+            options.tag = event.application.id + '-STATUS';
+            options.icon = event.to.status !== 'UP' ? 'img/error.png' : 'img/ok.png';
+            options.body = event.from.status + ' --> ' + event.to.status + '\n' + options.body;
+        }
+
+        $rootScope.$apply();
+        Notification.notify(title, options);
+    };
+
+    journalEventSource.onerror = function(event) {
+        $log.error('Could not read server sent event!', event);
+    };
 });
