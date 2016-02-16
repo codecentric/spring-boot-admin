@@ -51,21 +51,6 @@ import de.codecentric.boot.admin.model.Application;
  * @author Dennis Schulte
  */
 public class AdminApplicationHazelcastTest {
-
-	@Configuration
-	@EnableAutoConfiguration
-	@EnableAdminServer
-	public static class TestAdminApplication {
-		@Bean
-		public Config hazelcastConfig() {
-			return new Config()
-					.addMapConfig(new MapConfig("spring-boot-admin-application-store")
-							.setBackupCount(1).setEvictionPolicy(EvictionPolicy.NONE))
-					.addListConfig(new ListConfig("spring-boot-admin-application-store")
-							.setBackupCount(1).setMaxSize(1000));
-		}
-	}
-
 	private RestTemplate template = new TestRestTemplate();
 	private EmbeddedWebApplicationContext instance1;
 	private EmbeddedWebApplicationContext instance2;
@@ -144,6 +129,20 @@ public class AdminApplicationHazelcastTest {
 				"http://localhost:" + port + "/api/applications?name={name}", ApplicationList.class,
 				Collections.singletonMap("name", name));
 		return (ResponseEntity<Collection<Application>>) getResponse;
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableAdminServer
+	public static class TestAdminApplication {
+		@Bean
+		public Config hazelcastConfig() {
+			return new Config()
+					.addMapConfig(new MapConfig("spring-boot-admin-application-store")
+							.setBackupCount(1).setEvictionPolicy(EvictionPolicy.NONE))
+					.addListConfig(new ListConfig("spring-boot-admin-application-store")
+							.setBackupCount(1).setMaxSize(1000));
+		}
 	}
 
 	public static class ApplicationList extends ArrayList<Application> {

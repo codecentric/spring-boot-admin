@@ -15,17 +15,16 @@
  */
 package de.codecentric.boot.admin.zuul;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cloud.netflix.zuul.filters.RouteLocator;
-import org.springframework.cloud.netflix.zuul.filters.ZuulProperties.ZuulRoute;
+import org.springframework.cloud.netflix.zuul.filters.RefreshableRouteLocator;
+import org.springframework.cloud.netflix.zuul.filters.Route;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
 import org.springframework.util.PathMatcher;
@@ -37,17 +36,20 @@ import de.codecentric.boot.admin.registry.ApplicationRegistry;
 /**
  * RouteLocator to register all applications' routes to zuul
  *
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
  */
-public class ApplicationRouteLocator implements RouteLocator {
+public class ApplicationRouteLocator implements RefreshableRouteLocator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationRouteLocator.class);
-	private AtomicReference<Map<String, ZuulRoute>> routes = new AtomicReference<>();
+
 	private ApplicationRegistry registry;
-	private String prefix;
 	private PathMatcher pathMatcher = new AntPathMatcher();
+
+	private AtomicReference<List<Route>> routes = new AtomicReference<>();
+
+	private String prefix;
 	private String servletPath;
-	private String[] proxyEndpoints = { "/env", "/metrics", "/trace", "/dump", "/jolokia", "/info",
-			"/configprops", "/trace", "/activiti", "/logfile", "/refresh" };
+	private String[] proxyEndpoints = { "env", "metrics", "trace", "dump", "jolokia", "info",
+			"configprops", "trace", "activiti", "logfile", "refresh" };
 
 	public ApplicationRouteLocator(String servletPath, ApplicationRegistry registry,
 			String prefix) {
@@ -56,68 +58,82 @@ public class ApplicationRouteLocator implements RouteLocator {
 		this.prefix = prefix;
 	}
 
-	private LinkedHashMap<String, ZuulRoute> locateRoutes() {
-		LinkedHashMap<String, ZuulRoute> locateRoutes = new LinkedHashMap<String, ZuulRoute>();
-		for (Application application : registry.getApplications()) {
-			String appPath = prefix + "/" + application.getId();
-			addRoute(locateRoutes, appPath + "/health/**", application.getHealthUrl());
+	protected List<Route> locateRoutes() {
+		Collection<Application> applications = registry.getApplications();
+
+		List<Route> locateRoutes = new ArrayList<Route>(
+				applications.size() * (proxyEndpoints.length + 1));
+
+		for (Application application : applications) {
+			addRoute(locateRoutes, application.getId(), "health", application.getHealthUrl());
+
 			if (!StringUtils.isEmpty(application.getManagementUrl())) {
 				for (String endpoint : proxyEndpoints) {
-					addRoute(locateRoutes, appPath + endpoint + "/**",
-							application.getManagementUrl() + endpoint);
+					addRoute(locateRoutes, application.getId(), endpoint,
+							application.getManagementUrl() + "/" + endpoint);
 				}
 			}
 		}
+
 		return locateRoutes;
 	}
 
-	private void addRoute(LinkedHashMap<String, ZuulRoute> locateRoutes, String path, String url) {
-		locateRoutes.put(path, new ZuulRoute(path, url));
-	}
-
-	public ProxyRouteSpec getMatchingRoute(String path) {
-		LOGGER.debug("Finding route for path: {}", path);
-		LOGGER.debug("servletPath={}", this.servletPath);
-		if (StringUtils.hasText(this.servletPath) && !this.servletPath.equals("/")
-				&& path.startsWith(this.servletPath)) {
-			path = path.substring(this.servletPath.length());
-		}
-		for (Entry<String, ZuulRoute> entry : this.routes.get().entrySet()) {
-			String pattern = entry.getKey();
-			LOGGER.debug("Matching pattern: {}", pattern);
-			if (this.pathMatcher.match(pattern, path)) {
-				ZuulRoute route = entry.getValue();
-				int index = route.getPath().indexOf("*") - 1;
-				String routePrefix = route.getPath().substring(0, index);
-				String targetPath = path.substring(index, path.length());
-				return new ProxyRouteSpec(route.getId(), targetPath, route.getLocation(),
-						routePrefix);
-			}
-		}
-		return null;
+	private void addRoute(List<Route> locateRoutes, String applicationId, String endpoint,
+			String targetUrl) {
+		Route route = new Route(applicationId + "-" + endpoint, "/**", targetUrl,
+				prefix + applicationId + "/" + endpoint, false, null);
+		locateRoutes.add(route);
 	}
 
 	@Override
-	public Collection<String> getRoutePaths() {
-		return getRoutes().keySet();
-	}
+	public Route getMatchingRoute(final String path) {
+		LOGGER.debug("Finding route for path: {}", path);
 
-	public void resetRoutes() {
-		this.routes.set(locateRoutes());
-	}
-
-	public Map<String, String> getRoutes() {
 		if (this.routes.get() == null) {
 			this.routes.set(locateRoutes());
 		}
-		Map<String, String> values = new LinkedHashMap<>();
-		for (String key : this.routes.get().keySet()) {
-			String url = key;
-			values.put(url, this.routes.get().get(key).getLocation());
+
+		LOGGER.debug("servletPath= {}", this.servletPath);
+
+		String adjustedPath = stripServletPath(path);
+
+		for (Route route : this.routes.get()) {
+			String pattern = route.getFullPath();
+			LOGGER.debug("Matching pattern: {}", pattern);
+			if (this.pathMatcher.match(pattern, adjustedPath)) {
+				LOGGER.debug("route matched= {}", route);
+				return adjustPathRoute(route, adjustedPath);
+			}
 		}
-		return values;
+
+		return null;
 	}
 
+	private Route adjustPathRoute(Route route, String path) {
+		String adjustedPath;
+		if (path.startsWith(route.getPrefix())) {
+			adjustedPath = path.substring(route.getPrefix().length());
+		} else {
+			adjustedPath = path;
+		}
+		return new Route(route.getId(), adjustedPath, route.getLocation(), route.getPrefix(),
+				route.getRetryable(), null);
+	}
+
+	@Override
+	public List<Route> getRoutes() {
+		if (this.routes.get() == null) {
+			this.routes.set(locateRoutes());
+		}
+		return new ArrayList<>(routes.get());
+	}
+
+	@Override
+	public void refresh() {
+		routes.set(locateRoutes());
+	}
+
+	@Override
 	public Collection<String> getIgnoredPaths() {
 		return Collections.emptyList();
 	}
@@ -125,38 +141,21 @@ public class ApplicationRouteLocator implements RouteLocator {
 	public void setProxyEndpoints(String[] proxyEndpoints) {
 		for (String endpoint : proxyEndpoints) {
 			Assert.hasText(endpoint, "The proxyEndpoints must not contain null");
-			Assert.isTrue(endpoint.startsWith("/"), "All proxyEndpoints must start with '/'");
+			Assert.isTrue(!endpoint.startsWith("/"), "All proxyEndpoints must not start with '/'");
 		}
 		this.proxyEndpoints = proxyEndpoints.clone();
 	}
 
-	public static class ProxyRouteSpec {
-		private final String id;
-		private final String path;
-		private final String location;
-		private final String prefix;
+	private String stripServletPath(final String path) {
+		String adjustedPath = path;
 
-		public ProxyRouteSpec(String id, String path, String location, String prefix) {
-			this.id = id;
-			this.path = path;
-			this.location = location;
-			this.prefix = prefix;
+		if (StringUtils.hasText(servletPath)) {
+			if (!servletPath.equals("/")) {
+				adjustedPath = path.substring(this.servletPath.length());
+			}
 		}
 
-		public String getId() {
-			return id;
-		}
-
-		public String getPath() {
-			return path;
-		}
-
-		public String getLocation() {
-			return location;
-		}
-
-		public String getPrefix() {
-			return prefix;
-		}
+		LOGGER.debug("adjustedPath={}", path);
+		return adjustedPath;
 	}
 }

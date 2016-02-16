@@ -191,7 +191,7 @@ The Spring Boot Admin Client registers the application at the admin server. This
 
 | spring.boot.admin.client.enabled
 | Enables the Spring Boot Admin Client.
-| true
+| `true`
 
 | spring.boot.admin.url
 | List of URLs of the Spring Boot Admin server to register at. This triggers the AutoConfiguration. *Mandatory*.
@@ -266,6 +266,14 @@ spring.boot.admin.password
 The Spring Boot Admin Server is capable of using  Spring Clouds `DiscoveryClient` to discover applications. The advantage is that the clients don't have to include the `spring-boot-admin-starter-client`. You just have to add a DiscoveryClient to your admin server - everything else is done by AutoConfiguration.
 The setup is explained <<discover-clients-via-spring-cloud-discovery,above>>.
 
+==== Usage of discovery informations ====
+
+The informations of the discovered services is converted by the `ServiceInstanceConverter`. Spring Boot Admin ships with a default and Eureka converter implementation. The corresponding one is selected by AutoConfiguration. You can use your own conversion by simply implementing the interface and adding the bean to your application context.
+
+TIP: When Eureka discovery is used, the `EurekaServiceInstanceConverter` will use the discovered instances homePageUrl and healthCheckUrl. In case the instances managment.context-path is different from the homePageUrl you should add an entry `management.context-path` to the instances metadata-map with the corresponding value.
+
+TIP: When the default conversion kicks in, you can use the `spring.boot.admin.discovery.converter.*` properties to control the conversion for all your instances.
+
 .Discovery configuration options
 |===
 | Property name |Description |Default value
@@ -274,12 +282,18 @@ The setup is explained <<discover-clients-via-spring-cloud-discovery,above>>.
 | Enables the DiscoveryClient-support for the admin server.
 | `true`
 
-| spring.boot.admin.discovery.management.context-path
+| spring.boot.admin.discovery.management.context-path _(deprecated)_
 | If set this will be appended to the service-url from the discovery information.
 |
-|===
 
-NOTE: Currently the implementation is not specific to any DiscoveryClient implementation. Unfortunately the DiscoveryClient doesn't expose the health- or management-url, so if you're not sticking to the defaults and setting `spring.boot.admin.discovery.management.context-path` doesn't suffice, you can add a bean extending `ApplicationDiscoveryListener` to your admin server and provide your own conversion.
+| spring.boot.admin.discovery.converter.management-context-path
+| Will be appended to the service-url of the discovered service when the managment-url is converter by the `DefaultServiceInstanceConverter`.
+|
+
+| spring.boot.admin.discovery.converter.health-endpoint
+| Will be appended to the management-url of the discovered service when the health-url is converter by the `DefaultServiceInstanceConverter`.
+| `"health"`
+|===
 
 [[hazelcast-support]]
 === Hazelcast support ===
@@ -544,9 +558,6 @@ public class ReminderConfiguration {
 Can I include spring-boot-admin into my business application?::
   *tl;dr* You can, but you shouldn't. +
   You can set `spring.boot.admin.context-path` to alter the path where the UI and REST-API is served, but depending on the complexity of your application you might get in trouble. On the other hand in my opinion it makes no sense for an application to monitor itself. In case your application goes down your monitoring tool also does.
-
-How do I disable Spring Boot Admin Client for my unit tests?::
-  The AutoConfiguration is triggered by the presence of the `spring.boot.admin.url`. So if you don't set this property for your tests, the Spring Boot Admin Client is not active.
 
 How do I customize the UI?::
   You can only customize the UI by copying and modifying the source of `spring-boot-admin-ui` and adding your own module to your classpath.

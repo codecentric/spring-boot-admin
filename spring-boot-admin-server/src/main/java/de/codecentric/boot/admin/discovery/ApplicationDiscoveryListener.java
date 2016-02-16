@@ -22,7 +22,6 @@ import org.springframework.cloud.client.discovery.event.HeartbeatMonitor;
 import org.springframework.cloud.client.discovery.event.InstanceRegisteredEvent;
 import org.springframework.cloud.client.discovery.event.ParentHeartbeatEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.util.StringUtils;
 
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
@@ -30,21 +29,14 @@ import de.codecentric.boot.admin.registry.ApplicationRegistry;
 /**
  * Listener for Heartbeats events to publish all services to the application registry.
  *
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
  */
 public class ApplicationDiscoveryListener {
 
 	private final DiscoveryClient discoveryClient;
-
 	private final ApplicationRegistry registry;
-
 	private final HeartbeatMonitor monitor = new HeartbeatMonitor();
-
-	private String managementContextPath = "";
-
-	private String serviceContextPath = "";
-
-	private String healthEndpoint = "health";
+	private ServiceInstanceConverter converter = new DefaultServiceInstanceConverter();
 
 	public ApplicationDiscoveryListener(DiscoveryClient discoveryClient,
 			ApplicationRegistry registry) {
@@ -82,33 +74,10 @@ public class ApplicationDiscoveryListener {
 	}
 
 	protected Application convert(ServiceInstance instance) {
-		String serviceUrl = append(instance.getUri().toString(), serviceContextPath);
-		String managementUrl = append(instance.getUri().toString(), managementContextPath);
-		String healthUrl = append(managementUrl, healthEndpoint);
-
-		return Application.create(instance.getServiceId()).withHealthUrl(healthUrl)
-				.withManagementUrl(managementUrl).withServiceUrl(serviceUrl).build();
+		return converter.convert(instance);
 	}
 
-	public void setManagementContextPath(String managementContextPath) {
-		this.managementContextPath = managementContextPath;
-	}
-
-	public void setServiceContextPath(String serviceContextPath) {
-		this.serviceContextPath = serviceContextPath;
-	}
-
-	public void setHealthEndpoint(String healthEndpoint) {
-		this.healthEndpoint = healthEndpoint;
-	}
-
-	protected final String append(String uri, String path) {
-		String baseUri = uri.replaceFirst("/+$", "");
-		if (StringUtils.isEmpty(path)) {
-			return baseUri;
-		}
-
-		String normPath = path.replaceFirst("^/+", "").replaceFirst("/+$", "");
-		return baseUri + "/" + normPath;
+	public void setConverter(ServiceInstanceConverter converter) {
+		this.converter = converter;
 	}
 }

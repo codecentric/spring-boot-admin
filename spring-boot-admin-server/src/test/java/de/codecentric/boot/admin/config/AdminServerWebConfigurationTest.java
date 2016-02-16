@@ -116,7 +116,7 @@ public class AdminServerWebConfigurationTest {
 	@Configuration
 	static class TestHazelcastConfig {
 		@Bean
-		Config config() {
+		public Config config() {
 			return new Config();
 		}
 	}

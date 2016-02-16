@@ -16,17 +16,23 @@
 package de.codecentric.boot.admin.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.noop.NoopDiscoveryClientAutoConfiguration;
+import org.springframework.cloud.netflix.eureka.EurekaDiscoveryClient.EurekaServiceInstance;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import de.codecentric.boot.admin.discovery.ApplicationDiscoveryListener;
+import de.codecentric.boot.admin.discovery.DefaultServiceInstanceConverter;
+import de.codecentric.boot.admin.discovery.EurekaServiceInstanceConverter;
+import de.codecentric.boot.admin.discovery.ServiceInstanceConverter;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
 
 @Configuration
@@ -34,9 +40,6 @@ import de.codecentric.boot.admin.registry.ApplicationRegistry;
 @ConditionalOnProperty(prefix = "spring.boot.admin.discovery", name = "enabled", matchIfMissing = true)
 @AutoConfigureAfter({ NoopDiscoveryClientAutoConfiguration.class })
 public class DiscoveryClientConfiguration {
-
-	@Value("${spring.boot.admin.discovery.management.context-path:}")
-	private String managementPath;
 
 	@Autowired
 	private DiscoveryClient discoveryClient;
@@ -46,10 +49,32 @@ public class DiscoveryClientConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ApplicationDiscoveryListener applicationDiscoveryListener() {
+	public ApplicationDiscoveryListener applicationDiscoveryListener(
+			ServiceInstanceConverter serviceInstanceConverter) {
 		ApplicationDiscoveryListener listener = new ApplicationDiscoveryListener(discoveryClient,
 				registry);
-		listener.setManagementContextPath(managementPath);
+		listener.setConverter(serviceInstanceConverter);
 		return listener;
+	}
+
+	@Configuration
+	@ConditionalOnClass({ EurekaServiceInstance.class })
+	@AutoConfigureBefore(DefaultConverterConfiguration.class)
+	public static class EurekaConverterConfiguration {
+		@Bean
+		@ConditionalOnMissingBean
+		public EurekaServiceInstanceConverter serviceInstanceConverter() {
+			return new EurekaServiceInstanceConverter();
+		}
+	}
+
+	@Configuration
+	@ConfigurationProperties(prefix = "spring.boot.admin.discovery.converter")
+	public static class DefaultConverterConfiguration {
+		@Bean
+		@ConditionalOnMissingBean
+		public DefaultServiceInstanceConverter serviceInstanceConverter() {
+			return new DefaultServiceInstanceConverter();
+		}
 	}
 }

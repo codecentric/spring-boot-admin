@@ -1,0 +1,35 @@
+server:
+    port: 8080
+spring:
+    application:
+        name: spring-boot-admin-server-test
+info:
+    version: 1.0.0
+---
+spring:
+    profiles: default
+    boot:
+        admin:
+            url: http://localhost:8080
+---
+server:
+    port: 8761
+spring:
+    profiles: eurekaServer
+    jmx:
+        enabled: false
+    boot:
+        admin:
+            contextPath: /admin
+eureka:
+    client:
+        registerWithEureka: true
+        fetchRegistry: true
+        registry-fetch-interval-seconds: 5
+        serviceUrl:
+            defaultZone: http://localhost:8761/eureka/
+    instance:
+        nonSecurePort: 8761
+        home-page-url: http://${spring.cloud.client.hostname}:3333
+        health-check-url: http://${spring.cloud.client.hostname}:4444/customHealth
+

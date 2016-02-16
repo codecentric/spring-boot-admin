@@ -22,7 +22,7 @@ import de.codecentric.boot.admin.model.Application;
 /**
  * Abstract Event regearding spring boot admin clients
  *
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
  */
 public abstract class ClientApplicationEvent implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -39,21 +39,21 @@ public abstract class ClientApplicationEvent implements Serializable {
 	}
 
 	/**
-	 * Return the system time in milliseconds when the event happened.
+	 * @return system time in milliseconds when the event happened.
 	 */
 	public final long getTimestamp() {
 		return this.timestamp;
 	}
 
 	/**
-	 * Return the affected application.
+	 * @return affected application.
 	 */
 	public Application getApplication() {
 		return application;
 	}
 
 	/**
-	 * Return the event type (for JSON).
+	 * @return event type (for JSON).
 	 */
 	public String getType() {
 		return type;

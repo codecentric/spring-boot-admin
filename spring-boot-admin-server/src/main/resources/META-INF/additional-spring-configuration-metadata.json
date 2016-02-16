@@ -29,6 +29,9 @@
     "name": "spring.boot.admin.discovery.management.context-path",
     "type": "java.lang.String",
     "description": "management-path suffix for discovered applications",
-    "defaultValue": ""
+    "defaultValue": "",
+    "deprecation" : {
+      "replacement" : "spring.boot.admin.discovery.converter.management-context-path"
+    }
   }
 ]}

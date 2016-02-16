@@ -37,10 +37,9 @@ import de.codecentric.boot.admin.registry.HashingApplicationUrlIdGenerator;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
 
 public class ApplicationDiscoveryListenerTest {
-
-	ApplicationDiscoveryListener listener;
-	DiscoveryClient discovery;
-	ApplicationRegistry registry;
+	private ApplicationDiscoveryListener listener;
+	private DiscoveryClient discovery;
+	private ApplicationRegistry registry;
 
 	@Before
 	public void setup() {
@@ -54,9 +53,8 @@ public class ApplicationDiscoveryListenerTest {
 	@Test
 	public void test_register_and_convert() {
 		when(discovery.getServices()).thenReturn(Collections.singletonList("service"));
-		when(discovery.getInstances("service")).thenReturn(
-				Collections.singletonList((ServiceInstance) new DefaultServiceInstance("service",
-						"localhost", 80, false)));
+		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
+				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
 
 		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
@@ -70,35 +68,13 @@ public class ApplicationDiscoveryListenerTest {
 	}
 
 	@Test
-	public void convert_mgmtContextPath() {
-		when(discovery.getServices()).thenReturn(Collections.singletonList("service"));
-		when(discovery.getInstances("service")).thenReturn(
-				Collections.singletonList((ServiceInstance) new DefaultServiceInstance("service",
-						"localhost", 80, false)));
-
-		listener.setManagementContextPath("/mgmt");
-		listener.setServiceContextPath("/service");
-		listener.setHealthEndpoint("alive");
-		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
-
-		assertEquals(1, registry.getApplications().size());
-		Application application = registry.getApplications().iterator().next();
-
-		assertEquals("http://localhost:80/mgmt/alive", application.getHealthUrl());
-		assertEquals("http://localhost:80/mgmt", application.getManagementUrl());
-		assertEquals("http://localhost:80/service", application.getServiceUrl());
-		assertEquals("service", application.getName());
-	}
-
-	@Test
 	public void single_discovery_for_same_heartbeat() {
 		Object heartbeat = new Object();
 		listener.onParentHeartbeat(new ParentHeartbeatEvent(new Object(), heartbeat));
 
 		when(discovery.getServices()).thenReturn(Collections.singletonList("service"));
-		when(discovery.getInstances("service")).thenReturn(
-				Collections.singletonList((ServiceInstance) new DefaultServiceInstance("service",
-						"localhost", 80, false)));
+		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
+				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
 
 		listener.onApplicationEvent(new HeartbeatEvent(new Object(), heartbeat));
 		assertEquals(0, registry.getApplications().size());

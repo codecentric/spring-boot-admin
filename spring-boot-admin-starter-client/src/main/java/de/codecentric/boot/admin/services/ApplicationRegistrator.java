@@ -78,12 +78,10 @@ public class ApplicationRegistrator {
 						new HttpEntity<Application>(self, HTTP_HEADERS), Map.class);
 
 				if (response.getStatusCode().equals(HttpStatus.CREATED)) {
-					if (registeredId.get() == null) {
-						if (registeredId.compareAndSet(null,
-								response.getBody().get("id").toString())) {
-							LOGGER.info("Application registered itself as {}", response.getBody());
-							return true;
-						}
+					if (registeredId.get() == null && registeredId.compareAndSet(null,
+							response.getBody().get("id").toString())) {
+						LOGGER.info("Application registered itself as {}", response.getBody());
+						return true;
 					}
 
 					LOGGER.debug("Application refreshed itself as {}", response.getBody());

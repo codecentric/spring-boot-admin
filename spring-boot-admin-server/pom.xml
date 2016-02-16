@@ -29,6 +29,8 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-netflix-core</artifactId>
+			<!--  for fix of serverproeprties -->
+			<version>1.1.0.BUILD-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
@@ -38,16 +40,22 @@
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 		</dependency>
-                <!-- Optional Mail Starter for mail-notfications -->
+		<!-- Optional Mail Starter for mail-notfications -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
-                        <optional>true</optional>
+			<optional>true</optional>
 		</dependency>
 		<!-- Optional Discovery Client -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<!-- Optional Eureka Discovery Client -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-eureka</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<!-- Optional Hazelcast-Support -->

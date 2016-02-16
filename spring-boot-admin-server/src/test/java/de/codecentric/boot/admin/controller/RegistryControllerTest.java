@@ -36,11 +36,10 @@ import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
 public class RegistryControllerTest {
 
 	private RegistryController controller;
-	private ApplicationRegistry registry;
 
 	@Before
 	public void setup() {
-		registry = new ApplicationRegistry(new SimpleApplicationStore(),
+		ApplicationRegistry registry = new ApplicationRegistry(new SimpleApplicationStore(),
 				new HashingApplicationUrlIdGenerator());
 		registry.setApplicationEventPublisher(Mockito.mock(ApplicationEventPublisher.class));
 		controller = new RegistryController(registry);
