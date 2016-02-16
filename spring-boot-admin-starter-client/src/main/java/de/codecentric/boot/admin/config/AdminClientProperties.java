@@ -15,9 +15,6 @@
  */
 package de.codecentric.boot.admin.config;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
@@ -28,8 +25,16 @@ import org.springframework.context.event.EventListener;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 @ConfigurationProperties(prefix = "spring.boot.admin.client")
 public class AdminClientProperties {
+
+	/**
+	 * Controls if the client is enabled or disabled.
+	 */
+	private boolean enabled = true;
 
 	/**
 	 * Client-management-URL to register with. Inferred at runtime, can be overriden in case the
@@ -170,6 +175,14 @@ public class AdminClientProperties {
 
 	public boolean isPreferIp() {
 		return preferIp;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	private String createLocalUri(String host, int port) {

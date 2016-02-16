@@ -15,22 +15,21 @@
  */
 package de.codecentric.boot.admin.config;
 
-import java.util.Arrays;
-
+import de.codecentric.boot.admin.services.ApplicationRegistrator;
+import de.codecentric.boot.admin.services.RegistrationApplicationListener;
+import de.codecentric.boot.admin.web.BasicAuthHttpRequestInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.web.client.RestTemplate;
 
-import de.codecentric.boot.admin.services.ApplicationRegistrator;
-import de.codecentric.boot.admin.services.RegistrationApplicationListener;
-import de.codecentric.boot.admin.web.BasicAuthHttpRequestInterceptor;
+import java.util.Arrays;
 
 /**
  * This configuration adds a registrator bean to the spring context. This bean checks periodicaly,
@@ -39,7 +38,7 @@ import de.codecentric.boot.admin.web.BasicAuthHttpRequestInterceptor;
  */
 @Configuration
 @EnableConfigurationProperties({ AdminProperties.class, AdminClientProperties.class })
-@ConditionalOnProperty("spring.boot.admin.url")
+@Conditional(SpringBootAdminClientEnablerCondition.class)
 public class SpringBootAdminClientAutoConfiguration {
 
 	@Autowired
