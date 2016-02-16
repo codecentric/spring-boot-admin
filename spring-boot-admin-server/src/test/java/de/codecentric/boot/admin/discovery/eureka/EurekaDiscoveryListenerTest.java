@@ -14,8 +14,8 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
+import org.springframework.util.concurrent.SettableListenableFuture;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -61,11 +61,11 @@ public class EurekaDiscoveryListenerTest {
     public static class TestEurekaAdminServerApplication {
         public static class RegistrationMonitor {
 
-            private CompletableFuture<ClientApplicationRegisteredEvent> registeredApp = new CompletableFuture<>();
+            private SettableListenableFuture<ClientApplicationRegisteredEvent> registeredApp = new SettableListenableFuture<>();
 
             @EventListener
             public void onAppRegistered(ClientApplicationRegisteredEvent clientApplicationEvent) {
-                registeredApp.complete(clientApplicationEvent);
+                registeredApp.set(clientApplicationEvent);
             }
 
             public Application getApplication() throws ExecutionException, InterruptedException {
