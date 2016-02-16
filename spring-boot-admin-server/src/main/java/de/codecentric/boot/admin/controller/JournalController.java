@@ -15,10 +15,20 @@
  */
 package de.codecentric.boot.admin.controller;
 
-import java.util.Collection;
+import static java.util.Collections.synchronizedCollection;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.event.EventListener;
+import org.springframework.http.MediaType;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import de.codecentric.boot.admin.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.journal.ApplicationEventJournal;
@@ -30,16 +40,42 @@ import de.codecentric.boot.admin.journal.ApplicationEventJournal;
  */
 @ResponseBody
 public class JournalController {
+	private static Logger LOGGER = LoggerFactory.getLogger(JournalController.class);
 
 	private ApplicationEventJournal eventJournal;
+	private final Collection<SseEmitter> emitters = synchronizedCollection(
+			new LinkedList<SseEmitter>());
 
 	public JournalController(ApplicationEventJournal eventJournal) {
 		this.eventJournal = eventJournal;
 	}
 
-	@RequestMapping("/api/journal")
+	@RequestMapping(path = "/api/journal", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public Collection<ClientApplicationEvent> getJournal() {
 		return eventJournal.getEvents();
 	}
 
+	@RequestMapping(path = "/api/journal", produces = "text/event-stream")
+	public SseEmitter getJournalEvents() {
+		final SseEmitter emitter = new SseEmitter();
+		emitter.onCompletion(new Runnable() {
+			@Override
+			public void run() {
+				emitters.remove(emitter);
+			}
+		});
+		emitters.add(emitter);
+		return emitter;
+	}
+
+	@EventListener
+	public void onClientApplicationEvent(ClientApplicationEvent event) {
+		for (SseEmitter emitter : new ArrayList<>(emitters)) {
+			try {
+				emitter.send(event, MediaType.APPLICATION_JSON);
+			} catch (Exception ex) {
+				LOGGER.debug("Error sending event to client ", ex);
+			}
+		}
+	}
 }
