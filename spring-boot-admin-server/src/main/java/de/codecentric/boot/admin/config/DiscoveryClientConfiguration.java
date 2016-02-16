@@ -15,12 +15,11 @@
  */
 package de.codecentric.boot.admin.config;
 
+import de.codecentric.boot.admin.discovery.eureka.EurekaApplicationDiscoveryListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.noop.NoopDiscoveryClientAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -46,9 +45,20 @@ public class DiscoveryClientConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@ConditionalOnMissingClass( name = "org.springframework.cloud.netflix.eureka.EurekaDiscoveryClient")
 	public ApplicationDiscoveryListener applicationDiscoveryListener() {
 		ApplicationDiscoveryListener listener = new ApplicationDiscoveryListener(discoveryClient,
 				registry);
+		listener.setManagementContextPath(managementPath);
+		return listener;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnClass( name = "org.springframework.cloud.netflix.eureka.EurekaDiscoveryClient")
+	public ApplicationDiscoveryListener eurekaApplicationDiscoveryListener() {
+
+		ApplicationDiscoveryListener listener = new EurekaApplicationDiscoveryListener(discoveryClient,registry);
 		listener.setManagementContextPath(managementPath);
 		return listener;
 	}

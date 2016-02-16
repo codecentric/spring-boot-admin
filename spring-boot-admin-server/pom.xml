@@ -50,7 +50,15 @@
 			<artifactId>spring-cloud-starter</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<!-- Optional Hazelcast-Support -->
+
+		<!-- Optional Eureka Server -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-eureka-server</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+        <!-- Optional Hazelcast-Support -->
 		<dependency>
 			<groupId>com.hazelcast</groupId>
 			<artifactId>hazelcast</artifactId>
