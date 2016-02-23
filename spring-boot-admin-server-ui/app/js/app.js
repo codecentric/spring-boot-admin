@@ -122,6 +122,7 @@ springBootAdmin.config(function ($stateProvider, $urlRouterProvider) {
 springBootAdmin.run(function ($rootScope, $state, $log, $filter, Notification, Application ) {
     $rootScope.$state = $state;
     $rootScope.applications = [];
+
     $rootScope.indexOfApplication = function (id) {
        for (var i = 0; i <  $rootScope.applications.length; i++) {
             if ($rootScope.applications[i].id === id) {
@@ -154,9 +155,9 @@ springBootAdmin.run(function ($rootScope, $state, $log, $filter, Notification, A
 
     Application.query(function (applications) {
         for (var i = 0; i < applications.length; i++) {
-                refresh(applications[i]);
+            refresh(applications[i]);
+            $rootScope.applications.push(applications[i]);
         }
-        $rootScope.applications = applications;
     });
 
 
