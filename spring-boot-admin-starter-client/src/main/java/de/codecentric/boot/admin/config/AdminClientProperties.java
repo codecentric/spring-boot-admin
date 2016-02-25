@@ -25,12 +25,10 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.event.EventListener;
-import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 @ConfigurationProperties(prefix = "spring.boot.admin.client")
 public class AdminClientProperties {
-
 	/**
 	 * Client-management-URL to register with. Inferred at runtime, can be overriden in case the
 	 * reachable URL is different (e.g. Docker).
@@ -101,16 +99,17 @@ public class AdminClientProperties {
 		}
 
 		if (preferIp) {
-			Assert.notNull(management.getAddress(),
-					"management.address must be set when using preferIp");
-			return append(
-					append(createLocalUri(management.getAddress().getHostAddress(), managementPort),
-							server.getContextPath()),
-					management.getContextPath());
+			InetAddress address = management.getAddress();
+			if (address == null) {
+				address = getHostAddress();
+			}
+			return append(append(createLocalUri(address.getHostAddress(), managementPort),
+					server.getContextPath()), management.getContextPath());
 
 		}
 		return append(
-				append(createLocalUri(getHostname(), managementPort), server.getContextPath()),
+				append(createLocalUri(getHostAddress().getCanonicalHostName(), managementPort),
+						server.getContextPath()),
 				management.getContextPath());
 	}
 
@@ -140,12 +139,16 @@ public class AdminClientProperties {
 		}
 
 		if (preferIp) {
-			Assert.notNull(server.getAddress(), "server.address must be set when using preferIp");
-			return append(createLocalUri(server.getAddress().getHostAddress(), serverPort),
+			InetAddress address = server.getAddress();
+			if (address == null) {
+				address = getHostAddress();
+			}
+			return append(createLocalUri(address.getHostAddress(), serverPort),
 					server.getContextPath());
 
 		}
-		return append(createLocalUri(getHostname(), serverPort), server.getContextPath());
+		return append(createLocalUri(getHostAddress().getCanonicalHostName(), serverPort),
+				server.getContextPath());
 	}
 
 	public void setServiceUrl(String serviceUrl) {
@@ -187,9 +190,9 @@ public class AdminClientProperties {
 		return baseUri + "/" + normPath;
 	}
 
-	private String getHostname() {
+	private InetAddress getHostAddress() {
 		try {
-			return InetAddress.getLocalHost().getCanonicalHostName();
+			return InetAddress.getLocalHost();
 		} catch (UnknownHostException ex) {
 			throw new IllegalArgumentException(ex.getMessage(), ex);
 		}

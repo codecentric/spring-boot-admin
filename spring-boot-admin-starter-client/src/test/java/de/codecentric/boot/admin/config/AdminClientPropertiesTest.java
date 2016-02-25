@@ -133,7 +133,7 @@ public class AdminClientPropertiesTest {
 		assertThat(clientProperties.getServiceUrl(), is("https://" + getHostname() + ":8080"));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void test_preferIpAddress_serveraddress_missing() {
 		load("local.server.port=8080");
 		AdminClientProperties clientProperties = new AdminClientProperties();
@@ -142,10 +142,11 @@ public class AdminClientPropertiesTest {
 
 		publishApplicationReadyEvent(clientProperties);
 
-		clientProperties.getServiceUrl();
+		assertTrue(clientProperties.getServiceUrl()
+				.matches("http://\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}:8080"));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void test_preferIpAddress_managementaddress_missing() {
 		load("local.server.port=8080", "local.management.port=8081");
 		AdminClientProperties clientProperties = new AdminClientProperties();
@@ -153,8 +154,8 @@ public class AdminClientPropertiesTest {
 		context.getAutowireCapableBeanFactory().autowireBean(clientProperties);
 
 		publishApplicationReadyEvent(clientProperties);
-
-		clientProperties.getManagementUrl();
+		assertTrue(clientProperties.getManagementUrl()
+				.matches("http://\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}:8081"));
 	}
 
 	@Test

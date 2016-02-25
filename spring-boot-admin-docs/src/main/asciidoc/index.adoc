@@ -228,7 +228,7 @@ spring.boot.admin.password
 | `${spring.application.name}` if set, `"spring-boot-application"` otherwise.
 
 | spring.boot.admin.client.prefer-ip
-| Use the ip-address rather then the hostname in the guessed urls. It's required to set `server.address` and `management.address`respectively.
+| Use the ip-address rather then the hostname in the guessed urls. If `server.address` / `management.address` is set they get used otherwise the IP address returned from `InetAddress.getLocalHost()` gets used.
 | `false`
 |===
 
