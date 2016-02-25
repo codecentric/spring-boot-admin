@@ -509,7 +509,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 1.3.3-SNAPSHOT,</span>
-<span id="revdate">23.02.2016</span>
+<span id="revdate">25.02.2016</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -836,7 +836,7 @@ spring.boot.admin.password</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.prefer-ip</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Use the ip-address rather then the hostname in the guessed urls. It&#8217;s required to set <code>server.address</code> and `management.address`respectively.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Use the ip-address rather then the hostname in the guessed urls. If <code>server.address</code> / <code>management.address</code> is set they get used otherwise the IP address returned from <code>InetAddress.getLocalHost()</code> gets used.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
 </tr>
 </tbody>
