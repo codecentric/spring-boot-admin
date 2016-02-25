@@ -103,7 +103,7 @@ Also have a look at the http://projects.spring.io/spring-cloud/spring-cloud.html
 <dependency>
     <groupId>org.springframework.cloud</groupId>
     <artifactId>spring-cloud-starter-eureka</artifactId>
-    <version>1.0.4.RELEASE</version>
+    <version>1.0.6.RELEASE</version>
 </dependency>
 ----
 
@@ -228,7 +228,7 @@ spring.boot.admin.password
 | `${spring.application.name}` if set, `"spring-boot-application"` otherwise.
 
 | spring.boot.admin.client.prefer-ip
-| Use the ip-address rather then the hostname in the guessed urls. If `server.address` / `management.address` is set they get used otherwise the IP address returned from `InetAddress.getLocalHost()` gets used.
+| Use the ip-address rather then the hostname in the guessed urls. If `server.address` / `management.address` is set, it get used. Otherwise the IP address returned from `InetAddress.getLocalHost()` gets used.
 | `false`
 |===
 
@@ -332,8 +332,10 @@ public class SpringBootAdminApplication {
 | `"spring-boot-admin-event-store"`
 |===
 
+=== Notifications ===
+
 [[mail-notifications]]
-=== Mail notifications ===
+==== Mail notifications ====
 
 Configure a `JavaMailSender` using `spring-boot-starter-mail` and set a recipient.
 
@@ -385,9 +387,8 @@ spring.boot.admin.notify.mail.to=admin@example.com
 | `+++"#{application.name} (#{application.id})\nstatus changed from #{from.status} to #{to.status}\n\n#{application.healthUrl}"+++`
 |===
 
-
 [[pagerduty-notifications]]
-=== Pagerduty notifications ===
+==== Pagerduty notifications ====
 To enable pagerduty notifications you just have to add a generic service to your pagerduty-account and set `spring.boot.admin.notify.pagerduty.service-key` to the service-key you received.
 
 .Pagerduty notifications configuration options
@@ -422,6 +423,36 @@ To enable pagerduty notifications you just have to add a generic service to your
 | Client-url to use in the event
 |
 |===
+
+[reminder-notifactaions]
+==== Reminder notifications ====
+To get reminders for down/offline applications you can add a `RemindingNotifier` to your `ApplicationContext`. The `RemindingNotifier` uses another `Notifier` as delegate to send the reminders.
+
+.How to configure reminders
+[source,java]
+----
+@Configuration
+public class ReminderConfiguration {
+    @Autowired
+    private Notifier notifier;
+
+    @Bean
+    @Primary
+    public RemindingNotifier remindingNotifier() {
+        RemindingNotifier remindingNotifier = new RemindingNotifier(notifier);
+        remindingNotifier.setReminderPeriod(TimeUnit.MINUTES.toMillis(5)); // <1>
+        return remindingNotifier;
+    }
+
+    @Scheduled(fixedRate = 6000L) // <2>
+    public void remind() {
+        remindingNotifier().sendReminders();
+    }
+}
+----
+<1> The reminders will be sent every 5 minutes.
+<2> Schedules sending of due reminders every 60 seconds.
+
 
 [[faqs]]
 == FAQs ==

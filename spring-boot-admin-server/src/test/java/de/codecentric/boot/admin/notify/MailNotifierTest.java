@@ -47,7 +47,7 @@ public class MailNotifierTest {
 
 	@Test
 	public void test_onApplicationEvent() {
-		notifier.onClientApplicationStatusChanged(new ClientApplicationStatusChangedEvent(
+		notifier.notify(new ClientApplicationStatusChangedEvent(
 				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
 				StatusInfo.ofDown(), StatusInfo.ofUp()));
 
@@ -66,7 +66,7 @@ public class MailNotifierTest {
 	@Test
 	public void test_onApplicationEvent_disbaled() {
 		notifier.setEnabled(false);
-		notifier.onClientApplicationStatusChanged(new ClientApplicationStatusChangedEvent(
+		notifier.notify(new ClientApplicationStatusChangedEvent(
 				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
 				StatusInfo.ofDown(), StatusInfo.ofUp()));
 
@@ -75,7 +75,7 @@ public class MailNotifierTest {
 
 	@Test
 	public void test_onApplicationEvent_noSend() {
-		notifier.onClientApplicationStatusChanged(new ClientApplicationStatusChangedEvent(
+		notifier.notify(new ClientApplicationStatusChangedEvent(
 				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
 				StatusInfo.ofUnknown(), StatusInfo.ofUp()));
 
@@ -85,7 +85,7 @@ public class MailNotifierTest {
 	@Test
 	public void test_onApplicationEvent_noSend_wildcard() {
 		notifier.setIgnoreChanges(new String[] { "*:UP" });
-		notifier.onClientApplicationStatusChanged(new ClientApplicationStatusChangedEvent(
+		notifier.notify(new ClientApplicationStatusChangedEvent(
 				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
 				StatusInfo.ofOffline(), StatusInfo.ofUp()));
 
@@ -94,13 +94,13 @@ public class MailNotifierTest {
 
 	@Test
 	public void test_onApplicationEvent_throw_doesnt_propagate() {
-		AbstractNotifier notifier = new AbstractNotifier() {
+		Notifier notifier = new AbstractStatusChangeNotifier() {
 			@Override
-			protected void notify(ClientApplicationStatusChangedEvent event) throws Exception {
+			protected void doNotify(ClientApplicationStatusChangedEvent event) throws Exception {
 				throw new RuntimeException();
 			}
 		};
-		notifier.onClientApplicationStatusChanged(new ClientApplicationStatusChangedEvent(
+		notifier.notify(new ClientApplicationStatusChangedEvent(
 				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
 				StatusInfo.ofOffline(), StatusInfo.ofUp()));
 	}

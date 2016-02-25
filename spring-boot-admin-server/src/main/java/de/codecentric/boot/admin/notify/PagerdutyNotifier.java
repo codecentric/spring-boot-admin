@@ -27,7 +27,12 @@ import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
 
-public class PagerdutyNotifier extends AbstractNotifier {
+/**
+ * Notifier submitting events to Pagerduty.
+ *
+ * @author Johannes Edmeier
+ */
+public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 	public static final URI DEFAULT_URI = URI
 			.create("https://events.pagerduty.com/generic/2010-04-15/create_event.json");
 
@@ -67,7 +72,7 @@ public class PagerdutyNotifier extends AbstractNotifier {
 	}
 
 	@Override
-	protected void notify(ClientApplicationStatusChangedEvent event) throws Exception {
+	protected void doNotify(ClientApplicationStatusChangedEvent event) throws Exception {
 		restTemplate.postForEntity(url, createPagerdutyEvent(event), Void.class);
 	}
 

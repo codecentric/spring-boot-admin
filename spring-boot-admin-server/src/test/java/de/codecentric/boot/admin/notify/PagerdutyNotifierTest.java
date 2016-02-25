@@ -52,7 +52,7 @@ public class PagerdutyNotifierTest {
 		StatusInfo infoDown = StatusInfo.ofDown();
 		StatusInfo infoUp = StatusInfo.ofUp();
 
-		notifier.onClientApplicationStatusChanged(new ClientApplicationStatusChangedEvent(
+		notifier.notify(new ClientApplicationStatusChangedEvent(
 				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
 				infoDown, infoUp));
 
@@ -75,7 +75,7 @@ public class PagerdutyNotifierTest {
 		StatusInfo infoDown = StatusInfo.ofDown();
 		StatusInfo infoUp = StatusInfo.ofUp();
 
-		notifier.onClientApplicationStatusChanged(new ClientApplicationStatusChangedEvent(
+		notifier.notify(new ClientApplicationStatusChangedEvent(
 				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
 				infoUp, infoDown));
 

@@ -27,7 +27,12 @@ import org.springframework.mail.SimpleMailMessage;
 
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
 
-public class MailNotifier extends AbstractNotifier {
+/**
+ * Notifier sending emails.
+ *
+ * @author Johannes Edmeier
+ */
+public class MailNotifier extends AbstractStatusChangeNotifier {
 	private final static String DEFAULT_SUBJECT = "#{application.name} (#{application.id}) is #{to.status}";
 	private final static String DEFAULT_TEXT = "#{application.name} (#{application.id})\nstatus changed from #{from.status} to #{to.status}\n\n#{application.healthUrl}";
 
@@ -66,7 +71,7 @@ public class MailNotifier extends AbstractNotifier {
 	}
 
 	@Override
-	protected void notify(ClientApplicationStatusChangedEvent event) {
+	protected void doNotify(ClientApplicationStatusChangedEvent event) {
 		EvaluationContext context = new StandardEvaluationContext(event);
 
 		SimpleMailMessage message = new SimpleMailMessage();

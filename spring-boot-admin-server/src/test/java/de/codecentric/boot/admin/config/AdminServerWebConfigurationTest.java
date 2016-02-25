@@ -150,8 +150,7 @@ public class AdminServerWebConfigurationTest {
 		applicationContext.register(ServerPropertiesAutoConfiguration.class);
 		applicationContext.register(MailSenderAutoConfiguration.class);
 		applicationContext.register(HazelcastAutoConfiguration.class);
-		applicationContext.register(MailNotifierConfiguration.class);
-		applicationContext.register(PagerdutyNotifierConfiguration.class);
+		applicationContext.register(NotifierConfiguration.class);
 		applicationContext.register(HazelcastStoreConfiguration.class);
 		applicationContext.register(DiscoveryClientConfiguration.class);
 		applicationContext.register(AdminServerWebConfiguration.class);
