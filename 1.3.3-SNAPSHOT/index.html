@@ -509,7 +509,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 1.3.3-SNAPSHOT,</span>
-<span id="revdate">26.02.2016</span>
+<span id="revdate">28.02.2016</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -533,8 +533,7 @@ table.CodeRay td.code>pre{padding:0}
 <ul class="sectlevel2">
 <li><a href="#spring-cloud-discovery-support">4.1. Spring Cloud Discovery support</a></li>
 <li><a href="#hazelcast-support">4.2. Hazelcast support</a></li>
-<li><a href="#mail-notifications">4.3. Mail notifications</a></li>
-<li><a href="#pagerduty-notifications">4.4. Pagerduty notifications</a></li>
+<li><a href="#_notifications">4.3. Notifications</a></li>
 </ul>
 </li>
 <li><a href="#faqs">5. FAQs</a></li>
@@ -655,7 +654,7 @@ Also have a look at the <a href="http://projects.spring.io/spring-cloud/spring-c
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
     <span class="tag">&lt;groupId&gt;</span>org.springframework.cloud<span class="tag">&lt;/groupId&gt;</span>
     <span class="tag">&lt;artifactId&gt;</span>spring-cloud-starter-eureka<span class="tag">&lt;/artifactId&gt;</span>
-    <span class="tag">&lt;version&gt;</span>1.0.4.RELEASE<span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;version&gt;</span>1.0.6.RELEASE<span class="tag">&lt;/version&gt;</span>
 <span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
@@ -836,7 +835,7 @@ spring.boot.admin.password</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.prefer-ip</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Use the ip-address rather then the hostname in the guessed urls. If <code>server.address</code> / <code>management.address</code> is set they get used otherwise the IP address returned from <code>InetAddress.getLocalHost()</code> gets used.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Use the ip-address rather then the hostname in the guessed urls. If <code>server.address</code> / <code>management.address</code> is set, it get used. Otherwise the IP address returned from <code>InetAddress.getLocalHost()</code> gets used.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
 </tr>
 </tbody>
@@ -1007,7 +1006,9 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 </table>
 </div>
 <div class="sect2">
-<h3 id="mail-notifications"><a class="anchor" href="#mail-notifications"></a>4.3. Mail notifications</h3>
+<h3 id="_notifications"><a class="anchor" href="#_notifications"></a>4.3. Notifications</h3>
+<div class="sect3">
+<h4 id="mail-notifications"><a class="anchor" href="#mail-notifications"></a>4.3.1. Mail notifications</h4>
 <div class="paragraph">
 <p>Configure a <code>JavaMailSender</code> using <code>spring-boot-starter-mail</code> and set a recipient.</p>
 </div>
@@ -1080,8 +1081,8 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </tbody>
 </table>
 </div>
-<div class="sect2">
-<h3 id="pagerduty-notifications"><a class="anchor" href="#pagerduty-notifications"></a>4.4. Pagerduty notifications</h3>
+<div class="sect3">
+<h4 id="pagerduty-notifications"><a class="anchor" href="#pagerduty-notifications"></a>4.3.2. Pagerduty notifications</h4>
 <div class="paragraph">
 <p>To enable pagerduty notifications you just have to add a generic service to your pagerduty-account and set <code>spring.boot.admin.notify.pagerduty.service-key</code> to the service-key you received.</p>
 </div>
@@ -1137,6 +1138,48 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </tr>
 </tbody>
 </table>
+</div>
+<div class="sect3">
+<h4 id="_reminder_notifications"><a class="anchor" href="#_reminder_notifications"></a>4.3.3. Reminder notifications</h4>
+<div class="paragraph">
+<p>To get reminders for down/offline applications you can add a <code>RemindingNotifier</code> to your <code>ApplicationContext</code>. The <code>RemindingNotifier</code> uses another <code>Notifier</code> as delegate to send the reminders.</p>
+</div>
+<div class="listingblock">
+<div class="title">How to configure reminders</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">ReminderConfiguration</span> {
+    <span class="annotation">@Autowired</span>
+    <span class="directive">private</span> Notifier notifier;
+
+    <span class="annotation">@Bean</span>
+    <span class="annotation">@Primary</span>
+    <span class="directive">public</span> RemindingNotifier remindingNotifier() {
+        RemindingNotifier remindingNotifier = <span class="keyword">new</span> RemindingNotifier(notifier);
+        remindingNotifier.setReminderPeriod(<span class="predefined-type">TimeUnit</span>.MINUTES.toMillis(<span class="integer">5</span>)); <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="keyword">return</span> remindingNotifier;
+    }
+
+    <span class="annotation">@Scheduled</span>(fixedRate = <span class="integer">6000L</span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="directive">public</span> <span class="type">void</span> remind() {
+        remindingNotifier().sendReminders();
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The reminders will be sent every 5 minutes.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Schedules sending of due reminders every 60 seconds.</td>
+</tr>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
