@@ -344,6 +344,18 @@ dl.health-status td {
   margin-left: -15px;
 }
 
+.event.warn:before {
+  border-color: #e0ba2d;
+}
+
+.event.error:before {
+  border-color: #b30000;
+}
+
+.event.ok:before {
+  border-color: #6db33f;
+}
+
 .timeline .event:hover:before {
   background: #ccc;
 }
