@@ -51,7 +51,7 @@ First you need to setup your server. To do this just setup a simple boot project
 @EnableAdminServer
 public class SpringBootAdminApplication {
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(SpringBootAdminApplication.class, args);
     }
 }
 ----
