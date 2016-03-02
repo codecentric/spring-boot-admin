@@ -137,18 +137,18 @@ span.status-UP {
 	color: #00AA00;
 	font-weight: bold;
 }
- 
+
 span.status-OFFLINE {
 	color: #000000;
 	font-weight: bold;
 }
- 
+
 span.status-DOWN,
 span.status-OUT_OF_SERVICE {
 	color: #DD0000;
 	font-weight: bold;
 }
- 
+
 span.status-UNKNOWN {
 	font-weight: bold;
 	color: #FF8800;
@@ -166,13 +166,13 @@ span.refresh {
 .accordion-heading > a,
 .accordion-heading > a:hover,
 .accordion-heading > a:focus,
-.nav-tabs > .active > a, 
-.nav-tabs > .active > a:hover, 
+.nav-tabs > .active > a,
+.nav-tabs > .active > a:hover,
 .nav-tabs > .active > a:focus,
 .table > thead > tr > th {
-	background-color: #34302D; 
-	border-color: #34302D; 
-	color: #f1f1f1; 
+	background-color: #34302D;
+	border-color: #34302D;
+	color: #f1f1f1;
 }
 
 .accordion-group,
@@ -206,7 +206,7 @@ span.refresh {
 
 /** Tabs-list in domain-section in JMX-View **/
 .tabs-left > ul {
-	max-width: 30%; 
+	max-width: 30%;
 	overflow: hidden;
 }
 
@@ -234,8 +234,8 @@ dl.health-status td {
 
 /** Metric Bars **/
 .bar-offset {
-    float: left; 
-    box-sizing: border-box; 
+    float: left;
+    box-sizing: border-box;
     height: 100%;
 }
 
@@ -268,7 +268,7 @@ dl.health-status td {
 .mark-current {
     width: 1px;
     height: 20px;
-    position: absolute; 
+    position: absolute;
     background-color: #dd514c;
     background-image: linear-gradient(to bottom, #ee5f5b, #c43c35);
     background-repeat: repeat-x;
@@ -342,6 +342,34 @@ dl.health-status td {
   position: absolute;
   left: -6px;
   margin-left: -15px;
+}
+
+.event.warn:before {
+  border-color: #e0ba2d;
+}
+.event.warn > .title > .status {
+  color: #e0ba2d;
+}
+
+.event.error:before {
+  border-color: #b30000;
+}
+.event.error > .title > .status {
+  color: #b30000;
+}
+
+.event.ok:before {
+  border-color: #6db33f;
+}
+.event.ok > .title > .status {
+  color: #6db33f;
+}
+
+.event.unknown:before {
+  border-color: #999999;
+}
+.event.unknown  > .title > .status {
+  color: #999999;
 }
 
 .timeline .event:hover:before {

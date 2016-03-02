@@ -50,5 +50,26 @@ module.exports = function ($scope, application, $interval) {
         }
     };
 
+    /**
+     * Determines the css class for a trace-item.
+     *
+     * @param trace current item
+     */
+    $scope.getStatusClass = function (trace) {
+        // only if the response part is available
+        if (trace.info.headers.response) {
+            var status = parseInt(trace.info.headers.response.status);
+
+            if (Math.floor(status / 500) === 1) {
+                return 'error';
+            } else if (Math.floor(status / 400) === 1) {
+                return 'warn';
+            }
+            return 'ok';
+        }
+
+        return 'unknown';
+    };
+
     $scope.refresh();
 };
