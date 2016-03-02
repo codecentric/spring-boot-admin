@@ -9,39 +9,38 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.ContextClosedEvent;
-import org.springframework.core.task.SyncTaskExecutor;
 
 public class RegistrationApplicationListenerTest {
 
 	@Test
-	public void test_register_embedded() {
+	public void test_register() throws Exception {
 		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator,
-				new SyncTaskExecutor());
+		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator);
 
 		listener.onApplicationReady(
 				new ApplicationReadyEvent(mock(SpringApplication.class), null, null));
 
+		Thread.sleep(500);
 		verify(registrator).register();
 	}
 
 	@Test
-	public void test_register_war() {
+	public void test_no_register() throws Exception {
 		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator,
-				new SyncTaskExecutor());
+		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator);
+		listener.setAutoRegister(false);
 
 		listener.onApplicationReady(
 				new ApplicationReadyEvent(mock(SpringApplication.class), null, null));
 
-		verify(registrator).register();
+		Thread.sleep(500);
+		verify(registrator, never()).register();
 	}
 
 	@Test
-	public void test_no_deregister() {
+	public void test_no_deregister() throws Exception {
 		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator,
-				new SyncTaskExecutor());
+		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator);
 
 		listener.onClosedContext(new ContextClosedEvent(mock(EmbeddedWebApplicationContext.class)));
 
@@ -49,10 +48,9 @@ public class RegistrationApplicationListenerTest {
 	}
 
 	@Test
-	public void test_deregister() {
+	public void test_deregister() throws Exception {
 		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator,
-				new SyncTaskExecutor());
+		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator);
 		listener.setAutoDeregister(true);
 
 		listener.onClosedContext(new ContextClosedEvent(mock(EmbeddedWebApplicationContext.class)));

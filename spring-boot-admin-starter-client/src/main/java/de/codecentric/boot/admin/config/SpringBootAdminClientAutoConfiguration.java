@@ -25,18 +25,12 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.services.ApplicationRegistrator;
 import de.codecentric.boot.admin.services.RegistrationApplicationListener;
 import de.codecentric.boot.admin.web.BasicAuthHttpRequestInterceptor;
 
-/**
- * This configuration adds a registrator bean to the spring context. This bean checks periodicaly,
- * if the using application is registered at the spring-boot-admin application. If not, it registers
- * itself.
- */
 @Configuration
 @EnableConfigurationProperties({ AdminProperties.class, AdminClientProperties.class })
 @Conditional(SpringBootAdminClientEnabledCondition.class)
@@ -70,33 +64,16 @@ public class SpringBootAdminClientAutoConfiguration {
 	}
 
 	/**
-	 * TaskRegistrar that triggers the RegistratorTask every ten seconds.
+	 * ApplicationListener triggering registration after being ready/shutdown
 	 */
 	@Bean
-	public ScheduledTaskRegistrar taskRegistrar() {
-		ScheduledTaskRegistrar registrar = new ScheduledTaskRegistrar();
-		Runnable registratorTask = new Runnable() {
-			@Override
-			public void run() {
-				if (client.isReady()) {
-					registrator().register();
-				}
-			}
-		};
-
-		registrar.addFixedRateTask(registratorTask, admin.getPeriod());
-		return registrar;
-	}
-
-	/**
-	 * ApplicationListener triggering registration after refresh/shutdown
-	 */
-	@Bean
+	@ConditionalOnMissingBean
 	public RegistrationApplicationListener registrationListener() {
 		RegistrationApplicationListener listener = new RegistrationApplicationListener(
 				registrator());
+		listener.setAutoRegister(admin.isAutoRegistration());
 		listener.setAutoDeregister(admin.isAutoDeregistration());
+		listener.setRegisterPeriod(admin.getPeriod());
 		return listener;
 	}
-
 }

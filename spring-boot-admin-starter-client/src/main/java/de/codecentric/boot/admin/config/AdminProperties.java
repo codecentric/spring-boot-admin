@@ -33,7 +33,7 @@ public class AdminProperties {
 	/**
 	 * Time interval (in ms) the registration is repeated
 	 */
-	private int period = 10000;
+	private long period = 10_000L;
 
 	/**
 	 * Username for basic authentication on admin server
@@ -49,6 +49,11 @@ public class AdminProperties {
 	 * Enable automatic deregistration on shutdown
 	 */
 	private boolean autoDeregistration;
+
+	/**
+	 * Enable automatic registration when the application is ready
+	 */
+	private boolean autoRegistration = true;
 
 	public void setUrl(String[] url) {
 		this.url = url.clone();
@@ -74,7 +79,7 @@ public class AdminProperties {
 		return adminUrls;
 	}
 
-	public int getPeriod() {
+	public long getPeriod() {
 		return period;
 	}
 
@@ -104,5 +109,13 @@ public class AdminProperties {
 
 	public void setAutoDeregistration(boolean autoDeregistration) {
 		this.autoDeregistration = autoDeregistration;
+	}
+
+	public boolean isAutoRegistration() {
+		return autoRegistration;
+	}
+
+	public void setAutoRegistration(boolean autoRegistration) {
+		this.autoRegistration = autoRegistration;
 	}
 }

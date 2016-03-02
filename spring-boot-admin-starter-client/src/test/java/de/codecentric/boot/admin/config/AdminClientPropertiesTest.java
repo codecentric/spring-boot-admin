@@ -1,7 +1,6 @@
 package de.codecentric.boot.admin.config;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -28,21 +27,6 @@ public class AdminClientPropertiesTest {
 		if (this.context != null) {
 			this.context.close();
 		}
-	}
-
-	@Test
-	public void test_isServerStarted_false() {
-		assertFalse(new AdminClientProperties().isReady());
-	}
-
-	@Test
-	public void test_isServerStarted_true() {
-		load();
-		AdminClientProperties clientProperties = new AdminClientProperties();
-
-		publishApplicationReadyEvent(clientProperties);
-
-		assertTrue(clientProperties.isReady());
 	}
 
 	@Test

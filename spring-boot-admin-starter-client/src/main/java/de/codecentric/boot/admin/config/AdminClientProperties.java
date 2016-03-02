@@ -71,15 +71,12 @@ public class AdminClientProperties {
 
 	private Integer managementPort;
 
-	private boolean ready = false;
-
 	@EventListener
 	public void onApplicationReady(ApplicationReadyEvent event) {
 		serverPort = event.getApplicationContext().getEnvironment().getProperty("local.server.port",
 				Integer.class);
 		managementPort = event.getApplicationContext().getEnvironment()
 				.getProperty("local.management.port", Integer.class, serverPort);
-		ready = true;
 	}
 
 	public String getManagementUrl() {
@@ -93,7 +90,7 @@ public class AdminClientProperties {
 					management.getContextPath());
 		}
 
-		if (ready && managementPort == null) {
+		if (managementPort == null) {
 			throw new IllegalStateException(
 					"serviceUrl must be set when deployed to servlet-container");
 		}
@@ -133,7 +130,7 @@ public class AdminClientProperties {
 			return serviceUrl;
 		}
 
-		if (ready && serverPort == null) {
+		if (serverPort == null) {
 			throw new IllegalStateException(
 					"serviceUrl must be set when deployed to servlet-container");
 		}
@@ -153,10 +150,6 @@ public class AdminClientProperties {
 
 	public void setServiceUrl(String serviceUrl) {
 		this.serviceUrl = serviceUrl;
-	}
-
-	public boolean isReady() {
-		return ready;
 	}
 
 	public String getName() {
