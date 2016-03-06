@@ -1,0 +1,102 @@
+.timeline {
+  position: relative;
+  padding: 1em 0;
+  list-style-type: none;
+  padding-left: 120px;
+}
+
+.timeline:before {
+  position: absolute;
+  top: 0;
+  content: ' ';
+  display: block;
+  width: 6px;
+  height: 100%;
+  margin-left: 0;
+  background: rgb(80,80,80);
+  background: -moz-linear-gradient(top, rgba(80,80,80,0) 0%, rgb(80,80,80) 8%, rgb(80,80,80) 92%, rgba(80,80,80,0) 100%);
+  background: -webkit-linear-gradient(top, rgba(80,80,80,0) 0%, rgb(80,80,80) 8%, rgb(80,80,80) 92%, rgba(80,80,80,0) 100%);
+  background: -webkit-gradient(top, rgba(80,80,80,0) 0%, rgb(80,80,80) 8%, rgb(80,80,80) 92%, rgba(80,80,80,0) 100%);
+  background: -o-linear-gradient(top, rgba(80,80,80,0) 0%, rgb(80,80,80) 8%, rgb(80,80,80) 92%, rgba(80,80,80,0) 100%);
+  background: -ms-linear-gradient(top, rgba(80,80,80,0) 0%, rgb(80,80,80) 8%, rgb(80,80,80) 92%, rgba(80,80,80,0) 100%);
+  background: linear-gradient(to bottom, rgba(80,80,80,0) 0%, rgb(80,80,80) 8%, rgb(80,80,80) 92%, rgba(80,80,80,0) 100%);
+  z-index: 5;
+}
+
+.timeline li {
+  padding: 1em 0;
+}
+
+.timeline li:after {
+  content: "";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+.timeline .event {
+  position: relative;
+  width: 100%;
+  display: inline-block;
+  left: 15px;
+  padding-left: 5px;
+  cursor:pointer;
+}
+
+.timeline .event .time {
+  position: absolute;
+  left: -120px;
+  margin-left: -25px;
+  display: inline-block;
+  vertical-align: middle;
+  text-align:right;
+  width: 120px;
+}
+
+.timeline .event:before {
+  box-sizing: border-box;
+  content: ' ';
+  display: block;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 10px;
+  border: 4px solid #6db33f;
+  z-index: 10;
+  position: absolute;
+  left: -6px;
+  margin-left: -15px;
+}
+
+.event.warn:before {
+  border-color: #e0ba2d;
+}
+.event.warn > .title > .status {
+  color: #e0ba2d;
+}
+
+.event.error:before {
+  border-color: #b30000;
+}
+.event.error > .title > .status {
+  color: #b30000;
+}
+
+.event.ok:before {
+  border-color: #6db33f;
+}
+.event.ok > .title > .status {
+  color: #6db33f;
+}
+
+.event.unknown:before {
+  border-color: #999999;
+}
+.event.unknown  > .title > .status {
+  color: #999999;
+}
+
+.timeline .event:hover:before {
+  background: #ccc;
+}

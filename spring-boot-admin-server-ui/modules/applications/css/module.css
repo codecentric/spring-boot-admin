@@ -1,0 +1,81 @@
+
+.sortable {
+  cursor: pointer;
+}
+
+.sorted-ascending,
+.sorted-descending {
+  color: #6db33f;
+}
+
+.sorted-ascending::after {
+    content: " \25b2";
+}
+.sorted-descending::after {
+    content: " \25bc";
+}
+
+/* ---------- */
+
+.status-UP {
+    color: #00AA00;
+    font-weight: bold;
+}
+
+.status-OFFLINE {
+    color: #000000;
+    font-weight: bold;
+}
+
+.status-DOWN,
+.status-OUT_OF_SERVICE {
+    color: #DD0000;
+    font-weight: bold;
+}
+
+.status-UNKNOWN {
+    font-weight: bold;
+    color: #FF8800;
+}
+
+.refresh {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: url("../applications/img/refresh.gif")  no-repeat;
+    margin-left: 8px;
+}
+
+/* ---------- */
+
+.info-panel {
+    border: 1px solid #34302D;
+    border-radius: 4px;
+    margin-bottom: 12px;
+}
+
+.info-panel > .info-panel-title {
+    background-color: #34302D;
+    border-color: #34302D;
+    color: #f1f1f1;
+    padding: 8px 15px;
+}
+
+.info-panel-content > .table {
+    margin-bottom: 0;
+}
+
+/* ---------- */
+
+.accordion-heading ,
+.accordion-heading > a,
+.accordion-heading > a:hover,
+.accordion-heading > a:focus {
+    background-color: #34302D;
+    border-color: #34302D;
+    color: #f1f1f1;
+}
+
+.accordion-group {
+  border: 1px solid #34302D;
+}

@@ -1,0 +1,28 @@
+<dl class="health-status">
+    <dt>{{name}} <span class="status-{{health.status}} pull-right" ng-bind="health.status"></span></dt>
+    <dd ng-if="repository.error">
+        <table style="width:100%;">
+            <tr class="error">
+            <td>Error</td><td ng-bind="repository.error"></td>
+            </tr>
+        </table>
+    </dd>
+    <dd>
+        <dl ng-repeat="repository in health.repositories" class="health-status">
+            <dt ng-bind="repository.name"></dt>
+            <dd>
+                <table style="width:100%;">
+                    <tr>
+                        <td>Label</td><td ng-bind="repository.label"></td>
+                    </tr>
+                    <tr>
+                        <td>Sources</td><td>{{repository.sources | joinArray:', '}}</td>
+                    </tr>
+                    <tr>
+                        <td>Profiles</td><td>{{repository.profiles | joinArray:', '}}</td>
+                    </tr>
+                </table>
+            </dd>
+        </dl>
+    </dd>
+</dl>

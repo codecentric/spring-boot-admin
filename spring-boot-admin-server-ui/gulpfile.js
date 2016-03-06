@@ -6,20 +6,24 @@ var browserify = require('browserify'),
     eslint = require('gulp-eslint'),
     glob = require('glob'),
     gulp = require('gulp'),
+    gutil = require('gulp-util'),
     karma = require('gulp-karma'),
     mocha = require('gulp-mocha'),
     ngAnnotage = require('gulp-ng-annotate'),
     protractor = require('gulp-protractor').protractor,
+    concat = require('gulp-concat'),
     source = require('vinyl-source-stream'),
     streamify = require('gulp-streamify'),
     uglify = require('gulp-uglify'),
     shell = require('gulp-shell'),
-    argv = require('yargs').argv;
+    rename = require('gulp-rename'),
+    argv = require('yargs').argv,
+    merge = require('merge-stream');
 
 var backendPort = 8080,
     serverPort = 9000,
     liveReload = true,
-    targetDir = './target';
+    targetDir = './target/';
 
 /*
  * Useful tasks:
@@ -64,9 +68,9 @@ function skipTests(task) {
 }
 
 gulp.task('clean', function () {
-    return gulp.src([ target('/dist')
-                    , target('/ngAnnotate')
-                    , target('/test/')
+    return gulp.src([ target('dist/')
+                    , target('ngAnnotate/')
+                    , target('test/')
                     ], {
             read: false
         })
@@ -76,13 +80,24 @@ gulp.task('clean', function () {
 gulp.task('lint', function () {
     return gulp.src([
             'gulpfile.js',
-            'app/js/**/*.js',
+            'core/**/*.js',
+            'modules/**/*.js',
             'test/**/*.js',
-            '!app/js/third-party/**',
+            '!**/third-party/**',
             '!test/browserified/**'
         ])
         .pipe(eslint())
         .pipe(eslint.format());
+});
+
+gulp.task('ngAnnotate', function () {
+	return gulp.src([
+	                 'core/**/*.js',
+	                 'modules/**/*.js',
+	                 '!**/third-party/**',
+	                 ])
+	                 .pipe(ngAnnotage())
+	                 .pipe(gulp.dest(target('/ngAnnotate')));
 });
 
 gulp.task('unit', skipTests(function () {
@@ -94,80 +109,96 @@ gulp.task('unit', skipTests(function () {
         }));
 }));
 
-gulp.task('browserify', ['lint', 'unit'], function () {
-    return browserify('./app/js/app.js')
-        .bundle({
-            debug: true
-        })
-        .pipe(source('app.js'))
-        .pipe(gulp.dest(target('/dist/js')))
-        .pipe(connect.reload());
+gulp.task('browserify', ['lint', 'ngAnnotate', 'unit'], function () {
+	var dependencies = ['es5-shim/es5-shim', 'es5-shim/es5-sham', 'jquery', 'bootstrap', 'angular',  'angular-resource', 'angular-ui-router'];
+	var withExternals = function (bundle) {
+	    dependencies.forEach(function(dependency) {
+	        bundle.external(dependency);
+	    });
+	    return bundle;
+	};
+	var withRequire = function (bundle) {
+	    dependencies.forEach(function(dependency) {
+	        bundle.require(dependency, { expose : dependency });
+	    });
+	    return bundle;
+	};
+	var errorHandler = function(error) {
+	      gutil.log(gutil.colors.red(error));
+	      this.emit('end');
+	};
+
+	var tasks = [];
+        tasks.push(withRequire(browserify())
+                .bundle()
+                .on('error', errorHandler)
+                .pipe(source('dependencies.js'))
+                .pipe(gulp.dest(target('dist/'))));
+
+	tasks.push(withExternals(browserify(target('ngAnnotate/core.js')))
+			.bundle()
+			.on('error', errorHandler)
+			.pipe(source('core.js'))
+			.pipe(gulp.dest(target('dist/'))));
+
+	glob.sync(target('ngAnnotate/*/module.js')).forEach(function (file) {
+		tasks.push(withExternals(browserify(file))
+		    .bundle()
+		    .on('error', errorHandler)
+		    .pipe(source('module.js'))
+		    .pipe(gulp.dest(file.replace(/\/ngAnnotate\//,'/dist/').replace(/\/module\.js/,''))));  
+	});
+	
+    return merge(tasks).pipe(connect.reload());
 });
 
-gulp.task('ngAnnotate', ['lint', 'unit'], function () {
-    return gulp.src([
-            'app/js/**/*.js',
-            '!app/js/third-party/**'
-        ])
-        .pipe(ngAnnotage())
-        .pipe(gulp.dest(target('/ngAnnotate')));
+gulp.task('minify', ['browserify'], function () {
+	return gulp.src(target('dist/**/*.js'))
+		.pipe(streamify(uglify({ mangle: false  })))
+		.pipe(rename({suffix: '.min'}))
+		.pipe(gulp.dest(target('dist/')));
 });
 
-gulp.task('browserify-min', ['ngAnnotate'], function () {
-    return browserify(target('/ngAnnotate/app.js'))
-        .bundle()
-        .pipe(source('app.min.js'))
-        .pipe(streamify(uglify({
-            mangle: false
-        })))
-        .pipe(gulp.dest(target('/dist/js')));
+gulp.task('copy', function () {
+    gulp.src(['dependencies/**', 'core/**', 'modules/**', '!**/*.js'] , { nodir: true })
+        .pipe(gulp.dest(target('dist/')));
 });
 
 gulp.task('browserify-tests', function () {
-    var bundler = browserify();
+    var bundler = browserify({ debug: true });
     glob.sync('./test/unit/**/*.js')
         .forEach(function (file) {
             bundler.add(file);
         });
     return bundler
-        .bundle({
-            debug: true
-        })
+        .bundle()
         .pipe(source('browserified_tests.js'))
-        .pipe(gulp.dest(target('/test/browserified')));
+        .pipe(gulp.dest(target('test')));
 });
 
 gulp.task('karma', ['browserify-tests'], skipTests(function () {
-    return gulp
-        .src(target('/test/browserified/browserified_tests.js'))
-        .pipe(karma({
+    return gulp.src(target('test/browserified_tests.js'))
+    	.pipe(karma({
             configFile: forEnv('karma.conf.js'),
             action: 'run'
         }))
         .on('error', function (err) {
-            // Make sure failed tests cause gulp to exit non-zero
             throw err;
         });
 }));
 
-gulp.task('copy', function () {
-    gulp.src(['app/**', '!**/*.js'])
-        .pipe(gulp.dest(target('/dist')));
-});
-
 gulp.task('backend-server', shell.task([
-    'cd ../spring-boot-admin-samples/spring-boot-admin-sample && mvn spring-boot:run -D"run.arguments=--server.port=' +
-    backendPort + '"'
+    'cd ../spring-boot-admin-samples/spring-boot-admin-sample && mvn spring-boot:run -D"run.arguments=--server.port=' + backendPort + '"'
 ]));
 
-gulp.task('server', ['browserify', 'copy'], function () {
+gulp.task('server', ['concat-module-js', 'copy', 'concat-module-css'], function () {
     if (argv.nobackend === true) {
         process.stdout.write('Running UI only\n');
     } else {
         gulp.start('backend-server');
     }
     connect.server({
-        root: target('/dist'),
+        root: target('dist/'),
         livereload: liveReload,
         port: serverPort,
         middleware: function () {
@@ -200,17 +231,32 @@ gulp.task('e2e', ['server'], skipTests(function () {
 gulp.task('watch', function () {
     gulp.start('server');
     gulp.watch([
-        'app/**',
-        '!app/js/third-party/**',
+        'core/**',
+        'modules/**',
+        '!**/third-party/**',
         'test/**/*.js'
     ], ['fast']);
 });
 
+gulp.task('concat-module-js', ['browserify'], function() {
+	//concatenates all module-js files - this will happen on the server in real life
+	return gulp.src(target('dist/*/module.js'))
+	    .pipe(concat('all-modules.js', {newLine: ';\n'}))
+	    .pipe(gulp.dest(target('dist/')));
+});
+
+gulp.task('concat-module-css', function() {
+	//concatenates all module-css files - this will happen on the server in real life
+	return gulp.src('./modules/*/css/module.css')
+		.pipe(concat('all-modules.css'))
+		.pipe(gulp.dest(target('dist/css/')));
+});
+
 gulp.task('fast', ['clean'], function () {
-    gulp.start('browserify', 'copy');
+    gulp.start('concat-module-js', 'copy', 'concat-module-css');
 });
 
 gulp.task('default', ['clean'], function () {
     liveReload = false;
-    gulp.start('karma', 'browserify', 'copy', 'browserify-min' /*, 'e2e'*/);
+    gulp.start('karma', 'copy', 'minify' /*, 'e2e'*/);
 });

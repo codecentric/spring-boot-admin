@@ -27,6 +27,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -56,6 +57,9 @@ import de.codecentric.boot.admin.registry.StatusUpdater;
 import de.codecentric.boot.admin.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
 import de.codecentric.boot.admin.web.PrefixHandlerMapping;
+import de.codecentric.boot.admin.web.servlet.resource.ConcatenatingResourceResolver;
+import de.codecentric.boot.admin.web.servlet.resource.PreferMinifiedFilteringResourceResolver;
+import de.codecentric.boot.admin.web.servlet.resource.ResourcePatternResolvingResourceResolver;
 
 @Configuration
 @EnableConfigurationProperties
@@ -72,6 +76,9 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 
 	@Autowired
 	private ServerProperties server;
+
+	@Autowired
+	private ResourcePatternResolver resourcePatternResolver;
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -106,7 +113,22 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler(adminServerProperties().getContextPath() + "/**")
-				.addResourceLocations("classpath:/META-INF/spring-boot-admin-server-ui/");
+				.addResourceLocations("classpath:/META-INF/spring-boot-admin-server-ui/")
+				.resourceChain(true)
+				.addResolver(new PreferMinifiedFilteringResourceResolver(".min"));
+
+		registry.addResourceHandler(adminServerProperties().getContextPath() + "/css/all-modules.css")
+				.resourceChain(true)
+				.addResolver(new ResourcePatternResolvingResourceResolver(resourcePatternResolver,
+						"classpath*:/META-INF/spring-boot-admin-server-ui/*/css/module.css"))
+				.addResolver(new ConcatenatingResourceResolver("\n".getBytes()));
+
+		registry.addResourceHandler(adminServerProperties().getContextPath() + "/all-modules.js")
+				.resourceChain(true)
+				.addResolver(new ResourcePatternResolvingResourceResolver(resourcePatternResolver,
+						"classpath*:/META-INF/spring-boot-admin-server-ui/*/module.js"))
+				.addResolver(new PreferMinifiedFilteringResourceResolver(".min"))
+				.addResolver(new ConcatenatingResourceResolver(";\n".getBytes()));
 	}
 
 	@Override

@@ -29,6 +29,7 @@
     <modules>
         <module>spring-boot-admin-server</module>
         <module>spring-boot-admin-server-ui</module>
+        <module>spring-boot-admin-server-ui-activiti</module>
         <module>spring-boot-admin-samples</module>
         <module>spring-boot-admin-starter-client</module>
         <module>spring-boot-admin-docs</module>
@@ -89,6 +90,15 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <!-- this fix is needed for the eclipse-plugin to get the right java-version -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
             </plugin>
         </plugins>
         <pluginManagement>
@@ -212,6 +222,11 @@
             <dependency>
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-server-ui</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-server-ui-activiti</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

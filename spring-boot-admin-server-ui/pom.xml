@@ -50,6 +50,7 @@
             <resource>
                 <directory>target/dist</directory>
                 <targetPath>META-INF/spring-boot-admin-server-ui</targetPath>
+                <filtering>true</filtering>
             </resource>
         </resources>
     </build>

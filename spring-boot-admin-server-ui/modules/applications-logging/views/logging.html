@@ -1,0 +1,40 @@
+<div class="container content">
+	<div ng-if="errorWhileListing">
+	<p>To make the logging section work you need to make the /jolokia-endpoint accessible.<br/>
+	Include the jolokia-core.jar in your spring-boot-application:
+	<pre>&lt;dependency&gt;
+	&lt;groupId>org.jolokia&lt;/groupId&gt;
+	&lt;artifactId>jolokia-core&lt;/artifactId&gt;
+&lt;/dependency&gt;</pre></p>
+	<p>Please note that the logging section currently only works with Logback.<br/>
+		To make the section work with Logback please activate the JMXConfigurator in your <b>logback.xml</b>:
+	<pre>&lt;configuration&gt;
+	&lt;include resource="org/springframework/boot/logging/logback/base.xml"/&gt;
+	&lt;jmxConfigurator/&gt;
+&lt;/configuration&gt;</pre></p>
+	</div>
+	<pre class="alert alert-error" ng-if="error"><b>Error:</b><br/>{{ error | json }}</pre>
+	<div ng-show="loggers">
+		<form>
+			<div class="input-prepend input-append">
+				<button class="btn" title="Show package-level loggers" ng-class="{'btn-inverse': showPackageLoggers}" ng-model="showPackageLoggers" btn-checkbox ><i class="icon-folder-open"  ng-class="{'icon-white': showPackageLoggers}"></i></button>
+				<input placeholder="Filter by name ..." class="span10" type="search" ng-model="filterLogger.name" />
+				<button class="btn" title="reload list" ng-click="refreshLoggers()"><i class="icon-refresh"></i></button>
+				<span title="filtered / total" class="add-on">{{ filteredLoggers.length }}/{{ loggers.length }}</span>
+			</div>
+		</form>
+		<table class="table table-hover">
+			<tbody>
+				<tr ng-repeat="logger in (filteredLoggers = (loggers | filter:packageFilter | filter:filterLogger) ) | limitTo: limit track by logger.name">
+					<td><sba-logger value="logger" on-level-changed="refreshLoggers"></sba-logger></td>
+				</tr>
+				<tr ng-show="limit < loggers.length" >
+					<td><button class="btn btn-link btn-block" ng-click="limit = limit + 10">show more</button></td>
+				</tr>
+				<tr ng-show="limit < loggers.length" >
+					<td><button class="btn btn-link btn-block" ng-click="limit = loggers.length">show all</button></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
