@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.MailSender;
 
+import de.codecentric.boot.admin.notify.HipchatNotifier;
 import de.codecentric.boot.admin.notify.MailNotifier;
 import de.codecentric.boot.admin.notify.Notifier;
 import de.codecentric.boot.admin.notify.NotifierListener;
@@ -76,5 +77,18 @@ public class NotifierConfiguration {
 		public PagerdutyNotifier pagerdutyNotifier() {
 			return new PagerdutyNotifier();
 		}
+	}
+
+	@Configuration
+	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.hipchat", name = "url")
+	@AutoConfigureBefore({ NotifierListenerConfiguration.class })
+	public class HipchatNotifierConfiguration {
+	    @Bean
+	    @ConditionalOnMissingBean
+	    @ConditionalOnProperty(prefix = "spring.boot.admin.notify.hipchat", name = "enabled", matchIfMissing = true)
+	    @ConfigurationProperties("spring.boot.admin.notify.hipchat")
+	    public HipchatNotifier hipchatNotifier() {
+	        return new HipchatNotifier();
+	    }
 	}
 }
