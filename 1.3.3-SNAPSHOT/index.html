@@ -509,7 +509,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 1.3.3-SNAPSHOT,</span>
-<span id="revdate">12.03.2016</span>
+<span id="revdate">14.03.2016</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -1145,7 +1145,65 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_reminder_notifications"><a class="anchor" href="#_reminder_notifications"></a>4.3.3. Reminder notifications</h4>
+<h4 id="_hipchat_notifications"><a class="anchor" href="#_hipchat_notifications"></a>4.3.3. Hipchat notifications</h4>
+<div class="paragraph">
+<p>To enable Hipchat notifications you need to create an API token from you Hipchat account and set the appropriate configuration properties.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 7. Hipchat notifications configuration options</caption>
+<colgroup>
+<col style="width: 33%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.hipchat.enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enable Hipchat notifications</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.hipchat.ignore-changes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Comma-delimited list of status changes to be ignored. Format: "&lt;from-status&gt;:&lt;to-status&gt;". Wildcards allowed.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"UNKNOWN:UP"</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.hipchat.url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The HipChat REST API (V2) URL</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.hipchat.auth-token</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The API token with access to the notification room</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.hipchat.room-id</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The ID or url-encoded name of the room to send notifications to</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.hipchat.notify</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the message should trigger a user notification</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.hipchat.description</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description to use in the event. SpEL-expressions are supported</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"<strong>#{application.name}</strong>/#{application.id} is <strong>#{to.status}</strong>"</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_reminder_notifications"><a class="anchor" href="#_reminder_notifications"></a>4.3.4. Reminder notifications</h4>
 <div class="paragraph">
 <p>To get reminders for down/offline applications you can add a <code>RemindingNotifier</code> to your <code>ApplicationContext</code>. The <code>RemindingNotifier</code> uses another <code>Notifier</code> as delegate to send the reminders.</p>
 </div>
