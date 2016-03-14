@@ -428,6 +428,44 @@ To enable pagerduty notifications you just have to add a generic service to your
 |
 |===
 
+[hipchat-notifications]
+==== Hipchat notifications ====
+To enable Hipchat notifications you need to create an API token from you Hipchat account and set the appropriate configuration properties.
+
+.Hipchat notifications configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.hipchat.enabled
+| Enable Hipchat notifications
+| `true`
+
+| spring.boot.admin.notify.hipchat.ignore-changes
+| Comma-delimited list of status changes to be ignored. Format: "<from-status>:<to-status>". Wildcards allowed.
+| `"UNKNOWN:UP"`
+
+| spring.boot.admin.notify.hipchat.url
+| The HipChat REST API (V2) URL
+|
+
+| spring.boot.admin.notify.hipchat.auth-token
+| The API token with access to the notification room
+|
+
+| spring.boot.admin.notify.hipchat.room-id
+| The ID or url-encoded name of the room to send notifications to
+|
+
+| spring.boot.admin.notify.hipchat.notify
+| Whether the message should trigger a user notification
+| `false`
+
+| spring.boot.admin.notify.hipchat.description
+| Description to use in the event. SpEL-expressions are supported
+| `+++"<strong>#{application.name}</strong>/#{application.id} is <strong>#{to.status}</strong>"+++`
+|
+|===
+
 [reminder-notifactaions]
 ==== Reminder notifications ====
 To get reminders for down/offline applications you can add a `RemindingNotifier` to your `ApplicationContext`. The `RemindingNotifier` uses another `Notifier` as delegate to send the reminders.
