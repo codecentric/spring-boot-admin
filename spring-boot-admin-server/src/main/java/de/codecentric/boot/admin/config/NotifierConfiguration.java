@@ -82,7 +82,7 @@ public class NotifierConfiguration {
 	@Configuration
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.hipchat", name = "url")
 	@AutoConfigureBefore({ NotifierListenerConfiguration.class })
-	public class HipchatNotifierConfiguration {
+	public static class HipchatNotifierConfiguration {
 	    @Bean
 	    @ConditionalOnMissingBean
 	    @ConditionalOnProperty(prefix = "spring.boot.admin.notify.hipchat", name = "enabled", matchIfMissing = true)
