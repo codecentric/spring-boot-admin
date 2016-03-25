@@ -162,7 +162,7 @@ springBootAdmin.run(function ($rootScope, $state, $log, $filter, Notification, A
 
 
     //setups up the sse-reciever
-    var journalEventSource = new EventSource('api/journal');
+    var journalEventSource = new EventSource('api/journal?stream');
     journalEventSource.onmessage = function(message) {
         var event = JSON.parse(message.data);
         Object.setPrototypeOf(event.application, Application.prototype);
