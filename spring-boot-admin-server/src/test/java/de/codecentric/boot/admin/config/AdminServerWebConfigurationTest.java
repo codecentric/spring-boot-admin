@@ -35,6 +35,7 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.cloud.client.discovery.noop.NoopDiscoveryClientAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -42,10 +43,13 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import com.hazelcast.config.Config;
 
 import de.codecentric.boot.admin.discovery.ApplicationDiscoveryListener;
+import de.codecentric.boot.admin.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.journal.store.HazelcastJournaledEventStore;
 import de.codecentric.boot.admin.journal.store.JournaledEventStore;
 import de.codecentric.boot.admin.journal.store.SimpleJournaledEventStore;
+import de.codecentric.boot.admin.notify.CompositeNotifier;
 import de.codecentric.boot.admin.notify.MailNotifier;
+import de.codecentric.boot.admin.notify.Notifier;
 import de.codecentric.boot.admin.notify.PagerdutyNotifier;
 import de.codecentric.boot.admin.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.registry.store.HazelcastApplicationStore;
@@ -112,6 +116,35 @@ public class AdminServerWebConfigurationTest {
 	}
 
 	@Test
+	public void simpleConfig_multipleNotifiers() {
+		load(TestAdditionalNotifierConfig.class, "spring.boot.admin.notify.pagerduty.service-key:foo");
+		assertThat(context.getBean(Notifier.class),
+			is(instanceOf(CompositeNotifier.class)));
+	}
+
+	@Test
+	public void simpleConfig_multipleNotifiersWithPrimary() {
+		load(TestAdditionalPrimaryNotifierConfig.class, "spring.boot.admin.notify.pagerduty.service-key:foo");
+		assertThat(context.getBean(Notifier.class),
+			is(instanceOf(TestNotifier.class)));
+	}
+
+	static class TestAdditionalNotifierConfig {
+		@Bean
+		public Notifier testNotifier() {
+			return new TestNotifier();
+		}
+	}
+
+	static class TestAdditionalPrimaryNotifierConfig {
+		@Bean
+		@Primary
+		public Notifier testNotifier() {
+			return new TestNotifier();
+		}
+	}
+
+	@Test
 	public void hazelcastConfig() {
 		load(TestHazelcastConfig.class);
 		assertThat(context.getBean(ApplicationStore.class),
@@ -158,5 +191,11 @@ public class AdminServerWebConfigurationTest {
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
 		applicationContext.refresh();
 		this.context = applicationContext;
+	}
+
+	private static class TestNotifier implements Notifier {
+
+		@Override
+		public void notify(ClientApplicationEvent event) {}
 	}
 }

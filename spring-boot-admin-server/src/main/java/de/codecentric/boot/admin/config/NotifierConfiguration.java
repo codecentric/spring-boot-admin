@@ -15,18 +15,25 @@
  */
 package de.codecentric.boot.admin.config;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.mail.MailSender;
 
+import de.codecentric.boot.admin.notify.CompositeNotifier;
 import de.codecentric.boot.admin.notify.HipchatNotifier;
 import de.codecentric.boot.admin.notify.MailNotifier;
 import de.codecentric.boot.admin.notify.Notifier;
@@ -46,6 +53,32 @@ public class NotifierConfiguration {
 		@ConditionalOnMissingBean
 		public NotifierListener notifierListener() {
 			return new NotifierListener(notifier);
+		}
+	}
+
+	@Configuration
+	@AutoConfigureBefore({ NotifierListenerConfiguration.class })
+	@AutoConfigureAfter({ MailNotifierConfiguration.class, PagerdutyNotifierConfiguration.class, HipchatNotifierConfiguration.class })
+	public static class CompositeNotifierConfiguration {
+
+		@Bean
+		@Primary
+		@Conditional(OnNoPrimaryNotifierCondition.class)
+		@ConditionalOnBean(Notifier.class)
+		public CompositeNotifier compositeNotifier(List<Notifier> notifiers) {
+			return new CompositeNotifier(notifiers);
+		}
+
+		static class OnNoPrimaryNotifierCondition extends NoneNestedConditions {
+
+			OnNoPrimaryNotifierCondition() {
+				super(ConfigurationPhase.REGISTER_BEAN);
+			}
+
+			@ConditionalOnSingleCandidate(Notifier.class)
+			static class HasSingleNotifierInstance {
+
+			}
 		}
 	}
 
