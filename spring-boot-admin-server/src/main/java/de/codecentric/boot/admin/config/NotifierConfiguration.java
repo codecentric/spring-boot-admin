@@ -15,18 +15,25 @@
  */
 package de.codecentric.boot.admin.config;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.mail.MailSender;
 
+import de.codecentric.boot.admin.notify.CompositeNotifier;
 import de.codecentric.boot.admin.notify.HipchatNotifier;
 import de.codecentric.boot.admin.notify.MailNotifier;
 import de.codecentric.boot.admin.notify.Notifier;
@@ -50,9 +57,32 @@ public class NotifierConfiguration {
 	}
 
 	@Configuration
+	@ConditionalOnBean(Notifier.class)
+	@AutoConfigureBefore({ NotifierListenerConfiguration.class })
+	public static class CompositeNotifierConfiguration {
+		@Bean
+		@Primary
+		@Conditional(NoSingleNotifierCandidateCondition.class)
+		public CompositeNotifier compositeNotifier(List<Notifier> notifiers) {
+			return new CompositeNotifier(notifiers);
+		}
+
+		static class NoSingleNotifierCandidateCondition extends NoneNestedConditions {
+			NoSingleNotifierCandidateCondition() {
+				super(ConfigurationPhase.REGISTER_BEAN);
+			}
+
+			@ConditionalOnSingleCandidate(Notifier.class)
+			static class HasSingleNotifierInstance {
+			}
+		}
+	}
+
+	@Configuration
 	@ConditionalOnBean(MailSender.class)
 	@AutoConfigureAfter({ MailSenderAutoConfiguration.class })
-	@AutoConfigureBefore({ NotifierListenerConfiguration.class })
+	@AutoConfigureBefore({ NotifierListenerConfiguration.class,
+			CompositeNotifierConfiguration.class })
 	public static class MailNotifierConfiguration {
 		@Autowired
 		private MailSender mailSender;
@@ -68,7 +98,8 @@ public class NotifierConfiguration {
 
 	@Configuration
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.pagerduty", name = "service-key")
-	@AutoConfigureBefore({ NotifierListenerConfiguration.class })
+	@AutoConfigureBefore({ NotifierListenerConfiguration.class,
+			CompositeNotifierConfiguration.class })
 	public static class PagerdutyNotifierConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
@@ -81,14 +112,15 @@ public class NotifierConfiguration {
 
 	@Configuration
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.hipchat", name = "url")
-	@AutoConfigureBefore({ NotifierListenerConfiguration.class })
+	@AutoConfigureBefore({ NotifierListenerConfiguration.class,
+			CompositeNotifierConfiguration.class })
 	public static class HipchatNotifierConfiguration {
-	    @Bean
-	    @ConditionalOnMissingBean
-	    @ConditionalOnProperty(prefix = "spring.boot.admin.notify.hipchat", name = "enabled", matchIfMissing = true)
-	    @ConfigurationProperties("spring.boot.admin.notify.hipchat")
-	    public HipchatNotifier hipchatNotifier() {
-	        return new HipchatNotifier();
-	    }
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = "spring.boot.admin.notify.hipchat", name = "enabled", matchIfMissing = true)
+		@ConfigurationProperties("spring.boot.admin.notify.hipchat")
+		public HipchatNotifier hipchatNotifier() {
+			return new HipchatNotifier();
+		}
 	}
 }

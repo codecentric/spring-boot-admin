@@ -29,7 +29,6 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
-import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.cloud.client.discovery.noop.NoopDiscoveryClientAutoConfiguration;
@@ -46,7 +45,6 @@ import de.codecentric.boot.admin.journal.store.HazelcastJournaledEventStore;
 import de.codecentric.boot.admin.journal.store.JournaledEventStore;
 import de.codecentric.boot.admin.journal.store.SimpleJournaledEventStore;
 import de.codecentric.boot.admin.notify.MailNotifier;
-import de.codecentric.boot.admin.notify.PagerdutyNotifier;
 import de.codecentric.boot.admin.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.registry.store.HazelcastApplicationStore;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
@@ -95,20 +93,6 @@ public class AdminServerWebConfigurationTest {
 		assertTrue(context.getBeansOfType(MailNotifier.class).isEmpty());
 		assertThat(context.getBean(JournaledEventStore.class),
 				is(instanceOf(SimpleJournaledEventStore.class)));
-
-	}
-
-	@Test
-	public void simpleConfig_mail() {
-		load("spring.mail.host:localhost");
-		assertThat(context.getBean(MailNotifier.class), is(instanceOf(MailNotifier.class)));
-	}
-
-	@Test
-	public void simpleConfig_pagerduty() {
-		load("spring.boot.admin.notify.pagerduty.service-key:foo");
-		assertThat(context.getBean(PagerdutyNotifier.class),
-				is(instanceOf(PagerdutyNotifier.class)));
 	}
 
 	@Test
@@ -148,9 +132,7 @@ public class AdminServerWebConfigurationTest {
 		}
 		applicationContext.register(PropertyPlaceholderAutoConfiguration.class);
 		applicationContext.register(ServerPropertiesAutoConfiguration.class);
-		applicationContext.register(MailSenderAutoConfiguration.class);
 		applicationContext.register(HazelcastAutoConfiguration.class);
-		applicationContext.register(NotifierConfiguration.class);
 		applicationContext.register(HazelcastStoreConfiguration.class);
 		applicationContext.register(DiscoveryClientConfiguration.class);
 		applicationContext.register(AdminServerWebConfiguration.class);
