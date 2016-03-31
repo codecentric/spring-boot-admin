@@ -16,27 +16,20 @@
 'use strict';
 
 module.exports = function ($scope, application, $interval) {
-    $scope.lastTraceTime = 0;
     $scope.traces = [];
     $scope.refresher = null;
     $scope.refreshInterval = 5;
 
-    $scope.refresh = function () {
-        application.getTraces()
-            .then(function (traces) {
-                for (var i = 0; i < traces.length; i++) {
-                    if (traces[i].timestamp > $scope.lastTraceTime) {
-                        $scope.traces.push(traces[i]);
-                    }
-                }
-                if (traces.length > 0) {
-                    $scope.lastTraceTime = traces[traces.length - 1].timestamp;
-                }
-
-            })
-            .catch(function (error) {
-                $scope.error = error;
+    $scope.refresh = function() {
+        application.getTraces().then(function(traces) {
+            var oldestTrace = traces[traces.length - 1];
+            var olderTraces = $scope.traces.filter(function(trace) {
+                return trace.timestamp < oldestTrace.timestamp;
             });
+            $scope.traces = traces.concat(olderTraces);
+        }).catch(function(error) {
+            $scope.error = error;
+        });
     };
 
     $scope.toggleAutoRefresh = function() {
