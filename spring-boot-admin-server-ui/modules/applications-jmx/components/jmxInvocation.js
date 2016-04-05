@@ -15,55 +15,54 @@
  */
 'use strict';
 
-module.exports =  {
-        bindings : {
-            name : '<operationName',
-            descriptor : '<operationDescriptor',
-            cancelInvoke : '&onCancel'
-        },
-        require : {
-            parent : '^sbaJmxBean'
-        },
-        controller : function(ApplicationJmx) {
-            var ctrl = this;
-            var getSignature = function(args) {
-                var types = args.map(function(arg) {
-                    return arg.type;
-                }).join(',');
-                return '(' + types + ')';
-            };
+module.exports = {
+  bindings: {
+    name: '<operationName',
+    descriptor: '<operationDescriptor',
+    cancelInvoke: '&onCancel'
+  },
+  require: {
+    parent: '^sbaJmxBean'
+  },
+  controller: function (ApplicationJmx) {
+    'ngInject';
 
-            ctrl.$onInit = function() {
-                ctrl.state = 'init';
-                ctrl.signature = '';
-                ctrl.arguments = [];
-                ctrl.response = null;
-                ctrl.proceedJmxInvocation();
-            };
-
-            ctrl.proceedJmxInvocation = function() {
-                if (ctrl.descriptor instanceof Array) {
-                    ctrl.state = 'selectOverload';
-                    return;
-                }
-
-                ctrl.signature = ctrl.name + getSignature(ctrl.descriptor.args);
-                if (ctrl.descriptor.args.length > 0 && ctrl.descriptor.args.length > ctrl.arguments.length) {
-                    ctrl.state = 'inputParameters';
-                    return;
-                }
-
-                ctrl.state = 'showResult';
-                ctrl.call = ctrl.name + '(' + ctrl.arguments.join(', ') + ')';
-                ApplicationJmx.invoke(ctrl.parent.application, ctrl.parent.bean, ctrl.signature, ctrl.arguments).then(function(response) {
-                    ctrl.response = response;
-                }).catch(function(response) {
-                    ctrl.response = response;
-                });
-            };
-        },
-        template : '<sba-jmx-invoke-select-overload ng-if="$ctrl.state == \'selectOverload\'"></sba-jmx-invoke-select-overload>'
-                + '<sba-jmx-invoke-input-parameters ng-if="$ctrl.state == \'inputParameters\'"></sba-jmx-invoke-input-parameters>'
-                + '<sba-jmx-invoke-show-result ng-if="$ctrl.state == \'showResult\'"></sba-jmx-invoke-show-result>'
-                + '<button class="btn" ng-click="$ctrl.cancelInvoke()" ng-bind="$ctrl.state == \'showResult\' ? \'Done\' : \'Cancel\'"></button>'
+    var ctrl = this;
+    var getSignature = function (args) {
+      var types = args.map(function (arg) {
+        return arg.type;
+      }).join(',');
+      return '(' + types + ')';
     };
+
+    ctrl.$onInit = function () {
+      ctrl.state = 'init';
+      ctrl.signature = '';
+      ctrl.arguments = [];
+      ctrl.response = null;
+      ctrl.proceedJmxInvocation();
+    };
+
+    ctrl.proceedJmxInvocation = function () {
+      if (ctrl.descriptor instanceof Array) {
+        ctrl.state = 'selectOverload';
+        return;
+      }
+
+      ctrl.signature = ctrl.name + getSignature(ctrl.descriptor.args);
+      if (ctrl.descriptor.args.length > 0 && ctrl.descriptor.args.length > ctrl.arguments.length) {
+        ctrl.state = 'inputParameters';
+        return;
+      }
+
+      ctrl.state = 'showResult';
+      ctrl.call = ctrl.name + '(' + ctrl.arguments.join(', ') + ')';
+      ApplicationJmx.invoke(ctrl.parent.application, ctrl.parent.bean, ctrl.signature, ctrl.arguments).then(function (response) {
+        ctrl.response = response;
+      }).catch(function (response) {
+        ctrl.response = response;
+      });
+    };
+  },
+  template: require('./jmxInvocation.tpl.html')
+};

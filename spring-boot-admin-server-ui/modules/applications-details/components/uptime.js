@@ -16,18 +16,20 @@
 'use strict';
 
 module.exports = {
-        bindings : {
-            value : '<value',
-        },
-        controller : function($interval, $filter) {
-            var ctrl = this;
-            var start = Date.now();
-            ctrl.$onChanges = function() {
-                ctrl.clock  = $filter('timeInterval')(ctrl.value + Date.now() - start);
-                $interval(function() {
-                    ctrl.clock  = $filter('timeInterval')(ctrl.value + Date.now() - start);
-                }, 1000);
-            };
-        },
-        template : '{{$ctrl.clock}} [d:h:m:s]'
+  bindings: {
+    value: '<value'
+  },
+  controller: function ($interval, $filter) {
+    'ngInject';
+
+    var ctrl = this;
+    var start = Date.now();
+    ctrl.$onChanges = function () {
+      ctrl.clock = $filter('timeInterval')(ctrl.value + Date.now() - start);
+      $interval(function () {
+        ctrl.clock = $filter('timeInterval')(ctrl.value + Date.now() - start);
+      }, 1000);
     };
+  },
+  template: '{{$ctrl.clock}} [d:h:m:s]'
+};

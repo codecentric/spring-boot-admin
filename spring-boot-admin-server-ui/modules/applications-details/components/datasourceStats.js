@@ -17,48 +17,35 @@
 
 var angular = require('angular');
 module.exports = {
-    bindings : {
-        metrics : '<metrics',
-    },
-    controller: function($filter) {
-        var ctrl = this;
-        ctrl.$onChanges = function() {
-            ctrl.datasources = [];
-            angular.forEach(ctrl.metrics, function (value, key){
-                var match = /datasource\.(.+)\.active/.exec(key);
-                if (match !== null) {
-                    ctrl.datasources.push( {
-                        name : match[1],
-                        active : value,
-                        usage : $filter('number')(ctrl.metrics['datasource.' + match[1] + '.usage'] * 100, 2)
-                    });
-                }
-            });
-        };
-        ctrl.getBarClass = function(percentage) {
-            if (percentage < 75) {
-                return 'bar-success';
-            } else if (percentage >= 75 && percentage <= 95) {
-                return 'bar-warning';
-            } else {
-                return 'bar-danger';
-            }
-        };
-    },
-    template : 
-        '<table class="table">'
-        + '     <tr ng-repeat-start="datasource in $ctrl.datasources track by datasource.name">'
-        + '             <td rowspan="2" ng-bind="datasource.name"></td>'
-        + '             <td>active connections</td>'
-        + '             <td ng-bind="datasource.active"></td>'
-        + '     </tr><tr ng-repeat-end>'
-        + '             <td colspan="2">'
-        + '                     <div class="progress" style="margin-bottom: 0px;">'
-        + '                             <div class="bar" ng-class="$ctrl.getBarClass(datasource.usage)" style="width: {{datasource.usage}}%;">'
-        + '                                    {{datasource.usage}}%'
-        + '                             </div>'
-        + '                     </div>'
-        + '             </td>'
-        + '     </tr>'
-        + '</table>'
+  bindings: {
+    metrics: '<metrics'
+  },
+  controller: function ($filter) {
+    'ngInject';
+
+    var ctrl = this;
+    ctrl.$onChanges = function () {
+      ctrl.datasources = [];
+      angular.forEach(ctrl.metrics, function (value, key) {
+        var match = /datasource\.(.+)\.active/.exec(key);
+        if (match !== null) {
+          ctrl.datasources.push({
+            name: match[1],
+            active: value,
+            usage: $filter('number')(ctrl.metrics['datasource.' + match[1] + '.usage'] * 100, 2)
+          });
+        }
+      });
+    };
+    ctrl.getBarClass = function (percentage) {
+      if (percentage < 75) {
+        return 'bar-success';
+      } else if (percentage >= 75 && percentage <= 95) {
+        return 'bar-warning';
+      } else {
+        return 'bar-danger';
+      }
+    };
+  },
+  template: require('./datasourceStats.tpl.html')
 };

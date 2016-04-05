@@ -15,10 +15,10 @@
  */
 'use strict';
 
-module.exports = function() {
-    return function(input, limit, begin) {
-        begin = begin || 0;
-        var lines = input.match(/[^\r\n]+/g);
-        return lines.splice(begin, limit).join('\n');
-    };
+module.exports = function () {
+  return function (input, limit, begin) {
+    begin = begin || 0;
+    var lines = input.match(/[^\r\n]+/g);
+    return lines.splice(begin, limit).join('\n');
+  };
 };

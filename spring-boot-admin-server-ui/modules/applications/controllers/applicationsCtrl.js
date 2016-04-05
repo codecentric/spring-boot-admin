@@ -15,36 +15,38 @@
  */
 'use strict';
 
-module.exports = function($rootScope, $scope, $state, ApplicationViews) {
-    $scope.applications = $rootScope.applications;
+module.exports = function ($rootScope, $scope, $state, ApplicationViews) {
+  'ngInject';
 
-    $scope.remove = function(application) {
-        application.$remove();
-    };
+  $scope.applications = $rootScope.applications;
 
-    $scope.order = {
-        column : 'name',
-        descending : false
-    };
+  $scope.remove = function (application) {
+    application.$remove();
+  };
 
-    $scope.viewsForApplication = function(application) {
-        return ApplicationViews.getApplicationViews(application);
-    };
+  $scope.order = {
+    column: 'name',
+    descending: false
+  };
 
-    $scope.orderBy = function(column) {
-        if (column === $scope.order.column) {
-            $scope.order.descending = !$scope.order.descending;
-        } else {
-            $scope.order.column = column;
-            $scope.order.descending = false;
-        }
-    };
+  $scope.viewsForApplication = function (application) {
+    return ApplicationViews.getApplicationViews(application);
+  };
 
-    $scope.orderByCssClass = function(column) {
-        if (column === $scope.order.column) {
-            return 'sorted-' + ($scope.order.descending ? 'descending' : 'ascending');
-        } else {
-            return '';
-        }
-    };
+  $scope.orderBy = function (column) {
+    if (column === $scope.order.column) {
+      $scope.order.descending = !$scope.order.descending;
+    } else {
+      $scope.order.column = column;
+      $scope.order.descending = false;
+    }
+  };
+
+  $scope.orderByCssClass = function (column) {
+    if (column === $scope.order.column) {
+      return 'sorted-' + ($scope.order.descending ? 'descending' : 'ascending');
+    } else {
+      return '';
+    }
+  };
 };

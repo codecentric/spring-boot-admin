@@ -17,28 +17,28 @@
 
 var angular = require('angular');
 
-var module = angular.module('sba-applications-environment', [ 'sba-applications' ]);
+var module = angular.module('sba-applications-environment', ['sba-applications']);
 global.sbaModules.push(module.name);
 
-module.controller('environmentCtrl', require('./controllers/environmentCtrl'));
+module.controller('environmentCtrl', require('./controllers/environmentCtrl.js'));
 
-module.component('sbaEnvironmentManager', require('./components/environmentManager'));
+module.component('sbaEnvironmentManager', require('./components/environmentManager.js'));
 
-module.config(function($stateProvider) {
-    $stateProvider.state('applications.environment', {
-        url : '/environment',
-        templateUrl : 'applications-environment/views/environment.html',
-        controller : 'environmentCtrl'
-    });
+module.config(function ($stateProvider) {
+  $stateProvider.state('applications.environment', {
+    url: '/environment',
+    templateUrl: 'applications-environment/views/environment.html',
+    controller: 'environmentCtrl'
+  });
 });
 
-module.run(function(ApplicationViews) {
-    ApplicationViews.register({
-        order : 10,
-        title : 'Environment',
-        state : 'applications.environment',
-        show : function (application) {
-            return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';
-        }
-    });
+module.run(function (ApplicationViews) {
+  ApplicationViews.register({
+    order: 10,
+    title: 'Environment',
+    state: 'applications.environment',
+    show: function (application) {
+      return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';
+    }
+  });
 });

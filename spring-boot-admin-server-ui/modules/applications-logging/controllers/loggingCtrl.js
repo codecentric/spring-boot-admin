@@ -15,42 +15,44 @@
  */
 'use strict';
 
-module.exports = function($scope, application, ApplicationLogging) {
-    $scope.loggers = [];
-    $scope.filteredLoggers = [];
-    $scope.limit = 10;
-    $scope.showPackageLoggers = false;
+module.exports = function ($scope, application, ApplicationLogging) {
+  'ngInject';
 
-    $scope.packageFilter = function(logger) {
-        return !logger.packageLogger || $scope.showPackageLoggers;
-    };
+  $scope.loggers = [];
+  $scope.filteredLoggers = [];
+  $scope.limit = 10;
+  $scope.showPackageLoggers = false;
 
-    ApplicationLogging.getLoggingConfigurator(application).then(
-            function(logging) {
-                $scope.refreshLoggers = function(changedLogger) {
-                    var outdatedLoggers = $scope.loggers.filter(function(logger) {
-                        return !changedLogger || changedLogger.name === 'ROOT'
-                                || logger.name.indexOf(changedLogger.name) === 0;
-                    });
-                    logging.getLogLevels(outdatedLoggers).catch(function(responses) {
-                        responses.some(function(response) {
-                            if (response.error !== null) {
-                                $scope.error = response;
-                                return true;
-                            }
-                            return false;
-                        });
-                    });
-                };
+  $scope.packageFilter = function (logger) {
+    return !logger.packageLogger || $scope.showPackageLoggers;
+  };
 
-                logging.getAllLoggers().then(function(loggers) {
-                    $scope.loggers = loggers;
-                }).catch(function(response) {
-                    $scope.error = response;
-                    $scope.errorWhileListing = true;
-                });
-            }).catch(function(response) {
-                $scope.error = response;
-                $scope.errorWhileListing = true;
-            });
+  ApplicationLogging.getLoggingConfigurator(application).then(
+    function (logging) {
+      $scope.refreshLoggers = function (changedLogger) {
+        var outdatedLoggers = $scope.loggers.filter(function (logger) {
+          return !changedLogger || changedLogger.name === 'ROOT' || logger.name.indexOf(changedLogger.name) === 0;
+        });
+        logging.getLogLevels(outdatedLoggers).catch(function (responses) {
+          responses.some(function (response) {
+            if (response.error !== null) {
+              $scope.error = response;
+              return true;
+            }
+            return false;
+          });
+        });
+      };
+
+      logging.getAllLoggers().then(function (loggers) {
+        $scope.loggers = loggers;
+      }).catch(function (response) {
+        $scope.error = response;
+        $scope.errorWhileListing = true;
+      });
+    }
+  ).catch(function (response) {
+    $scope.error = response;
+    $scope.errorWhileListing = true;
+  });
 };

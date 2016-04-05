@@ -17,36 +17,39 @@
 
 var angular = require('angular');
 
-module.exports = function($scope, application) {
-    $scope.application = application;
-    $scope.metrics = {};
+module.exports = function ($scope, application) {
+  'ngInject';
 
-    application.getInfo().then(function(response) {
-        $scope.info = response.data;
-    }).catch(function(response) {
-        $scope.error = response.data;
-    });
+  $scope.application = application;
+  $scope.metrics = {};
 
-    application.getHealth().then(function(response) {
-        $scope.health = response.data;
-    }).catch(function(response) {
-        $scope.health = response.data;
-    });
+  application.getInfo().then(function (response) {
+    $scope.info = response.data;
+  }).catch(function (response) {
+    $scope.error = response.data;
+  });
 
-    application.getMetrics().then(
-            function(response) {
-                $scope.metrics = response.data;
-                $scope.hasDatasources = false;
-                $scope.hasCaches = false;
-                angular.forEach($scope.metrics, function (value, key) {
-                    if (!$scope.hasDatasources && key.startsWith('datasource.')) {
-                        $scope.hasDatasources = true;
-                    }
-                    if (!$scope.hasCaches && key.startsWith('cache.')) {
-                        $scope.hasCaches = true;
-                    }
-                });
-            }).catch(function(response) {
-                $scope.error = response.data;
-            });
+  application.getHealth().then(function (response) {
+    $scope.health = response.data;
+  }).catch(function (response) {
+    $scope.health = response.data;
+  });
+
+  application.getMetrics().then(
+    function (response) {
+      $scope.metrics = response.data;
+      $scope.hasDatasources = false;
+      $scope.hasCaches = false;
+      angular.forEach($scope.metrics, function (value, key) {
+        if (!$scope.hasDatasources && key.startsWith('datasource.')) {
+          $scope.hasDatasources = true;
+        }
+        if (!$scope.hasCaches && key.startsWith('cache.')) {
+          $scope.hasCaches = true;
+        }
+      });
+    }
+  ).catch(function (response) {
+    $scope.error = response.data;
+  });
 };

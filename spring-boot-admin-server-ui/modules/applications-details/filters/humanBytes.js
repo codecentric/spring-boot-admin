@@ -15,29 +15,29 @@
  */
 'use strict';
 
-module.exports = function() {
-    var units = {
-        B : Math.pow(1024, 0),
-        K : Math.pow(1024, 1),
-        M : Math.pow(1024, 2),
-        G : Math.pow(1024, 3),
-        T : Math.pow(1024, 4),
-        P : Math.pow(1024, 5)
-    };
+module.exports = function () {
+  var units = {
+    B: Math.pow(1024, 0),
+    K: Math.pow(1024, 1),
+    M: Math.pow(1024, 2),
+    G: Math.pow(1024, 3),
+    T: Math.pow(1024, 4),
+    P: Math.pow(1024, 5)
+  };
 
-    return function(input, unit) {
-        input = input || 0;
-        unit = unit || 'B';
+  return function (input, unit) {
+    input = input || 0;
+    unit = unit || 'B';
 
-        var bytes = input * (units[unit] || 1);
+    var bytes = input * (units[unit] || 1);
 
-        var chosen = 'B';
-        for ( var u in units) {
-            if (units[chosen] < units[u] && bytes >= units[u]) {
-                chosen = u;
-            }
-        }
+    var chosen = 'B';
+    for (var u in units) {
+      if (units[chosen] < units[u] && bytes >= units[u]) {
+        chosen = u;
+      }
+    }
 
-        return (bytes / units[chosen]).toFixed(1).replace(/\.0$/, '').replace(/,/g, '') + chosen;
-    };
+    return (bytes / units[chosen]).toFixed(1).replace(/\.0$/, '').replace(/,/g, '') + chosen;
+  };
 };

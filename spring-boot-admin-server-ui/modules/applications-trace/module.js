@@ -17,28 +17,28 @@
 
 var angular = require('angular');
 
-var module = angular.module('sba-applications-trace', [ 'sba-applications' ]);
+var module = angular.module('sba-applications-trace', ['sba-applications']);
 global.sbaModules.push(module.name);
 
-module.controller('traceCtrl', require('./controllers/traceCtrl'));
+module.controller('traceCtrl', require('./controllers/traceCtrl.js'));
 
-module.component('sbaTrace', require('./components/trace'));
+module.component('sbaTrace', require('./components/trace.js'));
 
-module.config(function($stateProvider) {
-    $stateProvider.state('applications.trace', {
-        url : '/trace',
-        templateUrl : 'applications-trace/views/trace.html',
-        controller : 'traceCtrl'
-    });
+module.config(function ($stateProvider) {
+  $stateProvider.state('applications.trace', {
+    url: '/trace',
+    templateUrl: 'applications-trace/views/trace.html',
+    controller: 'traceCtrl'
+  });
 });
 
-module.run(function(ApplicationViews) {
-    ApplicationViews.register({
-        order : 60,
-        title : 'Trace',
-        state : 'applications.trace',
-        show : function (application) {
-            return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';
-        }
-    });
+module.run(function (ApplicationViews) {
+  ApplicationViews.register({
+    order: 60,
+    title: 'Trace',
+    state: 'applications.trace',
+    show: function (application) {
+      return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';
+    }
+  });
 });

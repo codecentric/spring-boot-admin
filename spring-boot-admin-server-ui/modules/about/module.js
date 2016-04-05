@@ -16,20 +16,20 @@
 'use strict';
 
 var angular = require('angular');
-var module = angular.module('sba-about', ['sba-ui-core']);
+var module = angular.module('sba-about', ['sba-core']);
 global.sbaModules.push(module.name);
 
 module.config(function ($stateProvider) {
-    $stateProvider.state('about', {
-        url: '/about',
-        templateUrl: 'about/about.html',
-    });
+  $stateProvider.state('about', {
+    url: '/about',
+    templateUrl: 'about/about.html'
+  });
 });
 
 module.run(function (MainViews) {
-    MainViews.register({
-        title: 'About',
-        state: 'about',
-        order: 200
-    });
+  MainViews.register({
+    title: 'About',
+    state: 'about',
+    order: 200
+  });
 });

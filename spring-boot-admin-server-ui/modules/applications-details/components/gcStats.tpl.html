@@ -1,0 +1,11 @@
+<table class="table">
+    <tr ng-repeat-start="gc in $ctrl.gcs track by gc.name">
+        <td rowspan="2" ng-bind="gc.name"></td>
+        <td>Count</td>
+        <td ng-bind="gc.count"></td>
+    </tr>
+    <tr ng-repeat-end>
+        <td>Time</td>
+        <td ng-bind="gc.time"></td>
+    </tr>
+</table>

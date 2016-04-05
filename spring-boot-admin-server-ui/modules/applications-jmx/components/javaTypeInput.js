@@ -17,61 +17,59 @@
 
 var angular = require('angular');
 module.exports = {
-        bindings : {
-            value : '=model',
-            disabled : '<disabled',
-            type : '@type'
-        },
-        controller : function($scope) {
-            var ctrl = this;
-            ctrl.jsonEdited = function() {
-                ctrl.value = angular.fromJson($scope.json);
-            };
+  bindings: {
+    value: '=model',
+    disabled: '<disabled',
+    type: '@type'
+  },
+  controller: function ($scope) {
+    'ngInject';
 
-            ctrl.$onInit = function() {
-                ctrl.inputType = (function() {
-                    switch (ctrl.type) {
-                        case 'java.lang.String':
-                            return 'text';
-                        case 'int':
-                        case 'java.lang.Integer':
-                        case 'long':
-                        case 'java.lang.Long':
-                        case 'double':
-                        case 'java.lang.Double':
-                        case 'float':
-                        case 'java.lang.Float':
-                        case 'short':
-                        case 'java.lang.short':
-                        case 'java.lang.Number':
-                            return 'number';
-                        default:
-                            return null;
-                    }
-                })();
-
-                ctrl.selectOptions = (function() {
-                    switch (ctrl.type) {
-                        case 'boolean':
-                            return [ true, false ];
-                        case 'java.lang.Boolean':
-                            return [ null, true, false ];
-                        default:
-                            return null;
-                    }
-                })();
-                
-                ctrl.isObject = ctrl.selectOptions === null && ctrl.inputType === null;
-                if (ctrl.isObject) {
-                    $scope.$watch('$ctrl.value', function(value) {
-                        ctrl.json = angular.toJson(value, true);
-                    });
-                }
-            };
-        },
-        template : '<input ng-show="$ctrl.inputType" class="input-xxlarge" type="{{$ctrl.inputType}}" ng-model="$ctrl.value" ng-disabled="$ctrl.disabled"/>'
-                + '<select ng-show="$ctrl.selectOptions" class="input-xxlarge" ng-model="$ctrl.value" ng-disabled="$ctrl.disabled">'
-                + '     <option ng-repeat="opt in $ctrl.selectOptions" value="{{opt}}" ng-selected="$ctrl.value == opt">{{opt}}</option>'
-                + '</select>'
-                + '<textarea ng-show="$ctrl.isObject" style="word-break: break-all;" class="input-xxlarge" rows="6" ng-model="$ctrl.json" ng-blur="$ctrl.jsonEdited" ng-disabled="$ctrl.disabled"/>'
+    var ctrl = this;
+    ctrl.jsonEdited = function () {
+      ctrl.value = angular.fromJson($scope.json);
     };
+
+    ctrl.$onInit = function () {
+      ctrl.inputType = (function () {
+        switch (ctrl.type) {
+          case 'java.lang.String':
+            return 'text';
+          case 'int':
+          case 'java.lang.Integer':
+          case 'long':
+          case 'java.lang.Long':
+          case 'double':
+          case 'java.lang.Double':
+          case 'float':
+          case 'java.lang.Float':
+          case 'short':
+          case 'java.lang.short':
+          case 'java.lang.Number':
+            return 'number';
+          default:
+            return null;
+        }
+      })();
+
+      ctrl.selectOptions = (function () {
+        switch (ctrl.type) {
+          case 'boolean':
+            return [true, false];
+          case 'java.lang.Boolean':
+            return [null, true, false];
+          default:
+            return null;
+        }
+      })();
+
+      ctrl.isObject = ctrl.selectOptions === null && ctrl.inputType === null;
+      if (ctrl.isObject) {
+        $scope.$watch('$ctrl.value', function (value) {
+          ctrl.json = angular.toJson(value, true);
+        });
+      }
+    };
+  },
+  template: require('./javaTypeInput.tpl.html')
+};

@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>de.codecentric</groupId>
-		<artifactId>spring-boot-admin</artifactId>
-		<version>1.4.0-SNAPSHOT</version>
-		<relativePath>..</relativePath>
-	</parent>
-	<artifactId>spring-boot-admin-server-ui</artifactId>
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>de.codecentric</groupId>
+        <artifactId>spring-boot-admin</artifactId>
+        <version>1.4.0-SNAPSHOT</version>
+        <relativePath>..</relativePath>
+    </parent>
+    <artifactId>spring-boot-admin-server-ui</artifactId>
     <build>
         <plugins>
             <plugin>
@@ -29,23 +27,37 @@
                             </arguments>
                         </configuration>
                     </execution>
-                   <execution>
-                        <id>gulp</id>
+                    <execution>
+                        <id>npm-build</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>./node_modules/.bin/gulp</executable>
-                                <arguments>
-                                    <argument>--skipTests=${skipTests}</argument>
-                                </arguments>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>run</argument>
+                                <argument>build</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>run</argument>
+                                <argument>test</argument>
+                            </arguments>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
-
         <resources>
             <resource>
                 <directory>target/dist</directory>
@@ -54,5 +66,4 @@
             </resource>
         </resources>
     </build>
-
 </project>

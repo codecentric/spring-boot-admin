@@ -17,34 +17,24 @@
 
 var angular = require('angular');
 module.exports = {
-    bindings : {
-        metrics : '<metrics',
-    },
-    controller: function() {
-        var ctrl = this;
-        ctrl.$onChanges = function() {
-            ctrl.gcs = [];
-            angular.forEach(ctrl.metrics, function (value, key){
-                var match = /gc\.(.+)\.time/.exec(key);
-                if (match !== null) {
-                    ctrl.gcs.push( {
-                        name : match[1],
-                        time : value + ' ms',
-                        count: ctrl.metrics['gc.' + match[1] + '.count']
-                    });
-                }
-            });
-        };
-    },
-    template : 
-        '<table class="table">'
-        + '     <tr ng-repeat-start="gc in $ctrl.gcs track by gc.name">'
-        + '             <td rowspan="2" ng-bind="gc.name"></td>'
-        + '             <td>Count</td>'
-        + '             <td ng-bind="gc.count"></td>'
-        + '     </tr><tr ng-repeat-end>'
-        + '             <td>Time</td>'
-        + '             <td ng-bind="gc.time"></td>'
-        + '     </tr>'
-        + '</table>'
+  bindings: {
+    metrics: '<metrics'
+  },
+  controller: function () {
+    var ctrl = this;
+    ctrl.$onChanges = function () {
+      ctrl.gcs = [];
+      angular.forEach(ctrl.metrics, function (value, key) {
+        var match = /gc\.(.+)\.time/.exec(key);
+        if (match !== null) {
+          ctrl.gcs.push({
+            name: match[1],
+            time: value + ' ms',
+            count: ctrl.metrics['gc.' + match[1] + '.count']
+          });
+        }
+      });
+    };
+  },
+  template: require('./gcStats.tpl.html')
 };

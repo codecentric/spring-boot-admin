@@ -66,7 +66,9 @@
     <script src="all-modules.js" type="text/javascript"></script>
     <script type="text/javascript">
         angular.element(document).ready(function() {
-            angular.bootstrap(document, sbaModules.slice(0));
+            angular.bootstrap(document, sbaModules.slice(0), {
+                strictDi: true
+            });
         });
 
     </script>

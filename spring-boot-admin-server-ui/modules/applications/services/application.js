@@ -15,96 +15,98 @@
  */
 'use strict';
 
-module.exports = function($resource, $http) {
-    var isEndpointPresent = function(endpoint, configprops) {
-        if (configprops[endpoint]) {
-            return true;
-        } else {
-            return false;
-        }
-    };
+module.exports = function ($resource, $http) {
+  'ngInject';
 
-    var Application = $resource('api/applications/:id', {
-        id : '@id'
-    }, {
-        query : {
-            method : 'GET',
-            isArray : true
-        },
-        get : {
-            method : 'GET'
-        },
-        remove : {
-            method : 'DELETE'
-        }
-    });
+  var isEndpointPresent = function (endpoint, configprops) {
+    if (configprops[endpoint]) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
-    var convert = function(response) {
-        delete response.data['_links'];
-        return response;
-    };
+  var Application = $resource('api/applications/:id', {
+    id: '@id'
+  }, {
+    query: {
+      method: 'GET',
+      isArray: true
+    },
+    get: {
+      method: 'GET'
+    },
+    remove: {
+      method: 'DELETE'
+    }
+  });
 
-    var convertArray = function(response) {
-        delete response.data['_links'];
-        response.data = response.data.content || response.data;
-        return response;
-    };
+  var convert = function (response) {
+    delete response.data['_links'];
+    return response;
+  };
 
-    Application.prototype.getCapabilities = function() {
-        var application = this;
-        this.capabilities = {};
-        if (this.managementUrl) {
-            $http.get('api/applications/' + application.id + '/configprops').then(
-                    function(response) {
-                        application.capabilities.refresh = isEndpointPresent('refreshEndpoint',
-                                response.data);
-                    });
-            $http.head('api/applications/' + application.id + '/logfile').then(function() {
-                application.capabilities.logfile = true;
-            }).catch(function() {
-                application.capabilities.logfile = false;
-            });
-        }
-    };
+  var convertArray = function (response) {
+    delete response.data['_links'];
+    response.data = response.data.content || response.data;
+    return response;
+  };
 
-    Application.prototype.getHealth = function() {
-        return $http.get('api/applications/' + this.id + '/health').then(convert);
-    };
+  Application.prototype.getCapabilities = function () {
+    var application = this;
+    this.capabilities = {};
+    if (this.managementUrl) {
+      $http.get('api/applications/' + application.id + '/configprops').then(
+        function (response) {
+          application.capabilities.refresh = isEndpointPresent('refreshEndpoint',
+            response.data);
+        });
+      $http.head('api/applications/' + application.id + '/logfile').then(function () {
+        application.capabilities.logfile = true;
+      }).catch(function () {
+        application.capabilities.logfile = false;
+      });
+    }
+  };
 
-    Application.prototype.getInfo = function() {
-        return $http.get('api/applications/' + this.id + '/info').then(convert);
-    };
+  Application.prototype.getHealth = function () {
+    return $http.get('api/applications/' + this.id + '/health').then(convert);
+  };
 
-    Application.prototype.getMetrics = function() {
-        return $http.get('api/applications/' + this.id + '/metrics').then(convert);
-    };
+  Application.prototype.getInfo = function () {
+    return $http.get('api/applications/' + this.id + '/info').then(convert);
+  };
 
-    Application.prototype.getEnv = function(key) {
-        return $http.get('api/applications/' + this.id + '/env' + (key ? '/' + key : '')).then(
-                convert);
-    };
+  Application.prototype.getMetrics = function () {
+    return $http.get('api/applications/' + this.id + '/metrics').then(convert);
+  };
 
-    Application.prototype.setEnv = function(map) {
-        return $http.post('api/applications/' + this.id + '/env', '', {
-            params : map
-        }).then(convert);
-    };
+  Application.prototype.getEnv = function (key) {
+    return $http.get('api/applications/' + this.id + '/env' + (key ? '/' + key : '')).then(
+      convert);
+  };
 
-    Application.prototype.resetEnv = function() {
-        return $http.post('api/applications/' + this.id + '/env/reset').then(convert);
-    };
+  Application.prototype.setEnv = function (map) {
+    return $http.post('api/applications/' + this.id + '/env', '', {
+      params: map
+    }).then(convert);
+  };
 
-    Application.prototype.refresh = function() {
-        return $http.post('api/applications/' + this.id + '/refresh').then(convert);
-    };
+  Application.prototype.resetEnv = function () {
+    return $http.post('api/applications/' + this.id + '/env/reset').then(convert);
+  };
 
-    Application.prototype.getThreadDump = function() {
-        return $http.get('api/applications/' + this.id + '/dump').then(convertArray);
-    };
+  Application.prototype.refresh = function () {
+    return $http.post('api/applications/' + this.id + '/refresh').then(convert);
+  };
 
-    Application.prototype.getTraces = function() {
-        return $http.get('api/applications/' + this.id + '/trace').then(convertArray);
-    };
+  Application.prototype.getThreadDump = function () {
+    return $http.get('api/applications/' + this.id + '/dump').then(convertArray);
+  };
 
-    return Application;
+  Application.prototype.getTraces = function () {
+    return $http.get('api/applications/' + this.id + '/trace').then(convertArray);
+  };
+
+  return Application;
 };

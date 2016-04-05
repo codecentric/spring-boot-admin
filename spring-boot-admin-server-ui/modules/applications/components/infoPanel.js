@@ -15,18 +15,12 @@
  */
 'use strict';
 
-module.exports =  {
-        transclude : true,
-        bindings : {
-            title : '@title',
-            raw : '@raw',
-            category : '@category'
-        },
-        template :
-            '<div class="info-panel">'
-            + ' <div class="info-panel-title">'
-            + '             <small ng-if="$ctrl.category" ng-bind="$ctrl.category" class="muted"></small> {{$ctrl.title}} <small ng-if="$ctrl.raw" class="pull-right"><a href="{{$ctrl.raw}}" target="_blank">raw JSON</a></small>'
-            + ' </div>'
-            + '	<div class="info-panel-content" ng-transclude></div> '
-            + '</div>'
-    };
+module.exports = {
+  transclude: true,
+  bindings: {
+    title: '@title',
+    raw: '@raw',
+    category: '@category'
+  },
+  template: require('./infoPanel.tpl.html')
+};

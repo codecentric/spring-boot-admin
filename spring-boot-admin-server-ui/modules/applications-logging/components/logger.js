@@ -16,48 +16,40 @@
 'use strict';
 
 module.exports = {
-        bindings : {
-            logger : '<value',
-            levelchangeCallback : '&onLevelChanged'
-        },
-        controller : function() {
-            var ctrl = this;
-            
-            ctrl.getLoggerClass = function(level) {
-                if (ctrl.logger.level !== level) {
-                    return '';
-                }
-                switch (ctrl.logger.level) {
-                    case 'TRACE':
-                        return 'active btn-danger';
-                    case 'DEBUG':
-                        return 'active btn-warning';
-                    case 'INFO':
-                        return 'active btn-info';
-                    case 'WARN':
-                        return 'active btn-success';
-                    case 'ERROR':
-                        return 'active btn-primary';
-                    case 'OFF':
-                        return 'active btn-inverse';
-                    default:
-                        return '';
-                }
-            };
-            
-            ctrl.setLevel = function(level) {
-                ctrl.logger.setLevel(level).finally(function() {
-                    ctrl.levelchangeCallback()(ctrl.logger, level);
-                });
-            };
-        },
-        template : '{{ $ctrl.logger.name }}'
-                + '<div class="btn-group pull-right">'
-                + '	<label class="btn btn-small" ng-class="$ctrl.getLoggerClass(\'TRACE\')" ng-click="$ctrl.setLevel(\'TRACE\')">TRACE</label>'
-                + '	<label class="btn btn-small" ng-class="$ctrl.getLoggerClass(\'DEBUG\')" ng-click="$ctrl.setLevel(\'DEBUG\')">DEBUG</label>'
-                + '	<label class="btn btn-small" ng-class="$ctrl.getLoggerClass(\'INFO\')" ng-click="$ctrl.setLevel(\'INFO\')">INFO</label>'
-                + '	<label class="btn btn-small" ng-class="$ctrl.getLoggerClass(\'WARN\')" ng-click="$ctrl.setLevel(\'WARN\')">WARN</label>'
-                + '	<label class="btn btn-small" ng-class="$ctrl.getLoggerClass(\'ERROR\')" ng-click="$ctrl.setLevel(\'ERROR\')">ERROR</label>'
-                + '	<label class="btn btn-small" ng-class="$ctrl.getLoggerClass(\'OFF\')" ng-click="$ctrl.setLevel(\'OFF\')">OFF</label>'
-                + '</div>'
+  bindings: {
+    logger: '<value',
+    levelchangeCallback: '&onLevelChanged'
+  },
+  controller: function () {
+    var ctrl = this;
+
+    ctrl.getLoggerClass = function (level) {
+      if (ctrl.logger.level !== level) {
+        return '';
+      }
+      switch (ctrl.logger.level) {
+        case 'TRACE':
+          return 'active btn-danger';
+        case 'DEBUG':
+          return 'active btn-warning';
+        case 'INFO':
+          return 'active btn-info';
+        case 'WARN':
+          return 'active btn-success';
+        case 'ERROR':
+          return 'active btn-primary';
+        case 'OFF':
+          return 'active btn-inverse';
+        default:
+          return '';
+      }
     };
+
+    ctrl.setLevel = function (level) {
+      ctrl.logger.setLevel(level).finally(function () {
+        ctrl.levelchangeCallback()(ctrl.logger, level);
+      });
+    };
+  },
+  template: require('./logger.tpl.html')
+};

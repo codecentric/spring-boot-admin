@@ -16,36 +16,28 @@
 'use strict';
 
 module.exports = {
-        bindings : {
-            trace : '<value',
-        },
-        controller : function() {
-            var ctrl = this;
-            ctrl.show = false;
-            ctrl.statusClass = 'unknown';
-            ctrl.toggle = function() {
-                ctrl.show = !ctrl.show;
-            };
-            ctrl.$onChanges = function() {
-                if (ctrl.trace.info.headers.response) {
-                    var status = parseInt(ctrl.trace.info.headers.response.status);
-                    if (Math.floor(status / 500) === 1) {
-                        ctrl.statusClass = 'error';
-                    } else if (Math.floor(status / 400) === 1) {
-                        ctrl.statusClass = 'warn';
-                    } else {
-                        ctrl.statusClass = 'ok';
-                    }
-                }
-            };
-        },
-        template : '<div class="event" ng-class="statusClass" ng-click="$ctrl.toggle()">'
-                + '	<div class="time">{{$ctrl.trace.timestamp | date:\'HH:mm:ss.sss\'}} <small class="muted">{{$ctrl.trace.timestamp | date:\'dd.MM.yyyy\'}}</small></div>'
-                + '	<div class="title">'
-                + '		<span class="status">{{$ctrl.trace.info.headers.response.status || \'???\' }}</span>'
-                + '		<span class="muted"> - {{$ctrl.trace.info.method}}</span>'
-                + '		{{$ctrl.trace.info.path}}'
-                + '	</div>'
-                + '	<pre ng-show="$ctrl.show">{{$ctrl.trace.info | json}}</pre>'
-                + '</div>'
+  bindings: {
+    trace: '<value'
+  },
+  controller: function () {
+    var ctrl = this;
+    ctrl.show = false;
+    ctrl.statusClass = 'unknown';
+    ctrl.toggle = function () {
+      ctrl.show = !ctrl.show;
     };
+    ctrl.$onChanges = function () {
+      if (ctrl.trace.info.headers.response) {
+        var status = parseInt(ctrl.trace.info.headers.response.status);
+        if (Math.floor(status / 500) === 1) {
+          ctrl.statusClass = 'error';
+        } else if (Math.floor(status / 400) === 1) {
+          ctrl.statusClass = 'warn';
+        } else {
+          ctrl.statusClass = 'ok';
+        }
+      }
+    };
+  },
+  template: require('./trace.tpl.html')
+};

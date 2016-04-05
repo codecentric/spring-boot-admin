@@ -17,138 +17,138 @@
 
 var angular = require('angular');
 
-var module = angular.module('sba-applications', ['sba-ui-core', require('angular-resource')]);
+var module = angular.module('sba-applications', ['sba-core', require('angular-resource')]);
 global.sbaModules.push(module.name);
 
-module.controller('applicationsCtrl', require('./controllers/applicationsCtrl'));
-module.controller('applicationsHeaderCtrl', require('./controllers/applicationsHeaderCtrl'));
+module.controller('applicationsCtrl', require('./controllers/applicationsCtrl.js'));
+module.controller('applicationsHeaderCtrl', require('./controllers/applicationsHeaderCtrl.js'));
 
-module.service('Application', require('./services/application'));
-module.service('Notification', require('./services/notification'));
-module.service('ApplicationViews', require('./services/applicationViews'));
+module.service('Application', require('./services/application.js'));
+module.service('Notification', require('./services/notification.js'));
+module.service('ApplicationViews', require('./services/applicationViews.js'));
 
-module.filter('yaml', require('./filters/yaml'));
-module.filter('limitLines', require('./filters/limitLines'));
+module.filter('yaml', require('./filters/yaml.js'));
+module.filter('limitLines', require('./filters/limitLines.js'));
 
-module.component('sbaInfoPanel', require('./components/infoPanel'));
-module.component('sbaAccordion', require('./components/accordion'));
-module.component('sbaAccordionGroup', require('./components/accordionGroup'));
+module.component('sbaInfoPanel', require('./components/infoPanel.js'));
+module.component('sbaAccordion', require('./components/accordion.js'));
+module.component('sbaAccordionGroup', require('./components/accordionGroup.js'));
 
 module.config(function ($stateProvider) {
-    $stateProvider.state('applications-list', {
-        url: '/',
-        templateUrl: 'applications/views/applications-list.html',
-        controller: 'applicationsCtrl'
-    }).state('applications', {
-        abstract: true,
-        url: '/applications/:id',
-        controller: 'applicationsHeaderCtrl',
-        templateUrl: 'applications/views/applications-header.html',
-        resolve: {
-            application: function ($stateParams, Application) {
-                return Application.get({
-                    id: $stateParams.id
-                }).$promise;
-            }
-        }
-    });
+  $stateProvider.state('applications-list', {
+    url: '/',
+    templateUrl: 'applications/views/applications-list.html',
+    controller: 'applicationsCtrl'
+  }).state('applications', {
+    abstract: true,
+    url: '/applications/:id',
+    controller: 'applicationsHeaderCtrl',
+    templateUrl: 'applications/views/applications-header.html',
+    resolve: {
+      application: function ($stateParams, Application) {
+        return Application.get({
+          id: $stateParams.id
+        }).$promise;
+      }
+    }
+  });
 });
 
 module.run(function ($rootScope, $state, $filter, Notification, Application, MainViews) {
-    MainViews.register({
-        title: 'Applications',
-        state: 'applications-list',
-        order: -100
+  MainViews.register({
+    title: 'Applications',
+    state: 'applications-list',
+    order: -100
+  });
+
+  $rootScope.applications = [];
+
+  $rootScope.indexOfApplication = function (id) {
+    for (var i = 0; i < $rootScope.applications.length; i++) {
+      if ($rootScope.applications[i].id === id) {
+        return i;
+      }
+    }
+    return -1;
+  };
+
+  var refresh = function (application) {
+    application.info = {};
+    application.refreshing = true;
+    application.getCapabilities();
+    application.getInfo().then(function (response) {
+      var info = response.data;
+      application.version = info.version;
+      application.infoDetails = null;
+      application.infoShort = '';
+      delete info.version;
+      var infoYml = $filter('yaml')(info);
+      if (infoYml !== '{}\n') {
+        application.infoShort = $filter('limitLines')(infoYml, 3);
+        if (application.infoShort !== infoYml) {
+          application.infoDetails = $filter('limitLines')(infoYml, 32000, 3);
+        }
+      }
+    }).finally(function () {
+      application.refreshing = false;
     });
+  };
 
-    $rootScope.applications = [];
+  Application.query(function (applications) {
+    for (var i = 0; i < applications.length; i++) {
+      refresh(applications[i]);
+      $rootScope.applications.push(applications[i]);
+    }
+  });
 
-    $rootScope.indexOfApplication = function (id) {
-        for (var i = 0; i < $rootScope.applications.length; i++) {
-            if ($rootScope.applications[i].id === id) {
-                return i;
-            }
-        }
-        return -1;
+  // setups up the sse-reciever
+  var journalEventSource = new EventSource('api/journal?stream');
+  journalEventSource.onmessage = function (message) {
+    var event = JSON.parse(message.data);
+    Object.setPrototypeOf(event.application, Application.prototype);
+
+    var options = {
+      tag: event.application.id,
+      body: 'Instance ' + event.application.id + '\n' + event.application.healthUrl,
+      icon: 'applications/img/unknown.png',
+      timeout: 10000,
+      url: $state.href('apps.details', {
+        id: event.application.id
+      })
     };
+    var title = event.application.name;
+    var index = $rootScope.indexOfApplication(event.application.id);
 
-    var refresh = function (application) {
-        application.info = {};
-        application.refreshing = true;
-        application.getCapabilities();
-        application.getInfo().then(function (response) {
-            var info = response.data;
-            application.version = info.version;
-            application.infoDetails = null;
-            application.infoShort = '';
-            delete info.version;
-            var infoYml = $filter('yaml')(info);
-            if (infoYml !== '{}\n') {
-                application.infoShort = $filter('limitLines')(infoYml, 3);
-                if (application.infoShort !== infoYml) {
-                    application.infoDetails = $filter('limitLines')(infoYml, 32000, 3);
-                }
-            }
-        }).finally(function () {
-            application.refreshing = false;
-        });
-    };
+    if (event.type === 'REGISTRATION') {
+      if (index === -1) {
+        $rootScope.applications.push(event.application);
+      }
 
-    Application.query(function (applications) {
-        for (var i = 0; i < applications.length; i++) {
-            refresh(applications[i]);
-            $rootScope.applications.push(applications[i]);
-        }
-    });
+      title += ' instance registered.';
+      options.tag = event.application.id + '-REGISTRY';
+    } else if (event.type === 'DEREGISTRATION') {
+      if (index > -1) {
+        $rootScope.applications.splice(index, 1);
+      }
 
-    // setups up the sse-reciever
-    var journalEventSource = new EventSource('api/journal?stream');
-    journalEventSource.onmessage = function (message) {
-        var event = JSON.parse(message.data);
-        Object.setPrototypeOf(event.application, Application.prototype);
+      title += ' instance removed.';
+      options.tag = event.application.id + '-REGISTRY';
+    } else if (event.type === 'STATUS_CHANGE') {
+      refresh(event.application);
+      if (index > -1) {
+        $rootScope.applications[index] = event.application;
+      } else {
+        $rootScope.applications.push(event.application);
+      }
 
-        var options = {
-            tag: event.application.id,
-            body: 'Instance ' + event.application.id + '\n' + event.application.healthUrl,
-            icon: 'applications/img/unknown.png',
-            timeout: 10000,
-            url: $state.href('apps.details', {
-                id: event.application.id
-            })
-        };
-        var title = event.application.name;
-        var index = $rootScope.indexOfApplication(event.application.id);
+      title += ' instance is ' + event.to.status;
+      options.tag = event.application.id + '-STATUS';
+      options.icon = event.to.status !== 'UP' ? 'applications/img/error.png' : 'applications/img/ok.png';
+      options.body = event.from.status + ' --> ' + event.to.status + '\n' + options.body;
+    }
 
-        if (event.type === 'REGISTRATION') {
-            if (index === -1) {
-                $rootScope.applications.push(event.application);
-            }
-
-            title += ' instance registered.';
-            options.tag = event.application.id + '-REGISTRY';
-        } else if (event.type === 'DEREGISTRATION') {
-            if (index > -1) {
-                $rootScope.applications.splice(index, 1);
-            }
-
-            title += ' instance removed.';
-            options.tag = event.application.id + '-REGISTRY';
-        } else if (event.type === 'STATUS_CHANGE') {
-            refresh(event.application);
-            if (index > -1) {
-                $rootScope.applications[index] = event.application;
-            } else {
-                $rootScope.applications.push(event.application);
-            }
-
-            title += ' instance is ' + event.to.status;
-            options.tag = event.application.id + '-STATUS';
-            options.icon = event.to.status !== 'UP' ? 'applications/img/error.png' : 'applications/img/ok.png';
-            options.body = event.from.status + ' --> ' + event.to.status + '\n' + options.body;
-        }
-
-        $rootScope.$apply();
-        Notification.notify(title, options);
-    };
+    $rootScope.$apply();
+    Notification.notify(title, options);
+  };
 
 });

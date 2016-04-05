@@ -19,25 +19,27 @@ var angular = require('angular');
 var module = angular.module('sba-applications-logging', ['sba-applications-jmx']);
 global.sbaModules.push(module.name);
 
-module.service('ApplicationLogging', require('./services/applicationLogging'));
-module.controller('loggingCtrl', require('./controllers/loggingCtrl'));
-module.component('sbaLogger', require('./components/logger'));
+module.service('ApplicationLogging', require('./services/applicationLogging.js'));
 
-module.config(function($stateProvider) {
-	$stateProvider.state('applications.logging', {
-		url: '/logging',
-		templateUrl: 'applications-logging/views/logging.html',
-		controller: 'loggingCtrl'
-	});
+module.controller('loggingCtrl', require('./controllers/loggingCtrl.js'));
+
+module.component('sbaLogger', require('./components/logger.js'));
+
+module.config(function ($stateProvider) {
+  $stateProvider.state('applications.logging', {
+    url: '/logging',
+    templateUrl: 'applications-logging/views/logging.html',
+    controller: 'loggingCtrl'
+  });
 });
 
-module.run(function(ApplicationViews){
-	ApplicationViews.register({
-		order: 30,
-		title: 'Logging',
-		state: 'applications.logging',
-	        show : function (application) {
-	            return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';
-	        }
-	});
+module.run(function (ApplicationViews) {
+  ApplicationViews.register({
+    order: 30,
+    title: 'Logging',
+    state: 'applications.logging',
+    show: function (application) {
+      return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';
+    }
+  });
 });

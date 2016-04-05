@@ -17,29 +17,29 @@
 
 var angular = require('angular');
 
-var module = angular.module('sba-applications-metrics', [ 'sba-applications' ]);
+var module = angular.module('sba-applications-metrics', ['sba-applications']);
 global.sbaModules.push(module.name);
 
-module.controller('metricsCtrl', require('./controllers/metricsCtrl'));
+module.controller('metricsCtrl', require('./controllers/metricsCtrl.js'));
 
-module.directive('sbaSimpleMetricBar', require('./directives/simpleMetricBar'));
-module.directive('sbaRichMetricBar', require('./directives/richMetricBar'));
+module.directive('sbaSimpleMetricBar', require('./directives/simpleMetricBar.js'));
+module.directive('sbaRichMetricBar', require('./directives/richMetricBar.js'));
 
-module.config(function($stateProvider) {
-    $stateProvider.state('applications.metrics', {
-        url : '/metrics',
-        templateUrl : 'applications-metrics/views/metrics.html',
-        controller : 'metricsCtrl'
-    });
+module.config(function ($stateProvider) {
+  $stateProvider.state('applications.metrics', {
+    url: '/metrics',
+    templateUrl: 'applications-metrics/views/metrics.html',
+    controller: 'metricsCtrl'
+  });
 });
 
-module.run(function(ApplicationViews) {
-    ApplicationViews.register({
-        order : 5,
-        title : 'Metrics',
-        state : 'applications.metrics',
-        show : function (application) {
-            return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';
-        }
-    });
+module.run(function (ApplicationViews) {
+  ApplicationViews.register({
+    order: 5,
+    title: 'Metrics',
+    state: 'applications.metrics',
+    show: function (application) {
+      return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';
+    }
+  });
 });

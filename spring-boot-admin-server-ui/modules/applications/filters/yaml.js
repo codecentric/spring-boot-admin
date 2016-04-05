@@ -17,11 +17,11 @@
 
 var yaml = require('js-yaml');
 
-module.exports = function() {
-    return function(input) {
-        return yaml.dump(input, {
-            skipInvalid : true,
-            sort : true
-        });
-    };
+module.exports = function () {
+  return function (input) {
+    return yaml.dump(input, {
+      skipInvalid: true,
+      sort: true
+    });
+  };
 };

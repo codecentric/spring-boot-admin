@@ -17,26 +17,18 @@
 
 var id = 0;
 module.exports = {
-        transclude : {
-            heading : 'sbaAccordionHeading',
-            body : 'sbaAccordionBody'
-        },
-        require : {
-            accordion: '^sbaAccordion',
-        },
-        controller : function() {
-            var ctrl = this;
-            ctrl.$onInit = function() {
-                ctrl.id = ctrl.accordion.id + '-' + id++;
-            };
-        },
-        template : 
-            '<div class="accordion-group">'
-            + '         <div class="accordion-heading">'
-            + '                 <a class="accordion-toggle" data-toggle="collapse" data-target="#{{$ctrl.id}}-body" ng-transclude="heading"></a>'
-            + '         </div>'
-            + '         <div id="{{$ctrl.id}}-body" class="accordion-body collapse">'
-            + '                 <div class="accordion-inner" ng-transclude="body"></div>' 
-            + '         </div>'
-            + '</div>'
+  transclude: {
+    heading: 'sbaAccordionHeading',
+    body: 'sbaAccordionBody'
+  },
+  require: {
+    accordion: '^sbaAccordion'
+  },
+  controller: function () {
+    var ctrl = this;
+    ctrl.$onInit = function () {
+      ctrl.id = ctrl.accordion.id + '-' + id++;
     };
+  },
+  template: require('./accordionGroup.tpl.html')
+};

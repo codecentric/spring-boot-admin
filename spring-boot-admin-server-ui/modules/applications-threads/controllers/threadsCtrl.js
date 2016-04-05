@@ -15,12 +15,14 @@
  */
 'use strict';
 
-module.exports = function($scope, application) {
-    $scope.dumpThreads = function() {
-        application.getThreadDump().then(function(response) {
-            $scope.dump = response.data;
-        }).catch(function(response) {
-            $scope.error = response.data;
-        });
-    };
+module.exports = function ($scope, application) {
+  'ngInject';
+
+  $scope.dumpThreads = function () {
+    application.getThreadDump().then(function (response) {
+      $scope.dump = response.data;
+    }).catch(function (response) {
+      $scope.error = response.data;
+    });
+  };
 };

@@ -17,58 +17,55 @@
 
 var angular = require('angular');
 module.exports = {
-    bindings : {
-        threads : '<threads',
-    },
-    controller: function($filter) {
-        var ctrl = this;
-        ctrl.$onChanges = function() {
-            ctrl.threadSummary = {
-                    NEW : {
-                        count : 0,
-                        percentage : 0,
-                        cssClass : 'bar-info'
-                    },
-                    RUNNABLE : {
-                        count : 0,
-                        percentage : 0,
-                        cssClass : 'bar-success'
-                    },
-                    BLOCKED : {
-                        count : 0,
-                        percentage : 0,
-                        cssClass : 'bar-danger'
-                    },
-                    WAITING : {
-                        count : 0,
-                        percentage : 0,
-                        cssClass : 'bar-warning'
-                    },
-                    TIMED_WAITING : {
-                        count : 0,
-                        percentage : 0,
-                        cssClass : 'bar-warning'
-                    },
-                    TERMINATED : {
-                        count : 0,
-                        percentage : 0,
-                        cssClass : 'bar-info'
-                    }
-            };
+  bindings: {
+    threads: '<threads'
+  },
+  controller: function ($filter) {
+    'ngInject';
 
-            ctrl.threads.forEach(function(thread) {
-                ctrl.threadSummary[thread.threadState].count++;
-            });
+    var ctrl = this;
+    ctrl.$onChanges = function () {
+      ctrl.threadSummary = {
+        NEW: {
+          count: 0,
+          percentage: 0,
+          cssClass: 'bar-info'
+        },
+        RUNNABLE: {
+          count: 0,
+          percentage: 0,
+          cssClass: 'bar-success'
+        },
+        BLOCKED: {
+          count: 0,
+          percentage: 0,
+          cssClass: 'bar-danger'
+        },
+        WAITING: {
+          count: 0,
+          percentage: 0,
+          cssClass: 'bar-warning'
+        },
+        TIMED_WAITING: {
+          count: 0,
+          percentage: 0,
+          cssClass: 'bar-warning'
+        },
+        TERMINATED: {
+          count: 0,
+          percentage: 0,
+          cssClass: 'bar-info'
+        }
+      };
 
-            angular.forEach(ctrl.threadSummary, function(value) {
-                value.percentage = $filter('number')(value.count / ctrl.threads.length * 100, 2);
-            });
-        };
-    },
-    template : 
-        '<div class="progress">'
-        + '     <div ng-repeat="(state, stats) in $ctrl.threadSummary" ng-if="stats.count &gt 0" class="bar" ng-class="stats.cssClass" style="width: {{stats.percentage}}%">'
-        + '             {{state}} {{stats.count}}'
-        + '     </div>'
-        + '</div>'
+      ctrl.threads.forEach(function (thread) {
+        ctrl.threadSummary[thread.threadState].count++;
+      });
+
+      angular.forEach(ctrl.threadSummary, function (value) {
+        value.percentage = $filter('number')(value.count / ctrl.threads.length * 100, 2);
+      });
+    };
+  },
+  template: require('./threadSummary.tpl.html')
 };

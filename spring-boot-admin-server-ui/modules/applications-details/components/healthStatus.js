@@ -15,23 +15,24 @@
  */
 'use strict';
 
-module.exports =  {
-        bindings : {
-            health : '<health',
-        },
-        controller : function($scope) {
-            var ctrl = this;
-            ctrl.isHealthDetail = function(key, value) {
-                return key !== 'status' && value !== null
-                        && (Array.isArray(value) || typeof value !== 'object');
-            };
-            ctrl.isChildHealth = function(key, health) {
-                return health !== null && !Array.isArray(health) && typeof health === 'object';
-            };
-            ctrl.$onChanges = function() {
-                $scope.health = ctrl.health;
-                $scope.name = 'application';
-            };
-        },
-        template : '<ng-include src="\'applications-details/views/templates/health-status.html\'"></ng-include>'
+module.exports = {
+  bindings: {
+    health: '<health'
+  },
+  controller: function ($scope) {
+    'ngInject';
+
+    var ctrl = this;
+    ctrl.isHealthDetail = function (key, value) {
+      return key !== 'status' && value !== null && (Array.isArray(value) || typeof value !== 'object');
     };
+    ctrl.isChildHealth = function (key, health) {
+      return health !== null && !Array.isArray(health) && typeof health === 'object';
+    };
+    ctrl.$onChanges = function () {
+      $scope.health = ctrl.health;
+      $scope.name = 'application';
+    };
+  },
+  template: '<ng-include src="\'applications-details/views/templates/health-status.html\'"></ng-include>'
+};

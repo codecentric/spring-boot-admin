@@ -15,21 +15,21 @@
  */
 'use strict';
 
-module.exports = function() {
-    function padZero(i, n) {
-        var s = i + '';
-        while (s.length < n) {
-            s = '0' + s;
-        }
-        return s;
+module.exports = function () {
+  function padZero(i, n) {
+    var s = i + '';
+    while (s.length < n) {
+      s = '0' + s;
     }
+    return s;
+  }
 
-    return function(input) {
-        var s = input || 0;
-        var d = padZero(Math.floor(s / 86400000), 2);
-        var h = padZero(Math.floor(s % 86400000 / 3600000), 2);
-        var m = padZero(Math.floor(s % 3600000 / 60000), 2);
-        var sec = padZero(Math.floor(s % 60000 / 1000), 2);
-        return d + ':' + h + ':' + m + ':' + sec;
-    };
+  return function (input) {
+    var s = input || 0;
+    var d = padZero(Math.floor(s / 86400000), 2);
+    var h = padZero(Math.floor(s % 86400000 / 3600000), 2);
+    var m = padZero(Math.floor(s % 3600000 / 60000), 2);
+    var sec = padZero(Math.floor(s % 60000 / 1000), 2);
+    return d + ':' + h + ':' + m + ':' + sec;
+  };
 };

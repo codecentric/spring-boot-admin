@@ -15,37 +15,20 @@
  */
 'use strict';
 
-module.exports = function() {
-    return {
-        restrict : 'E',
-        scope : {
-            metric : '=forMetric',
-            globalMax : '=?globalMax'
-        },
-        link : function(scope) {
-            scope.globalMax = scope.globalMax || scope.metric.max;
-            scope.minWidth = (scope.metric.min / scope.globalMax * 100).toFixed(2);
-            scope.avgWidth = (scope.metric.avg / scope.globalMax * 100).toFixed(2);
-            scope.valueWidth = (scope.metric.value / scope.globalMax * 100).toFixed(2);
-            scope.maxWidth = (scope.metric.max / scope.globalMax * 100).toFixed(2);
-        },
-        template : '<div> '
-                + '{{metric.name}} (count: {{metric.count}}) '
-                + '    <div ng-if="metric.count > 1" class="progress with-marks"> '
-                + '        <div class="mark-current" style="left: {{valueWidth}}%"></div> '
-                + '        <div class="bar-offset" style="width:{{minWidth}}%"></div> '
-                + '        <div class="bar bar-success" style="width: {{avgWidth - minWidth}}%;"></div> '
-                + '        <div class="bar bar-success" style="width: {{maxWidth - avgWidth}}%"></div> '
-                + '        <div tooltip="value {{metric.value}}" class="value-mark" style="left: {{valueWidth}}%;">{{metric.value}}</div> '
-                + '    </div> '
-                + '    <div ng-if="metric.count > 1" class="bar-scale"> '
-                + '        <div tooltip="min {{metric.min}}" class="pitch-line" style="left: {{minWidth}}%;"><small class="muted">{{metric.min}}</small></div> '
-                + '        <div tooltip="max {{metric.max}}" class="pitch-line" style="left: {{maxWidth}}%;"><small class="muted">{{metric.max}}</small></div> '
-                + '        <div tooltip="average {{metric.avg}}" class="pitch-line" style="left: {{avgWidth}}%;">{{metric.avg}}</div> '
-                + '    </div> '
-                + '    <div ng-if="metric.count <= 1" class="progress" style="margin-bottom: 0px;"> '
-                + '        <div class="bar bar-success" style="width: {{valueWidth}}%; text-align:right; padding-right: 5px;">{{metric.value}}</div> '
-                + '    </div> '
-                + '</div>'
-    };
+module.exports = function () {
+  return {
+    restrict: 'E',
+    scope: {
+      metric: '=forMetric',
+      globalMax: '=?globalMax'
+    },
+    link: function (scope) {
+      scope.globalMax = scope.globalMax || scope.metric.max;
+      scope.minWidth = (scope.metric.min / scope.globalMax * 100).toFixed(2);
+      scope.avgWidth = (scope.metric.avg / scope.globalMax * 100).toFixed(2);
+      scope.valueWidth = (scope.metric.value / scope.globalMax * 100).toFixed(2);
+      scope.maxWidth = (scope.metric.max / scope.globalMax * 100).toFixed(2);
+    },
+    template: require('./richMetricBar.tpl.html')
+  };
 };

@@ -15,81 +15,83 @@
  */
 'use strict';
 
-module.exports = function($rootScope, jolokia, $q) {
-    this.list = function(app) {
-        return jolokia.list('api/applications/' + app.id + '/jolokia/').then(
-                function(response) {
-                    var domains = [];
-                    for ( var rDomainName in response.value) {
-                        var rDomain = response.value[rDomainName];
-                        var domain = {
-                            name : rDomainName,
-                            beans : []
-                        };
+module.exports = function ($rootScope, jolokia, $q) {
+  'ngInject';
 
-                        for ( var rBeanName in rDomain) {
-                            var rBean = rDomain[rBeanName];
-                            var bean = {
-                                id : domain.name + ':' + rBeanName,
-                                name : '',
-                                domain : domain.name,
-                                nameProps : {},
-                                description : rBean.desc,
-                                operations : rBean.op,
-                                attributes : rBean.attr
-                            };
-                            var name = '';
-                            var type = '';
-                            var parts = rBeanName.split(',');
-                            for ( var i in parts) {
-                                var tokens = parts[i].split('=');
-                                if (tokens[0].toLowerCase() === 'name') {
-                                    name = tokens[1];
-                                } else {
-                                    bean.nameProps[tokens[0]] = tokens[1];
-                                    if ((tokens[0].toLowerCase() === 'type' || tokens[0]
-                                            .toLowerCase() === 'j2eetype')
-                                            && type.length === 0) {
-                                        type = tokens[1];
-                                    }
-                                }
-                            }
+  this.list = function (app) {
+    return jolokia.list('api/applications/' + app.id + '/jolokia/').then(
+      function (response) {
+        var domains = [];
+        for (var rDomainName in response.value) {
+          var rDomain = response.value[rDomainName];
+          var domain = {
+            name: rDomainName,
+            beans: []
+          };
 
-                            if (name.length !== 0) {
-                                bean.name = name;
-                            }
-                            if (type.length !== 0) {
-                                if (bean.name !== 0) {
-                                    bean.name += ' ';
-                                }
-                                bean.name += '[' + type + ']';
-                            }
+          for (var rBeanName in rDomain) {
+            var rBean = rDomain[rBeanName];
+            var bean = {
+              id: domain.name + ':' + rBeanName,
+              name: '',
+              domain: domain.name,
+              nameProps: {},
+              description: rBean.desc,
+              operations: rBean.op,
+              attributes: rBean.attr
+            };
+            var name = '';
+            var type = '';
+            var parts = rBeanName.split(',');
+            for (var i in parts) {
+              var tokens = parts[i].split('=');
+              if (tokens[0].toLowerCase() === 'name') {
+                name = tokens[1];
+              } else {
+                bean.nameProps[tokens[0]] = tokens[1];
+                if ((tokens[0].toLowerCase() === 'type' || tokens[0]
+                    .toLowerCase() === 'j2eetype') && type.length === 0) {
+                  type = tokens[1];
+                }
+              }
+            }
 
-                            if (bean.name.length === 0) {
-                                bean.name = rBeanName;
-                            }
+            if (name.length !== 0) {
+              bean.name = name;
+            }
+            if (type.length !== 0) {
+              if (bean.name !== 0) {
+                bean.name += ' ';
+              }
+              bean.name += '[' + type + ']';
+            }
 
-                            domain.beans.push(bean);
-                        }
+            if (bean.name.length === 0) {
+              bean.name = rBeanName;
+            }
 
-                        domains.push(domain);
-                    }
+            domain.beans.push(bean);
+          }
 
-                    return domains;
-                }).catch(function(response) {
-                    return $q.reject(response);
-                });
-    };
+          domains.push(domain);
+        }
 
-    this.readAllAttr = function(app, bean) {
-        return jolokia.read('api/applications/' + app.id + '/jolokia/', bean.id);
-    };
+        return domains;
+      }
+    ).catch(function (response) {
+      return $q.reject(response);
+    });
+  };
 
-    this.writeAttr = function(app, bean, attr, val) {
-        return jolokia.writeAttr('api/applications/' + app.id + '/jolokia/', bean.id, attr, val);
-    };
+  this.readAllAttr = function (app, bean) {
+    return jolokia.read('api/applications/' + app.id + '/jolokia/', bean.id);
+  };
 
-    this.invoke = function(app, bean, opname, args) {
-        return jolokia.exec('api/applications/' + app.id + '/jolokia/', bean.id, opname, args);
-    };
+  this.writeAttr = function (app, bean, attr, val) {
+    return jolokia.writeAttr('api/applications/' + app.id + '/jolokia/', bean.id, attr, val);
+  };
+
+  this.invoke = function (app, bean, opname, args) {
+    return jolokia.exec('api/applications/' + app.id + '/jolokia/', bean.id, opname, args);
+  };
 };

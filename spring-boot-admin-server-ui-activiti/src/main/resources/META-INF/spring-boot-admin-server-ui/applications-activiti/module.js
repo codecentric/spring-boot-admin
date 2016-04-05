@@ -18,7 +18,7 @@
 var module = angular.module('sba-applications-activiti', [ 'sba-applications' ]);
 sbaModules.push(module.name);
 
-module.controller('activitiCtrl', function($scope, $http, application) {
+module.controller('activitiCtrl', [ '$scope', '$http', 'application', function($scope, $http, application) {
     $scope.application = application;
     $http.get('api/applications/' + application.id + '/activiti').then(function(response) {
         var activiti = response.data;
@@ -61,17 +61,17 @@ module.controller('activitiCtrl', function($scope, $http, application) {
     }).catch(function(response) {
         $scope.error = response.data;
     });
-});
+}]);
 
-module.config(function($stateProvider) {
+module.config([ '$stateProvider', function($stateProvider) {
     $stateProvider.state('applications.activiti', {
         url : '/activiti',
         templateUrl : 'applications-activiti/activiti.html',
         controller : 'activitiCtrl'
     });
-});
+}]);
 
-module.run(function(ApplicationViews, $http) {
+module.run([ 'ApplicationViews', '$http', function(ApplicationViews, $http) {
     ApplicationViews.register({
         order : 100,
         title : 'Activiti',
@@ -89,4 +89,4 @@ module.run(function(ApplicationViews, $http) {
                     });
         }
     });
-});
+}]);

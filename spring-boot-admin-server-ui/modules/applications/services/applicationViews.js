@@ -15,31 +15,32 @@
  */
 'use strict';
 
-module.exports = function($state, $q) {
-    var views = [];
+module.exports = function ($state, $q) {
+  'ngInject';
 
-    this.register = function(view) {
-        views.push(view);
-    };
+  var views = [];
+  this.register = function (view) {
+    views.push(view);
+  };
 
-    this.getApplicationViews = function(application) {
-        var applicationViews = [];
+  this.getApplicationViews = function (application) {
+    var applicationViews = [];
 
-        views.forEach(function(view) {
-            $q.when(!view.show || view.show(application)).then(function(result) {
-                if (result) {
-                    view.href = $state.href(view.state, {
-                        id : application.id
-                    });
+    views.forEach(function (view) {
+      $q.when(!view.show || view.show(application)).then(function (result) {
+        if (result) {
+          view.href = $state.href(view.state, {
+            id: application.id
+          });
 
-                    applicationViews.push(view);
-                    applicationViews.sort(function(v1, v2) {
-                        return (v1.order || 0) - (v2.order || 0);
-                    });
-                }
-            });
-        });
+          applicationViews.push(view);
+          applicationViews.sort(function (v1, v2) {
+            return (v1.order || 0) - (v2.order || 0);
+          });
+        }
+      });
+    });
 
-        return applicationViews;
-    };
+    return applicationViews;
+  };
 };

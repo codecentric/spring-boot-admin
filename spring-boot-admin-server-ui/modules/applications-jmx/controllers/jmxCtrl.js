@@ -15,14 +15,16 @@
  */
 'use strict';
 
-module.exports = function($scope, application, ApplicationJmx) {
-    $scope.error = null;
-    $scope.domains = [];
+module.exports = function ($scope, application, ApplicationJmx) {
+  'ngInject';
 
-    ApplicationJmx.list(application).then(function(domains) {
-        $scope.domains = domains;
-    }).catch(function(response) {
-        $scope.error = response;
-        $scope.errorWhileListing = true;
-    });
+  $scope.error = null;
+  $scope.domains = [];
+
+  ApplicationJmx.list(application).then(function (domains) {
+    $scope.domains = domains;
+  }).catch(function (response) {
+    $scope.error = response;
+    $scope.errorWhileListing = true;
+  });
 };

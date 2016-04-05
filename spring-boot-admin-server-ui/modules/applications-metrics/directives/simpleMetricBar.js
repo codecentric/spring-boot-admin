@@ -15,21 +15,16 @@
  */
 'use strict';
 
-module.exports = function() {
-    return {
-        restrict : 'E',
-        scope : {
-            metric : '=forMetric',
-            globalMax : '=globalMax'
-        },
-        link : function(scope) {
-            scope.valueWidth = (scope.metric.value / scope.globalMax * 100).toFixed(2);
-        },
-        template : '<div> '
-                + '{{metric.name}} '
-                + '    <div class="progress" style="margin-bottom: 0px;"> '
-                + '        <div class="bar bar-success" style="width: {{valueWidth}}%; text-align:right; padding-right: 5px;">{{metric.value}}</div> '
-                + '    </div> '
-                + '</div>'
-    };
+module.exports = function () {
+  return {
+    restrict: 'E',
+    scope: {
+      metric: '=forMetric',
+      globalMax: '=globalMax'
+    },
+    link: function (scope) {
+      scope.valueWidth = (scope.metric.value / scope.globalMax * 100).toFixed(2);
+    },
+    template: require('./simpleMetricBar.tpl.html')
+  };
 };

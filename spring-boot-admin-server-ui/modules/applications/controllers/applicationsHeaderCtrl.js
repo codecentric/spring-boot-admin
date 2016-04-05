@@ -15,11 +15,13 @@
  */
 'use strict';
 
-module.exports = function($scope, application, ApplicationViews) {
-    $scope.application = application;
-    if (!application.capablities) {
-        application.getCapabilities();
-    }
+module.exports = function ($scope, application, ApplicationViews) {
+  'ngInject';
 
-    $scope.views = ApplicationViews.getApplicationViews(application);
+  $scope.application = application;
+  if (!application.capablities) {
+    application.getCapabilities();
+  }
+
+  $scope.views = ApplicationViews.getApplicationViews(application);
 };

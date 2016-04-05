@@ -16,27 +16,17 @@
 'use strict';
 
 module.exports = {
-    bindings : {
-        metrics : '<metrics',
-    },
-    controller: function() {
-        var ctrl = this;
-        ctrl.$onChanges = function() {
-           ctrl.sessions = {
-                   active : ctrl.metrics['httpsessions.active'],
-                   max : (ctrl.metrics['httpsessions.max'] < 0 ? 'unbounded' : ctrl.metrics['httpsessions.max'])
-           };
-        };
-    },
-    template : 
-        '<table class="table">'
-        + '     <tr>'
-        + '             <td rowspan="2">Http sessions</td>'
-        + '             <td>active</td>'
-        + '             <td ng-bind="$ctrl.sessions.active"></td>'
-        + '     </tr><tr>'
-        + '             <td>maximum</td>'
-        + '             <td ng-bind="$ctrl.sessions.max"></td>'
-        + '     </tr>'
-        + '</table>'
+  bindings: {
+    metrics: '<metrics'
+  },
+  controller: function () {
+    var ctrl = this;
+    ctrl.$onChanges = function () {
+      ctrl.sessions = {
+        active: ctrl.metrics['httpsessions.active'],
+        max: (ctrl.metrics['httpsessions.max'] < 0 ? 'unbounded' : ctrl.metrics['httpsessions.max'])
+      };
+    };
+  },
+  template: require('./servletContainerStats.tpl.html')
 };

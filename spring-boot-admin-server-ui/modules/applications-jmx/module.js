@@ -17,36 +17,36 @@
 
 var angular = require('angular');
 
-var module = angular.module('sba-applications-jmx', [ 'sba-applications' ]);
+var module = angular.module('sba-applications-jmx', ['sba-applications']);
 global.sbaModules.push(module.name);
 
-module.service('ApplicationJmx', require('./services/applicationJmx'));
-module.service('jolokia', require('./services/jolokia'));
+module.service('ApplicationJmx', require('./services/applicationJmx.js'));
+module.service('jolokia', require('./services/jolokia.js'));
 
-module.controller('jmxCtrl', require('./controllers/jmxCtrl'));
+module.controller('jmxCtrl', require('./controllers/jmxCtrl.js'));
 
-module.component('sbaJmxBean', require('./components/jmxBean'));
-module.component('sbaJavaTypeInput', require('./components/javaTypeInput'));
-module.component('sbaJmxInvocation', require('./components/jmxInvocation'));
-module.component('sbaJmxInvokeSelectOverload', require('./components/jmxInvokeSelectOverload'));
-module.component('sbaJmxInvokeInputParameters', require('./components/jmxInvokeInputParameters'));
-module.component('sbaJmxInvokeShowResult', require('./components/jmxInvokeShowResult'));
+module.component('sbaJmxBean', require('./components/jmxBean.js'));
+module.component('sbaJavaTypeInput', require('./components/javaTypeInput.js'));
+module.component('sbaJmxInvocation', require('./components/jmxInvocation.js'));
+module.component('sbaJmxInvokeSelectOverload', require('./components/jmxInvokeSelectOverload.js'));
+module.component('sbaJmxInvokeInputParameters', require('./components/jmxInvokeInputParameters.js'));
+module.component('sbaJmxInvokeShowResult', require('./components/jmxInvokeShowResult.js'));
 
-module.config(function($stateProvider) {
-    $stateProvider.state('applications.jmx', {
-        url : '/jmx',
-        templateUrl : 'applications-jmx/views/jmx.html',
-        controller : 'jmxCtrl'
-    });
+module.config(function ($stateProvider) {
+  $stateProvider.state('applications.jmx', {
+    url: '/jmx',
+    templateUrl: 'applications-jmx/views/jmx.html',
+    controller: 'jmxCtrl'
+  });
 });
 
-module.run(function(ApplicationViews) {
-    ApplicationViews.register({
-        order : 40,
-        title : 'JMX',
-        state : 'applications.jmx',
-        show : function (application) {
-            return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';
-        }
-    });
+module.run(function (ApplicationViews) {
+  ApplicationViews.register({
+    order: 40,
+    title: 'JMX',
+    state: 'applications.jmx',
+    show: function (application) {
+      return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';
+    }
+  });
 });

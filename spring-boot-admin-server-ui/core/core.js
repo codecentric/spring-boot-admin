@@ -19,28 +19,28 @@ require('es5-shim/es5-shim');
 require('es5-shim/es5-sham');
 require('bootstrap');
 var angular = require('angular');
-var module = angular.module('sba-ui-core', [require('angular-ui-router')]);
+var module = angular.module('sba-core', [require('angular-ui-router')]);
 global.sbaModules.push(module.name);
 
 module.config(function ($urlRouterProvider) {
-    $urlRouterProvider.otherwise('/');
+  $urlRouterProvider.otherwise('/');
 });
 
 module.service('MainViews', function () {
-    var views = [];
-    this.register = function (view) {
-        views.push(view);
-        views.sort(function (v1, v2) {
-            return (v1.order || 0) - (v2.order || 0);
-        });
-    };
-    this.getViews = function () {
-        return views;
-    };
+  var views = [];
+  this.register = function (view) {
+    views.push(view);
+    views.sort(function (v1, v2) {
+      return (v1.order || 0) - (v2.order || 0);
+    });
+  };
+  this.getViews = function () {
+    return views;
+  };
 });
 
 module.run(function ($rootScope, $state, MainViews) {
-    $rootScope.$state = $state;
-    $rootScope.mainViews = MainViews.getViews();
-    $rootScope.modules = global.sbaModules;
+  $rootScope.$state = $state;
+  $rootScope.mainViews = MainViews.getViews();
+  $rootScope.modules = global.sbaModules;
 });

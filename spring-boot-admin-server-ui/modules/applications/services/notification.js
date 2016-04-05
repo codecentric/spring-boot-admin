@@ -15,34 +15,34 @@
  */
 'use strict';
 
-module.exports = function() {
-    var granted = false;
-    if ('Notification' in window) {
-        granted = (window.Notification.permission === 'granted');
+module.exports = function () {
+  var granted = false;
+  if ('Notification' in window) {
+    granted = (window.Notification.permission === 'granted');
 
-        if (!granted && window.Notification.permission !== 'denied') {
-            window.Notification.requestPermission(function(permission) {
-                granted = (permission === 'granted');
-            });
-        }
+    if (!granted && window.Notification.permission !== 'denied') {
+      window.Notification.requestPermission(function (permission) {
+        granted = (permission === 'granted');
+      });
     }
+  }
 
-    this.notify = function(title, options) {
-        if (granted) {
-            var note = new window.Notification(title, options);
-            if (options.url !== null) {
-                note.onclick = function() {
-                    window.focus();
-                    window.open(options.url, '_self');
-                };
-            }
-            if (options.timeout > 0) {
-                note.onshow = function() {
-                    setTimeout(function() {
-                        note.close();
-                    }, options.timeout);
-                };
-            }
-        }
-    };
+  this.notify = function (title, options) {
+    if (granted) {
+      var note = new window.Notification(title, options);
+      if (options.url !== null) {
+        note.onclick = function () {
+          window.focus();
+          window.open(options.url, '_self');
+        };
+      }
+      if (options.timeout > 0) {
+        note.onshow = function () {
+          setTimeout(function () {
+            note.close();
+          }, options.timeout);
+        };
+      }
+    }
+  };
 };

@@ -16,48 +16,18 @@
 'use strict';
 
 module.exports = {
-    bindings : {
-        metrics : '<metrics',
-    },
-    controller: function($filter) {
-        var ctrl = this;
-        ctrl.$onChanges = function() {
-            if (ctrl.metrics['systemload.average']) {
-                ctrl.systemload = $filter('number')(ctrl.metrics['systemload.average'], 2);
-            }
-        };
-    },
-    template : 
-          '<table class="table">'
-        + '     <tr>'
-        + '             <td>Uptime</td>'
-        + '             <td colspan="2"><sba-uptime value="$ctrl.metrics.uptime"></sba-uptime></td>'
-        + '     </tr><tr ng-if="$ctrl.systemload">'
-        + '             <td>Systemload</td>'
-        + '             <td colspan="2">{{$ctrl.systemload}} (last min. &#x2300; runq-sz)</td>'
-        + '     </tr><tr>'
-        + '             <td>Available Processors</td>'
-        + '             <td colspan="2" ng-bind="$ctrl.metrics.processors"></td>'
-        + '     </tr><tr>'
-        + '             <td rowspan="3">Classes</td>'
-        + '             <td>current loaded</td>'
-        + '             <td ng-bind="$ctrl.metrics.classes"></td>'
-        + '     </tr><tr>'
-        + '             <td>total loaded</td>'
-        + '             <td ng-bind="$ctrl.metrics[\'classes.loaded\']"></td>'
-        + '     </tr><tr>'
-        + '             <td>unloaded </td>'
-        + '             <td ng-bind="$ctrl.metrics[\'classes.unloaded\']"></td>'
-        + '     </tr><tr>'
-        + '             <td rowspan="3">Threads</td>'
-        + '             <td>total</td>'
-        + '             <td ng-bind="$ctrl.metrics.threads"></td>'
-        + '     </tr><tr>'
-        + '             <td>daemon</td>'
-        + '             <td ng-bind="$ctrl.metrics[\'threads.daemon\']"></td>'
-        + '     </tr><tr>'
-        + '             <td>peak</td>'
-        + '             <td ng-bind="$ctrl.metrics[\'threads.peak\']"></td>'
-        + '     </tr>'
-        + '</table>'
+  bindings: {
+    metrics: '<metrics'
+  },
+  controller: function ($filter) {
+    'ngInject';
+
+    var ctrl = this;
+    ctrl.$onChanges = function () {
+      if (ctrl.metrics['systemload.average']) {
+        ctrl.systemload = $filter('number')(ctrl.metrics['systemload.average'], 2);
+      }
+    };
+  },
+  template: require('./jvmStats.tpl.html')
 };

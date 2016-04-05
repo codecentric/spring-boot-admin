@@ -15,33 +15,35 @@
  */
 'use strict';
 
-module.exports = function($scope, application) {
-    $scope.application = application;
+module.exports = function ($scope, application) {
+  'ngInject';
 
-    var toArray = function(obj) {
-        return Object.getOwnPropertyNames(obj).map(function(key) {
-            var value = obj[key] instanceof Object ? toArray(obj[key]) : obj[key];
-            return {
-                name : key,
-                value : value
-            };
-        });
-    };
+  $scope.application = application;
 
-    $scope.refresh = function() {
-        $scope.env = [];
-        $scope.profiles = [];
+  var toArray = function (obj) {
+    return Object.getOwnPropertyNames(obj).map(function (key) {
+      var value = obj[key] instanceof Object ? toArray(obj[key]) : obj[key];
+      return {
+        name: key,
+        value: value
+      };
+    });
+  };
 
-        application.getEnv().then(function(response) {
-            var env = response.data;
-            $scope.profiles = env.profiles;
-            delete env.profiles;
-            $scope.env = toArray(env); // to get the env-sources in correct
-                                        // order we have to convert to an array
-        }).catch(function(response) {
-            $scope.error = response.data;
-        });
-    };
+  $scope.refresh = function () {
+    $scope.env = [];
+    $scope.profiles = [];
 
-    $scope.refresh();
+    application.getEnv().then(function (response) {
+      var env = response.data;
+      $scope.profiles = env.profiles;
+      delete env.profiles;
+      $scope.env = toArray(env); // to get the env-sources in correct
+      // order we have to convert to an array
+    }).catch(function (response) {
+      $scope.error = response.data;
+    });
+  };
+
+  $scope.refresh();
 };

@@ -18,113 +18,115 @@
 var angular = require('angular');
 var Jolokia = require('jolokia');
 
-module.exports = function($q) {
-    var outer = this;
-    var j4p = new Jolokia();
+module.exports = function ($q) {
+  'ngInject';
 
-    this.bulkRequest = function(url, requests) {
-        var deferred = $q.defer();
-        deferred.notify(requests);
+  var outer = this;
+  var j4p = new Jolokia();
 
-        var hasError = false;
-        var responses = [];
+  this.bulkRequest = function (url, requests) {
+    var deferred = $q.defer();
+    deferred.notify(requests);
 
-        j4p.request(requests, {
-            url : url,
-            method : 'post',
-            success : function(response) {
-                responses.push(response);
-                if (responses.length >= requests.length) {
-                    if (!hasError) {
-                        deferred.resolve(responses);
-                    } else {
-                        deferred.resolve(responses);
-                    }
-                }
-            },
-            error : function(response) {
-                hasError = true;
-                responses.push(response);
-                if (responses.length >= requests.length) {
-                    deferred.reject(responses);
-                }
-            },
-            ajaxError : function(response) {
-                hasError = true;
-                responses.push(angular.fromJson(response.responseText));
-                if (responses.length >= requests.length) {
-                    deferred.reject(responses, response.status);
-                }
-            }
-        });
+    var hasError = false;
+    var responses = [];
 
-        return deferred.promise;
-    };
+    j4p.request(requests, {
+      url: url,
+      method: 'post',
+      success: function (response) {
+        responses.push(response);
+        if (responses.length >= requests.length) {
+          if (!hasError) {
+            deferred.resolve(responses);
+          } else {
+            deferred.resolve(responses);
+          }
+        }
+      },
+      error: function (response) {
+        hasError = true;
+        responses.push(response);
+        if (responses.length >= requests.length) {
+          deferred.reject(responses);
+        }
+      },
+      ajaxError: function (response) {
+        hasError = true;
+        responses.push(angular.fromJson(response.responseText));
+        if (responses.length >= requests.length) {
+          deferred.reject(responses, response.status);
+        }
+      }
+    });
 
-    this.request = function(url, request) {
-        var deferred = $q.defer();
-        deferred.notify(request);
+    return deferred.promise;
+  };
 
-        j4p.request(request, {
-            url : url,
-            method : 'post',
-            success : function(response) {
-                deferred.resolve(response);
-            },
-            error : function(response) {
-                deferred.reject(response);
-            },
-            ajaxError : function(response) {
-                deferred.reject(angular.fromJson(response.responseText), response.status);
-            }
-        });
+  this.request = function (url, request) {
+    var deferred = $q.defer();
+    deferred.notify(request);
 
-        return deferred.promise;
-    };
+    j4p.request(request, {
+      url: url,
+      method: 'post',
+      success: function (response) {
+        deferred.resolve(response);
+      },
+      error: function (response) {
+        deferred.reject(response);
+      },
+      ajaxError: function (response) {
+        deferred.reject(angular.fromJson(response.responseText), response.status);
+      }
+    });
 
-    this.exec = function(url, mbean, op, args) {
-        return outer.request(url, {
-            type : 'exec',
-            mbean : mbean,
-            operation : op,
-            arguments : args
-        });
-    };
+    return deferred.promise;
+  };
 
-    this.read = function(url, mbean) {
-        return outer.request(url, {
-            type : 'read',
-            mbean : mbean
-        });
-    };
+  this.exec = function (url, mbean, op, args) {
+    return outer.request(url, {
+      type: 'exec',
+      mbean: mbean,
+      operation: op,
+      arguments: args
+    });
+  };
 
-    this.readAttr = function(url, mbean, attr) {
-        return outer.request(url, {
-            type : 'read',
-            mbean : mbean,
-            attribute : attr
-        });
-    };
+  this.read = function (url, mbean) {
+    return outer.request(url, {
+      type: 'read',
+      mbean: mbean
+    });
+  };
 
-    this.writeAttr = function(url, mbean, attr, val) {
-        return outer.request(url, {
-            type : 'write',
-            mbean : mbean,
-            attribute : attr,
-            value : val
-        });
-    };
+  this.readAttr = function (url, mbean, attr) {
+    return outer.request(url, {
+      type: 'read',
+      mbean: mbean,
+      attribute: attr
+    });
+  };
 
-    this.list = function(url) {
-        return outer.request(url, {
-            type : 'list'
-        });
-    };
+  this.writeAttr = function (url, mbean, attr, val) {
+    return outer.request(url, {
+      type: 'write',
+      mbean: mbean,
+      attribute: attr,
+      value: val
+    });
+  };
 
-    this.search = function(url, mbean) {
-        return outer.request(url, {
-            type : 'search',
-            mbean : mbean
-        });
-    };
+  this.list = function (url) {
+    return outer.request(url, {
+      type: 'list'
+    });
+  };
+
+  this.search = function (url, mbean) {
+    return outer.request(url, {
+      type: 'search',
+      mbean: mbean
+    });
+  };
 };

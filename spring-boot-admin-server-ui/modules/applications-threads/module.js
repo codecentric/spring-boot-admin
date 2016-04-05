@@ -17,29 +17,29 @@
 
 var angular = require('angular');
 
-var module = angular.module('sba-applications-threads', [ 'sba-applications' ]);
+var module = angular.module('sba-applications-threads', ['sba-applications']);
 global.sbaModules.push(module.name);
 
-module.controller('threadsCtrl', require('./controllers/threadsCtrl'));
+module.controller('threadsCtrl', require('./controllers/threadsCtrl.js'));
 
-module.component('sbaThread', require('./components/thread'));
-module.component('sbaThreadSummary', require('./components/threadSummary'));
+module.component('sbaThread', require('./components/thread.js'));
+module.component('sbaThreadSummary', require('./components/threadSummary.js'));
 
-module.config(function($stateProvider) {
-    $stateProvider.state('applications.threads', {
-        url : '/threads',
-        templateUrl : 'applications-threads/views/threads.html',
-        controller : 'threadsCtrl'
-    });
+module.config(function ($stateProvider) {
+  $stateProvider.state('applications.threads', {
+    url: '/threads',
+    templateUrl: 'applications-threads/views/threads.html',
+    controller: 'threadsCtrl'
+  });
 });
 
-module.run(function(ApplicationViews) {
-    ApplicationViews.register({
-        order : 50,
-        title : 'Threads',
-        state : 'applications.threads',
-        show : function (application) {
-            return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';
-        }
-    });
+module.run(function (ApplicationViews) {
+  ApplicationViews.register({
+    order: 50,
+    title: 'Threads',
+    state: 'applications.threads',
+    show: function (application) {
+      return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';
+    }
+  });
 });

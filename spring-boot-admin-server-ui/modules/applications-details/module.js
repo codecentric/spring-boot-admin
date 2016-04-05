@@ -17,39 +17,39 @@
 
 var angular = require('angular');
 
-var module = angular.module('sba-applications-details', [ 'sba-applications' ]);
+var module = angular.module('sba-applications-details', ['sba-applications']);
 global.sbaModules.push(module.name);
 
-module.controller('detailsCtrl', require('./controllers/detailsCtrl'));
+module.controller('detailsCtrl', require('./controllers/detailsCtrl.js'));
 
-module.filter('humanBytes', require('./filters/humanBytes'));
-module.filter('joinArray', require('./filters/joinArray'));
-module.filter('timeInterval', require('./filters/timeInterval'));
+module.filter('humanBytes', require('./filters/humanBytes.js'));
+module.filter('joinArray', require('./filters/joinArray.js'));
+module.filter('timeInterval', require('./filters/timeInterval.js'));
 
-module.component('sbaHealthStatus', require('./components/healthStatus'));
-module.component('sbaUptime', require('./components/uptime'));
-module.component('sbaMemoryStats', require('./components/memoryStats'));
-module.component('sbaJvmStats', require('./components/jvmStats'));
-module.component('sbaGcStats', require('./components/gcStats'));
-module.component('sbaServletContainerStats', require('./components/servletContainerStats'));
-module.component('sbaDatasourceStats', require('./components/datasourceStats'));
-module.component('sbaCacheStats', require('./components/cacheStats'));
+module.component('sbaHealthStatus', require('./components/healthStatus.js'));
+module.component('sbaUptime', require('./components/uptime.js'));
+module.component('sbaMemoryStats', require('./components/memoryStats.js'));
+module.component('sbaJvmStats', require('./components/jvmStats.js'));
+module.component('sbaGcStats', require('./components/gcStats.js'));
+module.component('sbaServletContainerStats', require('./components/servletContainerStats.js'));
+module.component('sbaDatasourceStats', require('./components/datasourceStats.js'));
+module.component('sbaCacheStats', require('./components/cacheStats.js'));
 
-module.config(function($stateProvider) {
-    $stateProvider.state('applications.details', {
-        url : '/details',
-        templateUrl : 'applications-details/views/details.html',
-        controller : 'detailsCtrl'
-    });
+module.config(function ($stateProvider) {
+  $stateProvider.state('applications.details', {
+    url: '/details',
+    templateUrl: 'applications-details/views/details.html',
+    controller: 'detailsCtrl'
+  });
 });
 
-module.run(function(ApplicationViews) {
-    ApplicationViews.register({
-        order : 0,
-        title : 'Details',
-        state : 'applications.details',
-        show : function (application) {
-            return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';
-        }
-    });
+module.run(function (ApplicationViews) {
+  ApplicationViews.register({
+    order: 0,
+    title: 'Details',
+    state: 'applications.details',
+    show: function (application) {
+      return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';
+    }
+  });
 });

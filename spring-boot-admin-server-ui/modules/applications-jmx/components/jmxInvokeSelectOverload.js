@@ -16,26 +16,15 @@
 'use strict';
 
 module.exports = {
-        require : {
-            invocation : '^sbaJmxInvocation'
-        },
-        controller : function() {
-            var ctrl = this;
-            ctrl.selectOverload = function(operation) {
-                ctrl.invocation.descriptor = operation;
-                ctrl.invocation.proceedJmxInvocation();
-            };
-        },
-        template : '<form class="form">'
-                + '	<p>The method {{$ctrl.invocation.name}} is overloaded. Please choose a variant.</p>'
-                + '	<div class="control-group" >'
-                + '		<button class="btn btn-block" style="text-align: left; padding: 8px 15px;" ng-repeat="op in $ctrl.invocation.descriptor" ng-click="$ctrl.selectOverload(op)">'
-                + '			<b ng-bind="$ctrl.invocation.name"></b>('
-                + '				<span ng-repeat-start="arg in op.args" data-toggle="tooltip" title="{{arg.desc}}">{{arg.type}} {{arg.name}}</span><span ng-repeat-end ng-if="!$last">, </span>'
-                + '			)<br/>'
-                + '			<small class="muted" ng-bind="op.ret"></small>'
-                + '			<span class="help-block" ng-bind="op.desc"></span>'
-                + '		</button>'
-                + '	</div>'
-                + '</form>'
+  require: {
+    invocation: '^sbaJmxInvocation'
+  },
+  controller: function () {
+    var ctrl = this;
+    ctrl.selectOverload = function (operation) {
+      ctrl.invocation.descriptor = operation;
+      ctrl.invocation.proceedJmxInvocation();
     };
+  },
+  template: require('./jmxInvokeSelectOverload.tpl.html')
+};

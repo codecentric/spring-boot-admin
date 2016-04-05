@@ -17,9 +17,9 @@
 
 var id = 0;
 module.exports = {
-        transclude : true,
-        controller: function() {
-            this.id = 'accordion-' + id++;
-        },
-        template : '<div id="{{$ctrl.id}}" class="accordion" ng-transclude></div>'
-    };
+  transclude: true,
+  controller: function () {
+    this.id = 'accordion-' + id++;
+  },
+  template: '<div id="{{$ctrl.id}}" class="accordion" ng-transclude></div>'
+};

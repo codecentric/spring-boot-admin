@@ -17,30 +17,30 @@
 
 var angular = require('angular');
 
-var module = angular.module('sba-events', ['sba-ui-core']);
+var module = angular.module('sba-events', ['sba-core']);
 global.sbaModules.push(module.name);
 
 module.controller('eventsCtrl', function ($scope, $http) {
-    $http.get('api/journal').then(function (response) {
-        $scope.journal = response.data;
-    }).catch(function (response) {
-        $scope.error = response.data;
-    });
+  $http.get('api/journal').then(function (response) {
+    $scope.journal = response.data;
+  }).catch(function (response) {
+    $scope.error = response.data;
+  });
 });
 
 module.config(function ($stateProvider) {
-    $stateProvider.state('events', {
-        name: 'events',
-        url: '/events',
-        templateUrl: 'events/events.html',
-        controller: 'eventsCtrl'
-    });
+  $stateProvider.state('events', {
+    name: 'events',
+    url: '/events',
+    templateUrl: 'events/events.html',
+    controller: 'eventsCtrl'
+  });
 });
 
 module.run(function (MainViews) {
-    MainViews.register({
-        title: 'Journal',
-        state: 'events',
-        order: 100
-    });
+  MainViews.register({
+    title: 'Journal',
+    state: 'events',
+    order: 100
+  });
 });

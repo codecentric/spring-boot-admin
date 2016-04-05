@@ -15,33 +15,35 @@
  */
 'use strict';
 
-module.exports = function($scope, application, $interval) {
-    $scope.traces = [];
-    $scope.refreshInterval = 3;
-    $scope.refresher = null;
+module.exports = function ($scope, application, $interval) {
+  'ngInject';
 
-    $scope.refresh = function() {
-        application.getTraces().then(function(response) {
-            var oldestTrace = response.data[response.data.length - 1];
-            var olderTraces = $scope.traces.filter(function(trace) {
-                return trace.timestamp < oldestTrace.timestamp; 
-            });
-            $scope.traces = response.data.concat(olderTraces);
-        }).catch(function(response) {
-            $scope.error = response.data;
-        });
-    };
+  $scope.traces = [];
+  $scope.refreshInterval = 3;
+  $scope.refresher = null;
 
-    $scope.toggleAutoRefresh = function() {
-        if ($scope.refresher === null) {
-            $scope.refresher = $interval(function() {
-                $scope.refresh();
-            }, $scope.refreshInterval * 1000);
-        } else {
-            $interval.cancel($scope.refresher);
-            $scope.refresher = null;
-        }
-    };
+  $scope.refresh = function () {
+    application.getTraces().then(function (response) {
+      var oldestTrace = response.data[response.data.length - 1];
+      var olderTraces = $scope.traces.filter(function (trace) {
+        return trace.timestamp < oldestTrace.timestamp;
+      });
+      $scope.traces = response.data.concat(olderTraces);
+    }).catch(function (response) {
+      $scope.error = response.data;
+    });
+  };
 
-    $scope.refresh();
+  $scope.toggleAutoRefresh = function () {
+    if ($scope.refresher === null) {
+      $scope.refresher = $interval(function () {
+        $scope.refresh();
+      }, $scope.refreshInterval * 1000);
+    } else {
+      $interval.cancel($scope.refresher);
+      $scope.refresher = null;
+    }
+  };
+
+  $scope.refresh();
 };
