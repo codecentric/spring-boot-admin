@@ -37,6 +37,14 @@ module.exports = {
         max: ctrl.metrics.heap
       };
       ctrl.heap.percentUsed = $filter('number')(ctrl.heap.used / ctrl.heap.total * 100, 2);
+
+      ctrl.nonheap = {
+        total: ctrl.metrics['nonheap.committed'],
+        used: ctrl.metrics['nonheap.used'],
+        init: ctrl.metrics['nonheap.init'],
+        max: ctrl.metrics.nonheap
+      };
+      ctrl.nonheap.percentUsed = $filter('number')(ctrl.nonheap.used / ctrl.nonheap.total * 100, 2);
     };
 
     ctrl.getBarClass = function (percentage) {
