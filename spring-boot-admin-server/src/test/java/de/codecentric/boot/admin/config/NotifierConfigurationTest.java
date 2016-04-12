@@ -43,6 +43,7 @@ import de.codecentric.boot.admin.notify.MailNotifier;
 import de.codecentric.boot.admin.notify.Notifier;
 import de.codecentric.boot.admin.notify.NotifierListener;
 import de.codecentric.boot.admin.notify.PagerdutyNotifier;
+import de.codecentric.boot.admin.notify.SlackNotifier;
 
 public class NotifierConfigurationTest {
 	private static final ClientApplicationEvent APP_DOWN = new ClientApplicationStatusChangedEvent(
@@ -89,6 +90,12 @@ public class NotifierConfigurationTest {
 	public void test_hipchat() {
 		load(null, "spring.boot.admin.notify.hipchat.url:http://example.com");
 		assertThat(context.getBean(HipchatNotifier.class), is(instanceOf(HipchatNotifier.class)));
+	}
+
+	@Test
+	public void test_slack() {
+		load(null, "spring.boot.admin.notify.slack.webhook-url:http://example.com");
+		assertThat(context.getBean(SlackNotifier.class), is(instanceOf(SlackNotifier.class)));
 	}
 
 	@Test
