@@ -17,6 +17,7 @@ package de.codecentric.boot.admin.config;
 
 import java.util.List;
 
+import de.codecentric.boot.admin.notify.SlackNotifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -123,4 +124,20 @@ public class NotifierConfiguration {
 			return new HipchatNotifier();
 		}
 	}
+
+	@Configuration
+	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.slack", name = "webhook-url")
+	@AutoConfigureBefore({ NotifierListenerConfiguration.class,
+			CompositeNotifierConfiguration.class })
+	public static class SlackNotifierConfiguration {
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = "spring.boot.admin.notify.slack", name = "enabled", matchIfMissing = true)
+		@ConfigurationProperties("spring.boot.admin.notify.slack")
+		public SlackNotifier slackNotifier() {
+			return new SlackNotifier();
+		}
+	}
+
+
 }

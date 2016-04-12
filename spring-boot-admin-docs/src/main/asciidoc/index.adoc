@@ -496,6 +496,44 @@ public class ReminderConfiguration {
 <1> The reminders will be sent every 5 minutes.
 <2> Schedules sending of due reminders every 60 seconds.
 
+[slack-notifications]
+==== Slack notifications ====
+To enable Slack notifications you need to add configuration in Incoming WebHooks in Custom Integrations on your Slack
+account and set the appropriate configuration properties.
+
+.Slack notifications configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.slack.enabled
+| Enable Slack notifications
+| `true`
+
+| spring.boot.admin.notify.slack.ignore-changes
+| Comma-delimited list of status changes to be ignored. Format: "<from-status>:<to-status>". Wildcards allowed.
+| `"UNKNOWN:UP"`
+
+| spring.boot.admin.notify.slack.webhook-url
+| The Slack WebHooks URL to send notifications
+|
+
+| spring.boot.admin.notify.slack.channel
+| Optional channel name (without # at the beginning) if different than channel in Slack WebHooks settings
+|
+
+| spring.boot.admin.notify.slack.icon
+| Optional icon name (without surrounding colons) if different than icon in Slack WebHooks settings
+|
+
+| spring.boot.admin.notify.slack.username
+| Optional username to send notification if different than in Slack WebHooks settings
+| `Spring Boot Admin`
+
+| spring.boot.admin.notify.slack.message
+| Message to use in the event. SpEL-expressions and Slack markups are supported
+| `+++"*#{application.name}* (#{application.id}) is *#{to.status}*"+++`
+|
+|===
 
 [[faqs]]
 == FAQs ==
