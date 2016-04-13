@@ -22,20 +22,16 @@ module.exports = {
   controller: function () {
     var ctrl = this;
     ctrl.show = false;
-    ctrl.statusClass = 'unknown';
     ctrl.toggle = function () {
       ctrl.show = !ctrl.show;
     };
-    ctrl.$onChanges = function () {
+
+    ctrl.getStatusClass = function () {
       if (ctrl.trace.info.headers.response) {
         var status = parseInt(ctrl.trace.info.headers.response.status);
-        if (Math.floor(status / 500) === 1) {
-          ctrl.statusClass = 'error';
-        } else if (Math.floor(status / 400) === 1) {
-          ctrl.statusClass = 'warn';
-        } else {
-          ctrl.statusClass = 'ok';
-        }
+        return 'http-' + Math.floor(status / 100) + 'xx';
+      } else {
+        return 'unknown';
       }
     };
   },
