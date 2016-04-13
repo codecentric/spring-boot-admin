@@ -17,7 +17,6 @@ package de.codecentric.boot.admin.config;
 
 import java.util.List;
 
-import de.codecentric.boot.admin.notify.SlackNotifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -40,6 +39,7 @@ import de.codecentric.boot.admin.notify.MailNotifier;
 import de.codecentric.boot.admin.notify.Notifier;
 import de.codecentric.boot.admin.notify.NotifierListener;
 import de.codecentric.boot.admin.notify.PagerdutyNotifier;
+import de.codecentric.boot.admin.notify.SlackNotifier;
 
 @Configuration
 public class NotifierConfiguration {
@@ -138,6 +138,5 @@ public class NotifierConfiguration {
 			return new SlackNotifier();
 		}
 	}
-
 
 }

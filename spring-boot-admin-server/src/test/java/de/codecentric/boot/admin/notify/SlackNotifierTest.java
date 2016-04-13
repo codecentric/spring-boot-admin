@@ -1,8 +1,17 @@
 package de.codecentric.boot.admin.notify;
 
-import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.model.Application;
-import de.codecentric.boot.admin.model.StatusInfo;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+import java.net.URI;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.expression.Expression;
@@ -10,28 +19,21 @@ import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.Nullable;
-import java.net.URI;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.model.Application;
+import de.codecentric.boot.admin.model.StatusInfo;
 
 public class SlackNotifierTest {
-	private final String channel = "channel";
-	private final String icon = "icon";
-	private final String user = "user";
-	private final String appName = "App";
-	private final String id = "-id-";
-	private final String message = "test";
+	private static final String channel = "channel";
+	private static final String icon = "icon";
+	private static final String user = "user";
+	private static final String appName = "App";
+	private static final String id = "-id-";
+	private static final String message = "test";
 
 	private SlackNotifier notifier;
 	private RestTemplate restTemplate;
-	
+
 	@Before
 	public void setUp() {
 		restTemplate = mock(RestTemplate.class);
@@ -50,7 +52,8 @@ public class SlackNotifierTest {
 		notifier.setIcon(icon);
 		notifier.notify(getEvent(infoDown, infoUp));
 
-		Object expected = expectedMessage("good", user, icon, channel, standardMessage(infoUp.getStatus(), appName, id));
+		Object expected = expectedMessage("good", user, icon, channel,
+				standardMessage(infoUp.getStatus(), appName, id));
 
 		verify(restTemplate).postForEntity(any(URI.class), eq(expected), eq(Void.class));
 	}
@@ -62,7 +65,8 @@ public class SlackNotifierTest {
 
 		notifier.notify(getEvent(infoDown, infoUp));
 
-		Object expected = expectedMessage("good", user, null, null, standardMessage(infoUp.getStatus(), appName, id));
+		Object expected = expectedMessage("good", user, null, null,
+				standardMessage(infoUp.getStatus(), appName, id));
 
 		verify(restTemplate).postForEntity(any(URI.class), eq(expected), eq(Void.class));
 	}
@@ -79,7 +83,7 @@ public class SlackNotifierTest {
 		notifier.notify(getEvent(infoDown, infoUp));
 
 		Object expected = expectedMessage("good", anotherUser, icon, channel,
-		                                  standardMessage(infoUp.getStatus(), appName, id));
+				standardMessage(infoUp.getStatus(), appName, id));
 
 		verify(restTemplate).postForEntity(any(URI.class), eq(expected), eq(Void.class));
 	}
@@ -89,7 +93,8 @@ public class SlackNotifierTest {
 		StatusInfo infoDown = StatusInfo.ofDown();
 		StatusInfo infoUp = StatusInfo.ofUp();
 
-		Expression expression = new SpelExpressionParser().parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
+		Expression expression = new SpelExpressionParser().parseExpression(message,
+				ParserContext.TEMPLATE_EXPRESSION);
 		notifier.setMessage(expression);
 		notifier.setChannel(channel);
 		notifier.setIcon(icon);
@@ -110,26 +115,27 @@ public class SlackNotifierTest {
 		notifier.notify(getEvent(infoUp, infoDown));
 
 		Object expected = expectedMessage("danger", user, icon, channel,
-		                                  standardMessage(infoDown.getStatus(), appName, id));
+				standardMessage(infoDown.getStatus(), appName, id));
 
 		verify(restTemplate).postForEntity(any(URI.class), eq(expected), eq(Void.class));
 	}
 
 	private ClientApplicationStatusChangedEvent getEvent(StatusInfo infoDown, StatusInfo infoUp) {
 		return new ClientApplicationStatusChangedEvent(
-				Application.create(appName)
-				           .withId(id)
-				           .withHealthUrl("http://health")
-				           .build(),
+				Application.create(appName).withId(id).withHealthUrl("http://health").build(),
 				infoDown, infoUp);
 	}
 
 	private Object expectedMessage(String color, String user, @Nullable String icon,
-	                               @Nullable String channel, String message) {
+			@Nullable String channel, String message) {
 		Map<String, Object> messageJson = new HashMap<>();
 		messageJson.put("username", user);
-		if (icon != null) messageJson.put("icon_emoji", ":" + icon + ":");
-		if (channel != null) messageJson.put("channel", channel);
+		if (icon != null) {
+			messageJson.put("icon_emoji", ":" + icon + ":");
+		}
+		if (channel != null) {
+			messageJson.put("channel", channel);
+		}
 
 		Map<String, Object> attachments = new HashMap<>();
 		attachments.put("text", message);

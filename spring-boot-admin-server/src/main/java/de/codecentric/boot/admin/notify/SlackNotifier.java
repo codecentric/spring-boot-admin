@@ -1,15 +1,16 @@
 package de.codecentric.boot.admin.notify;
 
-import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
+import java.net.URI;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
 
 /**
  * Notifier submitting events to Slack.
@@ -83,8 +84,12 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
 	private Object createMessage(ClientApplicationStatusChangedEvent event) {
 		Map<String, Object> messageJson = new HashMap<>();
 		messageJson.put("username", username);
-		if (icon != null) messageJson.put("icon_emoji", ":" + icon + ":");
-		if (channel != null) messageJson.put("channel", channel);
+		if (icon != null) {
+			messageJson.put("icon_emoji", ":" + icon + ":");
+		}
+		if (channel != null) {
+			messageJson.put("channel", channel);
+		}
 
 		Map<String, Object> attachments = new HashMap<>();
 		attachments.put("text", getText(event));
