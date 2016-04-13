@@ -39,6 +39,7 @@ import de.codecentric.boot.admin.notify.MailNotifier;
 import de.codecentric.boot.admin.notify.Notifier;
 import de.codecentric.boot.admin.notify.NotifierListener;
 import de.codecentric.boot.admin.notify.PagerdutyNotifier;
+import de.codecentric.boot.admin.notify.SlackNotifier;
 
 @Configuration
 public class NotifierConfiguration {
@@ -123,4 +124,19 @@ public class NotifierConfiguration {
 			return new HipchatNotifier();
 		}
 	}
+
+	@Configuration
+	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.slack", name = "webhook-url")
+	@AutoConfigureBefore({ NotifierListenerConfiguration.class,
+			CompositeNotifierConfiguration.class })
+	public static class SlackNotifierConfiguration {
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = "spring.boot.admin.notify.slack", name = "enabled", matchIfMissing = true)
+		@ConfigurationProperties("spring.boot.admin.notify.slack")
+		public SlackNotifier slackNotifier() {
+			return new SlackNotifier();
+		}
+	}
+
 }
