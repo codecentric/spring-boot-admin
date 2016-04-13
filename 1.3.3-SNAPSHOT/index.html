@@ -509,7 +509,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 1.3.3-SNAPSHOT,</span>
-<span id="revdate">31.03.2016</span>
+<span id="revdate">13.04.2016</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -1203,7 +1203,66 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_reminder_notifications"><a class="anchor" href="#_reminder_notifications"></a>4.3.4. Reminder notifications</h4>
+<h4 id="_slack_notifications"><a class="anchor" href="#_slack_notifications"></a>4.3.4. Slack notifications</h4>
+<div class="paragraph">
+<p>To enable Slack notifications you need to add a incoming Webhook under custom integrations on your Slack
+account and configure it appropriately.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 8. Slack notifications configuration options</caption>
+<colgroup>
+<col style="width: 33%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.slack.enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enable Slack notifications</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.slack.ignore-changes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Comma-delimited list of status changes to be ignored. Format: "&lt;from-status&gt;:&lt;to-status&gt;". Wildcards allowed.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"UNKNOWN:UP"</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.slack.webhook-url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Slack Webhook URL to send notifications</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.slack.channel</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optional channel name (without # at the beginning). If different than channel in Slack Webhooks settings</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.slack.icon</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optional icon name (without surrounding colons). If different than icon in Slack Webhooks settings</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.slack.username</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optional username to send notification if different than in Slack Webhooks settings</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Spring Boot Admin</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.slack.message</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Message to use in the event. SpEL-expressions and Slack markups are supported</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"*#{application.name}* (#{application.id}) is *#{to.status}*"</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_reminder_notifications"><a class="anchor" href="#_reminder_notifications"></a>4.3.5. Reminder notifications</h4>
 <div class="paragraph">
 <p>To get reminders for down/offline applications you can add a <code>RemindingNotifier</code> to your <code>ApplicationContext</code>. The <code>RemindingNotifier</code> uses another <code>Notifier</code> as delegate to send the reminders.</p>
 </div>
