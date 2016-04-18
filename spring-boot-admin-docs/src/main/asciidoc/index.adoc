@@ -56,7 +56,10 @@ public class SpringBootAdminApplication {
 }
 ----
 
-See also the https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample/[spring-boot-admin-sample-project].
+NOTE: If you want to setup the Spring Boot Admin Server via war-deployment in a servlet-container, please have a look at the https://github.com/codecentric/spring-boot-admin/blob/master/spring-boot-admin-samples/spring-boot-admin-sample-war/[spring-boot-admin-sample-war].
+
+See also the https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample/[spring-boot-admin-sample] project.
+
 
 [[register-client-applications]]
 === Register client applications ===
