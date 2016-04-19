@@ -50,7 +50,9 @@
 										<input ng-switch-when="long" class="span5" type="number" ng-model="attr.value" ng-disabled="!attr.rw" />
 										<input ng-switch-when="int"  class="span5" type="number" ng-model="attr.value" ng-disabled="!attr.rw" />
 										<input ng-switch-when="double" class="span5" type="number" ng-model="attr.value" ng-disabled="!attr.rw" />
-										<select ng-switch-when="boolean" class="span5" ng-model="attr.value" ng-disabled="!attr.rw" ng-options="val for val in [true, false]" />
+										<select ng-switch-when="boolean" class="span5" ng-model="attr.value" ng-disabled="!attr.rw">
+                                            <option ng-repeat="opt in [true, false]" value="{{opt}}" ng-selected="attr.value == opt">{{opt}}</option>
+                                        </select>
 										<textarea ng-switch-default style="word-break: break-all;" class="span5" ng-model="attr.jsonValue" ng-disabled="!attr.rw" />
 									</div>
 									<span class="help-block">{{attr.desc}}</span>
@@ -91,7 +93,9 @@
 					<input ng-switch-when="long" class="span6" type="number" ng-model="invocation.args[$index]" />
 					<input ng-switch-when="int"  class="span6" type="number" ng-model="invocation.args[$index]" />
 					<input ng-switch-when="double" class="span6" type="number" ng-model="invocation.args[$index]" />
-					<select ng-switch-when="boolean" class="span6" ng-model="invocation.args[$index]" ng-options="val for val in [true, false]" />
+					<select ng-switch-when="boolean" class="span5" ng-model="invocation.args[$index]" >
+                        <option ng-repeat="opt in [true, false]" value="{{opt}}" ng-selected="invocation.args[$index] == opt">{{opt}}</option>
+                    </select>
 					<textarea ng-switch-default style="word-break: break-all;" class="span6" ng-model="invocation.args[$index]" />
 					<span class="help-block">{{arg.desc}}</span>
 				</div>
