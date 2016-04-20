@@ -95,7 +95,7 @@ public class ApplicationRegistry implements ApplicationEventPublisherAware {
 		if (existing != null) {
 			return existing.getStatusInfo();
 		}
-		return null;
+		return StatusInfo.ofUnknown();
 	}
 
 	/**

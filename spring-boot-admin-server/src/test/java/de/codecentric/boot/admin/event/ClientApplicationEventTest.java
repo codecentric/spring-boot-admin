@@ -35,7 +35,7 @@ public class ClientApplicationEventTest {
 	@Test
 	public void hashCode_equals() throws Exception {
 		ClientApplicationEvent event1 = new ClientApplicationRegisteredEvent(
-				Application.create("test").build());
+				Application.create("test").withHealthUrl("http://health").build());
 		ClientApplicationEvent event2 = cloneBySerialization(event1);
 
 		assertThat(event1.hashCode(), is(event2.hashCode()));
@@ -45,9 +45,9 @@ public class ClientApplicationEventTest {
 	@Test
 	public void equals() throws Exception {
 		ClientApplicationEvent event1 = new ClientApplicationRegisteredEvent(
-				Application.create("test").build());
+				Application.create("test").withHealthUrl("http://health").build());
 		ClientApplicationEvent event2 = new ClientApplicationDeregisteredEvent(
-				Application.create("test").build());
+				Application.create("test").withHealthUrl("http://health").build());
 
 		assertThat(event1, not(is(event2)));
 	}

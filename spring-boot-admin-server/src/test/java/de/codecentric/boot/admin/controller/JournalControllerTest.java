@@ -40,7 +40,7 @@ public class JournalControllerTest {
 	@Test
 	public void test_getJournal() {
 		ClientApplicationEvent emittedEvent = new ClientApplicationRegisteredEvent(
-				Application.create("foo").withId("bar").build());
+				Application.create("foo").withId("bar").withHealthUrl("http://health").build());
 		journal.onClientApplicationEvent(emittedEvent);
 
 		Collection<ClientApplicationEvent> history = controller.getJournal();
@@ -54,7 +54,7 @@ public class JournalControllerTest {
 	@Test
 	public void test_getJournal_sse() {
 		ClientApplicationEvent emittedEvent = new ClientApplicationRegisteredEvent(
-				Application.create("foo").withId("bar").build());
+				Application.create("foo").withId("bar").withHealthUrl("http://health").build());
 
 		SseEmitter emitter = controller.getJournalEvents();
 		journal.onClientApplicationEvent(emittedEvent);

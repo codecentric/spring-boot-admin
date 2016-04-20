@@ -49,7 +49,8 @@ public class HazelcastJournaledEventStoreTest {
 
 	@Test
 	public void test_store() {
-		Application application = Application.create("foo").withId("bar").build();
+		Application application = Application.create("foo").withId("bar")
+				.withHealthUrl("http://health").build();
 		List<ClientApplicationEvent> events = Arrays.asList(
 				new ClientApplicationRegisteredEvent(application),
 				new ClientApplicationDeregisteredEvent(application));

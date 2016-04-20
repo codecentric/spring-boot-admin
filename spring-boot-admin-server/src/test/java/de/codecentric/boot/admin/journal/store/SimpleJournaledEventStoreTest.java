@@ -34,7 +34,8 @@ public class SimpleJournaledEventStoreTest {
 	@Test
 	public void test_store() {
 		SimpleJournaledEventStore store = new SimpleJournaledEventStore();
-		Application application = Application.create("foo").withId("bar").build();
+		Application application = Application.create("foo").withId("bar")
+				.withHealthUrl("http://health").build();
 		List<ClientApplicationEvent> events = Arrays.asList(
 				new ClientApplicationRegisteredEvent(application),
 				new ClientApplicationDeregisteredEvent(application));
@@ -52,7 +53,8 @@ public class SimpleJournaledEventStoreTest {
 		SimpleJournaledEventStore store = new SimpleJournaledEventStore();
 		store.setCapacity(2);
 
-		Application application = Application.create("foo").withId("bar").build();
+		Application application = Application.create("foo").withId("bar")
+				.withHealthUrl("http://health").build();
 		List<ClientApplicationEvent> events = Arrays.asList(
 				new ClientApplicationRegisteredEvent(application),
 				new ClientApplicationDeregisteredEvent(application),

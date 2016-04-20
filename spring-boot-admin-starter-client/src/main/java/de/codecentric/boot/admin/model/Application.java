@@ -36,32 +36,38 @@ public class Application implements Serializable {
 	private final String serviceUrl;
 	private final StatusInfo statusInfo;
 
-	protected Application(String healthUrl, String managementUrl, String serviceUrl, String name,
-			String id, StatusInfo statusInfo) {
-		this.healthUrl = healthUrl;
-		this.managementUrl = managementUrl;
-		this.serviceUrl = serviceUrl;
-		this.name = name;
-		this.id = id;
-		this.statusInfo = statusInfo != null ? statusInfo : StatusInfo.ofUnknown();
+	protected Application(Builder builder) {
+		Assert.hasText(builder.name, "name must not be empty!");
+		Assert.hasText(builder.healthUrl, "healthUrl must not be empty!");
+		Assert.notNull(builder.statusInfo, "statusInfo must not be null!");
+		this.healthUrl = builder.healthUrl;
+		this.managementUrl = builder.managementUrl;
+		this.serviceUrl = builder.serviceUrl;
+		this.name = builder.name;
+		this.id = builder.id;
+		this.statusInfo = builder.statusInfo;
 	}
 
 	@JsonCreator
-	public static Application create(@JsonProperty("url") String url,
+	public static Application fromJson(@JsonProperty("url") String url,
 			@JsonProperty("managementUrl") String managementUrl,
 			@JsonProperty("healthUrl") String healthUrl,
 			@JsonProperty("serviceUrl") String serviceUrl, @JsonProperty("name") String name,
 			@JsonProperty("id") String id, @JsonProperty("statusInfo") StatusInfo statusInfo) {
 
-		Assert.hasText(name, "name must not be empty!");
+		Builder builder = create(name).withId(id);
+		if (statusInfo != null) {
+			builder.withStatusInfo(statusInfo);
+		}
+
 		if (StringUtils.hasText(url)) {
 			// old format
-			return new Application(url.replaceFirst("/+$", "") + "/health", url, null, name, id,
-					statusInfo);
+			builder.withHealthUrl(url.replaceFirst("/+$", "") + "/health").withManagementUrl(url);
 		} else {
-			Assert.hasText(healthUrl, "healthUrl must not be empty!");
-			return new Application(healthUrl, managementUrl, serviceUrl, name, id, statusInfo);
+			builder.withHealthUrl(healthUrl).withManagementUrl(managementUrl)
+					.withServiceUrl(serviceUrl);
 		}
+		return builder.build();
 	}
 
 	public static Builder create(String name) {
@@ -78,7 +84,7 @@ public class Application implements Serializable {
 		private String managementUrl;
 		private String healthUrl;
 		private String serviceUrl;
-		private StatusInfo statusInfo;
+		private StatusInfo statusInfo = StatusInfo.ofUnknown();
 
 		private Builder(String name) {
 			this.name = name;
@@ -124,7 +130,7 @@ public class Application implements Serializable {
 		}
 
 		public Application build() {
-			return new Application(healthUrl, managementUrl, serviceUrl, name, id, statusInfo);
+			return new Application(this);
 		}
 	}
 
@@ -154,8 +160,8 @@ public class Application implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Application [id=" + id + ", name=" + name + ", managementUrl=" + managementUrl
-				+ ", healthUrl=" + healthUrl + ", serviceUrl=" + serviceUrl + "]";
+		return "Application [id=" + id + ", name=" + name + ", managementUrl="
+				+ managementUrl + ", healthUrl=" + healthUrl + ", serviceUrl=" + serviceUrl + "]";
 	}
 
 	@Override

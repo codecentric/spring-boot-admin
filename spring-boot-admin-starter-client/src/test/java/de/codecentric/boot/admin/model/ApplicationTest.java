@@ -45,12 +45,12 @@ public class ApplicationTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void test_name_expected() throws JsonProcessingException, IOException {
-		Application.create("http://url", "", "", "", "", null, null);
+		Application.fromJson("http://url", "", "", "", "", null, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void test_healthUrl_expected() throws JsonProcessingException, IOException {
-		Application.create("", "", "", "", "name", null, null);
+		Application.fromJson("", "", "", "", "name", null, null);
 	}
 
 	@Test
