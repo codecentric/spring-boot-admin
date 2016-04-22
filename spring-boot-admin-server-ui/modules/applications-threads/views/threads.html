@@ -1,24 +1,14 @@
-<div class="container content">
-	<div class="alert alert-error" ng-if="error">
-		<b>Error:</b> {{ error }}
-	</div>
-	<div class="row">
-		<div class="span12 text-center" >
-			<form>
-				<button class="btn" ng-click="dumpThreads()"><i class="icon-screenshot"></i> Dump all threads!</button>
-			</form>
-		</div>
-	</div>
-	<div class="row" ng-show="dump" >	
-		<div class="span12">
-			<sba-thread-summary threads="dump"></sba-thread-summary>
-		</div>
-	</div>	
-	<div class="row" ng-show="dump">
-		<div class="span12">	
-		  <sba-accordion>
-		      <sba-thread ng-repeat="thread in dump | orderBy:'threadName' track by thread.threadId" thread="thread"></sba-thread>
-		  </sba-accordion>
-		</div>
-	</div>
+<div class="alert alert-error" ng-if="error">
+  <b>Error:</b> {{ error }}
 </div>
+<div class="row">
+  <div class="span12 text-center">
+    <form>
+      <button class="btn" ng-click="dumpThreads()"><i class="icon-screenshot"></i> Dump all threads!</button>
+    </form>
+  </div>
+</div>
+<sba-thread-summary ng-show="dump" threads="dump"></sba-thread-summary>
+<sba-accordion>
+  <sba-thread ng-repeat="thread in dump | orderBy:'threadName' track by thread.threadId" thread="thread"></sba-thread>
+</sba-accordion>

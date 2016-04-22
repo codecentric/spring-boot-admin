@@ -1,31 +1,32 @@
-<div class="container content">
-	<h3>Journal</h3>
-	<div class="alert alert-error" ng-if="error">
-		<b>Error:</b> {{ error }}
-	</div>
-	<div class="row">
-		<table class="table table-striped">
-			<thead>
-				<tr>
-					<th>Time</th>
-					<th>Application</th>
-					<th>Event</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="event in journal | orderBy:'timestamp':true" >
-					<td>{{ event.timestamp | date:'yyyy-MM-dd-HH.mm.ss.sss' }}</td>
-					<td>{{ event.application.name }} ({{ event.application.id }})<br/>
-						<span class="muted">{{ event.application.serviceUrl || event.application.managementUrl || event.application.healthUrl }}</span>
-					</td>
-					<td>{{ event.type }}<br/>
-						<span ng-if="event.type == 'STATUS_CHANGE'">
-							<span class="status-{{event.from.status}}">{{ event.from.status }}</span>
-							-&gt; 	<span class="status-{{event.to.status}}">{{ event.to.status }}</span>
-						</span>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
+<div class="container">
+  <h3>Journal</h3>
+  <div class="alert alert-error" ng-if="error">
+    <b>Error:</b> {{ error }}
+  </div>
+  <div class="row">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Application</th>
+          <th>Event</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="event in journal | orderBy:'timestamp':true">
+          <td>{{ event.timestamp | date:'yyyy-MM-dd-HH.mm.ss.sss' }}</td>
+          <td>{{ event.application.name }} ({{ event.application.id }})
+            <br/>
+            <span class="muted">{{ event.application.serviceUrl || event.application.managementUrl || event.application.healthUrl }}</span>
+          </td>
+          <td>{{ event.type }}
+            <br/>
+            <span ng-if="event.type == 'STATUS_CHANGE'">
+							<span class="status-{{event.from.status}}">{{ event.from.status }}</span> -&gt; <span class="status-{{event.to.status}}">{{ event.to.status }}</span>
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

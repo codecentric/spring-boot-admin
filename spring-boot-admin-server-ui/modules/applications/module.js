@@ -43,7 +43,7 @@ module.config(function ($stateProvider) {
     abstract: true,
     url: '/applications/:id',
     controller: 'applicationsHeaderCtrl',
-    templateUrl: 'applications/views/applications-header.html',
+    templateUrl: 'applications/views/application-nav.html',
     resolve: {
       application: function ($stateParams, Application) {
         return Application.get({

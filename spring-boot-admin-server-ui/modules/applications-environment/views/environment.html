@@ -1,35 +1,34 @@
-<div class="container content">
-	<div class="alert alert-error" ng-if="error">
-		<b>Error:</b> {{ error }}
-	</div>
-	
-	<sba-info-panel title="Active profiles"	raw="api/applications/{{ application.id }}/env">
-	   <table class="table">
-		  <tr><td>{{profiles.join(', ') || '-'}}</td></tr>
-	   </table>
-	</sba-info-panel>
-	
-	<sba-info-panel title="Environment manager" ng-show="application.capabilities.refresh"> 
-		<sba-environment-manager environment="env" application="application" on-environment-changed="refresh"></sba-environment-manager>
-	</sba-info-panel>
-	
-	<div class="input-append">
-		<input placeholder="Filter" class="input-xxlarge" type="search" ng-model="searchFilter" />
-		<button class="btn" title="reload list" ng-click="refresh()"><i class="icon-refresh"></i></button>
-	</div>
-	
-	<sba-info-panel category="PropertySource" title="{{source.name}}" ng-repeat="source in env" ng-show="!searchFilter || (source.value | filter:searchFilter).length > 0">
-	   <table class="table">
-		  <col width="38%">
-		  <col width="62%"> 
-		  <tr ng-repeat="property in source.value | filter:searchFilter">
-			<td style="word-break: break-all;">{{property.name}}</td>
-			<td style="word-break: break-all;">{{property.value}}</td>
-		  </tr>
-		  <tr ng-if="source.value.length == 0">
-			<td colspan="2">-</td>
-		  </tr>
-	   </table>
-	</sba-info-panel>
+<div class="alert alert-error" ng-if="error">
+  <b>Error:</b> {{ error }}
 </div>
 
+<sba-info-panel title="Active profiles" raw="api/applications/{{ application.id }}/env">
+  <table class="table">
+    <tr>
+      <td>{{profiles.join(', ') || '-'}}</td>
+    </tr>
+  </table>
+</sba-info-panel>
+
+<sba-info-panel title="Environment manager" ng-show="application.capabilities.refresh">
+  <sba-environment-manager environment="env" application="application" on-environment-changed="refresh"></sba-environment-manager>
+</sba-info-panel>
+
+<div class="input-append">
+  <input placeholder="Filter" class="input-xxlarge" type="search" ng-model="searchFilter" />
+  <button class="btn" title="reload list" ng-click="refresh()"><i class="icon-refresh"></i></button>
+</div>
+
+<sba-info-panel category="PropertySource" title="{{source.name}}" ng-repeat="source in env" ng-show="!searchFilter || (source.value | filter:searchFilter).length > 0">
+  <table class="table">
+    <col width="38%">
+      <col width="62%">
+        <tr ng-repeat="property in source.value | filter:searchFilter">
+          <td style="word-break: break-all;">{{property.name}}</td>
+          <td style="word-break: break-all;">{{property.value}}</td>
+        </tr>
+        <tr ng-if="source.value.length == 0">
+          <td colspan="2">-</td>
+        </tr>
+  </table>
+</sba-info-panel>

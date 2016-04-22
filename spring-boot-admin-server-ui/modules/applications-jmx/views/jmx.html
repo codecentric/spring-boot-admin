@@ -1,35 +1,32 @@
-<div class="container content">
-	<div ng-if="errorWhileListing">
-	<p>To make the JMX section work you need to make the /jolokia-endpoint accessible.<br/>
-		Include the jolokia-core.jar in your spring-boot-application:
-	<pre>&lt;dependency&gt;
+<div ng-if="errorWhileListing">
+  <p>To make the JMX section work you need to make the /jolokia-endpoint accessible.
+    <br/> Include the jolokia-core.jar in your spring-boot-application:
+    <pre>&lt;dependency&gt;
 	&lt;groupId>org.jolokia&lt;/groupId&gt;
 	&lt;artifactId>jolokia-core&lt;/artifactId&gt;
 &lt;/dependency&gt;</pre></p>
-	</div>
-	<pre class="alert alert-error" ng-if="error"><b>Error:</b><br/>{{ error | json }}</pre>
-	<sba-accordion>
-	   <sba-accordion-group ng-repeat="domain in domains | orderBy:'name' track by domain.name">
-	       <sba-accordion-heading>
-			    <ul class="breadcrumb" style="margin: 0; background-color: #34302D;">
-			        <li style="text-shadow: none;">
-			           <small class="muted">Domain</small>
-			            <a ng-if="domain.selectedBean" ng-click="domain.selectedBean = null">{{domain.name}}</a>
-			            <span ng-if="domain.selectedBean" class="divider">/</span>
-			            <span ng-if="!domain.selectedBean">{{domain.name}}</span>
-			        </li>
-			        <li style="text-shadow: none;" ng-if="domain.selectedBean.name">
-			            <small class="muted">MBean</small>
-			            {{domain.selectedBean.name}}
-			        </li>
-			    </ul>
-	       </sba-accordion-heading>
-	       <sba-accordion-body>
-			    <ul class="nav nav-tabs nav-stacked" ng-show="!domain.selectedBean" style="transition: 0.6s ease-in-out left">
-			        <li ng-repeat="bean in domain.beans track by bean.id"><a ng-click="domain.selectedBean = bean"><small class="muted">MBean</small> {{bean.name}}</a></li>
-			    </ul>	
-			    <sba-jmx-bean application="application" bean="domain.selectedBean" ng-show="domain.selectedBean"></sba-jmx-bean>
-	       </sba-accordion-body>
-	   </sba-accordion-group>
-	</sba-accordion>
 </div>
+<pre class="alert alert-error" ng-if="error"><b>Error:</b><br/>{{ error | json }}</pre>
+<sba-accordion>
+  <sba-accordion-group ng-repeat="domain in domains | orderBy:'name' track by domain.name">
+    <sba-accordion-heading>
+      <ul class="breadcrumb" style="margin: 0; background-color: #34302D;">
+        <li style="text-shadow: none;">
+          <small class="muted">Domain</small>
+          <a ng-if="domain.selectedBean" ng-click="domain.selectedBean = null">{{domain.name}}</a>
+          <span ng-if="domain.selectedBean" class="divider">/</span>
+          <span ng-if="!domain.selectedBean">{{domain.name}}</span>
+        </li>
+        <li style="text-shadow: none;" ng-if="domain.selectedBean.name">
+          <small class="muted">MBean</small> {{domain.selectedBean.name}}
+        </li>
+      </ul>
+    </sba-accordion-heading>
+    <sba-accordion-body>
+      <ul class="nav nav-tabs nav-stacked" ng-show="!domain.selectedBean" style="transition: 0.6s ease-in-out left">
+        <li ng-repeat="bean in domain.beans track by bean.id"><a ng-click="domain.selectedBean = bean"><small class="muted">MBean</small> {{bean.name}}</a></li>
+      </ul>
+      <sba-jmx-bean application="application" bean="domain.selectedBean" ng-show="domain.selectedBean"></sba-jmx-bean>
+    </sba-accordion-body>
+  </sba-accordion-group>
+</sba-accordion>

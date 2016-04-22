@@ -1,32 +1,26 @@
-<div class="container content">
-  <div class="alert alert-error" ng-if="error">
-    <b>Error:</b> {{ error }}
-  </div>
-  <div class="row">
-    <div class="span12">
-      <sba-info-panel title="Counter" raw="api/applications/{{ application.id }}/metrics/counter.*">
-        <table class="table" ng-if="counters.length > 0">
-          <tr ng-repeat="counter in counters">
-            <td>
-              <sba-simple-metric-bar for-metric="counter" global-max="countersMax"></sba-simple-metric-bar>
-            </td>
-          </tr>
-        </table>
-      </sba-info-panel>
-      <sba-info-panel title="Gauges" raw="api/applications/{{ application.id }}/metrics/gauge.*">
-        <table class="table" ng-if="gauges.length > 0">
-          <tr ng-if="showRichGauges" ng-repeat="gauge in gauges">
-            <td>
-              <sba-rich-metric-bar for-metric="gauge" global-max="gaugesMax"></sba-rich-metric-bar>
-            </td>
-          </tr>
-          <tr ng-if="!showRichGauges" ng-repeat="gauge in gauges">
-            <td>
-              <sba-simple-metric-bar for-metric="gauge" global-max="gaugesMax"></sba-simple-metric-bar>
-            </td>
-          </tr>
-        </table>
-      </sba-info-panel>
-    </div>
-  </div>
+<div class="alert alert-error" ng-if="error">
+  <b>Error:</b> {{ error }}
 </div>
+<sba-info-panel title="Counter" raw="api/applications/{{ application.id }}/metrics/counter.*">
+  <table class="table" ng-if="counters.length > 0">
+    <tr ng-repeat="counter in counters">
+      <td>
+        <sba-simple-metric-bar for-metric="counter" global-max="countersMax"></sba-simple-metric-bar>
+      </td>
+    </tr>
+  </table>
+</sba-info-panel>
+<sba-info-panel title="Gauges" raw="api/applications/{{ application.id }}/metrics/gauge.*">
+  <table class="table" ng-if="gauges.length > 0">
+    <tr ng-if="showRichGauges" ng-repeat="gauge in gauges">
+      <td>
+        <sba-rich-metric-bar for-metric="gauge" global-max="gaugesMax"></sba-rich-metric-bar>
+      </td>
+    </tr>
+    <tr ng-if="!showRichGauges" ng-repeat="gauge in gauges">
+      <td>
+        <sba-simple-metric-bar for-metric="gauge" global-max="gaugesMax"></sba-simple-metric-bar>
+      </td>
+    </tr>
+  </table>
+</sba-info-panel>

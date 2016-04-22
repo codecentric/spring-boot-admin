@@ -1,0 +1,23 @@
+<div class="container">
+  <div class="row">
+    <div class="span3">
+      <div class="sidebar-nav info-panel">
+        <div class="info-panel-title">
+          <h1 ng-bind="application.name"></h1>
+          <h1 class="status-{{application.statusInfo.status}}" ng-bind="application.statusInfo.status"></h1>
+        </div>
+        <ul class="application-urls">
+          <li ng-if="application.healthUrl"><a href="{{ application.healthUrl }}" title="Health URL"><i class="icon-heart" ></i> {{ application.healthUrl }}</a></li>
+          <li ng-if="application.managementUrl"><a href="{{ application.managementUrl }}" title="Management URL"><i class="icon-wrench"></i> {{ application.managementUrl }}</a></li>
+          <li ng-if="application.serviceUrl"><a href="{{ application.serviceUrl }}" title="Service URL"><i class="icon-home" ></i> {{ application.serviceUrl }}</a></li>
+        </ul>
+        <div class="info-panel-content">
+          <ul class="nav nav-list">
+            <li ng-repeat="view in views" ng-class="{active: $state.includes(view.state)}"><a ng-href="{{view.href}}"><span ng-bind="view.title"></span></a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="span9" ui-view></div>
+  </div>
+</div>

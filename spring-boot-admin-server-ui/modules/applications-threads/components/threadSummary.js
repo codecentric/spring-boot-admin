@@ -25,6 +25,8 @@ module.exports = {
 
     var ctrl = this;
     ctrl.$onChanges = function () {
+      ctrl.threads = ctrl.threads || [];
+
       ctrl.threadSummary = {
         NEW: {
           count: 0,
