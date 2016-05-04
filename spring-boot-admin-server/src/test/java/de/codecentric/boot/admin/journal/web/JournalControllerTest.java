@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.codecentric.boot.admin.controller;
+package de.codecentric.boot.admin.journal.web;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -29,6 +29,7 @@ import de.codecentric.boot.admin.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.journal.ApplicationEventJournal;
 import de.codecentric.boot.admin.journal.store.SimpleJournaledEventStore;
+import de.codecentric.boot.admin.journal.web.JournalController;
 import de.codecentric.boot.admin.model.Application;
 
 public class JournalControllerTest {

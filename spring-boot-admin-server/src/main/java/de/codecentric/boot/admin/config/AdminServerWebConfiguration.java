@@ -42,20 +42,20 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.codecentric.boot.admin.controller.JournalController;
-import de.codecentric.boot.admin.controller.RegistryController;
 import de.codecentric.boot.admin.event.ClientApplicationDeregisteredEvent;
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.event.RoutesOutdatedEvent;
 import de.codecentric.boot.admin.journal.ApplicationEventJournal;
 import de.codecentric.boot.admin.journal.store.JournaledEventStore;
 import de.codecentric.boot.admin.journal.store.SimpleJournaledEventStore;
+import de.codecentric.boot.admin.journal.web.JournalController;
 import de.codecentric.boot.admin.registry.ApplicationIdGenerator;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.registry.HashingApplicationUrlIdGenerator;
 import de.codecentric.boot.admin.registry.StatusUpdater;
 import de.codecentric.boot.admin.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
+import de.codecentric.boot.admin.registry.web.RegistryController;
 import de.codecentric.boot.admin.web.PrefixHandlerMapping;
 import de.codecentric.boot.admin.web.servlet.resource.ConcatenatingResourceResolver;
 import de.codecentric.boot.admin.web.servlet.resource.PreferMinifiedFilteringResourceResolver;
