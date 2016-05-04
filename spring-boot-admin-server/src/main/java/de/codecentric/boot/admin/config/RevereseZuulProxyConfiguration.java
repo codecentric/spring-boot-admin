@@ -69,7 +69,7 @@ public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
 	@Bean
 	public PreDecorationFilter preDecorationFilter() {
 		return new PreDecorationFilter(routeLocator(), this.server.getServletPrefix(),
-				new ZuulProperties());
+				new ZuulProperties(), new ProxyRequestHelper());
 	}
 
 	@Bean
