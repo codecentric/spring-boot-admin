@@ -708,7 +708,7 @@ Also have a look at the <a href="http://projects.spring.io/spring-cloud/spring-c
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-You can include the Spring Boot Admin to your Eureka server. Add the dependencies, add <code>@EnableAdminServer</code> to your configuration and set <code>spring.boot.admin.context-path</code> to something different than <code>"/"</code> so that the Spring Boot Admin Server UI won&#8217;t clash with Eurekas one.
+You can include the Spring Boot Admin to your Eureka server. Add the dependencies, add <code>@EnableAdminServer</code> to your configuration and set <code>spring.boot.admin.context-path</code> to something different than <code>"/"</code> so that the Spring Boot Admin Server UI won&#8217;t clash with Eureka&#8217;s one.
 </td>
 </tr>
 </table>
@@ -750,7 +750,7 @@ You can include the Spring Boot Admin to your Eureka server. Add the dependencie
 <div class="sect2">
 <h3 id="loglevel-management"><a class="anchor" href="#loglevel-management"></a>3.3. Loglevel managment</h3>
 <div class="paragraph">
-<p>Currently the loglevel management is only available for <a href="http://logback.qos.ch/">Logback</a>. It is accessed via JMX so <a href="#jmx-bean-management">include Jolokia</a> in your application. In addition you have configure Logbacks <code>JMXConfigurator</code>:</p>
+<p>Currently the loglevel management is only available for <a href="http://logback.qos.ch/">Logback</a>. It is accessed via JMX so <a href="#jmx-bean-management">include Jolokia</a> in your application. In addition you have configure Logback&#8217;s <code>JMXConfigurator</code>:</p>
 </div>
 <div class="listingblock">
 <div class="title">logback.xml</div>
@@ -904,7 +904,7 @@ The setup is explained <a href="#discover-clients-via-spring-cloud-discovery">ab
 <div class="sect3">
 <h4 id="_usage_of_discovery_informations"><a class="anchor" href="#_usage_of_discovery_informations"></a>4.1.1. Usage of discovery informations</h4>
 <div class="paragraph">
-<p>The informations of the discovered services is converted by the <code>ServiceInstanceConverter</code>. Spring Boot Admin ships with a default and Eureka converter implementation. The correct one is selected by AutoConfiguration. You can use your own conversion by simply implementing the interface and adding the bean to your application context.</p>
+<p>The informations from the discovered services are converted by the <code>ServiceInstanceConverter</code>. Spring Boot Admin ships with a default and Eureka converter implementation. The correct one is selected by AutoConfiguration. You can use your own conversion by implementing the interface and adding the bean to your application context.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -957,12 +957,12 @@ When the default conversion kicks in, you can use the <code>spring.boot.admin.di
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.discovery.converter.management-context-path</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Will be appended to the service-url of the discovered service when the managment-url is converter by the <code>DefaultServiceInstanceConverter</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Will be appended to the service-url of the discovered service when the managment-url is converted by the <code>DefaultServiceInstanceConverter</code>.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.discovery.converter.health-endpoint</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Will be appended to the management-url of the discovered service when the health-url is converter by the <code>DefaultServiceInstanceConverter</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Will be appended to the management-url of the discovered service when the health-url is converted by the <code>DefaultServiceInstanceConverter</code>.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>"health"</code></p></td>
 </tr>
 </tbody>
