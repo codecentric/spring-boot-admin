@@ -135,7 +135,7 @@ eureka.instance.client.serviceUrl.defaultZone: http://localhost:8761/eureka/
 
 See also https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-discovery/[spring-boot-admin-sample-discovery].
 
-NOTE: You can include the Spring Boot Admin to your Eureka server. Add the dependencies, add `@EnableAdminServer` to your configuration and set `spring.boot.admin.context-path` to something different than `"/"` so that the Spring Boot Admin Server UI won't clash with Eurekas one.
+NOTE: You can include the Spring Boot Admin to your Eureka server. Add the dependencies, add `@EnableAdminServer` to your configuration and set `spring.boot.admin.context-path` to something different than `"/"` so that the Spring Boot Admin Server UI won't clash with Eureka's one.
 
 [[client-applications]]
 == Client applications ==
@@ -143,7 +143,7 @@ NOTE: You can include the Spring Boot Admin to your Eureka server. Add the depen
 [[show-version-in-application-list]]
 === Show version in application list ===
 
-To get the version show up in the admins application list you have to set `info.version`. For example using maven filtering during the build:
+To get the version show up in the admin's application list you have to set `info.version`. For example using maven filtering during the build:
 
 [source]
 .application.properties
@@ -167,7 +167,7 @@ To interact with JMX-beans in the admin UI you have to include https://jolokia.o
 
 [[loglevel-management]]
 === Loglevel managment ===
-Currently the loglevel management is only available for http://logback.qos.ch/[Logback]. It is accessed via JMX so <<jmx-bean-management, include Jolokia>> in your application. In addition you have configure Logbacks `JMXConfigurator`:
+Currently the loglevel management is only available for http://logback.qos.ch/[Logback]. It is accessed via JMX so <<jmx-bean-management, include Jolokia>> in your application. In addition you have configure Logback's `JMXConfigurator`:
 
 [source,xml]
 .logback.xml
@@ -247,7 +247,7 @@ spring.boot.admin.password
 | Property name |Description |Default value
 
 | spring.boot.admin.context-path
-| The context-path prefixes the path where the Admin Servers statics assets and API should be served. Relative to the Dispatcher-Servlet.
+| The context-path prefixes the path where the Admin Server's statics assets and API should be served. Relative to the Dispatcher-Servlet.
 |
 
 | spring.boot.admin.monitor.period
@@ -268,9 +268,9 @@ The setup is explained <<discover-clients-via-spring-cloud-discovery,above>>.
 
 ==== Usage of discovery informations ====
 
-The informations of the discovered services is converted by the `ServiceInstanceConverter`. Spring Boot Admin ships with a default and Eureka converter implementation. The corresponding one is selected by AutoConfiguration. You can use your own conversion by simply implementing the interface and adding the bean to your application context.
+The informations from the discovered services are converted by the `ServiceInstanceConverter`. Spring Boot Admin ships with a default and Eureka converter implementation. The correct one is selected by AutoConfiguration. You can use your own conversion by implementing the interface and adding the bean to your application context.
 
-TIP: When Eureka discovery is used, the `EurekaServiceInstanceConverter` will use the discovered instances homePageUrl and healthCheckUrl. In case the instances managment.context-path is different from the homePageUrl you should add an entry `management.context-path` to the instances metadata-map with the corresponding value.
+TIP: When *Eureka* discovery is active, the `EurekaServiceInstanceConverter` will use the discovered instances' `homePageUrl` and `healthCheckUrl`. In case the instances' `managment.context-path` is different from the `homePageUrl` you should add an entry `management.context-path` to the instances' `metadata`-map with the corresponding value.
 
 TIP: When the default conversion kicks in, you can use the `spring.boot.admin.discovery.converter.*` properties to control the conversion for all your instances.
 
@@ -287,17 +287,17 @@ TIP: When the default conversion kicks in, you can use the `spring.boot.admin.di
 |
 
 | spring.boot.admin.discovery.converter.management-context-path
-| Will be appended to the service-url of the discovered service when the managment-url is converter by the `DefaultServiceInstanceConverter`.
+| Will be appended to the service-url of the discovered service when the managment-url is converted by the `DefaultServiceInstanceConverter`.
 |
 
 | spring.boot.admin.discovery.converter.health-endpoint
-| Will be appended to the management-url of the discovered service when the health-url is converter by the `DefaultServiceInstanceConverter`.
+| Will be appended to the management-url of the discovered service when the health-url is converted by the `DefaultServiceInstanceConverter`.
 | `"health"`
 |===
 
 [[hazelcast-support]]
 === Hazelcast support ===
-Spring Boot Admin Server supports cluster replication with Hazelcast. It is automatically enabled when a `HazelcastConfig`- or `HazelcastInstance`-Bean is present. You can also confugure the Hazelcast instance to be persistent, to keep the status over restarts.
+Spring Boot Admin Server supports cluster replication with Hazelcast. It is automatically enabled when a `HazelcastConfig`- or `HazelcastInstance`-Bean is present. You can also configure the Hazelcast instance to be persistent, to keep the status over restarts.
 Also have a look at the http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-hazelcast/[Spring Boot support for Hazelcast].
 
 . Add Hazelcast to your dependencies:
