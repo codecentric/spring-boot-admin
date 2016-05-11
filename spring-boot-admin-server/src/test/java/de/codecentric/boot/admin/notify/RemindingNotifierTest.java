@@ -3,9 +3,7 @@ package de.codecentric.boot.admin.notify;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -72,16 +70,4 @@ public class RemindingNotifierTest {
 		assertThat(notifier.getEvents(), is(Arrays.asList(APP_DOWN)));
 	}
 
-	private static class TestNotifier implements Notifier {
-		private List<ClientApplicationEvent> events = new ArrayList<ClientApplicationEvent>();
-
-		@Override
-		public void notify(ClientApplicationEvent event) {
-			this.events.add(event);
-		}
-
-		public List<ClientApplicationEvent> getEvents() {
-			return events;
-		}
-	}
 }

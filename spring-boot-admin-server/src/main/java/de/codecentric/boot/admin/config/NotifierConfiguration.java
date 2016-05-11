@@ -40,6 +40,9 @@ import de.codecentric.boot.admin.notify.Notifier;
 import de.codecentric.boot.admin.notify.NotifierListener;
 import de.codecentric.boot.admin.notify.PagerdutyNotifier;
 import de.codecentric.boot.admin.notify.SlackNotifier;
+import de.codecentric.boot.admin.notify.filter.FilteringNotifier;
+import de.codecentric.boot.admin.notify.filter.web.NotificationFilterController;
+import de.codecentric.boot.admin.web.PrefixHandlerMapping;
 
 @Configuration
 public class NotifierConfiguration {
@@ -80,10 +83,33 @@ public class NotifierConfiguration {
 	}
 
 	@Configuration
+	@ConditionalOnSingleCandidate(FilteringNotifier.class)
+	public static class FilteringNotifierWebConfiguration {
+
+		@Autowired
+		private FilteringNotifier filteringNotifier;
+
+		@Autowired
+		private AdminServerProperties adminServerProperties;
+
+		@Bean
+		public NotificationFilterController notificationFilterController() {
+			return new NotificationFilterController(filteringNotifier);
+		}
+
+		@Bean
+		public PrefixHandlerMapping prefixHandlerMappingNotificationFilterController() {
+			PrefixHandlerMapping prefixHandlerMapping = new PrefixHandlerMapping(notificationFilterController());
+			prefixHandlerMapping.setPrefix(adminServerProperties.getContextPath());
+			return prefixHandlerMapping;
+		}
+	}
+
+	@Configuration
 	@ConditionalOnBean(MailSender.class)
 	@AutoConfigureAfter({ MailSenderAutoConfiguration.class })
 	@AutoConfigureBefore({ NotifierListenerConfiguration.class,
-			CompositeNotifierConfiguration.class })
+		CompositeNotifierConfiguration.class })
 	public static class MailNotifierConfiguration {
 		@Autowired
 		private MailSender mailSender;
@@ -100,7 +126,7 @@ public class NotifierConfiguration {
 	@Configuration
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.pagerduty", name = "service-key")
 	@AutoConfigureBefore({ NotifierListenerConfiguration.class,
-			CompositeNotifierConfiguration.class })
+		CompositeNotifierConfiguration.class })
 	public static class PagerdutyNotifierConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
@@ -114,7 +140,7 @@ public class NotifierConfiguration {
 	@Configuration
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.hipchat", name = "url")
 	@AutoConfigureBefore({ NotifierListenerConfiguration.class,
-			CompositeNotifierConfiguration.class })
+		CompositeNotifierConfiguration.class })
 	public static class HipchatNotifierConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
@@ -128,7 +154,7 @@ public class NotifierConfiguration {
 	@Configuration
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.slack", name = "webhook-url")
 	@AutoConfigureBefore({ NotifierListenerConfiguration.class,
-			CompositeNotifierConfiguration.class })
+		CompositeNotifierConfiguration.class })
 	public static class SlackNotifierConfiguration {
 		@Bean
 		@ConditionalOnMissingBean

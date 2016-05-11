@@ -15,51 +15,37 @@
  */
 package de.codecentric.boot.admin.journal.web;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.assertThat;
-
-import java.util.Collection;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Test;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import de.codecentric.boot.admin.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.journal.ApplicationEventJournal;
 import de.codecentric.boot.admin.journal.store.SimpleJournaledEventStore;
-import de.codecentric.boot.admin.journal.web.JournalController;
 import de.codecentric.boot.admin.model.Application;
 
 public class JournalControllerTest {
 
 	private ApplicationEventJournal journal = new ApplicationEventJournal(
 			new SimpleJournaledEventStore());
-	private JournalController controller = new JournalController(journal);
+	private MockMvc mvc = MockMvcBuilders.standaloneSetup(new JournalController(journal)).build();
 
 	@Test
-	public void test_getJournal() {
+	public void test_getJournal() throws Exception {
 		ClientApplicationEvent emittedEvent = new ClientApplicationRegisteredEvent(
 				Application.create("foo").withId("bar").withHealthUrl("http://health").build());
 		journal.onClientApplicationEvent(emittedEvent);
 
-		Collection<ClientApplicationEvent> history = controller.getJournal();
+		mvc.perform(get("/api/journal").accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$[0].type").value("REGISTRATION"));
 
-		assertThat(history.size(), is(1));
-
-		ClientApplicationEvent event = history.iterator().next();
-		assertThat(event, sameInstance(emittedEvent));
-	}
-
-	@Test
-	public void test_getJournal_sse() {
-		ClientApplicationEvent emittedEvent = new ClientApplicationRegisteredEvent(
-				Application.create("foo").withId("bar").withHealthUrl("http://health").build());
-
-		SseEmitter emitter = controller.getJournalEvents();
-		journal.onClientApplicationEvent(emittedEvent);
-
-		assertThat(emitter, notNullValue());
+		mvc.perform(get("/api/journal").accept(MediaType.parseMediaType("text/event-stream")))
+				.andExpect(status().isOk());
 	}
 }

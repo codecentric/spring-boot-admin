@@ -15,156 +15,91 @@
  */
 package de.codecentric.boot.admin.registry.web;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Collection;
+import java.io.UnsupportedEncodingException;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import de.codecentric.boot.admin.model.Application;
+import com.jayway.jsonpath.JsonPath;
+
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.registry.HashingApplicationUrlIdGenerator;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
-import de.codecentric.boot.admin.registry.web.RegistryController;
 
 public class RegistryControllerTest {
 
-	private RegistryController controller;
+	private static final String APPLICATION_TEST_JSON = "{ \"name\":\"test\", \"healthUrl\":\"http://localhost/mgmt/health\"}";
+	private static final String APPLICATION_TWICE_JSON = "{ \"name\":\"twice\", \"healthUrl\":\"http://localhost/mgmt/health\"}";
+	private MockMvc mvc;
 
 	@Before
 	public void setup() {
 		ApplicationRegistry registry = new ApplicationRegistry(new SimpleApplicationStore(),
 				new HashingApplicationUrlIdGenerator());
 		registry.setApplicationEventPublisher(Mockito.mock(ApplicationEventPublisher.class));
-		controller = new RegistryController(registry);
+		mvc = MockMvcBuilders.standaloneSetup(new RegistryController(registry)).build();
 	}
 
 	@Test
-	public void register() {
-		Application application = Application.create("test")
-				.withHealthUrl("http://localhost/mgmt/health")
-				.withManagementUrl("http://localhost/mgmt").withServiceUrl("http://localhost/")
-				.build();
+	public void test_register_twice_get_and_remove() throws Exception {
+		MvcResult result = mvc
+				.perform(post("/api/applications").contentType(MediaType.APPLICATION_JSON)
+						.content(APPLICATION_TEST_JSON))
+				.andExpect(status().isCreated()).andExpect(jsonPath("$.name").value("test"))
+				.andExpect(jsonPath("$.healthUrl").value("http://localhost/mgmt/health"))
+				.andExpect(jsonPath("$.id").isNotEmpty()).andReturn();
 
-		ResponseEntity<Application> response = controller.register(application);
+		String id = extractId(result);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-		assertEquals("http://localhost/mgmt/health", response.getBody().getHealthUrl());
-		assertEquals("http://localhost/mgmt", response.getBody().getManagementUrl());
-		assertEquals("http://localhost/", response.getBody().getServiceUrl());
-		assertEquals("test", response.getBody().getName());
+		mvc.perform(post("/api/applications").contentType(MediaType.APPLICATION_JSON)
+				.content(APPLICATION_TWICE_JSON)).andExpect(status().isCreated())
+				.andExpect(jsonPath("$.name").value("twice"))
+				.andExpect(jsonPath("$.healthUrl").value("http://localhost/mgmt/health"))
+				.andExpect(jsonPath("$.id").value(id));
+
+		mvc.perform(get("/api/applications")).andExpect(status().isOk())
+				.andExpect(jsonPath("$[0].id").value(id));
+
+		mvc.perform(get("/api/applications?name=twice")).andExpect(status().isOk())
+				.andExpect(jsonPath("$[0].id").value(id));
+
+		mvc.perform(get("/api/applications/{id}", id)).andExpect(status().isOk())
+				.andExpect(jsonPath("$.id").value(id));
+
+		mvc.perform(delete("/api/applications/{id}", id)).andExpect(status().isOk())
+				.andExpect(jsonPath("$.id").value(id));
+
+		mvc.perform(get("/api/applications/{id}", id)).andExpect(status().isNotFound());
+
+	}
+
+
+	private String extractId(MvcResult result) throws UnsupportedEncodingException {
+		return JsonPath.compile("$.id").read(result.getResponse().getContentAsString());
 	}
 
 	@Test
-	public void register_twice() {
-		Application application = Application.create("test")
-				.withHealthUrl("http://localhost/health").build();
-
-		controller.register(application);
-		ResponseEntity<Application> response = controller.register(application);
-
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-		assertEquals("http://localhost/health", response.getBody().getHealthUrl());
-		assertEquals("test", response.getBody().getName());
+	public void test_get_notFound() throws Exception {
+		mvc.perform(get("/api/applications/unknown")).andExpect(status().isNotFound());
+		mvc.perform(get("/api/applications?name=unknown")).andExpect(status().isOk())
+				.andExpect(jsonPath("$").isEmpty());
 	}
 
 	@Test
-	public void register_sameUrl() {
-		Application application = Application.create("FOO")
-				.withHealthUrl("http://localhost/mgmt/health").build();
-		controller.register(application);
-
-		ResponseEntity<?> response = controller.register(Application.create("BAR")
-				.withHealthUrl("http://localhost/mgmt/health").build());
-
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+	public void test_delete_notFound() throws Exception {
+		mvc.perform(delete("/api/applications/unknown")).andExpect(status().isNotFound());
 	}
 
-	@Test
-	public void get() {
-		Application application = Application.create("FOO")
-				.withHealthUrl("http://localhost/health").build();
-
-		application = controller.register(application).getBody();
-
-		ResponseEntity<?> response = controller.get(application.getId());
-		Application body = (Application) response.getBody();
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertEquals("http://localhost/health", body.getHealthUrl());
-		assertEquals("FOO", body.getName());
-	}
-
-	@Test
-	public void get_notFound() {
-		Application application = Application.create("FOO")
-				.withHealthUrl("http://localhost/mgmt/health").build();
-		controller.register(application);
-
-		ResponseEntity<?> response = controller.get("unknown");
-		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-	}
-
-	@Test
-	public void unregister() {
-		Application application = Application.create("FOO")
-				.withHealthUrl("http://localhost/mgmt/health").build();
-
-		application = controller.register(application).getBody();
-
-		ResponseEntity<?> response = controller.unregister(application.getId());
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertEquals(application, response.getBody());
-
-		assertEquals(HttpStatus.NOT_FOUND, controller.get(application.getId()).getStatusCode());
-	}
-
-	@Test
-	public void unregister_notFound() {
-		Application application = Application.create("FOO")
-				.withHealthUrl("http://localhost/mgmt/health").build();
-
-		controller.register(application);
-
-		ResponseEntity<?> response = controller.unregister("unknown");
-		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-	}
-
-	@Test
-	public void applications() {
-		Application app = controller.register(
-				Application.create("FOO").withHealthUrl("http://localhost/mgmt/health").build())
-				.getBody();
-
-		Collection<Application> applications = controller.applications(null);
-		assertEquals(1, applications.size());
-		assertTrue(applications.contains(app));
-	}
-
-	@Test
-	public void applicationsByName() {
-		Application application = Application.create("FOO")
-				.withHealthUrl("http://localhost1/mgmt/health").build();
-		application = controller.register(application).getBody();
-
-		Application application2 = Application.create("FOO")
-				.withHealthUrl("http://localhost2/mgmt/health").build();
-		application2 = controller.register(application2).getBody();
-
-		Application application3 = Application.create("BAR")
-				.withHealthUrl("http://localhost3/mgmt/health").build();
-		application3 = controller.register(application3).getBody();
-
-		Collection<Application> applications = controller.applications("FOO");
-		assertEquals(2, applications.size());
-		assertTrue(applications.contains(application));
-		assertTrue(applications.contains(application2));
-		assertFalse(applications.contains(application3));
-	}
 }

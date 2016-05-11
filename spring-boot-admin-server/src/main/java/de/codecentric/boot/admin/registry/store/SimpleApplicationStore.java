@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import de.codecentric.boot.admin.model.Application;
 
@@ -27,7 +28,7 @@ import de.codecentric.boot.admin.model.Application;
  */
 public class SimpleApplicationStore implements ApplicationStore {
 
-	private final ConcurrentHashMap<String, Application> map = new ConcurrentHashMap<>();
+	private final ConcurrentMap<String, Application> map = new ConcurrentHashMap<>();
 
 	@Override
 	public Application save(Application app) {

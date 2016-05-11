@@ -25,6 +25,7 @@ module.controller('applicationsHeaderCtrl', require('./controllers/applicationsH
 
 module.service('Application', require('./services/application.js'));
 module.service('Notification', require('./services/notification.js'));
+module.service('NotificationFilters', require('./services/notificationFilters.js'));
 module.service('ApplicationViews', require('./services/applicationViews.js'));
 
 module.filter('yaml', require('./filters/yaml.js'));
@@ -33,6 +34,7 @@ module.filter('limitLines', require('./filters/limitLines.js'));
 module.component('sbaInfoPanel', require('./components/infoPanel.js'));
 module.component('sbaAccordion', require('./components/accordion.js'));
 module.component('sbaAccordionGroup', require('./components/accordionGroup.js'));
+module.component('sbaNotificationFilter', require('./components/notificationFilter.js'));
 
 module.config(function ($stateProvider) {
   $stateProvider.state('applications-list', {

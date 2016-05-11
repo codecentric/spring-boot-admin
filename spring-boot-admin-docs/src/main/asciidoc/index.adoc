@@ -543,7 +543,7 @@ public class ReminderConfiguration {
         return remindingNotifier;
     }
 
-    @Scheduled(fixedRate = 6000L) // <2>
+    @Scheduled(fixedRate = 60_000L) // <2>
     public void remind() {
         remindingNotifier().sendReminders();
     }
