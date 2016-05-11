@@ -723,7 +723,7 @@ You can include the Spring Boot Admin to your Eureka server. Add the dependencie
 <div class="sect2">
 <h3 id="show-version-in-application-list"><a class="anchor" href="#show-version-in-application-list"></a>3.1. Show version in application list</h3>
 <div class="paragraph">
-<p>To get the version show up in the admins application list you have to set <code>info.version</code>. For example using maven filtering during the build:</p>
+<p>To get the version show up in the admin&#8217;s application list you have to set <code>info.version</code>. For example using maven filtering during the build:</p>
 </div>
 <div class="listingblock">
 <div class="title">application.properties</div>
@@ -880,7 +880,7 @@ spring.boot.admin.password</p></td>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.context-path</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The context-path prefixes the path where the Admin Servers statics assets and API should be served. Relative to the Dispatcher-Servlet.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The context-path prefixes the path where the Admin Server&#8217;s statics assets and API should be served. Relative to the Dispatcher-Servlet.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
@@ -904,7 +904,7 @@ The setup is explained <a href="#discover-clients-via-spring-cloud-discovery">ab
 <div class="sect3">
 <h4 id="_usage_of_discovery_informations"><a class="anchor" href="#_usage_of_discovery_informations"></a>4.1.1. Usage of discovery informations</h4>
 <div class="paragraph">
-<p>The informations of the discovered services is converted by the <code>ServiceInstanceConverter</code>. Spring Boot Admin ships with a default and Eureka converter implementation. The corresponding one is selected by AutoConfiguration. You can use your own conversion by simply implementing the interface and adding the bean to your application context.</p>
+<p>The informations of the discovered services is converted by the <code>ServiceInstanceConverter</code>. Spring Boot Admin ships with a default and Eureka converter implementation. The correct one is selected by AutoConfiguration. You can use your own conversion by simply implementing the interface and adding the bean to your application context.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -913,7 +913,7 @@ The setup is explained <a href="#discover-clients-via-spring-cloud-discovery">ab
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-When Eureka discovery is used, the <code>EurekaServiceInstanceConverter</code> will use the discovered instances homePageUrl and healthCheckUrl. In case the instances managment.context-path is different from the homePageUrl you should add an entry <code>management.context-path</code> to the instances metadata-map with the corresponding value.
+When <strong>Eureka</strong> discovery is active, the <code>EurekaServiceInstanceConverter</code> will use the discovered instances' <code>homePageUrl</code> and <code>healthCheckUrl</code>. In case the instances' <code>managment.context-path</code> is different from the <code>homePageUrl</code> you should add an entry <code>management.context-path</code> to the instances' <code>metadata</code>-map with the corresponding value.
 </td>
 </tr>
 </table>
@@ -972,7 +972,7 @@ When the default conversion kicks in, you can use the <code>spring.boot.admin.di
 <div class="sect2">
 <h3 id="hazelcast-support"><a class="anchor" href="#hazelcast-support"></a>4.2. Hazelcast support</h3>
 <div class="paragraph">
-<p>Spring Boot Admin Server supports cluster replication with Hazelcast. It is automatically enabled when a <code>HazelcastConfig</code>- or <code>HazelcastInstance</code>-Bean is present. You can also confugure the Hazelcast instance to be persistent, to keep the status over restarts.
+<p>Spring Boot Admin Server supports cluster replication with Hazelcast. It is automatically enabled when a <code>HazelcastConfig</code>- or <code>HazelcastInstance</code>-Bean is present. You can also configure the Hazelcast instance to be persistent, to keep the status over restarts.
 Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-hazelcast/">Spring Boot support for Hazelcast</a>.</p>
 </div>
 <div class="olist arabic">
