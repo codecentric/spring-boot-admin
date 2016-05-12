@@ -20,12 +20,10 @@ import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.cloud.netflix.zuul.RoutesEndpoint;
 import org.springframework.cloud.netflix.zuul.ZuulConfiguration;
 import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
 import org.springframework.cloud.netflix.zuul.filters.RouteLocator;
-import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.cloud.netflix.zuul.filters.pre.PreDecorationFilter;
 import org.springframework.cloud.netflix.zuul.filters.route.SimpleHostRoutingFilter;
 import org.springframework.cloud.netflix.zuul.web.ZuulHandlerMapping;
@@ -47,9 +45,6 @@ public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
 	private TraceRepository traces;
 
 	@Autowired
-	private ServerProperties server;
-
-	@Autowired
 	private ApplicationRegistry registry;
 
 	@Autowired
@@ -65,20 +60,27 @@ public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
 				adminServer.getContextPath() + "/api/applications/");
 	}
 
-	// pre filters
 	@Bean
-	public PreDecorationFilter preDecorationFilter() {
-		return new PreDecorationFilter(routeLocator(), this.server.getServletPrefix(),
-				new ZuulProperties(), new ProxyRequestHelper());
-	}
-
-	@Bean
-	public SimpleHostRoutingFilter simpleHostRoutingFilter() {
+	public ProxyRequestHelper proxyRequestHelper() {
 		ProxyRequestHelper helper = new ProxyRequestHelper();
 		if (this.traces != null) {
 			helper.setTraces(this.traces);
 		}
-		return new SimpleHostRoutingFilter(helper, new ZuulProperties());
+		helper.setIgnoredHeaders(this.zuulProperties.getIgnoredHeaders());
+		helper.setTraceRequestBody(this.zuulProperties.isTraceRequestBody());
+		return helper;
+	}
+
+	// pre filters
+	@Bean
+	public PreDecorationFilter preDecorationFilter() {
+		return new PreDecorationFilter(routeLocator(), this.server.getServletPrefix(),
+				zuulProperties, proxyRequestHelper());
+	}
+
+	@Bean
+	public SimpleHostRoutingFilter simpleHostRoutingFilter() {
+		return new SimpleHostRoutingFilter(proxyRequestHelper(), zuulProperties);
 	}
 
 	@Bean
