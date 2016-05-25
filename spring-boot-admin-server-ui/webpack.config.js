@@ -4,6 +4,7 @@ var Webpack = require('webpack'),
   NgAnnotatePlugin = require('ng-annotate-webpack-plugin'),
   CopyWebpackPlugin = require('copy-webpack-plugin'),
   CleanWebpackPlugin = require('clean-webpack-plugin'),
+  ExtractTextPlugin = require('extract-text-webpack-plugin'),
   path = require('path'),
   glob = require('glob');
 
@@ -15,15 +16,15 @@ var allModules = glob.sync(ROOT + '/modules/*/module.js').map(function (file) {
   var name = /modules\/([^\/]+)\/module\.js/.exec(file)[1];
   return {
     name: name,
-    bundle: name + '/module.js',
-    entry: file,
-    outputPath: path.resolve('./', name)
+    bundle: name + '/module',
+    entry: './' + path.relative(ROOT, file),
+    outputPath: name + '/'
   };
 });
 
 var getEntries = function (modules) {
   var entries = {
-    'core.js': './core/core.js',
+    'core': './core/core.js',
     'dependencies.js': ['es5-shim/es5-shim', 'es5-shim/es5-sham', 'jquery', 'bootstrap', 'angular', 'angular-resource', 'angular-ui-router']
   };
   modules.forEach(function (module) {
@@ -31,22 +32,6 @@ var getEntries = function (modules) {
   });
   return entries;
 };
-
-var getStaticAssets = function (modules) {
-  var assets = [{
-    from: './core'
-    }, {
-    from: './dependencies'
-    }];
-  modules.forEach(function (module) {
-    assets.push({
-      from: path.dirname(module.entry),
-      to: module.outputPath
-    });
-  });
-  return assets;
-};
-
 
 var ConcatSource = require('webpack-sources').ConcatSource;
 var ModuleConcatPlugin = function (files) {
@@ -76,11 +61,13 @@ module.exports = {
   entry: getEntries(allModules),
   output: {
     path: DIST,
-    filename: '[name]'
+    filename: '[name].js'
   },
   resolve: {
     alias: {
-      bootstrap: path.resolve(ROOT, 'dependencies/third-party/bootstrap/bootstrap.js'),
+      bootstrap: path.resolve(ROOT, 'third-party/bootstrap/js/bootstrap.js'),
+      'bootstrap.css': path.resolve(ROOT, 'third-party/bootstrap/css/bootstrap.css'),
+      'bootstrap-responsive.css': path.resolve(ROOT, 'third-party/bootstrap/css/bootstrap-responsive.css'),
       jolokia: path.resolve(ROOT, 'modules/applications-jmx/third-party/jolokia.js')
     }
   },
@@ -95,37 +82,62 @@ module.exports = {
       exclude: [/node_modules/, /third-party/],
       loader: 'ng-annotate'
         }, {
-      test: /\.html$/,
+      test: /\.tpl\.html$/,
       loader: 'raw'
-        }]
+        }, {
+      test: /\.css(\?.*)?$/,
+      loader: ExtractTextPlugin.extract('style', 'css?-minimize')
+      }, {
+      test: /\.(jpg|png|gif|eot|svg|ttf|woff(2)?)(\?.*)?$/,
+      include: /\/(third-party|node_modules)\//,
+      loader: 'file',
+      query: {
+        name: 'third-party/[2]',
+        regExp: '(third-party|node_modules)/(.+)'
+      }
+      }, {
+      test: /\.(jpg|png|gif)$/,
+      include: /\/(core|modules)\//,
+      loader: 'file',
+      query: {
+        name: '[2]',
+        regExp: '(core|modules)/(.+)$'
+      }
+      }]
   },
   plugins: [
-        new Webpack.ProvidePlugin({
+    new CleanWebpackPlugin([DIST]),
+    new ExtractTextPlugin('[name].css'),
+    new Webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
       'window.jQuery': 'jquery'
     }),
-        new NgAnnotatePlugin({
+    new NgAnnotatePlugin({
       add: true
     }),
-        new Webpack.optimize.CommonsChunkPlugin({
+    new Webpack.optimize.CommonsChunkPlugin({
       name: 'dependencies.js',
       filename: 'dependencies.js'
     }),
-        new CopyWebpackPlugin(getStaticAssets(allModules), {
-      ignore: ['*.js', '*.tpl.html']
-    }),
-        new CleanWebpackPlugin([DIST])
-    ].concat(!isDevServer ? [] : new ModuleConcatPlugin([
-    {
+    new CopyWebpackPlugin([{
+      from: '**/*.html',
+      context: 'core/'
+      }, {
+      from: '**/*.html',
+      context: 'modules/'
+      }], {
+      ignore: ['*.tpl.html']
+    })
+    ].concat(!isDevServer ? [] : new ModuleConcatPlugin([{
       filename: 'all-modules.js',
       test: /module\.js/,
       delimiter: ';\n'
-        }, {
-      filename: 'css/all-modules.css',
-      test: /css\/module\.css/,
+    }, {
+      filename: 'all-modules.css',
+      test: /module\.css/,
       delimiter: '\n'
-        }
+      }
     ])),
   devServer: {
     proxy: {

@@ -33,10 +33,10 @@ module.config(function ($stateProvider) {
   });
 });
 
-module.run(function (ApplicationViews) {
+module.run(function (ApplicationViews, $sce) {
   ApplicationViews.register({
     order: 5,
-    title: 'Metrics',
+    title: $sce.trustAsHtml('<i class="fa fa-bar-chart fa-fw"></i>Metrics'),
     state: 'applications.metrics',
     show: function (application) {
       return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';

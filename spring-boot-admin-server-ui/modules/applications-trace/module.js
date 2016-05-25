@@ -24,6 +24,8 @@ module.controller('traceCtrl', require('./controllers/traceCtrl.js'));
 
 module.component('sbaTrace', require('./components/trace.js'));
 
+require('./css/module.css');
+
 module.config(function ($stateProvider) {
   $stateProvider.state('applications.trace', {
     url: '/trace',
@@ -32,10 +34,10 @@ module.config(function ($stateProvider) {
   });
 });
 
-module.run(function (ApplicationViews) {
+module.run(function (ApplicationViews, $sce) {
   ApplicationViews.register({
     order: 60,
-    title: 'Trace',
+    title: $sce.trustAsHtml('<i class="fa fa-eye fa-fw"></i>Trace'),
     state: 'applications.trace',
     show: function (application) {
       return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';

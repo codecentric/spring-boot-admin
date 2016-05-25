@@ -35,6 +35,8 @@ module.component('sbaServletContainerStats', require('./components/servletContai
 module.component('sbaDatasourceStats', require('./components/datasourceStats.js'));
 module.component('sbaCacheStats', require('./components/cacheStats.js'));
 
+require('./css/module.css');
+
 module.config(function ($stateProvider) {
   $stateProvider.state('applications.details', {
     url: '/details',
@@ -43,10 +45,10 @@ module.config(function ($stateProvider) {
   });
 });
 
-module.run(function (ApplicationViews) {
+module.run(function (ApplicationViews, $sce) {
   ApplicationViews.register({
     order: 0,
-    title: 'Details',
+    title: $sce.trustAsHtml('<i class="fa fa-info fa-fw"></i>Details'),
     state: 'applications.details',
     show: function (application) {
       return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';

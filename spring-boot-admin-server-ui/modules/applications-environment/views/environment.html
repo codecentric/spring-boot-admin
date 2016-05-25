@@ -16,7 +16,7 @@
 
 <div class="input-append">
   <input placeholder="Filter" class="input-xxlarge" type="search" ng-model="searchFilter" />
-  <button class="btn" title="reload list" ng-click="refresh()"><i class="icon-refresh"></i></button>
+  <button class="btn" title="reload list" ng-click="refresh()"><i class="fa fa-repeat"></i></button>
 </div>
 
 <sba-info-panel category="PropertySource" title="{{source.name}}" ng-repeat="source in env" ng-show="!searchFilter || (source.value | filter:searchFilter).length > 0">

@@ -9,10 +9,8 @@
   <meta name="viewport" content="width=device-width">
   <link rel="shortcut icon" type="image/x-icon" href="img/favicon.png" />
   <link href="https://fonts.googleapis.com/css?family=Varela+Round|Montserrat:400,700" rel="stylesheet" type="text/css">
-  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
-  <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css" />
-  <link rel="stylesheet" type="text/css" href="css/core.css" />
-  <link rel="stylesheet" type="text/css" href="css/all-modules.css" />
+  <link rel="stylesheet" type="text/css" href="core.css" />
+  <link rel="stylesheet" type="text/css" href="all-modules.css" />
 </head>
 
 <body>
@@ -24,9 +22,10 @@
 
   </script>
 
-  <header class="navbar navbar-fixed-top header--navbar desktop-only">
+  <header class="navbar header--navbar desktop-only">
     <div class="navbar-inner">
       <div class="container-fluid">
+
         <div class="spring-logo--container">
           <a class="spring-logo" href="#"><span></span></a>
         </div>
@@ -38,6 +37,7 @@
             <a ui-sref="{{view.state}}" ng-bind="view.title"></a>
           </li>
         </ul>
+
       </div>
     </div>
   </header>

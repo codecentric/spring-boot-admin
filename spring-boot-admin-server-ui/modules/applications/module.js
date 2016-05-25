@@ -36,6 +36,8 @@ module.component('sbaAccordion', require('./components/accordion.js'));
 module.component('sbaAccordionGroup', require('./components/accordionGroup.js'));
 module.component('sbaNotificationFilter', require('./components/notificationFilter.js'));
 
+require('./css/module.css');
+
 module.config(function ($stateProvider) {
   $stateProvider.state('applications-list', {
     url: '/',
@@ -112,7 +114,7 @@ module.run(function ($rootScope, $state, $filter, Notification, Application, Mai
     var options = {
       tag: event.application.id,
       body: 'Instance ' + event.application.id + '\n' + event.application.healthUrl,
-      icon: 'applications/img/unknown.png',
+      icon: require('./img/unknown.png'),
       timeout: 10000,
       url: $state.href('apps.details', {
         id: event.application.id
@@ -145,7 +147,7 @@ module.run(function ($rootScope, $state, $filter, Notification, Application, Mai
 
       title += ' instance is ' + event.to.status;
       options.tag = event.application.id + '-STATUS';
-      options.icon = event.to.status !== 'UP' ? 'applications/img/error.png' : 'applications/img/ok.png';
+      options.icon = event.to.status !== 'UP' ? require('./img/error.png') : require('./img/ok.png');
       options.body = event.from.status + ' --> ' + event.to.status + '\n' + options.body;
     }
 

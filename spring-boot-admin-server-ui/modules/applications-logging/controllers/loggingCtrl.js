@@ -27,6 +27,10 @@ module.exports = function ($scope, application, ApplicationLogging) {
     return !logger.packageLogger || $scope.showPackageLoggers;
   };
 
+  $scope.togglePackageLoggers = function () {
+    $scope.showPackageLoggers = !$scope.showPackageLoggers;
+  };
+
   ApplicationLogging.getLoggingConfigurator(application).then(
     function (logging) {
       $scope.refreshLoggers = function (changedLogger) {

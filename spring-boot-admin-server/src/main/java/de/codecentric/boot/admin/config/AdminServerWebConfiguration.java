@@ -117,10 +117,10 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 				.resourceChain(true)
 				.addResolver(new PreferMinifiedFilteringResourceResolver(".min"));
 
-		registry.addResourceHandler(adminServerProperties().getContextPath() + "/css/all-modules.css")
+		registry.addResourceHandler(adminServerProperties().getContextPath() + "/all-modules.css")
 				.resourceChain(true)
 				.addResolver(new ResourcePatternResolvingResourceResolver(resourcePatternResolver,
-						"classpath*:/META-INF/spring-boot-admin-server-ui/*/css/module.css"))
+						"classpath*:/META-INF/spring-boot-admin-server-ui/*/module.css"))
 				.addResolver(new ConcatenatingResourceResolver("\n".getBytes()));
 
 		registry.addResourceHandler(adminServerProperties().getContextPath() + "/all-modules.js")

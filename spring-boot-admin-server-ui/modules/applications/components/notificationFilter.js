@@ -32,8 +32,8 @@ module.exports = {
     };
 
     ctrl.getCssClass = function () {
-      return notificationActive() ? 'notifiy-active' : 'notify-filtered';
+      return notificationActive() ? 'fa-bell muted' : 'fa-bell-slash  ';
     };
   },
-  template: '<span class="{{$ctrl.getCssClass()}}"></span>'
+  template: '<i class="fa {{$ctrl.getCssClass()}}"></i>'
 };

@@ -33,10 +33,10 @@ module.config(function ($stateProvider) {
   });
 });
 
-module.run(function (ApplicationViews) {
+module.run(function (ApplicationViews, $sce) {
   ApplicationViews.register({
     order: 50,
-    title: 'Threads',
+    title: $sce.trustAsHtml('<i class="fa fa-list fa-fw"></i>Threads'),
     state: 'applications.threads',
     show: function (application) {
       return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';

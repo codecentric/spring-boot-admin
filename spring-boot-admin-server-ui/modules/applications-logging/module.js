@@ -33,10 +33,10 @@ module.config(function ($stateProvider) {
   });
 });
 
-module.run(function (ApplicationViews) {
+module.run(function (ApplicationViews, $sce) {
   ApplicationViews.register({
     order: 30,
-    title: 'Logging',
+    title: $sce.trustAsHtml('<i class="fa fa-sliders fa-fw"></i>Logging'),
     state: 'applications.logging',
     show: function (application) {
       return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';

@@ -8,6 +8,7 @@
     <col/>
     <col/>
     <col/>
+    <col/>
     <col style="width: 250px;" />
     <thead>
       <tr>
@@ -16,7 +17,7 @@
         </th>
         <th><span class="sortable" ng-class="orderByCssClass('info.version')" ng-click="orderBy('info.version')">Version</span></th>
         <th>Info</th>
-        <th colspan="2">Status</th>
+        <th colspan="3">Status</th>
       </tr>
     </thead>
     <tbody>
@@ -27,25 +28,30 @@
         <td><span style="white-space: pre" ng-init="collapsed = true">{{application.infoShort}}</span>
           <a class="btn btn-mini" ng-show="application.infoDetails" ng-click="collapsed = !collapsed">...</a>
           <br/>
-          <span style="white-space: pre" ng-hide="collapsed">{{application.infoDetails}}</span></td>
+          <span style="white-space: pre" ng-hide="collapsed">{{application.infoDetails}}</span>
+        </td>
         <td><span class="status-{{application.statusInfo.status}}" title="{{application.statusInfo.timestamp  | date:'dd.MM.yyyy HH:mm:ss' }}">{{ application.statusInfo.status }}</span>
-          <span ng-show="application.refreshing" class="refresh"></span>
+          <span ng-show="application.refreshing"><i class="fa fa-spinner fa-pulse fa-lg"></i></span>
+        </td>
+        <td>
           <sba-notification-filter application="application" filters="notificationFilters"></sba-notification-filter>
         </td>
         <td>
           <div class="pull-right">
             <div class="btn-group">
-              <a ng-if="application.capabilities.logfile && application.managementUrl && application.statusInfo.status != null && application.statusInfo.status != 'OFFLINE'" target="_blank" class="btn btn-success" ng-href="{{application.capabilities.logfile ? 'api/applications/' + application.id + '/logfile' :''}}"><i class="icon-file icon-white"></i>Log</a>
-              <a ng-if="views.length > 0" ng-href="{{views[0].href}}" class="btn btn-success">{{views[0].title}}</a>
+              <a ng-if="application.capabilities.logfile && application.managementUrl && application.statusInfo.status != null && application.statusInfo.status != 'OFFLINE'" target="_blank" class="btn btn-success" ng-href="{{application.capabilities.logfile ? 'api/applications/' + application.id + '/logfile' :''}}"><i class="fa fa-file-text-o"></i> Log</a>
+              <a ng-if="views.length > 0" ng-href="{{views[0].href}}" class="btn btn-success" ng-bind-html="views[0].title">/a>
               <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" ng-if="views.length > 1">
-                <span class="caret"></span>
+                <i class="fa fa-caret-down"></i>
               </a>
               <ul class="dropdown-menu">
-                <li ng-repeat="view in views.slice(1)"><a ng-href="{{view.href}}">{{view.title}}</a></li>
+                <li ng-repeat="view in views.slice(1)">
+                  <a ng-href="{{view.href}}" ng-bind-html="view.title"></a>
+                </li>
               </ul>
             </div>
             <div class="btn-group" title="remove">
-              <a class="btn btn-danger" ng-click="remove(application)"><i class="icon-remove icon-white"></i></a>
+              <a class="btn btn-danger" ng-click="remove(application)"><i class="fa fa-times"></i></a>
             </div>
           </div>
         </td>

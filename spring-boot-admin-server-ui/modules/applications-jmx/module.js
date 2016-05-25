@@ -40,10 +40,10 @@ module.config(function ($stateProvider) {
   });
 });
 
-module.run(function (ApplicationViews) {
+module.run(function (ApplicationViews, $sce) {
   ApplicationViews.register({
     order: 40,
-    title: 'JMX',
+    title: $sce.trustAsHtml('<i class="fa fa-cogs fa-fw"></i>JMX'),
     state: 'applications.jmx',
     show: function (application) {
       return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';

@@ -25,4 +25,6 @@ module.exports = function ($scope, application) {
       $scope.error = response.data;
     });
   };
+
+  $scope.dumpThreads();
 };

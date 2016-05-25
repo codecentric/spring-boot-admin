@@ -16,9 +16,9 @@
 <div ng-show="loggers">
   <form>
     <div class="input-prepend input-append">
-      <button class="btn" title="Show package-level loggers" ng-class="{'btn-inverse': showPackageLoggers}" ng-model="showPackageLoggers" btn-checkbox><i class="icon-folder-open" ng-class="{'icon-white': showPackageLoggers}"></i></button>
+      <button class="btn" title="Show package-level loggers" ng-class="{'btn-inverse': showPackageLoggers}" ng-click="togglePackageLoggers()"><i class="fa fa-folder-o"></i></button>
       <input placeholder="Filter by name ..." class="input-xxlarge" type="search" ng-model="filterLogger.name" />
-      <button class="btn" title="reload list" ng-click="refreshLoggers()"><i class="icon-refresh"></i></button>
+      <button class="btn" title="reload list" ng-click="refreshLoggers()"><i class="fa fa-repeat"></i></button>
       <span title="filtered / total" class="add-on">{{ filteredLoggers.length }}/{{ loggers.length }}</span>
     </div>
   </form>

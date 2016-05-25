@@ -17,7 +17,17 @@
 
 require('es5-shim/es5-shim');
 require('es5-shim/es5-sham');
+
 require('bootstrap');
+require('bootstrap-responsive.css');
+require('bootstrap.css');
+
+require('font-awesome/css/font-awesome.css');
+require('./css/core.css');
+
+
+
+
 var angular = require('angular');
 var module = angular.module('sba-core', [require('angular-ui-router')]);
 global.sbaModules.push(module.name);

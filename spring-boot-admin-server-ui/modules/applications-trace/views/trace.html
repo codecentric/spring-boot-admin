@@ -2,10 +2,10 @@
   <b>Error:</b> {{ error }}
 </div>
 <div class="form-inline">
-  <button title="refresh" class="btn" ng-click="refresh()"><i class="icon-refresh"></i></button>
+  <button title="refresh" class="btn" ng-click="refresh()"><i class="fa fa-repeat"></i></button>
   <div class="input-prepend input-append">
     <button title="auto refresh" class="btn" ng-click="toggleAutoRefresh()" ng-class="{'active':refresher != null}">
-      <i ng-class="{'icon-play':refresher == null, 'icon-pause':refresher != null}"></i>
+      <i class="fa fa-refresh" ng-class="{'fa-spin':refresher != null}"></i>
     </button>
     <input class="input-mini" type="number" min="1" ng-model="refreshInterval" ng-disabled="refresher != null" />
     <span class="add-on">sec</span>

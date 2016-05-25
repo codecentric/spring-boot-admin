@@ -1,46 +1,70 @@
-.sidebar-nav {
-  font-family: "Montserrat", sans-serif;
+.header--application {
+  margin-bottom: 40px;
   font-size: 15px;
 }
-.sidebar-nav .info-panel-title {
-  text-align: center;
+.header--application .navbar-inner {
+  background-color: #666;
+  background-image: none;
+  border-radius: 0;
+  filter: none;
+  border: none;
+  border-bottom: 1px solid #34302D;
+  box-shadow: none;
 }
-.sidebar-nav h1 {
-  padding-top: 15px;
+.header--application .nav > li > a {
+  color: #888;
+}
+.header--application .nav-tabs {
+  border: 0;
+}
+.header--application .nav-tabs > li > a {
+  border: 0;
+  padding: 9px 13px 8px 13px;
+  border-bottom: 1px solid #34302D;
+}
+.header--application .nav-tabs > li > a:hover,
+.header--application .nav-tabs > li > a:focus {
+  background-color: #666;
+  color: #ebf1e7;
+}
+.header--application .nav-tabs > .active > a,
+.header--application .nav-tabs > .active > a:hover,
+.header--application .nav-tabs > .active > a:focus {
+  color: #333333;
+  background-color: #f1f1f1;
+  border-bottom: 1px solid #f1f1f1;
+  border-left: 1px solid #34302D;
+  border-right: 1px solid #34302D;
+  border-top: 4px solid #6db33f;
+  padding: 5px 12px 8px 12px;
+}
+.header--application .application--status {
+  color: #ebf1e7;
   font-size: 24px;
   line-height: 24px;
+  margin: 20px;
 }
-.sidebar-nav ul {
-  border-top: 1px solid #34302D;
-  padding: 8px 15px;
+.header--application .application--title {
+  color: #ebf1e7;
+  font-size: 24px;
+  line-height: 24px;
+  margin: 20px 20px 20px 0;
 }
-.sidebar-nav .nav-list > li a {
-  text-transform: uppercase;
-  font-size: 14px;
-  line-height: 14px;
-  padding: 16px 25px;
-  transition: all 0.15s;
-  -webkit-transition: all 0.15s;
-  -moz-transition: all 0.15s;
-  -o-transition: all 0.15s;
-  -ms-transition: all 0.15s;
-}
-.sidebar-nav .nav-list li:hover > a,
-.sidebar-nav .nav-list > .active > a {
-  background-color: #6db33f;
-  box-shadow: none;
-  text-shadow: none;
-  color: #fff;
-}
-ul.application-urls {
+.application--urls {
   list-style: none;
-  margin: 0;
+  text-align: right;
+  font-size: 14px;
+  color: #888;
+  margin-top: 20px;
+  height: 0px;
 }
-.application-urls li {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  padding: 8px 0;
+.application--urls > li >a {
+  color: #888;
+}
+.application--urls > li > a:hover,
+.application--urls > li > a:focus {
+  color: #ebf1e7;
+  text-decoration: none;
 }
 
 /* ---------- */
@@ -77,13 +101,6 @@ ul.application-urls {
 .status-UNKNOWN {
   font-weight: bold;
   color: #FF8800;
-}
-.refresh {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  background: url("../applications/img/refresh.gif") no-repeat;
-  margin-left: 8px;
 }
 
 /* ---------- */
