@@ -77,11 +77,11 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
 		this.username = username;
 	}
 
-	public void setMessage(Expression message) {
-		this.message = message;
+	public void setMessage(String message) {
+		this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
-	private Object createMessage(ClientApplicationStatusChangedEvent event) {
+	protected Object createMessage(ClientApplicationStatusChangedEvent event) {
 		Map<String, Object> messageJson = new HashMap<>();
 		messageJson.put("username", username);
 		if (icon != null) {
