@@ -14,9 +14,6 @@ import javax.annotation.Nullable;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ParserContext;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
@@ -93,9 +90,7 @@ public class SlackNotifierTest {
 		StatusInfo infoDown = StatusInfo.ofDown();
 		StatusInfo infoUp = StatusInfo.ofUp();
 
-		Expression expression = new SpelExpressionParser().parseExpression(message,
-				ParserContext.TEMPLATE_EXPRESSION);
-		notifier.setMessage(expression);
+		notifier.setMessage(message);
 		notifier.setChannel(channel);
 		notifier.setIcon(icon);
 		notifier.notify(getEvent(infoDown, infoUp));
