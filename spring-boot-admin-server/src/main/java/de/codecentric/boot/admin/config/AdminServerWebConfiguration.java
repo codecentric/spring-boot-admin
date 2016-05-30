@@ -20,6 +20,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -181,16 +182,18 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 
 	@Bean
 	public ScheduledTaskRegistrar updateTaskRegistrar() {
-		ScheduledTaskRegistrar registrar = new ScheduledTaskRegistrar();
+		return new ScheduledTaskRegistrar();
+	}
 
-		registrar.addFixedRateTask(new Runnable() {
+	@EventListener
+	public void onApplicationReadyEvent(ApplicationReadyEvent event) {
+		updateTaskRegistrar().addFixedRateTask(new Runnable() {
 			@Override
 			public void run() {
 				statusUpdater().updateStatusForAllApplications();
 			}
 		}, adminServerProperties().getMonitor().getPeriod());
-
-		return registrar;
+		updateTaskRegistrar().afterPropertiesSet();
 	}
 
 	@Bean
