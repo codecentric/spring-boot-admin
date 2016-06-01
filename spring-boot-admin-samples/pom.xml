@@ -8,7 +8,6 @@
         <version>1.3.4-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
-    <groupId>de.codecentric</groupId>
     <artifactId>spring-boot-admin-samples</artifactId>
     <packaging>pom</packaging>
     <name>Spring Boot Admin Samples</name>
