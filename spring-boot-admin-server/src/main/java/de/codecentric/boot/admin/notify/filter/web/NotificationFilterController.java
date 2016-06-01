@@ -17,6 +17,7 @@ package de.codecentric.boot.admin.notify.filter.web;
 
 import static org.springframework.util.StringUtils.hasText;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
@@ -53,11 +54,13 @@ public class NotificationFilterController {
 
 	@RequestMapping(path = "/api/notifications/filters", method = {
 			RequestMethod.POST }, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> addFilter(@RequestParam(name = "id", required = false) String id,
+	public ResponseEntity<?> addFilter(@RequestParam(name = "id", required = false) String id,
 			@RequestParam(name = "name", required = false) String name,
 			@RequestParam(name = "ttl", required = false, defaultValue = "-1") long ttl) {
 		if (hasText(id) || hasText(name)) {
-			return ResponseEntity.ok(filteringNotifier.addFilter(createFilter(id, name, ttl)));
+			NotificationFilter filter = createFilter(id, name, ttl);
+			String filterId = filteringNotifier.addFilter(filter);
+			return ResponseEntity.ok(Collections.singletonMap(filterId, filter));
 		} else {
 			return ResponseEntity.badRequest().body("Either 'id' or 'name' must be set");
 		}
@@ -78,6 +81,7 @@ public class NotificationFilterController {
 
 		NotificationFilter filter = hasText(id) ? new ApplicationIdNotificationFilter(id, expiry)
 				: new ApplicationNameNotificationFilter(name, expiry);
+
 		return filter;
 	}
 }

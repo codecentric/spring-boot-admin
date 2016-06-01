@@ -34,7 +34,8 @@ module.filter('limitLines', require('./filters/limitLines.js'));
 module.component('sbaInfoPanel', require('./components/infoPanel.js'));
 module.component('sbaAccordion', require('./components/accordion.js'));
 module.component('sbaAccordionGroup', require('./components/accordionGroup.js'));
-module.component('sbaNotificationFilter', require('./components/notificationFilter.js'));
+module.component('sbaNotificationSettings', require('./components/notificationSettings.js'));
+module.component('sbaPopover', require('./components/popover.js'));
 
 require('./css/module.css');
 

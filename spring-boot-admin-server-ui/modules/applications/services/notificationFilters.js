@@ -15,30 +15,47 @@
  */
 'use strict';
 
+var angular = require('angular');
 module.exports = function ($http) {
   'ngInject';
 
   this.getFilters = function () {
-    return $http.get('api/notifications/filters');
+    return $http.get('api/notifications/filters').then(function (response) {
+      return response.data;
+    }).catch(function () {
+      return null;
+    });
+  };
+
+  this.getActiveFilters = function (filters, application) {
+    var appFilters = {};
+    angular.forEach(filters, function (value, key) {
+      if ((value.expired === false || value.expired === undefined) && (value.id === application.id || value.name === application.name)) {
+        appFilters[key] = value;
+      }
+    });
+    return appFilters;
   };
 
   this.addFilterByName = function (name, ttl) {
-    return $http.post('api/notifications/filters', {
-      name: name,
-      ttl: ttl
+    return $http.post('api/notifications/filters', null, {
+      params: {
+        name: name,
+        ttl: ttl
+      }
     });
   };
 
   this.addFilterById = function (id, ttl) {
-    return $http.post('api/notifications/filters', {
-      id: id,
-      ttl: ttl
+    return $http.post('api/notifications/filters', null, {
+      params: {
+        id: id,
+        ttl: ttl
+      }
     });
   };
 
   this.removeFilter = function (id) {
-    return $http.delete('api/notifications/filters', {
-      id: id
-    });
+    return $http.delete('api/notifications/filters/' + id);
   };
 };

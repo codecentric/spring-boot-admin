@@ -9,9 +9,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.IOException;
+import java.util.Map;
+
 import org.junit.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.codecentric.boot.admin.notify.LoggingNotifier;
 import de.codecentric.boot.admin.notify.filter.FilteringNotifier;
@@ -35,9 +41,11 @@ public class NotificationFilterControllerTest {
 
 	@Test
 	public void test_post_delete() throws Exception {
-		String id = mvc.perform(post("/api/notifications/filters?id=1337&ttl=10000"))
+		String response = mvc.perform(post("/api/notifications/filters?id=1337&ttl=10000"))
 				.andExpect(status().isOk()).andExpect(content().string(not(isEmptyString())))
 				.andReturn().getResponse().getContentAsString();
+
+		String id = extractId(response);
 
 		mvc.perform(get("/api/notifications/filters")).andExpect(status().isOk())
 		.andExpect(jsonPath("$..id").value("1337"));
@@ -46,5 +54,10 @@ public class NotificationFilterControllerTest {
 
 		mvc.perform(get("/api/notifications/filters")).andExpect(status().isOk())
 				.andExpect(jsonPath("$").isEmpty());
+	}
+
+	private String extractId(String response) throws JsonProcessingException, IOException {
+		Map<?, ?> map = new ObjectMapper().readerFor(Map.class).readValue(response);
+		return map.keySet().iterator().next().toString();
 	}
 }

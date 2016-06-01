@@ -133,3 +133,9 @@
 .accordion-group {
   border: 1px solid #34302D;
 }
+
+/* ---------- */
+
+  .popover {
+    max-width: none !important;
+  }

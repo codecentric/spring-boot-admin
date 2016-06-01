@@ -11,5 +11,8 @@ target/
 *.iml
 *.iws
 
+#vscode
+.vscode/
+
 # gnupg keyring
 /.gnupg

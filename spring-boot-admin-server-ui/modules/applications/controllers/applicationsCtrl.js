@@ -18,8 +18,10 @@
 module.exports = function ($rootScope, $scope, $state, ApplicationViews, NotificationFilters) {
   'ngInject';
 
+
   $scope.applications = $rootScope.applications;
-  $scope.notificationFilters = {};
+  $scope.notificationFilters = null;
+  $scope.notificationFiltersSupported = false;
 
   $scope.remove = function (application) {
     application.$remove();
@@ -51,7 +53,10 @@ module.exports = function ($rootScope, $scope, $state, ApplicationViews, Notific
     }
   };
 
-  NotificationFilters.getFilters().then(function (filters) {
-    $scope.notificationFilters = filters.data;
-  });
+  $scope.loadFilters = function () {
+    return NotificationFilters.getFilters().then(function (filters) {
+      $scope.notificationFilters = filters;
+    });
+  };
+  $scope.loadFilters();
 };

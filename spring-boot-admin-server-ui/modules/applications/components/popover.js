@@ -14,26 +14,31 @@
  * limitations under the License.
  */
 'use strict';
-var angular = require('angular');
+
 module.exports = {
+  transclude: true,
   bindings: {
-    application: '<application',
-    filters: '<filters'
+    title: '@popoverTitle',
+    toggle: '<popoverToggle'
   },
-  controller: function () {
+  controllerAs: '$popover',
+  controller: function ($element) {
+    'ngInject';
     var ctrl = this;
+    ctrl.offset = null;
 
-    var notificationActive = function () {
-      var active = true;
-      angular.forEach(ctrl.filters, function (value) {
-        active = active && (value.id !== ctrl.application.id && value.name !== ctrl.application.name || value.expired);
-      });
-      return active;
+    ctrl.$onChanges = function (changes) {
+      if (changes.toggle.currentValue) {
+        ctrl.offset = $element.parent().offset();
+        ctrl.offset.left -= (($element.children().first().outerWidth() - $element.parent().outerWidth()) / 2);
+        ctrl.offset.top += + (($element.parent().outerHeight()));
+      }
     };
 
-    ctrl.getCssClass = function () {
-      return notificationActive() ? 'fa-bell muted' : 'fa-bell-slash  ';
+    ctrl.isVisible = function () {
+      return ctrl.toggle;
     };
+
   },
-  template: '<i class="fa {{$ctrl.getCssClass()}}"></i>'
+  template: require('./popover.tpl.html')
 };
