@@ -1,0 +1,33 @@
+<div class="input-append">
+    <input placeholder="Filter" class="input-xxlarge" type="search" ng-model="searchFilter" />
+</div>
+<sba-info-panel title="Flyway Migrations" raw="api/applications/{{ application.id }}/flyway">
+    <table class="table table-hover">
+        <thead>
+            <th>Type</th>
+            <th>Checksum</th>
+            <th>Version</th>
+            <th>Description</th>
+            <th>Script</th>
+            <th>State</th>
+            <th>Installed</th>
+            <th>Execution Time</th>
+        </thead>
+        <tbody>
+            <tr ng-repeat="migration in migrations | filter:searchFilter">
+                <td>{{migration.type}}</td>
+                <td>{{migration.checksum}}</td>
+                <td>{{migration.version}}</td>
+                <td>{{migration.description}}</td>
+                <td>{{migration.script}}</td>
+                <td><span class="label" 
+                    ng-class="{
+                    'label-success': inArray(migration.state, successStates), 
+                    'label-warning': inArray(migration.state, warningStates),
+                    'label-danger': inArray(migration.state, failedStates)}">{{migration.state}}</span></td>
+                <td>{{migration.installedOn | date:'medium'}}</td>
+                <td>{{migration.executionTime}} ms</td>
+            </tr>
+        </tbody>
+    </table>
+</sba-info-panel>
