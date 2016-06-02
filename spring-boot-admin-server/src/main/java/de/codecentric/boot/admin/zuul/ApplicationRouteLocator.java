@@ -49,7 +49,7 @@ public class ApplicationRouteLocator implements RefreshableRouteLocator {
 	private String prefix;
 	private String servletPath;
 	private String[] proxyEndpoints = { "env", "metrics", "trace", "dump", "jolokia", "info",
-			"configprops", "trace", "activiti", "logfile", "refresh" };
+			"configprops", "trace", "activiti", "logfile", "refresh", "flyway" };
 
 	public ApplicationRouteLocator(String servletPath, ApplicationRegistry registry,
 			String prefix) {
