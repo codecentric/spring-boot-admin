@@ -15,6 +15,7 @@
  */
 'use strict';
 
+var angular = require('angular');
 module.exports = function ($state, $q) {
   'ngInject';
 
@@ -29,18 +30,18 @@ module.exports = function ($state, $q) {
     views.forEach(function (view) {
       $q.when(!view.show || view.show(application)).then(function (result) {
         if (result) {
-          view.href = $state.href(view.state, {
+          var appView = angular.copy(view);
+          appView.href = $state.href(view.state, {
             id: application.id
           });
 
-          applicationViews.push(view);
+          applicationViews.push(appView);
           applicationViews.sort(function (v1, v2) {
             return (v1.order || 0) - (v2.order || 0);
           });
         }
       });
     });
-
     return applicationViews;
   };
 };
