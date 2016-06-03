@@ -1,0 +1,5 @@
+<div class="input-append">
+    <input placeholder="Filter" class="input-xxlarge" type="search" ng-model="searchFilter" />
+    <button class="btn" title="reload list" ng-click="refresh()"><i class="fa fa-repeat"></i></button>
+</div>
+<sba-liquibase-change-log-entry ng-repeat="entry in changeLog" change-log-entry="entry" />
