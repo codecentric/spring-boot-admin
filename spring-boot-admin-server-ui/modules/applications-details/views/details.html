@@ -2,7 +2,7 @@
   <b>Error:</b> {{ error }}
 </div>
 <div style="display: flex; flex-wrap: wrap; justify-content: space-around;">
-  <sba-info-panel class="span5" title="Application" raw="api/applications/{{ application.id }}/info">
+  <sba-info-panel class="span5" panel-title="Application" raw="api/applications/{{ application.id }}/info">
     <table class="table">
       <tr ng-repeat="(key, value) in info">
         <td ng-bind="key"></td>
@@ -10,25 +10,25 @@
       </tr>
     </table>
   </sba-info-panel>
-  <sba-info-panel class="span5" title="Health" raw="api/applications/{{ application.id }}/health">
+  <sba-info-panel class="span5" panel-title="Health" raw="api/applications/{{ application.id }}/health">
     <sba-health-status health="health"></sba-health-status>
   </sba-info-panel>
-  <sba-info-panel class="span5" title="Memory" raw="api/applications/{{ application.id }}/metrics/mem.*%7Cheap.*">
+  <sba-info-panel class="span5" panel-title="Memory" raw="api/applications/{{ application.id }}/metrics/mem.*%7Cheap.*">
     <sba-memory-stats metrics=metrics></sba-memory-stats>
   </sba-info-panel>
-  <sba-info-panel class="span5" title="JVM" raw="api/applications/{{ application.id }}/metrics/systemload.*%7Cclasses.*%7Cuptime%7Cprocessors%7Cthreads.*">
+  <sba-info-panel class="span5" panel-title="JVM" raw="api/applications/{{ application.id }}/metrics/systemload.*%7Cclasses.*%7Cuptime%7Cprocessors%7Cthreads.*">
     <sba-jvm-stats metrics="metrics"></sba-jvm-stats>
   </sba-info-panel>
-  <sba-info-panel class="span5" title="Garbage Collection" raw="api/applications/{{ application.id }}/metrics/gc.*">
+  <sba-info-panel class="span5" panel-title="Garbage Collection" raw="api/applications/{{ application.id }}/metrics/gc.*">
     <sba-gc-stats metrics="metrics"></sba-gc-stats>
   </sba-info-panel>
-  <sba-info-panel class="span5" title="Servlet Container" raw="api/applications/{{ application.id }}/metrics/httpsessions.*" ng-show="metrics['httpsessions.active'] != null">
+  <sba-info-panel class="span5" panel-title="Servlet Container" raw="api/applications/{{ application.id }}/metrics/httpsessions.*" ng-show="metrics['httpsessions.active'] != null">
     <sba-servlet-container-stats metrics="metrics"></sba-servlet-container-stats>
   </sba-info-panel>
-  <sba-info-panel class="span5" title="Datasources" raw="api/applications/{{ application.id }}/metrics/datasource.*" ng-show="hasDatasources">
+  <sba-info-panel class="span5" panel-title="Datasources" raw="api/applications/{{ application.id }}/metrics/datasource.*" ng-show="hasDatasources">
     <sba-datasource-stats metrics="metrics"></sba-datasource-stats>
   </sba-info-panel>
-  <sba-info-panel class="span5" title="Caches" raw="api/applications/{{ application.id }}/metrics/cache.*" ng-show="hasCaches">
+  <sba-info-panel class="span5" panel-title="Caches" raw="api/applications/{{ application.id }}/metrics/cache.*" ng-show="hasCaches">
     <sba-cache-stats metrics="metrics"></sba-cache-stats>
   </sba-info-panel>
 </div>

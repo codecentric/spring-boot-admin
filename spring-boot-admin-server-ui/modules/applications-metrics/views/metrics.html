@@ -1,7 +1,7 @@
 <div class="alert alert-error" ng-if="error">
   <b>Error:</b> {{ error }}
 </div>
-<sba-info-panel title="Counter" raw="api/applications/{{ application.id }}/metrics/counter.*">
+<sba-info-panel panel-title="Counter" raw="api/applications/{{ application.id }}/metrics/counter.*">
   <table class="table" ng-if="counters.length > 0">
     <tr ng-repeat="counter in counters">
       <td>
@@ -10,7 +10,7 @@
     </tr>
   </table>
 </sba-info-panel>
-<sba-info-panel title="Gauges" raw="api/applications/{{ application.id }}/metrics/gauge.*">
+<sba-info-panel panel-title="Gauges" raw="api/applications/{{ application.id }}/metrics/gauge.*">
   <table class="table" ng-if="gauges.length > 0">
     <tr ng-if="showRichGauges" ng-repeat="gauge in gauges">
       <td>

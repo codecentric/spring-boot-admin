@@ -18,7 +18,7 @@
 module.exports = {
   transclude: true,
   bindings: {
-    title: '@title',
+    title: '@panelTitle',
     raw: '@raw',
     category: '@category'
   },

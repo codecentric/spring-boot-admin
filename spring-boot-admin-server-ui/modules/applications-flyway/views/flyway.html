@@ -2,7 +2,7 @@
     <input placeholder="Filter" class="input-xxlarge" type="search" ng-model="searchFilter" />
     <button class="btn" title="reload list" ng-click="refresh()"><i class="fa fa-repeat"></i></button>
 </div>
-<sba-info-panel title="Flyway Migrations" raw="api/applications/{{ application.id }}/flyway">
+<sba-info-panel panel-title="Flyway Migrations" raw="api/applications/{{ application.id }}/flyway">
     <table class="table">
         <thead>
             <th>Type</th>
