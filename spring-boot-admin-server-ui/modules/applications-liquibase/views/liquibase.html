@@ -1,0 +1,24 @@
+<div class="input-append">
+    <input placeholder="Filter" class="input-xxlarge" type="search" ng-model="searchFilter" />
+    <button class="btn" title="reload list" ng-click="refresh()"><i class="fa fa-repeat"></i></button>
+</div>
+<sba-accordion>
+  <sba-accordion-group ng-repeat="migration in migrations | filter:searchFilter">
+    <sba-accordion-heading>
+        <small class="muted" ng-bind="migration.ID"></small> {{migration.FILENAME}}
+        <span class="label label-warning pull-right" ng-bind="migration.EXECTYPE"
+        ng-class="{
+        'label-success':migration.EXECTYPE === 'EXECUTED',
+        'label-danger':migration.EXECTYPE === 'FAILED'}"></span>
+    </sba-accordion-heading>
+    <sba-accordion-body>
+        <table class="table">
+            <col width="40%">
+            <col width="60%">
+                <tr ng-repeat="(column,label) in migrationTable">
+                <td ng-show="migration[column]" ng-bind="label"></td>
+                <td ng-show="migration[column]">{{ isDate(column) ? (migration[column] | date:'medium') : migration[column] }}</td>
+        </table>
+    </sba-accordion-body>
+  </sba-accordion-group>
+</sba-accordion>
