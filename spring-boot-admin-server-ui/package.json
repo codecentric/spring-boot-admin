@@ -10,11 +10,11 @@
     "dev-server": "webpack-dev-server --port 9000"
   },
   "dependencies": {
-    "angular": "^1.5.5",
-    "angular-resource": "^1.5.5",
-    "angular-ui-router": "^0.3.0",
+    "angular": "^1.5.6",
+    "angular-resource": "^1.5.6",
+    "angular-ui-router": "^0.3.1",
     "es5-shim": "^4.5.8",
-    "font-awesome": "^4.6.1",
+    "font-awesome": "^4.6.3",
     "jquery": "^2.2.4",
     "js-yaml": "^3.6.1",
     "karma-chrome-launcher": "^1.0.1",
