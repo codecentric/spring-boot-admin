@@ -95,8 +95,11 @@ spring.boot.admin.url=http://localhost:8080
 [[discover-clients-via-spring-cloud-discovery]]
 ==== Discover clients via Spring Cloud Discovery ====
 
-If you already using Spring Cloud Discovery for your applications you don't have to add the Spring Boot Admin Client to your applications. Just make the Spring Boot Admin Server a DiscoveryClient, the rest is done by our AutoConfiguration. The following steps are for using Eureka.
-Also have a look at the http://projects.spring.io/spring-cloud/spring-cloud.html#_spring_cloud_netflix[Spring Cloud Netflix documentation].
+If you already using Spring Cloud Discovery for your applications you don't have to add the Spring Boot Admin Client to your applications. Just make the Spring Boot Admin Server a DiscoveryClient, the rest is done by our AutoConfiguration.
+
+The following steps are for using Eureka, but other Spring Cloud Discovery implementations are supported as well. There is an example using Consul (see https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-consul/[spring-boot-admin-sample-consul]).
+
+Also have a look at the http://projects.spring.io/spring-cloud/spring-cloud.html[Spring Cloud documentation].
 
 . Add spring-cloud-starter-eureka to you dependencies:
 +
@@ -106,7 +109,6 @@ Also have a look at the http://projects.spring.io/spring-cloud/spring-cloud.html
 <dependency>
     <groupId>org.springframework.cloud</groupId>
     <artifactId>spring-cloud-starter-eureka</artifactId>
-    <version>1.0.6.RELEASE</version>
 </dependency>
 ----
 
@@ -133,7 +135,7 @@ public class SpringBootAdminApplication {
 eureka.instance.client.serviceUrl.defaultZone: http://localhost:8761/eureka/
 ----
 
-See also https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-discovery/[spring-boot-admin-sample-discovery].
+See also https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-eureka/[spring-boot-admin-sample-eureka].
 
 NOTE: You can include the Spring Boot Admin to your Eureka server. Add the dependencies, add `@EnableAdminServer` to your configuration and set `spring.boot.admin.context-path` to something different than `"/"` so that the Spring Boot Admin Server UI won't clash with Eureka's one.
 
@@ -270,9 +272,7 @@ The setup is explained <<discover-clients-via-spring-cloud-discovery,above>>.
 
 The informations from the discovered services are converted by the `ServiceInstanceConverter`. Spring Boot Admin ships with a default and Eureka converter implementation. The correct one is selected by AutoConfiguration. You can use your own conversion by implementing the interface and adding the bean to your application context.
 
-TIP: When *Eureka* discovery is active, the `EurekaServiceInstanceConverter` will use the discovered instances' `homePageUrl` and `healthCheckUrl`. In case the instances' `managment.context-path` is different from the `homePageUrl` you should add an entry `management.context-path` to the instances' `metadata`-map with the corresponding value.
-
-TIP: When the default conversion kicks in, you can use the `spring.boot.admin.discovery.converter.*` properties to control the conversion for all your instances.
+TIP: If you want to customize the default conversion of services you can either add `health.path` and/or `mangament.context-path` entries to the services metadata. This allows you to set the health or management path per application. In case you want to configure this for all of your discovered services, you can use the `spring.boot.admin.discovery.converter.*`-properties for your Spring Boot Admin Server configuration. The services' metadata takes precedence over the server configuration.
 
 .Discovery configuration options
 |===
@@ -282,10 +282,6 @@ TIP: When the default conversion kicks in, you can use the `spring.boot.admin.di
 | Enables the DiscoveryClient-support for the admin server.
 | `true`
 
-| spring.boot.admin.discovery.management.context-path _(deprecated)_
-| If set this will be appended to the service-url from the discovery information.
-|
-
 | spring.boot.admin.discovery.converter.management-context-path
 | Will be appended to the service-url of the discovered service when the managment-url is converted by the `DefaultServiceInstanceConverter`.
 |
@@ -293,6 +289,10 @@ TIP: When the default conversion kicks in, you can use the `spring.boot.admin.di
 | spring.boot.admin.discovery.converter.health-endpoint
 | Will be appended to the management-url of the discovered service when the health-url is converted by the `DefaultServiceInstanceConverter`.
 | `"health"`
+
+| spring.boot.admin.discovery.ignored-services
+| This services will be ignored when using discovery and not registered as application.
+|
 |===
 
 [[hazelcast-support]]

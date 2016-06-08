@@ -15,43 +15,76 @@
  */
 package de.codecentric.boot.admin.discovery;
 
+import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang.StringUtils.stripStart;
+
+import java.net.URI;
+
 import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.util.StringUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import de.codecentric.boot.admin.model.Application;
 
 /**
- * Converts any {@link ServiceInstance}s to {@link Application}s.
+ * Converts any {@link ServiceInstance}s to {@link Application}s. To customize the health- or
+ * management-url for all applications you can set healthEndpointPath or managementContextPath
+ * respectively. If you want to influence the url per service you can add
+ * <code>management.context-path</code> or <code>health.path</code> to the instances metadata.
  *
  * @author Johannes Edmeier
  */
 public class DefaultServiceInstanceConverter implements ServiceInstanceConverter {
+	private static final String KEY_MANAGEMENT_PATH = "management.context-path";
+	private static final String KEY_HEALTH_PATH = "health.path";
 	private String managementContextPath = "";
 	private String healthEndpointPath = "health";
 
 	@Override
 	public Application convert(ServiceInstance instance) {
-		String serviceUrl = instance.getUri().toString();
-		String managementUrl = append(serviceUrl, managementContextPath);
-		String healthUrl = append(managementUrl, healthEndpointPath);
-
-		return Application.create(instance.getServiceId()).withHealthUrl(healthUrl)
-				.withManagementUrl(managementUrl).withServiceUrl(serviceUrl).build();
-	}
-
-	protected final String append(String uri, String path) {
-		String baseUri = uri.replaceFirst("/+$", "");
-		if (StringUtils.isEmpty(path)) {
-			return baseUri;
+		Application.Builder builder = Application.create(instance.getServiceId());
+		URI healthUrl = getHealthUrl(instance);
+		if (healthUrl != null) {
+			builder.withHealthUrl(healthUrl.toString());
 		}
 
-		String normPath = path.replaceFirst("^/+", "").replaceFirst("/+$", "");
-		return baseUri + "/" + normPath;
+		URI managementUrl = getManagementUrl(instance);
+		if (managementUrl != null) {
+			builder.withManagementUrl(managementUrl.toString());
+		}
+
+		URI serviceUrl = getServiceUrl(instance);
+		if (serviceUrl != null) {
+			builder.withServiceUrl(serviceUrl.toString());
+		}
+
+		return builder.build();
+	}
+
+	protected URI getHealthUrl(ServiceInstance instance) {
+		String healthPath = defaultIfEmpty(
+				instance.getMetadata().get(KEY_HEALTH_PATH), healthEndpointPath);
+		healthPath = stripStart(healthPath, "/");
+
+		return UriComponentsBuilder.fromUri(getManagementUrl(instance)).pathSegment(healthPath)
+				.build().toUri();
+	}
+
+	protected URI getManagementUrl(ServiceInstance instance) {
+		String managamentPath = defaultIfEmpty(
+				instance.getMetadata().get(KEY_MANAGEMENT_PATH), managementContextPath);
+		managamentPath = stripStart(managamentPath, "/");
+
+		return UriComponentsBuilder.fromUri(getServiceUrl(instance)).pathSegment(managamentPath)
+				.build().toUri();
+	}
+
+	protected URI getServiceUrl(ServiceInstance instance) {
+		return instance.getUri();
 	}
 
 	/**
-	 * <code>management.context-path</code> to be appended to the url of the discovered service for
-	 * the managment-url.
+	 * Default <code>management.context-path</code> to be appended to the url of the discovered
+	 * service for the managment-url.
 	 *
 	 * @param managementContextPath the management context-path.
 	 */
@@ -60,7 +93,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 	}
 
 	/**
-	 * path of the health-endpoint to be used for the health-url of the discovered service.
+	 * Default path of the health-endpoint to be used for the health-url of the discovered service.
 	 *
 	 * @param healthEndpointPath the path for the health-endpoint.
 	 */

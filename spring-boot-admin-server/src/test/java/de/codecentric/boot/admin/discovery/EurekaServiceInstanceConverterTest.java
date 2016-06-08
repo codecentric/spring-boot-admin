@@ -7,6 +7,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.net.URI;
 import java.util.Collections;
 
 import org.junit.Test;
@@ -20,17 +21,15 @@ public class EurekaServiceInstanceConverterTest {
 
 	@Test
 	public void convert() {
-		EurekaServiceInstanceConverter converter = new EurekaServiceInstanceConverter();
 		InstanceInfo instanceInfo = mock(InstanceInfo.class);
-		when(instanceInfo.getAppName()).thenReturn("test");
-		when(instanceInfo.getHomePageUrl()).thenReturn("http://localhost:80");
 		when(instanceInfo.getHealthCheckUrl()).thenReturn("http://localhost:80/mgmt/ping");
-		when(instanceInfo.getMetadata())
-				.thenReturn(singletonMap("management.context-path", "/mgmt"));
 		EurekaServiceInstance service = mock(EurekaServiceInstance.class);
 		when(service.getInstanceInfo()).thenReturn(instanceInfo);
+		when(service.getUri()).thenReturn(URI.create("http://localhost:80"));
+		when(service.getServiceId()).thenReturn("test");
+		when(service.getMetadata()).thenReturn(singletonMap("management.context-path", "/mgmt"));
 
-		Application application = converter.convert(service);
+		Application application = new EurekaServiceInstanceConverter().convert(service);
 
 		assertThat(application.getId(), nullValue());
 		assertThat(application.getName(), is("test"));
@@ -39,8 +38,8 @@ public class EurekaServiceInstanceConverterTest {
 		assertThat(application.getHealthUrl(), is("http://localhost:80/mgmt/ping"));
 
 		// no management url in metadata
-		when(instanceInfo.getMetadata()).thenReturn(Collections.<String, String> emptyMap());
-		application = converter.convert(service);
+		when(service.getMetadata()).thenReturn(Collections.<String, String> emptyMap());
+		application = new EurekaServiceInstanceConverter().convert(service);
 		assertThat(application.getManagementUrl(), is("http://localhost:80"));
 	}
 }

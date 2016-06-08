@@ -3,7 +3,7 @@ info:
 
 spring:
   application:
-    name: discovery-example
+    name: eureka-example
   cloud:
     config:
       enabled: false

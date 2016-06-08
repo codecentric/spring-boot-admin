@@ -15,6 +15,11 @@
  */
 package de.codecentric.boot.admin.discovery;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.event.HeartbeatEvent;
@@ -32,11 +37,17 @@ import de.codecentric.boot.admin.registry.ApplicationRegistry;
  * @author Johannes Edmeier
  */
 public class ApplicationDiscoveryListener {
-
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(ApplicationDiscoveryListener.class);
 	private final DiscoveryClient discoveryClient;
 	private final ApplicationRegistry registry;
 	private final HeartbeatMonitor monitor = new HeartbeatMonitor();
 	private ServiceInstanceConverter converter = new DefaultServiceInstanceConverter();
+
+	/**
+	 * Set of serviceIds to be ignored and not to be registered as application.
+	 */
+	private Set<String> ignoredServices = new HashSet<>();
 
 	public ApplicationDiscoveryListener(DiscoveryClient discoveryClient,
 			ApplicationRegistry registry) {
@@ -68,16 +79,31 @@ public class ApplicationDiscoveryListener {
 	protected void discover() {
 		for (String serviceId : discoveryClient.getServices()) {
 			for (ServiceInstance instance : discoveryClient.getInstances(serviceId)) {
-				registry.register(convert(instance));
+				if (!ignoredServices.contains(serviceId)) {
+					register(instance);
+				}
 			}
 		}
 	}
 
-	protected Application convert(ServiceInstance instance) {
-		return converter.convert(instance);
+	protected void register(ServiceInstance instance) {
+		try {
+			Application application = converter.convert(instance);
+			if (application != null) {
+				registry.register(application);
+			} else {
+				LOGGER.warn("No application for service {} registered", instance);
+			}
+		} catch (Exception ex) {
+			LOGGER.error("Couldn't register application for service {}", instance, ex);
+		}
 	}
 
 	public void setConverter(ServiceInstanceConverter converter) {
 		this.converter = converter;
+	}
+
+	public void setIgnoredServices(Set<String> ignoredServices) {
+		this.ignoredServices = ignoredServices;
 	}
 }

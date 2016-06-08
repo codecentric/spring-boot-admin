@@ -49,6 +49,7 @@ public class DiscoveryClientConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@ConfigurationProperties(prefix = "spring.boot.admin.discovery")
 	public ApplicationDiscoveryListener applicationDiscoveryListener(
 			ServiceInstanceConverter serviceInstanceConverter) {
 		ApplicationDiscoveryListener listener = new ApplicationDiscoveryListener(discoveryClient,
@@ -62,6 +63,7 @@ public class DiscoveryClientConfiguration {
 	public static class EurekaConverterConfiguration {
 		@Bean
 		@ConditionalOnMissingBean({ ServiceInstanceConverter.class })
+		@ConfigurationProperties(prefix = "spring.boot.admin.discovery.converter")
 		public EurekaServiceInstanceConverter serviceInstanceConverter() {
 			return new EurekaServiceInstanceConverter();
 		}
