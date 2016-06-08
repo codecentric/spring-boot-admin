@@ -95,8 +95,11 @@ spring.boot.admin.url=http://localhost:8080
 [[discover-clients-via-spring-cloud-discovery]]
 ==== Discover clients via Spring Cloud Discovery ====
 
-If you already using Spring Cloud Discovery for your applications you don't have to add the Spring Boot Admin Client to your applications. Just make the Spring Boot Admin Server a DiscoveryClient, the rest is done by our AutoConfiguration. The following steps are for using Eureka.
-Also have a look at the http://projects.spring.io/spring-cloud/spring-cloud.html#_spring_cloud_netflix[Spring Cloud Netflix documentation].
+If you already using Spring Cloud Discovery for your applications you don't have to add the Spring Boot Admin Client to your applications. Just make the Spring Boot Admin Server a DiscoveryClient, the rest is done by our AutoConfiguration.
+
+The following steps are for using Eureka, but other Spring Cloud Discovery implementations are supported as well. There is an example using Consul (see https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-consul/[spring-boot-admin-sample-consul]).
+
+Also have a look at the http://projects.spring.io/spring-cloud/spring-cloud.html[Spring Cloud documentation].
 
 . Add spring-cloud-starter-eureka to you dependencies:
 +
@@ -106,7 +109,6 @@ Also have a look at the http://projects.spring.io/spring-cloud/spring-cloud.html
 <dependency>
     <groupId>org.springframework.cloud</groupId>
     <artifactId>spring-cloud-starter-eureka</artifactId>
-    <version>1.0.6.RELEASE</version>
 </dependency>
 ----
 
@@ -133,7 +135,7 @@ public class SpringBootAdminApplication {
 eureka.instance.client.serviceUrl.defaultZone: http://localhost:8761/eureka/
 ----
 
-See also https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-discovery/[spring-boot-admin-sample-discovery].
+See also https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-eureka/[spring-boot-admin-sample-eureka].
 
 NOTE: You can include the Spring Boot Admin to your Eureka server. Add the dependencies, add `@EnableAdminServer` to your configuration and set `spring.boot.admin.context-path` to something different than `"/"` so that the Spring Boot Admin Server UI won't clash with Eureka's one.
 
