@@ -97,7 +97,7 @@ spring.boot.admin.url=http://localhost:8080
 
 If you already using Spring Cloud Discovery for your applications you don't have to add the Spring Boot Admin Client to your applications. Just make the Spring Boot Admin Server a DiscoveryClient, the rest is done by our AutoConfiguration.
 
-The following steps are for using Eureka, but other Spring Cloud Discovery implementations are supported as well. There is an example using Consul (see https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-consul/[spring-boot-admin-sample-consul]).
+The following steps are for using Eureka, but other Spring Cloud Discovery implementations are supported as well. There are examples using https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-consul/[Consul] and https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-zookeeper/[Zookeper]. 
 
 Also have a look at the http://projects.spring.io/spring-cloud/spring-cloud.html[Spring Cloud documentation].
 
