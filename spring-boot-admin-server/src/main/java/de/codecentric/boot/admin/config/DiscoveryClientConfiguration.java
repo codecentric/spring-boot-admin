@@ -63,6 +63,7 @@ public class DiscoveryClientConfiguration {
 	public static class EurekaConverterConfiguration {
 		@Bean
 		@ConditionalOnMissingBean({ ServiceInstanceConverter.class })
+		@ConfigurationProperties(prefix = "spring.boot.admin.discovery.converter")
 		public EurekaServiceInstanceConverter serviceInstanceConverter() {
 			return new EurekaServiceInstanceConverter();
 		}

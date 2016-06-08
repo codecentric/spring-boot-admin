@@ -270,9 +270,7 @@ The setup is explained <<discover-clients-via-spring-cloud-discovery,above>>.
 
 The informations from the discovered services are converted by the `ServiceInstanceConverter`. Spring Boot Admin ships with a default and Eureka converter implementation. The correct one is selected by AutoConfiguration. You can use your own conversion by implementing the interface and adding the bean to your application context.
 
-TIP: When *Eureka* discovery is active, the `EurekaServiceInstanceConverter` will use the discovered instances' `homePageUrl` and `healthCheckUrl`. In case the instances' `managment.context-path` is different from the `homePageUrl` you should add an entry `management.context-path` to the instances' `metadata`-map with the corresponding value.
-
-TIP: When the default conversion kicks in, you can use the `spring.boot.admin.discovery.converter.*` properties to control the conversion for all your instances.
+TIP: If you want to customize the default conversion of services you can either add `health.path` and/or `mangament.context-path` entries to the services metadata. This allows you to set the health or management path per application. In case you want to configure this for all of your discovered services, you can use the `spring.boot.admin.discovery.converter.*`-properties for your Spring Boot Admin Server configuration. The services' metadata takes precedence over the server configuration.
 
 .Discovery configuration options
 |===
@@ -281,10 +279,6 @@ TIP: When the default conversion kicks in, you can use the `spring.boot.admin.di
 | spring.boot.admin.discovery.enabled
 | Enables the DiscoveryClient-support for the admin server.
 | `true`
-
-| spring.boot.admin.discovery.management.context-path _(deprecated)_
-| If set this will be appended to the service-url from the discovery information.
-|
 
 | spring.boot.admin.discovery.converter.management-context-path
 | Will be appended to the service-url of the discovered service when the managment-url is converted by the `DefaultServiceInstanceConverter`.

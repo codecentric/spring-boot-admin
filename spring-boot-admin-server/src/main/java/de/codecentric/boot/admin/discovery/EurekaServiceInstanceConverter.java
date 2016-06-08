@@ -15,12 +15,11 @@
  */
 package de.codecentric.boot.admin.discovery;
 
+import java.net.URI;
+
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.netflix.eureka.EurekaDiscoveryClient.EurekaServiceInstance;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
-
-import com.netflix.appinfo.InstanceInfo;
 
 import de.codecentric.boot.admin.model.Application;
 
@@ -29,35 +28,13 @@ import de.codecentric.boot.admin.model.Application;
  *
  * @author Johannes Edmeier
  */
-public class EurekaServiceInstanceConverter implements ServiceInstanceConverter {
+public class EurekaServiceInstanceConverter extends DefaultServiceInstanceConverter {
+
 	@Override
-	public Application convert(ServiceInstance instance) {
+	protected URI getHealthUrl(ServiceInstance instance) {
 		Assert.isInstanceOf(EurekaServiceInstance.class, instance,
 				"serviceInstance must be of type EurekaServiceInstance");
 
-		return convert(((EurekaServiceInstance) instance).getInstanceInfo());
-	}
-
-	private Application convert(InstanceInfo instanceInfo) {
-		String mgmtUrl = instanceInfo.getHomePageUrl();
-		String mgmtPath = instanceInfo.getMetadata().get("management.context-path");
-		if (StringUtils.hasText(mgmtPath)) {
-			mgmtUrl = append(mgmtUrl, mgmtPath);
-		}
-		return Application.create(instanceInfo.getAppName())
-				.withHealthUrl(instanceInfo.getHealthCheckUrl()).withManagementUrl(mgmtUrl)
-				.withServiceUrl(instanceInfo.getHomePageUrl()).build();
-	}
-
-	private String append(String mgmtUrl, String mgmtPath) {
-		if (mgmtUrl.endsWith("/")) {
-			mgmtUrl = mgmtUrl.substring(0, mgmtUrl.length() - 1);
-		}
-
-		if (!mgmtPath.startsWith("/")) {
-			mgmtPath = "/" + mgmtPath;
-		}
-
-		return mgmtUrl + mgmtPath;
+		return URI.create(((EurekaServiceInstance) instance).getInstanceInfo().getHealthCheckUrl());
 	}
 }
