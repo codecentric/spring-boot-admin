@@ -293,6 +293,10 @@ TIP: When the default conversion kicks in, you can use the `spring.boot.admin.di
 | spring.boot.admin.discovery.converter.health-endpoint
 | Will be appended to the management-url of the discovered service when the health-url is converted by the `DefaultServiceInstanceConverter`.
 | `"health"`
+
+| spring.boot.admin.discovery.ignored-services
+| This services will be ignored when using discovery and not registered as application.
+|
 |===
 
 [[hazelcast-support]]

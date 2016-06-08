@@ -15,6 +15,9 @@
  */
 package de.codecentric.boot.admin.discovery;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.event.HeartbeatEvent;
@@ -32,11 +35,15 @@ import de.codecentric.boot.admin.registry.ApplicationRegistry;
  * @author Johannes Edmeier
  */
 public class ApplicationDiscoveryListener {
-
 	private final DiscoveryClient discoveryClient;
 	private final ApplicationRegistry registry;
 	private final HeartbeatMonitor monitor = new HeartbeatMonitor();
 	private ServiceInstanceConverter converter = new DefaultServiceInstanceConverter();
+
+	/**
+	 * Set of serviceIds to be ignored and not to be registered as application.
+	 */
+	private Set<String> ignoredServices = new HashSet<>();
 
 	public ApplicationDiscoveryListener(DiscoveryClient discoveryClient,
 			ApplicationRegistry registry) {
@@ -68,7 +75,9 @@ public class ApplicationDiscoveryListener {
 	protected void discover() {
 		for (String serviceId : discoveryClient.getServices()) {
 			for (ServiceInstance instance : discoveryClient.getInstances(serviceId)) {
-				registry.register(convert(instance));
+				if (!ignoredServices.contains(serviceId)) {
+					registry.register(convert(instance));
+				}
 			}
 		}
 	}
@@ -79,5 +88,9 @@ public class ApplicationDiscoveryListener {
 
 	public void setConverter(ServiceInstanceConverter converter) {
 		this.converter = converter;
+	}
+
+	public void setIgnoredServices(Set<String> ignoredServices) {
+		this.ignoredServices = ignoredServices;
 	}
 }

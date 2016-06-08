@@ -51,6 +51,18 @@ public class ApplicationDiscoveryListenerTest {
 	}
 
 	@Test
+	public void test_ignore() {
+		when(discovery.getServices()).thenReturn(Collections.singletonList("service"));
+		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
+				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
+
+		listener.setIgnoredServices(Collections.singleton("service"));
+		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
+
+		assertEquals(0, registry.getApplications().size());
+	}
+
+	@Test
 	public void test_register_and_convert() {
 		when(discovery.getServices()).thenReturn(Collections.singletonList("service"));
 		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
