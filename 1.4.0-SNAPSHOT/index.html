@@ -509,7 +509,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 1.4.0-SNAPSHOT,</span>
-<span id="revdate">06.06.2016</span>
+<span id="revdate">08.06.2016</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -653,8 +653,13 @@ Either you can include the <code>spring-boot-admin</code> client or use <a href=
 <div class="sect3">
 <h4 id="discover-clients-via-spring-cloud-discovery"><a class="anchor" href="#discover-clients-via-spring-cloud-discovery"></a>2.2.2. Discover clients via Spring Cloud Discovery</h4>
 <div class="paragraph">
-<p>If you already using Spring Cloud Discovery for your applications you don&#8217;t have to add the Spring Boot Admin Client to your applications. Just make the Spring Boot Admin Server a DiscoveryClient, the rest is done by our AutoConfiguration. The following steps are for using Eureka.
-Also have a look at the <a href="http://projects.spring.io/spring-cloud/spring-cloud.html#_spring_cloud_netflix">Spring Cloud Netflix documentation</a>.</p>
+<p>If you already using Spring Cloud Discovery for your applications you don&#8217;t have to add the Spring Boot Admin Client to your applications. Just make the Spring Boot Admin Server a DiscoveryClient, the rest is done by our AutoConfiguration.</p>
+</div>
+<div class="paragraph">
+<p>The following steps are for using Eureka, but other Spring Cloud Discovery implementations are supported as well. There is an example using Consul (see <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-consul/">spring-boot-admin-sample-consul</a>).</p>
+</div>
+<div class="paragraph">
+<p>Also have a look at the <a href="http://projects.spring.io/spring-cloud/spring-cloud.html">Spring Cloud documentation</a>.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -666,7 +671,6 @@ Also have a look at the <a href="http://projects.spring.io/spring-cloud/spring-c
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
     <span class="tag">&lt;groupId&gt;</span>org.springframework.cloud<span class="tag">&lt;/groupId&gt;</span>
     <span class="tag">&lt;artifactId&gt;</span>spring-cloud-starter-eureka<span class="tag">&lt;/artifactId&gt;</span>
-    <span class="tag">&lt;version&gt;</span>1.0.6.RELEASE<span class="tag">&lt;/version&gt;</span>
 <span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
@@ -699,7 +703,7 @@ Also have a look at the <a href="http://projects.spring.io/spring-cloud/spring-c
 </ol>
 </div>
 <div class="paragraph">
-<p>See also <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-discovery/">spring-boot-admin-sample-discovery</a>.</p>
+<p>See also <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-eureka/">spring-boot-admin-sample-eureka</a>.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -913,19 +917,7 @@ The setup is explained <a href="#discover-clients-via-spring-cloud-discovery">ab
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-When <strong>Eureka</strong> discovery is active, the <code>EurekaServiceInstanceConverter</code> will use the discovered instances' <code>homePageUrl</code> and <code>healthCheckUrl</code>. In case the instances' <code>managment.context-path</code> is different from the <code>homePageUrl</code> you should add an entry <code>management.context-path</code> to the instances' <code>metadata</code>-map with the corresponding value.
-</td>
-</tr>
-</table>
-</div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-When the default conversion kicks in, you can use the <code>spring.boot.admin.discovery.converter.*</code> properties to control the conversion for all your instances.
+If you want to customize the default conversion of services you can either add <code>health.path</code> and/or <code>mangament.context-path</code> entries to the services metadata. This allows you to set the health or management path per application. In case you want to configure this for all of your discovered services, you can use the <code>spring.boot.admin.discovery.converter.*</code>-properties for your Spring Boot Admin Server configuration. The services' metadata takes precedence over the server configuration.
 </td>
 </tr>
 </table>
@@ -951,11 +943,6 @@ When the default conversion kicks in, you can use the <code>spring.boot.admin.di
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.discovery.management.context-path <em>(deprecated)</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">If set this will be appended to the service-url from the discovery information.</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.discovery.converter.management-context-path</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Will be appended to the service-url of the discovered service when the managment-url is converted by the <code>DefaultServiceInstanceConverter</code>.</p></td>
 <td class="tableblock halign-left valign-top"></td>
@@ -964,6 +951,11 @@ When the default conversion kicks in, you can use the <code>spring.boot.admin.di
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.discovery.converter.health-endpoint</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Will be appended to the management-url of the discovered service when the health-url is converted by the <code>DefaultServiceInstanceConverter</code>.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>"health"</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.discovery.ignored-services</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">This services will be ignored when using discovery and not registered as application.</p></td>
+<td class="tableblock halign-left valign-top"></td>
 </tr>
 </tbody>
 </table>
