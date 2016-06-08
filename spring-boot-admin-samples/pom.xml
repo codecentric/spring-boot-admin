@@ -18,6 +18,7 @@
         <module>spring-boot-admin-sample-war</module>
         <module>spring-boot-admin-sample-eureka</module>
         <module>spring-boot-admin-sample-consul</module>
+        <module>spring-boot-admin-sample-zookeeper</module>
         <module>spring-boot-admin-sample-hazelcast</module>
     </modules>
 </project>

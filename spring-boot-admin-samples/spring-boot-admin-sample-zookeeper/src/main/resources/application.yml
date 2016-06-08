@@ -1,0 +1,19 @@
+info:
+  version: 1.0.0
+
+spring:
+  application:
+    name: zookeeper-example
+  cloud:
+    config:
+      enabled: false
+    zookeeper:
+      connect-string: localhost:2181
+      discovery:
+        metadata:
+          management.context-path: /foo
+          health.path: /ping
+
+management.context-path: /foo
+endpoints.health.path: /ping
+
