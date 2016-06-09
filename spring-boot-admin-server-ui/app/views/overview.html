@@ -23,9 +23,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="application in applications|orderBy:order.column:order.descending|orderBy:'statusInfo.status':false|filter:searchFilter track by application.id"
-			ng-click="$state.go('apps.details.metrics', {id: application.id})"
-			>
+			<tr ng-repeat="application in applications|orderBy:order.column:order.descending|orderBy:'statusInfo.status':false|filter:searchFilter track by application.id">
 				<td>{{ application.name }}<br/><span class="muted">{{ application.serviceUrl || application.managementUrl || application.healthUrl }}</span></td>
 				<td>{{ application.version }}</td>
 				<td><span style="white-space: pre" ng-init="collapsed = true">{{application.infoShort}}</span>
