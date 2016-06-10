@@ -15,9 +15,8 @@
  */
 package de.codecentric.boot.admin.discovery;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import de.codecentric.boot.admin.model.Application;
+import de.codecentric.boot.admin.registry.ApplicationRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.ServiceInstance;
@@ -28,8 +27,8 @@ import org.springframework.cloud.client.discovery.event.InstanceRegisteredEvent;
 import org.springframework.cloud.client.discovery.event.ParentHeartbeatEvent;
 import org.springframework.context.event.EventListener;
 
-import de.codecentric.boot.admin.model.Application;
-import de.codecentric.boot.admin.registry.ApplicationRegistry;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Listener for Heartbeats events to publish all services to the application registry.
@@ -38,7 +37,7 @@ import de.codecentric.boot.admin.registry.ApplicationRegistry;
  */
 public class ApplicationDiscoveryListener {
 	private static final Logger LOGGER = LoggerFactory
-			.getLogger(ApplicationDiscoveryListener.class);
+		.getLogger(ApplicationDiscoveryListener.class);
 	private final DiscoveryClient discoveryClient;
 	private final ApplicationRegistry registry;
 	private final HeartbeatMonitor monitor = new HeartbeatMonitor();
@@ -50,7 +49,7 @@ public class ApplicationDiscoveryListener {
 	private Set<String> ignoredServices = new HashSet<>();
 
 	public ApplicationDiscoveryListener(DiscoveryClient discoveryClient,
-			ApplicationRegistry registry) {
+	                                    ApplicationRegistry registry) {
 		this.discoveryClient = discoveryClient;
 		this.registry = registry;
 	}
@@ -77,26 +76,38 @@ public class ApplicationDiscoveryListener {
 	}
 
 	protected void discover() {
+		final Set<String> currentApplications = new HashSet<>();
 		for (String serviceId : discoveryClient.getServices()) {
 			for (ServiceInstance instance : discoveryClient.getInstances(serviceId)) {
 				if (!ignoredServices.contains(serviceId)) {
-					register(instance);
+					final Application application = register(instance);
+					if (application != null) {
+						currentApplications.add(application.getId());
+					}
 				}
+			}
+		}
+		for (Application application : registry.getApplications()) {
+			if (!currentApplications.contains(application.getId())) {
+				LOGGER.info("Application {} not present in DiscoveryClient''s services: removing from registry.", application);
+				registry.deregister(application.getId());
+
 			}
 		}
 	}
 
-	protected void register(ServiceInstance instance) {
+	protected Application register(ServiceInstance instance) {
 		try {
 			Application application = converter.convert(instance);
 			if (application != null) {
-				registry.register(application);
+				return registry.register(application);
 			} else {
 				LOGGER.warn("No application for service {} registered", instance);
 			}
 		} catch (Exception ex) {
 			LOGGER.error("Couldn't register application for service {}", instance, ex);
 		}
+		return null;
 	}
 
 	public void setConverter(ServiceInstanceConverter converter) {
