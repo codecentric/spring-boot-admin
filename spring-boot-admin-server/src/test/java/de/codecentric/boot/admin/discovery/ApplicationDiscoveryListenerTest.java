@@ -19,7 +19,9 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -90,6 +92,26 @@ public class ApplicationDiscoveryListenerTest {
 
 		listener.onApplicationEvent(new HeartbeatEvent(new Object(), heartbeat));
 		assertEquals(0, registry.getApplications().size());
+
+		listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
+		assertEquals(1, registry.getApplications().size());
+	}
+
+	@Test
+	public void deregister_removed_app() {
+		Object heartbeat = new Object();
+
+		List<ServiceInstance> instances = new ArrayList<>();
+		instances.add(new DefaultServiceInstance("service", "localhost", 80, false));
+		instances.add(new DefaultServiceInstance("service", "example.net", 80, false));
+
+		when(discovery.getServices()).thenReturn(Collections.singletonList("service"));
+		when(discovery.getInstances("service")).thenReturn(instances);
+
+		listener.onApplicationEvent(new HeartbeatEvent(new Object(), heartbeat));
+		assertEquals(2, registry.getApplications().size());
+
+		instances.remove(0);
 
 		listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
 		assertEquals(1, registry.getApplications().size());
