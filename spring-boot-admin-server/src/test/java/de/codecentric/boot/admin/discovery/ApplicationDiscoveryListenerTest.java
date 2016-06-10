@@ -88,7 +88,7 @@ public class ApplicationDiscoveryListenerTest {
 
 		when(discovery.getServices()).thenReturn(Collections.singletonList("service"));
 		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
-			(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
+				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
 
 		listener.onApplicationEvent(new HeartbeatEvent(new Object(), heartbeat));
 		assertEquals(0, registry.getApplications().size());

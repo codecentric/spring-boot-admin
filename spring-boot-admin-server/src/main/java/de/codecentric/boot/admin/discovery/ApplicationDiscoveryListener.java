@@ -15,8 +15,9 @@
  */
 package de.codecentric.boot.admin.discovery;
 
-import de.codecentric.boot.admin.model.Application;
-import de.codecentric.boot.admin.registry.ApplicationRegistry;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.ServiceInstance;
@@ -27,8 +28,8 @@ import org.springframework.cloud.client.discovery.event.InstanceRegisteredEvent;
 import org.springframework.cloud.client.discovery.event.ParentHeartbeatEvent;
 import org.springframework.context.event.EventListener;
 
-import java.util.HashSet;
-import java.util.Set;
+import de.codecentric.boot.admin.model.Application;
+import de.codecentric.boot.admin.registry.ApplicationRegistry;
 
 /**
  * Listener for Heartbeats events to publish all services to the application registry.
@@ -37,7 +38,7 @@ import java.util.Set;
  */
 public class ApplicationDiscoveryListener {
 	private static final Logger LOGGER = LoggerFactory
-		.getLogger(ApplicationDiscoveryListener.class);
+			.getLogger(ApplicationDiscoveryListener.class);
 	private final DiscoveryClient discoveryClient;
 	private final ApplicationRegistry registry;
 	private final HeartbeatMonitor monitor = new HeartbeatMonitor();
@@ -49,7 +50,7 @@ public class ApplicationDiscoveryListener {
 	private Set<String> ignoredServices = new HashSet<>();
 
 	public ApplicationDiscoveryListener(DiscoveryClient discoveryClient,
-	                                    ApplicationRegistry registry) {
+			ApplicationRegistry registry) {
 		this.discoveryClient = discoveryClient;
 		this.registry = registry;
 	}
