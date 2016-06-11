@@ -77,26 +77,42 @@ public class ApplicationDiscoveryListener {
 	}
 
 	protected void discover() {
+		final Set<String> staleApplicationIds = getAllApplicationIdsFromRegistry();
 		for (String serviceId : discoveryClient.getServices()) {
-			for (ServiceInstance instance : discoveryClient.getInstances(serviceId)) {
-				if (!ignoredServices.contains(serviceId)) {
-					register(instance);
+			if (!ignoredServices.contains(serviceId)) {
+				for (ServiceInstance instance : discoveryClient.getInstances(serviceId)) {
+					String applicationId = register(instance);
+					staleApplicationIds.remove(applicationId);
 				}
 			}
 		}
+		for (String staleApplicationId : staleApplicationIds) {
+			LOGGER.info("Application ({}) missing in DiscoveryClient services ",
+					staleApplicationId);
+			registry.deregister(staleApplicationId);
+		}
 	}
 
-	protected void register(ServiceInstance instance) {
+	protected final Set<String> getAllApplicationIdsFromRegistry() {
+		Set<String> result = new HashSet<>();
+		for (Application application : registry.getApplications()) {
+			result.add(application.getId());
+		}
+		return result;
+	}
+
+	protected String register(ServiceInstance instance) {
 		try {
 			Application application = converter.convert(instance);
 			if (application != null) {
-				registry.register(application);
+				return registry.register(application).getId();
 			} else {
 				LOGGER.warn("No application for service {} registered", instance);
 			}
 		} catch (Exception ex) {
 			LOGGER.error("Couldn't register application for service {}", instance, ex);
 		}
+		return null;
 	}
 
 	public void setConverter(ServiceInstanceConverter converter) {
