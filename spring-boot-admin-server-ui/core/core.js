@@ -23,6 +23,7 @@ require('bootstrap-responsive.css');
 require('bootstrap.css');
 
 require('font-awesome/css/font-awesome.css');
+require('googlefonts.css');
 require('./css/core.css');
 
 

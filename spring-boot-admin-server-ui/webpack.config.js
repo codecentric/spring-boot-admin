@@ -68,6 +68,7 @@ module.exports = {
       bootstrap: path.resolve(ROOT, 'third-party/bootstrap/js/bootstrap.js'),
       'bootstrap.css': path.resolve(ROOT, 'third-party/bootstrap/css/bootstrap.css'),
       'bootstrap-responsive.css': path.resolve(ROOT, 'third-party/bootstrap/css/bootstrap-responsive.css'),
+      'googlefonts.css': path.resolve(ROOT, 'third-party/googlefonts/googlefonts.css'),
       jolokia: path.resolve(ROOT, 'modules/applications-jmx/third-party/jolokia.js')
     }
   },
