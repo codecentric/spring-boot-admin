@@ -42,7 +42,7 @@ public class ApplicationRouteLocatorTest {
 	public void setup() {
 		registry = mock(ApplicationRegistry.class);
 		locator = new ApplicationRouteLocator("/", registry, "/api/applications/");
-		locator.setProxyEndpoints(new String[] { "env" });
+		locator.setEndpoints(new String[] { "env" });
 	}
 
 	@Test

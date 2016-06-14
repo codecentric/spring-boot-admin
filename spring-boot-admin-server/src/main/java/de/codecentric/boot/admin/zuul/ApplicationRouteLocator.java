@@ -48,7 +48,11 @@ public class ApplicationRouteLocator implements RefreshableRouteLocator {
 
 	private String prefix;
 	private String servletPath;
-	private String[] proxyEndpoints = { "env", "metrics", "trace", "dump", "jolokia", "info",
+
+	/**
+	 * Endpoints to be proxified by spring boot admin.
+	 */
+	private String[] endpoints = { "env", "metrics", "trace", "dump", "jolokia", "info",
 			"configprops", "trace", "activiti", "logfile", "refresh", "flyway", "liquibase" };
 
 	public ApplicationRouteLocator(String servletPath, ApplicationRegistry registry,
@@ -62,13 +66,13 @@ public class ApplicationRouteLocator implements RefreshableRouteLocator {
 		Collection<Application> applications = registry.getApplications();
 
 		List<Route> locateRoutes = new ArrayList<Route>(
-				applications.size() * (proxyEndpoints.length + 1));
+				applications.size() * (endpoints.length + 1));
 
 		for (Application application : applications) {
 			addRoute(locateRoutes, application.getId(), "health", application.getHealthUrl());
 
 			if (!StringUtils.isEmpty(application.getManagementUrl())) {
-				for (String endpoint : proxyEndpoints) {
+				for (String endpoint : endpoints) {
 					addRoute(locateRoutes, application.getId(), endpoint,
 							application.getManagementUrl() + "/" + endpoint);
 				}
@@ -80,8 +84,9 @@ public class ApplicationRouteLocator implements RefreshableRouteLocator {
 
 	private void addRoute(List<Route> locateRoutes, String applicationId, String endpoint,
 			String targetUrl) {
-		Route route = new Route(applicationId + "-" + endpoint, "/**", targetUrl,
-				prefix + applicationId + "/" + endpoint, false, null);
+		String routeId = applicationId + "-" + endpoint;
+		Route route = new Route(routeId, "/**", targetUrl, prefix + applicationId + "/" + endpoint,
+				false, null);
 		locateRoutes.add(route);
 	}
 
@@ -138,12 +143,12 @@ public class ApplicationRouteLocator implements RefreshableRouteLocator {
 		return Collections.emptyList();
 	}
 
-	public void setProxyEndpoints(String[] proxyEndpoints) {
+	public void setEndpoints(String[] proxyEndpoints) {
 		for (String endpoint : proxyEndpoints) {
 			Assert.hasText(endpoint, "The proxyEndpoints must not contain null");
 			Assert.isTrue(!endpoint.startsWith("/"), "All proxyEndpoints must not start with '/'");
 		}
-		this.proxyEndpoints = proxyEndpoints.clone();
+		this.endpoints = proxyEndpoints.clone();
 	}
 
 	private String stripServletPath(final String path) {

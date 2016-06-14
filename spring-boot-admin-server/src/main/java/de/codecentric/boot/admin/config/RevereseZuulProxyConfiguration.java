@@ -20,6 +20,7 @@ import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.netflix.zuul.RoutesEndpoint;
 import org.springframework.cloud.netflix.zuul.ZuulConfiguration;
 import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
@@ -55,6 +56,7 @@ public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
 
 	@Bean
 	@Override
+	@ConfigurationProperties("spring.boot.admin.routes")
 	public ApplicationRouteLocator routeLocator() {
 		return new ApplicationRouteLocator(this.server.getServletPrefix(), registry,
 				adminServer.getContextPath() + "/api/applications/");
