@@ -272,7 +272,7 @@ The setup is explained <<discover-clients-via-spring-cloud-discovery,above>>.
 
 The informations from the discovered services are converted by the `ServiceInstanceConverter`. Spring Boot Admin ships with a default and Eureka converter implementation. The correct one is selected by AutoConfiguration. You can use your own conversion by implementing the interface and adding the bean to your application context.
 
-TIP: If you want to customize the default conversion of services you can either add `health.path` and/or `mangament.context-path` entries to the services metadata. This allows you to set the health or management path per application. In case you want to configure this for all of your discovered services, you can use the `spring.boot.admin.discovery.converter.*`-properties for your Spring Boot Admin Server configuration. The services' metadata takes precedence over the server configuration.
+TIP: If you want to customize the default conversion of services you can either add `health.path` and/or `mangament.context-path` entries to the services metadata. This allows you to set the health or management path per application. In case you want to configure this for all of your discovered services, you can use the `spring.boot.admin.discovery.converter.*` properties for your Spring Boot Admin Server configuration. The services' metadata takes precedence over the server configuration. For the health-url the `EurekaServiceInstanceConverter` uses the healthCheckUrl registered in Eureka, which can be set for your client via `eureka.instance.healthCheckUrl`.
 
 .Discovery configuration options
 |===
