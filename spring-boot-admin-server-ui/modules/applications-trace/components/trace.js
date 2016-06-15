@@ -15,6 +15,8 @@
  */
 'use strict';
 
+require('./trace.css');
+
 module.exports = {
   bindings: {
     trace: '<value'

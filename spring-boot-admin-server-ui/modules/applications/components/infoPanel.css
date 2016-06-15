@@ -1,0 +1,14 @@
+.info-panel {
+  border: 1px solid #34302D;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+.info-panel .info-panel-title {
+  background-color: #34302D;
+  border-color: #34302D;
+  color: #f1f1f1;
+  padding: 8px 15px;
+}
+.info-panel-content .table {
+  margin-bottom: 0;
+}

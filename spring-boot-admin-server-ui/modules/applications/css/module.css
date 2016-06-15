@@ -11,21 +11,29 @@
   border-bottom: 1px solid #34302D;
   box-shadow: none;
 }
-.header--application .nav > li > a {
-  color: #888;
-}
+
 .header--application .nav-tabs {
   border: 0;
 }
-.header--application .nav-tabs > li > a {
+
+.header--application .nav > li > a  {
+  color: #c7c7c7;
+}
+
+.header--application .nav > li > a:hover,
+.header--application .nav > li > a:focus,
+.header--application .nav-tabs > li > a:hover,
+.header--application .nav-tabs > li > a:focus {
+  color: #f1f1f1;
+}
+
+.header--application .nav-tabs > li > a,
+.header--application .nav-tabs > li > a:hover,
+.header--application .nav-tabs > li > a:focus  {
+  background-color: #666;
   border: 0;
   padding: 9px 13px 8px 13px;
   border-bottom: 1px solid #34302D;
-}
-.header--application .nav-tabs > li > a:hover,
-.header--application .nav-tabs > li > a:focus {
-  background-color: #666;
-  color: #ebf1e7;
 }
 .header--application .nav-tabs > .active > a,
 .header--application .nav-tabs > .active > a:hover,
@@ -39,13 +47,12 @@
   padding: 5px 12px 8px 12px;
 }
 .header--application .application--status {
-  color: #ebf1e7;
   font-size: 24px;
   line-height: 24px;
   margin: 20px;
 }
 .header--application .application--title {
-  color: #ebf1e7;
+  color: #f1f1f1;
   font-size: 24px;
   line-height: 24px;
   margin: 20px 20px 20px 0;
@@ -59,11 +66,11 @@
   height: 0px;
 }
 .application--urls > li >a {
-  color: #888;
+  color: #f1f1f1;
 }
 .application--urls > li > a:hover,
 .application--urls > li > a:focus {
-  color: #ebf1e7;
+  color: #c7c7c7;
   text-decoration: none;
 }
 
@@ -102,40 +109,3 @@
   font-weight: bold;
   color: #FF8800;
 }
-
-/* ---------- */
-
-.info-panel {
-  border: 1px solid #34302D;
-  border-radius: 4px;
-  margin-bottom: 12px;
-}
-.info-panel .info-panel-title {
-  background-color: #34302D;
-  border-color: #34302D;
-  color: #f1f1f1;
-  padding: 8px 15px;
-}
-.info-panel-content .table {
-  margin-bottom: 0;
-}
-
-/* ---------- */
-
-.accordion-heading,
-.accordion-heading > a,
-.accordion-heading > a:hover,
-.accordion-heading > a:focus {
-  background-color: #34302D;
-  border-color: #34302D;
-  color: #f1f1f1;
-}
-.accordion-group {
-  border: 1px solid #34302D;
-}
-
-/* ---------- */
-
-  .popover {
-    max-width: none !important;
-  }

@@ -1,0 +1,62 @@
+.trace-event {
+  position: relative;
+  width: 100%;
+  display: inline-block;
+  left: 15px;
+  padding-left: 5px;
+  cursor: pointer;
+}
+.trace-event .time {
+  position: absolute;
+  left: -120px;
+  margin-left: -25px;
+  display: inline-block;
+  vertical-align: middle;
+  text-align: right;
+  width: 120px;
+}
+.trace-event:before {
+  box-sizing: border-box;
+  content: ' ';
+  display: block;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 10px;
+  border: 4px solid #6db33f;
+  z-index: 10;
+  position: absolute;
+  left: -6px;
+  margin-left: -15px;
+}
+.trace-event.http-4xx:before {
+  border-color: #e0ba2d;
+}
+.trace-event.http-4xx > .title > .status {
+  color: #e0ba2d;
+}
+.trace-event.http-5xx:before {
+  border-color: #b30000;
+}
+.trace-event.http-5xx > .title > .status {
+  color: #b30000;
+}
+.trace-event.http-1xx:before,
+.trace-event.http-2xx:before,
+.trace-event.http-3xx:before {
+  border-color: #6db33f;
+}
+.trace-event.http-1xx > .title > .status,
+.trace-event.http-2xx > .title > .status,
+.trace-event.http-3xx > .title > .status {
+  color: #6db33f;
+}
+.trace-event.unknown:before {
+  border-color: #999999;
+}
+.trace-event.unknown > .title > .status {
+  color: #999999;
+}
+.trace-event:hover:before {
+  background: #ccc;
+}

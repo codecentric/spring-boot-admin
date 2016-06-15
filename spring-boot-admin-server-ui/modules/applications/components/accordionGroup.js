@@ -15,7 +15,10 @@
  */
 'use strict';
 
+require('./accordionGroup.css');
+
 var id = 0;
+
 module.exports = {
   transclude: {
     heading: 'sbaAccordionHeading',

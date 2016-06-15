@@ -15,6 +15,8 @@
  */
 'use strict';
 
+require('./infoPanel.css');
+
 module.exports = {
   transclude: true,
   bindings: {

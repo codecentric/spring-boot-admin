@@ -15,6 +15,8 @@
  */
 'use strict';
 
+require('./healthStatus.css');
+
 module.exports = {
   bindings: {
     health: '<health'

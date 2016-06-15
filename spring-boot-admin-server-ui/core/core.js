@@ -27,8 +27,6 @@ require('googlefonts.css');
 require('./css/core.css');
 
 
-
-
 var angular = require('angular');
 var module = angular.module('sba-core', [require('angular-ui-router')]);
 global.sbaModules.push(module.name);

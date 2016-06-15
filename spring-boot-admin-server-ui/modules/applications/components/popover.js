@@ -15,6 +15,8 @@
  */
 'use strict';
 
+require('./popover.css');
+
 module.exports = {
   transclude: true,
   bindings: {

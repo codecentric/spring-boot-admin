@@ -35,8 +35,6 @@ module.component('sbaServletContainerStats', require('./components/servletContai
 module.component('sbaDatasourceStats', require('./components/datasourceStats.js'));
 module.component('sbaCacheStats', require('./components/cacheStats.js'));
 
-require('./css/module.css');
-
 module.config(function ($stateProvider) {
   $stateProvider.state('applications.details', {
     url: '/details',
