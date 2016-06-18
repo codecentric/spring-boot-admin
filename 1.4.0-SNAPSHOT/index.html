@@ -510,14 +510,14 @@ table.CodeRay td.code>pre{padding:0}
 .CodeRay .head .head{color:#f4f}
 </style>
 </head>
-<body class="book toc2 toc-right">
+<body class="book toc2 toc-left">
 <div id="header">
 <h1>Spring Boot Admin Reference Guide</h1>
 <div class="details">
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 1.4.0-SNAPSHOT,</span>
-<span id="revdate">15.06.2016</span>
+<span id="revdate">18.06.2016</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -526,7 +526,12 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#getting-started">2. Getting started</a>
 <ul class="sectlevel2">
 <li><a href="#set-up-admin-server">2.1. Set up admin server</a></li>
-<li><a href="#register-client-applications">2.2. Register client applications</a></li>
+<li><a href="#register-client-applications">2.2. Register client applications</a>
+<ul class="sectlevel3">
+<li><a href="#register-clients-via-spring-boot-admin">2.2.1. spring-boot-admin-starter-client</a></li>
+<li><a href="#discover-clients-via-spring-cloud-discovery">2.2.2. Spring Cloud Discovery</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#client-applications">3. Client applications</a>
@@ -539,9 +544,22 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 <li><a href="#spring-boot-admin-server">4. Spring Boot Admin Server</a>
 <ul class="sectlevel2">
-<li><a href="#spring-cloud-discovery-support">4.1. Spring Cloud Discovery support</a></li>
-<li><a href="#hazelcast-support">4.2. Hazelcast support</a></li>
-<li><a href="#_notifications">4.3. Notifications</a></li>
+<li><a href="#spring-cloud-discovery-support">4.1. Spring Cloud Discovery</a>
+<ul class="sectlevel3">
+<li><a href="#_serviceinstanceconverter">4.1.1. ServiceInstanceConverter</a></li>
+</ul>
+</li>
+<li><a href="#clustering-support">4.2. Clustering</a></li>
+<li><a href="#_notifications">4.3. Notifications</a>
+<ul class="sectlevel3">
+<li><a href="#_reminder_notifications">4.3.1. Reminder notifications</a></li>
+<li><a href="#filtering-notifications">4.3.2. Filtering notifications</a></li>
+<li><a href="#mail-notifications">4.3.3. Mail notifications</a></li>
+<li><a href="#pagerduty-notifications">4.3.4. Pagerduty notifications</a></li>
+<li><a href="#_hipchat_notifications">4.3.5. Hipchat notifications</a></li>
+<li><a href="#_slack_notifications">4.3.6. Slack notifications</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#faqs">5. FAQs</a></li>
@@ -627,7 +645,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 Either you can include the <code>spring-boot-admin</code> client or use <a href="http://projects.spring.io/spring-cloud/spring-cloud.html">Spring Cloud Discovery</a> (e.g. Eureka)</p>
 </div>
 <div class="sect3">
-<h4 id="register-clients-via-spring-boot-admin"><a class="anchor" href="#register-clients-via-spring-boot-admin"></a>2.2.1. Register clients via spring-boot-admin-client</h4>
+<h4 id="register-clients-via-spring-boot-admin"><a class="anchor" href="#register-clients-via-spring-boot-admin"></a>2.2.1. spring-boot-admin-starter-client</h4>
 <div class="paragraph">
 <p>Each application that want to register itself to the admin has to include the Spring Boot Admin Client.</p>
 </div>
@@ -659,7 +677,7 @@ Either you can include the <code>spring-boot-admin</code> client or use <a href=
 </div>
 </div>
 <div class="sect3">
-<h4 id="discover-clients-via-spring-cloud-discovery"><a class="anchor" href="#discover-clients-via-spring-cloud-discovery"></a>2.2.2. Discover clients via Spring Cloud Discovery</h4>
+<h4 id="discover-clients-via-spring-cloud-discovery"><a class="anchor" href="#discover-clients-via-spring-cloud-discovery"></a>2.2.2. Spring Cloud Discovery</h4>
 <div class="paragraph">
 <p>If you already using Spring Cloud Discovery for your applications you don&#8217;t have to add the Spring Boot Admin Client to your applications. Just make the Spring Boot Admin Server a DiscoveryClient, the rest is done by our AutoConfiguration.</p>
 </div>
@@ -905,16 +923,21 @@ spring.boot.admin.password</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Lifetime of application statuses in ms. The applications /health-endpoint will not be queried until the lifetime has expired.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">10.000</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.routes.endpoints</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The enpoints which will be available via spring boot admin zuul proxy. If you write ui modules using other endpoints you need to add them.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"env, metrics, trace, dump, jolokia, info, configprops, trace, activiti, logfile, refresh, flyway, liquibase"</code></p></td>
+</tr>
 </tbody>
 </table>
 <div class="sect2">
-<h3 id="spring-cloud-discovery-support"><a class="anchor" href="#spring-cloud-discovery-support"></a>4.1. Spring Cloud Discovery support</h3>
+<h3 id="spring-cloud-discovery-support"><a class="anchor" href="#spring-cloud-discovery-support"></a>4.1. Spring Cloud Discovery</h3>
 <div class="paragraph">
 <p>The Spring Boot Admin Server is capable of using  Spring Clouds <code>DiscoveryClient</code> to discover applications. The advantage is that the clients don&#8217;t have to include the <code>spring-boot-admin-starter-client</code>. You just have to add a DiscoveryClient to your admin server - everything else is done by AutoConfiguration.
 The setup is explained <a href="#discover-clients-via-spring-cloud-discovery">above</a>.</p>
 </div>
 <div class="sect3">
-<h4 id="_usage_of_discovery_informations"><a class="anchor" href="#_usage_of_discovery_informations"></a>4.1.1. Usage of discovery informations</h4>
+<h4 id="_serviceinstanceconverter"><a class="anchor" href="#_serviceinstanceconverter"></a>4.1.1. ServiceInstanceConverter</h4>
 <div class="paragraph">
 <p>The informations from the discovered services are converted by the <code>ServiceInstanceConverter</code>. Spring Boot Admin ships with a default and Eureka converter implementation. The correct one is selected by AutoConfiguration. You can use your own conversion by implementing the interface and adding the bean to your application context.</p>
 </div>
@@ -970,9 +993,9 @@ If you want to customize the default conversion of services you can either add <
 </div>
 </div>
 <div class="sect2">
-<h3 id="hazelcast-support"><a class="anchor" href="#hazelcast-support"></a>4.2. Hazelcast support</h3>
+<h3 id="clustering-support"><a class="anchor" href="#clustering-support"></a>4.2. Clustering</h3>
 <div class="paragraph">
-<p>Spring Boot Admin Server supports cluster replication with Hazelcast. It is automatically enabled when a <code>HazelcastConfig</code>- or <code>HazelcastInstance</code>-Bean is present. You can also configure the Hazelcast instance to be persistent, to keep the status over restarts.
+<p>Spring Boot Admin Server supports cluster replication via Hazelcast. It is automatically enabled when a <code>HazelcastConfig</code>- or <code>HazelcastInstance</code>-Bean is present. You can also configure the Hazelcast instance to be persistent, to keep the status over restarts.
 Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-hazelcast/">Spring Boot support for Hazelcast</a>.</p>
 </div>
 <div class="olist arabic">
@@ -1053,7 +1076,120 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <div class="sect2">
 <h3 id="_notifications"><a class="anchor" href="#_notifications"></a>4.3. Notifications</h3>
 <div class="sect3">
-<h4 id="mail-notifications"><a class="anchor" href="#mail-notifications"></a>4.3.1. Mail notifications</h4>
+<h4 id="_reminder_notifications"><a class="anchor" href="#_reminder_notifications"></a>4.3.1. Reminder notifications</h4>
+<div class="paragraph">
+<p>The <code>RemindingNotifier</code> sends reminders for down/offline applications, it delegates the sending of notifications to another notifier.</p>
+</div>
+<div class="paragraph">
+<p>By default a reminder is triggered when a registered application changes to <code>DOWN</code> or <code>OFFLINE</code>. You can alter this behaviour via <code>setReminderStatuses()</code>. The reminder ends when either the status changes to a non-triggering status or the regarding application gets deregistered.</p>
+</div>
+<div class="paragraph">
+<p>By default the reminders are sent every 10 minutes, to change this use <code>setReminderPeriod()</code>. The <code>RemindingNotifier</code> itself doesn&#8217;t start the background thread to send the reminders, you need to take care of this as shown in the given example below;</p>
+</div>
+<div class="listingblock">
+<div class="title">How to configure reminders</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
+<span class="annotation">@EnableScheduling</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">NotifierConfiguration</span> {
+    <span class="annotation">@Autowired</span>
+    <span class="directive">private</span> Notifier notifier;
+
+    <span class="annotation">@Bean</span>
+    <span class="annotation">@Primary</span>
+    <span class="directive">public</span> RemindingNotifier remindingNotifier() {
+        RemindingNotifier remindingNotifier = <span class="keyword">new</span> RemindingNotifier(notifier);
+        remindingNotifier.setReminderPeriod(<span class="predefined-type">TimeUnit</span>.MINUTES.toMillis(<span class="integer">5</span>)); <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="keyword">return</span> remindingNotifier;
+    }
+
+    <span class="annotation">@Scheduled</span>(fixedRate = <span class="integer">60</span>_000L) <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="directive">public</span> <span class="type">void</span> remind() {
+        remindingNotifier().sendReminders();
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The reminders will be sent every 5 minutes.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Schedules sending of due reminders every 60 seconds.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="filtering-notifications"><a class="anchor" href="#filtering-notifications"></a>4.3.2. Filtering notifications</h4>
+<div class="paragraph">
+<p>The <code>FilteringNotifier</code> allows you to filter certain notification based on rules you can add/remove at runtime. It delegates the sending of notifications to another notifier.</p>
+</div>
+<div class="paragraph">
+<p>If you add a <code>FilteringNotifier</code> to your <code>ApplicationContext</code> a RESTful interface on <code>api/notifications/filter</code> gets available. When this happens the ui shows options to manage the filters.</p>
+</div>
+<div class="paragraph">
+<p>This notifier is useful if you don&#8217;t want recieve notifications when deploying your applications. Before stopping the application you can add an (expiring) filter either via a <code>POST</code> request or the ui.</p>
+</div>
+<div class="listingblock">
+<div class="title">How to configure filtering</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
+<span class="annotation">@EnableScheduling</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">NotifierConfiguration</span> {
+        <span class="annotation">@Autowired</span>
+        <span class="directive">private</span> Notifier delegate;
+
+        <span class="annotation">@Bean</span>
+        <span class="directive">public</span> FilteringNotifier filteringNotifier() { <i class="conum" data-value="1"></i><b>(1)</b>
+                <span class="keyword">return</span> <span class="keyword">new</span> FilteringNotifier(delegate);
+        }
+
+        <span class="annotation">@Bean</span>
+        <span class="annotation">@Primary</span>
+        <span class="directive">public</span> RemindingNotifier remindingNotifier() { <i class="conum" data-value="2"></i><b>(2)</b>
+                RemindingNotifier notifier = <span class="keyword">new</span> RemindingNotifier(filteringNotifier());
+                notifier.setReminderPeriod(<span class="predefined-type">TimeUnit</span>.SECONDS.toMillis(<span class="integer">10</span>));
+                <span class="keyword">return</span> notifier;
+        }
+
+        <span class="annotation">@Scheduled</span>(fixedRate = <span class="integer">1</span>_000L)
+        <span class="directive">public</span> <span class="type">void</span> remind() {
+                remindingNotifier().sendReminders();
+        }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Add the <code>FilteringNotifier</code> bean using a delegate (e.g. <code>MailNotifier</code> when configured)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Add the <code>RemindingNotifier</code> as primary bean using the <code>FilteringNotifier</code> as delegate.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+This examples combines the reminding and filtering notifiers. This allows you to get notifications after the deployed applications hasn&#8217;t restarted in a certain amount of time (until the filter expires).
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="mail-notifications"><a class="anchor" href="#mail-notifications"></a>4.3.3. Mail notifications</h4>
 <div class="paragraph">
 <p>Configure a <code>JavaMailSender</code> using <code>spring-boot-starter-mail</code> and set a recipient.</p>
 </div>
@@ -1127,7 +1263,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="pagerduty-notifications"><a class="anchor" href="#pagerduty-notifications"></a>4.3.2. Pagerduty notifications</h4>
+<h4 id="pagerduty-notifications"><a class="anchor" href="#pagerduty-notifications"></a>4.3.4. Pagerduty notifications</h4>
 <div class="paragraph">
 <p>To enable pagerduty notifications you just have to add a generic service to your pagerduty-account and set <code>spring.boot.admin.notify.pagerduty.service-key</code> to the service-key you received.</p>
 </div>
@@ -1185,7 +1321,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_hipchat_notifications"><a class="anchor" href="#_hipchat_notifications"></a>4.3.3. Hipchat notifications</h4>
+<h4 id="_hipchat_notifications"><a class="anchor" href="#_hipchat_notifications"></a>4.3.5. Hipchat notifications</h4>
 <div class="paragraph">
 <p>To enable Hipchat notifications you need to create an API token from you Hipchat account and set the appropriate configuration properties.</p>
 </div>
@@ -1243,7 +1379,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_slack_notifications"><a class="anchor" href="#_slack_notifications"></a>4.3.4. Slack notifications</h4>
+<h4 id="_slack_notifications"><a class="anchor" href="#_slack_notifications"></a>4.3.6. Slack notifications</h4>
 <div class="paragraph">
 <p>To enable Slack notifications you need to add a incoming Webhook under custom integrations on your Slack
 account and configure it appropriately.</p>
@@ -1300,48 +1436,6 @@ account and configure it appropriately.</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="sect3">
-<h4 id="_reminder_notifications"><a class="anchor" href="#_reminder_notifications"></a>4.3.5. Reminder notifications</h4>
-<div class="paragraph">
-<p>To get reminders for down/offline applications you can add a <code>RemindingNotifier</code> to your <code>ApplicationContext</code>. The <code>RemindingNotifier</code> uses another <code>Notifier</code> as delegate to send the reminders.</p>
-</div>
-<div class="listingblock">
-<div class="title">How to configure reminders</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
-<span class="annotation">@EnableScheduling</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">ReminderConfiguration</span> {
-    <span class="annotation">@Autowired</span>
-    <span class="directive">private</span> Notifier notifier;
-
-    <span class="annotation">@Bean</span>
-    <span class="annotation">@Primary</span>
-    <span class="directive">public</span> RemindingNotifier remindingNotifier() {
-        RemindingNotifier remindingNotifier = <span class="keyword">new</span> RemindingNotifier(notifier);
-        remindingNotifier.setReminderPeriod(<span class="predefined-type">TimeUnit</span>.MINUTES.toMillis(<span class="integer">5</span>)); <i class="conum" data-value="1"></i><b>(1)</b>
-        <span class="keyword">return</span> remindingNotifier;
-    }
-
-    <span class="annotation">@Scheduled</span>(fixedRate = <span class="integer">60</span>_000L) <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="directive">public</span> <span class="type">void</span> remind() {
-        remindingNotifier().sendReminders();
-    }
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The reminders will be sent every 5 minutes.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Schedules sending of due reminders every 60 seconds.</td>
-</tr>
-</table>
-</div>
 </div>
 </div>
 </div>
