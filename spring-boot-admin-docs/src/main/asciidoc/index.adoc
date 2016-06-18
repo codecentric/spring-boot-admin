@@ -1,8 +1,9 @@
 = Spring Boot Admin Reference Guide =
 Johannes Edmeier <https://twitter.com/joshiste[@joshiste]>
-:revnumber: {project-version} 
+:revnumber: {project-version}
 :revdate: {commit-time}
-:toc: right
+:toc: left
+:toclevels: 3
 :doctype: book
 :sectanchors:
 :sectlinks:
@@ -68,7 +69,7 @@ To register your application at the admin server (next referred as "clients").
 Either you can include the `spring-boot-admin` client or use http://projects.spring.io/spring-cloud/spring-cloud.html[Spring Cloud Discovery] (e.g. Eureka)
 
 [[register-clients-via-spring-boot-admin]]
-==== Register clients via spring-boot-admin-client ====
+==== spring-boot-admin-starter-client ====
 
 Each application that want to register itself to the admin has to include the Spring Boot Admin Client.
 
@@ -93,11 +94,11 @@ spring.boot.admin.url=http://localhost:8080
 ----
 
 [[discover-clients-via-spring-cloud-discovery]]
-==== Discover clients via Spring Cloud Discovery ====
+==== Spring Cloud Discovery ====
 
 If you already using Spring Cloud Discovery for your applications you don't have to add the Spring Boot Admin Client to your applications. Just make the Spring Boot Admin Server a DiscoveryClient, the rest is done by our AutoConfiguration.
 
-The following steps are for using Eureka, but other Spring Cloud Discovery implementations are supported as well. There are examples using https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-consul/[Consul] and https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-zookeeper/[Zookeeper]. 
+The following steps are for using Eureka, but other Spring Cloud Discovery implementations are supported as well. There are examples using https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-consul/[Consul] and https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-zookeeper/[Zookeeper].
 
 Also have a look at the http://projects.spring.io/spring-cloud/spring-cloud.html[Spring Cloud documentation].
 
@@ -262,17 +263,17 @@ spring.boot.admin.password
 
 | spring.boot.admin.routes.endpoints
 | The enpoints which will be available via spring boot admin zuul proxy. If you write ui modules using other endpoints you need to add them.
-| `"env,metrics,trace,dump,jolokia,info,configprops,trace,activiti,logfile,refresh,flyway,liquibase"`
+| `"env, metrics, trace, dump, jolokia, info, configprops, trace, activiti, logfile, refresh, flyway, liquibase"`
 |===
 
 
 [[spring-cloud-discovery-support]]
-=== Spring Cloud Discovery support ===
+=== Spring Cloud Discovery ===
 
 The Spring Boot Admin Server is capable of using  Spring Clouds `DiscoveryClient` to discover applications. The advantage is that the clients don't have to include the `spring-boot-admin-starter-client`. You just have to add a DiscoveryClient to your admin server - everything else is done by AutoConfiguration.
 The setup is explained <<discover-clients-via-spring-cloud-discovery,above>>.
 
-==== Usage of discovery informations ====
+==== ServiceInstanceConverter ====
 
 The informations from the discovered services are converted by the `ServiceInstanceConverter`. Spring Boot Admin ships with a default and Eureka converter implementation. The correct one is selected by AutoConfiguration. You can use your own conversion by implementing the interface and adding the bean to your application context.
 
@@ -299,9 +300,9 @@ TIP: If you want to customize the default conversion of services you can either 
 |
 |===
 
-[[hazelcast-support]]
-=== Hazelcast support ===
-Spring Boot Admin Server supports cluster replication with Hazelcast. It is automatically enabled when a `HazelcastConfig`- or `HazelcastInstance`-Bean is present. You can also configure the Hazelcast instance to be persistent, to keep the status over restarts.
+[[clustering-support]]
+=== Clustering ===
+Spring Boot Admin Server supports cluster replication via Hazelcast. It is automatically enabled when a `HazelcastConfig`- or `HazelcastInstance`-Bean is present. You can also configure the Hazelcast instance to be persistent, to keep the status over restarts.
 Also have a look at the http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-hazelcast/[Spring Boot support for Hazelcast].
 
 . Add Hazelcast to your dependencies:
@@ -358,6 +359,81 @@ public class SpringBootAdminApplication {
 |===
 
 === Notifications ===
+
+[reminder-notifications]
+==== Reminder notifications ====
+The `RemindingNotifier` sends reminders for down/offline applications, it delegates the sending of notifications to another notifier.
+
+By default a reminder is triggered when a registered application changes to `DOWN` or `OFFLINE`. You can alter this behaviour via `setReminderStatuses()`. The reminder ends when either the status changes to a non-triggering status or the regarding application gets deregistered.
+
+By default the reminders are sent every 10 minutes, to change this use `setReminderPeriod()`. The `RemindingNotifier` itself doesn't start the background thread to send the reminders, you need to take care of this as shown in the given example below;
+
+.How to configure reminders
+[source,java]
+----
+@Configuration
+@EnableScheduling
+public class NotifierConfiguration {
+    @Autowired
+    private Notifier notifier;
+
+    @Bean
+    @Primary
+    public RemindingNotifier remindingNotifier() {
+        RemindingNotifier remindingNotifier = new RemindingNotifier(notifier);
+        remindingNotifier.setReminderPeriod(TimeUnit.MINUTES.toMillis(5)); // <1>
+        return remindingNotifier;
+    }
+
+    @Scheduled(fixedRate = 60_000L) // <2>
+    public void remind() {
+        remindingNotifier().sendReminders();
+    }
+}
+----
+<1> The reminders will be sent every 5 minutes.
+<2> Schedules sending of due reminders every 60 seconds.
+
+[[filtering-notifications]]
+==== Filtering notifications ====
+The `FilteringNotifier` allows you to filter certain notification based on rules you can add/remove at runtime. It delegates the sending of notifications to another notifier.
+
+If you add a `FilteringNotifier` to your `ApplicationContext` a RESTful interface on `api/notifications/filter` gets available. When this happens the ui shows options to manage the filters.
+
+This notifier is useful if you don't want recieve notifications when deploying your applications. Before stopping the application you can add an (expiring) filter either via a `POST` request or the ui.
+
+.How to configure filtering
+[source,java]
+----
+@Configuration
+@EnableScheduling
+public class NotifierConfiguration {
+	@Autowired
+	private Notifier delegate;
+
+	@Bean
+	public FilteringNotifier filteringNotifier() { // <1>
+		return new FilteringNotifier(delegate);
+	}
+
+	@Bean
+	@Primary
+	public RemindingNotifier remindingNotifier() { // <2>
+		RemindingNotifier notifier = new RemindingNotifier(filteringNotifier());
+		notifier.setReminderPeriod(TimeUnit.SECONDS.toMillis(10));
+		return notifier;
+	}
+
+	@Scheduled(fixedRate = 1_000L)
+	public void remind() {
+		remindingNotifier().sendReminders();
+	}
+}
+----
+<1> Add the `FilteringNotifier` bean using a delegate (e.g. `MailNotifier` when configured)
+<2> Add the `RemindingNotifier` as primary bean using the `FilteringNotifier` as delegate.
+
+TIP: This examples combines the reminding and filtering notifiers. This allows you to get notifications after the deployed applications hasn't restarted in a certain amount of time (until the filter expires).
 
 [[mail-notifications]]
 ==== Mail notifications ====
@@ -525,36 +601,6 @@ account and configure it appropriately.
 | `+++"*#{application.name}* (#{application.id}) is *#{to.status}*"+++`
 |
 |===
-
-[reminder-notifactaions]
-==== Reminder notifications ====
-To get reminders for down/offline applications you can add a `RemindingNotifier` to your `ApplicationContext`. The `RemindingNotifier` uses another `Notifier` as delegate to send the reminders.
-
-.How to configure reminders
-[source,java]
-----
-@Configuration
-@EnableScheduling
-public class ReminderConfiguration {
-    @Autowired
-    private Notifier notifier;
-
-    @Bean
-    @Primary
-    public RemindingNotifier remindingNotifier() {
-        RemindingNotifier remindingNotifier = new RemindingNotifier(notifier);
-        remindingNotifier.setReminderPeriod(TimeUnit.MINUTES.toMillis(5)); // <1>
-        return remindingNotifier;
-    }
-
-    @Scheduled(fixedRate = 60_000L) // <2>
-    public void remind() {
-        remindingNotifier().sendReminders();
-    }
-}
-----
-<1> The reminders will be sent every 5 minutes.
-<2> Schedules sending of due reminders every 60 seconds.
 
 [[faqs]]
 == FAQs ==
