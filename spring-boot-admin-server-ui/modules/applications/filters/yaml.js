@@ -21,7 +21,8 @@ module.exports = function () {
   return function (input) {
     return yaml.dump(input, {
       skipInvalid: true,
-      sort: true
+      sort: true,
+      lineWidth: Number.MAX_VALUE
     });
   };
 };

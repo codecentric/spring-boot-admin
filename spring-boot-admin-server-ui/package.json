@@ -12,13 +12,15 @@
   "dependencies": {
     "angular": "^1.5.6",
     "angular-resource": "^1.5.6",
+    "angular-sanitize": "^1.5.7",
     "angular-ui-router": "^0.3.1",
     "es5-shim": "^4.5.8",
     "font-awesome": "^4.6.3",
     "jquery": "^2.2.4",
     "js-yaml": "^3.6.1",
     "karma-chrome-launcher": "^1.0.1",
-    "karma-jasmine": "^1.0.2"
+    "karma-jasmine": "^1.0.2",
+    "linkifyjs": "^2.0.3"
   },
   "devDependencies": {
     "clean-webpack-plugin": "^0.1.9",

@@ -4,12 +4,7 @@
     <input placeholder="Filter" class="input-xxlarge" type="search" ng-model="searchFilter" />
   </div>
   <table class="table table-hover">
-    <col/>
-    <col/>
-    <col/>
-    <col/>
-    <col/>
-    <col style="width: 250px;" />
+
     <thead>
       <tr>
         <th><span class="sortable" ng-class="orderByCssClass('name')" ng-click="orderBy('name')">Application</span> /
@@ -25,11 +20,7 @@
         <td>{{ application.name }} ({{ application.id }})
           <br/><span class="muted">{{ application.serviceUrl || application.managementUrl || application.healthUrl }}</span></td>
         <td>{{ application.version }}</td>
-        <td><span style="white-space: pre" ng-init="collapsed = true">{{application.infoShort}}</span>
-          <a class="btn btn-mini" ng-show="application.infoDetails" ng-click="collapsed = !collapsed">...</a>
-          <br/>
-          <span style="white-space: pre" ng-hide="collapsed">{{application.infoDetails}}</span>
-        </td>
+        <td><pre class="pre-scrollable" style="resize: vertical; height: 62px;" ng-bind-html="application.info | yaml | linkify:60"></pre></td>
         <td><span class="status-{{application.statusInfo.status}}" title="{{application.statusInfo.timestamp  | date:'dd.MM.yyyy HH:mm:ss' }}">{{ application.statusInfo.status }}</span>
           <span ng-show="application.refreshing"><i class="fa fa-spinner fa-pulse fa-lg"></i></span>
         </td>

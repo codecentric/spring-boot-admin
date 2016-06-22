@@ -1,5 +1,6 @@
 info:
-  version: @pom.version@
+  version: @project.version@
+  scm-url: @scm.url@
   stage: test
 
 logging:
@@ -11,9 +12,6 @@ spring:
   boot:
     admin:
       url: http://localhost:8080
-  cloud:
-    config:
-      enabled: false
 
 endpoints:
   health:

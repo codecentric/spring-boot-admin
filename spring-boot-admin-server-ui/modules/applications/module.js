@@ -17,7 +17,7 @@
 
 var angular = require('angular');
 
-var module = angular.module('sba-applications', ['sba-core', require('angular-resource')]);
+var module = angular.module('sba-applications', ['sba-core', require('angular-resource'), require('angular-sanitize')]);
 global.sbaModules.push(module.name);
 
 module.controller('applicationsCtrl', require('./controllers/applicationsCtrl.js'));
@@ -29,7 +29,7 @@ module.service('NotificationFilters', require('./services/notificationFilters.js
 module.service('ApplicationViews', require('./services/applicationViews.js'));
 
 module.filter('yaml', require('./filters/yaml.js'));
-module.filter('limitLines', require('./filters/limitLines.js'));
+module.filter('linkify', require('./filters/linkify.js'));
 
 module.component('sbaInfoPanel', require('./components/infoPanel.js'));
 module.component('sbaAccordion', require('./components/accordion.js'));
@@ -84,16 +84,8 @@ module.run(function ($rootScope, $state, $filter, Notification, Application, Mai
     application.getInfo().then(function (response) {
       var info = response.data;
       application.version = info.version;
-      application.infoDetails = null;
-      application.infoShort = '';
       delete info.version;
-      var infoYml = $filter('yaml')(info);
-      if (infoYml !== '{}\n') {
-        application.infoShort = $filter('limitLines')(infoYml, 3);
-        if (application.infoShort !== infoYml) {
-          application.infoDetails = $filter('limitLines')(infoYml, 32000, 3);
-        }
-      }
+      application.info = info;
     }).finally(function () {
       application.refreshing = false;
     });
