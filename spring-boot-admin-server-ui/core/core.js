@@ -26,6 +26,7 @@ require('font-awesome/css/font-awesome.css');
 require('googlefonts.css');
 require('./css/core.css');
 
+require('./img/favicon.png');
 
 var angular = require('angular');
 var module = angular.module('sba-core', [require('angular-ui-router')]);
