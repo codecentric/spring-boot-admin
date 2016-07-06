@@ -25,6 +25,7 @@ import org.springframework.cloud.netflix.zuul.RoutesEndpoint;
 import org.springframework.cloud.netflix.zuul.ZuulConfiguration;
 import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
 import org.springframework.cloud.netflix.zuul.filters.RouteLocator;
+import org.springframework.cloud.netflix.zuul.filters.TraceProxyRequestHelper;
 import org.springframework.cloud.netflix.zuul.filters.pre.PreDecorationFilter;
 import org.springframework.cloud.netflix.zuul.filters.route.SimpleHostRoutingFilter;
 import org.springframework.cloud.netflix.zuul.web.ZuulHandlerMapping;
@@ -64,7 +65,7 @@ public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
 
 	@Bean
 	public ProxyRequestHelper proxyRequestHelper() {
-		ProxyRequestHelper helper = new ProxyRequestHelper();
+		TraceProxyRequestHelper helper = new TraceProxyRequestHelper();
 		if (this.traces != null) {
 			helper.setTraces(this.traces);
 		}
