@@ -31,9 +31,14 @@ module.exports = function ($state, $q) {
       $q.when(!view.show || view.show(application)).then(function (result) {
         if (result) {
           var appView = angular.copy(view);
-          appView.href = $state.href(view.state, {
-            id: application.id
-          });
+          if (view.state) {
+            appView.href = $state.href(view.state, {
+              id: application.id
+            });
+          } else {
+            appView.href = view.href.replace('{id}', application.id);
+            appView.target = '_blank';
+          }
 
           applicationViews.push(appView);
           applicationViews.sort(function (v1, v2) {

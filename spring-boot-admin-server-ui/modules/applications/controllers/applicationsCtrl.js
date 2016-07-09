@@ -18,7 +18,6 @@
 module.exports = function ($rootScope, $scope, $state, ApplicationViews, NotificationFilters) {
   'ngInject';
 
-
   $scope.applications = $rootScope.applications;
   $scope.notificationFilters = null;
   $scope.notificationFiltersSupported = false;

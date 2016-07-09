@@ -59,11 +59,28 @@ module.config(function ($stateProvider) {
   });
 });
 
-module.run(function ($rootScope, $state, $filter, Notification, Application, MainViews) {
+module.run(function ($rootScope, $state, $filter, $sce, $http, Notification, Application, MainViews, ApplicationViews) {
   MainViews.register({
     title: 'Applications',
     state: 'applications-list',
     order: -100
+  });
+
+  ApplicationViews.register({
+    order: 110,
+    title: $sce.trustAsHtml('<i class="fa fa-cubes fa-fw"></i>Heapdump'),
+    href: '/api/applications/{id}/heapdump',
+    target: '_blank',
+    show: function (application) {
+      if (!application.managementUrl || !application.statusInfo.status || application.statusInfo.status === 'OFFLINE') {
+        return false;
+      }
+      return $http.head('api/applications/' + application.id + '/heapdump').then(function () {
+        return true;
+      }).catch(function () {
+        return false;
+      });
+    }
   });
 
   $rootScope.applications = [];

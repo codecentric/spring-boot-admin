@@ -13,7 +13,7 @@
     </div>
     <div class="container-fluid">
       <ul class="nav nav-tabs">
-        <li ng-repeat="view in views" ng-class="{active: $state.includes(view.state)}"><a ng-href="{{view.href}}"><span ng-bind-html="view.title"></span></a></li>
+        <li ng-repeat="view in views" ng-class="{active: $state.includes(view.state)}"><a ng-href="{{view.href}}" target="{{view.target}}"><span ng-bind-html="view.title"></span></a></li>
       </ul>
     </div>
   </div>
