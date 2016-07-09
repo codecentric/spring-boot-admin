@@ -10,7 +10,7 @@
   </table>
 </sba-info-panel>
 
-<sba-info-panel panel-title="Environment manager" ng-show="application.capabilities.refresh">
+<sba-info-panel panel-title="Environment manager" ng-show="refreshSupported">
   <sba-environment-manager environment="env" application="application" on-environment-changed="refresh"></sba-environment-manager>
 </sba-info-panel>
 

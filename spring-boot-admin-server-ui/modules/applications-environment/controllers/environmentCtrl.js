@@ -15,10 +15,15 @@
  */
 'use strict';
 
-module.exports = function ($scope, application) {
+module.exports = function ($scope, $http, application) {
   'ngInject';
 
   $scope.application = application;
+  $scope.refreshSupported = false;
+
+  $http.head('api/applications/' + application.id + '/refresh').catch(function (response) {
+    $scope.refreshSupported = response.status === 405; //If method not allowed is returned the endpoint is present.
+  });
 
   var toArray = function (obj) {
     return Object.getOwnPropertyNames(obj).map(function (key) {
@@ -38,8 +43,7 @@ module.exports = function ($scope, application) {
       var env = response.data;
       $scope.profiles = env.profiles;
       delete env.profiles;
-      $scope.env = toArray(env); // to get the env-sources in correct
-      // order we have to convert to an array
+      $scope.env = toArray(env); // to get the env-sources in correct order we have to convert to an array
     }).catch(function (response) {
       $scope.error = response.data;
     });

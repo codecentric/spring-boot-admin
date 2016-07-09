@@ -30,7 +30,6 @@
         <td>
           <div class="pull-right">
             <div class="btn-group">
-              <a ng-if="application.capabilities.logfile && application.statusInfo.status != null && application.statusInfo.status != 'OFFLINE'" target="_blank" class="btn btn-success" ng-href="{{application.capabilities.logfile ? 'api/applications/' + application.id + '/logfile' :''}}"><i class="fa fa-file-text-o"></i> Log</a>
               <a ng-if="views.length > 0" ng-href="{{views[0].href}}" target="{{views[0].target}}" class="btn btn-success" ng-bind-html="views[0].title"></a>
               <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" ng-if="views.length > 1">
                 <i class="fa fa-caret-down"></i>

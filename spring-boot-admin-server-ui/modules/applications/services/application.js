@@ -18,14 +18,6 @@
 module.exports = function ($resource, $http) {
   'ngInject';
 
-  var isEndpointPresent = function (endpoint, configprops) {
-    if (configprops[endpoint]) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
   var Application = $resource('api/applications/:id', {
     id: '@id'
   }, {
@@ -50,23 +42,6 @@ module.exports = function ($resource, $http) {
     delete response.data['_links'];
     response.data = response.data.content || response.data;
     return response;
-  };
-
-  Application.prototype.getCapabilities = function () {
-    var application = this;
-    this.capabilities = {};
-    if (this.managementUrl) {
-      $http.get('api/applications/' + application.id + '/configprops').then(
-        function (response) {
-          application.capabilities.refresh = isEndpointPresent('refreshEndpoint',
-            response.data);
-        });
-      $http.head('api/applications/' + application.id + '/logfile').then(function () {
-        application.capabilities.logfile = true;
-      }).catch(function () {
-        application.capabilities.logfile = false;
-      });
-    }
   };
 
   Application.prototype.getHealth = function () {

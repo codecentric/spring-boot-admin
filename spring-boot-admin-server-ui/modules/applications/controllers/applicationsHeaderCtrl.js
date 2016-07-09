@@ -19,9 +19,5 @@ module.exports = function ($scope, application, ApplicationViews) {
   'ngInject';
 
   $scope.application = application;
-  if (!application.capablities) {
-    application.getCapabilities();
-  }
-
   $scope.views = ApplicationViews.getApplicationViews(application);
 };

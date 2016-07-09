@@ -67,6 +67,23 @@ module.run(function ($rootScope, $state, $filter, $sce, $http, Notification, App
   });
 
   ApplicationViews.register({
+    order: 1,
+    title: $sce.trustAsHtml('<i class="fa fa-file-text-o fa-fw"></i>Log'),
+    href: '/api/applications/{id}/logfile',
+    target: '_blank',
+    show: function (application) {
+      if (!application.managementUrl || !application.statusInfo.status || application.statusInfo.status === 'OFFLINE') {
+        return false;
+      }
+      return $http.head('api/applications/' + application.id + '/logfile').then(function () {
+        return true;
+      }).catch(function () {
+        return false;
+      });
+    }
+  });
+
+  ApplicationViews.register({
     order: 110,
     title: $sce.trustAsHtml('<i class="fa fa-cubes fa-fw"></i>Heapdump'),
     href: '/api/applications/{id}/heapdump',
@@ -97,7 +114,6 @@ module.run(function ($rootScope, $state, $filter, $sce, $http, Notification, App
   var refresh = function (application) {
     application.info = {};
     application.refreshing = true;
-    application.getCapabilities();
     application.getInfo().then(function (response) {
       var info = response.data;
       application.version = info.version;
