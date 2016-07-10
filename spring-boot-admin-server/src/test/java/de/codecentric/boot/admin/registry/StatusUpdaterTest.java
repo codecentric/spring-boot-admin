@@ -56,6 +56,7 @@ public class StatusUpdaterTest {
 	}
 
 	@Test
+	@SuppressWarnings("rawtypes")
 	public void test_update_statusChanged() {
 		when(template.getForEntity("health", Map.class)).thenReturn(
 				ResponseEntity.ok().body((Map) Collections.singletonMap("status", "UP")));
@@ -70,6 +71,7 @@ public class StatusUpdaterTest {
 	}
 
 	@Test
+	@SuppressWarnings("rawtypes")
 	public void test_update_statusUnchanged() {
 		when(template.getForEntity("health", Map.class))
 				.thenReturn(ResponseEntity.ok((Map) Collections.singletonMap("status", "UNKNOWN")));
@@ -82,6 +84,7 @@ public class StatusUpdaterTest {
 	}
 
 	@Test
+	@SuppressWarnings("rawtypes")
 	public void test_update_noBody() {
 		// HTTP 200 - UP
 		when(template.getForEntity("health", Map.class)).thenReturn(ResponseEntity.ok((Map) null));
@@ -113,6 +116,7 @@ public class StatusUpdaterTest {
 	}
 
 	@Test
+	@SuppressWarnings("rawtypes")
 	public void test_updateStatusForApplications() {
 		Application app1 = Application.create("foo").withId("id-1").withHealthUrl("health-1")
 				.build();

@@ -30,12 +30,11 @@ import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.config.EvictionPolicy;
@@ -51,7 +50,7 @@ import de.codecentric.boot.admin.model.Application;
  * @author Dennis Schulte
  */
 public class AdminApplicationHazelcastTest {
-	private RestTemplate template = new TestRestTemplate();
+	private TestRestTemplate template = new TestRestTemplate();
 	private EmbeddedWebApplicationContext instance1;
 	private EmbeddedWebApplicationContext instance2;
 

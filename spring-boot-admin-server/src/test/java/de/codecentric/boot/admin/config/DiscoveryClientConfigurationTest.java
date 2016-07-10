@@ -8,6 +8,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration.RestTemplateConfiguration;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.noop.NoopDiscoveryClientAutoConfiguration;
 import org.springframework.cloud.commons.util.UtilAutoConfiguration;
@@ -77,6 +78,7 @@ public class DiscoveryClientConfigurationTest {
 		}
 
 		applicationContext.register(PropertyPlaceholderAutoConfiguration.class);
+		applicationContext.register(RestTemplateConfiguration.class);
 		applicationContext.register(ServerPropertiesAutoConfiguration.class);
 		applicationContext.register(AdminServerWebConfiguration.class);
 		applicationContext.register(DiscoveryClientConfiguration.class);

@@ -15,7 +15,7 @@ import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 public class AdminClientPropertiesTest {

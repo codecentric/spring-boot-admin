@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEventPublisher;
@@ -36,7 +37,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.DefaultResponseErrorHandler;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -80,6 +80,9 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 
 	@Autowired
 	private ResourcePatternResolver resourcePatternResolver;
+
+	@Autowired
+	private RestTemplateBuilder builder;
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -178,15 +181,15 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 	@Bean
 	@ConditionalOnMissingBean
 	public StatusUpdater statusUpdater() {
-		RestTemplate template = new RestTemplate();
-		template.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-		template.setErrorHandler(new DefaultResponseErrorHandler() {
+		builder.messageConverters(new MappingJackson2HttpMessageConverter())
+				.errorHandler(new DefaultResponseErrorHandler() {
 			@Override
 			protected boolean hasError(HttpStatus statusCode) {
 				return false;
 			}
 		});
-		StatusUpdater statusUpdater = new StatusUpdater(template, applicationStore);
+
+		StatusUpdater statusUpdater = new StatusUpdater(builder.build(), applicationStore);
 		statusUpdater.setStatusLifetime(adminServerProperties().getMonitor().getStatusLifetime());
 		return statusUpdater;
 	}

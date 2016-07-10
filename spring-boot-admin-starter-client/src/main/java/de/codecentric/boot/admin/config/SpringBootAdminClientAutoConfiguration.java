@@ -15,21 +15,17 @@
  */
 package de.codecentric.boot.admin.config;
 
-import java.util.Arrays;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.services.ApplicationRegistrator;
 import de.codecentric.boot.admin.services.RegistrationApplicationListener;
-import de.codecentric.boot.admin.web.BasicAuthHttpRequestInterceptor;
 
 @Configuration
 @EnableConfigurationProperties({ AdminProperties.class, AdminClientProperties.class })
@@ -42,25 +38,20 @@ public class SpringBootAdminClientAutoConfiguration {
 	@Autowired
 	private AdminProperties admin;
 
+	@Autowired
+	private RestTemplateBuilder builder;
+
 	/**
 	 * Task that registers the application at the spring-boot-admin application.
 	 */
 	@Bean
 	@ConditionalOnMissingBean
 	public ApplicationRegistrator registrator() {
-		return new ApplicationRegistrator(createRestTemplate(admin), admin, client);
-	}
-
-	protected RestTemplate createRestTemplate(AdminProperties admin) {
-		RestTemplate template = new RestTemplate();
-		template.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-
+		builder.messageConverters(new MappingJackson2HttpMessageConverter());
 		if (admin.getUsername() != null) {
-			template.setInterceptors(Arrays.<ClientHttpRequestInterceptor> asList(
-					new BasicAuthHttpRequestInterceptor(admin.getUsername(), admin.getPassword())));
+			builder.basicAuthorization(admin.getUsername(), admin.getPassword());
 		}
-
-		return template;
+		return new ApplicationRegistrator(builder.build(), admin, client);
 	}
 
 	/**

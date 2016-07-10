@@ -6,7 +6,8 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration.RestTemplateConfiguration;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import de.codecentric.boot.admin.services.ApplicationRegistrator;
@@ -44,6 +45,7 @@ public class SpringBootAdminClientAutoConfigurationTest {
 	private void load(String... environment) {
 		AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
 		applicationContext.register(ServerPropertiesAutoConfiguration.class);
+		applicationContext.register(RestTemplateConfiguration.class);
 		applicationContext.register(ManagementServerPropertiesAutoConfiguration.class);
 		applicationContext.register(SpringBootAdminClientAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);

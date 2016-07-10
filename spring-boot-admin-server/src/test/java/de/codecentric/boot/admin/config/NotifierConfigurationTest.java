@@ -28,7 +28,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -158,7 +158,7 @@ public class NotifierConfigurationTest {
 	}
 
 	private static class TestNotifier implements Notifier {
-		private List<ClientApplicationEvent> events = new ArrayList<ClientApplicationEvent>();
+		private List<ClientApplicationEvent> events = new ArrayList<>();
 
 		@Override
 		public void notify(ClientApplicationEvent event) {

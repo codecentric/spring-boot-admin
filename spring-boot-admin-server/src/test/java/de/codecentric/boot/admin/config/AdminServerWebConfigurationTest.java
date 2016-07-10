@@ -30,7 +30,8 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration.RestTemplateConfiguration;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.cloud.client.discovery.noop.NoopDiscoveryClientAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -131,6 +132,7 @@ public class AdminServerWebConfigurationTest {
 			applicationContext.register(config);
 		}
 		applicationContext.register(PropertyPlaceholderAutoConfiguration.class);
+		applicationContext.register(RestTemplateConfiguration.class);
 		applicationContext.register(ServerPropertiesAutoConfiguration.class);
 		applicationContext.register(HazelcastAutoConfiguration.class);
 		applicationContext.register(HazelcastStoreConfiguration.class);
