@@ -42,6 +42,7 @@ import de.codecentric.boot.admin.model.Application;
 
 public class ApplicationRegistratorTest {
 
+	private AdminProperties adminProps;
 	private ApplicationRegistrator registrator;
 	private RestTemplate restTemplate;
 	private HttpHeaders headers;
@@ -50,7 +51,7 @@ public class ApplicationRegistratorTest {
 	public void setup() {
 		restTemplate = mock(RestTemplate.class);
 
-		AdminProperties adminProps = new AdminProperties();
+		adminProps = new AdminProperties();
 		adminProps.setUrl(new String[] { "http://sba:8080", "http://sba2:8080" });
 
 		AdminClientProperties clientProps = new AdminClientProperties();
@@ -76,7 +77,7 @@ public class ApplicationRegistratorTest {
 		assertTrue(registrator.register());
 		verify(restTemplate)
 				.postForEntity("http://sba:8080/api/applications",
-						new HttpEntity<Application>(Application.create("AppName")
+						new HttpEntity<>(Application.create("AppName")
 								.withHealthUrl("http://localhost:8080/health")
 								.withManagementUrl("http://localhost:8080/mgmt")
 								.withServiceUrl("http://localhost:8080").build(), headers),
@@ -113,5 +114,73 @@ public class ApplicationRegistratorTest {
 		registrator.deregister();
 
 		verify(restTemplate).delete("http://sba:8080/api/applications/-id-");
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void register_multiple() {
+		adminProps.setRegisterOnce(false);
+
+		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class)))
+				.thenReturn(new ResponseEntity<Map>(Collections.singletonMap("id", "-id-"),
+						HttpStatus.CREATED));
+
+		assertTrue(registrator.register());
+
+		verify(restTemplate)
+				.postForEntity("http://sba:8080/api/applications",
+						new HttpEntity<>(Application.create("AppName")
+								.withHealthUrl("http://localhost:8080/health")
+								.withManagementUrl("http://localhost:8080/mgmt")
+								.withServiceUrl("http://localhost:8080").build(), headers),
+						Map.class);
+
+		verify(restTemplate)
+				.postForEntity("http://sba2:8080/api/applications",
+						new HttpEntity<>(Application.create("AppName")
+								.withHealthUrl("http://localhost:8080/health")
+								.withManagementUrl("http://localhost:8080/mgmt")
+								.withServiceUrl("http://localhost:8080").build(), headers),
+						Map.class);
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void register_multiple_one_failure() {
+		adminProps.setRegisterOnce(false);
+
+		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class)))
+				.thenReturn(new ResponseEntity<Map>(Collections.singletonMap("id", "-id-"),
+						HttpStatus.CREATED))
+				.thenThrow(new RestClientException("Error"));
+
+		assertTrue(registrator.register());
+
+		verify(restTemplate)
+				.postForEntity("http://sba:8080/api/applications",
+						new HttpEntity<>(Application.create("AppName")
+								.withHealthUrl("http://localhost:8080/health")
+								.withManagementUrl("http://localhost:8080/mgmt")
+								.withServiceUrl("http://localhost:8080").build(), headers),
+						Map.class);
+
+		verify(restTemplate)
+				.postForEntity("http://sba2:8080/api/applications",
+						new HttpEntity<>(Application.create("AppName")
+								.withHealthUrl("http://localhost:8080/health")
+								.withManagementUrl("http://localhost:8080/mgmt")
+								.withServiceUrl("http://localhost:8080").build(), headers),
+						Map.class);
+	}
+
+	@Test
+	public void register_multiple_all_failures() {
+		adminProps.setRegisterOnce(false);
+
+		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class)))
+				.thenThrow(new RestClientException("Error"))
+				.thenThrow(new RestClientException("Error"));
+
+		assertFalse(registrator.register());
 	}
 }

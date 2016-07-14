@@ -21,7 +21,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class AdminProperties {
 
 	/**
-	 * The admin servers url to register at
+	 * The admin server urls to register at
 	 */
 	private String[] url;
 
@@ -54,6 +54,11 @@ public class AdminProperties {
 	 * Enable automatic registration when the application is ready
 	 */
 	private boolean autoRegistration = true;
+
+	/**
+	 * Enable registration against one or all admin servers
+	 */
+	private boolean registerOnce = true;
 
 	public void setUrl(String[] url) {
 		this.url = url.clone();
@@ -117,5 +122,13 @@ public class AdminProperties {
 
 	public void setAutoRegistration(boolean autoRegistration) {
 		this.autoRegistration = autoRegistration;
+	}
+
+	public boolean isRegisterOnce() {
+		return registerOnce;
+	}
+
+	public void setRegisterOnce(boolean registerOnce) {
+		this.registerOnce = registerOnce;
 	}
 }

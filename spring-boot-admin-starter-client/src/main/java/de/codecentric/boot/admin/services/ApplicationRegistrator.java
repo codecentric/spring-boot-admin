@@ -41,7 +41,7 @@ public class ApplicationRegistrator {
 
 	private static HttpHeaders HTTP_HEADERS = createHttpHeaders();
 
-	private final AtomicReference<String> registeredId = new AtomicReference<String>();
+	private final AtomicReference<String> registeredId = new AtomicReference<>();
 
 	private AdminClientProperties client;
 
@@ -66,26 +66,28 @@ public class ApplicationRegistrator {
 	/**
 	 * Registers the client application at spring-boot-admin-server.
 	 *
-	 * @return true if successful
+	 * @return true if successful registration on at least one admin server
 	 */
 	public boolean register() {
+		boolean isRegistrationSuccessful = false;
 		Application self = createApplication();
-
 		for (String adminUrl : admin.getAdminUrl()) {
 			try {
 				@SuppressWarnings("rawtypes")
 				ResponseEntity<Map> response = template.postForEntity(adminUrl,
-						new HttpEntity<Application>(self, HTTP_HEADERS), Map.class);
+						new HttpEntity<>(self, HTTP_HEADERS), Map.class);
 
 				if (response.getStatusCode().equals(HttpStatus.CREATED)) {
-					if (registeredId.get() == null && registeredId.compareAndSet(null,
-							response.getBody().get("id").toString())) {
+					if (registeredId.compareAndSet(null, response.getBody().get("id").toString())) {
 						LOGGER.info("Application registered itself as {}", response.getBody());
-						return true;
+					} else {
+						LOGGER.debug("Application refreshed itself as {}", response.getBody());
 					}
 
-					LOGGER.debug("Application refreshed itself as {}", response.getBody());
-					return true;
+					isRegistrationSuccessful = true;
+					if (admin.isRegisterOnce()) {
+						break;
+					}
 				} else {
 					LOGGER.warn("Application failed to registered itself as {}. Response: {}", self,
 							response.toString());
@@ -96,7 +98,7 @@ public class ApplicationRegistrator {
 			}
 		}
 
-		return false;
+		return isRegistrationSuccessful;
 	}
 
 	public void deregister() {
@@ -105,8 +107,10 @@ public class ApplicationRegistrator {
 			for (String adminUrl : admin.getAdminUrl()) {
 				try {
 					template.delete(adminUrl + "/" + id);
-					registeredId.set(null);
-					return;
+					registeredId.compareAndSet(id, null);
+					if (admin.isRegisterOnce()) {
+						break;
+					}
 				} catch (Exception ex) {
 					LOGGER.warn(
 							"Failed to deregister application (id={}) at spring-boot-admin ({}): {}",
