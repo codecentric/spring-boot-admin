@@ -831,7 +831,7 @@ In case you are deploying multiple applications to the same JVM and multiple Log
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.url</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">List of URLs of the Spring Boot Admin server to register at. This triggers the AutoConfiguration. <strong>Mandatory</strong>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Comma separated ordered list of URLs of the Spring Boot Admin server to register at. This triggers the AutoConfiguration. <strong>Mandatory</strong>.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
@@ -859,6 +859,11 @@ spring.boot.admin.password</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.auto-deregistration</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Switch to enable auto-deregistration at Spring Boot Admin server when context is closed.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.register-once</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If set to true the client will only register against one admin server (in order defined by <code>spring.boot.admin.url</code>); if that admin server goes down, will automatically register against the next admin server. If false, will register against all admin servers.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.health-url</p></td>
