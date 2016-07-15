@@ -61,6 +61,22 @@ public class AdminClientPropertiesTest {
 	}
 
 	@Test
+	public void test_contextPatht_mgmtPortPath() {
+		load("server.context-path=app", "management.context-path=/admin", "local.server.port=8080",
+				"local.management.port=8081");
+		AdminClientProperties clientProperties = new AdminClientProperties();
+		context.getAutowireCapableBeanFactory().autowireBean(clientProperties);
+
+		publishApplicationReadyEvent(clientProperties);
+
+		assertThat(clientProperties.getManagementUrl(),
+				is("http://" + getHostname() + ":8081/admin"));
+		assertThat(clientProperties.getHealthUrl(),
+				is("http://" + getHostname() + ":8081/admin/health"));
+		assertThat(clientProperties.getServiceUrl(), is("http://" + getHostname() + ":8080/app"));
+	}
+
+	@Test
 	public void test_contextPath() {
 		load("server.context-path=app", "local.server.port=80");
 		AdminClientProperties clientProperties = new AdminClientProperties();

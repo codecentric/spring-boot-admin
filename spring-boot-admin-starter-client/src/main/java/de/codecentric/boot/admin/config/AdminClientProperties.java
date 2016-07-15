@@ -104,9 +104,7 @@ public class AdminClientProperties {
 					server.getContextPath()), management.getContextPath());
 
 		}
-		return append(
-				append(createLocalUri(getHostAddress().getCanonicalHostName(), managementPort),
-						server.getContextPath()),
+		return append(createLocalUri(getHostAddress().getCanonicalHostName(), managementPort),
 				management.getContextPath());
 	}
 
