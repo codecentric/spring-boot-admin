@@ -197,7 +197,7 @@ The Spring Boot Admin Client registers the application at the admin server. This
 | `true`
 
 | spring.boot.admin.url
-| List of URLs of the Spring Boot Admin server to register at. This triggers the AutoConfiguration. *Mandatory*.
+| Comma separated ordered list of URLs of the Spring Boot Admin server to register at. This triggers the AutoConfiguration. *Mandatory*.
 |
 
 | spring.boot.admin.api-path
@@ -220,6 +220,10 @@ spring.boot.admin.password
 | spring.boot.admin.auto-deregistration
 | Switch to enable auto-deregistration at Spring Boot Admin server when context is closed.
 | `false`
+
+| spring.boot.admin.register-once
+| If set to true the client will only register against one admin server (in order defined by `spring.boot.admin.url`); if that admin server goes down, will automatically register against the next admin server. If false, will register against all admin servers.
+| `true`
 
 | spring.boot.admin.client.health-url
 | Client-health-url to register with. Can be overridden in case the reachable URL is different (e.g. Docker). Must be unique in registry.

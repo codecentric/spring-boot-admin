@@ -16,7 +16,9 @@
 package de.codecentric.boot.admin.services;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
@@ -42,6 +44,7 @@ public class ApplicationRegistrator {
 	private static HttpHeaders HTTP_HEADERS = createHttpHeaders();
 
 	private final AtomicReference<String> registeredId = new AtomicReference<String>();
+	private final Set<String> validAdminUrls = new HashSet<String>();
 
 	private AdminClientProperties client;
 
@@ -66,11 +69,11 @@ public class ApplicationRegistrator {
 	/**
 	 * Registers the client application at spring-boot-admin-server.
 	 *
-	 * @return true if successful
+	 * @return true if successful registration on at least one admin server
 	 */
 	public boolean register() {
+		boolean isRegistrationSuccessful = false;
 		Application self = createApplication();
-
 		for (String adminUrl : admin.getAdminUrl()) {
 			try {
 				@SuppressWarnings("rawtypes")
@@ -80,29 +83,38 @@ public class ApplicationRegistrator {
 				if (response.getStatusCode().equals(HttpStatus.CREATED)) {
 					if (registeredId.get() == null && registeredId.compareAndSet(null,
 							response.getBody().get("id").toString())) {
+						validAdminUrls.add(adminUrl);
 						LOGGER.info("Application registered itself as {}", response.getBody());
-						return true;
+						
+						if (admin.isRegisterOnce()) {
+							return true;
+						}
 					}
 
 					LOGGER.debug("Application refreshed itself as {}", response.getBody());
-					return true;
+					if (admin.isRegisterOnce()) {
+						return true;
+					}
+					isRegistrationSuccessful = true;
 				} else {
+					validAdminUrls.remove(adminUrl);
 					LOGGER.warn("Application failed to registered itself as {}. Response: {}", self,
 							response.toString());
 				}
 			} catch (Exception ex) {
+				validAdminUrls.remove(adminUrl);
 				LOGGER.warn("Failed to register application as {} at spring-boot-admin ({}): {}",
 						self, admin.getAdminUrl(), ex.getMessage());
 			}
 		}
 
-		return false;
+		return isRegistrationSuccessful;
 	}
 
 	public void deregister() {
 		String id = registeredId.get();
 		if (id != null) {
-			for (String adminUrl : admin.getAdminUrl()) {
+			for (String adminUrl : validAdminUrls) {
 				try {
 					template.delete(adminUrl + "/" + id);
 					registeredId.set(null);
