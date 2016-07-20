@@ -92,8 +92,8 @@ module.run(function ($rootScope, $state, $filter, $sce, $http, Notification, App
       if (!application.managementUrl || !application.statusInfo.status || application.statusInfo.status === 'OFFLINE') {
         return false;
       }
-      return $http.head('api/applications/' + application.id + '/heapdump').then(function () {
-        return true;
+      return $http({ method: 'OPTIONS', url: 'api/applications/' + application.id + '/heapdump' }).then(function (response) {
+        return response.headers('Allow') === 'GET,HEAD'; //Test the exact headers, in case the DispatcherServlet responses to the request for older boot-versions
       }).catch(function () {
         return false;
       });
