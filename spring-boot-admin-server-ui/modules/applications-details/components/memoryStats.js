@@ -26,7 +26,8 @@ module.exports = {
     ctrl.$onChanges = function () {
       ctrl.memory = {
         total: ctrl.metrics.mem,
-        used: ctrl.metrics.mem - ctrl.metrics['mem.free']
+        used: ctrl.metrics.mem - ctrl.metrics['mem.free'],
+        unit: 'K'
       };
       ctrl.memory.percentUsed = $filter('number')(ctrl.memory.used / ctrl.memory.total * 100, 2);
 
@@ -34,7 +35,8 @@ module.exports = {
         total: ctrl.metrics['heap.committed'],
         used: ctrl.metrics['heap.used'],
         init: ctrl.metrics['heap.init'],
-        max: ctrl.metrics.heap
+        max: ctrl.metrics['heap.max'] || ctrl.metrics.heap,
+        unit: ctrl.metrics['heap.max'] ? 'B' : 'K'
       };
       ctrl.heap.percentUsed = $filter('number')(ctrl.heap.used / ctrl.heap.total * 100, 2);
 
@@ -42,7 +44,8 @@ module.exports = {
         total: ctrl.metrics['nonheap.committed'],
         used: ctrl.metrics['nonheap.used'],
         init: ctrl.metrics['nonheap.init'],
-        max: ctrl.metrics.nonheap
+        max: ctrl.metrics.nonheap,
+        unit: 'K'
       };
       ctrl.nonheap.percentUsed = $filter('number')(ctrl.nonheap.used / ctrl.nonheap.total * 100, 2);
     };

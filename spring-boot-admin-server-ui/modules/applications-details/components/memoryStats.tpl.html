@@ -1,13 +1,13 @@
 <table class="table">
   <tr>
-    <td colspan="2"> <span>Memory ({{ $ctrl.memory.used | humanBytes:'K' }} / {{ $ctrl.memory.total | humanBytes:'K' }})</span>
+    <td colspan="2"> <span>Memory ({{ $ctrl.memory.used | humanBytes:$ctrl.memory.unit }} / {{ $ctrl.memory.total | humanBytes:$ctrl.memory.unit }})</span>
       <div class="progress" style="margin-bottom: 0px;">
         <div class="bar" ng-class="$ctrl.getBarClass($ctrl.memory.percentUsed)" style="width: {{$ctrl.memory.percentUsed}}%;">{{$ctrl.memory.percentUsed}}%</div>
       </div>
     </td>
   </tr>
   <tr>
-    <td colspan="2"> <span>Heap Memory ({{ $ctrl.heap.used | humanBytes:'K' }} / {{ $ctrl.heap.total | humanBytes:'K' }})</span>
+    <td colspan="2"> <span>Heap Memory ({{ $ctrl.heap.used | humanBytes:$ctrl.heap.unit }} / {{ $ctrl.heap.total | humanBytes:$ctrl.heap.unit }})</span>
       <div class="progress" style="margin-bottom: 0px;">
         <div class="bar" ng-class="$ctrl.getBarClass($ctrl.heap.percentUsed)" style="width: {{$ctrl.heap.percentUsed}}%;">{{$ctrl.heap.percentUsed}}%</div>
       </div>
@@ -15,14 +15,14 @@
   </tr>
   <tr>
     <td>Initial Heap (-Xms)</td>
-    <td>{{$ctrl.heap.init | humanBytes:'K' }}</td>
+    <td>{{$ctrl.heap.init | humanBytes:$ctrl.heap.unit }}</td>
   </tr>
   <tr>
     <td>Maximum Heap (-Xmx)</td>
-    <td>{{$ctrl.heap.max | humanBytes:'K' }}</td>
+    <td>{{$ctrl.heap.max | humanBytes:$ctrl.heap.unit }}</td>
   </tr>
   <tr>
-    <td colspan="2"> <span>Non-Heap Memory ({{ $ctrl.nonheap.used | humanBytes:'K' }} / {{ $ctrl.nonheap.total | humanBytes:'K' }})</span>
+    <td colspan="2"> <span>Non-Heap Memory ({{ $ctrl.nonheap.used | humanBytes:$ctrl.nonheap.unit }} / {{ $ctrl.nonheap.total | humanBytes:$ctrl.nonheap.unit }})</span>
       <div class="progress" style="margin-bottom: 0px;">
         <div class="bar" ng-class="$ctrl.getBarClass($ctrl.nonheap.percentUsed)" style="width: {{$ctrl.nonheap.percentUsed}}%;">{{$ctrl.nonheap.percentUsed}}%</div>
       </div>
@@ -30,11 +30,11 @@
   </tr>
   <tr>
     <td>Initial Non-Heap</td>
-    <td>{{$ctrl.nonheap.init | humanBytes:'K' }}</td>
+    <td>{{$ctrl.nonheap.init | humanBytes:$ctrl.nonheap.unit }}</td>
   </tr>
   <tr>
     <td>Maximum Non-Heap</td>
-    <td ng-show="$ctrl.nonheap.max > 0">{{$ctrl.nonheap.max | humanBytes:'K' }}</td>
+    <td ng-show="$ctrl.nonheap.max > 0">{{$ctrl.nonheap.max | humanBytes:$ctrl.nonheap.unit }}</td>
     <td ng-show="$ctrl.nonheap.max <= 0">unbounded</td>
   </tr>
 </table>
