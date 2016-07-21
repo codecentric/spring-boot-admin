@@ -59,45 +59,11 @@ module.config(function ($stateProvider) {
   });
 });
 
-module.run(function ($rootScope, $state, $filter, $sce, $http, Notification, Application, MainViews, ApplicationViews) {
+module.run(function ($rootScope, $state, Notification, Application, MainViews) {
   MainViews.register({
     title: 'Applications',
     state: 'applications-list',
     order: -100
-  });
-
-  ApplicationViews.register({
-    order: 1,
-    title: $sce.trustAsHtml('<i class="fa fa-file-text-o fa-fw"></i>Log'),
-    href: '/api/applications/{id}/logfile',
-    target: '_blank',
-    show: function (application) {
-      if (!application.managementUrl || !application.statusInfo.status || application.statusInfo.status === 'OFFLINE') {
-        return false;
-      }
-      return $http.head('api/applications/' + application.id + '/logfile').then(function () {
-        return true;
-      }).catch(function () {
-        return false;
-      });
-    }
-  });
-
-  ApplicationViews.register({
-    order: 110,
-    title: $sce.trustAsHtml('<i class="fa fa-cubes fa-fw"></i>Heapdump'),
-    href: '/api/applications/{id}/heapdump',
-    target: '_blank',
-    show: function (application) {
-      if (!application.managementUrl || !application.statusInfo.status || application.statusInfo.status === 'OFFLINE') {
-        return false;
-      }
-      return $http({ method: 'OPTIONS', url: 'api/applications/' + application.id + '/heapdump' }).then(function (response) {
-        return response.headers('Allow') === 'GET,HEAD'; //Test the exact headers, in case the DispatcherServlet responses to the request for older boot-versions
-      }).catch(function () {
-        return false;
-      });
-    }
   });
 
   $rootScope.applications = [];
