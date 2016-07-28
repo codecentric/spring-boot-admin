@@ -29,11 +29,13 @@ import de.codecentric.boot.admin.model.Application;
  * Converts any {@link ServiceInstance}s to {@link Application}s. To customize the health- or
  * management-url for all applications you can set healthEndpointPath or managementContextPath
  * respectively. If you want to influence the url per service you can add
- * <code>management.context-path</code> or <code>health.path</code> to the instances metadata.
+ * <code>management.context-path</code> or <code>management.port</code> or <code>health.path</code>
+ * to the instances metadata.
  *
  * @author Johannes Edmeier
  */
 public class DefaultServiceInstanceConverter implements ServiceInstanceConverter {
+	private static final String KEY_MANAGEMENT_PORT = "management.port";
 	private static final String KEY_MANAGEMENT_PATH = "management.context-path";
 	private static final String KEY_HEALTH_PATH = "health.path";
 	private String managementContextPath = "";
@@ -61,8 +63,8 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 	}
 
 	protected URI getHealthUrl(ServiceInstance instance) {
-		String healthPath = defaultIfEmpty(
-				instance.getMetadata().get(KEY_HEALTH_PATH), healthEndpointPath);
+		String healthPath = defaultIfEmpty(instance.getMetadata().get(KEY_HEALTH_PATH),
+				healthEndpointPath);
 		healthPath = stripStart(healthPath, "/");
 
 		return UriComponentsBuilder.fromUri(getManagementUrl(instance)).pathSegment(healthPath)
@@ -70,12 +72,16 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 	}
 
 	protected URI getManagementUrl(ServiceInstance instance) {
-		String managamentPath = defaultIfEmpty(
-				instance.getMetadata().get(KEY_MANAGEMENT_PATH), managementContextPath);
+		String managamentPath = defaultIfEmpty(instance.getMetadata().get(KEY_MANAGEMENT_PATH),
+				managementContextPath);
 		managamentPath = stripStart(managamentPath, "/");
 
-		return UriComponentsBuilder.fromUri(getServiceUrl(instance)).pathSegment(managamentPath)
-				.build().toUri();
+		URI serviceUrl = getServiceUrl(instance);
+		String managamentPort = defaultIfEmpty(instance.getMetadata().get(KEY_MANAGEMENT_PORT),
+				String.valueOf(serviceUrl.getPort()));
+
+		return UriComponentsBuilder.fromUri(serviceUrl).port(managamentPort)
+				.pathSegment(managamentPath).build().toUri();
 	}
 
 	protected URI getServiceUrl(ServiceInstance instance) {
