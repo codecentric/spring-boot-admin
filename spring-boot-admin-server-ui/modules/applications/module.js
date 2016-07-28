@@ -24,6 +24,7 @@ module.controller('applicationsCtrl', require('./controllers/applicationsCtrl.js
 module.controller('applicationsHeaderCtrl', require('./controllers/applicationsHeaderCtrl.js'));
 
 module.service('Application', require('./services/application.js'));
+module.service('ApplicationGroups', require('./services/applicationGroups.js'));
 module.service('Notification', require('./services/notification.js'));
 module.service('NotificationFilters', require('./services/notificationFilters.js'));
 module.service('ApplicationViews', require('./services/applicationViews.js'));
@@ -36,6 +37,7 @@ module.component('sbaAccordion', require('./components/accordion.js'));
 module.component('sbaAccordionGroup', require('./components/accordionGroup.js'));
 module.component('sbaNotificationSettings', require('./components/notificationSettings.js'));
 module.component('sbaPopover', require('./components/popover.js'));
+module.component('sbaLimitedText', require('./components/limitedText.js'));
 
 require('./css/module.css');
 
@@ -59,23 +61,15 @@ module.config(function ($stateProvider) {
   });
 });
 
-module.run(function ($rootScope, $state, Notification, Application, MainViews) {
+module.run(function ($rootScope, $state, Notification, Application, ApplicationGroups, MainViews) {
   MainViews.register({
     title: 'Applications',
     state: 'applications-list',
     order: -100
   });
 
-  $rootScope.applications = [];
-
-  $rootScope.indexOfApplication = function (id) {
-    for (var i = 0; i < $rootScope.applications.length; i++) {
-      if ($rootScope.applications[i].id === id) {
-        return i;
-      }
-    }
-    return -1;
-  };
+  var applicationGroups = new ApplicationGroups();
+  $rootScope.applicationGroups = applicationGroups;
 
   var refresh = function (application) {
     application.info = {};
@@ -93,7 +87,7 @@ module.run(function ($rootScope, $state, Notification, Application, MainViews) {
   Application.query(function (applications) {
     for (var i = 0; i < applications.length; i++) {
       refresh(applications[i]);
-      $rootScope.applications.push(applications[i]);
+      applicationGroups.addApplication(applications[i]);
     }
   });
 
@@ -103,6 +97,7 @@ module.run(function ($rootScope, $state, Notification, Application, MainViews) {
     var event = JSON.parse(message.data);
     Object.setPrototypeOf(event.application, Application.prototype);
 
+    var title = event.application.name;
     var options = {
       tag: event.application.id,
       body: 'Instance ' + event.application.id + '\n' + event.application.healthUrl,
@@ -112,31 +107,19 @@ module.run(function ($rootScope, $state, Notification, Application, MainViews) {
         id: event.application.id
       })
     };
-    var title = event.application.name;
-    var index = $rootScope.indexOfApplication(event.application.id);
 
     if (event.type === 'REGISTRATION') {
-      if (index === -1) {
-        $rootScope.applications.push(event.application);
-      }
-
+      applicationGroups.addApplication(event.application, false);
+      refresh(event.application);
       title += ' instance registered.';
       options.tag = event.application.id + '-REGISTRY';
     } else if (event.type === 'DEREGISTRATION') {
-      if (index > -1) {
-        $rootScope.applications.splice(index, 1);
-      }
-
+      applicationGroups.removeApplication(event.application);
       title += ' instance removed.';
       options.tag = event.application.id + '-REGISTRY';
     } else if (event.type === 'STATUS_CHANGE') {
       refresh(event.application);
-      if (index > -1) {
-        $rootScope.applications[index] = event.application;
-      } else {
-        $rootScope.applications.push(event.application);
-      }
-
+      applicationGroups.addApplication(event.application, true);
       title += ' instance is ' + event.to.status;
       options.tag = event.application.id + '-STATUS';
       options.icon = event.to.status !== 'UP' ? require('./img/error.png') : require('./img/ok.png');
@@ -146,5 +129,4 @@ module.run(function ($rootScope, $state, Notification, Application, MainViews) {
     $rootScope.$apply();
     Notification.notify(title, options);
   };
-
 });

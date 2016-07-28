@@ -1,27 +1,37 @@
 <div class="container-fluid">
   <h3>Spring Boot applications</h3>
   <div>
-    <input placeholder="Filter" class="input-xxlarge" type="search" ng-model="searchFilter" />
+    <input placeholder="Filter" class="input-xxlarge" type="search" ng-model="searchFilter" ng-keypress="toggleExpandAll(true)" />
   </div>
-  <table class="table table-hover">
-
+  <table class="table application-list">
     <thead>
       <tr>
-        <th><span class="sortable" ng-class="orderByCssClass('name')" ng-click="orderBy('name')">Application</span> /
-          <span class="sortable" ng-class="orderByCssClass('healthUrl')" ng-click="orderBy('healthUrl')">URL</span>
-        </th>
+        <th class="group-column" title="{{expandAll ? 'collapse' : 'expand'}} all" ng-click="toggleExpandAll()"><i class="fa"  ng-class="{'fa-plus': !expandAll, 'fa-minus': expandAll}"></i></th>
+        <th><span class="sortable" ng-class="orderByCssClass('name')" ng-click="orderBy('name')">Application</span> / <span class="sortable" ng-class="orderByCssClass('healthUrl')" ng-click="orderBy('healthUrl')">URL</span></th>
         <th><span class="sortable" ng-class="orderByCssClass('info.version')" ng-click="orderBy('info.version')">Version</span></th>
         <th>Info</th>
-        <th colspan="3">Status</th>
+        <th>Status</th>
+        <th colspan="2"></th>
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat="application in applications|orderBy:order.column:order.descending|orderBy:'statusInfo.status':false|filter:searchFilter track by application.id" ng-init="views = viewsForApplication(application)">
-        <td>{{ application.name }} ({{ application.id }})
-          <br/><span class="muted">{{ application.serviceUrl || application.managementUrl || application.healthUrl }}</span></td>
+      <tr ng-repeat-start="group in applicationGroups.groups|orderBy:order.column:order.descending|orderBy:'status':false|filter:searchFilter track by group.name" ng-init="group.collapsed = group.applications.length > 1 && !expandAll"  ng-show="group.collapsed">
+        <td class="group-column" ng-click="group.collapsed = false"><i class="fa fa-plus"></i></td>
+        <td colspan="3" ng-bind="group.name"></td>
+        <td>
+          <span ng-repeat-start="(status, count) in group.statusCounter track by status" class="status-{{status}}" ng-bind="count + ' ' + status"></span><span ng-repeat-end ng-hide="$last"> / </span>
+        </td>
+        <th colspan="2"></th>
+      </tr>
+      <tr ng-hide="group.collapsed" ng-repeat="application in filteredApps = (group.applications|orderBy:order.column:order.descending|orderBy:'statusInfo.status':false|filter:searchFilter) track by application.id" ng-init="views = viewsForApplication(application)" ng-repeat-end>
+        <td class="group-column" ng-if="$first" rowspan="{{filteredApps.length}}" ng-click="group.collapsed = filteredApps.length > 1"><i ng-show="filteredApps.length > 1" class="fa fa-minus"></i></td>
+        <td>{{ application.name }} ({{ application.id }})<br/>
+            <span class="muted">{{ application.serviceUrl || application.managementUrl || application.healthUrl }}</span></td>
         <td>{{ application.version }}</td>
-        <td><pre class="pre-scrollable" style="resize: vertical; height: 62px;" ng-bind-html="application.info | yaml | linkify:60"></pre></td>
-        <td><span class="status-{{application.statusInfo.status}}" title="{{application.statusInfo.timestamp  | date:'dd.MM.yyyy HH:mm:ss' }}">{{ application.statusInfo.status }}</span>
+        <td>
+          <sba-limited-text max-lines="3" bind-html="application.info | yaml | linkify:60"></sba-limited-text>
+        </td>
+        <td><span class="status-{{application.statusInfo.status}}" title="{{application.statusInfo.timestamp  | date:'dd.MM.yyyy HH:mm:ss' }}" ng-bind="application.statusInfo.status"></span>
           <span ng-show="application.refreshing"><i class="fa fa-spinner fa-pulse fa-lg"></i></span>
         </td>
         <td>

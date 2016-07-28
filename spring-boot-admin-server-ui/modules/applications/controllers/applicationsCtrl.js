@@ -17,13 +17,19 @@
 
 module.exports = function ($rootScope, $scope, $state, ApplicationViews, NotificationFilters) {
   'ngInject';
-
-  $scope.applications = $rootScope.applications;
   $scope.notificationFilters = null;
   $scope.notificationFiltersSupported = false;
+  $scope.expandAll = false;
 
   $scope.remove = function (application) {
     application.$remove();
+  };
+
+  $scope.toggleExpandAll = function (value) {
+    $scope.expandAll = value || !$scope.expandAll;
+    $rootScope.applicationGroups.groups.forEach(function (group) {
+      group.collapsed = !$scope.expandAll && group.applications.length > 1;
+    });
   };
 
   $scope.order = {

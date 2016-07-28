@@ -74,6 +74,24 @@
   text-decoration: none;
 }
 
+.application-list {
+  background-color: #f9f9f9;
+}
+
+.table .group-column {
+  border-right: 1px solid #dddddd;
+  color: #999999;
+  vertical-align: middle;
+  text-align: center;
+  cursor: pointer;
+}
+
+.table .group-column:hover {
+  background-color: #c7c7c7;
+  color: #f9f9f9;
+}
+
+
 /* ---------- */
 
 .sortable {
