@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.4.0.RC1</version>
+        <version>1.4.0.RELEASE</version>
         <relativePath/>
     </parent>
     <groupId>de.codecentric</groupId>
@@ -17,8 +17,8 @@
     <properties>
         <java.version>1.7</java.version>
         <main.basedir>${basedir}</main.basedir>
-        <spring-boot.version>1.4.0.RC1</spring-boot.version>
-        <spring-cloud.version>Brixton.SR3</spring-cloud.version>
+        <spring-boot.version>1.4.0.RELEASE</spring-boot.version>
+        <spring-cloud.version>Brixton.SR4</spring-cloud.version>
         <build-plugin.jacoco.version>0.7.7.201606060606</build-plugin.jacoco.version>
         <build-plugin.coveralls.version>4.2.0</build-plugin.coveralls.version>
         <build-plugin.gpg.version>1.6</build-plugin.gpg.version>
@@ -255,7 +255,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-<!-- Remove for release -->
+<!-- Removed for release
     <repositories>
         <repository>
             <id>spring-release</id>
@@ -295,5 +295,5 @@
             <url>http://repo.spring.io/milestone</url>
         </pluginRepository>
     </pluginRepositories>
-<!-- -->
+-->
 </project>
