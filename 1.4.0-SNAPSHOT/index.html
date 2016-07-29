@@ -953,7 +953,7 @@ The setup is explained <a href="#discover-clients-via-spring-cloud-discovery">ab
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-If you want to customize the default conversion of services you can either add <code>health.path</code> and/or <code>mangament.context-path</code> entries to the services metadata. This allows you to set the health or management path per application. In case you want to configure this for all of your discovered services, you can use the <code>spring.boot.admin.discovery.converter.*</code> properties for your Spring Boot Admin Server configuration. The services' metadata takes precedence over the server configuration. For the health-url the <code>EurekaServiceInstanceConverter</code> uses the healthCheckUrl registered in Eureka, which can be set for your client via <code>eureka.instance.healthCheckUrl</code>.
+If you want to customize the default conversion of services you can either add <code>health.path</code>, <code>management.port</code> and/or <code>mangament.context-path</code> entries to the services metadata. This allows you to set the health or management path per application. In case you want to configure this for all of your discovered services, you can use the <code>spring.boot.admin.discovery.converter.*</code> properties for your Spring Boot Admin Server configuration. The services' metadata takes precedence over the server configuration. For the health-url the <code>EurekaServiceInstanceConverter</code> uses the healthCheckUrl registered in Eureka, which can be set for your client via <code>eureka.instance.healthCheckUrl</code>.
 </td>
 </tr>
 </table>
