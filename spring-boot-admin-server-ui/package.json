@@ -18,8 +18,6 @@
     "font-awesome": "^4.6.3",
     "jquery": "^2.2.4",
     "js-yaml": "^3.6.1",
-    "karma-chrome-launcher": "^1.0.1",
-    "karma-jasmine": "^1.0.2",
     "linkifyjs": "^2.0.3"
   },
   "devDependencies": {
