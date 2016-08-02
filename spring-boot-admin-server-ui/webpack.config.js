@@ -77,41 +77,43 @@ module.exports = {
       test: /\.js$/,
       loader: 'eslint',
       exclude: [/node_modules/, /third-party/],
-        }],
-    loaders: [{
-      test: /\.js$/,
-      exclude: [/node_modules/, /third-party/],
-      loader: 'ng-annotate'
-        }, {
-      test: /\.tpl\.html$/,
-      loader: 'raw'
-        }, {
-      test: /\.css(\?.*)?$/,
-      loader: ExtractTextPlugin.extract('style', 'css?-minimize')
+    }],
+    loaders: [
+      {
+        test: /^jolokia$/,
+        loader: "imports?$=jquery"
       }, {
-      test: /\.(jpg|png|gif|eot|svg|ttf|woff(2)?)(\?.*)?$/,
-      include: /\/(third-party|node_modules)\//,
-      loader: 'file',
-      query: {
-        name: 'third-party/[2]',
-        regExp: '(third-party|node_modules)/(.+)'
-      }
+        test: /\.js$/,
+        exclude: [/node_modules/, /third-party/],
+        loader: 'ng-annotate'
       }, {
-      test: /\.(jpg|png|gif)$/,
-      include: /\/(core|modules)\//,
-      loader: 'file',
-      query: {
-        name: '[2]',
-        regExp: '(core|modules)/(.+)$'
-      }
+        test: /\.tpl\.html$/,
+        loader: 'raw'
+      }, {
+        test: /\.css(\?.*)?$/,
+        loader: ExtractTextPlugin.extract('style', 'css?-minimize')
+      }, {
+        test: /\.(jpg|png|gif|eot|svg|ttf|woff(2)?)(\?.*)?$/,
+        include: /\/(third-party|node_modules)\//,
+        loader: 'file',
+        query: {
+          name: 'third-party/[2]',
+          regExp: '(third-party|node_modules)/(.+)'
+        }
+      }, {
+        test: /\.(jpg|png|gif)$/,
+        include: /\/(core|modules)\//,
+        loader: 'file',
+        query: {
+          name: '[2]',
+          regExp: '(core|modules)/(.+)$'
+        }
       }]
   },
   plugins: [
     new CleanWebpackPlugin([DIST]),
     new ExtractTextPlugin('[name].css'),
     new Webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery',
       'window.jQuery': 'jquery'
     }),
     new NgAnnotatePlugin({
@@ -124,13 +126,14 @@ module.exports = {
     new CopyWebpackPlugin([{
       from: '**/*.html',
       context: 'core/'
-      }, {
-      from: '**/*.html',
-      context: 'modules/'
+    }, {
+        from: '**/*.html',
+        context: 'modules/'
       }], {
-      ignore: ['*.tpl.html']
-    })
-    ].concat(!isDevServer ? [] : new ModuleConcatPlugin([{
+        ignore: ['*.tpl.html']
+      })
+  ].concat(!isDevServer ? [] : new ModuleConcatPlugin([
+    {
       filename: 'all-modules.js',
       test: /module\.js/,
       delimiter: ';\n'
@@ -138,8 +141,8 @@ module.exports = {
       filename: 'all-modules.css',
       test: /module\.css/,
       delimiter: '\n'
-      }
-    ])),
+    }
+  ])),
   devServer: {
     proxy: {
       '/api*': {
