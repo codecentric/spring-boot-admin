@@ -7,13 +7,15 @@ body {
   margin-left: auto;
   margin-right: auto;
 }
-a {
-  color: #5fa134;
-}
+.btn-link,
+.btn-link:hover,
+.btn-link:active,
+a,
 a:hover,
 a:active {
   color: #5fa134;
 }
+
 pre {
   white-space: pre;
 }

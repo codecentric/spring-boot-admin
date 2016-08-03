@@ -144,12 +144,11 @@ module.exports = {
     }
   ])),
   devServer: {
-    proxy: {
-      '/api*': {
+    proxy: [{
+        context: '/api',
         target: 'http://localhost:8080',
         secure: false
-      }
-    }
+    }]
   },
   node: {
     fs: 'empty'

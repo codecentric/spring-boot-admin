@@ -1,0 +1,56 @@
+.hystrix-container {
+  padding: 15px;
+  line-height: 1;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  border-radius: 0 0 4px 4px;
+  background-color: white;
+}
+
+.hystrix-container .tooltip {
+/*Reset all values from Bootstrap */
+    position: inherit;
+    z-index: inherit;
+    display: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    opacity: inherit;
+}
+
+.spacer {
+	width: 100%;
+	margin: 0 auto;
+	padding-top:4px;
+	clear:both;
+}
+
+.last {
+	margin-right: 0px;
+}
+
+.success {
+	color: green;
+}
+
+.shortCircuited {
+	color: blue;
+}
+
+.timeout {
+	color: #FF9900;	 /* shade of orange */
+}
+
+.failure {
+	color: red;
+}
+
+.rejected {
+	color: purple;
+}
+
+.exceptionsThrown {
+	color: brown;
+}
+
+.badRequest {
+	color: lightSeaGreen;
+}

@@ -41,9 +41,9 @@
           <div class="pull-right">
             <div class="btn-group">
               <a ng-if="views.length > 0" ng-href="{{views[0].href}}" target="{{views[0].target}}" class="btn btn-success" ng-bind-html="views[0].title"></a>
-              <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" ng-if="views.length > 1">
+              <button class="btn btn-success dropdown-toggle" data-toggle="dropdown" ng-if="views.length > 1">
                 <i class="fa fa-caret-down"></i>
-              </a>
+              </button>
               <ul class="dropdown-menu">
                 <li ng-repeat="view in views.slice(1)">
                   <a ng-href="{{view.href}}" target="{{view.target}}" ng-bind-html="view.title"></a>

@@ -19,6 +19,7 @@
         <main.basedir>${basedir}</main.basedir>
         <spring-boot.version>1.4.0.RELEASE</spring-boot.version>
         <spring-cloud.version>Brixton.SR5</spring-cloud.version>
+        <hystrix-dashboard.version>1.5.5</hystrix-dashboard.version>
         <build-plugin.jacoco.version>0.7.7.201606060606</build-plugin.jacoco.version>
         <build-plugin.coveralls.version>4.2.0</build-plugin.coveralls.version>
         <build-plugin.gpg.version>1.6</build-plugin.gpg.version>
@@ -30,6 +31,7 @@
         <module>spring-boot-admin-server</module>
         <module>spring-boot-admin-server-ui</module>
         <module>spring-boot-admin-server-ui-activiti</module>
+        <module>spring-boot-admin-server-ui-hystrix</module>
         <module>spring-boot-admin-samples</module>
         <module>spring-boot-admin-starter-client</module>
         <module>spring-boot-admin-docs</module>
@@ -231,6 +233,11 @@
             </dependency>
             <dependency>
                 <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-server-ui-hystrix</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-starter-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -238,6 +245,11 @@
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-example</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netflix.hystrix</groupId>
+                <artifactId>hystrix-dashboard</artifactId>
+                <version>${hystrix-dashboard.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>

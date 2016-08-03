@@ -1,0 +1,25 @@
+<div class="hystrix-container">
+  Sort by
+  <button class="btn btn-link" ng-click="$ctrl.monitor.sortByErrorThenVolume()">Error then Volume</button>
+  <button class="btn btn-link" ng-click="$ctrl.monitor.sortAlphabetically()">Alphabetical</button>
+  <button class="btn btn-link" ng-click="$ctrl.monitor.sortByVolume()">Volume</button>
+  <button class="btn btn-link" ng-click="$ctrl.monitor.sortByError()">Error</button>
+  <button class="btn btn-link" ng-click="$ctrl.monitor.sortByLatencyMean()">Mean</button>
+  <button class="btn btn-link" ng-click="$ctrl.monitor.sortByLatencyMedian()">Median</button>
+  <button class="btn btn-link" ng-click="$ctrl.monitor.sortByLatency90()">90th</button>
+  <button class="btn btn-link" ng-click="$ctrl.monitor.sortByLatency99()">99th</button>
+  <button class="btn btn-link" ng-click="$ctrl.monitor.sortByLatency995()">99.5th</button>
+  <div id="hystrix-command-{{$ctrl.id}}" class="hystrix-row dependencies">
+    <span class="loading">Loading ...</span>
+  </div>
+  <div class="spacer"></div>
+  <div style="padding-top: 4px;">
+    <span class="success">Success</span>
+    <span class="shortCircuited">Short-Circuited</span>
+    <span class="badRequest"> Bad Request</span>
+    <span class="timeout">Timeout</span>
+    <span class="rejected">Rejected</span>
+    <span class="failure">Failure</span>
+    <span class="errorPercentage">Error %</span>
+  </div>
+</div>

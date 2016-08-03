@@ -95,8 +95,12 @@ module.run(function ($rootScope, $state, Notification, Application, ApplicationG
   });
 
   // setups up the sse-reciever
-  var journalEventSource = new EventSource('api/journal?stream');
-  journalEventSource.onmessage = function (message) {
+  $rootScope.journalEventSource = new EventSource('api/journal?stream');
+  $rootScope.$on('$destroy', function () {
+    $rootScope.journalEventSource.close();
+  });
+
+  $rootScope.journalEventSource.addEventListener('message', function (message) {
     var event = JSON.parse(message.data);
     Object.setPrototypeOf(event.application, Application.prototype);
 
@@ -131,5 +135,5 @@ module.run(function ($rootScope, $state, Notification, Application, ApplicationG
 
     $rootScope.$apply();
     Notification.notify(title, options);
-  };
+  });
 });
