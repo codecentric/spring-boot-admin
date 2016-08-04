@@ -96,7 +96,9 @@ public class ApplicationDiscoveryListener {
 	protected final Set<String> getAllApplicationIdsFromRegistry() {
 		Set<String> result = new HashSet<>();
 		for (Application application : registry.getApplications()) {
-			result.add(application.getId());
+			if (!ignoredServices.contains(application.getName())) {
+				result.add(application.getId());
+			}
 		}
 		return result;
 	}
