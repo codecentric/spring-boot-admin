@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.junit.After;
 import org.junit.Test;
@@ -30,7 +29,7 @@ public class AdminClientPropertiesTest {
 	}
 
 	@Test
-	public void test_mgmtPortPath() {
+	public void test_mgmtPortPath() throws Exception {
 		load("management.contextPath=/admin", "endpoints.health.id=alive", "local.server.port=8080",
 				"local.management.port=8081");
 		AdminClientProperties clientProperties = new AdminClientProperties();
@@ -46,7 +45,7 @@ public class AdminClientPropertiesTest {
 	}
 
 	@Test
-	public void test_contextPath_mgmtPath() {
+	public void test_contextPath_mgmtPath() throws Exception {
 		load("server.context-path=app", "management.context-path=/admin", "local.server.port=8080");
 		AdminClientProperties clientProperties = new AdminClientProperties();
 		context.getAutowireCapableBeanFactory().autowireBean(clientProperties);
@@ -61,7 +60,7 @@ public class AdminClientPropertiesTest {
 	}
 
 	@Test
-	public void test_contextPatht_mgmtPortPath() {
+	public void test_contextPatht_mgmtPortPath() throws Exception {
 		load("server.context-path=app", "management.context-path=/admin", "local.server.port=8080",
 				"local.management.port=8081");
 		AdminClientProperties clientProperties = new AdminClientProperties();
@@ -77,7 +76,7 @@ public class AdminClientPropertiesTest {
 	}
 
 	@Test
-	public void test_contextPath() {
+	public void test_contextPath() throws Exception {
 		load("server.context-path=app", "local.server.port=80");
 		AdminClientProperties clientProperties = new AdminClientProperties();
 		context.getAutowireCapableBeanFactory().autowireBean(clientProperties);
@@ -91,7 +90,7 @@ public class AdminClientPropertiesTest {
 	}
 
 	@Test
-	public void test_servletPath() {
+	public void test_servletPath() throws Exception {
 		load("server.servlet-path=app", "server.context-path=srv", "local.server.port=80");
 		AdminClientProperties clientProperties = new AdminClientProperties();
 		context.getAutowireCapableBeanFactory().autowireBean(clientProperties);
@@ -106,7 +105,7 @@ public class AdminClientPropertiesTest {
 	}
 
 	@Test
-	public void test_default() {
+	public void test_default() throws Exception {
 		load("local.server.port=8080");
 		AdminClientProperties clientProperties = new AdminClientProperties();
 		context.getAutowireCapableBeanFactory().autowireBean(clientProperties);
@@ -119,7 +118,7 @@ public class AdminClientPropertiesTest {
 	}
 
 	@Test
-	public void testSsl() {
+	public void testSsl() throws Exception {
 		load("server.ssl.key-store=somefile.jks", "server.ssl.key-store-password=password",
 				"local.server.port=8080");
 		AdminClientProperties clientProperties = new AdminClientProperties();
@@ -173,12 +172,8 @@ public class AdminClientPropertiesTest {
 		assertThat(clientProperties.getServiceUrl(), is("http://127.0.0.1:8080"));
 	}
 
-	private String getHostname() {
-		try {
+	private String getHostname() throws Exception {
 			return InetAddress.getLocalHost().getCanonicalHostName();
-		} catch (UnknownHostException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	private void publishApplicationReadyEvent(AdminClientProperties client) {

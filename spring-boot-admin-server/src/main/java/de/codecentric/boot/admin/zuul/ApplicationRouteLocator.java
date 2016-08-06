@@ -154,10 +154,8 @@ public class ApplicationRouteLocator implements RefreshableRouteLocator {
 	private String stripServletPath(final String path) {
 		String adjustedPath = path;
 
-		if (StringUtils.hasText(servletPath)) {
-			if (!servletPath.equals("/")) {
+		if (StringUtils.hasText(servletPath) && !"/".equals(servletPath)) {
 				adjustedPath = path.substring(this.servletPath.length());
-			}
 		}
 
 		LOGGER.debug("adjustedPath={}", path);

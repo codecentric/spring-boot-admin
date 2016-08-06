@@ -43,7 +43,7 @@ public class ConcatenatingResourceResolver extends AbstractResourceResolver {
 	private final byte[] delimiter;
 
 	public ConcatenatingResourceResolver(byte[] delimiter) {
-		this.delimiter = delimiter;
+		this.delimiter = delimiter.clone();
 	}
 
 	@Override

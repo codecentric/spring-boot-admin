@@ -97,7 +97,7 @@ public class MailNotifierTest {
 		Notifier notifier = new AbstractStatusChangeNotifier() {
 			@Override
 			protected void doNotify(ClientApplicationStatusChangedEvent event) throws Exception {
-				throw new RuntimeException();
+				throw new IllegalStateException("test");
 			}
 		};
 		notifier.notify(new ClientApplicationStatusChangedEvent(

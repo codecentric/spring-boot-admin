@@ -30,7 +30,7 @@ import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
  * @author Johannes Edmeier
  */
 public class RemindingNotifier implements Notifier {
-	private final ConcurrentHashMap<String, Reminder> reminders = new ConcurrentHashMap<String, Reminder>();
+	private final ConcurrentHashMap<String, Reminder> reminders = new ConcurrentHashMap<>();
 	private long reminderPeriod = TimeUnit.MINUTES.toMillis(10L);
 	private String[] reminderStatuses = { "DOWN", "OFFLINE" };
 	private final Notifier delegate;
@@ -51,7 +51,7 @@ public class RemindingNotifier implements Notifier {
 
 	public void sendReminders() {
 		long now = System.currentTimeMillis();
-		for (Reminder reminder : new ArrayList<Reminder>(reminders.values())) {
+		for (Reminder reminder : new ArrayList<>(reminders.values())) {
 			if (now - reminder.getLastNotification() > reminderPeriod) {
 				reminder.setLastNotification(now);
 				delegate.notify(reminder.getEvent());
@@ -92,7 +92,7 @@ public class RemindingNotifier implements Notifier {
 		private final ClientApplicationEvent event;
 		private long lastNotification;
 
-		public Reminder(ClientApplicationEvent event) {
+		private Reminder(ClientApplicationEvent event) {
 			this.event = event;
 			this.lastNotification = event.getTimestamp();
 		}

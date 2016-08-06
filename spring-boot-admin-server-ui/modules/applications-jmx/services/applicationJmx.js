@@ -43,7 +43,7 @@ module.exports = function ($rootScope, jolokia, $q) {
             var name = '';
             var type = '';
             var parts = rBeanName.split(',');
-            for (var i in parts) {
+            for (var i = 0; i < parts.length; i++) {
               var tokens = parts[i].split('=');
               if (tokens[0].toLowerCase() === 'name') {
                 name = tokens[1];

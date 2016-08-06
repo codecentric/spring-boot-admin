@@ -112,7 +112,7 @@ public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
 	private static class ZuulRefreshListener implements ApplicationListener<ApplicationEvent> {
 		private ZuulHandlerMapping zuulHandlerMapping;
 
-		public ZuulRefreshListener(ZuulHandlerMapping zuulHandlerMapping) {
+		private ZuulRefreshListener(ZuulHandlerMapping zuulHandlerMapping) {
 			this.zuulHandlerMapping = zuulHandlerMapping;
 		}
 
