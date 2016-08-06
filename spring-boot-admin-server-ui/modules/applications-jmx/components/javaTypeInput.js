@@ -50,7 +50,7 @@ module.exports = {
           default:
             return null;
         }
-      })();
+      }());
 
       ctrl.selectOptions = (function () {
         switch (ctrl.type) {

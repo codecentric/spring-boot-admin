@@ -24,7 +24,7 @@
     </sba-accordion-heading>
     <sba-accordion-body>
       <ul class="nav nav-tabs nav-stacked" ng-show="!domain.selectedBean" style="transition: 0.6s ease-in-out left">
-        <li ng-repeat="bean in domain.beans track by bean.id"><a ng-click="domain.selectedBean = bean"><small class="muted">MBean</small> {{bean.name}}</a></li>
+        <li ng-repeat="bean in domain.beans | orderBy:'name' track by bean.id"><a ng-click="domain.selectedBean = bean"><small class="muted">MBean</small> {{bean.name}}</a></li>
       </ul>
       <sba-jmx-bean application="application" bean="domain.selectedBean" ng-show="domain.selectedBean"></sba-jmx-bean>
     </sba-accordion-body>
