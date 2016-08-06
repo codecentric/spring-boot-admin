@@ -9,14 +9,14 @@ module.exports = function (config) {
         files: ['test/unit/**/*.js'],
         exclude: [],
         preprocessors: {
-            'test/unit/**/*.js': ['webpack'],
+            'test/unit/**/*.js': ['webpack']
         },
         webpack: {
             module: {
                 loaders: [{
                     test: /\.js$/,
                     exclude: [/node_modules/, /third-party/],
-                    loader: "ng-annotate"
+                    loader: 'ng-annotate'
                 }, {
                     test: /\.html$/,
                     loader: 'raw'

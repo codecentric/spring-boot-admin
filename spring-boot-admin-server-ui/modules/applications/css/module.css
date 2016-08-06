@@ -63,7 +63,7 @@
   font-size: 14px;
   color: #888;
   margin-top: 20px;
-  height: 0px;
+  height: 0;
 }
 .application--urls > li >a {
   color: #f1f1f1;

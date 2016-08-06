@@ -30,7 +30,7 @@ module.exports = function ($http) {
   this.getActiveFilters = function (filters, application) {
     var appFilters = {};
     angular.forEach(filters, function (value, key) {
-      if ((value.expired === false || value.expired === undefined) && (value.id === application.id || value.name === application.name)) {
+      if (!value.expired && (value.id === application.id || value.name === application.name)) {
         appFilters[key] = value;
       }
     });

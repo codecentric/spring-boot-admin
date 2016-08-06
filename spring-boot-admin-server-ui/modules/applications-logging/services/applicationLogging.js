@@ -27,7 +27,7 @@ module.exports = function ($q, jolokia) {
 
   var findLogbackMbean = function (app) {
     return jolokia.search('api/applications/' + app.id + '/jolokia/',
-        'ch.qos.logback.classic:Name=*,Type=ch.qos.logback.classic.jmx.JMXConfigurator')
+      'ch.qos.logback.classic:Name=*,Type=ch.qos.logback.classic.jmx.JMXConfigurator')
       .then(function (response) {
         if (response.value.length === 1) {
           return response.value[0];
@@ -38,13 +38,13 @@ module.exports = function ($q, jolokia) {
           if (value === undefined) {
             value = findInArray(response.value, 'default');
           }
-          if (value !== undefined) {
-            return value;
+          if (value === undefined) {
+            return $q.reject({
+              error: 'Ambigious Logback JMXConfigurator-MBeans found!',
+              candidates: response.value
+            });
           }
-          return $q.reject({
-            error: 'Ambigious Logback JMXConfigurator-MBeans found!',
-            candidates: response.value
-          });
+          return value;
         }
         return $q.reject({
           error: 'Couldn\'t find Logback JMXConfigurator-MBean'
