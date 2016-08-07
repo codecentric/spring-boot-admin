@@ -99,7 +99,9 @@ public class ApplicationDiscoveryListenerTest {
 
 	@Test
 	public void deregister_removed_app() {
-		Object heartbeat = new Object();
+		registry.register(Application.create("ignored").withHealthUrl("http://health")
+				.withId("abcdef").build());
+		listener.setIgnoredServices(Collections.singleton("ignored"));
 
 		List<ServiceInstance> instances = new ArrayList<>();
 		instances.add(new DefaultServiceInstance("service", "localhost", 80, false));
@@ -108,13 +110,15 @@ public class ApplicationDiscoveryListenerTest {
 		when(discovery.getServices()).thenReturn(Collections.singletonList("service"));
 		when(discovery.getInstances("service")).thenReturn(instances);
 
-		listener.onApplicationEvent(new HeartbeatEvent(new Object(), heartbeat));
-		assertEquals(2, registry.getApplications().size());
+		listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
+		assertEquals(2, registry.getApplicationsByName("service").size());
+		assertEquals(1, registry.getApplicationsByName("ignored").size());
 
 		instances.remove(0);
 
 		listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
-		assertEquals(1, registry.getApplications().size());
+		assertEquals(1, registry.getApplicationsByName("service").size());
+		assertEquals(1, registry.getApplicationsByName("ignored").size());
 	}
 
 }
