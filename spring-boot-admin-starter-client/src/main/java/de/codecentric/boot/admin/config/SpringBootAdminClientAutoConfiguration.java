@@ -47,9 +47,9 @@ public class SpringBootAdminClientAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public ApplicationRegistrator registrator() {
-		builder.messageConverters(new MappingJackson2HttpMessageConverter());
+		builder = builder.messageConverters(new MappingJackson2HttpMessageConverter());
 		if (admin.getUsername() != null) {
-			builder.basicAuthorization(admin.getUsername(), admin.getPassword());
+			builder = builder.basicAuthorization(admin.getUsername(), admin.getPassword());
 		}
 		return new ApplicationRegistrator(builder.build(), admin, client);
 	}
