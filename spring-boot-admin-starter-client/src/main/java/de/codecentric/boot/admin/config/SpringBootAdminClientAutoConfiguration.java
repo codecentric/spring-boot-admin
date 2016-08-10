@@ -39,7 +39,7 @@ public class SpringBootAdminClientAutoConfiguration {
 	private AdminProperties admin;
 
 	@Autowired
-	private RestTemplateBuilder builder;
+	private RestTemplateBuilder restTemplBuilder;
 
 	/**
 	 * Task that registers the application at the spring-boot-admin application.
@@ -47,7 +47,8 @@ public class SpringBootAdminClientAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public ApplicationRegistrator registrator() {
-		builder = builder.messageConverters(new MappingJackson2HttpMessageConverter());
+		RestTemplateBuilder builder = restTemplBuilder
+				.messageConverters(new MappingJackson2HttpMessageConverter());
 		if (admin.getUsername() != null) {
 			builder = builder.basicAuthorization(admin.getUsername(), admin.getPassword());
 		}

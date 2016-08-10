@@ -82,7 +82,7 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 	private ResourcePatternResolver resourcePatternResolver;
 
 	@Autowired
-	private RestTemplateBuilder builder;
+	private RestTemplateBuilder restTemplBuilder;
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -181,7 +181,8 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 	@Bean
 	@ConditionalOnMissingBean
 	public StatusUpdater statusUpdater() {
-		builder.messageConverters(new MappingJackson2HttpMessageConverter())
+		RestTemplateBuilder builder = restTemplBuilder
+				.messageConverters(new MappingJackson2HttpMessageConverter())
 				.errorHandler(new DefaultResponseErrorHandler() {
 			@Override
 			protected boolean hasError(HttpStatus statusCode) {
