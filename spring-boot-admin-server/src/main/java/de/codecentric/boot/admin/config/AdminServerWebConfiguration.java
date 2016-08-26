@@ -18,9 +18,9 @@ package de.codecentric.boot.admin.config;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.ApplicationContext;
@@ -34,7 +34,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -53,6 +54,7 @@ import de.codecentric.boot.admin.journal.web.JournalController;
 import de.codecentric.boot.admin.registry.ApplicationIdGenerator;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.registry.HashingApplicationUrlIdGenerator;
+import de.codecentric.boot.admin.registry.StatusUpdateApplicationListener;
 import de.codecentric.boot.admin.registry.StatusUpdater;
 import de.codecentric.boot.admin.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
@@ -195,31 +197,32 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 		return statusUpdater;
 	}
 
+	@Bean
+	@Qualifier("updateTaskScheduler")
+	public TaskScheduler updateTaskScheduler() {
+		ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+		taskScheduler.setPoolSize(1);
+		taskScheduler.setRemoveOnCancelPolicy(true);
+		taskScheduler.setThreadNamePrefix("updateTask");
+		return taskScheduler;
+	}
+
+	@Bean
+	public StatusUpdateApplicationListener statusUpdateApplicationListener() {
+		StatusUpdateApplicationListener listener = new StatusUpdateApplicationListener(
+				statusUpdater(), updateTaskScheduler());
+		listener.setUpdatePeriod(adminServerProperties().getMonitor().getPeriod());
+		return listener;
+	}
+
 	@EventListener
 	public void onClientApplicationRegistered(ClientApplicationRegisteredEvent event) {
-		statusUpdater().updateStatus(event.getApplication());
 		publisher.publishEvent(new RoutesOutdatedEvent());
 	}
 
 	@EventListener
 	public void onClientApplicationDeregistered(ClientApplicationDeregisteredEvent event) {
 		publisher.publishEvent(new RoutesOutdatedEvent());
-	}
-
-	@Bean
-	public ScheduledTaskRegistrar updateTaskRegistrar() {
-		return new ScheduledTaskRegistrar();
-	}
-
-	@EventListener
-	public void onApplicationReadyEvent(ApplicationReadyEvent event) {
-		updateTaskRegistrar().addFixedRateTask(new Runnable() {
-			@Override
-			public void run() {
-				statusUpdater().updateStatusForAllApplications();
-			}
-		}, adminServerProperties().getMonitor().getPeriod());
-		updateTaskRegistrar().afterPropertiesSet();
 	}
 
 	@Bean

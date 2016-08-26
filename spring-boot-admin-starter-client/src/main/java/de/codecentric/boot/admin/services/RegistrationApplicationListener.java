@@ -15,8 +15,6 @@
  */
 package de.codecentric.boot.admin.services;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
 import org.slf4j.Logger;
@@ -27,7 +25,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
 
 /**
  * Listener responsible for starting and stopping the registration task when the application is
@@ -44,20 +41,10 @@ public class RegistrationApplicationListener {
 	private long registerPeriod = 10_000L;
 	private volatile ScheduledFuture<?> scheduledTask;
 
-
 	public RegistrationApplicationListener(ApplicationRegistrator registrator,
 			TaskScheduler taskScheduler) {
 		this.registrator = registrator;
 		this.taskScheduler = taskScheduler;
-	}
-
-	public RegistrationApplicationListener(ApplicationRegistrator registrator,
-			ScheduledExecutorService scheduler) {
-		this(registrator, new ConcurrentTaskScheduler(scheduler));
-	}
-
-	public RegistrationApplicationListener(ApplicationRegistrator registrator) {
-		this(registrator, Executors.newSingleThreadScheduledExecutor());
 	}
 
 	@EventListener
