@@ -22,6 +22,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 import de.codecentric.boot.admin.services.ApplicationRegistrator;
@@ -48,7 +49,8 @@ public class SpringBootAdminClientAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ApplicationRegistrator registrator() {
 		RestTemplateBuilder builder = restTemplBuilder
-				.messageConverters(new MappingJackson2HttpMessageConverter());
+				.messageConverters(new MappingJackson2HttpMessageConverter())
+				.requestFactory(SimpleClientHttpRequestFactory.class);
 		if (admin.getUsername() != null) {
 			builder = builder.basicAuthorization(admin.getUsername(), admin.getPassword());
 		}
