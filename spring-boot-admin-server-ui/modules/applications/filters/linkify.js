@@ -22,6 +22,13 @@ module.exports = function () {
     var max = maxLength || Number.MAX_VALUE;
     return linkify(input, {
       target: '_blank',
+      formatHref: function (href, type) {
+        if (type === 'url') {
+          //the yaml filter quotes all strings with singlequotes which then shows up in the href so we remove them here
+          return href.replace(/'$/, '');
+        }
+        return href;
+      },
       format: function(url, type) {
         if (type === 'url' && url.length > max) {
           url = url.replace(/https?:\/\//, '');
