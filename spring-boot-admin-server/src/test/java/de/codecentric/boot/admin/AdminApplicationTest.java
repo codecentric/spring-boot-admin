@@ -30,7 +30,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import de.codecentric.boot.admin.AdminApplicationTest.TestAdminApplication;
 import de.codecentric.boot.admin.config.EnableAdminServer;
@@ -41,7 +41,7 @@ import de.codecentric.boot.admin.model.Application;
  *
  * @author Dennis Schulte
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestAdminApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
 		"spring.cloud.config.enabled=false" })
 public class AdminApplicationTest {
