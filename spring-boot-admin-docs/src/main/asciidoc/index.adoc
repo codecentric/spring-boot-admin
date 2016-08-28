@@ -146,12 +146,26 @@ NOTE: You can include the Spring Boot Admin to your Eureka server. Add the depen
 [[show-version-in-application-list]]
 === Show version in application list ===
 
-To get the version show up in the admin's application list you have to set `info.version`. For example using maven filtering during the build:
+To get the version show up in the admin's application list you can use the `build-info` goal from the `spring-boot-maven-plugin`, which generates the `META-INF/build-info.properties`. See also the http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#howto-build-info[Spring Boot Reference Guide].
 
-[source]
-.application.properties
+[source,xml]
+.pom.xml
 ----
-info.version=@project.version@
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>build-info</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
 ----
 
 [[jmx-bean-management]]

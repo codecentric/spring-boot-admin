@@ -1,5 +1,4 @@
 info:
-  version: @project.version@
   scm-url: @scm.url@
   stage: test
 

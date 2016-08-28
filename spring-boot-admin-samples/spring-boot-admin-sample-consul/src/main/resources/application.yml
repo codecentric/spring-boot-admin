@@ -1,6 +1,3 @@
-info:
-  version: 1.0.0
-
 spring:
   application:
     name: consul-example

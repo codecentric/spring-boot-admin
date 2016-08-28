@@ -1,10 +1,9 @@
 info:
-  version: @pom.version@
   stage: test
 
 spring:
   application:
-    name: @pom.artifactId@
+    name: spring-boot-admin-sample-war
   boot:
     admin:
       url: http://localhost:8080

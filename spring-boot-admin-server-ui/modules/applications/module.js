@@ -78,6 +78,9 @@ module.run(function ($rootScope, $state, Notification, Application, ApplicationG
       var info = response.data;
       application.version = info.version;
       delete info.version;
+      if (info.build && info.build.version) {
+        application.version = info.build.version;
+      }
       application.info = info;
     }).finally(function () {
       application.refreshing = false;

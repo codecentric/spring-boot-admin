@@ -34,19 +34,12 @@
           <execution>
             <goals>
               <goal>repackage</goal>
+              <goal>build-info</goal>
             </goals>
           </execution>
         </executions>
         <configuration>
           <addResources>false</addResources>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <configuration>
-          <wtpversion>2.0</wtpversion>
-          <jeeversion>6.0</jeeversion>
         </configuration>
       </plugin>
     </plugins>
