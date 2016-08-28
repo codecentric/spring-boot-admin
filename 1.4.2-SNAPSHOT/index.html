@@ -517,7 +517,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 1.4.2-SNAPSHOT,</span>
-<span id="revdate">27.08.2016</span>
+<span id="revdate">28.08.2016</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -753,12 +753,26 @@ You can include the Spring Boot Admin to your Eureka server. Add the dependencie
 <div class="sect2">
 <h3 id="show-version-in-application-list"><a class="anchor" href="#show-version-in-application-list"></a>3.1. Show version in application list</h3>
 <div class="paragraph">
-<p>To get the version show up in the admin&#8217;s application list you have to set <code>info.version</code>. For example using maven filtering during the build:</p>
+<p>To get the version show up in the admin&#8217;s application list you can use the <code>build-info</code> goal from the <code>spring-boot-maven-plugin</code>, which generates the <code>META-INF/build-info.properties</code>. See also the <a href="http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#howto-build-info">Spring Boot Reference Guide</a>.</p>
 </div>
 <div class="listingblock">
-<div class="title">application.properties</div>
+<div class="title">pom.xml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code>info.version=@project.version@</code></pre>
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;build&gt;</span>
+    <span class="tag">&lt;plugins&gt;</span>
+        <span class="tag">&lt;plugin&gt;</span>
+            <span class="tag">&lt;groupId&gt;</span>org.springframework.boot<span class="tag">&lt;/groupId&gt;</span>
+            <span class="tag">&lt;artifactId&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/artifactId&gt;</span>
+            <span class="tag">&lt;executions&gt;</span>
+                <span class="tag">&lt;execution&gt;</span>
+                    <span class="tag">&lt;goals&gt;</span>
+                        <span class="tag">&lt;goal&gt;</span>build-info<span class="tag">&lt;/goal&gt;</span>
+                    <span class="tag">&lt;/goals&gt;</span>
+                <span class="tag">&lt;/execution&gt;</span>
+            <span class="tag">&lt;/executions&gt;</span>
+        <span class="tag">&lt;/plugin&gt;</span>
+    <span class="tag">&lt;/plugins&gt;</span>
+<span class="tag">&lt;/build&gt;</span></code></pre>
 </div>
 </div>
 </div>
