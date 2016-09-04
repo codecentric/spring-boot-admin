@@ -8,9 +8,10 @@ logging:
 spring:
   application:
     name: @pom.artifactId@
-  boot:
-    admin:
-      url: http://localhost:8080
+
+# tag::configuration-sba-client[]
+spring.boot.admin.url: http://localhost:8080
+# end::configuration-sba-client[]
 
 endpoints:
   health:

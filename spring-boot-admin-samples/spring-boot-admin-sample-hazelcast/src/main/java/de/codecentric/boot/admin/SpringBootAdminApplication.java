@@ -27,6 +27,7 @@ import com.hazelcast.config.MapConfig;
 
 import de.codecentric.boot.admin.config.EnableAdminServer;
 
+// tag::application-hazelcast[]
 @Configuration
 @EnableAutoConfiguration
 @EnableAdminServer
@@ -44,3 +45,4 @@ public class SpringBootAdminApplication {
 		SpringApplication.run(SpringBootAdminApplication.class, args);
 	}
 }
+// end::application-hazelcast[]

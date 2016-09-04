@@ -1,0 +1,29 @@
+[[spring-boot-admin-server]]
+== Spring Boot Admin Server ==
+
+.Spring Boot Admin Server configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.context-path
+| The context-path prefixes the path where the Admin Server's statics assets and API should be served. Relative to the Dispatcher-Servlet.
+|
+
+| spring.boot.admin.monitor.period
+| Time interval in ms to update the status of applications with expired status-informations.
+| 10.000
+
+| spring.boot.admin.monitor.status-lifetime
+| Lifetime of application statuses in ms. The applications /health-endpoint will not be queried until the lifetime has expired.
+| 10.000
+
+| spring.boot.admin.routes.endpoints
+| The enpoints which will be available via spring boot admin zuul proxy. If you write ui modules using other endpoints you need to add them.
+| `"env, metrics, trace, dump, jolokia, info, configprops, trace, activiti, logfile, refresh, flyway, liquibase"`
+|===
+
+include::server-discovery.adoc[]
+
+include::server-clustering.adoc[]
+
+include::server-notifications.adoc[]

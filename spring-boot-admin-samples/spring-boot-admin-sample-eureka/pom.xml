@@ -17,14 +17,18 @@
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-server-ui</artifactId>
         </dependency>
+        <!-- tag::dependency-ui-hystrix[] -->
         <dependency>
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-server-ui-hystrix</artifactId>
         </dependency>
+        <!-- end::dependency-ui-hystrix[] -->
+        <!-- tag::dependency-eureka[] -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-eureka</artifactId>
         </dependency>
+        <!-- end::dependency-eureka[] -->
     </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName>

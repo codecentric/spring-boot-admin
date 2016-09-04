@@ -1,0 +1,37 @@
+
+[[clustering-support]]
+=== Clustering ===
+Spring Boot Admin Server supports cluster replication via Hazelcast. It is automatically enabled when a `HazelcastConfig`- or `HazelcastInstance`-Bean is present. You can also configure the Hazelcast instance to be persistent, to keep the status over restarts.
+Also have a look at the http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-hazelcast/[Spring Boot support for Hazelcast].
+
+. Add Hazelcast to your dependencies:
++
+[source,xml]
+.pom.xml
+----
+include::{samples-dir}/spring-boot-admin-sample-hazelcast/pom.xml[tags=dependency-hazelcast,indent=0]
+----
+
+. Instantiate a HazelcastConfig:
++
+[source,java]
+----
+include::{samples-dir}/spring-boot-admin-sample-hazelcast/src/main/java/de/codecentric/boot/admin/SpringBootAdminApplication.java[tags=application-hazelcast]
+----
+
+.Hazelcast configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.hazelcast.enabled
+| Enables the Hazelcast support
+| `true`
+
+| spring.boot.admin.hazelcast.application-store
+| Name of the Hazelcast-map to store the applications
+| `"spring-boot-admin-application-store"`
+
+| spring.boot.admin.hazelcast.event-store
+| Name of the Hazelcast-list to store the events
+| `"spring-boot-admin-event-store"`
+|===

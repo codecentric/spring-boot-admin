@@ -4,12 +4,13 @@ spring:
   cloud:
     config:
       enabled: false
-
+# tag::configuration-eureka[]
 eureka:
   instance:
     leaseRenewalIntervalInSeconds: 5
     client:
       serviceUrl:
         defaultZone: http://localhost:8761/eureka/
+# end::configuration-eureka[]
 
 spring.boot.admin.routes.endpoints: env,metrics,trace,dump,jolokia,info,configprops,trace,activiti,logfile,refresh,flyway,liquibase,heapdump,hystrix.stream
