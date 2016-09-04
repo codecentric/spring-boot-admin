@@ -517,7 +517,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 1.4.2-SNAPSHOT,</span>
-<span id="revdate">28.08.2016</span>
+<span id="revdate">04.09.2016</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -558,6 +558,12 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#pagerduty-notifications">4.3.4. Pagerduty notifications</a></li>
 <li><a href="#_hipchat_notifications">4.3.5. Hipchat notifications</a></li>
 <li><a href="#_slack_notifications">4.3.6. Slack notifications</a></li>
+</ul>
+</li>
+<li><a href="#_ui_modules">4.4. UI Modules</a>
+<ul class="sectlevel3">
+<li><a href="#_hystrix_ui_module">4.4.1. Hystrix UI Module</a></li>
+<li><a href="#_activiti_ui_module">4.4.2. Activiti UI Module</a></li>
 </ul>
 </li>
 </ul>
@@ -667,9 +673,9 @@ Either you can include the <code>spring-boot-admin</code> client or use <a href=
 <li>
 <p>Trigger the contained AutoConfiguration and tell the client where to find the admin to register at:</p>
 <div class="listingblock">
-<div class="title">application.properties</div>
+<div class="title">application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code>spring.boot.admin.url=http://localhost:8080</code></pre>
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.url</span>: <span class="string"><span class="content">http://localhost:8080</span></span></code></pre>
 </div>
 </div>
 </li>
@@ -710,9 +716,9 @@ Either you can include the <code>spring-boot-admin</code> client or use <a href=
 <span class="annotation">@EnableDiscoveryClient</span>
 <span class="annotation">@EnableAdminServer</span>
 <span class="directive">public</span> <span class="type">class</span> <span class="class">SpringBootAdminApplication</span> {
-    <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
-        SpringApplication.run(SpringBootAdminApplication.class, args);
-    }
+  <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
+    SpringApplication.run(SpringBootAdminApplication.class, args);
+  }
 }</code></pre>
 </div>
 </div>
@@ -720,9 +726,14 @@ Either you can include the <code>spring-boot-admin</code> client or use <a href=
 <li>
 <p>Tell the Eureka client where to find the service registry:</p>
 <div class="listingblock">
-<div class="title">application.properties</div>
+<div class="title">application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code>eureka.instance.client.serviceUrl.defaultZone: http://localhost:8761/eureka/</code></pre>
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">eureka</span>:
+  <span class="key">instance</span>:
+    <span class="key">leaseRenewalIntervalInSeconds</span>: <span class="string"><span class="content">5</span></span>
+    <span class="key">client</span>:
+      <span class="key">serviceUrl</span>:
+        <span class="key">defaultZone</span>: <span class="string"><span class="content">http://localhost:8761/eureka/</span></span></code></pre>
 </div>
 </div>
 </li>
@@ -797,11 +808,12 @@ You can include the Spring Boot Admin to your Eureka server. Add the dependencie
 <p>Currently the loglevel management is only available for <a href="http://logback.qos.ch/">Logback</a>. It is accessed via JMX so <a href="#jmx-bean-management">include Jolokia</a> in your application. In addition you have configure Logback&#8217;s <code>JMXConfigurator</code>:</p>
 </div>
 <div class="listingblock">
-<div class="title">logback.xml</div>
+<div class="title">logback-spring.xml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;configuration&gt;</span>
-    <span class="tag">&lt;include</span> <span class="attribute-name">resource</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">org/springframework/boot/logging/logback/base.xml</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
-    <span class="tag">&lt;jmxConfigurator</span><span class="tag">/&gt;</span>
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="preprocessor">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="tag">&lt;configuration&gt;</span>
+  <span class="tag">&lt;include</span> <span class="attribute-name">resource</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">org/springframework/boot/logging/logback/base.xml</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
+  <span class="tag">&lt;jmxConfigurator</span><span class="tag">/&gt;</span>
 <span class="tag">&lt;/configuration&gt;</span></code></pre>
 </div>
 </div>
@@ -1039,20 +1051,18 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <span class="annotation">@EnableAutoConfiguration</span>
 <span class="annotation">@EnableAdminServer</span>
 <span class="directive">public</span> <span class="type">class</span> <span class="class">SpringBootAdminApplication</span> {
-    <span class="annotation">@Bean</span>
-    <span class="directive">public</span> Config hazelcastConfig() {
-        <span class="keyword">return</span> <span class="keyword">new</span> Config().setProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">hazelcast.jmx</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>)
-                .addMapConfig(<span class="keyword">new</span> MapConfig(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-boot-admin-application-store</span><span class="delimiter">&quot;</span></span>)
-                    .setBackupCount(<span class="integer">1</span>)
-                    .setEvictionPolicy(EvictionPolicy.NONE))
-                .addListConfig(<span class="keyword">new</span> ListConfig(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-boot-admin-event-store</span><span class="delimiter">&quot;</span></span>)
-                    .setBackupCount(<span class="integer">1</span>)
-                    .setMaxSize(<span class="integer">1000</span>));
-    }
+  <span class="annotation">@Bean</span>
+  <span class="directive">public</span> Config hazelcastConfig() {
+    <span class="keyword">return</span> <span class="keyword">new</span> Config().setProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">hazelcast.jmx</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>)
+        .addMapConfig(<span class="keyword">new</span> MapConfig(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-boot-admin-application-store</span><span class="delimiter">&quot;</span></span>).setBackupCount(<span class="integer">1</span>)
+            .setEvictionPolicy(EvictionPolicy.NONE))
+        .addListConfig(<span class="keyword">new</span> ListConfig(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-boot-admin-event-store</span><span class="delimiter">&quot;</span></span>).setBackupCount(<span class="integer">1</span>)
+            .setMaxSize(<span class="integer">1000</span>));
+  }
 
-    <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
-        SpringApplication.run(SpringBootAdminApplication.class, args);
-    }
+  <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
+    SpringApplication.run(SpringBootAdminApplication.class, args);
+  }
 }</code></pre>
 </div>
 </div>
@@ -1159,26 +1169,26 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
 <span class="annotation">@EnableScheduling</span>
 <span class="directive">public</span> <span class="type">class</span> <span class="class">NotifierConfiguration</span> {
-        <span class="annotation">@Autowired</span>
-        <span class="directive">private</span> Notifier delegate;
+  <span class="annotation">@Autowired</span>
+  <span class="directive">private</span> Notifier delegate;
 
-        <span class="annotation">@Bean</span>
-        <span class="directive">public</span> FilteringNotifier filteringNotifier() { <i class="conum" data-value="1"></i><b>(1)</b>
-                <span class="keyword">return</span> <span class="keyword">new</span> FilteringNotifier(delegate);
-        }
+  <span class="annotation">@Bean</span>
+  <span class="directive">public</span> FilteringNotifier filteringNotifier() { <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="keyword">return</span> <span class="keyword">new</span> FilteringNotifier(delegate);
+  }
 
-        <span class="annotation">@Bean</span>
-        <span class="annotation">@Primary</span>
-        <span class="directive">public</span> RemindingNotifier remindingNotifier() { <i class="conum" data-value="2"></i><b>(2)</b>
-                RemindingNotifier notifier = <span class="keyword">new</span> RemindingNotifier(filteringNotifier());
-                notifier.setReminderPeriod(<span class="predefined-type">TimeUnit</span>.SECONDS.toMillis(<span class="integer">10</span>));
-                <span class="keyword">return</span> notifier;
-        }
+  <span class="annotation">@Bean</span>
+  <span class="annotation">@Primary</span>
+  <span class="directive">public</span> RemindingNotifier remindingNotifier() { <i class="conum" data-value="2"></i><b>(2)</b>
+    RemindingNotifier notifier = <span class="keyword">new</span> RemindingNotifier(filteringNotifier());
+    notifier.setReminderPeriod(<span class="predefined-type">TimeUnit</span>.SECONDS.toMillis(<span class="integer">10</span>));
+    <span class="keyword">return</span> notifier;
+  }
 
-        <span class="annotation">@Scheduled</span>(fixedRate = <span class="integer">1</span>_000L)
-        <span class="directive">public</span> <span class="type">void</span> remind() {
-                remindingNotifier().sendReminders();
-        }
+  <span class="annotation">@Scheduled</span>(fixedRate = <span class="integer">1</span>_000L)
+  <span class="directive">public</span> <span class="type">void</span> remind() {
+    remindingNotifier().sendReminders();
+  }
 }</code></pre>
 </div>
 </div>
@@ -1455,6 +1465,86 @@ account and configure it appropriately.</p>
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_ui_modules"><a class="anchor" href="#_ui_modules"></a>4.4. UI Modules</h3>
+<div class="paragraph">
+<p>Additional to the core UI there are following modules which can be included by adding the jar-file to the classpath:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>spring-boot-admin-server-ui-activiti</p>
+</li>
+<li>
+<p>spring-boot-admin-server-ui-hystrix</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_hystrix_ui_module"><a class="anchor" href="#_hystrix_ui_module"></a>4.4.1. Hystrix UI Module</h4>
+<div class="paragraph">
+<p>The Hystrix module uses the hystrix-dashboard to display the metrics from Hystrix or Turbine streams.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Add the ui module to your classpath:</p>
+<div class="listingblock">
+<div class="title">pom.xml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-server-ui-hystrix<span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;version&gt;</span>{project-version}<span class="tag">&lt;/version&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Add the <code>/hystrix.stream</code> and/or <code>/turbine.stream</code> to the proxified endpoints:</p>
+<div class="listingblock">
+<div class="title">application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.routes.endpoints</span>: <span class="string"><span class="content">env,metrics,trace,dump,jolokia,info,configprops,trace,logfile,refresh,flyway,liquibase,heapdump,hystrix.stream,turbine.stream</span></span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_activiti_ui_module"><a class="anchor" href="#_activiti_ui_module"></a>4.4.2. Activiti UI Module</h4>
+<div class="paragraph">
+<p>The Activiti module shows information from the <code>/activti</code> endpint.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Add the ui module to your classpath:</p>
+<div class="listingblock">
+<div class="title">pom.xml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-server-ui-activiti<span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;version&gt;</span>{project-version}<span class="tag">&lt;/version&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Add the <code>/activiti</code> to the proxified endpoints:</p>
+<div class="listingblock">
+<div class="title">application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.routes.endpoints</span>: <span class="string"><span class="content">env,metrics,trace,dump,jolokia,info,configprops,trace,logfile,refresh,flyway,liquibase,heapdump,activiti</span></span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
 </div>
 </div>
 </div>
