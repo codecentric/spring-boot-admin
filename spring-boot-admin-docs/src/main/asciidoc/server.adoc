@@ -27,3 +27,5 @@ include::server-discovery.adoc[]
 include::server-clustering.adoc[]
 
 include::server-notifications.adoc[]
+
+include::server-ui-modules.adoc[]

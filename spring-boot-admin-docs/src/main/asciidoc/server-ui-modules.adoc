@@ -1,0 +1,54 @@
+=== UI Modules ===
+
+Additional to the core UI there are following modules which can be included by adding the jar-file to the classpath:
+
+ - spring-boot-admin-server-ui-activiti
+ - spring-boot-admin-server-ui-hystrix
+
+==== Hystrix UI Module ====
+
+The Hystrix module uses the hystrix-dashboard to display the metrics from Hystrix or Turbine streams.
+
+. Add the ui module to your classpath:
++
+[source,xml]
+.pom.xml
+----
+<dependency>
+    <groupId>de.codecentric</groupId>
+    <artifactId>spring-boot-admin-server-ui-hystrix</artifactId>
+    <version>{project-version}</version>
+</dependency>
+----
+
+. Add the `/hystrix.stream` and/or `/turbine.stream` to the proxified endpoints:
++
+[source,yml]
+.application.yml
+----
+include::{samples-dir}/spring-boot-admin-sample-eureka/src/main/resources/application.yml[tags=configuration-ui-hystrix]
+----
+
+==== Activiti UI Module ====
+
+The Activiti module shows information from the `/activti` endpint.
+
+. Add the ui module to your classpath:
++
+[source,xml]
+.pom.xml
+----
+<dependency>
+    <groupId>de.codecentric</groupId>
+    <artifactId>spring-boot-admin-server-ui-activiti</artifactId>
+    <version>{project-version}</version>
+</dependency>
+----
+
+. Add the `/activiti` to the proxified endpoints:
++
+[source,yml]
+.application.yml
+----
+spring.boot.admin.routes.endpoints: env,metrics,trace,dump,jolokia,info,configprops,trace,logfile,refresh,flyway,liquibase,heapdump,activiti
+----

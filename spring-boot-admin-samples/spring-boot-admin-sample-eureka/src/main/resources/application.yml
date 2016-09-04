@@ -13,4 +13,6 @@ eureka:
         defaultZone: http://localhost:8761/eureka/
 # end::configuration-eureka[]
 
-spring.boot.admin.routes.endpoints: env,metrics,trace,dump,jolokia,info,configprops,trace,activiti,logfile,refresh,flyway,liquibase,heapdump,hystrix.stream
+# tag::configuration-ui-hystrix[]
+spring.boot.admin.routes.endpoints: env,metrics,trace,dump,jolokia,info,configprops,trace,logfile,refresh,flyway,liquibase,heapdump,hystrix.stream,turbine.stream
+# end::configuration-ui-hystrix[]
