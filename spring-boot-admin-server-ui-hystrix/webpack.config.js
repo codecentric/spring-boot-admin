@@ -1,7 +1,6 @@
 'use strict';
 
-var Webpack = require('webpack'),
-  NgAnnotatePlugin = require('ng-annotate-webpack-plugin'),
+var NgAnnotatePlugin = require('ng-annotate-webpack-plugin'),
   CopyWebpackPlugin = require('copy-webpack-plugin'),
   CleanWebpackPlugin = require('clean-webpack-plugin'),
   ExtractTextPlugin = require('extract-text-webpack-plugin'),
@@ -9,7 +8,6 @@ var Webpack = require('webpack'),
 
 var DIST = path.resolve(__dirname, 'target/dist');
 var ROOT = __dirname;
-var isDevServer = path.basename(require.main.filename) === 'webpack-dev-server.js';
 
 module.exports = {
   context: ROOT,
@@ -25,7 +23,7 @@ module.exports = {
       'hystrix/hystrixCommand.css': path.resolve(ROOT, 'target/hystrix-dashboard/components/hystrixCommand/hystrixCommand.css'),
       'hystrix/hystrixThreadPool': path.resolve(ROOT, 'target/hystrix-dashboard/components/hystrixThreadPool/hystrixThreadPool.js'),
       'hystrix/hystrixThreadPool.css': path.resolve(ROOT, 'target/hystrix-dashboard/components/hystrixThreadPool/hystrixThreadPool.css'),
-      'tsort' : path.resolve(ROOT, 'target/hystrix-dashboard/js/jquery.tinysort.min.js'),
+      'tsort' : path.resolve(ROOT, 'target/hystrix-dashboard/js/jquery.tinysort.min.js')
     }
   },
   module: {
@@ -37,14 +35,14 @@ module.exports = {
     loaders: [
       {
         test: /hystrix-dashboard\/js\/jquery\.tinysort\.min\.js$/,
-        loader: 'imports?jQuery=jquery',
+        loader: 'imports?jQuery=jquery'
       },{
         test: /hystrix-dashboard\/components\/hystrixCommand\/hystrixCommand\.js$/,
         loaders: [
           'imports?this=>global&jQuery=jquery&$=jquery&d3&tmpl=microtemplates&tsort',
           'exports?window.HystrixCommandMonitor',
           'regexp-replace?{"match": { "pattern": "\.\./components/hystrixCommand", "flags": "g" }, "replaceWith": "applications-hystrix/components/hystrixCommand"}'
-        ],
+        ]
       }, {
         test: /hystrix-dashboard\/components\/hystrixThreadPool\/hystrixThreadPool\.js$/,
         loaders: [
@@ -101,13 +99,13 @@ module.exports = {
               opts.end = false;
               proxyRes.__pipe(sink, opts);
             };
-            var suffix_module = ";\n"
+            var suffixModule = '\n';
             require('http').get('http://localhost:9000/applications-hystrix/module.js', function (r) {
               r.on('data', function (chunk) {
-                suffix_module += chunk;
+                suffixModule += chunk;
               });
               r.on('end', function () {
-                res.end(suffix_module);
+                res.end(suffixModule);
               });
             });
           }
@@ -121,13 +119,13 @@ module.exports = {
               opts.end = false;
               proxyRes.__pipe(sink, opts);
             };
-            var suffix_module = "\n"
+            var suffixCss = '\n';
             require('http').get('http://localhost:9000/applications-hystrix/module.css', function (r) {
               r.on('data', function (chunk) {
-                suffix_module += chunk;
+                suffixCss += chunk;
               });
               r.on('end', function () {
-                res.end(suffix_module);
+                res.end(suffixCss);
               });
             });
           }
