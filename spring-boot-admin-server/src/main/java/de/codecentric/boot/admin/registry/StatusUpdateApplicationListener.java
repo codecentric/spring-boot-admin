@@ -26,12 +26,16 @@ public class StatusUpdateApplicationListener {
 
 	@EventListener
 	public void onApplicationReady(ApplicationReadyEvent event) {
-		startStatusUpdate();
+		if (event.getApplicationContext().getParent() == null) {
+			startStatusUpdate();
+		}
 	}
 
 	@EventListener
 	public void onContextClosed(ContextClosedEvent event) {
-		stopStatusUpdate();
+		if (event.getApplicationContext().getParent() == null) {
+			stopStatusUpdate();
+		}
 	}
 
 	@EventListener

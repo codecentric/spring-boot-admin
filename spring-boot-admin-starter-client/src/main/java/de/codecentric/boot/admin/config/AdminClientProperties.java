@@ -73,10 +73,12 @@ public class AdminClientProperties {
 
 	@EventListener
 	public void onApplicationReady(ApplicationReadyEvent event) {
-		serverPort = event.getApplicationContext().getEnvironment().getProperty("local.server.port",
-				Integer.class);
-		managementPort = event.getApplicationContext().getEnvironment()
-				.getProperty("local.management.port", Integer.class, serverPort);
+		if (event.getApplicationContext().getParent() == null) {
+			serverPort = event.getApplicationContext().getEnvironment()
+					.getProperty("local.server.port", Integer.class);
+			managementPort = event.getApplicationContext().getEnvironment()
+					.getProperty("local.management.port", Integer.class, serverPort);
+		}
 	}
 
 	public String getManagementUrl() {

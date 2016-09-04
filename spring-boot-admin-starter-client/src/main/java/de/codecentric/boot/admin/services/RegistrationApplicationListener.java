@@ -50,7 +50,7 @@ public class RegistrationApplicationListener {
 	@EventListener
 	@Order(Ordered.LOWEST_PRECEDENCE)
 	public void onApplicationReady(ApplicationReadyEvent event) {
-		if (autoRegister) {
+		if (event.getApplicationContext().getParent() == null && autoRegister) {
 			startRegisterTask();
 		}
 	}
@@ -58,10 +58,12 @@ public class RegistrationApplicationListener {
 	@EventListener
 	@Order(Ordered.LOWEST_PRECEDENCE)
 	public void onClosedContext(ContextClosedEvent event) {
-		stopRegisterTask();
+		if (event.getApplicationContext().getParent() == null) {
+			stopRegisterTask();
 
-		if (autoDeregister) {
-			registrator.deregister();
+			if (autoDeregister) {
+				registrator.deregister();
+			}
 		}
 	}
 
