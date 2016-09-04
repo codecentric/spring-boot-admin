@@ -25,7 +25,7 @@ module.exports = function ($scope, $http, application) {
   $scope.searchFilter;
 
   $scope.refresh = function () {
-    $http.get('/api/applications/' + application.id + '/flyway').then(function (response) {
+    $http.get('api/applications/' + application.id + '/flyway').then(function (response) {
       $scope.migrations = response.data;
     });
   };

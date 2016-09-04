@@ -22,7 +22,7 @@ module.exports = function ($scope, $http, application) {
   $scope.searchFilter = null;
 
   $scope.refresh = function () {
-    $http.get('/api/applications/' + application.id + '/liquibase').then(function (response) {
+    $http.get('api/applications/' + application.id + '/liquibase').then(function (response) {
       $scope.changeLog = response.data;
     });
   };
