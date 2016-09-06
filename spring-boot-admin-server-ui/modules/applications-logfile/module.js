@@ -25,7 +25,7 @@ module.run(function ($sce, $http, ApplicationViews) {
   ApplicationViews.register({
     order: 1,
     title: $sce.trustAsHtml('<i class="fa fa-file-text-o fa-fw"></i>Log'),
-    href: '/api/applications/{id}/logfile',
+    href: 'api/applications/{id}/logfile',
     target: '_blank',
     show: function (application) {
       if (!application.managementUrl || !application.statusInfo.status || application.statusInfo.status === 'OFFLINE') {
