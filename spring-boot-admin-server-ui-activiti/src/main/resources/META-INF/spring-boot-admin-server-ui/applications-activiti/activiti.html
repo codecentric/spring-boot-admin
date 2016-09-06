@@ -1,4 +1,4 @@
-<div class="container content">
+<div class="container">
 	<table class="table table-striped">
 		<col style="width:30%">
 		<col style="width:auto">
@@ -8,9 +8,9 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="entry in summary" >
-				<td style="word-break: break-all;" >{{ entry.key }}</td>
-				<td style="word-break: break-all;" >{{ entry.value }}</td>
+			<tr ng-repeat="entry in summary">
+				<td style="word-break: break-all;">{{ entry.key }}</td>
+				<td style="word-break: break-all;">{{ entry.value }}</td>
 			</tr>
 		</tbody>
 	</table>
@@ -20,14 +20,16 @@
 		<col style="width:auto">
 		<thead>
 			<tr>
-				<th>Process</th><th>Running</th><th>Completed</th>
+				<th>Process</th>
+				<th>Running</th>
+				<th>Completed</th>
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="process in processes" >
-				<td style="word-break: break-all;" >{{ process.name }}</td>
-				<td style="word-break: break-all;" >{{ process.running }}</td>
-				<td style="word-break: break-all;" >{{ process.completed }}</td>
+			<tr ng-repeat="process in processes">
+				<td style="word-break: break-all;">{{ process.name }}</td>
+				<td style="word-break: break-all;">{{ process.running }}</td>
+				<td style="word-break: break-all;">{{ process.completed }}</td>
 			</tr>
 		</tbody>
 	</table>

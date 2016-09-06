@@ -20,13 +20,25 @@ var angular = require('angular');
 var module = angular.module('sba-applications-logfile', ['sba-applications']);
 global.sbaModules.push(module.name);
 
-module.run(function ($sce, $http, ApplicationViews) {
+require('./css/module.css');
 
+module.component('sbaLogfileViewer', require('./components/logfileViewer.js'));
+module.service('Logtail', require('./services/logtail.js'));
+module.controller('logfileCtrl', require('./controllers/logfileCtrl.js'));
+
+module.config(function ($stateProvider) {
+  $stateProvider.state('applications.logfile', {
+    url: '/logfile',
+    templateUrl: 'applications-logfile/views/logfile.html',
+    controller: 'logfileCtrl'
+  });
+});
+
+module.run(function (ApplicationViews, $sce, $http) {
   ApplicationViews.register({
     order: 1,
     title: $sce.trustAsHtml('<i class="fa fa-file-text-o fa-fw"></i>Log'),
-    href: 'api/applications/{id}/logfile',
-    target: '_blank',
+    state: 'applications.logfile',
     show: function (application) {
       if (!application.managementUrl || !application.statusInfo.status || application.statusInfo.status === 'OFFLINE') {
         return false;
@@ -38,5 +50,5 @@ module.run(function ($sce, $http, ApplicationViews) {
       });
     }
   });
-
 });
+

@@ -1,0 +1,8 @@
+<div id="download">
+  <button class="btn" ng-class="{'active btn-primary' : follow }" ng-click="toggleFollow()"><i class="fa fa-long-arrow-down"></i> Follow</button>
+  <a class="btn  btn-success" target="_blank" href="api/applications/{{application.id}}/logfile"><i class="fa fa-cloud-download"></i> Download</a>
+</div>
+<sba-logfile-viewer logfile-url="api/applications/{{application.id}}/logfile" on-append="updateview()"></sba-logfile-viewer>
+<div id="top">
+  <button class="btn btn-small" ng-click="scrollToTop()">Top <i class="fa fa-caret-up"></i></button>
+</div>

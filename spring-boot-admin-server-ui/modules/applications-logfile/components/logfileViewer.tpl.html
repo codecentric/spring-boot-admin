@@ -1,0 +1,4 @@
+<div class="logview" ng-bind="$ctrl.data"></div>
+<div class="alert alert-error" ng-if="$ctrl.error">
+  <b>Error while reading logfile:</b> <span data-ng-bind="$ctrl.error.status"></span> - <span data-ng-bind="$ctrl.error.statusText"></span>
+</div>

@@ -1,33 +1,35 @@
-<div class="input-append">
-    <input placeholder="Filter" class="input-xxlarge" type="search" ng-model="searchFilter" />
-    <button class="btn" title="reload list" ng-click="refresh()"><i class="fa fa-repeat"></i></button>
-</div>
-<sba-info-panel panel-title="Flyway Migrations" raw="api/applications/{{ application.id }}/flyway">
-    <table class="table">
-        <thead>
-            <th>Type</th>
-            <th>Checksum</th>
-            <th>Version</th>
-            <th>Description</th>
-            <th>Script</th>
-            <th>State</th>
-            <th>Installed</th>
-            <th>Execution Time</th>
-        </thead>
-        <tbody>
-            <tr ng-repeat="migration in migrations | filter:searchFilter">
-                <td ng-bind="migration.type"></td>
-                <td ng-bind="migration.checksum"></td>
-                <td ng-bind="migration.version"></td>
-                <td ng-bind="migration.description"></td>
-                <td ng-bind="migration.script"></td>
-                <td><span class="label" ng-class="{
+<div class="container">
+    <div class="input-append">
+        <input placeholder="Filter" class="input-xxlarge" type="search" ng-model="searchFilter" />
+        <button class="btn" title="reload list" ng-click="refresh()"><i class="fa fa-repeat"></i></button>
+    </div>
+    <sba-info-panel panel-title="Flyway Migrations" raw="api/applications/{{ application.id }}/flyway">
+        <table class="table">
+            <thead>
+                <th>Type</th>
+                <th>Checksum</th>
+                <th>Version</th>
+                <th>Description</th>
+                <th>Script</th>
+                <th>State</th>
+                <th>Installed</th>
+                <th>Execution Time</th>
+            </thead>
+            <tbody>
+                <tr ng-repeat="migration in migrations | filter:searchFilter">
+                    <td ng-bind="migration.type"></td>
+                    <td ng-bind="migration.checksum"></td>
+                    <td ng-bind="migration.version"></td>
+                    <td ng-bind="migration.description"></td>
+                    <td ng-bind="migration.script"></td>
+                    <td><span class="label" ng-class="{
                     'label-success': inArray(migration.state, successStates),
                     'label-warning': inArray(migration.state, warningStates),
                     'label-danger': inArray(migration.state, failedStates)}" ng-bind="migration.state"></span></td>
-                <td ng-bind="migration.installedOn | date:'dd.MM.yyyy HH:mm:ss.sss'"></td>
-                <td ng-bind="migration.executionTime + 'ms'"></td>
-            </tr>
-        </tbody>
-    </table>
-</sba-info-panel>
+                    <td ng-bind="migration.installedOn | date:'dd.MM.yyyy HH:mm:ss.sss'"></td>
+                    <td ng-bind="migration.executionTime + 'ms'"></td>
+                </tr>
+            </tbody>
+        </table>
+    </sba-info-panel>
+</div>
