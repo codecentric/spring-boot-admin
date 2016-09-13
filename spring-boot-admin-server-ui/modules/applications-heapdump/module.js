@@ -25,7 +25,7 @@ module.run(function ($sce, $http, ApplicationViews) {
   ApplicationViews.register({
     order: 110,
     title: $sce.trustAsHtml('<i class="fa fa-cubes fa-fw"></i>Heapdump'),
-    href: '/api/applications/{id}/heapdump',
+    href: 'api/applications/{id}/heapdump',
     target: '_blank',
     show: function (application) {
       if (!application.managementUrl || !application.statusInfo.status || application.statusInfo.status === 'OFFLINE') {
