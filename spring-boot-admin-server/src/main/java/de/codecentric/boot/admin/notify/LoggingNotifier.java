@@ -18,20 +18,26 @@ package de.codecentric.boot.admin.notify;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.codecentric.boot.admin.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
 
 /**
  * Notifier that just writes to a logger.
- * 
+ *
  * @author Johannes Edmeier
  */
 public class LoggingNotifier extends AbstractStatusChangeNotifier {
 	private static Logger LOGGER = LoggerFactory.getLogger(LoggingNotifier.class);
 
 	@Override
-	protected void doNotify(ClientApplicationStatusChangedEvent event) throws Exception {
-		LOGGER.info("Application {} ({}) is {}", event.getApplication().getName(),
-				event.getApplication().getId(), event.getTo().getStatus());
+	protected void doNotify(ClientApplicationEvent event) throws Exception {
+		if (event instanceof ClientApplicationStatusChangedEvent) {
+			LOGGER.info("Application {} ({}) is {}", event.getApplication().getName(),
+					event.getApplication().getId(), ((ClientApplicationStatusChangedEvent) event).getTo().getStatus());
+		} else {
+			LOGGER.info("Application {} ({}) {}", event.getApplication().getName(),
+					event.getApplication().getId(), event.getType());
+		}
 	}
 
 }

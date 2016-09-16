@@ -25,7 +25,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 
-import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.event.ClientApplicationEvent;
 
 /**
  * Notifier sending emails.
@@ -71,7 +71,7 @@ public class MailNotifier extends AbstractStatusChangeNotifier {
 	}
 
 	@Override
-	protected void doNotify(ClientApplicationStatusChangedEvent event) {
+	protected void doNotify(ClientApplicationEvent event) {
 		EvaluationContext context = new StandardEvaluationContext(event);
 
 		SimpleMailMessage message = new SimpleMailMessage();

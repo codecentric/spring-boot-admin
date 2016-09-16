@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 
+import de.codecentric.boot.admin.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.model.StatusInfo;
@@ -96,7 +97,7 @@ public class MailNotifierTest {
 	public void test_onApplicationEvent_throw_doesnt_propagate() {
 		Notifier notifier = new AbstractStatusChangeNotifier() {
 			@Override
-			protected void doNotify(ClientApplicationStatusChangedEvent event) throws Exception {
+			protected void doNotify(ClientApplicationEvent event) throws Exception {
 				throw new IllegalStateException("test");
 			}
 		};

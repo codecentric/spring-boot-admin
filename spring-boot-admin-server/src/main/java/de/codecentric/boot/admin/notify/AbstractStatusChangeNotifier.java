@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,6 @@ package de.codecentric.boot.admin.notify;
 
 import java.util.Arrays;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.codecentric.boot.admin.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
 
@@ -28,7 +25,7 @@ import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
  *
  * @author Johannes Edmeier
  */
-public abstract class AbstractStatusChangeNotifier implements Notifier {
+public abstract class AbstractStatusChangeNotifier extends AbstractEventNotifier {
 
 	/**
 	 * List of changes to ignore. Must be in Format OLD:NEW, for any status use * as wildcard, e.g.
@@ -36,36 +33,17 @@ public abstract class AbstractStatusChangeNotifier implements Notifier {
 	 */
 	protected String[] ignoreChanges = { "UNKNOWN:UP" };
 
-	/**
-	 * Enables the mail notification.
-	 */
-	private boolean enabled = true;
-
 	@Override
-	public void notify(ClientApplicationEvent event) {
+	protected boolean shouldNotify(ClientApplicationEvent event) {
 		if (event instanceof ClientApplicationStatusChangedEvent) {
 			ClientApplicationStatusChangedEvent statusChange = (ClientApplicationStatusChangedEvent) event;
-			if (enabled && shouldNotify(statusChange.getFrom().getStatus(),
-					statusChange.getTo().getStatus())) {
-				try {
-					doNotify(statusChange);
-				} catch (Exception ex) {
-					getLogger().error("Couldn't notify for status change {} ", statusChange, ex);
-				}
-			}
+			String from = statusChange.getFrom().getStatus();
+			String to = statusChange.getTo().getStatus();
+			return Arrays.binarySearch(ignoreChanges, from + ":" + to) < 0
+					&& Arrays.binarySearch(ignoreChanges, "*:" + to) < 0
+					&& Arrays.binarySearch(ignoreChanges, from + ":*") < 0;
 		}
-	}
-
-	protected boolean shouldNotify(String from, String to) {
-		return Arrays.binarySearch(ignoreChanges, (from + ":" + to)) < 0
-				&& Arrays.binarySearch(ignoreChanges, ("*:" + to)) < 0
-				&& Arrays.binarySearch(ignoreChanges, (from + ":*")) < 0;
-	}
-
-	protected abstract void doNotify(ClientApplicationStatusChangedEvent event) throws Exception;
-
-	private Logger getLogger() {
-		return LoggerFactory.getLogger(this.getClass());
+		return false;
 	}
 
 	public void setIgnoreChanges(String[] ignoreChanges) {
@@ -74,7 +52,4 @@ public abstract class AbstractStatusChangeNotifier implements Notifier {
 		this.ignoreChanges = copy;
 	}
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
 }

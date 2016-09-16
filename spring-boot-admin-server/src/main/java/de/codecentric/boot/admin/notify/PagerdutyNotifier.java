@@ -25,6 +25,7 @@ import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.web.client.RestTemplate;
 
+import de.codecentric.boot.admin.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
 
 /**
@@ -72,42 +73,54 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 	}
 
 	@Override
-	protected void doNotify(ClientApplicationStatusChangedEvent event) throws Exception {
+	protected void doNotify(ClientApplicationEvent event) throws Exception {
 		restTemplate.postForEntity(url, createPagerdutyEvent(event), Void.class);
 	}
 
-	private Map<String, Object> createPagerdutyEvent(ClientApplicationStatusChangedEvent event) {
-		Map<String, Object> result = new HashMap<String, Object>();
+	protected Map<String, Object> createPagerdutyEvent(ClientApplicationEvent event) {
+		Map<String, Object> result = new HashMap<>();
 		result.put("service_key", serviceKey);
 		result.put("incident_key",
 				event.getApplication().getName() + "/" + event.getApplication().getId());
-		result.put("description", description.getValue(event, String.class));
+		result.put("description", getDescirption(event));
 
-		Map<String, Object> details = new HashMap<String, Object>();
-		details.put("from", event.getFrom());
-		details.put("to", event.getTo());
+		Map<String, Object> details = getDetails(event);
 		result.put("details", details);
 
-		if ("UP".equals(event.getTo().getStatus())) {
-			result.put("event_type", "resolve");
+		if (event instanceof ClientApplicationStatusChangedEvent) {
+			if ("UP".equals(((ClientApplicationStatusChangedEvent) event).getTo().getStatus())) {
+				result.put("event_type", "resolve");
+			} else {
+				result.put("event_type", "trigger");
+				if (client != null) {
+					result.put("client", client);
+				}
+				if (clientUrl != null) {
+					result.put("client_url", clientUrl);
+				}
 
-		} else {
-			result.put("event_type", "trigger");
-			if (client != null) {
-				result.put("client", client);
+				Map<String, Object> context = new HashMap<>();
+				context.put("type", "link");
+				context.put("href", event.getApplication().getHealthUrl());
+				context.put("text", "Application health-endpoint");
+				result.put("contexts", Arrays.asList(context));
 			}
-			if (clientUrl != null) {
-				result.put("client_url", clientUrl);
-			}
-
-			Map<String, Object> context = new HashMap<String, Object>();
-			context.put("type", "link");
-			context.put("href", event.getApplication().getHealthUrl());
-			context.put("text", "Application health-endpoint");
-			result.put("contexts", Arrays.asList(context));
 		}
 
 		return result;
+	}
+
+	protected String getDescirption(ClientApplicationEvent event) {
+		return description.getValue(event, String.class);
+	}
+
+	protected Map<String, Object> getDetails(ClientApplicationEvent event) {
+		Map<String, Object> details = new HashMap<>();
+		if (event instanceof ClientApplicationStatusChangedEvent) {
+			details.put("from", ((ClientApplicationStatusChangedEvent) event).getFrom());
+			details.put("to", ((ClientApplicationStatusChangedEvent) event).getTo());
+		}
+		return details;
 	}
 
 	public void setUrl(URI url) {

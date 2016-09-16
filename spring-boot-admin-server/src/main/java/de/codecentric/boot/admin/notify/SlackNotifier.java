@@ -10,6 +10,7 @@ import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.web.client.RestTemplate;
 
+import de.codecentric.boot.admin.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
 
 /**
@@ -53,7 +54,7 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
 	}
 
 	@Override
-	protected void doNotify(ClientApplicationStatusChangedEvent event) throws Exception {
+	protected void doNotify(ClientApplicationEvent event) throws Exception {
 		restTemplate.postForEntity(webhookUrl, createMessage(event), Void.class);
 	}
 
@@ -81,7 +82,7 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
 		this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
-	protected Object createMessage(ClientApplicationStatusChangedEvent event) {
+	protected Object createMessage(ClientApplicationEvent event) {
 		Map<String, Object> messageJson = new HashMap<>();
 		messageJson.put("username", username);
 		if (icon != null) {
@@ -95,17 +96,19 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
 		attachments.put("text", getText(event));
 		attachments.put("color", getColor(event));
 		attachments.put("mrkdwn_in", Collections.singletonList("text"));
-
 		messageJson.put("attachments", Collections.singletonList(attachments));
-
 		return messageJson;
 	}
 
-	private String getText(ClientApplicationStatusChangedEvent event) {
+	protected String getText(ClientApplicationEvent event) {
 		return message.getValue(event, String.class);
 	}
 
-	private String getColor(ClientApplicationStatusChangedEvent event) {
-		return "UP".equals(event.getTo().getStatus()) ? "good" : "danger";
+	protected String getColor(ClientApplicationEvent event) {
+		if (event instanceof ClientApplicationStatusChangedEvent) {
+			return "UP".equals(((ClientApplicationStatusChangedEvent) event).getTo().getStatus()) ? "good" : "danger";
+		} else {
+			return "#439FE0";
+		}
 	}
 }
