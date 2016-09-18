@@ -1,0 +1,28 @@
+{"groups": [
+ 
+],"properties": [
+  {
+    "name": "spring.boot.admin.hazelcast.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Hazelcast support.",
+    "defaultValue": "true"
+  },
+  {
+    "name": "spring.boot.admin.hazelcast.application-store",
+    "type": "java.lang.String",
+    "description": "Name of backing Hazelcast-Map for storing applications",
+    "defaultValue": "spring-boot-admin-application-store"
+  },
+  {
+    "name": "spring.boot.admin.hazelcast.application-store",
+    "type": "java.lang.String",
+    "description": "Name of backing Hazelcast-List for storing the journal",
+    "defaultValue": "spring-boot-admin-event-store"
+  },
+  {
+    "name": "spring.boot.admin.discovery.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Spring Cloud Discovery support.",
+    "defaultValue": "true"
+  }
+]}

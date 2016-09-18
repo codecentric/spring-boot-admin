@@ -1,0 +1,14 @@
+<settings>
+    <servers>
+        <server>
+            <id>sonatype-nexus-snapshots</id>
+            <username>${env.OSSRH_USER}</username>
+            <password>${env.OSSRH_PASS}</password>
+        </server>
+        <server>
+            <id>sonatype-nexus-staging</id>
+            <username>${env.OSSRH_USER}</username>
+            <password>${env.OSSRH_PASS}</password>
+        </server>
+    </servers>
+</settings>

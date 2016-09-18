@@ -1,0 +1,16 @@
+#download {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+}
+
+#top {
+  text-align: right;
+  padding: 5px;
+}
+
+#follow {
+  position: fixed;
+  top: 100px;
+  right: 40px;
+}

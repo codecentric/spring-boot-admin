@@ -1,0 +1,29 @@
+<datalist id="allPropertyNames">
+    <option ng-repeat="name in $ctrl.allPropertyNames | orderBy:'toString()'">{{name}}</option>
+</datalist>
+<table class="table">
+    <col width="38%" />
+    <col width="62%" />
+    <tr ng-repeat="property in $ctrl.newProperties">
+        <td>
+            <input type="text" class="input-xlarge" list="allPropertyNames" placeholder="property name" ng-model="property.name" ng-change="$ctrl.onChangePropertyName(property)" />
+        </td>
+        <td>
+            <input type="text" class="input-xxlarge" placeholder="property value" ng-model="property.value" />
+        </td>
+    </tr>
+    <tr class="error" ng-if="$ctrl.error">
+        <td colspan="2"><b>Error:</b> {{$ctrl.error}}</td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <div class="control-group pull-left">
+                <button class="btn btn-info" ng-click="$ctrl.refreshContext()">Refresh context</button>
+            </div>
+            <div class="control-group pull-right">
+                <button class="btn btn-warning" ng-click="$ctrl.updateEnvironment()">Update environment</button>
+                <button class="btn" ng-click="$ctrl.resetEnvironment()">Reset environment</button>
+            </div>
+        </td>
+    </tr>
+</table>

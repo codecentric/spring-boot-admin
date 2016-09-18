@@ -1,0 +1,15 @@
+<dl class="health-status">
+    <dt>{{name}} <span class="status-{{health.status}} pull-right" ng-bind="health.status"></span></dt>
+    <dd> 
+        <table style="width:100%;">
+            <tr ng-repeat="(key, value) in health" ng-if="$ctrl.isHealthDetail(key, value)" ng-class="{'error': key == 'error'}"> 
+                <td style="text-transform: capitalize;" ng-bind="key"></td><td>{{value | joinArray:', '}}</td> 
+            </tr> 
+        </table> 
+    </dd> 
+    <dd ng-repeat="(name, health) in health" ng-if="$ctrl.isChildHealth(name, health)" >
+        <ng-include src="'applications-details/views/templates/health-status.html'"       ng-if="name != 'diskSpace' &amp;&amp; name != 'configServer'"></ng-include>
+        <ng-include src="'applications-details/views/templates/health-diskspace.html'"    ng-if="name == 'diskSpace'" ></ng-include>
+        <ng-include src="'applications-details/views/templates/health-configserver.html'" ng-if="name == 'configServer'" ></ng-include>
+    </dd>
+</dl>

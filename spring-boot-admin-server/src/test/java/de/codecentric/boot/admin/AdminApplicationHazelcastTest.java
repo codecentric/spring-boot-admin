@@ -30,42 +30,39 @@ import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
+
+import com.hazelcast.config.Config;
+import com.hazelcast.config.EvictionPolicy;
+import com.hazelcast.config.ListConfig;
+import com.hazelcast.config.MapConfig;
 
 import de.codecentric.boot.admin.config.EnableAdminServer;
 import de.codecentric.boot.admin.model.Application;
 
 /**
- *
  * Integration test to verify the correct functionality of the REST API with Hazelcast
  *
  * @author Dennis Schulte
  */
 public class AdminApplicationHazelcastTest {
-
-	@Configuration
-	@EnableAutoConfiguration
-	@EnableAdminServer
-	@ImportResource("classpath:hazelcast-test.xml")
-	public static class TestAdminApplication {
-	}
-
-	private RestTemplate template = new TestRestTemplate();
+	private TestRestTemplate template = new TestRestTemplate();
 	private EmbeddedWebApplicationContext instance1;
 	private EmbeddedWebApplicationContext instance2;
 
 	@Before
 	public void setup() throws InterruptedException {
 		System.setProperty("hazelcast.wait.seconds.before.join", "0");
-		instance1 = (EmbeddedWebApplicationContext) SpringApplication.run(TestAdminApplication.class, new String[] {
-				"--server.port=0", "--spring.jmx.enabled=false", "--spring.boot.admin.hazelcast.enabled=true" });
-		instance2 = (EmbeddedWebApplicationContext) SpringApplication.run(TestAdminApplication.class, new String[] {
-				"--server.port=0", "--spring.jmx.enabled=false", "--spring.boot.admin.hazelcast.enabled=true" });
+		instance1 = (EmbeddedWebApplicationContext) SpringApplication.run(
+				TestAdminApplication.class,
+				new String[] { "--server.port=0", "--spring.jmx.enabled=false" });
+		instance2 = (EmbeddedWebApplicationContext) SpringApplication.run(
+				TestAdminApplication.class,
+				new String[] { "--server.port=0", "--spring.jmx.enabled=false" });
 	}
 
 	@After
@@ -76,9 +73,12 @@ public class AdminApplicationHazelcastTest {
 
 	@Test
 	public void test() {
-		Application app = new Application("http://127.0.0.1", "Hazelcast Test");
-		Application app2 = new Application("http://127.0.0.1:2", "Hazelcast Test");
-		Application app3 = new Application("http://127.0.0.1:3", "Do not find");
+		Application app = Application.create("Hazelcast Test")
+				.withHealthUrl("http://127.0.0.1/health").build();
+		Application app2 = Application.create("Hazelcast Test")
+				.withHealthUrl("http://127.0.0.1:2/health").build();
+		Application app3 = Application.create("Do not find")
+				.withHealthUrl("http://127.0.0.1:3/health").build();
 
 		// publish app on instance1
 		ResponseEntity<Application> postResponse = registerApp(app, instance1);
@@ -108,22 +108,40 @@ public class AdminApplicationHazelcastTest {
 
 	private ResponseEntity<Application> getApp(String id, EmbeddedWebApplicationContext context) {
 		int port = context.getEmbeddedServletContainer().getPort();
-		ResponseEntity<Application> getResponse = template.getForEntity("http://localhost:" + port
-				+ "/api/applications/" + id, Application.class);
+		ResponseEntity<Application> getResponse = template.getForEntity(
+				"http://localhost:" + port + "/api/applications/" + id, Application.class);
 		return getResponse;
 	}
 
-	private ResponseEntity<Application> registerApp(Application app, EmbeddedWebApplicationContext context) {
+	private ResponseEntity<Application> registerApp(Application app,
+			EmbeddedWebApplicationContext context) {
 		int port = context.getEmbeddedServletContainer().getPort();
-		return template.postForEntity("http://localhost:" + port + "/api/applications", app, Application.class);
+		return template.postForEntity("http://localhost:" + port + "/api/applications", app,
+				Application.class);
 	}
 
 	@SuppressWarnings("unchecked")
-	private ResponseEntity<Collection<Application>> getAppByName(String name, EmbeddedWebApplicationContext context) {
+	private ResponseEntity<Collection<Application>> getAppByName(String name,
+			EmbeddedWebApplicationContext context) {
 		int port = context.getEmbeddedServletContainer().getPort();
-		ResponseEntity<?> getResponse = template.getForEntity("http://localhost:" + port
-				+ "/api/applications?name={name}", ApplicationList.class, Collections.singletonMap("name", name));
+		ResponseEntity<?> getResponse = template.getForEntity(
+				"http://localhost:" + port + "/api/applications?name={name}", ApplicationList.class,
+				Collections.singletonMap("name", name));
 		return (ResponseEntity<Collection<Application>>) getResponse;
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableAdminServer
+	public static class TestAdminApplication {
+		@Bean
+		public Config hazelcastConfig() {
+			return new Config()
+					.addMapConfig(new MapConfig("spring-boot-admin-application-store")
+							.setBackupCount(1).setEvictionPolicy(EvictionPolicy.NONE))
+					.addListConfig(new ListConfig("spring-boot-admin-application-store")
+							.setBackupCount(1).setMaxSize(1000));
+		}
 	}
 
 	public static class ApplicationList extends ArrayList<Application> {

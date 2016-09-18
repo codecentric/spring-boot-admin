@@ -1,0 +1,28 @@
+= Spring Boot Admin Reference Guide =
+Johannes Edmeier <https://twitter.com/joshiste[@joshiste]>
+:revnumber: {project-version}
+:revdate: {commit-time}
+:toc: left
+:toclevels: 3
+:doctype: book
+:sectanchors:
+:sectlinks:
+:sectnums:
+:icons: font
+:hide-uri-scheme:
+:last-update-label!:
+:tabsize: 2
+
+== What is Spring Boot Admin? ==
+
+Spring Boot Admin is a simple application to manage and monitor your http://projects.spring.io/spring-boot/[Spring Boot Applications].
+The applications register with our Spring Boot Admin Client (via http) or are discovered using Spring Cloud (e.g. Eureka).
+The UI is just an Angular.js application on top of the Spring Boot Actuator endpoints. In case you want to use the more advanced features (e.g. jmx-, loglevel-management), Jolokia must be included in the client application.
+
+include::getting-started.adoc[]
+
+include::client.adoc[]
+
+include::server.adoc[]
+
+include::faqs.adoc[]

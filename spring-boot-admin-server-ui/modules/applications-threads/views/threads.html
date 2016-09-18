@@ -1,0 +1,16 @@
+<div class="container">
+  <div class="alert alert-error" ng-if="error">
+    <b>Error:</b> {{ error }}
+  </div>
+  <div class="row">
+    <div class="text-center">
+      <form>
+        <button class="btn" ng-click="dumpThreads()"><i class="fa fa-repeat"></i> refresh</button>
+      </form>
+    </div>
+  </div>
+  <sba-thread-summary ng-show="dump" threads="dump"></sba-thread-summary>
+  <sba-accordion>
+    <sba-thread ng-repeat="thread in dump | orderBy:'threadName' track by thread.threadId" thread="thread"></sba-thread>
+  </sba-accordion>
+</div>

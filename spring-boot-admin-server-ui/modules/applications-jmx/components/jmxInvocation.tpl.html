@@ -1,0 +1,4 @@
+<sba-jmx-invoke-select-overload ng-if="$ctrl.state == 'selectOverload'"></sba-jmx-invoke-select-overload>
+<sba-jmx-invoke-input-parameters ng-if="$ctrl.state == 'inputParameters'"></sba-jmx-invoke-input-parameters>
+<sba-jmx-invoke-show-result ng-if="$ctrl.state == 'showResult'"></sba-jmx-invoke-show-result>
+<button class="btn" ng-click="$ctrl.cancelInvoke()" ng-bind="$ctrl.state == 'showResult' ? 'Done' : 'Cancel'"></button>

@@ -1,0 +1,37 @@
+/* ---------- */
+
+.bar-offset {
+  float: left;
+  box-sizing: border-box;
+  height: 100%;
+}
+.with-marks {
+  position: relative;
+}
+.bar-scale {
+  position: relative;
+  margin-top: -20px;
+  margin-bottom: 40px;
+}
+.pitch-line {
+  position: absolute;
+  width: 1px;
+  background-image: linear-gradient(to bottom, #333333 5px, transparent 5px);
+  background-repeat: repeat-x;
+}
+.value-mark {
+  position: absolute;
+  border-left: 1px solid #ee5f5b;
+  font-size: 12px;
+  color: #fff;
+  text-align: center;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.mark-current {
+  width: 1px;
+  height: 20px;
+  position: absolute;
+  background-color: #dd514c;
+  background-image: linear-gradient(to bottom, #ee5f5b, #c43c35);
+  background-repeat: repeat-x;
+}

@@ -1,0 +1,46 @@
+<table class="table">
+  <tr>
+    <td>Uptime</td>
+    <td colspan="2">
+      <sba-uptime value="$ctrl.metrics.uptime"></sba-uptime>
+    </td>
+  </tr>
+  <tr ng-if="$ctrl.systemload">
+    <td>Systemload</td>
+    <td colspan="2">{{$ctrl.systemload}} (last min. &#x2300; runq-sz)</td>
+  </tr>
+  <tr>
+    <td>Available Processors</td>
+    <td colspan="2" ng-bind="$ctrl.metrics.processors"></td>
+  </tr>
+  <tr>
+    <td rowspan="3">Classes</td>
+    <td>current loaded</td>
+    <td ng-bind="$ctrl.metrics.classes"></td>
+  </tr>
+  <tr>
+    <td>total loaded</td>
+    <td ng-bind="$ctrl.metrics['classes.loaded']"></td>
+  </tr>
+  <tr>
+    <td>unloaded </td>
+    <td ng-bind="$ctrl.metrics['classes.unloaded']"></td>
+  </tr>
+  <tr>
+    <td rowspan="4">Threads</td>
+    <td>current</td>
+    <td ng-bind="$ctrl.metrics.threads"></td>
+  </tr>
+  <tr>
+    <td>total started</td>
+    <td ng-bind="$ctrl.metrics['threads.totalStarted']"></td>
+  </tr>
+  <tr>
+    <td>daemon</td>
+    <td ng-bind="$ctrl.metrics['threads.daemon']"></td>
+  </tr>
+  <tr>
+    <td>peak</td>
+    <td ng-bind="$ctrl.metrics['threads.peak']"></td>
+  </tr>
+</table>

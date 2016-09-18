@@ -24,27 +24,26 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
-import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import de.codecentric.boot.admin.AdminApplicationTest.TestAdminApplication;
 import de.codecentric.boot.admin.config.EnableAdminServer;
 import de.codecentric.boot.admin.model.Application;
 
 /**
- *
  * Integration test to verify the correct functionality of the REST API.
  *
  * @author Dennis Schulte
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = TestAdminApplication.class)
-@WebIntegrationTest({ "server.port=0" })
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = TestAdminApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
+		"spring.cloud.config.enabled=false" })
 public class AdminApplicationTest {
 
 	@Value("${local.server.port}")
@@ -53,8 +52,8 @@ public class AdminApplicationTest {
 	@Test
 	public void testGetApplications() {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<List> entity = new TestRestTemplate().getForEntity("http://localhost:" + port
-				+ "/api/applications", List.class);
+		ResponseEntity<List> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + port + "/api/applications", List.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 	}
 
@@ -62,15 +61,29 @@ public class AdminApplicationTest {
 	public void testReverseProxy() {
 		String apiBaseUrl = "http://localhost:" + port + "/api/applications";
 
-		ResponseEntity<Application> entity = new TestRestTemplate().postForEntity(apiBaseUrl, new Application(
-				"http://localhost:" + port, "TestApp"), Application.class);
+		Application application = Application.create("TestApp")
+				.withHealthUrl("http://localhost:" + port + "/health")
+				.withManagementUrl("http://localhost:" + port).build();
+		ResponseEntity<Application> entity = new TestRestTemplate().postForEntity(apiBaseUrl,
+				application, Application.class);
 
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> health = new TestRestTemplate().getForEntity(apiBaseUrl + "/" + entity.getBody().getId()
-				+ "/info", Map.class);
-		assertEquals(HttpStatus.OK, health.getStatusCode());
-	}
+		ResponseEntity<Map> app = new TestRestTemplate()
+				.getForEntity(apiBaseUrl + "/" + entity.getBody().getId(), Map.class);
+		assertEquals(HttpStatus.OK, app.getStatusCode());
+		assertEquals("TestApp", app.getBody().get("name"));
 
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> info = new TestRestTemplate()
+				.getForEntity(apiBaseUrl + "/" + entity.getBody().getId() + "/info", Map.class);
+		assertEquals(HttpStatus.OK, info.getStatusCode());
+
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> health = new TestRestTemplate()
+				.getForEntity(apiBaseUrl + "/" + entity.getBody().getId() + "/health", Map.class);
+		assertEquals(HttpStatus.OK, health.getStatusCode());
+
+	}
 
 	@Configuration
 	@EnableAutoConfiguration

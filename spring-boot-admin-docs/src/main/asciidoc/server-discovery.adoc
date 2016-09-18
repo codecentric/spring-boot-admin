@@ -1,0 +1,32 @@
+[[spring-cloud-discovery-support]]
+=== Spring Cloud Discovery ===
+
+The Spring Boot Admin Server is capable of using  Spring Clouds `DiscoveryClient` to discover applications. The advantage is that the clients don't have to include the `spring-boot-admin-starter-client`. You just have to add a DiscoveryClient to your admin server - everything else is done by AutoConfiguration.
+The setup is explained <<discover-clients-via-spring-cloud-discovery,above>>.
+
+==== ServiceInstanceConverter ====
+
+The informations from the discovered services are converted by the `ServiceInstanceConverter`. Spring Boot Admin ships with a default and Eureka converter implementation. The correct one is selected by AutoConfiguration. You can use your own conversion by implementing the interface and adding the bean to your application context.
+
+TIP: If you want to customize the default conversion of services you can either add `health.path`, `management.port` and/or `mangament.context-path` entries to the services metadata. This allows you to set the health or management path per application. In case you want to configure this for all of your discovered services, you can use the `spring.boot.admin.discovery.converter.*` properties for your Spring Boot Admin Server configuration. The services' metadata takes precedence over the server configuration. For the health-url the `EurekaServiceInstanceConverter` uses the healthCheckUrl registered in Eureka, which can be set for your client via `eureka.instance.healthCheckUrl`.
+
+.Discovery configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.discovery.enabled
+| Enables the DiscoveryClient-support for the admin server.
+| `true`
+
+| spring.boot.admin.discovery.converter.management-context-path
+| Will be appended to the service-url of the discovered service when the managment-url is converted by the `DefaultServiceInstanceConverter`.
+|
+
+| spring.boot.admin.discovery.converter.health-endpoint
+| Will be appended to the management-url of the discovered service when the health-url is converted by the `DefaultServiceInstanceConverter`.
+| `"health"`
+
+| spring.boot.admin.discovery.ignored-services
+| This services will be ignored when using discovery and not registered as application.
+|
+|===

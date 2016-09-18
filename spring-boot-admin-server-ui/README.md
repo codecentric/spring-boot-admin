@@ -1,23 +1,33 @@
 spring-boot-admin-server-ui
 ================================
 
-This is the user-interface for the spring-boot-admin-server.
-There are neither configuration nor customization options. 
-If you want to change something, copy this project and build your own static resources and ship 'em with your spring-boot-admin-server.
-
 ### Building this module
-The jar **can be build with Maven** with the maven-exec-plugin, node.js and npm must be installed on your machine and be on your $PATH.
+The jar **can be build with Maven** with the maven-exec-plugin. To do this node.js and npm must be installed on your machine and be on your $PATH.
 If you dont want to use the maven exec run the following commands:
 
 ### Build
 ```shell
 npm install
-gulp
+npm run build
 ```
 
-### Run server (with watchify)
+Repeated build with watching the files:
 ```shell
-npm install
-gulp watch
+npm run watch:js
 ```
 
+### Run dev-server
+This starts a dev-server serving the ui only at port 9000. The rest requests are forwarded to port 8080.
+```shell
+npm run dev-server
+```
+
+## Run tests
+```shell
+npm run test
+```
+
+Repeated tests with watching the files:
+```shell
+npm run watch:test
+```

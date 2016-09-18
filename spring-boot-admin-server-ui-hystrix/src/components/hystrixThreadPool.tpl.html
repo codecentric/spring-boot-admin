@@ -1,0 +1,7 @@
+<div class="hystrix-container">
+  Sort by
+  <button class="btn btn-link" ng-click="$ctrl.monitor.sortAlphabetically()">Alphabetical</button>
+  <button class="btn btn-link" ng-click="$ctrl.monitor.sortByVolume()">Volume</button>
+  <div id="hystrix-thread-pools-{{$ctrl.id}}" class="hystrix-row dependencyThreadPools"><span class="loading">Loading ...</span></div>
+  <div class="spacer"></div>
+</div>

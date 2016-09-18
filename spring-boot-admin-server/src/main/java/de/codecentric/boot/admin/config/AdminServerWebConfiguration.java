@@ -16,97 +16,159 @@
 package de.codecentric.boot.admin.config;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.boot.actuate.trace.TraceRepository;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
-import org.springframework.cloud.client.discovery.noop.NoopDiscoveryClientAutoConfiguration;
-import org.springframework.cloud.netflix.zuul.RoutesEndpoint;
-import org.springframework.cloud.netflix.zuul.ZuulFilterInitializer;
-import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
-import org.springframework.cloud.netflix.zuul.filters.ProxyRouteLocator;
-import org.springframework.cloud.netflix.zuul.filters.RouteLocator;
-import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
-import org.springframework.cloud.netflix.zuul.filters.post.SendErrorFilter;
-import org.springframework.cloud.netflix.zuul.filters.post.SendResponseFilter;
-import org.springframework.cloud.netflix.zuul.filters.pre.DebugFilter;
-import org.springframework.cloud.netflix.zuul.filters.pre.FormBodyWrapperFilter;
-import org.springframework.cloud.netflix.zuul.filters.pre.PreDecorationFilter;
-import org.springframework.cloud.netflix.zuul.filters.pre.Servlet30WrapperFilter;
-import org.springframework.cloud.netflix.zuul.filters.route.SimpleHostRoutingFilter;
-import org.springframework.cloud.netflix.zuul.web.ZuulController;
-import org.springframework.cloud.netflix.zuul.web.ZuulHandlerMapping;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.util.StringUtils;
+import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import com.hazelcast.config.Config;
-import com.hazelcast.core.EntryEvent;
-import com.hazelcast.core.EntryListener;
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IMap;
-import com.hazelcast.core.MapEvent;
-import com.netflix.zuul.ZuulFilter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.codecentric.boot.admin.controller.RegistryController;
-import de.codecentric.boot.admin.discovery.ApplicationDiscoveryListener;
+import de.codecentric.boot.admin.event.ClientApplicationDeregisteredEvent;
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
-import de.codecentric.boot.admin.event.ClientApplicationUnregisteredEvent;
-import de.codecentric.boot.admin.model.Application;
+import de.codecentric.boot.admin.event.RoutesOutdatedEvent;
+import de.codecentric.boot.admin.journal.ApplicationEventJournal;
+import de.codecentric.boot.admin.journal.store.JournaledEventStore;
+import de.codecentric.boot.admin.journal.store.SimpleJournaledEventStore;
+import de.codecentric.boot.admin.journal.web.JournalController;
 import de.codecentric.boot.admin.registry.ApplicationIdGenerator;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.registry.HashingApplicationUrlIdGenerator;
+import de.codecentric.boot.admin.registry.StatusUpdateApplicationListener;
+import de.codecentric.boot.admin.registry.StatusUpdater;
 import de.codecentric.boot.admin.registry.store.ApplicationStore;
-import de.codecentric.boot.admin.registry.store.HazelcastApplicationStore;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
-import de.codecentric.boot.admin.zuul.ApplicationRouteLocator;
-import de.codecentric.boot.admin.zuul.ApplicationRouteRefreshListener;
+import de.codecentric.boot.admin.registry.web.RegistryController;
+import de.codecentric.boot.admin.web.PrefixHandlerMapping;
+import de.codecentric.boot.admin.web.servlet.resource.ConcatenatingResourceResolver;
+import de.codecentric.boot.admin.web.servlet.resource.PreferMinifiedFilteringResourceResolver;
+import de.codecentric.boot.admin.web.servlet.resource.ResourcePatternResolvingResourceResolver;
 
 @Configuration
-public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter {
+@EnableConfigurationProperties
+public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
+		implements ApplicationContextAware {
 
-	/**
-	 * Add JSON MessageConverter to send JSON objects to web clients.
-	 */
+	private ApplicationContext applicationContext;
+
+	@Autowired
+	private ApplicationEventPublisher publisher;
+
+	@Autowired
+	private ApplicationStore applicationStore;
+
+	@Autowired
+	private ServerProperties server;
+
+	@Autowired
+	private ResourcePatternResolver resourcePatternResolver;
+
+	@Autowired
+	private RestTemplateBuilder restTemplBuilder;
+
+	@Bean
+	@ConditionalOnMissingBean
+	public AdminServerProperties adminServerProperties() {
+		return new AdminServerProperties();
+	}
+
 	@Override
-	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-		converters.add(new MappingJackson2HttpMessageConverter());
+	public void setApplicationContext(ApplicationContext applicationContext) {
+		this.applicationContext = applicationContext;
+	}
+
+	@Override
+	public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+		if (!hasConverter(converters, MappingJackson2HttpMessageConverter.class)) {
+			ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json()
+					.applicationContext(this.applicationContext).build();
+			converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
+		}
+	}
+
+	private boolean hasConverter(List<HttpMessageConverter<?>> converters,
+			Class<? extends HttpMessageConverter<?>> clazz) {
+		for (HttpMessageConverter<?> converter : converters) {
+			if (clazz.isInstance(converter)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler(adminServerProperties().getContextPath() + "/**")
+				.addResourceLocations("classpath:/META-INF/spring-boot-admin-server-ui/")
+				.resourceChain(true)
+				.addResolver(new PreferMinifiedFilteringResourceResolver(".min"));
+
+		registry.addResourceHandler(adminServerProperties().getContextPath() + "/all-modules.css")
+				.resourceChain(true)
+				.addResolver(new ResourcePatternResolvingResourceResolver(resourcePatternResolver,
+						"classpath*:/META-INF/spring-boot-admin-server-ui/*/module.css"))
+				.addResolver(new ConcatenatingResourceResolver("\n".getBytes()));
+
+		registry.addResourceHandler(adminServerProperties().getContextPath() + "/all-modules.js")
+				.resourceChain(true)
+				.addResolver(new ResourcePatternResolvingResourceResolver(resourcePatternResolver,
+						"classpath*:/META-INF/spring-boot-admin-server-ui/*/module.js"))
+				.addResolver(new PreferMinifiedFilteringResourceResolver(".min"))
+				.addResolver(new ConcatenatingResourceResolver(";\n".getBytes()));
+	}
+
+	@Override
+	public void addViewControllers(ViewControllerRegistry registry) {
+		if (StringUtils.hasText(adminServerProperties().getContextPath())) {
+			registry.addRedirectViewController(adminServerProperties().getContextPath(),
+					server.getPath(adminServerProperties().getContextPath()) + "/");
+		}
+		registry.addViewController(adminServerProperties().getContextPath() + "/")
+				.setViewName("forward:index.html");
+	}
+
+	@Bean
+	public PrefixHandlerMapping prefixHandlerMapping() {
+		PrefixHandlerMapping prefixHandlerMapping = new PrefixHandlerMapping(registryController(),
+				journalController());
+		prefixHandlerMapping.setPrefix(adminServerProperties().getContextPath());
+		return prefixHandlerMapping;
 	}
 
 	/**
-	 * @param registry the backing Application registry.
 	 * @return Controller with REST-API for spring-boot applications to register itself.
 	 */
 	@Bean
-	public RegistryController registryController(ApplicationRegistry registry) {
-		return new RegistryController(registry);
+	public RegistryController registryController() {
+		return new RegistryController(applicationRegistry());
 	}
 
 	/**
-	 * @param applicationStore the backing store
-	 * @param applicationIdGenerator the id generator to use
 	 * @return Default registry for all registered application.
 	 */
 	@Bean
-	public ApplicationRegistry applicationRegistry(ApplicationStore applicationStore,
-			ApplicationIdGenerator applicationIdGenerator) {
-		return new ApplicationRegistry(applicationStore, applicationIdGenerator);
+	public ApplicationRegistry applicationRegistry() {
+		return new ApplicationRegistry(applicationStore, applicationIdGenerator());
 	}
 
 	/**
@@ -118,216 +180,73 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter {
 		return new HashingApplicationUrlIdGenerator();
 	}
 
-	@Configuration
-	public static class SimpleStoreConfig {
-		@Bean
-		@ConditionalOnMissingBean
-		public ApplicationStore applicationStore() {
-			return new SimpleApplicationStore();
-		}
+	@Bean
+	@ConditionalOnMissingBean
+	public StatusUpdater statusUpdater() {
+		RestTemplateBuilder builder = restTemplBuilder
+				.messageConverters(new MappingJackson2HttpMessageConverter())
+				.errorHandler(new DefaultResponseErrorHandler() {
+			@Override
+			protected boolean hasError(HttpStatus statusCode) {
+				return false;
+			}
+		});
+
+		StatusUpdater statusUpdater = new StatusUpdater(builder.build(), applicationStore);
+		statusUpdater.setStatusLifetime(adminServerProperties().getMonitor().getStatusLifetime());
+		return statusUpdater;
 	}
 
-	@Configuration
-	@EnableConfigurationProperties(ZuulProperties.class)
-	public static class RevereseZuulProxyConfiguration {
-
-		@Autowired(required = false)
-		private TraceRepository traces;
-
-		@Autowired
-		private ZuulProperties zuulProperties;
-
-		@Autowired
-		private ServerProperties server;
-
-		@Autowired
-		private ApplicationRegistry registry;
-
-		@Bean
-		public ApplicationRouteLocator routeLocator() {
-			return new ApplicationRouteLocator(this.server.getServletPrefix(), registry, this.zuulProperties,
-					RegistryController.PATH);
-		}
-
-		@Bean
-		public PreDecorationFilter preDecorationFilter() {
-			return new PreDecorationFilter(routeLocator(), this.zuulProperties.isAddProxyHeaders());
-		}
-
-		@Bean
-		public SimpleHostRoutingFilter simpleHostRoutingFilter() {
-			ProxyRequestHelper helper = new ProxyRequestHelper();
-			if (this.traces != null) {
-				helper.setTraces(this.traces);
-			}
-			return new SimpleHostRoutingFilter(helper);
-		}
-
-		@Bean
-		public ZuulController zuulController() {
-			return new ZuulController();
-		}
-
-		@Bean
-		public ZuulHandlerMapping zuulHandlerMapping(RouteLocator routes) {
-			return new ZuulHandlerMapping(routes, zuulController());
-		}
-
-		// pre filters
-
-		@Bean
-		public FormBodyWrapperFilter formBodyWrapperFilter() {
-			return new FormBodyWrapperFilter();
-		}
-
-		@Bean
-		public DebugFilter debugFilter() {
-			return new DebugFilter();
-		}
-
-		@Bean
-		public Servlet30WrapperFilter servlet30WrapperFilter() {
-			return new Servlet30WrapperFilter();
-		}
-
-		// post filters
-
-		@Bean
-		public SendResponseFilter sendResponseFilter() {
-			return new SendResponseFilter();
-		}
-
-		@Bean
-		public SendErrorFilter sendErrorFilter() {
-			return new SendErrorFilter();
-		}
-
-		@Configuration
-		protected static class ZuulFilterConfiguration {
-
-			@Autowired
-			private Map<String, ZuulFilter> filters;
-
-			@Bean
-			public ZuulFilterInitializer zuulFilterInitializer() {
-				return new ZuulFilterInitializer(this.filters);
-			}
-
-		}
-
-		@Bean
-		public ApplicationRouteRefreshListener applicationRouteRefreshListener() {
-			return new ApplicationRouteRefreshListener(routeLocator(), zuulHandlerMapping(routeLocator()));
-		}
-
-		@Configuration
-		@ConditionalOnClass(Endpoint.class)
-		protected static class RoutesEndpointConfiguration {
-
-			@Autowired
-			private ProxyRouteLocator routeLocator;
-
-			@Bean
-			public RoutesEndpoint zuulEndpoint() {
-				return new RoutesEndpoint(this.routeLocator);
-			}
-
-		}
-
+	@Bean
+	@Qualifier("updateTaskScheduler")
+	public TaskScheduler updateTaskScheduler() {
+		ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+		taskScheduler.setPoolSize(1);
+		taskScheduler.setRemoveOnCancelPolicy(true);
+		taskScheduler.setThreadNamePrefix("updateTask");
+		return taskScheduler;
 	}
 
-	@Configuration
-	@ConditionalOnClass({ Hazelcast.class })
-	@ConditionalOnProperty(prefix = "spring.boot.admin.hazelcast", name = "enabled", matchIfMissing = true)
-	@AutoConfigureBefore(SimpleStoreConfig.class)
-	public static class HazelcastStoreConfiguration {
-
-		@Value("${spring.boot.admin.hazelcast.map:spring-boot-admin-application-store}")
-		private String hazelcastMapName;
-
-		@Bean
-		@ConditionalOnMissingBean
-		public Config hazelcastConfig() {
-			return new Config();
-		}
-
-		@Bean(destroyMethod = "shutdown")
-		@ConditionalOnMissingBean
-		public HazelcastInstance hazelcastInstance(Config hazelcastConfig) {
-			return Hazelcast.newHazelcastInstance(hazelcastConfig);
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		public ApplicationStore applicationStore(HazelcastInstance hazelcast) {
-			IMap<String, Application> map = hazelcast.<String, Application> getMap(hazelcastMapName);
-			map.addIndex("name", false);
-			map.addEntryListener(entryListener(), false);
-			return new HazelcastApplicationStore(map);
-		}
-
-		@Bean
-		public EntryListener<String, Application> entryListener() {
-			return new ApplicationEntryListener();
-		}
-
-		private static class ApplicationEntryListener implements EntryListener<String, Application> {
-			@Autowired
-			ApplicationContext context;
-
-			@Override
-			public void entryAdded(EntryEvent<String, Application> event) {
-				context.publishEvent(new ClientApplicationRegisteredEvent(this,event.getValue()));
-			}
-
-			@Override
-			public void entryRemoved(EntryEvent<String, Application> event) {
-				context.publishEvent(new ClientApplicationUnregisteredEvent(this,event.getValue()));
-			}
-
-			@Override
-			public void entryUpdated(EntryEvent<String, Application> event) {
-				context.publishEvent(new ClientApplicationRegisteredEvent(this,event.getValue()));
-			}
-
-			@Override
-			public void entryEvicted(EntryEvent<String, Application> event) {
-				context.publishEvent(new ClientApplicationRegisteredEvent(this,null));
-			}
-
-			@Override
-			public void mapEvicted(MapEvent event) {
-				context.publishEvent(new ClientApplicationRegisteredEvent(this,null));
-			}
-
-			@Override
-			public void mapCleared(MapEvent event) {
-				context.publishEvent(new ClientApplicationRegisteredEvent(this,null));
-			}
-		}
+	@Bean
+	public StatusUpdateApplicationListener statusUpdateApplicationListener() {
+		StatusUpdateApplicationListener listener = new StatusUpdateApplicationListener(
+				statusUpdater(), updateTaskScheduler());
+		listener.setUpdatePeriod(adminServerProperties().getMonitor().getPeriod());
+		return listener;
 	}
 
-	@Configuration
-	@ConditionalOnClass({ DiscoveryClient.class })
-	@ConditionalOnProperty(prefix = "spring.boot.admin.discovery", name = "enabled", matchIfMissing = true)
-	@AutoConfigureAfter({ NoopDiscoveryClientAutoConfiguration.class })
-	public static class DiscoveryClientConfiguration {
+	@EventListener
+	public void onClientApplicationRegistered(ClientApplicationRegisteredEvent event) {
+		publisher.publishEvent(new RoutesOutdatedEvent());
+	}
 
-		@Value("${spring.boot.admin.discovery.management.context-path:}")
-		private String managementPath;
+	@EventListener
+	public void onClientApplicationDeregistered(ClientApplicationDeregisteredEvent event) {
+		publisher.publishEvent(new RoutesOutdatedEvent());
+	}
 
-		@Autowired
-		private DiscoveryClient discoveryClient;
+	@Bean
+	@ConditionalOnMissingBean
+	public ApplicationEventJournal applicationEventJournal() {
+		return new ApplicationEventJournal(journaledEventStore());
+	}
 
-		@Autowired
-		private ApplicationRegistry registry;
+	@Bean
+	@ConditionalOnMissingBean
+	public JournaledEventStore journaledEventStore() {
+		return new SimpleJournaledEventStore();
+	}
 
-		@Bean
-		ApplicationListener<ApplicationEvent> applicationDiscoveryListener() {
-			ApplicationDiscoveryListener listener = new ApplicationDiscoveryListener(discoveryClient, registry);
-			listener.setManagementContextPath(managementPath);
-			return listener;
-		}
+	@Bean
+	@ConditionalOnMissingBean
+	public JournalController journalController() {
+		return new JournalController(applicationEventJournal());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public ApplicationStore applicationStore() {
+		return new SimpleApplicationStore();
 	}
 
 }

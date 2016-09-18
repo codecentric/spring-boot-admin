@@ -24,7 +24,7 @@ import java.util.Collection;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
 
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
@@ -35,48 +35,64 @@ public class ApplicationRegistryTest {
 			new HashingApplicationUrlIdGenerator());
 
 	public ApplicationRegistryTest() {
-		registry.setApplicationContext(Mockito.mock(ApplicationContext.class));
-	}
-
-	@Test(expected = NullPointerException.class)
-	public void registerFailed1() throws Exception {
-		registry.register(new Application(null, null));
-	}
-
-	@Test(expected = NullPointerException.class)
-	public void registerFailed2() throws Exception {
-		Application app = new Application(null, "abc");
-		registry.register(app);
+		registry.setApplicationEventPublisher(Mockito.mock(ApplicationEventPublisher.class));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void registerFailed3() throws Exception {
-		Application app = new Application("not-an-url", "abc");
-		registry.register(app);
+	public void registerFailed_null() throws Exception {
+		registry.register(null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void registerFailed_no_name() throws Exception {
+		registry.register(Application.create("").withHealthUrl("http://localhost/health").build());
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void registerFailed_no_healthUrl() throws Exception {
+		registry.register(Application.create("name").build());
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void registerFailed_invalid_healthUrl() throws Exception {
+		registry.register(Application.create("name").withHealthUrl("not-a-url").build());
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void registerFailed_invalid_mgmtUrl() throws Exception {
+		registry.register(Application.create("").withHealthUrl("http://localhost/health")
+				.withManagementUrl("not-a-url").build());
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void registerFailed_invalid_svcUrl() throws Exception {
+		registry.register(Application.create("").withHealthUrl("http://localhost/health")
+				.withServiceUrl("not-a-url").build());
 	}
 
 	@Test
 	public void register() throws Exception {
-		Application app = new Application("http://localhost:8080", "abc");
-		Application response = registry.register(app);
+		Application app = registry.register(Application.create("abc")
+				.withHealthUrl("http://localhost:8080/health").build());
 
-		assertEquals("http://localhost:8080", response.getUrl());
-		assertEquals("abc", response.getName());
-		assertNotNull(response.getId());
+		assertEquals("http://localhost:8080/health", app.getHealthUrl());
+		assertEquals("abc", app.getName());
+		assertNotNull(app.getId());
 	}
 
 	@Test
 	public void getApplication() throws Exception {
-		Application app = new Application("http://localhost:8080", "abc");
-		app = registry.register(app);
-
+		Application app = registry.register(Application.create("abc")
+				.withHealthUrl("http://localhost/health")
+				.withManagementUrl("http://localhost:8080/").build());
 		assertEquals(app, registry.getApplication(app.getId()));
+		assertEquals("http://localhost:8080/", app.getManagementUrl());
 	}
 
 	@Test
 	public void getApplications() throws Exception {
-		Application app = new Application("http://localhost:8080", "abc");
-		app = registry.register(app);
+		Application app = registry.register(Application.create("abc")
+				.withHealthUrl("http://localhost/health").build());
 
 		Collection<Application> applications = registry.getApplications();
 		assertEquals(1, applications.size());
@@ -85,12 +101,12 @@ public class ApplicationRegistryTest {
 
 	@Test
 	public void getApplicationsByName() throws Exception {
-		Application app = new Application("http://localhost:8080", "abc");
-		app = registry.register(app);
-		Application app2 = new Application("http://localhost:8081", "abc");
-		app2 = registry.register(app2);
-		Application app3 = new Application("http://localhost:8082", "cba");
-		app3 = registry.register(app3);
+		Application app = registry.register(Application.create("abc")
+				.withHealthUrl("http://localhost/health").build());
+		Application app2 = registry.register(Application.create("abc")
+				.withHealthUrl("http://localhost:8081/health").build());
+		Application app3 = registry.register(Application.create("zzz")
+				.withHealthUrl("http://localhost:8082/health").build());
 
 		Collection<Application> applications = registry.getApplicationsByName("abc");
 		assertEquals(2, applications.size());

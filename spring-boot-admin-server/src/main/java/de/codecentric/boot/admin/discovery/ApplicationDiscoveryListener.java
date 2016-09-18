@@ -14,52 +14,60 @@
  * limitations under the License.
  */
 package de.codecentric.boot.admin.discovery;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.event.HeartbeatEvent;
 import org.springframework.cloud.client.discovery.event.HeartbeatMonitor;
 import org.springframework.cloud.client.discovery.event.InstanceRegisteredEvent;
 import org.springframework.cloud.client.discovery.event.ParentHeartbeatEvent;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.EventListener;
 
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
 
 /**
  * Listener for Heartbeats events to publish all services to the application registry.
- * @author Johannes Stelzer
+ *
+ * @author Johannes Edmeier
  */
-public class ApplicationDiscoveryListener implements ApplicationListener<ApplicationEvent> {
-
+public class ApplicationDiscoveryListener {
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(ApplicationDiscoveryListener.class);
 	private final DiscoveryClient discoveryClient;
-
 	private final ApplicationRegistry registry;
-
 	private final HeartbeatMonitor monitor = new HeartbeatMonitor();
+	private ServiceInstanceConverter converter = new DefaultServiceInstanceConverter();
 
-	private String managementContextPath = "";
+	/**
+	 * Set of serviceIds to be ignored and not to be registered as application.
+	 */
+	private Set<String> ignoredServices = new HashSet<>();
 
-
-	public ApplicationDiscoveryListener(DiscoveryClient discoveryClient, ApplicationRegistry registry) {
+	public ApplicationDiscoveryListener(DiscoveryClient discoveryClient,
+			ApplicationRegistry registry) {
 		this.discoveryClient = discoveryClient;
 		this.registry = registry;
 	}
 
-	@Override
-	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof InstanceRegisteredEvent) {
-			discover();
-		}
-		else if (event instanceof ParentHeartbeatEvent) {
-			ParentHeartbeatEvent e = (ParentHeartbeatEvent) event;
-			discoverIfNeeded(e.getValue());
-		}
-		else if (event instanceof HeartbeatEvent) {
-			HeartbeatEvent e = (HeartbeatEvent) event;
-			discoverIfNeeded(e.getValue());
-		}
+	@EventListener
+	public void onInstanceRegistered(InstanceRegisteredEvent<?> event) {
+		discover();
+	}
 
+	@EventListener
+	public void onParentHeartbeat(ParentHeartbeatEvent event) {
+		discoverIfNeeded(event.getValue());
+	}
+
+	@EventListener
+	public void onApplicationEvent(HeartbeatEvent event) {
+		discoverIfNeeded(event.getValue());
 	}
 
 	private void discoverIfNeeded(Object value) {
@@ -68,22 +76,52 @@ public class ApplicationDiscoveryListener implements ApplicationListener<Applica
 		}
 	}
 
-	public void discover() {
+	protected void discover() {
+		final Set<String> staleApplicationIds = getAllApplicationIdsFromRegistry();
 		for (String serviceId : discoveryClient.getServices()) {
-			for (ServiceInstance instance : discoveryClient.getInstances(serviceId)) {
-				registry.register(convert(instance));
+			if (!ignoredServices.contains(serviceId)) {
+				for (ServiceInstance instance : discoveryClient.getInstances(serviceId)) {
+					String applicationId = register(instance);
+					staleApplicationIds.remove(applicationId);
+				}
 			}
+		}
+		for (String staleApplicationId : staleApplicationIds) {
+			LOGGER.info("Application ({}) missing in DiscoveryClient services ",
+					staleApplicationId);
+			registry.deregister(staleApplicationId);
 		}
 	}
 
-	private Application convert(ServiceInstance instance) {
-		String url = instance.getUri()
-				.resolve(managementContextPath.startsWith("/") ? managementContextPath : "/" + managementContextPath)
-				.toString();
-		return new Application(url, instance.getServiceId());
+	protected final Set<String> getAllApplicationIdsFromRegistry() {
+		Set<String> result = new HashSet<>();
+		for (Application application : registry.getApplications()) {
+			if (!ignoredServices.contains(application.getName())) {
+				result.add(application.getId());
+			}
+		}
+		return result;
 	}
 
-	public void setManagementContextPath(String managementContextPath) {
-		this.managementContextPath = managementContextPath;
+	protected String register(ServiceInstance instance) {
+		try {
+			Application application = converter.convert(instance);
+			if (application != null) {
+				return registry.register(application).getId();
+			} else {
+				LOGGER.warn("No application for service {} registered", instance);
+			}
+		} catch (Exception ex) {
+			LOGGER.error("Couldn't register application for service {}", instance, ex);
+		}
+		return null;
+	}
+
+	public void setConverter(ServiceInstanceConverter converter) {
+		this.converter = converter;
+	}
+
+	public void setIgnoredServices(Set<String> ignoredServices) {
+		this.ignoredServices = ignoredServices;
 	}
 }

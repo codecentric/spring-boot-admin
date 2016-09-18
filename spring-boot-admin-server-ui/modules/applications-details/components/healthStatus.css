@@ -1,0 +1,21 @@
+dl.health-status {
+    margin-top: 0;
+    line-height: 20px;
+}
+
+dl.health-status dt {
+    border-bottom: 1px solid #ddd;
+    background-color: #f9f9f9;
+    padding: 8px;
+    text-transform: capitalize;
+}
+
+dl.health-status dl.health-status {
+    margin-top: 20px !important;
+}
+
+dl.health-status td {
+    border-top: none;
+    border-bottom: 1px solid #ddd;
+    padding: 8px;
+}

@@ -1,0 +1,9 @@
+.ellipsis-expander {
+  padding: 0 2px 2px;
+  color: #333333;
+  vertical-align: middle;
+  background-color: #ddd;
+  border: 1px solid #e1e1e8;
+  border-radius: 4px;
+  cursor: pointer;
+}

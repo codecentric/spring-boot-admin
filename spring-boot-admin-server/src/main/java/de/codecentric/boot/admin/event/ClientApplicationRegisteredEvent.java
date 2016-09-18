@@ -18,14 +18,14 @@ package de.codecentric.boot.admin.event;
 import de.codecentric.boot.admin.model.Application;
 
 /**
- * * This event gets emitted when an application is registered.
+ * This event gets emitted when an application is registered.
+ *
  * @author Johannes Stelzer
  */
 public class ClientApplicationRegisteredEvent extends ClientApplicationEvent {
-	public ClientApplicationRegisteredEvent(Object source, Application application) {
-		super(source, application);
-	}
-
 	private static final long serialVersionUID = 1L;
 
+	public ClientApplicationRegisteredEvent(Application application) {
+		super(application, "REGISTRATION");
+	}
 }

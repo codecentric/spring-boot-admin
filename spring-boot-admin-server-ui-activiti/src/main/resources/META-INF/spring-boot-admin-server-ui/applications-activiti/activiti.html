@@ -1,0 +1,36 @@
+<div class="container">
+	<table class="table table-striped">
+		<col style="width:30%">
+		<col style="width:auto">
+		<thead>
+			<tr>
+				<th colspan="2">Overview <small class="pull-right"><a href="api/applications/{{ application.id }}/activiti" target="_blank">raw JSON</a></small></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="entry in summary">
+				<td style="word-break: break-all;">{{ entry.key }}</td>
+				<td style="word-break: break-all;">{{ entry.value }}</td>
+			</tr>
+		</tbody>
+	</table>
+	<table class="table table-striped">
+		<col style="width:30%">
+		<col style="width:auto">
+		<col style="width:auto">
+		<thead>
+			<tr>
+				<th>Process</th>
+				<th>Running</th>
+				<th>Completed</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="process in processes">
+				<td style="word-break: break-all;">{{ process.name }}</td>
+				<td style="word-break: break-all;">{{ process.running }}</td>
+				<td style="word-break: break-all;">{{ process.completed }}</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

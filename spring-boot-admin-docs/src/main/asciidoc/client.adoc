@@ -1,0 +1,116 @@
+[[client-applications]]
+== Client applications ==
+
+[[show-version-in-application-list]]
+=== Show version in application list ===
+
+To get the version show up in the admin's application list you can use the `build-info` goal from the `spring-boot-maven-plugin`, which generates the `META-INF/build-info.properties`. See also the http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#howto-build-info[Spring Boot Reference Guide].
+
+[source,xml]
+.pom.xml
+----
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>build-info</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+----
+
+[[jmx-bean-management]]
+=== JMX-bean management ===
+
+To interact with JMX-beans in the admin UI you have to include https://jolokia.org/[Jolokia] in your application. In case you are using the `spring-boot-admin-starter-client` it will be pulled in for you, if not add Jolokia to your dependencies:
+
+[source,xml]
+.pom.xml
+----
+<dependency>
+    <groupId>org.jolokia</groupId>
+    <artifactId>jolokia-core</artifactId>
+</dependency>
+----
+
+[[loglevel-management]]
+=== Loglevel managment ===
+Currently the loglevel management is only available for http://logback.qos.ch/[Logback]. It is accessed via JMX so <<jmx-bean-management, include Jolokia>> in your application. In addition you have configure Logback's `JMXConfigurator`:
+
+[source,xml]
+.logback-spring.xml
+----
+include::{samples-dir}/spring-boot-admin-sample/src/main/resources/logback-spring.xml[]
+----
+
+NOTE: In case you are deploying multiple applications to the same JVM and multiple Logback-JMX-beans are present, the UI will select the JMXConfigurator with the context-name equals to your applications name. In this case you need to set the `contextName` in your logback-configuration.
+
+[[spring-boot-admin-client]]
+=== Spring Boot Admin Client ===
+
+The Spring Boot Admin Client registers the application at the admin server. This is done by periodically doing a http post-request to the admin server providing informations about the application. It also adds Jolokia to your dependencies, so that JMX-beans are accessible via http, this is needed if you want to manage loglevels or JMX-beans via the admin UI.
+
+.Spring Boot Admin Client configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.client.enabled
+| Enables the Spring Boot Admin Client.
+| `true`
+
+| spring.boot.admin.url
+| Comma separated ordered list of URLs of the Spring Boot Admin server to register at. This triggers the AutoConfiguration. *Mandatory*.
+|
+
+| spring.boot.admin.api-path
+| Http-path of registration endpoint at your admin server.
+| `"api/applications"`
+
+| spring.boot.admin.username
+spring.boot.admin.password
+| Username and password for http-basic authentication. If set the registration uses http-basic-authentication when registering at the admin server.
+|
+
+| spring.boot.admin.period
+| Interval for repeating the registration (in ms).
+| `10.000`
+
+| spring.boot.admin.auto-registration
+| If set to true the periodic task to register the application is automatically scheduled after the application is ready.
+| `true`
+
+| spring.boot.admin.auto-deregistration
+| Switch to enable auto-deregistration at Spring Boot Admin server when context is closed.
+| `false`
+
+| spring.boot.admin.register-once
+| If set to true the client will only register against one admin server (in order defined by `spring.boot.admin.url`); if that admin server goes down, will automatically register against the next admin server. If false, will register against all admin servers.
+| `true`
+
+| spring.boot.admin.client.health-url
+| Client-health-url to register with. Can be overridden in case the reachable URL is different (e.g. Docker). Must be unique in registry.
+| Guessed based on management-url and `endpoints.health.id`.
+
+| spring.boot.admin.client.management-url
+| Client-management-url to register with. Can be overridden in case the reachable url is different (e.g. Docker).
+| Guessed based on service-url, `server.servlet-path`, `management.port` and `management.context-path`.
+
+| spring.boot.admin.client.service-url
+| Client-service-url to register with. Can be overridden in case the reachable url is different (e.g. Docker).
+| Guessed based on hostname, `server.port` and `server.context-path`.
+
+| spring.boot.admin.client.name
+| Name to register with.
+| `${spring.application.name}` if set, `"spring-boot-application"` otherwise.
+
+| spring.boot.admin.client.prefer-ip
+| Use the ip-address rather then the hostname in the guessed urls. If `server.address` / `management.address` is set, it get used. Otherwise the IP address returned from `InetAddress.getLocalHost()` gets used.
+| `false`
+|===

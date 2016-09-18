@@ -1,64 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.2.2.RELEASE</version>
-        <relativePath /> <!-- lookup parent from repository -->
+        <version>1.4.0.RELEASE</version>
+        <relativePath/>
     </parent>
-
     <groupId>de.codecentric</groupId>
     <artifactId>spring-boot-admin</artifactId>
-    <version>1.2.1-SNAPSHOT</version>
+    <version>1.4.2-SNAPSHOT</version>
     <packaging>pom</packaging>
-
     <name>Spring Boot Admin</name>
     <description>Spring Boot Admin</description>
     <url>https://github.com/codecentric/spring-boot-admin/</url>
-
     <properties>
         <java.version>1.7</java.version>
         <main.basedir>${basedir}</main.basedir>
-        <passphrase>${gpg.passphrase}</passphrase>
-
-        <spring-boot.version>1.2.2.RELEASE</spring-boot.version>
-        <hazelcast.version>3.3.3</hazelcast.version>
-        <commons-lang3.version>3.3.2</commons-lang3.version>
-        <spring-cloud.version>1.0.0.RELEASE</spring-cloud.version>
-
-        <build-plugin.jacoco.version>0.7.3.201502191951</build-plugin.jacoco.version>
-        <build-plugin.coveralls.version>3.0.1</build-plugin.coveralls.version>
-        <build-plugin.gpg.version>1.5</build-plugin.gpg.version>
+        <spring-boot.version>1.4.0.RELEASE</spring-boot.version>
+        <spring-cloud.version>Brixton.SR5</spring-cloud.version>
+        <hystrix-dashboard.version>1.5.5</hystrix-dashboard.version>
+        <build-plugin.jacoco.version>0.7.7.201606060606</build-plugin.jacoco.version>
+        <build-plugin.coveralls.version>4.2.0</build-plugin.coveralls.version>
+        <build-plugin.gpg.version>1.6</build-plugin.gpg.version>
+        <build-plugin.asciidoctor.version>1.5.3</build-plugin.asciidoctor.version>
+        <build-plugin.exec.version>1.4.0</build-plugin.exec.version>
+        <build-plugin.git-commit-id.version>2.2.1</build-plugin.git-commit-id.version>
     </properties>
-
     <modules>
         <module>spring-boot-admin-server</module>
         <module>spring-boot-admin-server-ui</module>
+        <module>spring-boot-admin-server-ui-activiti</module>
+        <module>spring-boot-admin-server-ui-hystrix</module>
         <module>spring-boot-admin-samples</module>
         <module>spring-boot-admin-starter-client</module>
+        <module>spring-boot-admin-docs</module>
     </modules>
-
     <organization>
         <name>codecentric AG</name>
         <url>http://www.codecentric.de</url>
     </organization>
-
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </licenses>
-
     <scm>
         <connection>scm:git:git://github.com/codecentric/spring-boot-admin.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/codecentric/spring-boot-admin.git</developerConnection>
         <url>https://github.com/codecentric/spring-boot-admin</url>
     </scm>
-
     <developers>
+        <developer>
+            <name>Johannes Edmeier</name>
+            <email>johannes.edmeier@gmail.com</email>
+        </developer>
         <developer>
             <name>Thomas Bosch</name>
             <email>thomas.bosch@codecentric.de</email>
@@ -70,7 +67,6 @@
             <organization>codecentric AG</organization>
         </developer>
     </developers>
-
     <build>
         <plugins>
             <plugin>
@@ -97,6 +93,15 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <!-- this fix is needed for the eclipse-plugin to get the right java-version -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -105,6 +110,21 @@
                     <artifactId>maven-gpg-plugin</artifactId>
                     <version>${build-plugin.gpg.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.asciidoctor</groupId>
+                    <artifactId>asciidoctor-maven-plugin</artifactId>
+                    <version>${build-plugin.asciidoctor.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>${build-plugin.exec.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>pl.project13.maven</groupId>
+                    <artifactId>git-commit-id-plugin</artifactId>
+                    <version>${build-plugin.git-commit-id.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -112,7 +132,9 @@
         <profile>
             <id>sign-artifacts</id>
             <activation>
-                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>env.GPG_PASSPHRASE</name>
+                </property>
             </activation>
             <build>
                 <plugins>
@@ -120,7 +142,8 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                         <configuration>
-                            <passphrase>${passphrase}</passphrase>
+                            <passphrase>${env.GPG_PASSPHRASE}</passphrase>
+                            <homedir>${user.dir}/.gnupg</homedir>
                         </configuration>
                         <executions>
                             <execution>
@@ -159,7 +182,6 @@
                                     <goal>prepare-agent</goal>
                                 </goals>
                             </execution>
-
                             <!-- Ensures that the code coverage report for
                             unit tests is created after unit tests have been run. -->
                             <execution>
@@ -180,7 +202,6 @@
             </build>
         </profile>
     </profiles>
-
     <distributionManagement>
         <snapshotRepository>
             <id>sonatype-nexus-snapshots</id>
@@ -193,7 +214,6 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -208,6 +228,16 @@
             </dependency>
             <dependency>
                 <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-server-ui-activiti</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-server-ui-hystrix</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-starter-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -217,62 +247,27 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.netflix.hystrix</groupId>
+                <artifactId>hystrix-dashboard</artifactId>
+                <version>${hystrix-dashboard.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-web</artifactId>
+                <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-starter</artifactId>
-                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-starter-zuul</artifactId>
+                <artifactId>spring-cloud-dependencies</artifactId>
                 <version>${spring-cloud.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-netflix-core</artifactId>
-                <version>${spring-cloud.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-commons</artifactId>
-                <version>${spring-cloud.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-starter-eureka</artifactId>
-                <version>${spring-cloud.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${commons-lang3.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.hazelcast</groupId>
-                <artifactId>hazelcast</artifactId>
-                <version>${hazelcast.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.hazelcast</groupId>
-                <artifactId>hazelcast-spring</artifactId>
-                <version>${hazelcast.version}</version>
-            </dependency>
-            <!-- Test -->
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-test</artifactId>
-                <version>${spring.version}</version>
-                <scope>test</scope>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
-
+<!-- Removed for release
     <repositories>
         <repository>
             <id>spring-release</id>
@@ -281,5 +276,36 @@
             </snapshots>
             <url>http://repo.spring.io/release</url>
         </repository>
+        <repository>
+            <id>spring-milestone</id>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <url>http://repo.spring.io/milestone</url>
+        </repository>
+         <repository>
+            <id>spring-snapshot</id>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <url>http://repo.spring.io/snapshot</url>
+        </repository>
     </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spring-release</id>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <url>http://repo.spring.io/release</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>spring-milestone</id>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <url>http://repo.spring.io/milestone</url>
+        </pluginRepository>
+    </pluginRepositories>
+-->
 </project>

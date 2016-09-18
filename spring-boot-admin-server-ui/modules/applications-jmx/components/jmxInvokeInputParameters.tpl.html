@@ -1,0 +1,10 @@
+<form class="form">
+    <p>Please input the arguments for {{$ctrl.invocation.signature}} <small class="muted">: {{$ctrl.invocation.descriptor.ret}}</small></p>
+    <div class="control-group" ng-repeat="arg in $ctrl.invocation.descriptor.args">
+        <label class="control-label" for="{{arg.name}}" style="word-break: break-all;">{{arg.name}} <small class="muted" style="word-break: break-all;" ng-bind="arg.type"></small></label>
+        <div class="controls">
+            <sba-java-type-input type="{{arg.type}}" decription="{{arg.desc}}" model="$ctrl.arguments[$index]" />
+        </div>
+    </div>
+    <button class="btn btn-primary" ng-click="$ctrl.applyParameters()">Execute</button>
+</form>

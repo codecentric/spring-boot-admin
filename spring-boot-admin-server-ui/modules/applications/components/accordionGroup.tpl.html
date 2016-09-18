@@ -1,0 +1,8 @@
+<div class="accordion-group">
+    <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-target="#{{$ctrl.id}}-body" ng-transclude="heading"></a>
+    </div>
+    <div id="{{$ctrl.id}}-body" class="accordion-body collapse">
+        <div class="accordion-inner" ng-transclude="body"></div>
+    </div>
+</div>

@@ -1,0 +1,243 @@
+=== Notifications ===
+
+[reminder-notifications]
+==== Reminder notifications ====
+The `RemindingNotifier` sends reminders for down/offline applications, it delegates the sending of notifications to another notifier.
+
+By default a reminder is triggered when a registered application changes to `DOWN` or `OFFLINE`. You can alter this behaviour via `setReminderStatuses()`. The reminder ends when either the status changes to a non-triggering status or the regarding application gets deregistered.
+
+By default the reminders are sent every 10 minutes, to change this use `setReminderPeriod()`. The `RemindingNotifier` itself doesn't start the background thread to send the reminders, you need to take care of this as shown in the given example below;
+
+.How to configure reminders
+[source,java]
+----
+@Configuration
+@EnableScheduling
+public class NotifierConfiguration {
+    @Autowired
+    private Notifier notifier;
+
+    @Bean
+    @Primary
+    public RemindingNotifier remindingNotifier() {
+        RemindingNotifier remindingNotifier = new RemindingNotifier(notifier);
+        remindingNotifier.setReminderPeriod(TimeUnit.MINUTES.toMillis(5)); // <1>
+        return remindingNotifier;
+    }
+
+    @Scheduled(fixedRate = 60_000L) // <2>
+    public void remind() {
+        remindingNotifier().sendReminders();
+    }
+}
+----
+<1> The reminders will be sent every 5 minutes.
+<2> Schedules sending of due reminders every 60 seconds.
+
+[[filtering-notifications]]
+==== Filtering notifications ====
+The `FilteringNotifier` allows you to filter certain notification based on rules you can add/remove at runtime. It delegates the sending of notifications to another notifier.
+
+If you add a `FilteringNotifier` to your `ApplicationContext` a RESTful interface on `api/notifications/filter` gets available. When this happens the ui shows options to manage the filters.
+
+This notifier is useful if you don't want recieve notifications when deploying your applications. Before stopping the application you can add an (expiring) filter either via a `POST` request or the ui.
+
+.How to configure filtering
+[source,java]
+----
+@Configuration
+@EnableScheduling
+public class NotifierConfiguration {
+	@Autowired
+	private Notifier delegate;
+
+	@Bean
+	public FilteringNotifier filteringNotifier() { // <1>
+		return new FilteringNotifier(delegate);
+	}
+
+	@Bean
+	@Primary
+	public RemindingNotifier remindingNotifier() { // <2>
+		RemindingNotifier notifier = new RemindingNotifier(filteringNotifier());
+		notifier.setReminderPeriod(TimeUnit.SECONDS.toMillis(10));
+		return notifier;
+	}
+
+	@Scheduled(fixedRate = 1_000L)
+	public void remind() {
+		remindingNotifier().sendReminders();
+	}
+}
+----
+<1> Add the `FilteringNotifier` bean using a delegate (e.g. `MailNotifier` when configured)
+<2> Add the `RemindingNotifier` as primary bean using the `FilteringNotifier` as delegate.
+
+TIP: This examples combines the reminding and filtering notifiers. This allows you to get notifications after the deployed applications hasn't restarted in a certain amount of time (until the filter expires).
+
+[[mail-notifications]]
+==== Mail notifications ====
+
+Configure a `JavaMailSender` using `spring-boot-starter-mail` and set a recipient.
+
+[source,xml]
+.pom.xml
+----
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-mail</artifactId>
+</dependency>
+----
+
+.application.properties
+----
+spring.mail.host=smtp.example.com
+spring.boot.admin.notify.mail.to=admin@example.com
+----
+
+.Mail notifications configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.mail.enabled
+| Enable mail notifications
+| `true`
+
+| spring.boot.admin.notify.mail.ignore-changes
+| Comma-delimited list of status changes to be ignored. Format: "<from-status>:<to-status>". Wildcards allowed.
+| `"UNKNOWN:UP"`
+
+| spring.boot.admin.notify.mail.to
+| Comma-delimited list of mail recipients
+| `"root@localhost"`
+
+| spring.boot.admin.notify.mail.cc
+| Comma-delimited list of carbon-copy recipients
+|
+
+| spring.boot.admin.notify.mail.from
+| Mail sender
+|
+
+| spring.boot.admin.notify.mail.subject
+| Mail subject. SpEL-expressions are supported
+| `+++"#{application.name} (#{application.id}) is #{to.status}"+++`
+
+| spring.boot.admin.notify.mail.text
+| Mail body. SpEL-expressions are supported
+| `+++"#{application.name} (#{application.id})\nstatus changed from #{from.status} to #{to.status}\n\n#{application.healthUrl}"+++`
+|===
+
+[[pagerduty-notifications]]
+==== Pagerduty notifications ====
+To enable pagerduty notifications you just have to add a generic service to your pagerduty-account and set `spring.boot.admin.notify.pagerduty.service-key` to the service-key you received.
+
+.Pagerduty notifications configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.pagerduty.enabled
+| Enable mail notifications
+| `true`
+
+| spring.boot.admin.notify.pagerduty.ignore-changes
+| Comma-delimited list of status changes to be ignored. Format: "<from-status>:<to-status>". Wildcards allowed.
+| `"UNKNOWN:UP"`
+
+| spring.boot.admin.notify.pagerduty.service-key
+| Service-key to use for Pagerduty
+|
+
+| spring.boot.admin.notify.pagerduty.url
+| The Pagerduty-rest-api url
+| `+++"https://events.pagerduty.com/generic/2010-04-15/create_event.json"+++`
+
+| spring.boot.admin.notify.pagerduty.description
+| Description to use in the event. SpEL-expressions are supported
+| `+++"#{application.name}/#{application.id} is #{to.status}"+++`
+
+| spring.boot.admin.notify.pagerduty.client
+| Client-name to use in the event
+|
+
+| spring.boot.admin.notify.pagerduty.client-url
+| Client-url to use in the event
+|
+|===
+
+[hipchat-notifications]
+==== Hipchat notifications ====
+To enable Hipchat notifications you need to create an API token from you Hipchat account and set the appropriate configuration properties.
+
+.Hipchat notifications configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.hipchat.enabled
+| Enable Hipchat notifications
+| `true`
+
+| spring.boot.admin.notify.hipchat.ignore-changes
+| Comma-delimited list of status changes to be ignored. Format: "<from-status>:<to-status>". Wildcards allowed.
+| `"UNKNOWN:UP"`
+
+| spring.boot.admin.notify.hipchat.url
+| The HipChat REST API (V2) URL
+|
+
+| spring.boot.admin.notify.hipchat.auth-token
+| The API token with access to the notification room
+|
+
+| spring.boot.admin.notify.hipchat.room-id
+| The ID or url-encoded name of the room to send notifications to
+|
+
+| spring.boot.admin.notify.hipchat.notify
+| Whether the message should trigger a user notification
+| `false`
+
+| spring.boot.admin.notify.hipchat.description
+| Description to use in the event. SpEL-expressions are supported
+| `+++"<strong>#{application.name}</strong>/#{application.id} is <strong>#{to.status}</strong>"+++`
+|
+|===
+
+[slack-notifications]
+==== Slack notifications ====
+To enable Slack notifications you need to add a incoming Webhook under custom integrations on your Slack
+account and configure it appropriately.
+
+.Slack notifications configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.slack.enabled
+| Enable Slack notifications
+| `true`
+
+| spring.boot.admin.notify.slack.ignore-changes
+| Comma-delimited list of status changes to be ignored. Format: "<from-status>:<to-status>". Wildcards allowed.
+| `"UNKNOWN:UP"`
+
+| spring.boot.admin.notify.slack.webhook-url
+| The Slack Webhook URL to send notifications
+|
+
+| spring.boot.admin.notify.slack.channel
+| Optional channel name (without # at the beginning). If different than channel in Slack Webhooks settings
+|
+
+| spring.boot.admin.notify.slack.icon
+| Optional icon name (without surrounding colons). If different than icon in Slack Webhooks settings
+|
+
+| spring.boot.admin.notify.slack.username
+| Optional username to send notification if different than in Slack Webhooks settings
+| `Spring Boot Admin`
+
+| spring.boot.admin.notify.slack.message
+| Message to use in the event. SpEL-expressions and Slack markups are supported
+| `+++"*#{application.name}* (#{application.id}) is *#{to.status}*"+++`
+|
+|===

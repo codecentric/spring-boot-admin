@@ -1,26 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>de.codecentric</groupId>
-		<artifactId>spring-boot-admin</artifactId>
-		<version>1.2.1-SNAPSHOT</version>
-		<relativePath>..</relativePath>
-	</parent>
-	<groupId>de.codecentric</groupId>
-	<artifactId>spring-boot-admin-samples</artifactId>
-	<packaging>pom</packaging>
-	<name>Spring Boot Admin Samples</name>
-	<description>Spring Boot Admin Samples</description>
-	<url>https://github.com/codecentric/spring-boot-admin/</url>
-
-	<properties>
-		<main.basedir>${basedir}/..</main.basedir>
-	</properties>
-	<modules>
-		<module>spring-boot-admin-sample</module>
-		<module>spring-boot-admin-sample-discovery</module>
-		<module>spring-boot-admin-sample-hazelcast</module>
-	</modules>
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>de.codecentric</groupId>
+        <artifactId>spring-boot-admin</artifactId>
+        <version>1.4.2-SNAPSHOT</version>
+        <relativePath>..</relativePath>
+    </parent>
+    <artifactId>spring-boot-admin-samples</artifactId>
+    <packaging>pom</packaging>
+    <name>Spring Boot Admin Samples</name>
+    <description>Spring Boot Admin Samples</description>
+    <url>https://github.com/codecentric/spring-boot-admin/</url>
+    <modules>
+        <module>spring-boot-admin-sample</module>
+        <module>spring-boot-admin-sample-war</module>
+        <module>spring-boot-admin-sample-eureka</module>
+        <module>spring-boot-admin-sample-consul</module>
+        <module>spring-boot-admin-sample-zookeeper</module>
+        <module>spring-boot-admin-sample-hazelcast</module>
+    </modules>
 </project>

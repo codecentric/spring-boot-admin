@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: eureka-example
+  cloud:
+    config:
+      enabled: false
+# tag::configuration-eureka[]
+eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    client:
+      serviceUrl:
+        defaultZone: http://localhost:8761/eureka/
+# end::configuration-eureka[]
+
+# tag::configuration-ui-hystrix[]
+spring.boot.admin.routes.endpoints: env,metrics,trace,dump,jolokia,info,configprops,trace,logfile,refresh,flyway,liquibase,heapdump,hystrix.stream,turbine.stream
+# end::configuration-ui-hystrix[]

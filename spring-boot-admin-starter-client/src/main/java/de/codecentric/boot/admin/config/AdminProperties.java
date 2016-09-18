@@ -20,44 +20,71 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.boot.admin")
 public class AdminProperties {
 
-	private String url;
+	/**
+	 * The admin server urls to register at
+	 */
+	private String[] url;
 
-	private String contextPath = "api/applications";
+	/**
+	 * The admin rest-apis path.
+	 */
+	private String apiPath = "api/applications";
 
-	private int period = 10000;
+	/**
+	 * Time interval (in ms) the registration is repeated
+	 */
+	private long period = 10_000L;
 
+	/**
+	 * Username for basic authentication on admin server
+	 */
 	private String username;
 
+	/**
+	 * Password for basic authentication on admin server
+	 */
 	private String password;
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
+	/**
+	 * Enable automatic deregistration on shutdown
+	 */
+	private boolean autoDeregistration;
 
 	/**
-	 * 
-	 * @return the Spring Boot Admin Server's url.
+	 * Enable automatic registration when the application is ready
 	 */
-	public String getUrl() {
-		return url;
-	}
+	private boolean autoRegistration = true;
 
 	/**
-	 * @return the Spring Boot Admin Server's context path.
+	 * Enable registration against one or all admin servers
 	 */
-	public String getContextPath() {
-		return contextPath;
+	private boolean registerOnce = true;
+
+	public void setUrl(String[] url) {
+		this.url = url.clone();
 	}
 
-	public void setContextPath(String contextPath) {
-		this.contextPath = contextPath;
+	public String[] getUrl() {
+		return url.clone();
 	}
 
-	/**
-	 * 
-	 * @return the time interval (in ms) the registration is repeated.
-	 */
-	public int getPeriod() {
+	public void setApiPath(String apiPath) {
+		this.apiPath = apiPath;
+	}
+
+	public String getApiPath() {
+		return apiPath;
+	}
+
+	public String[] getAdminUrl() {
+		String adminUrls[] = url.clone();
+		for (int i = 0; i < adminUrls.length; i++) {
+			adminUrls[i] += "/" + apiPath;
+		}
+		return adminUrls;
+	}
+
+	public long getPeriod() {
 		return period;
 	}
 
@@ -69,9 +96,6 @@ public class AdminProperties {
 		this.username = username;
 	}
 
-	/**
-	 * @return username for basic authentication .
-	 */
 	public String getUsername() {
 		return username;
 	}
@@ -80,11 +104,31 @@ public class AdminProperties {
 		this.password = password;
 	}
 
-	/**
-	 * 
-	 * @return password for basic authentication.
-	 */
 	public String getPassword() {
 		return password;
+	}
+
+	public boolean isAutoDeregistration() {
+		return autoDeregistration;
+	}
+
+	public void setAutoDeregistration(boolean autoDeregistration) {
+		this.autoDeregistration = autoDeregistration;
+	}
+
+	public boolean isAutoRegistration() {
+		return autoRegistration;
+	}
+
+	public void setAutoRegistration(boolean autoRegistration) {
+		this.autoRegistration = autoRegistration;
+	}
+
+	public boolean isRegisterOnce() {
+		return registerOnce;
+	}
+
+	public void setRegisterOnce(boolean registerOnce) {
+		this.registerOnce = registerOnce;
 	}
 }

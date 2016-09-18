@@ -1,0 +1,13 @@
+<dl class="health-status">
+    <dt>{{name}} <span class="status-{{health.status}} pull-right" ng-bind="health.status"></span></dt>
+    <dd>
+        <table style="width:100%;">
+            <tr>
+                <td>Free</td><td>{{health.free | humanBytes}}</td>
+            </tr>
+            <tr>
+                <td>Threshold</td><td>{{health.threshold | humanBytes}}</td>
+            </tr>
+        </table>
+    </dd>
+</dl>

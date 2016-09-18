@@ -19,7 +19,9 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +31,7 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.event.HeartbeatEvent;
 import org.springframework.cloud.client.discovery.event.InstanceRegisteredEvent;
 import org.springframework.cloud.client.discovery.event.ParentHeartbeatEvent;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
 
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
@@ -37,67 +39,86 @@ import de.codecentric.boot.admin.registry.HashingApplicationUrlIdGenerator;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
 
 public class ApplicationDiscoveryListenerTest {
-
-	ApplicationDiscoveryListener listener;
-	DiscoveryClient discovery;
-	ApplicationRegistry registry;
+	private ApplicationDiscoveryListener listener;
+	private DiscoveryClient discovery;
+	private ApplicationRegistry registry;
 
 	@Before
 	public void setup() {
-		registry = new ApplicationRegistry(new SimpleApplicationStore(), new HashingApplicationUrlIdGenerator());
-		registry.setApplicationContext(mock(ApplicationContext.class));
+		registry = new ApplicationRegistry(new SimpleApplicationStore(),
+				new HashingApplicationUrlIdGenerator());
+		registry.setApplicationEventPublisher(mock(ApplicationEventPublisher.class));
 		discovery = mock(DiscoveryClient.class);
 		listener = new ApplicationDiscoveryListener(discovery, registry);
 	}
 
 	@Test
-	public void test_register_and_convert() {
+	public void test_ignore() {
 		when(discovery.getServices()).thenReturn(Collections.singletonList("service"));
-		when(discovery.getInstances("service")).thenReturn(
-				Collections.<ServiceInstance> singletonList(new DefaultServiceInstance("service", "localhost", 80,
-						false)));
+		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
+				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
 
-		listener.onApplicationEvent(new InstanceRegisteredEvent<>(new Object(), null));
+		listener.setIgnoredServices(Collections.singleton("service"));
+		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
-		assertEquals(1, registry.getApplications().size());
-		Application application = registry.getApplications().iterator().next();
-
-		assertEquals("http://localhost:80", application.getUrl());
-		assertEquals("service", application.getName());
+		assertEquals(0, registry.getApplications().size());
 	}
 
 	@Test
-	public void convert_mgmtContextPath() {
+	public void test_register_and_convert() {
 		when(discovery.getServices()).thenReturn(Collections.singletonList("service"));
-		when(discovery.getInstances("service")).thenReturn(
-				Collections.<ServiceInstance> singletonList(new DefaultServiceInstance("service", "localhost", 80,
-						false)));
+		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
+				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
 
-		listener.setManagementContextPath("/mgmt");
-		listener.onApplicationEvent(new InstanceRegisteredEvent<>(new Object(), null));
+		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
 		assertEquals(1, registry.getApplications().size());
 		Application application = registry.getApplications().iterator().next();
 
-		assertEquals("http://localhost:80/mgmt", application.getUrl());
+		assertEquals("http://localhost:80/health", application.getHealthUrl());
+		assertEquals("http://localhost:80", application.getManagementUrl());
+		assertEquals("http://localhost:80", application.getServiceUrl());
 		assertEquals("service", application.getName());
 	}
 
 	@Test
 	public void single_discovery_for_same_heartbeat() {
 		Object heartbeat = new Object();
-		listener.onApplicationEvent(new ParentHeartbeatEvent(new Object(), heartbeat));
+		listener.onParentHeartbeat(new ParentHeartbeatEvent(new Object(), heartbeat));
 
 		when(discovery.getServices()).thenReturn(Collections.singletonList("service"));
-		when(discovery.getInstances("service")).thenReturn(
-				Collections.<ServiceInstance> singletonList(new DefaultServiceInstance("service", "localhost", 80,
-						false)));
+		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
+				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
 
 		listener.onApplicationEvent(new HeartbeatEvent(new Object(), heartbeat));
 		assertEquals(0, registry.getApplications().size());
 
 		listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
 		assertEquals(1, registry.getApplications().size());
+	}
+
+	@Test
+	public void deregister_removed_app() {
+		registry.register(Application.create("ignored").withHealthUrl("http://health")
+				.withId("abcdef").build());
+		listener.setIgnoredServices(Collections.singleton("ignored"));
+
+		List<ServiceInstance> instances = new ArrayList<>();
+		instances.add(new DefaultServiceInstance("service", "localhost", 80, false));
+		instances.add(new DefaultServiceInstance("service", "example.net", 80, false));
+
+		when(discovery.getServices()).thenReturn(Collections.singletonList("service"));
+		when(discovery.getInstances("service")).thenReturn(instances);
+
+		listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
+		assertEquals(2, registry.getApplicationsByName("service").size());
+		assertEquals(1, registry.getApplicationsByName("ignored").size());
+
+		instances.remove(0);
+
+		listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
+		assertEquals(1, registry.getApplicationsByName("service").size());
+		assertEquals(1, registry.getApplicationsByName("ignored").size());
 	}
 
 }

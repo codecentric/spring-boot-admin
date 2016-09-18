@@ -1,0 +1,16 @@
+<div>
+    <p>Result for {{$ctrl.invocation.call}} <small class="muted">: {{$ctrl.invocation.descriptor.ret}}</small></p>
+    <div ng-if="!$ctrl.invocation.response" class="progress progress-striped active">
+        <div class="bar" style="width: 100%;">executing ... </div>
+    </div>
+    <div ng-if="$ctrl.invocation.response.value !== undefined">
+        <div class="alert alert-success"><b>Success</b></div>
+        <pre style="white-space: pre-wrap;">{{ $ctrl.invocation.response.value | json }}</pre>
+    </div>
+    <div ng-if="$ctrl.invocation.response.error">
+        <div class="alert alert-error">
+            <b>Error:</b> {{$ctrl.invocation.response.error}}
+        </div>
+        <pre style="white-space: pre-wrap;">{{$ctrl.invocation.response.stacktrace}}</pre>
+    </div>
+</div>

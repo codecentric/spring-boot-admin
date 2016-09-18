@@ -1,0 +1,40 @@
+<button class="btn" ng-click="$ctrl.showPopover = !$ctrl.showPopover">
+  <i class="fa fa-fw {{$ctrl.hasActiveFilter ? 'fa-bell-slash' : 'fa-bell muted'}}"></i>
+</button>
+<sba-popover popover-title="Notification Filters" popover-toggle="$ctrl.showPopover">
+  <button class="btn btn-link pull-right" ng-click="$ctrl.refreshFilters()"><i class="fa fa-fw fa-repeat"></i></button>
+  <table class="table">
+    <tr>
+      <th>Type</th>
+      <th>Expiry</th>
+      <th>Action</th>
+    </tr>
+    <tr ng-repeat="(key, value) in $ctrl.activeFilters">
+      <td ng-if="value.name">by name ({{value.name}})</td>
+      <td ng-if="value.id">by id ({{value.id}})</td>
+      <td ng-if="value.expiry >=0" ng-bind="value.expiry | date:'HH:mm:ss'"></td>
+      <td ng-if="value.expiry <0">unlimited</td>
+      <td><button class="btn btn-danger btn-small" ng-click="$ctrl.removeFilter(key)"><i class="fa fa-times"></i></button>
+    </tr>
+    <tr>
+      <td>
+        <select class="input-xlarge" ng-model="$ctrl.filterType">
+          <option value="{{'by-name'}}">by name ({{$ctrl.application.name}})</option>
+          <option value="{{'by-id'}}">by id ({{$ctrl.application.id}})</option>
+        </select>
+      </td>
+      <td>
+        <select class="input-small" ng-model="$ctrl.ttl">
+          <option value="{{'5'}}">5 min</option>
+          <option value="{{'15'}}">15 min</option>
+          <option value="{{'30'}}">30 min</option>
+          <option value="{{'60'}}">1 hr</option>
+          <option value="{{'-1'}}">unlimited</option>
+        </select>
+      </td>
+      <td>
+        <button class="btn btn-success btn-small" value="Add filter" ng-click="$ctrl.addFilter()"><i class="fa fa-plus"></i></button>
+      </td>
+    </tr>
+  </table>
+</sba-popover>

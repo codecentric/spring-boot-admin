@@ -15,38 +15,179 @@
  */
 package de.codecentric.boot.admin.config;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.event.EventListener;
+import org.springframework.util.StringUtils;
 
-@ConfigurationProperties(prefix = "spring.boot.admin.client", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "spring.boot.admin.client")
 public class AdminClientProperties {
+	/**
+	 * Client-management-URL to register with. Inferred at runtime, can be overriden in case the
+	 * reachable URL is different (e.g. Docker).
+	 */
+	private String managementUrl;
 
-	@Value("http://#{T(java.net.InetAddress).localHost.canonicalHostName}:${management.port:${server.port:8080}}${server.context-path:/}${management.context-path:/}")
-	private String url;
+	/**
+	 * Client-service-URL register with. Inferred at runtime, can be overriden in case the reachable
+	 * URL is different (e.g. Docker).
+	 */
+	private String serviceUrl;
 
+	/**
+	 * Client-health-URL to register with. Inferred at runtime, can be overriden in case the
+	 * reachable URL is different (e.g. Docker). Must be unique in registry.
+	 */
+	private String healthUrl;
+
+	/**
+	 * Name to register with. Defaults to ${spring.application.name}
+	 */
 	@Value("${spring.application.name:spring-boot-application}")
 	private String name;
 
-	/**
-	 * @return Client-management-URL to register with. Can be overriden in case the
-	 *         reachable URL is different (e.g. Docker). Must be unique in registry.
-	 */
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
+	@Value("${endpoints.health.id:health}")
+	private String healthEndpointId;
 
 	/**
-	 * @return Name to register with.
+	 * Should the registered urls be built with server.address or with hostname.
 	 */
+	private boolean preferIp = false;
+
+	@Autowired
+	private ManagementServerProperties management;
+
+	@Autowired
+	private ServerProperties server;
+
+	private Integer serverPort;
+
+	private Integer managementPort;
+
+	@EventListener
+	public void onApplicationReady(ApplicationReadyEvent event) {
+		if (event.getApplicationContext().getParent() == null) {
+			serverPort = event.getApplicationContext().getEnvironment()
+					.getProperty("local.server.port", Integer.class);
+			managementPort = event.getApplicationContext().getEnvironment()
+					.getProperty("local.management.port", Integer.class, serverPort);
+		}
+	}
+
+	public String getManagementUrl() {
+		if (managementUrl != null) {
+			return managementUrl;
+		}
+
+		if ((managementPort == null || managementPort.equals(serverPort))
+				&& getServiceUrl() != null) {
+			return append(append(getServiceUrl(), server.getServletPrefix()),
+					management.getContextPath());
+		}
+
+		if (managementPort == null) {
+			throw new IllegalStateException(
+					"serviceUrl must be set when deployed to servlet-container");
+		}
+
+		if (preferIp) {
+			InetAddress address = management.getAddress();
+			if (address == null) {
+				address = getHostAddress();
+			}
+			return append(append(createLocalUri(address.getHostAddress(), managementPort),
+					server.getContextPath()), management.getContextPath());
+
+		}
+		return append(createLocalUri(getHostAddress().getCanonicalHostName(), managementPort),
+				management.getContextPath());
+	}
+
+	public void setManagementUrl(String managementUrl) {
+		this.managementUrl = managementUrl;
+	}
+
+	public String getHealthUrl() {
+		if (healthUrl != null) {
+			return healthUrl;
+		}
+		return append(getManagementUrl(), healthEndpointId);
+	}
+
+	public void setHealthUrl(String healthUrl) {
+		this.healthUrl = healthUrl;
+	}
+
+	public String getServiceUrl() {
+		if (serviceUrl != null) {
+			return serviceUrl;
+		}
+
+		if (serverPort == null) {
+			throw new IllegalStateException(
+					"serviceUrl must be set when deployed to servlet-container");
+		}
+
+		if (preferIp) {
+			InetAddress address = server.getAddress();
+			if (address == null) {
+				address = getHostAddress();
+			}
+			return append(createLocalUri(address.getHostAddress(), serverPort),
+					server.getContextPath());
+
+		}
+		return append(createLocalUri(getHostAddress().getCanonicalHostName(), serverPort),
+				server.getContextPath());
+	}
+
+	public void setServiceUrl(String serviceUrl) {
+		this.serviceUrl = serviceUrl;
+	}
+
 	public String getName() {
 		return name;
 	}
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public void setPreferIp(boolean preferIp) {
+		this.preferIp = preferIp;
+	}
+
+	public boolean isPreferIp() {
+		return preferIp;
+	}
+
+	private String createLocalUri(String host, int port) {
+		String scheme = server.getSsl() != null && server.getSsl().isEnabled() ? "https" : "http";
+		return scheme + "://" + host + ":" + port;
+	}
+
+	private String append(String uri, String path) {
+		String baseUri = uri.replaceFirst("/+$", "");
+		if (StringUtils.isEmpty(path)) {
+			return baseUri;
+		}
+
+		String normPath = path.replaceFirst("^/+", "").replaceFirst("/+$", "");
+		return baseUri + "/" + normPath;
+	}
+
+	private InetAddress getHostAddress() {
+		try {
+			return InetAddress.getLocalHost();
+		} catch (UnknownHostException ex) {
+			throw new IllegalArgumentException(ex.getMessage(), ex);
+		}
 	}
 }
