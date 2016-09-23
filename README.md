@@ -11,28 +11,32 @@ This is a simple admin interface for [Spring Boot](http://projects.spring.io/spr
 
 This application provides a simple GUI to administrate Spring Boot applications in some ways. At the moment it provides the following features for every registered application.
 
-* Show name/id and version number
+* Show build-info number
 * Show health status
-* Download main logfile
+* Follow and download logfile
 * Show details, like
  * JVM & memory metrics
  * Counter & gauge metrics
  * Datasource metrics
  * Cache metrics
-* View Java, system- & environment-properties
-* Support for Spring Clouds postable /env- &/refresh-endpoint
-* Easy loglevel management (for Logback only)
+* View jvm system- & environment-properties
+* Support for Spring Cloud's postable /env- &/refresh-endpoint
+* Easy loglevel management (currently for Logback only)
 * Interact with JMX-beans
 * View threaddump
 * View traces
-* Mail and desktop notification on status change
+* Hystrix-Dashboard integration
+* Download heapdump
+* Notification on status change (via mail, Slack, Hipchat, ...)
 * Event journal of status changes (non persistent)
 
 ## Getting Started
 
-[A quick guide](http://codecentric.github.io/spring-boot-admin/1.4.1/#getting-started) to get started can be found in our docs.
+[A quick guide](http://codecentric.github.io/spring-boot-admin/1.4.2/#getting-started) to get started can be found in our docs.
 
 ## Reference Guide
+[Version 1.4.2](http://codecentric.github.io/spring-boot-admin/1.4.2/)
+
 [Version 1.4.1](http://codecentric.github.io/spring-boot-admin/1.4.1/)
 
 [Version 1.3.6](http://codecentric.github.io/spring-boot-admin/1.3.6/)
