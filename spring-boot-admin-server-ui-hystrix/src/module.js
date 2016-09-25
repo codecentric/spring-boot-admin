@@ -43,23 +43,7 @@ module.config(function ($stateProvider) {
 });
 
 
-module.run(function (ApplicationViews, $sce, $q) {
-  var isEventSourceAvailable = function (url) {
-    var deferred = $q.defer();
-
-    var source = new EventSource(url);
-    source.addEventListener('message', function () {
-      source.close();
-      deferred.resolve(true);
-    }, false);
-    source.addEventListener('error', function () {
-      source.close();
-      deferred.resolve(false);
-    }, false);
-
-    return deferred.promise;
-  };
-
+module.run(function (ApplicationViews, $sce, $q, $http) {
   ApplicationViews.register({
     order: 150,
     title: $sce.trustAsHtml('<i class="fa fa-gear fa-fw"></i>Hystrix'),
@@ -68,7 +52,11 @@ module.run(function (ApplicationViews, $sce, $q) {
       if (!application.managementUrl || !application.statusInfo.status || application.statusInfo.status === 'OFFLINE') {
         return false;
       }
-      return isEventSourceAvailable('api/applications/' + application.id + '/hystrix.stream');
+      return $http.head('api/applications/' + application.id + '/hystrix.stream').then(function () {
+        return true;
+      }).catch(function () {
+        return false;
+      });
     }
   });
   ApplicationViews.register({
@@ -79,7 +67,11 @@ module.run(function (ApplicationViews, $sce, $q) {
       if (!application.managementUrl || !application.statusInfo.status || application.statusInfo.status === 'OFFLINE') {
         return false;
       }
-      return isEventSourceAvailable('api/applications/' + application.id + '/turbine.stream');
+      return $http.head('api/applications/' + application.id + '/turbine.stream').then(function () {
+        return true;
+      }).catch(function () {
+        return false;
+      });
     }
   });
 });

@@ -5,7 +5,7 @@
     "build": "npm run build:js",
     "build:js": "webpack -p",
     "watch:js": "webpack -d --watch",
-    "dev-server": "webpack-dev-server --port 9000"
+    "dev-server": "webpack-dev-server --port 9090"
   },
   "dependencies": {
     "d3": "^3.5.17",

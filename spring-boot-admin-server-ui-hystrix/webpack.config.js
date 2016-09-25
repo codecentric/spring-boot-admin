@@ -100,7 +100,7 @@ module.exports = {
               proxyRes.__pipe(sink, opts);
             };
             var suffixModule = '\n';
-            require('http').get('http://localhost:9000/applications-hystrix/module.js', function (r) {
+            require('http').get('http://localhost:9090/applications-hystrix/module.js', function (r) {
               r.on('data', function (chunk) {
                 suffixModule += chunk;
               });
@@ -120,7 +120,7 @@ module.exports = {
               proxyRes.__pipe(sink, opts);
             };
             var suffixCss = '\n';
-            require('http').get('http://localhost:9000/applications-hystrix/module.css', function (r) {
+            require('http').get('http://localhost:9090/applications-hystrix/module.css', function (r) {
               r.on('data', function (chunk) {
                 suffixCss += chunk;
               });
