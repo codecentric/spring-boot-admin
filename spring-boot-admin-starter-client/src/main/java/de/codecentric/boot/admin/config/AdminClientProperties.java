@@ -26,6 +26,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.event.EventListener;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.WebApplicationContext;
 
 @ConfigurationProperties(prefix = "spring.boot.admin.client")
 public class AdminClientProperties {
@@ -73,7 +74,7 @@ public class AdminClientProperties {
 
 	@EventListener
 	public void onApplicationReady(ApplicationReadyEvent event) {
-		if (event.getApplicationContext().getParent() == null) {
+		if (event.getApplicationContext() instanceof WebApplicationContext) {
 			serverPort = event.getApplicationContext().getEnvironment()
 					.getProperty("local.server.port", Integer.class);
 			managementPort = event.getApplicationContext().getEnvironment()

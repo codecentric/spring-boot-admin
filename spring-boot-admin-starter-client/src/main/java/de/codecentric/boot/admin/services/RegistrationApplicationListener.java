@@ -25,6 +25,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Listener responsible for starting and stopping the registration task when the application is
@@ -50,7 +51,7 @@ public class RegistrationApplicationListener {
 	@EventListener
 	@Order(Ordered.LOWEST_PRECEDENCE)
 	public void onApplicationReady(ApplicationReadyEvent event) {
-		if (event.getApplicationContext().getParent() == null && autoRegister) {
+		if (event.getApplicationContext() instanceof WebApplicationContext && autoRegister) {
 			startRegisterTask();
 		}
 	}
@@ -58,7 +59,7 @@ public class RegistrationApplicationListener {
 	@EventListener
 	@Order(Ordered.LOWEST_PRECEDENCE)
 	public void onClosedContext(ContextClosedEvent event) {
-		if (event.getApplicationContext().getParent() == null) {
+		if (event.getApplicationContext() instanceof WebApplicationContext) {
 			stopRegisterTask();
 
 			if (autoDeregister) {

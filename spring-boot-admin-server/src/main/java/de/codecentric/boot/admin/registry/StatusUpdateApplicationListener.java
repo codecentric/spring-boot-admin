@@ -8,6 +8,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.web.context.WebApplicationContext;
 
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
 
@@ -26,14 +27,14 @@ public class StatusUpdateApplicationListener {
 
 	@EventListener
 	public void onApplicationReady(ApplicationReadyEvent event) {
-		if (event.getApplicationContext().getParent() == null) {
+		if (event.getApplicationContext() instanceof WebApplicationContext) {
 			startStatusUpdate();
 		}
 	}
 
 	@EventListener
 	public void onContextClosed(ContextClosedEvent event) {
-		if (event.getApplicationContext().getParent() == null) {
+		if (event.getApplicationContext() instanceof WebApplicationContext) {
 			stopStatusUpdate();
 		}
 	}

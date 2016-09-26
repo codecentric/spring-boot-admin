@@ -13,9 +13,9 @@ import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 public class RegistrationApplicationListenerTest {
 
@@ -28,7 +28,7 @@ public class RegistrationApplicationListenerTest {
 
 		listener.onApplicationReady(
 				new ApplicationReadyEvent(mock(SpringApplication.class), null,
-						mock(ConfigurableApplicationContext.class)));
+						mock(ConfigurableWebApplicationContext.class)));
 
 		verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(10_000L));
 	}
@@ -43,7 +43,7 @@ public class RegistrationApplicationListenerTest {
 
 		listener.onApplicationReady(
 				new ApplicationReadyEvent(mock(SpringApplication.class), null,
-						mock(ConfigurableApplicationContext.class)));
+						mock(ConfigurableWebApplicationContext.class)));
 
 		verify(scheduler, never()).scheduleAtFixedRate(isA(Runnable.class), eq(10_000L));
 	}
@@ -61,7 +61,7 @@ public class RegistrationApplicationListenerTest {
 
 		listener.onApplicationReady(
 				new ApplicationReadyEvent(mock(SpringApplication.class), null,
-						mock(ConfigurableApplicationContext.class)));
+						mock(ConfigurableWebApplicationContext.class)));
 
 		verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(10_000L));
 
