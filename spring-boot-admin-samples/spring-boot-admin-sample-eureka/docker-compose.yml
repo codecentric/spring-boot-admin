@@ -1,0 +1,105 @@
+version: '2'
+
+
+services:
+  eureka:
+    image: springcloud/eureka
+    container_name: eureka
+    ports:
+      - "8761:8761"
+    networks:
+      - "discovery"
+    environment:
+      - EUREKA_INSTANCE_PREFERIPADDRESS=true
+
+  admin:
+    build:
+      context: .
+      dockerfile: ./src/main/docker/Dockerfile
+    depends_on:
+      - eureka
+    container_name: admin
+    ports:
+     - "8080:8080"
+    networks:
+     - "discovery"
+    environment:
+      - EUREKA_SERVICE_URL=http://eureka:8761
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+      - LOGGING_FILE=/tmp/admin.log
+
+  config:
+    image: springcloud/configserver
+    container_name: config
+    depends_on:
+      - eureka
+    ports:
+      - "8888:8888"
+    networks:
+      - "discovery"
+    environment:
+      - EUREKA_SERVICE_URL=http://eureka:8761
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+
+  customers:
+    image: springcloud/customers
+    depends_on:
+      - config
+      - rabbit
+    networks:
+      - "discovery"
+    environment:
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+      - CONFIG_SERVER_URI=http://config:8888
+      - RABBITMQ_HOST=rabbit
+      - RABBITMQ_PORT=5672
+
+  stores:
+    image: springcloud/stores
+    depends_on:
+      - config
+      - rabbit
+      - mongodb
+    networks:
+      - "discovery"
+    environment:
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+      - CONFIG_SERVER_URI=http://config:8888
+      - RABBITMQ_HOST=rabbit
+      - RABBITMQ_PORT=5672
+      - MONGODB_HOST=mongodb
+      - MONGODB_PORT=27017
+
+  customersui:
+    image: springcloud/customersui
+    depends_on:
+      - config
+      - customers
+      - stores
+    ports:
+      - "80:80"
+    links:
+      - "config"
+    networks:
+      - "discovery"
+    environment:
+      - SERVER_PORT=80
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+      - CONFIG_SERVER_URI=http://config:8888
+
+  mongodb:
+    image: tutum/mongodb
+    container_name: mongodb
+    networks:
+      - "discovery"
+    environment:
+      - AUTH=no
+
+  rabbit:
+    image: "rabbitmq:3"
+    container_name: rabbit
+    networks:
+      - "discovery"
+
+networks:
+  discovery:

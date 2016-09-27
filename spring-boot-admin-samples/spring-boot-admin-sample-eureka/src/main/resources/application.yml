@@ -7,10 +7,11 @@ spring:
 # tag::configuration-eureka[]
 eureka:
   instance:
-    leaseRenewalIntervalInSeconds: 5
-    client:
-      serviceUrl:
-        defaultZone: http://localhost:8761/eureka/
+    leaseRenewalIntervalInSeconds: 10
+  client:
+    registryFetchIntervalSeconds: 5
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVICE_URL:http://localhost:8761}/eureka/
 # end::configuration-eureka[]
 
 # tag::configuration-ui-hystrix[]
