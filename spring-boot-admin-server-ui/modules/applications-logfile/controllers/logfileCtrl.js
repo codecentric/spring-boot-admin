@@ -24,6 +24,7 @@ module.exports = function ($scope, $window, $document) {
 
   $scope.toggleFollow = function () {
     $scope.follow = !$scope.follow;
+    $scope.updateview();
   };
 
   $scope.scrollToTop = function () {
