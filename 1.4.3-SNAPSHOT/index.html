@@ -517,7 +517,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 1.4.3-SNAPSHOT,</span>
-<span id="revdate">26.09.2016</span>
+<span id="revdate">27.09.2016</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -730,10 +730,11 @@ Either you can include the <code>spring-boot-admin</code> client or use <a href=
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="yml"><span class="key">eureka</span>:
   <span class="key">instance</span>:
-    <span class="key">leaseRenewalIntervalInSeconds</span>: <span class="string"><span class="content">5</span></span>
-    <span class="key">client</span>:
-      <span class="key">serviceUrl</span>:
-        <span class="key">defaultZone</span>: <span class="string"><span class="content">http://localhost:8761/eureka/</span></span></code></pre>
+    <span class="key">leaseRenewalIntervalInSeconds</span>: <span class="string"><span class="content">10</span></span>
+  <span class="key">client</span>:
+    <span class="key">registryFetchIntervalSeconds</span>: <span class="string"><span class="content">5</span></span>
+    <span class="key">serviceUrl</span>:
+      <span class="key">defaultZone</span>: <span class="string"><span class="content">${EUREKA_SERVICE_URL:http://localhost:8761}/eureka/</span></span></code></pre>
 </div>
 </div>
 </li>
