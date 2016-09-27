@@ -9,21 +9,21 @@ spring-boot-admin
 
 This is a simple admin interface for [Spring Boot](http://projects.spring.io/spring-boot/ "Official Spring-Boot website") applications.
 
-This application provides a simple GUI to administrate Spring Boot applications in some ways. At the moment it provides the following features for every registered application.
+This application provides a simple UI to administrate Spring Boot applications. It provides the following features for registered application.
 
-* Show build-info number
 * Show health status
-* Follow and download logfile
 * Show details, like
  * JVM & memory metrics
  * Counter & gauge metrics
  * Datasource metrics
  * Cache metrics
+* Show build-info number
+* Follow and download logfile
 * View jvm system- & environment-properties
 * Support for Spring Cloud's postable /env- &/refresh-endpoint
 * Easy loglevel management (currently for Logback only)
 * Interact with JMX-beans
-* View threaddump
+* View thread dump
 * View traces
 * Hystrix-Dashboard integration
 * Download heapdump
@@ -41,57 +41,40 @@ This application provides a simple GUI to administrate Spring Boot applications 
 
 [Version 1.3.6](http://codecentric.github.io/spring-boot-admin/1.3.6/)
 
-[Version 1.3.5](http://codecentric.github.io/spring-boot-admin/1.3.5/)
-
-[Version 1.3.4](http://codecentric.github.io/spring-boot-admin/1.3.4/)
-
-[Version 1.3.3](http://codecentric.github.io/spring-boot-admin/1.3.3/)
-
-[Version 1.3.2](http://codecentric.github.io/spring-boot-admin/1.3.2/)
-
-[Version 1.3.0](http://codecentric.github.io/spring-boot-admin/1.3.0/)
-
 ## Screenshots
 
-### Dashboard
+![Screenshot application list](/images/screenshot.png?raw=true)
+*Dashboard with desktop notifications*
 
-[](url "title")
-<img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot.png">
+![Screenshot details](/images/screenshot-details.png?raw=true)
+*View application health, info and details*
 
-### Details
+![Screenshot metrics](/images/screenshot-metrics.png?raw=true)
+*View metric counters and gauges*
 
-[](url "title")
-<img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-details.png">
+![Screenshot logfile](/images/screenshot-logfile.png?raw=true)
+*View logfile (with follow)*
 
-### Environment
+![Screenshot environment](/images/screenshot-environment.png?raw=true)
+*View and change Spring environment (via Spring Cloud)*
 
-[](url "title")
-<img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-environment.png">
+![Screenshot logging](/images/screenshot-logging.png?raw=true)
+*Manage Logback logger levels*
 
-### Logging
+![Screenshot jmx](/images/screenshot-jmx.png?raw=true)
+*View and use JMX beans via jolokia*
 
-[](url "title")
-<img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-logging.png">
+![Screenshot threads](/images/screenshot-threads.png?raw=true)
+*View thread dump*
 
-### JMX
+![Screenshot traces](/images/screenshot-trace.png?raw=true)
+*View http request traces*
 
-[](url "title")
-<img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-jmx.png">
+![Screenshot hystrix](/images/screenshot-hystrix.png?raw=true)
+*View Hystrix dashboard*
 
-### Threads
-
-[](url "title")
-<img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-threads.png">
-
-### Trace
-
-[](url "title")
-<img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-trace.png">
-
-### Journal
-
-[](url "title")
-<img src="https://raw.githubusercontent.com/codecentric/spring-boot-admin/master/screenshot-journal.png">
+![Screenshot journal](/images/screenshot-journal.png?raw=true)
+*View history of registered applications*
 
 ## Snapshot builds
 You can access snapshot builds from the sonatype repository:
