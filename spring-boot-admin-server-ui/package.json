@@ -18,7 +18,7 @@
     "font-awesome": "^4.6.3",
     "jquery": "^2.2.4",
     "js-yaml": "^3.6.1",
-    "linkifyjs": "^2.0.3"
+    "linkifyjs": "^2.1.2"
   },
   "devDependencies": {
     "clean-webpack-plugin": "^0.1.10",
