@@ -31,7 +31,7 @@ include::{samples-dir}/spring-boot-admin-sample-eureka/src/main/resources/applic
 
 ==== Activiti UI Module ====
 
-The Activiti module shows information from the `/activti` endpint.
+The Activiti module shows information from the `/activti` endpoint.
 
 . Add the ui module to your classpath:
 +
