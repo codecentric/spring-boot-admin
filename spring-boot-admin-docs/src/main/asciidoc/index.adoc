@@ -25,4 +25,6 @@ include::client.adoc[]
 
 include::server.adoc[]
 
+include::security.adoc[]
+
 include::faqs.adoc[]

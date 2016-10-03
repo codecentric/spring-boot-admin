@@ -199,7 +199,7 @@ To enable Hipchat notifications you need to create an API token from you Hipchat
 
 | spring.boot.admin.notify.hipchat.description
 | Description to use in the event. SpEL-expressions are supported
-| `+++"<strong>#{application.name}</strong>/#{application.id} is <strong>#{to.status}</strong>"+++`
+| `+++"&lt;strong&gt;#{application.name}&lt;/strong&gt;/#{application.id} is &lt;strong&gt;#{to.status}&lt;/strong&gt;"+++`
 |
 |===
 
