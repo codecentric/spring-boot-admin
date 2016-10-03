@@ -27,6 +27,11 @@
 			<artifactId>zuul-core</artifactId>
 		</dependency>
 		<dependency>
+			<!-- Remove when https://github.com/spring-cloud/spring-cloud-netflix/pull/1372 is resolved -->
+			<groupId>com.netflix.netflix-commons</groupId>
+			<artifactId>netflix-commons-util</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.netflix.hystrix</groupId>
 			<artifactId>hystrix-core</artifactId>
 		</dependency>
