@@ -568,7 +568,13 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 </ul>
 </li>
-<li><a href="#faqs">5. FAQs</a></li>
+<li><a href="#securing-spring-boot-admin">5. Security</a>
+<ul class="sectlevel2">
+<li><a href="#_securing_spring_boot_admin_server">5.1. Securing Spring Boot Admin Server</a></li>
+<li><a href="#_securing_client_s_actuator_endpoints">5.2. Securing Client&#8217;s Actuator Endpoints</a></li>
+</ul>
+</li>
+<li><a href="#faqs">6. FAQs</a></li>
 </ul>
 </div>
 </div>
@@ -1403,7 +1409,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.hipchat.description</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Description to use in the event. SpEL-expressions are supported</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"<strong>#{application.name}</strong>/#{application.id} is <strong>#{to.status}</strong>"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"&lt;strong&gt;#{application.name}&lt;/strong&gt;/#{application.id} is &lt;strong&gt;#{to.status}&lt;/strong&gt;"</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -1551,7 +1557,28 @@ account and configure it appropriately.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="faqs"><a class="anchor" href="#faqs"></a>5. FAQs</h2>
+<h2 id="securing-spring-boot-admin"><a class="anchor" href="#securing-spring-boot-admin"></a>5. Security</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_securing_spring_boot_admin_server"><a class="anchor" href="#_securing_spring_boot_admin_server"></a>5.1. Securing Spring Boot Admin Server</h3>
+<div class="paragraph">
+<p>Since there are several approaches on solving authentication and authorization in distributed web applications Spring Boot Admin doesn&#8217;t ship a default one.
+However you can include Spring Security to your Spring Boot Admin Server and configure it the way you like.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_securing_client_s_actuator_endpoints"><a class="anchor" href="#_securing_client_s_actuator_endpoints"></a>5.2. Securing Client&#8217;s Actuator Endpoints</h3>
+<div class="paragraph">
+<p>The simplest way to secure your actuator endpoints is to use basic authorization and the same username/password for all applications. This way the browser asks for the credentials and if you set <code>zuul.senstivieHeaders:</code> the Zuul Proxy in Spring Boot Admin Server forwards them to the clients.</p>
+</div>
+<div class="paragraph">
+<p>For more complex solutions (Spring Session, OAuth2, &#8230;&#8203;) please have a look at the samples in <a href="https://github.com/joshiste/spring-boot-admin-samples" target="_blank">joshiste/spring-boot-admin-samples</a>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="faqs"><a class="anchor" href="#faqs"></a>6. FAQs</h2>
 <div class="sectionbody">
 <div class="qlist qanda">
 <ol>
