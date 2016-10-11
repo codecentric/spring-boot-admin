@@ -173,6 +173,33 @@ public class AdminClientPropertiesTest {
 		assertThat(clientProperties.getServiceUrl(), is("http://127.0.0.1:8080"));
 	}
 
+	@Test
+	public void test_serveraddress() {
+		load("server.address=127.0.0.2", "local.server.port=8080");
+		AdminClientProperties clientProperties = new AdminClientProperties();
+		context.getAutowireCapableBeanFactory().autowireBean(clientProperties);
+
+		publishApplicationReadyEvent(clientProperties);
+
+		assertThat(clientProperties.getServiceUrl(), is("http://127.0.0.2:8080"));
+		assertThat(clientProperties.getManagementUrl(), is("http://127.0.0.2:8080"));
+		assertThat(clientProperties.getHealthUrl(), is("http://127.0.0.2:8080/health"));
+	}
+
+	@Test
+	public void test_managementaddress() {
+		load("server.address=127.0.0.2", "management.address=127.0.0.3", "local.server.port=8080",
+				"local.management.port=8081");
+		AdminClientProperties clientProperties = new AdminClientProperties();
+		context.getAutowireCapableBeanFactory().autowireBean(clientProperties);
+
+		publishApplicationReadyEvent(clientProperties);
+
+		assertThat(clientProperties.getServiceUrl(), is("http://127.0.0.2:8080"));
+		assertThat(clientProperties.getManagementUrl(), is("http://127.0.0.3:8081"));
+		assertThat(clientProperties.getHealthUrl(), is("http://127.0.0.3:8081/health"));
+	}
+
 	private String getHostname() {
 		try {
 			return InetAddress.getLocalHost().getCanonicalHostName();
