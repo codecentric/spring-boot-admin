@@ -4,6 +4,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -45,6 +47,8 @@ public class SpringBootAdminClientAutoConfigurationTest {
 		AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
 		applicationContext.register(ServerPropertiesAutoConfiguration.class);
 		applicationContext.register(ManagementServerPropertiesAutoConfiguration.class);
+		applicationContext.register(EndpointAutoConfiguration.class);
+		applicationContext.register(EndpointWebMvcManagementContextConfiguration.class);
 		applicationContext.register(SpringBootAdminClientAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
 		applicationContext.refresh();

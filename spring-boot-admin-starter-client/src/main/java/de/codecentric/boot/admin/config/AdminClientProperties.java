@@ -15,17 +15,20 @@
  */
 package de.codecentric.boot.admin.config;
 
+import static org.springframework.util.StringUtils.trimLeadingCharacter;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
+import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.event.EventListener;
-import org.springframework.util.StringUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @ConfigurationProperties(prefix = "spring.boot.admin.client")
 public class AdminClientProperties {
@@ -53,13 +56,13 @@ public class AdminClientProperties {
 	@Value("${spring.application.name:spring-boot-application}")
 	private String name;
 
-	@Value("${endpoints.health.id:health}")
-	private String healthEndpointId;
-
 	/**
 	 * Should the registered urls be built with server.address or with hostname.
 	 */
 	private boolean preferIp = false;
+
+	@Autowired
+	private HealthMvcEndpoint healthEndpoint;
 
 	@Autowired
 	private ManagementServerProperties management;
@@ -79,50 +82,6 @@ public class AdminClientProperties {
 				.getProperty("local.management.port", Integer.class, serverPort);
 	}
 
-	public String getManagementUrl() {
-		if (managementUrl != null) {
-			return managementUrl;
-		}
-
-		if ((managementPort == null || managementPort.equals(serverPort))
-				&& getServiceUrl() != null) {
-			return append(append(getServiceUrl(), server.getServletPrefix()),
-					management.getContextPath());
-		}
-
-		if (managementPort == null) {
-			throw new IllegalStateException(
-					"serviceUrl must be set when deployed to servlet-container");
-		}
-
-		InetAddress address = management.getAddress();
-		if (address == null) {
-			address = getHostAddress();
-		}
-		if (preferIp) {
-			return append(append(createLocalUri(address.getHostAddress(), managementPort),
-					server.getContextPath()), management.getContextPath());
-
-		}
-		return append(createLocalUri(address.getCanonicalHostName(), managementPort),
-				management.getContextPath());
-	}
-
-	public void setManagementUrl(String managementUrl) {
-		this.managementUrl = managementUrl;
-	}
-
-	public String getHealthUrl() {
-		if (healthUrl != null) {
-			return healthUrl;
-		}
-		return append(getManagementUrl(), healthEndpointId);
-	}
-
-	public void setHealthUrl(String healthUrl) {
-		this.healthUrl = healthUrl;
-	}
-
 	public String getServiceUrl() {
 		if (serviceUrl != null) {
 			return serviceUrl;
@@ -133,14 +92,40 @@ public class AdminClientProperties {
 					"serviceUrl must be set when deployed to servlet-container");
 		}
 
-		InetAddress address = getHostAddress();
-		if (preferIp) {
-			return append(createLocalUri(address.getHostAddress(), serverPort),
-					server.getContextPath());
+		return UriComponentsBuilder.newInstance().scheme(getScheme()).host(getServiceHost())
+				.port(serverPort).path(server.getContextPath()).toUriString();
+	}
 
+	public String getManagementUrl() {
+		if (managementUrl != null) {
+			return managementUrl;
 		}
-		return append(createLocalUri(address.getCanonicalHostName(), serverPort),
-				server.getContextPath());
+
+		if (managementPort == null || managementPort.equals(serverPort)) {
+			return UriComponentsBuilder.fromHttpUrl(getServiceUrl())
+					.pathSegment(server.getServletPrefix())
+					.pathSegment(trimLeadingCharacter(management.getContextPath(), '/'))
+					.toUriString();
+		}
+
+		return UriComponentsBuilder.newInstance().scheme(getScheme()).host(getManagementHost())
+				.port(managementPort).path(management.getContextPath()).toUriString();
+	}
+
+	public String getHealthUrl() {
+		if (healthUrl != null) {
+			return healthUrl;
+		}
+		return UriComponentsBuilder.fromHttpUrl(getManagementUrl())
+				.pathSegment(trimLeadingCharacter(healthEndpoint.getPath(), '/')).toUriString();
+	}
+
+	public void setManagementUrl(String managementUrl) {
+		this.managementUrl = managementUrl;
+	}
+
+	public void setHealthUrl(String healthUrl) {
+		this.healthUrl = healthUrl;
 	}
 
 	public void setServiceUrl(String serviceUrl) {
@@ -163,27 +148,36 @@ public class AdminClientProperties {
 		return preferIp;
 	}
 
-	private String createLocalUri(String host, int port) {
-		String scheme = server.getSsl() != null && server.getSsl().isEnabled() ? "https" : "http";
-		return scheme + "://" + host + ":" + port;
+	private String getScheme() {
+		return server.getSsl() != null && server.getSsl().isEnabled() ? "https" : "http";
 	}
 
-	private String append(String uri, String path) {
-		String baseUri = uri.replaceFirst("/+$", "");
-		if (StringUtils.isEmpty(path)) {
-			return baseUri;
+	private String getHost(InetAddress address) {
+		return preferIp ? address.getHostAddress() : address.getCanonicalHostName();
+	}
+
+	private String getServiceHost() {
+		InetAddress address = server.getAddress();
+		if (address == null) {
+			address = getLocalHost();
 		}
-
-		String normPath = path.replaceFirst("^/+", "").replaceFirst("/+$", "");
-		return baseUri + "/" + normPath;
+		return getHost(address);
 	}
 
-	private InetAddress getHostAddress() {
+	private String getManagementHost() {
+		InetAddress address = management.getAddress();
+		if (address != null) {
+			return getHost(address);
+		}
+		return getServiceHost();
+	}
+
+	private InetAddress getLocalHost() {
 		try {
-			InetAddress address = server.getAddress();
-			return address != null ? address : InetAddress.getLocalHost();
+			return InetAddress.getLocalHost();
 		} catch (UnknownHostException ex) {
 			throw new IllegalArgumentException(ex.getMessage(), ex);
 		}
 	}
+
 }
