@@ -173,6 +173,17 @@ public class AdminClientPropertiesTest {
 		assertThat(clientProperties.getServiceUrl(), is("http://127.0.0.1:8080"));
 	}
 
+	@Test
+	public void test_serveraddress() {
+		load("server.address=127.0.0.2", "local.server.port=8080");
+		AdminClientProperties clientProperties = new AdminClientProperties();
+		context.getAutowireCapableBeanFactory().autowireBean(clientProperties);
+
+		publishApplicationReadyEvent(clientProperties);
+
+		assertThat(clientProperties.getServiceUrl(), is("http://127.0.0.2:8080"));
+	}
+
 	private String getHostname() {
 		try {
 			return InetAddress.getLocalHost().getCanonicalHostName();

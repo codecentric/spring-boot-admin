@@ -134,10 +134,7 @@ public class AdminClientProperties {
 		}
 
 		if (preferIp) {
-			InetAddress address = server.getAddress();
-			if (address == null) {
-				address = getHostAddress();
-			}
+			InetAddress address = getHostAddress();
 			return append(createLocalUri(address.getHostAddress(), serverPort),
 					server.getContextPath());
 
@@ -183,7 +180,8 @@ public class AdminClientProperties {
 
 	private InetAddress getHostAddress() {
 		try {
-			return InetAddress.getLocalHost();
+			InetAddress address = server.getAddress();
+			return address != null ? address : InetAddress.getLocalHost();
 		} catch (UnknownHostException ex) {
 			throw new IllegalArgumentException(ex.getMessage(), ex);
 		}
