@@ -95,16 +95,16 @@ public class AdminClientProperties {
 					"serviceUrl must be set when deployed to servlet-container");
 		}
 
+		InetAddress address = management.getAddress();
+		if (address == null) {
+			address = getHostAddress();
+		}
 		if (preferIp) {
-			InetAddress address = management.getAddress();
-			if (address == null) {
-				address = getHostAddress();
-			}
 			return append(append(createLocalUri(address.getHostAddress(), managementPort),
 					server.getContextPath()), management.getContextPath());
 
 		}
-		return append(createLocalUri(getHostAddress().getCanonicalHostName(), managementPort),
+		return append(createLocalUri(address.getCanonicalHostName(), managementPort),
 				management.getContextPath());
 	}
 
@@ -133,16 +133,13 @@ public class AdminClientProperties {
 					"serviceUrl must be set when deployed to servlet-container");
 		}
 
+		InetAddress address = getHostAddress();
 		if (preferIp) {
-			InetAddress address = server.getAddress();
-			if (address == null) {
-				address = getHostAddress();
-			}
 			return append(createLocalUri(address.getHostAddress(), serverPort),
 					server.getContextPath());
 
 		}
-		return append(createLocalUri(getHostAddress().getCanonicalHostName(), serverPort),
+		return append(createLocalUri(address.getCanonicalHostName(), serverPort),
 				server.getContextPath());
 	}
 
@@ -183,7 +180,8 @@ public class AdminClientProperties {
 
 	private InetAddress getHostAddress() {
 		try {
-			return InetAddress.getLocalHost();
+			InetAddress address = server.getAddress();
+			return address != null ? address : InetAddress.getLocalHost();
 		} catch (UnknownHostException ex) {
 			throw new IllegalArgumentException(ex.getMessage(), ex);
 		}
