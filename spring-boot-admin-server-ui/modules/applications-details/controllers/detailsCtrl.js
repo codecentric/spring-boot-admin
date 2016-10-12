@@ -17,13 +17,15 @@
 
 var angular = require('angular');
 
-module.exports = function ($scope, application) {
+module.exports = function ($scope, application, $interval) {
   'ngInject';
 
   $scope.application = application;
   $scope.metrics = {};
+  $scope.refreshInterval = 1;
+  $scope.refresher = null;
 
-  $scope.getDetails = function () {
+  $scope.refresh = function () {
     application.getInfo().then(function (response) {
       $scope.info = response.data;
     }).catch(function (response) {
@@ -55,5 +57,30 @@ module.exports = function ($scope, application) {
     });
   };
 
-  $scope.getDetails();
+  $scope.start = function () {
+    $scope.refresher = $interval(function () {
+      $scope.refresh();
+    }, $scope.refreshInterval * 1000);
+  };
+
+  $scope.stop = function () {
+    if ($scope.refresher !== null) {
+      $interval.cancel($scope.refresher);
+      $scope.refresher = null;
+    }
+  };
+
+  $scope.toggleAutoRefresh = function () {
+    if ($scope.refresher === null) {
+      $scope.start();
+    } else {
+      $scope.stop();
+    }
+  };
+
+  $scope.$on('$destroy', function () {
+    $scope.stop();
+  });
+
+  $scope.refresh();
 };

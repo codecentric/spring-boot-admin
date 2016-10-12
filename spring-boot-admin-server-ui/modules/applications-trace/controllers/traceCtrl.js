@@ -34,16 +34,30 @@ module.exports = function ($scope, application, $interval) {
     });
   };
 
-  $scope.toggleAutoRefresh = function () {
-    if ($scope.refresher === null) {
-      $scope.refresher = $interval(function () {
-        $scope.refresh();
-      }, $scope.refreshInterval * 1000);
-    } else {
+  $scope.start = function () {
+    $scope.refresher = $interval(function () {
+      $scope.refresh();
+    }, $scope.refreshInterval * 1000);
+  };
+
+  $scope.stop = function () {
+    if ($scope.refresher !== null) {
       $interval.cancel($scope.refresher);
       $scope.refresher = null;
     }
   };
+
+  $scope.toggleAutoRefresh = function () {
+    if ($scope.refresher === null) {
+      $scope.start();
+    } else {
+      $scope.stop();
+    }
+  };
+
+  $scope.$on('$destroy', function () {
+    $scope.stop();
+  });
 
   $scope.refresh();
 };

@@ -3,11 +3,16 @@
     <b>Error:</b> {{ error }}
   </div>
   <div class="row">
-    <div class="text-center">
-      <form>
-        <button class="btn" ng-click="getDetails()"><i class="fa fa-repeat"></i> refresh</button>
+      <form class="form-inline">
+        <button title="refresh" class="btn" ng-click="refresh()"><i class="fa fa-repeat"></i></button>
+        <div class="input-prepend input-append">
+          <button title="auto refresh" class="btn" ng-click="toggleAutoRefresh()" ng-class="{'active':refresher != null}">
+            <i class="fa fa-refresh" ng-class="{'fa-spin':refresher != null}"></i>
+          </button>
+          <input class="input-mini" type="number" min="1" ng-model="refreshInterval" ng-disabled="refresher != null" />
+          <span class="add-on">sec</span>
+        </div>
       </form>
-    </div>
   </div>
   <div style="display: flex; flex-wrap: wrap; justify-content: space-around;">
     <sba-info-panel class="span6" style="margin-left:0px" panel-title="Application" raw="api/applications/{{ application.id }}/info">

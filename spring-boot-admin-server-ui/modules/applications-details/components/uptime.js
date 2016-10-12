@@ -23,10 +23,18 @@ module.exports = {
     'ngInject';
 
     var ctrl = this;
-    var start = Date.now();
+    var timer = null;
+    var start = 0;
     ctrl.$onChanges = function () {
-      ctrl.clock = $filter('timeInterval')(ctrl.value + Date.now() - start);
-      $interval(function () {
+      ctrl.clock = $filter('timeInterval')(ctrl.value);
+      start = Date.now();
+
+      if (timer !== null) {
+        $interval.cancel(timer);
+        timer = null;
+      }
+
+      timer = $interval(function () {
         ctrl.clock = $filter('timeInterval')(ctrl.value + Date.now() - start);
       }, 1000);
     };
