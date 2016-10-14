@@ -18,17 +18,15 @@
 var angular = require('angular');
 module.exports = {
   bindings: {
-    value: '=model',
-    disabled: '<disabled',
-    type: '@type'
+    value: '<sbaValue',
+    disabled: '<sbaDisabled',
+    type: '@sbaType',
+    onChange: '&sbaChange'
   },
-  controller: function ($scope) {
+  controller: function () {
     'ngInject';
 
     var ctrl = this;
-    ctrl.jsonEdited = function () {
-      ctrl.value = angular.fromJson($scope.json);
-    };
 
     ctrl.$onInit = function () {
       ctrl.inputType = (function () {
@@ -50,7 +48,7 @@ module.exports = {
           default:
             return null;
         }
-      }());
+      } ());
 
       ctrl.selectOptions = (function () {
         switch (ctrl.type) {
@@ -64,10 +62,23 @@ module.exports = {
       })();
 
       ctrl.isObject = ctrl.selectOptions === null && ctrl.inputType === null;
+    };
+
+    ctrl.$onChanges = function () {
       if (ctrl.isObject) {
-        $scope.$watch('$ctrl.value', function (value) {
-          ctrl.json = angular.toJson(value, true);
-        });
+        ctrl.json = angular.toJson(ctrl.value, true);
+      }
+    };
+
+    ctrl.valueChanged = function () {
+      ctrl.onChange({ value: ctrl.value, error: null });
+    };
+
+    ctrl.jsonChanged = function () {
+      try {
+        ctrl.onChange({ value: angular.fromJson(ctrl.json), error: null });
+      } catch (error) {
+        ctrl.onChange({ value: null, error: error });
       }
     };
   },

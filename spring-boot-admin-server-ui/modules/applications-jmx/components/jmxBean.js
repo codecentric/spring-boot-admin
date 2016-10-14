@@ -15,6 +15,7 @@
  */
 'use strict';
 
+var angular = require('angular');
 module.exports = {
   bindings: {
     bean: '<bean',
@@ -24,19 +25,32 @@ module.exports = {
     'ngInject';
 
     var ctrl = this;
-    ctrl.attributeValues = {};
-    ctrl.attributeErrors = {};
-    ctrl.error = null;
     ctrl.invocation = null;
+    ctrl.$onChanges = function () {
+      if (ctrl.bean) {
+        ctrl.initAttributes();
+        ctrl.readAttributeValues();
+      } else {
+        ctrl.attributes = {};
+        ctrl.error = null;
+      }
+    };
+
+    ctrl.initAttributes = function () {
+      ctrl.attributes = {};
+      angular.forEach(ctrl.bean.attributes, function (descriptor, name) {
+        ctrl.attributes[name] = { value: null, error: null, descriptor: descriptor };
+      });
+    };
 
     ctrl.readAttributeValues = function () {
       ctrl.readingAttributes = true;
       ctrl.error = null;
-      ctrl.attributeErrors = {};
-      ctrl.attributeValues = {};
       ApplicationJmx.readAllAttr(ctrl.application, ctrl.bean).then(
         function (response) {
-          ctrl.attributeValues = response.value;
+          angular.forEach(response.value, function (value, name) {
+            ctrl.attributes[name].value = value;
+          });
           ctrl.readingAttributes = false;
         }
       ).catch(function (response) {
@@ -45,11 +59,16 @@ module.exports = {
       });
     };
 
-    ctrl.writeAttributeValue = function (name, value) {
-      ctrl.attributeErrors[name] = null;
-      ApplicationJmx.writeAttr(ctrl.application, ctrl.bean, name, value).catch(
+    ctrl.updateAttributeValue = function (name, value, error) {
+      ctrl.attributes[name].value = value;
+      ctrl.attributes[name].error = error;
+    };
+
+    ctrl.writeAttributeValue = function (name) {
+      ctrl.attributes[name].error = null;
+      ApplicationJmx.writeAttr(ctrl.application, ctrl.bean, name, ctrl.attributes[name].value).catch(
         function (response) {
-          ctrl.attributeErrors[name] = response.error;
+          ctrl.attributes[name].error = response.error;
         });
     };
 

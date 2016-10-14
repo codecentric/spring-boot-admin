@@ -1,36 +1,38 @@
 <h3 ng-bind="$ctrl.bean.name"><br/><small ng-bind="$ctrl.bean.description"></small></h3>
-<div ng-show="error" class="alert alert-error"> <b>Error:</b> {{$ctrl.error}}</div>
+<div ng-show="$ctrl.error" class="alert alert-error"> <b>Error:</b> {{$ctrl.error}}</div>
 <dl>
-  <dt>Id</dt>
-  <dd style="word-break: break-all;" ng-bind="$ctrl.bean.id"></dd>
-  <dt ng-repeat-start="(name, value) in $ctrl.bean.nameProps" ng-bind="name"></dt>
-  <dd ng-repeat-end ng-bind="value"></dd>
+	<dt>Id</dt>
+	<dd style="word-break: break-all;" ng-bind="$ctrl.bean.id"></dd>
+	<dt ng-repeat-start="(name, value) in $ctrl.bean.nameProps" ng-bind="name"></dt>
+	<dd ng-repeat-end ng-bind="value"></dd>
 </dl>
 <form class="form-horizontal">
-  <fieldset ng-show="$ctrl.bean.attributes">
-    <legend>Attributes
-      <button class="btn" ng-click="$ctrl.readAttributeValues()">read</button>
-      <span ng-show="$ctrl.readingAttributes"><i class="fa fa-spinner fa-pulse"></i></span>
-    </legend>
-    <div class="control-group" ng-repeat="(name, attribute) in $ctrl.bean.attributes track by name" ng-class="{error: $ctrl.attributeErrors[attribute.name]}">
-      <label class="control-label" for="{{name}}" style="word-break: break-all;">
+	<fieldset ng-show="$ctrl.bean.attributes">
+		<legend>Attributes
+			<button class="btn" ng-click="$ctrl.readAttributeValues()">reload</button>
+			<span ng-show="$ctrl.readingAttributes"><i class="fa fa-spinner fa-pulse"></i></span>
+		</legend>
+		<div class="control-group" ng-repeat="(name, attribute) in $ctrl.attributes track by name" ng-class="{error: attribute.error}">
+			<label class="control-label" for="{{name}}" style="word-break: break-all;">
         {{name}}
-        <br/><small class="muted" ng-bind="attribute.type"></small>
+        <br/><small class="muted" ng-bind="attribute.descriptor.type"></small>
       </label>
-      <div class="controls">
-        <div class="input-prepend">
-          <button class="btn" type="button" ng-click="$ctrl.writeAttributeValue(name, $ctrl.attributeValues[name])" ng-disabled="!attribute.rw">write</button>
-          <sba-java-type-input type="{{attribute.type}}" model="$ctrl.attributeValues[name]" disabled="!attribute.rw"></sba-java-type-input>
-        </div>
-        <span class="help-block" ng-bind="attribute.desc"></span>
-        <span class="help-inline" ng-bind="$ctrl.attributeErrors[name]"></span>
-      </div>
-    </div>
-  </fieldset>
-  <fieldset ng-show="$ctrl.bean.operations">
-    <legend>Operations</legend>
-    <div class="control-group" ng-if="!$ctrl.invocation">
-      <button ng-repeat="(name, op) in $ctrl.bean.operations track by name" class="btn btn-block" style="text-align: left; padding: 8px 15px;" ng-click="$ctrl.doInvoke(name, op)">
+			<div class="controls">
+				<div class="input-prepend">
+					<button class="btn" type="button" ng-click="$ctrl.writeAttributeValue(name)" ng-disabled="!attribute.descriptor.rw">write</button>
+					<sba-java-type-input sba-type="{{attribute.descriptor.type}}" sba-value="attribute.value" sba-change="$ctrl.updateAttributeValue(name, value, error)"
+						sba-disabled="!attribute.descriptor.rw"></sba-java-type-input>
+				</div>
+				<span class="help-block" ng-bind="attribute.descriptor.desc"></span>
+				<span class="help-inline" ng-bind="attribute.error"></span>
+			</div>
+		</div>
+	</fieldset>
+	<fieldset ng-show="$ctrl.bean.operations">
+		<legend>Operations</legend>
+		<div class="control-group" ng-if="!$ctrl.invocation">
+			<button ng-repeat="(name, op) in $ctrl.bean.operations track by name" class="btn btn-block" style="text-align: left; padding: 8px 15px;"
+				ng-click="$ctrl.doInvoke(name, op)">
         <b ng-bind="name"></b>
         <span ng-if="!op.length">(<span ng-repeat-start="arg in op.args" data-toggle="tooltip" title="{{arg.desc}}">{{arg.type}} {{arg.name}}</span><span ng-repeat-end ng-if="!$last">, </span> )</span>
         <br/>
@@ -38,9 +40,9 @@
         <span class="help-block"><small class="muted" ng-show="op.length > 0">overloaded</small></span>
         <span class="help-block" ng-bind="op.desc"></span>
       </button>
-    </div>
-    <div ng-if="$ctrl.invocation">
-      <sba-jmx-invocation operation-name="$ctrl.invocation.name" operation-descriptor="$ctrl.invocation.operation" on-cancel="$ctrl.cancelInvoke()" />
-    </div>
-  </fieldset>
+		</div>
+		<div ng-if="$ctrl.invocation">
+			<sba-jmx-invocation operation-name="$ctrl.invocation.name" operation-descriptor="$ctrl.invocation.operation" on-cancel="$ctrl.cancelInvoke()"></sba-jmx-invocation>
+		</div>
+	</fieldset>
 </form>

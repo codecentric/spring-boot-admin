@@ -23,10 +23,21 @@ module.exports = {
     var ctrl = this;
     ctrl.$onInit = function () {
       ctrl.arguments = new Array(ctrl.invocation.descriptor.args.length);
+      ctrl.errors = new Array(ctrl.invocation.descriptor.args.length);
     };
     ctrl.applyParameters = function () {
-      ctrl.invocation.arguments = ctrl.arguments;
-      ctrl.invocation.proceedJmxInvocation();
+      var hasError = ctrl.arguments.find(function (arg) {
+        return arg !== null && arg.error !== null;
+      });
+      if (!hasError) {
+        ctrl.invocation.arguments = ctrl.arguments.map(function (arg) {
+          return arg.value;
+        });
+        ctrl.invocation.proceedJmxInvocation();
+      }
+    };
+    ctrl.updateArg = function (index, value, error) {
+      ctrl.arguments[index] = { value: value, error: error };
     };
   },
   template: require('./jmxInvokeInputParameters.tpl.html')
