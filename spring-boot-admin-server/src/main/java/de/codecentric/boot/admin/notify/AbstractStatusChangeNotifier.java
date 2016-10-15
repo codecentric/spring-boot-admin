@@ -31,7 +31,7 @@ public abstract class AbstractStatusChangeNotifier extends AbstractEventNotifier
 	 * List of changes to ignore. Must be in Format OLD:NEW, for any status use * as wildcard, e.g.
 	 * *:UP or OFFLINE:*
 	 */
-	protected String[] ignoreChanges = { "UNKNOWN:UP" };
+	private String[] ignoreChanges = { "UNKNOWN:UP" };
 
 	@Override
 	protected boolean shouldNotify(ClientApplicationEvent event) {

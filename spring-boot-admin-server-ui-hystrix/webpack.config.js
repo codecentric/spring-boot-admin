@@ -23,7 +23,7 @@ module.exports = {
       'hystrix/hystrixCommand.css': path.resolve(ROOT, 'target/hystrix-dashboard/components/hystrixCommand/hystrixCommand.css'),
       'hystrix/hystrixThreadPool': path.resolve(ROOT, 'target/hystrix-dashboard/components/hystrixThreadPool/hystrixThreadPool.js'),
       'hystrix/hystrixThreadPool.css': path.resolve(ROOT, 'target/hystrix-dashboard/components/hystrixThreadPool/hystrixThreadPool.css'),
-      'tsort' : path.resolve(ROOT, 'target/hystrix-dashboard/js/jquery.tinysort.min.js')
+      'tsort': path.resolve(ROOT, 'target/hystrix-dashboard/js/jquery.tinysort.min.js')
     }
   },
   module: {
@@ -36,7 +36,7 @@ module.exports = {
       {
         test: /hystrix-dashboard\/js\/jquery\.tinysort\.min\.js$/,
         loader: 'imports?jQuery=jquery'
-      },{
+      }, {
         test: /hystrix-dashboard\/components\/hystrixCommand\/hystrixCommand\.js$/,
         loaders: [
           'imports?this=>global&jQuery=jquery&$=jquery&d3&tmpl=microtemplates&tsort',
@@ -49,7 +49,7 @@ module.exports = {
           'imports?this=>global&jQuery=jquery&$=jquery&d3&tmpl=microtemplates&tsort',
           'exports?HystrixThreadPoolMonitor',
           'regexp-replace?{"match": { "pattern": "\.\./components/hystrixThreadPool", "flags": "g" }, "replaceWith": "applications-hystrix/components/hystrixThreadPool"}'
-        ],
+        ]
       }, {
         test: /\.js$/,
         exclude: [/node_modules/],
@@ -72,14 +72,14 @@ module.exports = {
       to: 'applications-hystrix',
       context: 'src/'
     }, {
-        from: '**/*.html',
-        to: 'applications-hystrix/components',
-        context: 'target/hystrix-dashboard/components'
-      }, {
-        from: '**/*.png',
-        to: 'applications-hystrix/components',
-        context: 'target/hystrix-dashboard/components'
-      }
+      from: '**/*.html',
+      to: 'applications-hystrix/components',
+      context: 'target/hystrix-dashboard/components'
+    }, {
+      from: '**/*.png',
+      to: 'applications-hystrix/components',
+      context: 'target/hystrix-dashboard/components'
+    }
     ], { ignore: ['*.tpl.html'] })
   ],
   devServer: {

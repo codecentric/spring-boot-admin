@@ -91,4 +91,4 @@
             }
         });
     }]);
-})(sbaModules, angular);
+} (sbaModules, angular));

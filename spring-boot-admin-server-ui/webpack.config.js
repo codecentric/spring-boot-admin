@@ -81,7 +81,7 @@ module.exports = {
     loaders: [
       {
         test: /^jolokia$/,
-        loader: "imports?$=jquery"
+        loader: 'imports?$=jquery'
       }, {
         test: /\.js$/,
         exclude: [/node_modules/, /third-party/],
@@ -127,11 +127,10 @@ module.exports = {
       from: '**/*.html',
       context: 'core/'
     }, {
-        from: '**/*.html',
-        context: 'modules/'
-      }], {
-        ignore: ['*.tpl.html']
-      })
+      from: '**/*.html',
+      context: 'modules/'
+    }],
+      { ignore: ['*.tpl.html'] })
   ].concat(!isDevServer ? [] : new ModuleConcatPlugin([
     {
       filename: 'all-modules.js',
@@ -145,9 +144,9 @@ module.exports = {
   ])),
   devServer: {
     proxy: [{
-        context: '/api',
-        target: 'http://localhost:8080',
-        secure: false
+      context: '/api',
+      target: 'http://localhost:8080',
+      secure: false
     }]
   },
   node: {

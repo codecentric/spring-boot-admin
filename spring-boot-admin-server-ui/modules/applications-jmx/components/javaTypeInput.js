@@ -59,7 +59,7 @@ module.exports = {
           default:
             return null;
         }
-      })();
+      } ());
 
       ctrl.isObject = ctrl.selectOptions === null && ctrl.inputType === null;
     };

@@ -33,7 +33,7 @@ import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
  * @author Jamie Brown
  */
 public class HipchatNotifier extends AbstractStatusChangeNotifier {
-	private final static String DEFAULT_DESCRIPTION = "<strong>#{application.name}</strong>/#{application.id} is <strong>#{to.status}</strong>";
+	private static final String DEFAULT_DESCRIPTION = "<strong>#{application.name}</strong>/#{application.id} is <strong>#{to.status}</strong>";
 
 	private final SpelExpressionParser parser = new SpelExpressionParser();
 	private RestTemplate restTemplate = new RestTemplate();
