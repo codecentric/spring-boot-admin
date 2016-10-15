@@ -15,9 +15,6 @@
  */
 'use strict';
 
-require('es5-shim/es5-shim');
-require('es5-shim/es5-sham');
-
 require('bootstrap');
 require('bootstrap-responsive.css');
 require('bootstrap.css');

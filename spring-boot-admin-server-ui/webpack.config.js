@@ -25,7 +25,7 @@ var allModules = glob.sync(ROOT + '/modules/*/module.js').map(function (file) {
 var getEntries = function (modules) {
   var entries = {
     'core': './core/core.js',
-    'dependencies.js': ['es5-shim/es5-shim', 'es5-shim/es5-sham', 'jquery', 'bootstrap', 'angular', 'angular-resource', 'angular-ui-router']
+    'dependencies.js': ['jquery', 'bootstrap', 'angular', 'angular-resource', 'angular-ui-router']
   };
   modules.forEach(function (module) {
     entries[module.bundle] = module.entry;
