@@ -25,6 +25,9 @@ require('./css/core.css');
 
 require('./img/favicon.png');
 
+require('eventsource-polyfill');
+require('es6-shim');
+
 var angular = require('angular');
 var module = angular.module('sba-core', [require('angular-ui-router')]);
 global.sbaModules.push(module.name);

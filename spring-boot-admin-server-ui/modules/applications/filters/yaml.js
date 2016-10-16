@@ -19,9 +19,10 @@ var yaml = require('js-yaml');
 
 module.exports = function () {
   return function (input) {
-    if (Object.keys(input).length === 0) {
+    if (typeof (input) === 'object' && Object.keys(input).length === 0) {
       return '';
     }
+
     return yaml.dump(input, {
       skipInvalid: true,
       sort: true,
