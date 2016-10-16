@@ -23,7 +23,6 @@ import java.net.UnknownHostException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
-import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -61,8 +60,8 @@ public class AdminClientProperties {
 	 */
 	private boolean preferIp = false;
 
-	@Autowired
-	private HealthMvcEndpoint healthEndpoint;
+	@Value("${endpoints.health.path:/${endpoints.health.id:health}}")
+	private String healthEndpointPath;
 
 	@Autowired
 	private ManagementServerProperties management;
@@ -103,8 +102,8 @@ public class AdminClientProperties {
 
 		if (managementPort == null || managementPort.equals(serverPort)) {
 			return UriComponentsBuilder.fromHttpUrl(getServiceUrl())
-					.pathSegment(server.getServletPrefix())
-					.pathSegment(trimLeadingCharacter(management.getContextPath(), '/'))
+					.pathSegment(server.getServletPrefix().split("/"))
+					.pathSegment(trimLeadingCharacter(management.getContextPath(), '/').split("/"))
 					.toUriString();
 		}
 
@@ -117,7 +116,8 @@ public class AdminClientProperties {
 			return healthUrl;
 		}
 		return UriComponentsBuilder.fromHttpUrl(getManagementUrl())
-				.pathSegment(trimLeadingCharacter(healthEndpoint.getPath(), '/')).toUriString();
+				.pathSegment(trimLeadingCharacter(healthEndpointPath, '/').split("/"))
+				.toUriString();
 	}
 
 	public void setManagementUrl(String managementUrl) {
