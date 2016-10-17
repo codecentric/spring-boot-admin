@@ -40,7 +40,7 @@ import de.codecentric.boot.admin.journal.ApplicationEventJournal;
  */
 @ResponseBody
 public class JournalController {
-	private static Logger LOGGER = LoggerFactory.getLogger(JournalController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JournalController.class);
 
 	private ApplicationEventJournal eventJournal;
 	private final Collection<SseEmitter> emitters = synchronizedCollection(
