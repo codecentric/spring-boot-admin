@@ -1,3 +1,3 @@
 <div class="progress">
-	<div ng-repeat="(state, stats) in $ctrl.threadSummary" ng-if="stats.count &gt 0" class="bar" ng-class="stats.cssClass" ng-style="{width: stats.percentage +'%'}">{{state}} {{stats.count}}</div>
+	<div ng-repeat="(state, stats) in $ctrl.threadSummary" ng-if="stats.count &gt; 0" class="bar" ng-class="stats.cssClass" ng-style="{width: stats.percentage +'%'}">{{state}} {{stats.count}}</div>
 </div>
