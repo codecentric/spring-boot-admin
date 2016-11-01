@@ -15,23 +15,25 @@
  */
 'use strict';
 
-module.exports = function ($scope, application) {
-  'ngInject';
-  $scope.error = null;
-  $scope.streamUrl = 'api/applications/' + application.id + '/hystrix.stream';
-  $scope.hystrixStream = new EventSource($scope.streamUrl);
-  $scope.hystrixStream.addEventListener('message', function () {
-    if ($scope.error) {
-      $scope.error = null;
-      $scope.$apply();
-    }
-  }, false);
-  $scope.hystrixStream.addEventListener('error', function (e) {
-    $scope.error = e;
-    $scope.$apply();
-  }, false);
+var angular = require('angular');
 
-  $scope.$on('$destroy', function () {
-    $scope.hystrixStream.close();
+var module = angular.module('sba-turbine', ['sba-applications-hystrix']);
+global.sbaModules.push(module.name);
+
+module.controller('turbineCtrl', require('./turbineCtrl.js'));
+
+module.config(function ($stateProvider) {
+  $stateProvider.state('turbine', {
+    url: '/turbine',
+    templateUrl: 'turbine/turbine.html',
+    controller: 'turbineCtrl'
   });
-};
+});
+
+module.run(function (MainViews) {
+  MainViews.register({
+    title: 'Turbine',
+    state: 'turbine',
+    order: 100
+  });
+});

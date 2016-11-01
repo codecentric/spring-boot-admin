@@ -32,6 +32,7 @@
         <module>spring-boot-admin-server-ui</module>
         <module>spring-boot-admin-server-ui-activiti</module>
         <module>spring-boot-admin-server-ui-hystrix</module>
+        <module>spring-boot-admin-server-ui-turbine</module>
         <module>spring-boot-admin-samples</module>
         <module>spring-boot-admin-starter-client</module>
         <module>spring-boot-admin-docs</module>
@@ -234,6 +235,11 @@
             <dependency>
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-server-ui-hystrix</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-server-ui-turbine</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

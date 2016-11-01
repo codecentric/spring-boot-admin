@@ -49,6 +49,7 @@
                                 <commit-id>${git.commit.id.abbrev}</commit-id>
                                 <commit-time>${git.commit.time}</commit-time>
                                 <project-version>${project.version}</project-version>
+                                <spring-cloud-version>${spring-cloud.version}</spring-cloud-version>
                                 <samples-dir>${project.parent.basedir}/spring-boot-admin-samples/</samples-dir>
                             </attributes>
                         </configuration>

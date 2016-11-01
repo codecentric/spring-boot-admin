@@ -1,0 +1,19 @@
+<div class="container">
+	<div class="alert alert-error" ng-if="error">
+		Unable to connect to Command Metric Stream '{{streamUrl}}'.<br>
+		<b>Error:</b> {{ error }}
+	</div>
+
+	<form class="form-inline">
+		<select ng-model="selectedCluster" ng-options="cluster as cluster for cluster in clusters" ng-disabled="clusters.length <= 1"
+			ng-change="startStream()"></select>
+	</form>
+
+	<sba-info-panel panel-title="Cuircuit Breakers">
+		<sba-hystrix-command event-source="hystrixStream"></sba-hystrix-command>
+	</sba-info-panel>
+
+	<sba-info-panel panel-title="Thread Pools">
+		<sba-hystrix-thread-pool event-source="hystrixStream"></sba-hystrix-thread-pool>
+	</sba-info-panel>
+</div>
