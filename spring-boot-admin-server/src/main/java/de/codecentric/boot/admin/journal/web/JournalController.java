@@ -32,13 +32,16 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import de.codecentric.boot.admin.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.journal.ApplicationEventJournal;
+import de.codecentric.boot.admin.web.AdminController;
 
 /**
  * REST-Controller for querying all client application events.
  *
  * @author Johannes Edmeier
  */
+@AdminController
 @ResponseBody
+@RequestMapping("/api/journal")
 public class JournalController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JournalController.class);
 
@@ -50,12 +53,12 @@ public class JournalController {
 		this.eventJournal = eventJournal;
 	}
 
-	@RequestMapping(path = "/api/journal", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	@RequestMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public Collection<ClientApplicationEvent> getJournal() {
 		return eventJournal.getEvents();
 	}
 
-	@RequestMapping(path = "/api/journal", produces = "text/event-stream")
+	@RequestMapping(produces = "text/event-stream")
 	public SseEmitter getJournalEvents() {
 		final SseEmitter emitter = new SseEmitter();
 		emitter.onCompletion(new Runnable() {
