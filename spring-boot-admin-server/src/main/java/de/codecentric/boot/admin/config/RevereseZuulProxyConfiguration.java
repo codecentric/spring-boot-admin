@@ -15,6 +15,8 @@
  */
 package de.codecentric.boot.admin.config;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.trace.TraceRepository;
@@ -35,11 +37,14 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.PayloadApplicationEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.Order;
 
 import de.codecentric.boot.admin.event.RoutesOutdatedEvent;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.zuul.ApplicationRouteLocator;
 import de.codecentric.boot.admin.zuul.OptionsDispatchingZuulController;
+import de.codecentric.boot.admin.zuul.filters.CompositeRouteLocator;
 import de.codecentric.boot.admin.zuul.filters.route.SimpleHostRoutingFilter;
 
 @Configuration
@@ -59,11 +64,22 @@ public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
 	private ZuulHandlerMapping zuulHandlerMapping;
 
 	@Bean
-	@Override
+	@Order(0)
 	@ConfigurationProperties("spring.boot.admin.routes")
-	public ApplicationRouteLocator routeLocator() {
+	public ApplicationRouteLocator applicationRouteLocator() {
 		return new ApplicationRouteLocator(this.server.getServletPrefix(), registry,
 				adminServer.getContextPath() + "/api/applications/");
+	}
+
+	@Bean
+	@Primary
+	public CompositeRouteLocator routeLocator(List<RouteLocator> locators) {
+		return new CompositeRouteLocator(locators);
+	}
+
+	@Override
+	public RouteLocator routeLocator() {
+		return null;
 	}
 
 	@Bean
@@ -114,7 +130,6 @@ public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
 			return new RoutesEndpoint(routeLocator);
 		}
 	}
-
 
 	private static class ZuulRefreshListener implements ApplicationListener<ApplicationEvent> {
 		private ZuulHandlerMapping zuulHandlerMapping;
