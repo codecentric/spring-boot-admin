@@ -1,5 +1,5 @@
 .header--application {
-  margin-bottom: 20px;
+  margin: -20px 0 20px 0;
   font-size: 15px;
 }
 .header--application .navbar-inner {
