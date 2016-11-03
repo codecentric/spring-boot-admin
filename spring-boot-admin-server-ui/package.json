@@ -7,7 +7,7 @@
     "test": "karma start karma.conf.js",
     "watch:js": "webpack -d --watch",
     "watch:test": "karma start karma.conf.js --watch",
-    "dev-server": "webpack-dev-server --port 9000 --host 0.0.0.0"
+    "dev-server": "webpack-dev-server --port 9090 --host 0.0.0.0"
   },
   "dependencies": {
     "angular": "1.5.8",

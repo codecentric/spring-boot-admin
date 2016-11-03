@@ -18,7 +18,7 @@
         <java.version>1.7</java.version>
         <main.basedir>${basedir}</main.basedir>
         <spring-boot.version>1.5.0.BUILD-SNAPSHOT</spring-boot.version>
-        <spring-cloud.version>Camden.BUILD-SNAPSHOT</spring-cloud.version>
+        <spring-cloud.version>Dalston.BUILD-SNAPSHOT</spring-cloud.version>
         <hystrix-dashboard.version>1.5.5</hystrix-dashboard.version>
         <build-plugin.jacoco.version>0.7.7.201606060606</build-plugin.jacoco.version>
         <build-plugin.coveralls.version>4.2.0</build-plugin.coveralls.version>
@@ -32,6 +32,7 @@
         <module>spring-boot-admin-server-ui</module>
         <module>spring-boot-admin-server-ui-activiti</module>
         <module>spring-boot-admin-server-ui-hystrix</module>
+        <module>spring-boot-admin-server-ui-turbine</module>
         <module>spring-boot-admin-samples</module>
         <module>spring-boot-admin-starter-client</module>
         <module>spring-boot-admin-docs</module>
@@ -234,6 +235,11 @@
             <dependency>
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-server-ui-hystrix</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-server-ui-turbine</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

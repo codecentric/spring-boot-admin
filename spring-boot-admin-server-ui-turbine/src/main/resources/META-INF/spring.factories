@@ -1,0 +1,1 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=spring.boot.admin.turbine.config.TurbineAutoConfiguration

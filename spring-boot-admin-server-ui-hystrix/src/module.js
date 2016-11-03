@@ -17,7 +17,6 @@
 
 var angular = require('angular');
 
-
 require('hystrix/hystrixThreadPool.css');
 
 var module = angular.module('sba-applications-hystrix', ['sba-applications']);
@@ -26,8 +25,7 @@ global.sbaModules.push(module.name);
 module.component('sbaHystrixCommand', require('./components/hystrixCommand.js'));
 module.component('sbaHystrixThreadPool', require('./components/hystrixThreadPool.js'));
 
-module.controller('hystrixCtrl', require('./controllers/hystrixCtrl.js')('hystrix.stream'));
-module.controller('turbineCtrl', require('./controllers/hystrixCtrl.js')('turbine.stream'));
+module.controller('hystrixCtrl', require('./controllers/hystrixCtrl.js'));
 
 module.config(function ($stateProvider) {
   $stateProvider.state('applications.hystrix', {
@@ -35,14 +33,7 @@ module.config(function ($stateProvider) {
     templateUrl: 'applications-hystrix/views/hystrix.html',
     controller: 'hystrixCtrl'
   });
-  $stateProvider.state('applications.turbine', {
-    url: '/turbine',
-    templateUrl: 'applications-hystrix/views/hystrix.html',
-    controller: 'turbineCtrl'
-  });
 });
-
-
 
 module.run(function (ApplicationViews, $sce, $q, $http) {
   var isEventSourceAvailable = function (url) {
@@ -63,7 +54,6 @@ module.run(function (ApplicationViews, $sce, $q, $http) {
     return deferred.promise;
   };
 
-
   ApplicationViews.register({
     order: 150,
     title: $sce.trustAsHtml('<i class="fa fa-gear fa-fw"></i>Hystrix'),
@@ -73,17 +63,6 @@ module.run(function (ApplicationViews, $sce, $q, $http) {
         return false;
       }
       return isEventSourceAvailable('api/applications/' + application.id + '/hystrix.stream');
-    }
-  });
-  ApplicationViews.register({
-    order: 155,
-    title: $sce.trustAsHtml('<i class="fa fa-gear fa-fw"></i>Turbine'),
-    state: 'applications.turbine',
-    show: function (application) {
-      if (!application.managementUrl || !application.statusInfo.status || application.statusInfo.status === 'OFFLINE') {
-        return false;
-      }
-      return isEventSourceAvailable('api/applications/' + application.id + '/turbine.stream');
     }
   });
 });

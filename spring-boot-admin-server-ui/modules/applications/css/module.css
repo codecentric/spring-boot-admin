@@ -1,5 +1,5 @@
 .header--application {
-  margin-bottom: 20px;
+  margin: -20px 0 20px 0;
   font-size: 15px;
 }
 .header--application .navbar-inner {
@@ -76,6 +76,15 @@
 
 .application-list {
   background-color: #f9f9f9;
+}
+
+table.application-list {
+  table-layout: fixed;
+  width: 100%;
+}
+.application-list td.scroll {
+  overflow-x: auto;
+  max-width: 400px;
 }
 
 .table .group-column {

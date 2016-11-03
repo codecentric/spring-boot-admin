@@ -4,10 +4,11 @@ Additional to the core UI there are following modules which can be included by a
 
  - spring-boot-admin-server-ui-activiti
  - spring-boot-admin-server-ui-hystrix
+ - spring-boot-admin-server-ui-turbine
 
 ==== Hystrix UI Module ====
 
-The Hystrix module uses the hystrix-dashboard to display the metrics from Hystrix or Turbine streams.
+The Hystrix module uses the hystrix-dashboard to display the metrics from Hystrix streams.
 
 . Add the ui module to your classpath:
 +
@@ -21,13 +22,56 @@ The Hystrix module uses the hystrix-dashboard to display the metrics from Hystri
 </dependency>
 ----
 
-. Add the `/hystrix.stream` and/or `/turbine.stream` to the proxified endpoints:
+. Add the `/hystrix.stream` to the proxified endpoints:
 +
 [source,yml]
 .application.yml
 ----
 include::{samples-dir}/spring-boot-admin-sample-eureka/src/main/resources/application.yml[tags=configuration-ui-hystrix]
 ----
+
+==== Turbine UI Module ====
+
+The Turbine module uses the hystrix-dashboard to display the metrics from a Turbine stream. The UI module does not configure Turbine for you. Either you run Turbine as a separate application or integrate it into your Spring Boot Admin application. Please see http://cloud.spring.io/spring-cloud-static/{spring-cloud-version}/#_turbine[Spring Cloud Reference] on setting up Turbine.
+
+. Add the ui module to your classpath:
++
+[source,xml,subs="verbatim,attributes"]
+.pom.xml
+----
+<dependency>
+    <groupId>de.codecentric</groupId>
+    <artifactId>spring-boot-admin-server-ui-turbine</artifactId>
+    <version>{project-version}</version>
+</dependency>
+----
+
+. Configure the Turbine URL and clusters
++
+[source,yml]
+.application.yml
+----
+include::{samples-dir}/spring-boot-admin-sample-eureka/src/main/resources/application.yml[tags=configuration-ui-turbine]
+----
+
+.Turbine UI Module configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.turbine.enabled
+| Enable the Spring Boot Admin backend configuration for Turbine.
+| `true`
+
+| spring.boot.admin.turbine.url
+| URL to the `turbine.stream`. Must be reachable from the admin server.
+|
+
+| spring.boot.admin.turbine.clusters
+| List of available Turbine clusters.
+| `"default"`
+
+|
+|===
 
 ==== Activiti UI Module ====
 

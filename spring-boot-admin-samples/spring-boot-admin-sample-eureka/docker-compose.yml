@@ -90,6 +90,8 @@ services:
   mongodb:
     image: tutum/mongodb
     container_name: mongodb
+    ports:
+      - "27017:27017"
     networks:
       - "discovery"
     environment:
@@ -98,6 +100,8 @@ services:
   rabbit:
     image: "rabbitmq:3"
     container_name: rabbit
+    ports:
+     - "5672:5672"
     networks:
       - "discovery"
 

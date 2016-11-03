@@ -16,6 +16,7 @@
 package de.codecentric.boot.admin.config;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -59,6 +60,7 @@ import de.codecentric.boot.admin.registry.StatusUpdater;
 import de.codecentric.boot.admin.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
 import de.codecentric.boot.admin.registry.web.RegistryController;
+import de.codecentric.boot.admin.web.AdminController;
 import de.codecentric.boot.admin.web.PrefixHandlerMapping;
 import de.codecentric.boot.admin.web.servlet.resource.ConcatenatingResourceResolver;
 import de.codecentric.boot.admin.web.servlet.resource.PreferMinifiedFilteringResourceResolver;
@@ -149,8 +151,10 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 
 	@Bean
 	public PrefixHandlerMapping prefixHandlerMapping() {
-		PrefixHandlerMapping prefixHandlerMapping = new PrefixHandlerMapping(registryController(),
-				journalController());
+		Map<String, Object> beans = applicationContext
+				.getBeansWithAnnotation(AdminController.class);
+		PrefixHandlerMapping prefixHandlerMapping = new PrefixHandlerMapping(
+				beans.values().toArray(new Object[beans.size()]));
 		prefixHandlerMapping.setPrefix(adminServerProperties().getContextPath());
 		return prefixHandlerMapping;
 	}
