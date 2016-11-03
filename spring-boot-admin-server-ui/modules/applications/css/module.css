@@ -78,6 +78,15 @@
   background-color: #f9f9f9;
 }
 
+table.application-list {
+  table-layout: fixed;
+  width: 100%;
+}
+.application-list td.scroll {
+  overflow-x: auto;
+  max-width: 400px;
+}
+
 .table .group-column {
   border-right: 1px solid #dddddd;
   color: #999999;

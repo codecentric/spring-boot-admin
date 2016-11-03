@@ -17,7 +17,7 @@
 			<table class="table">
 				<tr ng-repeat="(key, value) in info">
 					<td ng-bind="key"></td>
-					<td style="white-space: pre" ng-bind-html="value | yaml | linkify:50"></td>
+					<td style="white-space: pre; padding: 8px 0 8px 8px; max-width: 400px; overflow-x: auto;" ng-bind-html="value | yaml | linkify:50"></td>
 				</tr>
 			</table>
 		</sba-info-panel>
