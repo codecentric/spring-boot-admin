@@ -59,8 +59,11 @@ public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
 	@Autowired
 	private AdminServerProperties adminServer;
 
-	@Autowired
-	private ZuulHandlerMapping zuulHandlerMapping;
+	@Bean
+	@Primary
+	public CompositeRouteLocator compositeRouteLocator(List<RouteLocator> locators) {
+		return new CompositeRouteLocator(locators);
+	}
 
 	@Bean
 	@Order(0)
@@ -72,15 +75,11 @@ public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
 		return routeLocator;
 	}
 
-	@Bean
-	@Primary
-	public CompositeRouteLocator routeLocator(List<RouteLocator> locators) {
-		return new CompositeRouteLocator(locators);
-	}
-
 	@Override
+	@Bean
+	@Order(-100)
 	public RouteLocator routeLocator() {
-		return null;
+		return super.routeLocator();
 	}
 
 	@Bean
@@ -102,8 +101,8 @@ public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
 
 	// pre filters
 	@Bean
-	public PreDecorationFilter preDecorationFilter() {
-		return new PreDecorationFilter(routeLocator(), this.server.getServletPrefix(),
+	public PreDecorationFilter preDecorationFilter(RouteLocator routeLocator) {
+		return new PreDecorationFilter(routeLocator, this.server.getServletPrefix(),
 				zuulProperties, proxyRequestHelper());
 	}
 
@@ -120,7 +119,7 @@ public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
 	@Bean
 	@Override
 	public ApplicationListener<ApplicationEvent> zuulRefreshRoutesListener() {
-		return new ZuulRefreshListener(zuulHandlerMapping);
+		return new ZuulRefreshListener(zuulHandlerMapping(null));
 	}
 
 	@Configuration
