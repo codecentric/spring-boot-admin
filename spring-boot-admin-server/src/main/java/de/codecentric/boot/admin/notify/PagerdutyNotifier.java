@@ -37,7 +37,7 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 	public static final URI DEFAULT_URI = URI
 			.create("https://events.pagerduty.com/generic/2010-04-15/create_event.json");
 
-	private final static String DEFAULT_DESCRIPTION = "#{application.name}/#{application.id} is #{to.status}";
+	private static final String DEFAULT_DESCRIPTION = "#{application.name}/#{application.id} is #{to.status}";
 
 	private final SpelExpressionParser parser = new SpelExpressionParser();
 	private RestTemplate restTemplate = new RestTemplate();

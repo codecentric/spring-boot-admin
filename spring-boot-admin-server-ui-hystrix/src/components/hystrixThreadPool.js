@@ -25,13 +25,28 @@ module.exports = {
   bindings: {
     source: '<eventSource'
   },
-  controller: function () {
+  controller: function ($element) {
+    'ngInject';
     var ctrl = this;
+    ctrl.id = id++;
+
+    var startMonitor = function (id) {
+      $element.find('#hystrix-thread-pools-' + id).html('<span class="loading">Loading ...</span>');
+      if (ctrl.source !== null) {
+        ctrl.monitor = new HystrixThreadPoolMonitor(0, 'hystrix-thread-pools-' + id);
+        ctrl.monitor.sortByVolume();
+        ctrl.source.addEventListener('message', ctrl.monitor.eventSourceMessageListener, false);
+      }
+    };
+
     ctrl.$onInit = function () {
-      ctrl.id = id++;
-      ctrl.monitor = new HystrixThreadPoolMonitor(0, 'hystrix-thread-pools-' + ctrl.id);
-      ctrl.monitor.sortByVolume();
-      ctrl.source.addEventListener('message', ctrl.monitor.eventSourceMessageListener, false);
+      startMonitor(ctrl.id);
+    };
+
+    ctrl.$onChanges = function (changes) {
+      if (changes.source.currentValue !== changes.source.previousValue) {
+        startMonitor(ctrl.id);
+      }
     };
   },
   template: require('./hystrixThreadPool.tpl.html')

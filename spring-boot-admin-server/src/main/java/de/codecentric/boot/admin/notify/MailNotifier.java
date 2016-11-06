@@ -33,8 +33,8 @@ import de.codecentric.boot.admin.event.ClientApplicationEvent;
  * @author Johannes Edmeier
  */
 public class MailNotifier extends AbstractStatusChangeNotifier {
-	private final static String DEFAULT_SUBJECT = "#{application.name} (#{application.id}) is #{to.status}";
-	private final static String DEFAULT_TEXT = "#{application.name} (#{application.id})\nstatus changed from #{from.status} to #{to.status}\n\n#{application.healthUrl}";
+	private static final String DEFAULT_SUBJECT = "#{application.name} (#{application.id}) is #{to.status}";
+	private static final String DEFAULT_TEXT = "#{application.name} (#{application.id})\nstatus changed from #{from.status} to #{to.status}\n\n#{application.healthUrl}";
 
 	private final SpelExpressionParser parser = new SpelExpressionParser();
 	private final MailSender sender;

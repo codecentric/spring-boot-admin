@@ -34,7 +34,8 @@ import org.springframework.web.context.WebApplicationContext;
  * @author Johannes Edmeier
  */
 public class RegistrationApplicationListener {
-	private static Logger LOGGER = LoggerFactory.getLogger(RegistrationApplicationListener.class);
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(RegistrationApplicationListener.class);
 	private final ApplicationRegistrator registrator;
 	private final TaskScheduler taskScheduler;
 	private boolean autoDeregister = false;

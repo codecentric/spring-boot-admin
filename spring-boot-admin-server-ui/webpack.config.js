@@ -25,7 +25,7 @@ var allModules = glob.sync(ROOT + '/modules/*/module.js').map(function (file) {
 var getEntries = function (modules) {
   var entries = {
     'core': './core/core.js',
-    'dependencies.js': ['es5-shim/es5-shim', 'es5-shim/es5-sham', 'jquery', 'bootstrap', 'angular', 'angular-resource', 'angular-ui-router']
+    'dependencies.js': ['jquery', 'bootstrap', 'angular', 'angular-resource', 'angular-ui-router']
   };
   modules.forEach(function (module) {
     entries[module.bundle] = module.entry;
@@ -81,7 +81,7 @@ module.exports = {
     loaders: [
       {
         test: /^jolokia$/,
-        loader: "imports?$=jquery"
+        loader: 'imports?$=jquery'
       }, {
         test: /\.js$/,
         exclude: [/node_modules/, /third-party/],
@@ -127,11 +127,10 @@ module.exports = {
       from: '**/*.html',
       context: 'core/'
     }, {
-        from: '**/*.html',
-        context: 'modules/'
-      }], {
-        ignore: ['*.tpl.html']
-      })
+      from: '**/*.html',
+      context: 'modules/'
+    }],
+      { ignore: ['*.tpl.html'] })
   ].concat(!isDevServer ? [] : new ModuleConcatPlugin([
     {
       filename: 'all-modules.js',
@@ -145,9 +144,9 @@ module.exports = {
   ])),
   devServer: {
     proxy: [{
-        context: '/api',
-        target: 'http://localhost:8080',
-        secure: false
+      context: '/api',
+      target: 'http://localhost:8080',
+      secure: false
     }]
   },
   node: {

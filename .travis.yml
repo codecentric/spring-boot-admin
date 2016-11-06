@@ -4,6 +4,10 @@ sudo: false
 env:
   - NODE_VERSION=4
 
+cache:
+  directories:
+    - $HOME/.m2
+
 before_install:
   - 'if [[ -n "$DECRYPT_KEYPHRASE" ]]; then openssl aes-256-cbc -d -pass "env:DECRYPT_KEYPHRASE" -in .gnupg.tar.enc | tar xv; fi'
   - 'if [[ ${TRAVIS_TAG} != "" ]]; then mvn versions:set -DnewVersion="${TRAVIS_TAG}"; fi'

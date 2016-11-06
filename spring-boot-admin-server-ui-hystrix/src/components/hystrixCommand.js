@@ -18,7 +18,6 @@
 var id = 0;
 
 require('./hystrix.css');
-
 require('hystrix/hystrixCommand.css');
 var HystrixCommandMonitor = require('hystrix/hystrixCommand');
 
@@ -26,13 +25,28 @@ module.exports = {
   bindings: {
     source: '<eventSource'
   },
-  controller: function () {
+  controller: function ($element) {
+    'ngInject';
     var ctrl = this;
+    ctrl.id = id++;
+
+    var startMonitor = function (id) {
+      $element.find('#hystrix-command-' + id).html('<span class="loading">Loading ...</span>');
+      if (ctrl.source !== null) {
+        ctrl.monitor = new HystrixCommandMonitor(0, 'hystrix-command-' + id, { includeDetailIcon: false });
+        ctrl.monitor.sortByErrorThenVolume();
+        ctrl.source.addEventListener('message', ctrl.monitor.eventSourceMessageListener, false);
+      }
+    };
+
     ctrl.$onInit = function () {
-      ctrl.id = id++;
-      ctrl.monitor = new HystrixCommandMonitor(0, 'hystrix-command-' + ctrl.id, { includeDetailIcon: false });
-      ctrl.monitor.sortByErrorThenVolume();
-      ctrl.source.addEventListener('message', ctrl.monitor.eventSourceMessageListener, false);
+      startMonitor(ctrl.id);
+    };
+
+    ctrl.$onChanges = function (changes) {
+      if (changes.source.currentValue !== changes.source.previousValue) {
+        startMonitor(ctrl.id);
+      }
     };
   },
   template: require('./hystrixCommand.tpl.html')

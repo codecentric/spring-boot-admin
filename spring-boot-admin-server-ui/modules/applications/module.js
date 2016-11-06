@@ -94,46 +94,48 @@ module.run(function ($rootScope, $state, Notification, Application, ApplicationG
     }
   });
 
-  // setups up the sse-reciever
-  $rootScope.journalEventSource = new EventSource('api/journal?stream');
-  $rootScope.$on('$destroy', function () {
-    $rootScope.journalEventSource.close();
-  });
+  if (typeof (EventSource) !== 'undefined') {
+    // setups up the sse-reciever
+    $rootScope.journalEventSource = new EventSource('api/journal?stream');
+    $rootScope.$on('$destroy', function () {
+      $rootScope.journalEventSource.close();
+    });
 
-  $rootScope.journalEventSource.addEventListener('message', function (message) {
-    var event = JSON.parse(message.data);
-    Object.setPrototypeOf(event.application, Application.prototype);
+    $rootScope.journalEventSource.addEventListener('message', function (message) {
+      var event = JSON.parse(message.data);
+      Object.setPrototypeOf(event.application, Application.prototype);
 
-    var title = event.application.name;
-    var options = {
-      tag: event.application.id,
-      body: 'Instance ' + event.application.id + '\n' + event.application.healthUrl,
-      icon: require('./img/unknown.png'),
-      timeout: 10000,
-      url: $state.href('apps.details', {
-        id: event.application.id
-      })
-    };
+      var title = event.application.name;
+      var options = {
+        tag: event.application.id,
+        body: 'Instance ' + event.application.id + '\n' + event.application.healthUrl,
+        icon: require('./img/unknown.png'),
+        timeout: 10000,
+        url: $state.href('apps.details', {
+          id: event.application.id
+        })
+      };
 
-    if (event.type === 'REGISTRATION') {
-      applicationGroups.addApplication(event.application, false);
-      refresh(event.application);
-      title += ' instance registered.';
-      options.tag = event.application.id + '-REGISTRY';
-    } else if (event.type === 'DEREGISTRATION') {
-      applicationGroups.removeApplication(event.application);
-      title += ' instance removed.';
-      options.tag = event.application.id + '-REGISTRY';
-    } else if (event.type === 'STATUS_CHANGE') {
-      refresh(event.application);
-      applicationGroups.addApplication(event.application, true);
-      title += ' instance is ' + event.to.status;
-      options.tag = event.application.id + '-STATUS';
-      options.icon = event.to.status !== 'UP' ? require('./img/error.png') : require('./img/ok.png');
-      options.body = event.from.status + ' --> ' + event.to.status + '\n' + options.body;
-    }
+      if (event.type === 'REGISTRATION') {
+        applicationGroups.addApplication(event.application, false);
+        refresh(event.application);
+        title += ' instance registered.';
+        options.tag = event.application.id + '-REGISTRY';
+      } else if (event.type === 'DEREGISTRATION') {
+        applicationGroups.removeApplication(event.application);
+        title += ' instance removed.';
+        options.tag = event.application.id + '-REGISTRY';
+      } else if (event.type === 'STATUS_CHANGE') {
+        refresh(event.application);
+        applicationGroups.addApplication(event.application, true);
+        title += ' instance is ' + event.to.status;
+        options.tag = event.application.id + '-STATUS';
+        options.icon = event.to.status !== 'UP' ? require('./img/error.png') : require('./img/ok.png');
+        options.body = event.from.status + ' --> ' + event.to.status + '\n' + options.body;
+      }
 
-    $rootScope.$apply();
-    Notification.notify(title, options);
-  });
+      $rootScope.$apply();
+      Notification.notify(title, options);
+    });
+  }
 });

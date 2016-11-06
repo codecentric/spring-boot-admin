@@ -43,17 +43,10 @@ public class ApplicationRouteLocator implements RefreshableRouteLocator {
 
 	private ApplicationRegistry registry;
 	private PathMatcher pathMatcher = new AntPathMatcher();
-
 	private AtomicReference<List<Route>> routes = new AtomicReference<>();
-
 	private String prefix;
 	private String servletPath;
-
-	/**
-	 * Endpoints to be proxified by spring boot admin.
-	 */
-	private String[] endpoints = { "env", "metrics", "trace", "dump", "jolokia", "info", "trace",
-			"logfile", "refresh", "flyway", "liquibase", "heapdump" };
+	private String[] endpoints = {};
 
 	public ApplicationRouteLocator(String servletPath, ApplicationRegistry registry,
 			String prefix) {

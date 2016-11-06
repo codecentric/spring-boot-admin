@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>de.codecentric</groupId>
 		<artifactId>spring-boot-admin</artifactId>
-		<version>1.4.3-SNAPSHOT</version>
+		<version>1.5.0-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>spring-boot-admin-server</artifactId>
@@ -25,6 +25,11 @@
 		<dependency>
 			<groupId>com.netflix.zuul</groupId>
 			<artifactId>zuul-core</artifactId>
+		</dependency>
+		<dependency>
+			<!-- Remove when https://github.com/spring-cloud/spring-cloud-netflix/pull/1372 is resolved -->
+			<groupId>com.netflix.netflix-commons</groupId>
+			<artifactId>netflix-commons-util</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.netflix.hystrix</groupId>

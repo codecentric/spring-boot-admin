@@ -32,13 +32,16 @@ import de.codecentric.boot.admin.notify.filter.ApplicationIdNotificationFilter;
 import de.codecentric.boot.admin.notify.filter.ApplicationNameNotificationFilter;
 import de.codecentric.boot.admin.notify.filter.FilteringNotifier;
 import de.codecentric.boot.admin.notify.filter.NotificationFilter;
+import de.codecentric.boot.admin.web.AdminController;
 
 /**
  * REST-Controller for managing notification filters
  *
  * @author Johannes Edmeier
  */
+@AdminController
 @ResponseBody
+@RequestMapping("/api/notifications/filters")
 public class NotificationFilterController {
 	private FilteringNotifier filteringNotifier;
 
@@ -46,13 +49,12 @@ public class NotificationFilterController {
 		this.filteringNotifier = filteringNotifier;
 	}
 
-	@RequestMapping(path = "/api/notifications/filters", method = {
-			RequestMethod.GET }, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = { RequestMethod.GET }, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public Map<String, NotificationFilter> getFilters() {
 		return filteringNotifier.getNotificationFilters();
 	}
 
-	@RequestMapping(path = "/api/notifications/filters", method = {
+	@RequestMapping(method = {
 			RequestMethod.POST }, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> addFilter(@RequestParam(name = "id", required = false) String id,
 			@RequestParam(name = "name", required = false) String name,
@@ -66,7 +68,7 @@ public class NotificationFilterController {
 		}
 	}
 
-	@RequestMapping(path = "/api/notifications/filters/{id}", method = { RequestMethod.DELETE })
+	@RequestMapping(path = "/{id}", method = { RequestMethod.DELETE })
 	public ResponseEntity<?> deleteFilter(@PathVariable("id") String id) {
 		NotificationFilter deleted = filteringNotifier.removeFilter(id);
 		if (deleted != null) {

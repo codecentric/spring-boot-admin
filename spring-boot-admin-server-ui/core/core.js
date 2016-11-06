@@ -15,9 +15,6 @@
  */
 'use strict';
 
-require('es5-shim/es5-shim');
-require('es5-shim/es5-sham');
-
 require('bootstrap');
 require('bootstrap-responsive.css');
 require('bootstrap.css');
@@ -27,6 +24,9 @@ require('googlefonts.css');
 require('./css/core.css');
 
 require('./img/favicon.png');
+
+require('eventsource-polyfill');
+require('es6-shim');
 
 var angular = require('angular');
 var module = angular.module('sba-core', [require('angular-ui-router')]);

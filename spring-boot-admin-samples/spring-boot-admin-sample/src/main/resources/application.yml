@@ -1,5 +1,6 @@
 info:
   scm-url: @scm.url@
+  build-url: http://travis-ci.org/@env.TRAVIS_REPO_SLUG@/builds/@env.TRAVIS_BUILD_ID@
   stage: test
 
 logging:

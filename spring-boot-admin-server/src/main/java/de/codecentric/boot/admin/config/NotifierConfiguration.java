@@ -51,7 +51,7 @@ public class NotifierConfiguration {
 	@ConditionalOnBean(Notifier.class)
 	public static class NotifierListenerConfiguration {
 		@Autowired
-		public Notifier notifier;
+		private Notifier notifier;
 
 		@Bean
 		@ConditionalOnMissingBean

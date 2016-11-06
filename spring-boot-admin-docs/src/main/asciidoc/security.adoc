@@ -1,0 +1,13 @@
+[[securing-spring-boot-admin]]
+== Security ==
+
+=== Securing Spring Boot Admin Server ===
+
+Since there are several approaches on solving authentication and authorization in distributed web applications Spring Boot Admin doesn't ship a default one.
+However you can include Spring Security to your Spring Boot Admin Server and configure it the way you like.
+
+=== Securing Client's Actuator Endpoints ===
+
+The simplest way to secure your actuator endpoints is to use basic authorization and the same username/password for all applications. This way the browser asks for the credentials and if you set `zuul.senstivieHeaders:` the Zuul Proxy in Spring Boot Admin Server forwards them to the clients.
+
+For more complex solutions (Spring Session, OAuth2, ...) please have a look at the samples in https://github.com/joshiste/spring-boot-admin-samples[joshiste/spring-boot-admin-samples^].

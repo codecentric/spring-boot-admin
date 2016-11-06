@@ -1,5 +1,7 @@
-<input ng-show="$ctrl.inputType" class="input-xxlarge" type="{{$ctrl.inputType}}" ng-model="$ctrl.value" ng-disabled="$ctrl.disabled" />
-<select ng-show="$ctrl.selectOptions" class="input-xxlarge" ng-model="$ctrl.value" ng-disabled="$ctrl.disabled">
+<input ng-show="$ctrl.inputType" class="input-xxlarge" type="{{$ctrl.inputType}}" ng-model="$ctrl.value" ng-readonly="$ctrl.disabled"
+	ng-change="$ctrl.valueChanged()"></input>
+<select ng-show="$ctrl.selectOptions" class="input-xxlarge" ng-model="$ctrl.value" ng-readonly="$ctrl.disabled" ng-change="$ctrl.valueChanged()">
     <option ng-repeat="opt in $ctrl.selectOptions" value="{{opt}}" ng-selected="$ctrl.value == opt">{{opt}}</option>
 </select>
-<textarea ng-show="$ctrl.isObject" style="word-break: break-all;" class="input-xxlarge" rows="6" ng-model="$ctrl.json" ng-blur="$ctrl.jsonEdited" ng-disabled="$ctrl.disabled" />
+<textarea ng-show="$ctrl.isObject" style="word-break: break-all;" class="input-xxlarge" rows="6" ng-model="$ctrl.json" ng-change="$ctrl.jsonChanged()"
+	ng-readonly="$ctrl.disabled"></textarea>

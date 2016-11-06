@@ -13,6 +13,8 @@ public class AdminServerProperties {
 
 	private MonitorProperties monitor = new MonitorProperties();
 
+	private RoutesProperties routes = new RoutesProperties();
+
 	public void setContextPath(String pathPrefix) {
 		if (!pathPrefix.startsWith("/") || pathPrefix.endsWith("/")) {
 			throw new IllegalArgumentException(
@@ -27,6 +29,10 @@ public class AdminServerProperties {
 
 	public MonitorProperties getMonitor() {
 		return monitor;
+	}
+
+	public RoutesProperties getRoutes() {
+		return routes;
 	}
 
 	public static class MonitorProperties {
@@ -55,6 +61,22 @@ public class AdminServerProperties {
 
 		public long getStatusLifetime() {
 			return statusLifetime;
+		}
+	}
+
+	public static class RoutesProperties {
+		/**
+		 * Endpoints to be proxified by spring boot admin.
+		 */
+		private String[] endpoints = { "env", "metrics", "trace", "dump", "jolokia", "info",
+				"trace", "logfile", "refresh", "flyway", "liquibase", "heapdump" };
+
+		public String[] getEndpoints() {
+			return endpoints;
+		}
+
+		public void setEndpoints(String[] endpoints) {
+			this.endpoints = endpoints;
 		}
 	}
 }

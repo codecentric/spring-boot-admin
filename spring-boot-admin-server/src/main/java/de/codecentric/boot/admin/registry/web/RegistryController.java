@@ -30,11 +30,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
+import de.codecentric.boot.admin.web.AdminController;
 
 /**
  * REST controller for controlling registration of managed applications.
  */
+@AdminController
 @ResponseBody
+@RequestMapping("/api/applications")
 public class RegistryController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RegistryController.class);
@@ -51,7 +54,7 @@ public class RegistryController {
 	 * @param app The application infos.
 	 * @return The registered application.
 	 */
-	@RequestMapping(value = "/api/applications", method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Application> register(@RequestBody Application app) {
 		LOGGER.debug("Register application {}", app.toString());
 		Application registeredApp = registry.register(app);
@@ -64,7 +67,7 @@ public class RegistryController {
 	 * @param name the name to search for
 	 * @return List
 	 */
-	@RequestMapping(value = "/api/applications", method = RequestMethod.GET)
+	@RequestMapping(method = RequestMethod.GET)
 	public Collection<Application> applications(
 			@RequestParam(value = "name", required = false) String name) {
 		LOGGER.debug("Deliver registered applications with name={}", name);
@@ -81,7 +84,7 @@ public class RegistryController {
 	 * @param id The application identifier.
 	 * @return The registered application.
 	 */
-	@RequestMapping(value = "/api/applications/{id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<?> get(@PathVariable String id) {
 		LOGGER.debug("Deliver registered application with ID '{}'", id);
 		Application application = registry.getApplication(id);
@@ -98,7 +101,7 @@ public class RegistryController {
 	 * @param id The application id.
 	 * @return the unregistered application.
 	 */
-	@RequestMapping(value = "/api/applications/{id}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> unregister(@PathVariable String id) {
 		LOGGER.debug("Unregister application with ID '{}'", id);
 		Application application = registry.deregister(id);

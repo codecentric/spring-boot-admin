@@ -15,25 +15,23 @@
  */
 'use strict';
 
-module.exports = function (path) {
-  return function ($scope, application) {
-    'ngInject';
-    $scope.error = null;
-    $scope.streamUrl = 'api/applications/' + application.id + '/' + path;
-    $scope.hystrixStream = new EventSource($scope.streamUrl);
-    $scope.hystrixStream.addEventListener('message', function () {
-      if ($scope.error) {
-        $scope.error = null;
-        $scope.$apply();
-      }
-    }, false);
-    $scope.hystrixStream.addEventListener('error', function (e) {
-      $scope.error = e;
+module.exports = function ($scope, application) {
+  'ngInject';
+  $scope.error = null;
+  $scope.streamUrl = 'api/applications/' + application.id + '/hystrix.stream';
+  $scope.hystrixStream = new EventSource($scope.streamUrl);
+  $scope.hystrixStream.addEventListener('message', function () {
+    if ($scope.error) {
+      $scope.error = null;
       $scope.$apply();
-    }, false);
+    }
+  }, false);
+  $scope.hystrixStream.addEventListener('error', function (e) {
+    $scope.error = e;
+    $scope.$apply();
+  }, false);
 
-    $scope.$on('$destroy', function () {
-      $scope.hystrixStream.close();
-    });
-  };
+  $scope.$on('$destroy', function () {
+    $scope.hystrixStream.close();
+  });
 };
