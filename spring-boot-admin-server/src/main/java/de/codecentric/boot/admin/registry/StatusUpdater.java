@@ -30,7 +30,7 @@ import de.codecentric.boot.admin.model.StatusInfo;
 import de.codecentric.boot.admin.registry.store.ApplicationStore;
 
 /**
- * The StatusUpdater is responsible for updatig the status of all or a single application querying
+ * The StatusUpdater is responsible for updating the status of all or a single application querying
  * the healthUrl.
  *
  * @author Johannes Edmeier
@@ -70,7 +70,7 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
 		}
 	}
 
-	private StatusInfo queryStatus(Application application) {
+	protected StatusInfo queryStatus(Application application) {
 		LOGGER.trace("Updating status for {}", application);
 
 		try {
@@ -99,6 +99,10 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
 
 	public void setStatusLifetime(long statusLifetime) {
 		this.statusLifetime = statusLifetime;
+	}
+
+	public long getStatusLifetime() {
+		return statusLifetime;
 	}
 
 	@Override
