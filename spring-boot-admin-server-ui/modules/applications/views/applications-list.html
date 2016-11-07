@@ -26,7 +26,8 @@
 			<tr ng-repeat-start="group in applicationGroups.groups|orderBy:order.column:order.descending|orderBy:'status':false|filter:searchFilter track by group.name"
 				ng-init="group.collapsed = group.applications.length > 1 && !expandAll" ng-show="group.collapsed">
 				<td class="group-column" ng-click="group.collapsed = false"><i class="fa fa-plus"></i></td>
-				<td colspan="3" ng-bind="group.name"></td>
+				<td ng-bind="group.name"></td>
+				<td colspan="2" ng-bind="group.version"></td>
 				<td>
 					<span ng-repeat-start="(status, count) in group.statusCounter track by status" class="status-{{status}}" ng-bind="count + ' ' + status"></span>
 					<span ng-repeat-end ng-hide="$last"> / </span>

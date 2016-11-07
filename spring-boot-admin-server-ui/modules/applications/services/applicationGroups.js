@@ -31,6 +31,14 @@ module.exports = function () {
       return 'UNKNOWN';
     };
 
+    var getGroupVersion = function (versionCounter) {
+      if (versionCounter.length === 1) {
+        return versionCounter[0];
+      } else {
+        return '- multiple versions -';
+      }
+    };
+
     var findApplication = function (applications, application) {
       for (var i = 0; i < applications.length; i++) {
         if (applications[i].id === application.id) {
@@ -51,11 +59,14 @@ module.exports = function () {
 
     var updateStatus = function (group) {
       var statusCounter = {};
+      var versionCounter = {};
       group.applications.forEach(function (application) {
         statusCounter[application.statusInfo.status] = ++statusCounter[application.statusInfo.status] || 1;
+        versionCounter[application.version] = ++versionCounter[application.version] || 1;
       });
       group.statusCounter = statusCounter;
       group.status = getMaxStatus(statusCounter);
+      group.version = getGroupVersion(versionCounter);
     };
 
     this.addApplication = function (application, overwrite) {
