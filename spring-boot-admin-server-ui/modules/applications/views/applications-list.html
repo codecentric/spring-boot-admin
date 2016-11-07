@@ -26,12 +26,13 @@
 			<tr ng-repeat-start="group in applicationGroups.groups|orderBy:order.column:order.descending|orderBy:'status':false|filter:searchFilter track by group.name"
 				ng-init="group.collapsed = group.applications.length > 1 && !expandAll" ng-show="group.collapsed">
 				<td class="group-column" ng-click="group.collapsed = false"><i class="fa fa-plus"></i></td>
-				<td colspan="3" ng-bind="group.name"></td>
-				<td>
+				<td ng-bind="group.name"></td>
+				<td><span ng-bind="group.version"></span></td>
+				<td></td>
+				<td colspan="2">
 					<span ng-repeat-start="(status, count) in group.statusCounter track by status" class="status-{{status}}" ng-bind="count + ' ' + status"></span>
 					<span ng-repeat-end ng-hide="$last"> / </span>
 				</td>
-				<th colspan="2"></th>
 			</tr>
 			<tr ng-hide="group.collapsed" ng-repeat="application in filteredApps = (group.applications|orderBy:order.column:order.descending|orderBy:'statusInfo.status':false|filter:searchFilter) track by application.id"
 				ng-init="views = viewsForApplication(application)" ng-repeat-end>

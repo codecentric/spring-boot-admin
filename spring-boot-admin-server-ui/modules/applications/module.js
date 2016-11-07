@@ -71,7 +71,7 @@ module.run(function ($rootScope, $state, Notification, Application, ApplicationG
   var applicationGroups = new ApplicationGroups();
   $rootScope.applicationGroups = applicationGroups;
 
-  var refresh = function (application) {
+  var refresh = function (group, application) {
     application.info = {};
     application.refreshing = true;
     application.getInfo().then(function (response) {
@@ -81,6 +81,12 @@ module.run(function ($rootScope, $state, Notification, Application, ApplicationG
       if (info.build && info.build.version) {
         application.version = info.build.version;
       }
+      if (application.version) {
+        group.versionsCounter[application.version] = (group.versionsCounter[application.version] || 0) + 1;
+        var versions = Object.keys(group.versionsCounter);
+        versions.sort;
+        group.version = versions[0] + (versions.length > 1 ? ', ...' : '');
+      }
       application.info = info;
     }).finally(function () {
       application.refreshing = false;
@@ -89,8 +95,8 @@ module.run(function ($rootScope, $state, Notification, Application, ApplicationG
 
   Application.query(function (applications) {
     for (var i = 0; i < applications.length; i++) {
-      refresh(applications[i]);
-      applicationGroups.addApplication(applications[i]);
+      var group = applicationGroups.addApplication(applications[i]);
+      refresh(group, applications[i]);
     }
   });
 
