@@ -59,8 +59,8 @@ module.exports = function () {
     };
 
     this.addApplication = function (application, overwrite) {
-      var groupIdx = findGroup(this.groups,application.name);
-      var group = groupIdx > -1 ? this.groups[groupIdx] : { applications: [], statusCounter: {}, name: application.name, status: 'UNKNOWN' };
+      var groupIdx = findGroup(this.groups, application.name);
+      var group = groupIdx > -1 ? this.groups[groupIdx] : { applications: [], statusCounter: {}, versionsCounter: [], name: application.name, status: 'UNKNOWN' };
       if (groupIdx === -1) {
         this.groups.push(group);
       }
@@ -71,10 +71,11 @@ module.exports = function () {
         group.applications[index] = application;
       }
       updateStatus(group);
+      return group;
     };
 
     this.removeApplication = function (application) {
-      var groupIdx = findGroup(this.groups,application.name);
+      var groupIdx = findGroup(this.groups, application.name);
       if (groupIdx > -1) {
         var group = this.groups[groupIdx];
         var index = findApplication(group.applications, application);
