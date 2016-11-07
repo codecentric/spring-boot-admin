@@ -84,7 +84,7 @@ module.run(function ($rootScope, $state, Notification, Application, ApplicationG
       if (application.version) {
         group.versionsCounter[application.version] = (group.versionsCounter[application.version] || 0) + 1;
         var versions = Object.keys(group.versionsCounter);
-        versions.sort;
+        versions.sort();
         group.version = versions[0] + (versions.length > 1 ? ', ...' : '');
       }
       application.info = info;
