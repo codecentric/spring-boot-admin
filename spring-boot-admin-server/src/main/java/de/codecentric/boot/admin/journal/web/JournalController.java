@@ -21,13 +21,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.MediaType;
 import org.springframework.util.MimeTypeUtils;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import de.codecentric.boot.admin.event.ClientApplicationEvent;
@@ -80,5 +84,10 @@ public class JournalController {
 				LOGGER.debug("Error sending event to client ", ex);
 			}
 		}
+	}
+
+	@ExceptionHandler(AsyncRequestTimeoutException.class)
+	public void asyncRequestTimeoutExceptionHandler(HttpServletRequest req) {
+		LOGGER.debug("Async request to '{}' timed out", req.getRequestURI());
 	}
 }
