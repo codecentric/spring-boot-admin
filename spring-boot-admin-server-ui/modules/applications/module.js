@@ -123,8 +123,8 @@ module.run(function ($rootScope, $state, Notification, Application, ApplicationG
       };
 
       if (event.type === 'REGISTRATION') {
-        applicationGroups.addApplication(event.application, false);
-        refresh(event.application);
+        var group = applicationGroups.addApplication(event.application, false);
+        refresh(group, event.application);
         title += ' instance registered.';
         options.tag = event.application.id + '-REGISTRY';
       } else if (event.type === 'DEREGISTRATION') {
@@ -132,8 +132,8 @@ module.run(function ($rootScope, $state, Notification, Application, ApplicationG
         title += ' instance removed.';
         options.tag = event.application.id + '-REGISTRY';
       } else if (event.type === 'STATUS_CHANGE') {
-        refresh(event.application);
-        applicationGroups.addApplication(event.application, true);
+        var group2 = applicationGroups.addApplication(event.application, true);
+        refresh(group2, event.application);
         title += ' instance is ' + event.to.status;
         options.tag = event.application.id + '-STATUS';
         options.icon = event.to.status !== 'UP' ? require('./img/error.png') : require('./img/ok.png');
