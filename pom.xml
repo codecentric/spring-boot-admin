@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.4.1.RELEASE</version>
+        <version>1.4.2.RELEASE</version>
         <relativePath/>
     </parent>
     <groupId>de.codecentric</groupId>
@@ -17,7 +17,7 @@
     <properties>
         <java.version>1.7</java.version>
         <main.basedir>${basedir}</main.basedir>
-        <spring-boot.version>1.4.1.RELEASE</spring-boot.version>
+        <spring-boot.version>1.4.2.RELEASE</spring-boot.version>
         <spring-cloud.version>Camden.SR2</spring-cloud.version>
         <hystrix-dashboard.version>1.5.5</hystrix-dashboard.version>
         <build-plugin.jacoco.version>0.7.7.201606060606</build-plugin.jacoco.version>
