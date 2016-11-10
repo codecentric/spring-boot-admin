@@ -84,6 +84,8 @@ public class ApplicationDiscoveryListener {
 					String applicationId = register(instance);
 					staleApplicationIds.remove(applicationId);
 				}
+			} else {
+				LOGGER.debug("Ignoring discovered service {}", serviceId);
 			}
 		}
 		for (String staleApplicationId : staleApplicationIds) {
@@ -107,6 +109,7 @@ public class ApplicationDiscoveryListener {
 		try {
 			Application application = converter.convert(instance);
 			if (application != null) {
+				LOGGER.debug("Registering discovered application {}", application);
 				return registry.register(application).getId();
 			} else {
 				LOGGER.warn("No application for service {} registered", instance);
