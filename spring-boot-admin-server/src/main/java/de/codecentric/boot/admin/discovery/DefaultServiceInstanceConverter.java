@@ -20,6 +20,8 @@ import static org.apache.commons.lang.StringUtils.stripStart;
 
 import java.net.URI;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -35,6 +37,8 @@ import de.codecentric.boot.admin.model.Application;
  * @author Johannes Edmeier
  */
 public class DefaultServiceInstanceConverter implements ServiceInstanceConverter {
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(DefaultServiceInstanceConverter.class);
 	private static final String KEY_MANAGEMENT_PORT = "management.port";
 	private static final String KEY_MANAGEMENT_PATH = "management.context-path";
 	private static final String KEY_HEALTH_PATH = "health.path";
@@ -43,6 +47,10 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 
 	@Override
 	public Application convert(ServiceInstance instance) {
+		LOGGER.debug("Converting service '{}' running at '{}' with metadata {}",
+				instance.getServiceId(),
+				instance.getUri(), instance.getMetadata());
+
 		Application.Builder builder = Application.create(instance.getServiceId());
 		URI healthUrl = getHealthUrl(instance);
 		if (healthUrl != null) {

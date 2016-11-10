@@ -50,6 +50,10 @@ public class ResourcePatternResolvingResourceResolver extends AbstractResourceRe
 			List<? extends Resource> locations, ResourceResolverChain chain) {
 		try {
 			Resource[] resources = resourcePatternResolver.getResources(pattern);
+			if (logger.isDebugEnabled()) {
+				logger.debug(
+						"Resolved Resources for '" + pattern + "': " + Arrays.toString(resources));
+			}
 			return chain.resolveResource(request, requestPath, Arrays.asList(resources));
 		} catch (IOException ex) {
 			throw new ResourceAccessException("Couldn't resolve resources for \"" + pattern + "\"",

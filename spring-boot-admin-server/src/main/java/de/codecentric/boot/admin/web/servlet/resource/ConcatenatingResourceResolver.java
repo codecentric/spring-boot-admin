@@ -51,6 +51,9 @@ public class ConcatenatingResourceResolver extends AbstractResourceResolver {
 			List<? extends Resource> locations, ResourceResolverChain chain) {
 		String filename = StringUtils.getFilename(requestPath);
 		try {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Creating concatenated resource '" + filename + "' from " + locations);
+			}
 			return new InMemoryFileResource(filename, buildDescription(locations),
 					getContent(locations), getLastModified(locations));
 		} catch (IOException ex) {

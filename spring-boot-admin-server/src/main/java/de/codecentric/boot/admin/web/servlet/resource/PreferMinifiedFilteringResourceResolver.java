@@ -33,7 +33,6 @@ import org.springframework.web.servlet.resource.ResourceResolverChain;
  * @author Johannes Edmeier
  */
 public class PreferMinifiedFilteringResourceResolver extends AbstractResourceResolver {
-
 	private final String extensionPrefix;
 
 	public PreferMinifiedFilteringResourceResolver(String extensionPrefix) {
@@ -43,7 +42,7 @@ public class PreferMinifiedFilteringResourceResolver extends AbstractResourceRes
 	@Override
 	protected Resource resolveResourceInternal(HttpServletRequest request, String requestPath,
 			List<? extends Resource> locations, ResourceResolverChain chain) {
-		List<Resource> newLocations = new ArrayList<Resource>(locations.size());
+		List<Resource> newLocations = new ArrayList<>(locations.size());
 
 		for (Resource location : locations) {
 			Resource minified = findMinified(location);
@@ -60,6 +59,10 @@ public class PreferMinifiedFilteringResourceResolver extends AbstractResourceRes
 			Resource minified = resource
 					.createRelative(basename + extensionPrefix + '.' + extension);
 			if (minified.exists()) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Found minified file for '" + resource.getFilename() + "': '"
+							+ minified.getFilename() + "'");
+				}
 				return minified;
 			}
 		} catch (IOException ex) {
