@@ -1,7 +1,8 @@
 <div class="container">
   <div ng-if="errorWhileListing">
-    <p>To make the logging section work you need to make the /jolokia-endpoint accessible.
-      <br/> Include the jolokia-core.jar in your spring-boot-application:
+    <p><b>This only applies to Spring Boot 1.4.x and older applications:</b>
+      <br/> To make the logging section work you need to make the /jolokia-endpoint accessible.
+      <br/>Include the jolokia-core.jar in your spring-boot-application:
       <pre>&lt;dependency&gt; &lt;groupId>org.jolokia&lt;/groupId&gt; &lt;artifactId>jolokia-core&lt;/artifactId&gt; &lt;/dependency&gt;</pre>
     </p>
     <p>Please note that the logging section currently only works with Logback.

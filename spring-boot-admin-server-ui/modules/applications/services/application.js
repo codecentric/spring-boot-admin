@@ -18,17 +18,13 @@
 module.exports = function ($resource, $http) {
   'ngInject';
 
-  var Application = $resource('api/applications/:id', {
-    id: '@id'
-  }, {
+  var Application = $resource('api/applications/:id', { id: '@id' }, {
     query: {
       method: 'GET',
       isArray: true
-    },
-    get: {
+    }, get: {
       method: 'GET'
-    },
-    remove: {
+    }, remove: {
       method: 'DELETE'
     }
   });
@@ -57,14 +53,11 @@ module.exports = function ($resource, $http) {
   };
 
   Application.prototype.getEnv = function (key) {
-    return $http.get('api/applications/' + this.id + '/env' + (key ? '/' + key : '')).then(
-      convert);
+    return $http.get('api/applications/' + this.id + '/env' + (key ? '/' + key : '')).then(convert);
   };
 
   Application.prototype.setEnv = function (map) {
-    return $http.post('api/applications/' + this.id + '/env', '', {
-      params: map
-    }).then(convert);
+    return $http.post('api/applications/' + this.id + '/env', '', { params: map }).then(convert);
   };
 
   Application.prototype.resetEnv = function () {
@@ -81,6 +74,14 @@ module.exports = function ($resource, $http) {
 
   Application.prototype.getTraces = function () {
     return $http.get('api/applications/' + this.id + '/trace').then(convertArray);
+  };
+
+  Application.prototype.getLoggers = function () {
+    return $http.get('api/applications/' + this.id + '/loggers').then(convertArray);
+  };
+
+  Application.prototype.setLoggerLevel = function (logger, level) {
+    return $http.post('api/applications/' + this.id + '/loggers/' + logger, { configuredLevel: level });
   };
 
   return Application;

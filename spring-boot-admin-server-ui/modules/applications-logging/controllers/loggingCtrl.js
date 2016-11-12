@@ -15,12 +15,15 @@
  */
 'use strict';
 
+var angular = require('angular');
+
 module.exports = function ($scope, application, ApplicationLogging) {
   'ngInject';
 
   $scope.loggers = [];
   $scope.filteredLoggers = [];
   $scope.limit = 10;
+  $scope.error = null;
   $scope.showPackageLoggers = false;
 
   $scope.packageFilter = function (logger) {
@@ -31,32 +34,67 @@ module.exports = function ($scope, application, ApplicationLogging) {
     $scope.showPackageLoggers = !$scope.showPackageLoggers;
   };
 
-  ApplicationLogging.getLoggingConfigurator(application).then(
-    function (logging) {
-      $scope.refreshLoggers = function (changedLogger) {
-        var outdatedLoggers = $scope.loggers.filter(function (logger) {
-          return !changedLogger || changedLogger.name === 'ROOT' || logger.name.indexOf(changedLogger.name) === 0;
-        });
-        logging.getLogLevels(outdatedLoggers).catch(function (responses) {
-          responses.some(function (response) {
-            if (response.error !== null) {
-              $scope.error = response;
-              return true;
-            }
-            return false;
-          });
-        });
-      };
+  var Logger = function (name, data) {
+    this.name = name;
+    this.level = data.configuredLevel || data.effectiveLevel;
+    var i = name.lastIndexOf('.') + 1;
+    this.packageLogger = name.charAt(i) !== name.charAt(i).toUpperCase();
 
-      logging.getAllLoggers().then(function (loggers) {
-        $scope.loggers = loggers;
-      }).catch(function (response) {
-        $scope.error = response;
-        $scope.errorWhileListing = true;
+    this.setLevel = function (newLevel) {
+      return application.setLoggerLevel(name, newLevel);
+    };
+  };
+
+  $scope.refreshLoggers = function () {
+    return application.getLoggers().then(function (response) {
+      $scope.error = null;
+      var loggers = [];
+      angular.forEach(response.data, function (value, key) {
+        loggers.push(new Logger(key, value));
       });
+      $scope.loggers = loggers;
+    }).catch(function (response) {
+      $scope.error = response;
+    });
+  };
+
+  $scope.refreshLoggers().then(function () {
+    if ($scope.error != null && $scope.error.status === 404) {
+      //in case the client is a boot 1.4 application use the old jolokia style.
+      $scope.error = null;
+      initializeLoggersViaJolokia();
     }
-  ).catch(function (response) {
-    $scope.error = response;
-    $scope.errorWhileListing = true;
   });
+
+  var initializeLoggersViaJolokia = function () {
+    ApplicationLogging.getLoggingConfigurator(application).then(
+      function (logging) {
+        $scope.refreshLoggers = function (changedLogger) {
+          var outdatedLoggers = $scope.loggers.filter(function (logger) {
+            return !changedLogger || changedLogger.name === 'ROOT' || logger.name.indexOf(changedLogger.name) === 0;
+          });
+          logging.getLogLevels(outdatedLoggers).catch(function (responses) {
+            responses.some(function (response) {
+              if (response.error !== null) {
+                $scope.error = response;
+                return true;
+              }
+              return false;
+            });
+          });
+        };
+
+        logging.getAllLoggers().then(function (loggers) {
+          $scope.loggers = loggers;
+        }).catch(function (response) {
+          $scope.error = response;
+          $scope.errorWhileListing = true;
+        });
+      }
+    ).catch(function (response) {
+      $scope.error = response;
+      $scope.errorWhileListing = true;
+    });
+  };
+
 };
