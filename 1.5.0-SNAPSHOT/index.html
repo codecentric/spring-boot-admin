@@ -517,7 +517,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 1.5.0-SNAPSHOT,</span>
-<span id="revdate">10.11.2016</span>
+<span id="revdate">12.11.2016</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -813,7 +813,8 @@ You can include the Spring Boot Admin to your Eureka server. Add the dependencie
 <div class="sect2">
 <h3 id="loglevel-management"><a class="anchor" href="#loglevel-management"></a>3.3. Loglevel managment</h3>
 <div class="paragraph">
-<p>Currently the loglevel management is only available for <a href="http://logback.qos.ch/">Logback</a>. It is accessed via JMX so <a href="#jmx-bean-management">include Jolokia</a> in your application. In addition you have configure Logback&#8217;s <code>JMXConfigurator</code>:</p>
+<p>For applications using Spring Boot 1.5.x (or later) you can manage loglevels out-of-the-box.
+For applications using older versions of Spring Boot the loglevel management is only available for <a href="http://logback.qos.ch/">Logback</a>. It is accessed via JMX so <a href="#jmx-bean-management">include Jolokia</a> in your application. In addition you have configure Logback&#8217;s <code>JMXConfigurator</code>:</p>
 </div>
 <div class="listingblock">
 <div class="title">logback-spring.xml</div>
