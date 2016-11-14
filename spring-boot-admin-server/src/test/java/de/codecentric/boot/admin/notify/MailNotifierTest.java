@@ -26,6 +26,7 @@ import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 
 import de.codecentric.boot.admin.event.ClientApplicationEvent;
+import de.codecentric.boot.admin.event.ClientApplicationHealthStatusChangedEvent;
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.model.StatusInfo;
@@ -49,6 +50,22 @@ public class MailNotifierTest {
 	@Test
 	public void test_onApplicationEvent() {
 		notifier.notify(new ClientApplicationStatusChangedEvent(
+				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
+				StatusInfo.ofDown(), StatusInfo.ofUp()));
+
+		SimpleMailMessage expected = new SimpleMailMessage();
+		expected.setTo(new String[] { "foo@bar.com" });
+		expected.setCc(new String[] { "bar@foo.com" });
+		expected.setFrom("SBA <no-reply@example.com>");
+		expected.setText("App (-id-)\nstatus changed from DOWN to UP\n\nhttp://health");
+		expected.setSubject("-id- is UP");
+
+		verify(sender).send(eq(expected));
+	}
+	
+	@Test
+	public void test_onApplicationHealthStatusChangedEvent() {
+		notifier.notify(new ClientApplicationHealthStatusChangedEvent(
 				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
 				StatusInfo.ofDown(), StatusInfo.ofUp()));
 
