@@ -19,7 +19,7 @@
 
 | spring.boot.admin.routes.endpoints
 | The enpoints which will be available via spring boot admin zuul proxy. If you write ui modules using other endpoints you need to add them.
-| `"env, metrics, trace, dump, jolokia, info, configprops, trace, activiti, logfile, refresh, flyway, liquibase"`
+| `"env, metrics, trace, dump, jolokia, info, configprops, trace, activiti, logfile, refresh, flyway, liquibase, loggers"`
 |===
 
 include::server-discovery.adoc[]

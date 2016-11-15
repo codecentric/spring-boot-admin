@@ -15,7 +15,7 @@ eureka:
 # end::configuration-eureka[]
 
 # tag::configuration-ui-hystrix[]
-spring.boot.admin.routes.endpoints: env,metrics,trace,dump,jolokia,info,configprops,trace,logfile,refresh,flyway,liquibase,heapdump,hystrix.stream
+spring.boot.admin.routes.endpoints: env,metrics,trace,dump,jolokia,info,configprops,trace,logfile,refresh,flyway,liquibase,heapdump,loggers,hystrix.stream
 # end::configuration-ui-hystrix[]
 
 # tag::configuration-ui-turbine[]
