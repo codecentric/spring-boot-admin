@@ -17,6 +17,7 @@ package de.codecentric.boot.admin;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +35,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import de.codecentric.boot.admin.AdminApplicationTest.TestAdminApplication;
 import de.codecentric.boot.admin.config.EnableAdminServer;
-import de.codecentric.boot.admin.model.Application;
 
 /**
  * Integration test to verify the correct functionality of the REST API.
@@ -61,26 +61,30 @@ public class AdminApplicationTest {
 	public void testReverseProxy() {
 		String apiBaseUrl = "http://localhost:" + port + "/api/applications";
 
-		Application application = Application.create("TestApp")
-				.withHealthUrl("http://localhost:" + port + "/health")
-				.withManagementUrl("http://localhost:" + port).build();
-		ResponseEntity<Application> entity = new TestRestTemplate().postForEntity(apiBaseUrl,
-				application, Application.class);
+		Map<String, String> application = new HashMap<>();
+		application.put("name", "TestApp");
+		application.put("managementUrl", "http://localhost:" + port);
+		application.put("serviceUrl", "http://localhost:" + port);
+		application.put("healthUrl", "http://localhost:" + port + "/health");
+
+		@SuppressWarnings("unchecked")
+		ResponseEntity<Map<String, String>> entity = new TestRestTemplate().postForEntity(
+				apiBaseUrl, application, (Class<Map<String, String>>) (Class<?>) Map.class);
 
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> app = new TestRestTemplate()
-				.getForEntity(apiBaseUrl + "/" + entity.getBody().getId(), Map.class);
+				.getForEntity(apiBaseUrl + "/" + entity.getBody().get("id"), Map.class);
 		assertEquals(HttpStatus.OK, app.getStatusCode());
 		assertEquals("TestApp", app.getBody().get("name"));
 
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> info = new TestRestTemplate()
-				.getForEntity(apiBaseUrl + "/" + entity.getBody().getId() + "/info", Map.class);
+				.getForEntity(apiBaseUrl + "/" + entity.getBody().get("id") + "/info", Map.class);
 		assertEquals(HttpStatus.OK, info.getStatusCode());
 
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> health = new TestRestTemplate()
-				.getForEntity(apiBaseUrl + "/" + entity.getBody().getId() + "/health", Map.class);
+				.getForEntity(apiBaseUrl + "/" + entity.getBody().get("id") + "/health", Map.class);
 		assertEquals(HttpStatus.OK, health.getStatusCode());
 
 	}

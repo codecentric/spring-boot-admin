@@ -1,4 +1,4 @@
-package de.codecentric.boot.admin.config;
+package de.codecentric.boot.admin.client.config;
 
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -11,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import de.codecentric.boot.admin.client.config.AdminProperties;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestClientApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT, properties = {

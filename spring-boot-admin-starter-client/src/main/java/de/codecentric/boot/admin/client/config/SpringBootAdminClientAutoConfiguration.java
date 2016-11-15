@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.codecentric.boot.admin.config;
+package de.codecentric.boot.admin.client.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,8 +28,8 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
-import de.codecentric.boot.admin.services.ApplicationRegistrator;
-import de.codecentric.boot.admin.services.RegistrationApplicationListener;
+import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
+import de.codecentric.boot.admin.client.registration.RegistrationApplicationListener;
 
 @Configuration
 @EnableConfigurationProperties({ AdminProperties.class, AdminClientProperties.class })

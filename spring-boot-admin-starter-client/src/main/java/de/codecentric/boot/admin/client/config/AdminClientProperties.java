@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.codecentric.boot.admin.config;
+package de.codecentric.boot.admin.client.config;
 
 import static org.springframework.util.StringUtils.trimLeadingCharacter;
 

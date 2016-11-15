@@ -13,15 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.codecentric.boot.admin.model;
+package de.codecentric.boot.admin.client.registration;
 
 import java.io.Serializable;
 
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * The domain model for all registered application at the spring boot admin application.
@@ -29,45 +25,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Application implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private final String id;
 	private final String name;
 	private final String managementUrl;
 	private final String healthUrl;
 	private final String serviceUrl;
-	private final StatusInfo statusInfo;
 
 	protected Application(Builder builder) {
 		Assert.hasText(builder.name, "name must not be empty!");
 		Assert.hasText(builder.healthUrl, "healthUrl must not be empty!");
-		Assert.notNull(builder.statusInfo, "statusInfo must not be null!");
 		this.healthUrl = builder.healthUrl;
 		this.managementUrl = builder.managementUrl;
 		this.serviceUrl = builder.serviceUrl;
 		this.name = builder.name;
-		this.id = builder.id;
-		this.statusInfo = builder.statusInfo;
-	}
-
-	@JsonCreator
-	public static Application fromJson(@JsonProperty("url") String url,
-			@JsonProperty("managementUrl") String managementUrl,
-			@JsonProperty("healthUrl") String healthUrl,
-			@JsonProperty("serviceUrl") String serviceUrl, @JsonProperty("name") String name,
-			@JsonProperty("id") String id, @JsonProperty("statusInfo") StatusInfo statusInfo) {
-
-		Builder builder = create(name).withId(id);
-		if (statusInfo != null) {
-			builder.withStatusInfo(statusInfo);
-		}
-
-		if (StringUtils.hasText(url)) {
-			// old format
-			builder.withHealthUrl(url.replaceFirst("/+$", "") + "/health").withManagementUrl(url);
-		} else {
-			builder.withHealthUrl(healthUrl).withManagementUrl(managementUrl)
-					.withServiceUrl(serviceUrl);
-		}
-		return builder.build();
 	}
 
 	public static Builder create(String name) {
@@ -79,12 +48,10 @@ public class Application implements Serializable {
 	}
 
 	public static class Builder {
-		private String id;
 		private String name;
 		private String managementUrl;
 		private String healthUrl;
 		private String serviceUrl;
-		private StatusInfo statusInfo = StatusInfo.ofUnknown();
 
 		private Builder(String name) {
 			this.name = name;
@@ -95,17 +62,10 @@ public class Application implements Serializable {
 			this.managementUrl = application.managementUrl;
 			this.serviceUrl = application.serviceUrl;
 			this.name = application.name;
-			this.id = application.id;
-			this.statusInfo = application.statusInfo;
 		}
 
 		public Builder withName(String name) {
 			this.name = name;
-			return this;
-		}
-
-		public Builder withId(String id) {
-			this.id = id;
 			return this;
 		}
 
@@ -124,18 +84,9 @@ public class Application implements Serializable {
 			return this;
 		}
 
-		public Builder withStatusInfo(StatusInfo statusInfo) {
-			this.statusInfo = statusInfo;
-			return this;
-		}
-
 		public Application build() {
 			return new Application(this);
 		}
-	}
-
-	public String getId() {
-		return id;
 	}
 
 	public String getName() {
@@ -154,13 +105,9 @@ public class Application implements Serializable {
 		return serviceUrl;
 	}
 
-	public StatusInfo getStatusInfo() {
-		return statusInfo;
-	}
-
 	@Override
 	public String toString() {
-		return "Application [id=" + id + ", name=" + name + ", managementUrl="
+		return "Application [name=" + name + ", managementUrl="
 				+ managementUrl + ", healthUrl=" + healthUrl + ", serviceUrl=" + serviceUrl + "]";
 	}
 
@@ -169,7 +116,6 @@ public class Application implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((healthUrl == null) ? 0 : healthUrl.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((managementUrl == null) ? 0 : managementUrl.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((serviceUrl == null) ? 0 : serviceUrl.hashCode());
@@ -193,13 +139,6 @@ public class Application implements Serializable {
 				return false;
 			}
 		} else if (!healthUrl.equals(other.healthUrl)) {
-			return false;
-		}
-		if (id == null) {
-			if (other.id != null) {
-				return false;
-			}
-		} else if (!id.equals(other.id)) {
 			return false;
 		}
 		if (managementUrl == null) {

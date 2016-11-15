@@ -20,9 +20,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
@@ -42,7 +44,6 @@ import com.hazelcast.config.ListConfig;
 import com.hazelcast.config.MapConfig;
 
 import de.codecentric.boot.admin.config.EnableAdminServer;
-import de.codecentric.boot.admin.model.Application;
 
 /**
  * Integration test to verify the correct functionality of the REST API with Hazelcast
@@ -73,61 +74,75 @@ public class AdminApplicationHazelcastTest {
 
 	@Test
 	public void test() {
-		Application app = Application.create("Hazelcast Test")
-				.withHealthUrl("http://127.0.0.1/health").build();
-		Application app2 = Application.create("Hazelcast Test")
-				.withHealthUrl("http://127.0.0.1:2/health").build();
-		Application app3 = Application.create("Do not find")
-				.withHealthUrl("http://127.0.0.1:3/health").build();
-
 		// publish app on instance1
-		ResponseEntity<Application> postResponse = registerApp(app, instance1);
-		app = postResponse.getBody();
+		ResponseEntity<Map<String, String>> postResponse = registerApp("Hazelcast Test",
+				"http://127.0.0.1/health", instance1);
+		Map<String, String> app = postResponse.getBody();
 		assertEquals(HttpStatus.CREATED, postResponse.getStatusCode());
-		assertNotNull(app.getId());
+		assertNotNull(app.get("id"));
 
 		// publish app2 on instance2
-		ResponseEntity<Application> postResponse2 = registerApp(app2, instance2);
-		app2 = postResponse2.getBody();
+		ResponseEntity<Map<String, String>> postResponse2 = registerApp("Hazelcast Test",
+				"http://127.0.0.2/health", instance2);
+		Map<String, String> app2 = postResponse2.getBody();
 		assertEquals(HttpStatus.CREATED, postResponse.getStatusCode());
-		assertNotNull(app2.getId());
+		assertNotNull(app2.get("id"));
 
 		// retrieve app from instance2
-		ResponseEntity<Application> getResponse = getApp(app.getId(), instance2);
+		ResponseEntity<Map<String, String>> getResponse = getApp(app.get("id"), instance2);
 		assertEquals(HttpStatus.OK, getResponse.getStatusCode());
-		assertEquals(app, getResponse.getBody());
+		assertEquals(app.get("id"), getResponse.getBody().get("id"));
 
 		// retrieve app and app2 from instance1 (but not app3)
-		app3 = registerApp(app3, instance1).getBody();
-		Collection<Application> apps = getAppByName("Hazelcast Test", instance1).getBody();
+		Map<String, String> app3 = registerApp("Do not find", "http://127.0.0.1:3/health",
+				instance1).getBody();
+		Collection<Map<String, String>> apps = getAppByName("Hazelcast Test", instance1).getBody();
 		assertEquals(2, apps.size());
-		assertTrue(apps.contains(app));
-		assertTrue(apps.contains(app2));
-		assertFalse(apps.contains(app3));
+		assertTrue(containsApp(apps, app.get("id")));
+		assertTrue(containsApp(apps, app2.get("id")));
+		assertFalse(containsApp(apps, app3.get("id")));
 	}
 
-	private ResponseEntity<Application> getApp(String id, EmbeddedWebApplicationContext context) {
-		int port = context.getEmbeddedServletContainer().getPort();
-		ResponseEntity<Application> getResponse = template.getForEntity(
-				"http://localhost:" + port + "/api/applications/" + id, Application.class);
-		return getResponse;
+	private boolean containsApp(Collection<Map<String, String>> apps, String id) {
+		for (Map<String, String> app : apps) {
+			if (app.get("id").equals(id)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
-	private ResponseEntity<Application> registerApp(Application app,
+	private ResponseEntity<Map<String, String>> getApp(String id,
 			EmbeddedWebApplicationContext context) {
 		int port = context.getEmbeddedServletContainer().getPort();
-		return template.postForEntity("http://localhost:" + port + "/api/applications", app,
-				Application.class);
+		@SuppressWarnings("unchecked")
+		ResponseEntity<Map<String, String>> response = template.getForEntity(
+				"http://localhost:" + port + "/api/applications/" + id,
+				(Class<Map<String, String>>) (Class<?>) Map.class);
+		return response;
+	}
+
+	private ResponseEntity<Map<String, String>> registerApp(String name, String healthUrl,
+			EmbeddedWebApplicationContext context) {
+		Map<String, String> app = new HashMap<>();
+		app.put("name", name);
+		app.put("healthUrl", healthUrl);
+		int port = context.getEmbeddedServletContainer().getPort();
+		@SuppressWarnings("unchecked")
+		ResponseEntity<Map<String, String>> responseEntity = template.postForEntity(
+				"http://localhost:" + port + "/api/applications", app,
+				(Class<Map<String, String>>) (Class<?>) Map.class);
+		return responseEntity;
 	}
 
 	@SuppressWarnings("unchecked")
-	private ResponseEntity<Collection<Application>> getAppByName(String name,
+	private ResponseEntity<Collection<Map<String, String>>> getAppByName(String name,
 			EmbeddedWebApplicationContext context) {
 		int port = context.getEmbeddedServletContainer().getPort();
-		ResponseEntity<?> getResponse = template.getForEntity(
-				"http://localhost:" + port + "/api/applications?name={name}", ApplicationList.class,
+		ResponseEntity<?> response = template.getForEntity(
+				"http://localhost:" + port + "/api/applications?name={name}", List.class,
 				Collections.singletonMap("name", name));
-		return (ResponseEntity<Collection<Application>>) getResponse;
+		return (ResponseEntity<Collection<Map<String, String>>>) response;
 	}
 
 	@Configuration
@@ -142,11 +157,6 @@ public class AdminApplicationHazelcastTest {
 					.addListConfig(new ListConfig("spring-boot-admin-application-store")
 							.setBackupCount(1).setMaxSize(1000));
 		}
-	}
-
-	public static class ApplicationList extends ArrayList<Application> {
-		private static final long serialVersionUID = 1L;
-		// needed for JSON deserialization
 	}
 
 }

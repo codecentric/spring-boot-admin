@@ -1,4 +1,4 @@
-package de.codecentric.boot.admin.config;
+package de.codecentric.boot.admin.client.config;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -10,6 +10,8 @@ import org.mockito.BDDMockito;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.mock.env.MockEnvironment;
+
+import de.codecentric.boot.admin.client.config.SpringBootAdminClientEnabledCondition;
 
 public class SpringBootAdminClientEnabledConditionTest {
 

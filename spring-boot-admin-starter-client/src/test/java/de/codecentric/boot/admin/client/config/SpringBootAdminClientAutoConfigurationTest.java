@@ -1,4 +1,4 @@
-package de.codecentric.boot.admin.config;
+package de.codecentric.boot.admin.client.config;
 
 import static org.junit.Assert.assertTrue;
 
@@ -12,7 +12,8 @@ import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration.Res
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import de.codecentric.boot.admin.services.ApplicationRegistrator;
+import de.codecentric.boot.admin.client.config.SpringBootAdminClientAutoConfiguration;
+import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
 
 public class SpringBootAdminClientAutoConfigurationTest {
 

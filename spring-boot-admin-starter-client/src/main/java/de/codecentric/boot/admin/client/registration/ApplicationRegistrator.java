@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.codecentric.boot.admin.services;
+package de.codecentric.boot.admin.client.registration;
 
 import java.util.Collections;
 import java.util.Map;
@@ -28,9 +28,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import de.codecentric.boot.admin.config.AdminClientProperties;
-import de.codecentric.boot.admin.config.AdminProperties;
-import de.codecentric.boot.admin.model.Application;
+import de.codecentric.boot.admin.client.config.AdminClientProperties;
+import de.codecentric.boot.admin.client.config.AdminProperties;
 
 /**
  * Registers the client application at spring-boot-admin-server

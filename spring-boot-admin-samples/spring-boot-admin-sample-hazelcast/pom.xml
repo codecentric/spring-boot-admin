@@ -17,6 +17,10 @@
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-server-ui</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-starter-client</artifactId>
+        </dependency>
         <!-- tag::dependency-hazelcast[] -->
         <dependency>
             <groupId>com.hazelcast</groupId>

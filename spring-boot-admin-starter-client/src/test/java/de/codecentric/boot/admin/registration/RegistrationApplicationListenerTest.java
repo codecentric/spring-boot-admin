@@ -1,4 +1,4 @@
-package de.codecentric.boot.admin.services;
+package de.codecentric.boot.admin.registration;
 
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
@@ -16,6 +16,9 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
+
+import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
+import de.codecentric.boot.admin.client.registration.RegistrationApplicationListener;
 
 public class RegistrationApplicationListenerTest {
 

@@ -2,9 +2,6 @@ package de.codecentric.boot.admin.model;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * Represents a certain status a certain time.
  *
@@ -23,12 +20,6 @@ public class StatusInfo implements Serializable {
 
 	public static StatusInfo valueOf(String statusCode) {
 		return new StatusInfo(statusCode, System.currentTimeMillis());
-	}
-
-	@JsonCreator
-	public static StatusInfo valueOf(@JsonProperty("status") String statusCode,
-			@JsonProperty("timestamp") long timestamp) {
-		return new StatusInfo(statusCode, timestamp);
 	}
 
 	public static StatusInfo ofUnknown() {

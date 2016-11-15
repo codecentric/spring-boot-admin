@@ -23,7 +23,6 @@ public class ApplicationTest {
 
 		Application value = objectMapper.readValue(json, Application.class);
 
-		assertThat(value.getId(), nullValue());
 		assertThat(value.getName(), is("test"));
 		assertThat(value.getManagementUrl(), is("http://test"));
 		assertThat(value.getHealthUrl(), is("http://test/health"));
@@ -36,7 +35,6 @@ public class ApplicationTest {
 
 		Application value = objectMapper.readValue(json, Application.class);
 
-		assertThat(value.getId(), nullValue());
 		assertThat(value.getName(), is("test"));
 		assertThat(value.getManagementUrl(), is("http://test"));
 		assertThat(value.getHealthUrl(), is("http://health"));
@@ -45,12 +43,12 @@ public class ApplicationTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void test_name_expected() throws JsonProcessingException, IOException {
-		Application.fromJson("http://url", "", "", "", "", null, null);
+		Application.fromJson("http://url", "", "", "", null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void test_healthUrl_expected() throws JsonProcessingException, IOException {
-		Application.fromJson("", "", "", "", "name", null, null);
+		Application.fromJson("", "", "", "name", null);
 	}
 
 	@Test

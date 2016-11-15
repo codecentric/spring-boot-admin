@@ -35,6 +35,10 @@
 			<artifactId>spring-boot-admin-server-ui-turbine</artifactId>
 		</dependency>
 		<!-- end::dependency-ui-turbine[] -->
+		<dependency>
+			<groupId>org.jolokia</groupId>
+			<artifactId>jolokia-core</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>${project.artifactId}</finalName>

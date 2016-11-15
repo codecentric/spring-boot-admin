@@ -1,4 +1,4 @@
-package de.codecentric.boot.admin.config;
+package de.codecentric.boot.admin.client.config;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -23,6 +23,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+
+import de.codecentric.boot.admin.client.config.AdminClientProperties;
 
 public class AdminClientPropertiesTest {
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.codecentric.boot.admin.services;
+package de.codecentric.boot.admin.registration;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -36,9 +36,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import de.codecentric.boot.admin.config.AdminClientProperties;
-import de.codecentric.boot.admin.config.AdminProperties;
-import de.codecentric.boot.admin.model.Application;
+import de.codecentric.boot.admin.client.config.AdminClientProperties;
+import de.codecentric.boot.admin.client.config.AdminProperties;
+import de.codecentric.boot.admin.client.registration.Application;
+import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
 
 public class ApplicationRegistratorTest {
 
