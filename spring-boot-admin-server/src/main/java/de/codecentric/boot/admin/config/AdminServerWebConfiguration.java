@@ -87,7 +87,7 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 
 	@Autowired
 	private RestTemplateBuilder restTemplBuilder;
-
+	
 	@Bean
 	@ConditionalOnMissingBean
 	public AdminServerProperties adminServerProperties() {
@@ -190,12 +190,19 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 		RestTemplateBuilder builder = restTemplBuilder
 				.messageConverters(new MappingJackson2HttpMessageConverter())
 				.errorHandler(new DefaultResponseErrorHandler() {
-			@Override
-			protected boolean hasError(HttpStatus statusCode) {
-				return false;
-			}
-		});
-
+					@Override
+					protected boolean hasError(HttpStatus statusCode) {
+						return false;
+					}
+				});
+		if (applicationContext.getEnvironment().getProperty("management.security.enabled",
+				Boolean.class, Boolean.FALSE)
+				&& applicationContext.getEnvironment().getProperty("security.basic.enabled",
+						Boolean.class, Boolean.TRUE)) {
+			builder = builder.basicAuthorization(
+					applicationContext.getEnvironment().getProperty("security.user.name"),
+					applicationContext.getEnvironment().getProperty("security.user.password"));
+		}
 		StatusUpdater statusUpdater = new StatusUpdater(builder.build(), applicationStore);
 		statusUpdater.setStatusLifetime(adminServerProperties().getMonitor().getStatusLifetime());
 		return statusUpdater;

@@ -24,6 +24,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
@@ -33,6 +34,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.model.Application;
@@ -45,6 +50,7 @@ public class StatusUpdaterTest {
 	private SimpleApplicationStore store;
 	private RestTemplate template;
 	private ApplicationEventPublisher publisher;
+	private static final String HEALTH_TEST_JSON = "{\"status\":\"UP\",\"diskSpace\":{\"status\":\"UP\",\"total\":1000000,\"free\":500000,\"threshold\":100000}}";
 
 	@Before
 	public void setup() {
@@ -70,6 +76,23 @@ public class StatusUpdaterTest {
 		verify(publisher).publishEvent(argThat(isA(ClientApplicationStatusChangedEvent.class)));
 	}
 
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void test_update_statusHealthChanged() throws JsonParseException, JsonMappingException, IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		Map map = mapper.readValue(HEALTH_TEST_JSON, Map.class);
+		when(template.getForEntity("health", Map.class)).thenReturn(
+				ResponseEntity.ok().body(map));
+
+		updater.updateStatus(
+				Application.create("foo").withId("id").withHealthUrl("health").build());
+
+		Application app = store.find("id");
+
+		assertThat(app.getStatusInfo().getStatus(), is("UP"));
+		verify(publisher).publishEvent(argThat(isA(ClientApplicationStatusChangedEvent.class)));
+	}
+	
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void test_update_statusUnchanged() {

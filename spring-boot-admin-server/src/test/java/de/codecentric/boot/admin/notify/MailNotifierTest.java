@@ -20,13 +20,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.Status;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 
 import de.codecentric.boot.admin.event.ClientApplicationEvent;
-import de.codecentric.boot.admin.event.ClientApplicationHealthStatusChangedEvent;
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.model.StatusInfo;
@@ -62,12 +66,15 @@ public class MailNotifierTest {
 
 		verify(sender).send(eq(expected));
 	}
-	
+
 	@Test
 	public void test_onApplicationHealthStatusChangedEvent() {
-		notifier.notify(new ClientApplicationHealthStatusChangedEvent(
+		Map<String, Health> details = Collections.singletonMap("diskSpace",
+				new Health.Builder(Status.UP).withDetail("total", 1000000)
+						.withDetail("free", 500000).withDetail("threshold", 100000).build());
+		notifier.notify(new ClientApplicationStatusChangedEvent(
 				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
-				StatusInfo.ofDown(), StatusInfo.ofUp()));
+				StatusInfo.ofDown(), StatusInfo.ofUp(), details));
 
 		SimpleMailMessage expected = new SimpleMailMessage();
 		expected.setTo(new String[] { "foo@bar.com" });
