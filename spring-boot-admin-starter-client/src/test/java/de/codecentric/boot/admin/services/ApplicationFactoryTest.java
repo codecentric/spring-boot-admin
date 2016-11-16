@@ -138,14 +138,13 @@ public class ApplicationFactoryTest {
 	public void test_ssl_managment() {
 		load("management.ssl.key-store=somefile.jks", "management.ssl.key-store-password=password",
 				"local.server.port=8080", "local.management.port=9090");
-		AdminClientProperties clientProperties = context.getBean(AdminClientProperties.class);
+		ApplicationFactory factory = context.getBean(ApplicationFactory.class);
 
-		publishApplicationReadyEvent(clientProperties);
+		publishApplicationReadyEvent(factory);
 
-		assertThat(clientProperties.getManagementUrl(), is("https://" + getHostname() + ":9090"));
-		assertThat(clientProperties.getHealthUrl(),
-				is("https://" + getHostname() + ":9090/health"));
-		assertThat(clientProperties.getServiceUrl(), is("http://" + getHostname() + ":8080"));
+		assertThat(factory.doManagementUrl(), is("https://" + getHostname() + ":9090"));
+		assertThat(factory.doHealthUrl(), is("https://" + getHostname() + ":9090/health"));
+		assertThat(factory.doServiceUrl(), is("http://" + getHostname() + ":8080"));
 	}
 
 	@Test

@@ -5,6 +5,7 @@ import de.codecentric.boot.admin.model.Application;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.web.context.WebApplicationContext;
@@ -18,10 +19,9 @@ import static org.springframework.util.StringUtils.trimLeadingCharacter;
 /**
  * A factory for creating instances of {@link Application}
  *
- * @author rfelgentraeger
+ * @author rfelgent
  */
 public class ApplicationFactory {
-
 
     private AdminClientProperties client;
 
@@ -74,7 +74,7 @@ public class ApplicationFactory {
                     "serviceUrl must be set when deployed to servlet-container");
         }
 
-        return UriComponentsBuilder.newInstance().scheme(getScheme()).host(doServiceHost())
+        return UriComponentsBuilder.newInstance().scheme(getScheme(server.getSsl())).host(doServiceHost())
                 .port(serverPort).path(server.getContextPath()).toUriString();
     }
 
@@ -90,7 +90,8 @@ public class ApplicationFactory {
                     .toUriString();
         }
 
-        return UriComponentsBuilder.newInstance().scheme(getScheme()).host(doManagementHost())
+        Ssl ssl = management.getSsl() != null ? management.getSsl() : server.getSsl();
+        return UriComponentsBuilder.newInstance().scheme(getScheme(ssl)).host(doManagementHost())
                 .port(managementPort).path(management.getContextPath()).toUriString();
     }
 
@@ -119,8 +120,8 @@ public class ApplicationFactory {
         return doServiceHost();
     }
 
-    private String getScheme() {
-        return server.getSsl() != null && server.getSsl().isEnabled() ? "https" : "http";
+    private String getScheme(Ssl ssl) {
+        return ssl != null && ssl.isEnabled() ? "https" : "http";
     }
 
     private String getHost(InetAddress address) {
