@@ -135,6 +135,20 @@ public class AdminClientPropertiesTest {
 	}
 
 	@Test
+	public void test_ssl_managment() {
+		load("management.ssl.key-store=somefile.jks", "management.ssl.key-store-password=password",
+				"local.server.port=8080", "local.management.port=9090");
+		AdminClientProperties clientProperties = context.getBean(AdminClientProperties.class);
+
+		publishApplicationReadyEvent(clientProperties);
+
+		assertThat(clientProperties.getManagementUrl(), is("https://" + getHostname() + ":9090"));
+		assertThat(clientProperties.getHealthUrl(),
+				is("https://" + getHostname() + ":9090/health"));
+		assertThat(clientProperties.getServiceUrl(), is("http://" + getHostname() + ":8080"));
+	}
+
+	@Test
 	public void test_preferIpAddress_serveraddress_missing() {
 		load("spring.boot.admin.client.prefer-ip=true", "local.server.port=8080");
 		AdminClientProperties clientProperties = context.getBean(AdminClientProperties.class);
