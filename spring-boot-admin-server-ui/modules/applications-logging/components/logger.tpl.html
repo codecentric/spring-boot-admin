@@ -1,9 +1,5 @@
 {{ $ctrl.logger.name }}
 <div class="btn-group pull-right">
-    <label class="btn btn-small" ng-class="$ctrl.getLoggerClass('TRACE')" ng-click="$ctrl.setLevel('TRACE')">TRACE</label>
-    <label class="btn btn-small" ng-class="$ctrl.getLoggerClass('DEBUG')" ng-click="$ctrl.setLevel('DEBUG')">DEBUG</label>
-    <label class="btn btn-small" ng-class="$ctrl.getLoggerClass('INFO')" ng-click="$ctrl.setLevel('INFO')">INFO</label>
-    <label class="btn btn-small" ng-class="$ctrl.getLoggerClass('WARN')" ng-click="$ctrl.setLevel('WARN')">WARN</label>
-    <label class="btn btn-small" ng-class="$ctrl.getLoggerClass('ERROR')" ng-click="$ctrl.setLevel('ERROR')">ERROR</label>
-    <label class="btn btn-small" ng-class="$ctrl.getLoggerClass('OFF')" ng-click="$ctrl.setLevel('OFF')">OFF</label>
+  <button ng-repeat="level in $ctrl.logger.levels" class="btn btn-small" ng-class="$ctrl.getLoggerClass(level)" ng-click="$ctrl.setLevel(level)"
+    ng-bind="level"></button>
 </div>

@@ -34,9 +34,10 @@ module.exports = function ($scope, application, ApplicationLogging) {
     $scope.showPackageLoggers = !$scope.showPackageLoggers;
   };
 
-  var Logger = function (name, data) {
+  var Logger = function (name, data, levels) {
     this.name = name;
     this.level = data.configuredLevel || data.effectiveLevel;
+    this.levels = levels;
     var i = name.lastIndexOf('.') + 1;
     this.packageLogger = name.charAt(i) !== name.charAt(i).toUpperCase();
 
@@ -49,8 +50,9 @@ module.exports = function ($scope, application, ApplicationLogging) {
     return application.getLoggers().then(function (response) {
       $scope.error = null;
       var loggers = [];
-      angular.forEach(response.data, function (value, key) {
-        loggers.push(new Logger(key, value));
+      var levels = response.data.levels.reverse();
+      angular.forEach(response.data.loggers, function (value, key) {
+        loggers.push(new Logger(key, value, levels));
       });
       $scope.loggers = loggers;
     }).catch(function (response) {

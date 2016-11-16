@@ -58,6 +58,7 @@ module.exports = function ($q, jolokia) {
       var Logger = function (name) {
         this.name = name;
         this.level = null;
+        this.levels = ['TRACE', 'DEBUG', 'WARN', 'INFO', 'ERROR', 'OFF']; //Logback Default
         var i = name.lastIndexOf('.') + 1;
         this.packageLogger = name.charAt(i) !== name.charAt(i).toUpperCase();
 
