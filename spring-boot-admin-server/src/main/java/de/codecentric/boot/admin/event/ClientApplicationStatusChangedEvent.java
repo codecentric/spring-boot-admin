@@ -20,8 +20,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.springframework.boot.actuate.health.Health;
-
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.model.StatusInfo;
 
@@ -34,7 +32,7 @@ public class ClientApplicationStatusChangedEvent extends ClientApplicationEvent 
 	private static final long serialVersionUID = 1L;
 	private final StatusInfo from;
 	private final StatusInfo to;
-	private final Map<String, Health> details;
+	private final Map<String, Map<String, Object>> details;
 
 	public ClientApplicationStatusChangedEvent(Application application, StatusInfo from,
 			StatusInfo to) {
@@ -43,9 +41,9 @@ public class ClientApplicationStatusChangedEvent extends ClientApplicationEvent 
 		this.to = to;
 		this.details = null;
 	}
-	
+
 	public ClientApplicationStatusChangedEvent(Application application, StatusInfo from,
-			StatusInfo to, Map<String, Health> details) {
+			StatusInfo to, Map<String, Map<String, Object>> details) {
 		super(application, "STATUS_CHANGE");
 		this.from = from;
 		this.to = to;
@@ -59,33 +57,35 @@ public class ClientApplicationStatusChangedEvent extends ClientApplicationEvent 
 	public StatusInfo getTo() {
 		return to;
 	}
-	
+
 	/**
-	 * 
 	 * @return {@link Health} details if any, never <code>null</code>
 	 */
-	public Map<String, Health> getDetails() {
-		if(null == details)
+	public Map<String, Map<String, Object>> getDetails() {
+		if (null == details)
 			return Collections.emptyMap();
 		return details;
 	}
-	
-	public boolean hasDetails(){
+
+	public boolean hasDetails() {
 		return !getDetails().isEmpty();
 	}
+
 	/**
 	 * Helper for easy consumption by notifier in a SPEL context<br>
-	 * More @see http://docs.spring.io/spring-framework/docs/current/spring-framework-reference/htmlsingle/#expressions
+	 * More @see
+	 * http://docs.spring.io/spring-framework/docs/current/spring-framework-reference/htmlsingle/#expressions
+	 * 
 	 * @return formated string, never <code>null</code>
 	 */
 	public String getDetailsFormatted() {
 		StringBuffer buf = new StringBuffer("\n");
-		Iterator<Entry<String, Health>> iter = getDetails().entrySet().iterator();
+		Iterator<Entry<String, Map<String, Object>>> iter = getDetails().entrySet().iterator();
 		if (iter.hasNext()) {
 			while (iter.hasNext()) {
-				Entry<String, Health> entry = iter.next();
+				Entry<String, Map<String, Object>> entry = iter.next();
 				buf.append(entry.getKey()).append(":\n");
-				for (Entry<String, Object> healthDetails : entry.getValue().getDetails().entrySet()) {
+				for (Entry<String, Object> healthDetails : entry.getValue().entrySet()) {
 					buf.append("\t").append(healthDetails.getKey()).append(":\n");
 					buf.append("\t\t").append(healthDetails.getValue()).append("\n");
 				}

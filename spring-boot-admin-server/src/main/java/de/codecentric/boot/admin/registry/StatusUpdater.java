@@ -15,16 +15,12 @@
  */
 package de.codecentric.boot.admin.registry;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.Status;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.http.ResponseEntity;
@@ -65,7 +61,7 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
 
 	public void updateStatus(Application application) {
 		StatusInfo oldStatus = application.getStatusInfo();
-		Map<String, Health> healthIndicatorsMap = new LinkedHashMap<String, Health>();
+		Map<String, Map<String, Object>> healthIndicatorsMap = new LinkedHashMap<String, Map<String, Object>>();
 		StatusInfo newStatus = queryStatus(application, healthIndicatorsMap);
 
 		Application newState = Application.create(application).withStatusInfo(newStatus).build();
@@ -77,7 +73,8 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
 		}
 	}
 
-	protected StatusInfo queryStatus(Application application, Map<String, Health> healthMap) {
+	protected StatusInfo queryStatus(Application application,
+			Map<String, Map<String, Object>> healthMap) {
 		LOGGER.trace("Updating status for {}", application);
 
 		try {
@@ -98,12 +95,10 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
 							@SuppressWarnings("unchecked")
 							Map<String, Object> map = (Map<String, Object>) bodyEntry.getValue();
 							if (map.containsKey("status")) {
-								Status status = new Status((String) map.get("status"));
-								StatusInfo indicatorStatus = StatusInfo.valueOf(status.getCode());
+								StatusInfo indicatorStatus = StatusInfo.valueOf((String) map.get("status"));
 								if (newStatus.equals(indicatorStatus)) {// we got one
 									map.remove("status");
-									Health indicator = new Health.Builder(status, map).build();
-									healthMap.put(bodyEntry.getKey(), indicator);
+									healthMap.put(bodyEntry.getKey(), map);
 								}
 							}
 						}
@@ -122,14 +117,10 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
 			} else {
 				LOGGER.warn("Couldn't retrieve status for {}", application, ex);
 			}
-			Health indicator = new Health.Builder(
-					new Status(application.getStatusInfo().getStatus()),
-					Collections
-							.singletonMap("exception",
-									(null == ex.getMessage()
-											? (ex instanceof NullPointerException ? "NPE"
-													: ex.getClass().getSimpleName())
-											: ex.getMessage()))).build();
+			Map<String, Object> indicator = new LinkedHashMap<String, Object>();
+			indicator.put("exception", (null == ex.getMessage()
+					? (ex instanceof NullPointerException ? "NPE" : ex.getClass().getSimpleName())
+					: ex.getMessage()));
 			healthMap.put("error", indicator);
 			return StatusInfo.ofOffline();
 		}

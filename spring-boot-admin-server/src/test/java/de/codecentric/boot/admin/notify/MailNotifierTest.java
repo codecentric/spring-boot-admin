@@ -20,13 +20,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.Status;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 
@@ -69,12 +67,15 @@ public class MailNotifierTest {
 
 	@Test
 	public void test_onApplicationHealthStatusChangedEvent() {
-		Map<String, Health> details = Collections.singletonMap("diskSpace",
-				new Health.Builder(Status.UP).withDetail("total", 1000000)
-						.withDetail("free", 500000).withDetail("threshold", 100000).build());
+		Map<String, Object> details = new LinkedHashMap<String, Object>();
+		details.put("total", 1000000);
+		details.put("free", 500000);
+		details.put("threshold", 100000);
+		Map<String, Map<String, Object>> indicators = new LinkedHashMap<String, Map<String, Object>>();
+		indicators.put("diskSpace", details);
 		notifier.notify(new ClientApplicationStatusChangedEvent(
 				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
-				StatusInfo.ofDown(), StatusInfo.ofUp(), details));
+				StatusInfo.ofDown(), StatusInfo.ofUp(), indicators));
 
 		SimpleMailMessage expected = new SimpleMailMessage();
 		expected.setTo(new String[] { "foo@bar.com" });
