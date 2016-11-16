@@ -1,6 +1,9 @@
 package de.codecentric.boot.admin.model;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Represents a certain status a certain time.
@@ -8,34 +11,51 @@ import java.io.Serializable;
  * @author Johannes Stelzer
  */
 public class StatusInfo implements Serializable {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 
 	private final String status;
 	private final long timestamp;
+	private final Map<String, ? extends Serializable> details;
 
-	protected StatusInfo(String status, long timestamp) {
+	protected StatusInfo(String status, long timestamp,
+			Map<String, ? extends Serializable> details) {
 		this.status = status.toUpperCase();
 		this.timestamp = timestamp;
+		this.details = details != null ? Collections.unmodifiableMap(new HashMap<>(details))
+				: Collections.<String, Serializable>emptyMap();
 	}
 
-	public static StatusInfo valueOf(String statusCode) {
-		return new StatusInfo(statusCode, System.currentTimeMillis());
+	public static StatusInfo valueOf(String statusCode,
+			Map<String, ? extends Serializable> details) {
+		return new StatusInfo(statusCode, System.currentTimeMillis(), details);
 	}
 
 	public static StatusInfo ofUnknown() {
-		return valueOf("UNKNOWN");
+		return valueOf("UNKNOWN", null);
 	}
 
 	public static StatusInfo ofUp() {
-		return valueOf("UP");
+		return ofUp(null);
 	}
 
 	public static StatusInfo ofDown() {
-		return valueOf("DOWN");
+		return ofDown(null);
 	}
 
 	public static StatusInfo ofOffline() {
-		return valueOf("OFFLINE");
+		return ofOffline(null);
+	}
+
+	public static StatusInfo ofUp(Map<String, ? extends Serializable> details) {
+		return valueOf("UP", details);
+	}
+
+	public static StatusInfo ofDown(Map<String, ? extends Serializable> details) {
+		return valueOf("DOWN", details);
+	}
+
+	public static StatusInfo ofOffline(Map<String, ? extends Serializable> details) {
+		return valueOf("OFFLINE", details);
 	}
 
 	public String getStatus() {
@@ -44,6 +64,10 @@ public class StatusInfo implements Serializable {
 
 	public long getTimestamp() {
 		return timestamp;
+	}
+
+	public Map<String, ? extends Serializable> getDetails() {
+		return details;
 	}
 
 	@Override

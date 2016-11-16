@@ -15,6 +15,8 @@
  */
 package de.codecentric.boot.admin.registry;
 
+import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -75,26 +77,34 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
 
 		try {
 			@SuppressWarnings("unchecked")
-			ResponseEntity<Map<String, Object>> response = restTemplate.getForEntity(
-					application.getHealthUrl(), (Class<Map<String, Object>>) (Class<?>) Map.class);
+			ResponseEntity<Map<String, Serializable>> response = restTemplate.getForEntity(
+					application.getHealthUrl(),
+					(Class<Map<String, Serializable>>) (Class<?>) Map.class);
 			LOGGER.debug("/health for {} responded with {}", application, response);
 
 			if (response.hasBody() && response.getBody().get("status") instanceof String) {
-				return StatusInfo.valueOf((String) response.getBody().get("status"));
+				return StatusInfo.valueOf((String) response.getBody().get("status"),
+						response.getBody());
 			} else if (response.getStatusCode().is2xxSuccessful()) {
 				return StatusInfo.ofUp();
 			} else {
 				return StatusInfo.ofDown();
 			}
-
 		} catch (Exception ex) {
 			if ("OFFLINE".equals(application.getStatusInfo().getStatus())) {
 				LOGGER.debug("Couldn't retrieve status for {}", application, ex);
 			} else {
 				LOGGER.warn("Couldn't retrieve status for {}", application, ex);
 			}
-			return StatusInfo.ofOffline();
+			return StatusInfo.ofOffline(toDetails(ex));
 		}
+	}
+
+	protected Map<String, Serializable> toDetails(Exception ex) {
+		Map<String, Serializable> details = new HashMap<>();
+		details.put("message", ex.getMessage());
+		details.put("exception", ex.getClass().getName());
+		return details;
 	}
 
 	public void setStatusLifetime(long statusLifetime) {

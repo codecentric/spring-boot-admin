@@ -123,7 +123,7 @@ public class StatusUpdaterTest {
 		store.save(app1);
 
 		Application app2 = Application.create("foo").withId("id-2").withHealthUrl("health-2")
-				.withStatusInfo(StatusInfo.valueOf("UP")).build();
+				.withStatusInfo(StatusInfo.ofUp()).build();
 		store.save(app2);
 
 		when(template.getForEntity("health-2", Map.class))

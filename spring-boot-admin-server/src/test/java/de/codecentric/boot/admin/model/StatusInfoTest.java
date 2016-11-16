@@ -11,8 +11,8 @@ public class StatusInfoTest {
 	@Test
 	public void test_equals_hashcode() {
 		StatusInfo up = StatusInfo.ofUp();
-		StatusInfo up2 = StatusInfo.valueOf("UP");
-		StatusInfo down = StatusInfo.valueOf("DOWN");
+		StatusInfo up2 = StatusInfo.ofUp();
+		StatusInfo down = StatusInfo.ofDown();
 
 		assertThat(up, is(up2));
 		assertThat(up, not(is(down)));
