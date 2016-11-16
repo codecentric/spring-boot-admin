@@ -15,17 +15,8 @@
  */
 package de.codecentric.boot.admin.services;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Collections;
-import java.util.Map;
-
+import de.codecentric.boot.admin.config.AdminProperties;
+import de.codecentric.boot.admin.model.Application;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
@@ -36,9 +27,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import de.codecentric.boot.admin.config.AdminClientProperties;
-import de.codecentric.boot.admin.config.AdminProperties;
-import de.codecentric.boot.admin.model.Application;
+import java.util.Collections;
+import java.util.Map;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 public class ApplicationRegistratorTest {
 
@@ -54,13 +52,14 @@ public class ApplicationRegistratorTest {
 		adminProps = new AdminProperties();
 		adminProps.setUrl(new String[] { "http://sba:8080", "http://sba2:8080" });
 
-		AdminClientProperties clientProps = new AdminClientProperties();
-		clientProps.setManagementUrl("http://localhost:8080/mgmt");
-		clientProps.setHealthUrl("http://localhost:8080/health");
-		clientProps.setServiceUrl("http://localhost:8080");
-		clientProps.setName("AppName");
+		ApplicationFactory factory = mock(ApplicationFactory.class);
+		when(factory.createApplication()).thenReturn(Application.create("AppName")
+			.withManagementUrl("http://localhost:8080/mgmt")
+			.withHealthUrl("http://localhost:8080/health")
+			.withServiceUrl("http://localhost:8080")
+		.build());
 
-		registrator = new ApplicationRegistrator(restTemplate, adminProps, clientProps);
+		registrator = new ApplicationRegistrator(restTemplate, adminProps, factory);
 
 		headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
