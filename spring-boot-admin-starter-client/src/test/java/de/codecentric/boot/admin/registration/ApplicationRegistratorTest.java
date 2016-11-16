@@ -36,9 +36,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import de.codecentric.boot.admin.client.config.AdminClientProperties;
 import de.codecentric.boot.admin.client.config.AdminProperties;
 import de.codecentric.boot.admin.client.registration.Application;
+import de.codecentric.boot.admin.client.registration.ApplicationFactory;
 import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
 
 public class ApplicationRegistratorTest {
@@ -55,13 +55,14 @@ public class ApplicationRegistratorTest {
 		adminProps = new AdminProperties();
 		adminProps.setUrl(new String[] { "http://sba:8080", "http://sba2:8080" });
 
-		AdminClientProperties clientProps = new AdminClientProperties();
-		clientProps.setManagementUrl("http://localhost:8080/mgmt");
-		clientProps.setHealthUrl("http://localhost:8080/health");
-		clientProps.setServiceUrl("http://localhost:8080");
-		clientProps.setName("AppName");
+		ApplicationFactory factory = mock(ApplicationFactory.class);
+		when(factory.createApplication()).thenReturn(Application.create("AppName")
+			.withManagementUrl("http://localhost:8080/mgmt")
+			.withHealthUrl("http://localhost:8080/health")
+			.withServiceUrl("http://localhost:8080")
+		.build());
 
-		registrator = new ApplicationRegistrator(restTemplate, adminProps, clientProps);
+		registrator = new ApplicationRegistrator(restTemplate, adminProps, factory);
 
 		headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);

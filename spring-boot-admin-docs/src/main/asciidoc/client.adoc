@@ -56,7 +56,9 @@ NOTE: In case you are deploying multiple applications to the same JVM and multip
 [[spring-boot-admin-client]]
 === Spring Boot Admin Client ===
 
-The Spring Boot Admin Client registers the application at the admin server. This is done by periodically doing a http post-request to the admin server providing informations about the application. It also adds Jolokia to your dependencies, so that JMX-beans are accessible via http, this is needed if you want to manage loglevels or JMX-beans via the admin UI.
+The Spring Boot Admin Client registers the application at the admin server. This is done by periodically doing a http post-request to the admin server providing information about the application. It also adds Jolokia to your dependencies, so that JMX-beans are accessible via http, this is needed if you want to manage loglevels or JMX-beans via the admin UI.
+
+There are plenty of properties to influence the way how the client registers your application. In case that doesn't fit your needs, you can provide your own `AppliationFactory` implementation.
 
 .Spring Boot Admin Client configuration options
 |===
@@ -115,3 +117,5 @@ spring.boot.admin.password
 | Use the ip-address rather then the hostname in the guessed urls. If `server.address` / `management.address` is set, it get used. Otherwise the IP address returned from `InetAddress.getLocalHost()` gets used.
 | `false`
 |===
+
+----

@@ -28,7 +28,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import de.codecentric.boot.admin.client.config.AdminClientProperties;
 import de.codecentric.boot.admin.client.config.AdminProperties;
 
 /**
@@ -37,22 +36,16 @@ import de.codecentric.boot.admin.client.config.AdminProperties;
 public class ApplicationRegistrator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationRegistrator.class);
-
-	private static HttpHeaders HTTP_HEADERS = createHttpHeaders();
-
+	private static final HttpHeaders HTTP_HEADERS = createHttpHeaders();
 	private final AtomicReference<String> registeredId = new AtomicReference<>();
-
-	private AdminClientProperties client;
-
-	private AdminProperties admin;
-
+	private final AdminProperties admin;
 	private final RestTemplate template;
+	private final ApplicationFactory applicationFactory;
 
-	public ApplicationRegistrator(RestTemplate template, AdminProperties admin,
-			AdminClientProperties client) {
-		this.client = client;
+	public ApplicationRegistrator(RestTemplate template, AdminProperties admin, ApplicationFactory applicationFactory) {
 		this.admin = admin;
 		this.template = template;
+		this.applicationFactory = applicationFactory;
 	}
 
 	private static HttpHeaders createHttpHeaders() {
@@ -120,8 +113,6 @@ public class ApplicationRegistrator {
 	}
 
 	protected Application createApplication() {
-		return Application.create(client.getName()).withHealthUrl(client.getHealthUrl())
-				.withManagementUrl(client.getManagementUrl()).withServiceUrl(client.getServiceUrl())
-				.build();
+		return applicationFactory.createApplication();
 	}
 }

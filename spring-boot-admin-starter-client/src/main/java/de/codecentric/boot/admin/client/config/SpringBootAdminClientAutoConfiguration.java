@@ -15,9 +15,11 @@
  */
 package de.codecentric.boot.admin.client.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +30,9 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
+import de.codecentric.boot.admin.client.registration.ApplicationFactory;
 import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
+import de.codecentric.boot.admin.client.registration.DefaultApplicationFactory;
 import de.codecentric.boot.admin.client.registration.RegistrationApplicationListener;
 
 @Configuration
@@ -36,28 +40,25 @@ import de.codecentric.boot.admin.client.registration.RegistrationApplicationList
 @Conditional(SpringBootAdminClientEnabledCondition.class)
 public class SpringBootAdminClientAutoConfiguration {
 
-	@Autowired
-	private AdminClientProperties client;
-
-	@Autowired
-	private AdminProperties admin;
-
-	@Autowired
-	private RestTemplateBuilder restTemplBuilder;
-
-	/**
-	 * Task that registers the application at the spring-boot-admin application.
-	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public ApplicationRegistrator registrator() {
+	public ApplicationRegistrator registrator(AdminProperties admin,
+			ApplicationFactory applicationFactory, RestTemplateBuilder restTemplBuilder) {
 		RestTemplateBuilder builder = restTemplBuilder
 				.messageConverters(new MappingJackson2HttpMessageConverter())
 				.requestFactory(SimpleClientHttpRequestFactory.class);
 		if (admin.getUsername() != null) {
 			builder = builder.basicAuthorization(admin.getUsername(), admin.getPassword());
 		}
-		return new ApplicationRegistrator(builder.build(), admin, client);
+		return new ApplicationRegistrator(builder.build(), admin, applicationFactory);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public ApplicationFactory applicationFactory(AdminClientProperties client,
+			ManagementServerProperties management, ServerProperties server,
+			@Value("${endpoints.health.path:/${endpoints.health.id:health}}") String healthEndpointPath) {
+		return new DefaultApplicationFactory(client, management, server, healthEndpointPath);
 	}
 
 	@Bean
@@ -70,14 +71,12 @@ public class SpringBootAdminClientAutoConfiguration {
 		return taskScheduler;
 	}
 
-	/**
-	 * ApplicationListener triggering registration after being ready/shutdown
-	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public RegistrationApplicationListener registrationListener() {
-		RegistrationApplicationListener listener = new RegistrationApplicationListener(
-				registrator(), registrationTaskScheduler());
+	public RegistrationApplicationListener registrationListener(AdminProperties admin,
+			ApplicationRegistrator registrator) {
+		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator,
+				registrationTaskScheduler());
 		listener.setAutoRegister(admin.isAutoRegistration());
 		listener.setAutoDeregister(admin.isAutoDeregistration());
 		listener.setRegisterPeriod(admin.getPeriod());
