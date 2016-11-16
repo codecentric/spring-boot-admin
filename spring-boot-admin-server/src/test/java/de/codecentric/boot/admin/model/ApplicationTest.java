@@ -14,11 +14,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ApplicationTest {
-
 	private ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
 
 	@Test
-	public void test_old_json_format() throws JsonProcessingException, IOException {
+	public void test_1_2_json_format() throws JsonProcessingException, IOException {
 		String json = "{ \"name\" : \"test\", \"url\" : \"http://test\" }";
 
 		Application value = objectMapper.readValue(json, Application.class);
@@ -30,7 +29,19 @@ public class ApplicationTest {
 	}
 
 	@Test
-	public void test_new_json_format() throws JsonProcessingException, IOException {
+	public void test_1_4_json_format() throws JsonProcessingException, IOException {
+		String json = "{ \"name\" : \"test\", \"managementUrl\" : \"http://test\" , \"healthUrl\" : \"http://health\" , \"serviceUrl\" : \"http://service\", \"statusInfo\": {\"status\":\"UNKNOWN\"} }";
+
+		Application value = objectMapper.readValue(json, Application.class);
+
+		assertThat(value.getName(), is("test"));
+		assertThat(value.getManagementUrl(), is("http://test"));
+		assertThat(value.getHealthUrl(), is("http://health"));
+		assertThat(value.getServiceUrl(), is("http://service"));
+	}
+
+	@Test
+	public void test_1_5_json_format() throws JsonProcessingException, IOException {
 		String json = "{ \"name\" : \"test\", \"managementUrl\" : \"http://test\" , \"healthUrl\" : \"http://health\" , \"serviceUrl\" : \"http://service\"}";
 
 		Application value = objectMapper.readValue(json, Application.class);
@@ -41,14 +52,27 @@ public class ApplicationTest {
 		assertThat(value.getServiceUrl(), is("http://service"));
 	}
 
+
+	@Test
+	public void test_onlyHealhUrl() throws JsonProcessingException, IOException {
+		String json = "{ \"name\" : \"test\", \"healthUrl\" : \"http://test\" }";
+		Application value = objectMapper.readValue(json, Application.class);
+		assertThat(value.getName(), is("test"));
+		assertThat(value.getHealthUrl(), is("http://test"));
+		assertThat(value.getManagementUrl(), nullValue());
+		assertThat(value.getServiceUrl(), nullValue());
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void test_name_expected() throws JsonProcessingException, IOException {
-		Application.fromJson("http://url", "", "", "", null);
+		String json = "{ \"name\" : \"\", \"managementUrl\" : \"http://test\" , \"healthUrl\" : \"http://health\" , \"serviceUrl\" : \"http://service\"}";
+		objectMapper.readValue(json, Application.class);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void test_healthUrl_expected() throws JsonProcessingException, IOException {
-		Application.fromJson("", "", "", "name", null);
+		String json = "{ \"name\" : \"test\", \"managementUrl\" : \"http://test\" , \"healthUrl\" : \"\" , \"serviceUrl\" : \"http://service\"}";
+		objectMapper.readValue(json, Application.class);
 	}
 
 	@Test

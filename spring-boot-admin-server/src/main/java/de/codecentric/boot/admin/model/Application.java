@@ -15,17 +15,22 @@
  */
 package de.codecentric.boot.admin.model;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 /**
  * The domain model for all registered application at the spring boot admin application.
  */
+@JsonDeserialize(using = Application.Deserializer.class)
 public class Application implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -46,24 +51,6 @@ public class Application implements Serializable {
 		this.name = builder.name;
 		this.id = builder.id;
 		this.statusInfo = builder.statusInfo;
-	}
-
-	@JsonCreator
-	public static Application fromJson(@JsonProperty("url") String url,
-			@JsonProperty("managementUrl") String managementUrl,
-			@JsonProperty("healthUrl") String healthUrl,
-			@JsonProperty("serviceUrl") String serviceUrl, @JsonProperty("name") String name) {
-
-		Builder builder = create(name);
-
-		if (StringUtils.hasText(url)) {
-			// old format
-			builder.withHealthUrl(url.replaceFirst("/+$", "") + "/health").withManagementUrl(url);
-		} else {
-			builder.withHealthUrl(healthUrl).withManagementUrl(managementUrl)
-					.withServiceUrl(serviceUrl);
-		}
-		return builder.build();
 	}
 
 	public static Builder create(String name) {
@@ -222,4 +209,36 @@ public class Application implements Serializable {
 		return true;
 	}
 
+	public static class Deserializer extends StdDeserializer<Application> {
+		private static final long serialVersionUID = 1L;
+
+		protected Deserializer() {
+			super(Application.class);
+		}
+
+		@Override
+		public Application deserialize(JsonParser p, DeserializationContext ctxt)
+				throws IOException, JsonProcessingException {
+			JsonNode node = p.readValueAsTree();
+
+			Builder builder = create(node.get("name").asText());
+
+			if (node.has("url")) {
+				String url = node.get("url").asText();
+				builder.withHealthUrl(url.replaceFirst("/+$", "") + "/health")
+						.withManagementUrl(url);
+			} else {
+				if (node.has("healthUrl")) {
+					builder.withHealthUrl(node.get("healthUrl").asText());
+				}
+				if (node.has("managementUrl")) {
+					builder.withManagementUrl(node.get("managementUrl").asText());
+				}
+				if (node.has("serviceUrl")) {
+					builder.withServiceUrl(node.get("serviceUrl").asText());
+				}
+			}
+			return builder.build();
+		}
+	}
 }
