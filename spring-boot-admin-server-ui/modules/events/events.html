@@ -22,7 +22,7 @@
           <td>{{ event.type }}
             <br/>
             <span ng-if="event.type == 'STATUS_CHANGE'">
-							<span class="status-{{event.from.status}}">{{ event.from.status }}</span> -&gt; <span class="status-{{event.to.status}}">{{ event.to.status }}</span>
+              <sba-status-info status-info="event.from"></sba-status-info> -&gt; <sba-status-info status-info="event.to"></sba-status-info>
             </span>
           </td>
         </tr>

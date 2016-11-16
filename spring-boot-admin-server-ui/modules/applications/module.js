@@ -38,6 +38,7 @@ module.component('sbaAccordionGroup', require('./components/accordionGroup.js'))
 module.component('sbaNotificationSettings', require('./components/notificationSettings.js'));
 module.component('sbaPopover', require('./components/popover.js'));
 module.component('sbaLimitedText', require('./components/limitedText.js'));
+module.component('sbaStatusInfo', require('./components/statusInfo.js'));
 
 require('./css/module.css');
 
