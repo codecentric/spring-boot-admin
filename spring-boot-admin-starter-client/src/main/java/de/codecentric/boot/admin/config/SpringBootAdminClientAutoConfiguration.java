@@ -15,9 +15,12 @@
  */
 package de.codecentric.boot.admin.config;
 
+import de.codecentric.boot.admin.services.ApplicationFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +46,12 @@ public class SpringBootAdminClientAutoConfiguration {
 	private AdminProperties admin;
 
 	@Autowired
+	private ManagementServerProperties management;
+
+	@Autowired
+	private ServerProperties server;
+
+	@Autowired
 	private RestTemplateBuilder restTemplBuilder;
 
 	/**
@@ -57,7 +66,19 @@ public class SpringBootAdminClientAutoConfiguration {
 		if (admin.getUsername() != null) {
 			builder = builder.basicAuthorization(admin.getUsername(), admin.getPassword());
 		}
-		return new ApplicationRegistrator(builder.build(), admin, client);
+
+		return new ApplicationRegistrator(builder.build(), admin, applicationFactory());
+	}
+
+	/**
+	 * Task that registers the factory for creating instances of {@link de.codecentric.boot.admin.model.Application}
+	 * that are used by {@link #registrator()}
+	 * @return
+     */
+	@Bean
+	@ConditionalOnMissingBean
+	public ApplicationFactory applicationFactory() {
+		return new ApplicationFactory(client, management, server);
 	}
 
 	@Bean
