@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import de.codecentric.boot.admin.config.AdminClientProperties;
+import de.codecentric.boot.admin.model.Application;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
@@ -25,7 +26,6 @@ import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-//FIXME: do test on methods with visibility public, but not protected ...
 public class ApplicationFactoryTest {
 
 	private AnnotationConfigWebApplicationContext context;
@@ -42,28 +42,24 @@ public class ApplicationFactoryTest {
 		load("management.contextPath=/admin", "endpoints.health.id=alive", "local.server.port=8080",
 				"local.management.port=8081");
 		ApplicationFactory factory = context.getBean(ApplicationFactory.class);
-
 		publishApplicationReadyEvent(factory);
 
-		assertThat(factory.doManagementUrl(),
-				is("http://" + getHostname() + ":8081/admin"));
-		assertThat(factory.doHealthUrl(),
-				is("http://" + getHostname() + ":8081/admin/alive"));
-		assertThat(factory.doServiceUrl(), is("http://" + getHostname() + ":8080"));
+		Application app = factory.createApplication();
+		assertThat(app.getManagementUrl(), is("http://" + getHostname() + ":8081/admin"));
+		assertThat(app.getHealthUrl(), is("http://" + getHostname() + ":8081/admin/alive"));
+		assertThat(app.getServiceUrl(), is("http://" + getHostname() + ":8080"));
 	}
 
 	@Test
 	public void test_contextPath_mgmtPath() {
 		load("server.context-path=app", "management.context-path=/admin", "local.server.port=8080");
 		ApplicationFactory factory = context.getBean(ApplicationFactory.class);
-
 		publishApplicationReadyEvent(factory);
 
-		assertThat(factory.doManagementUrl(),
-				is("http://" + getHostname() + ":8080/app/admin"));
-		assertThat(factory.doHealthUrl(),
-				is("http://" + getHostname() + ":8080/app/admin/health"));
-		assertThat(factory.doServiceUrl(), is("http://" + getHostname() + ":8080/app"));
+		Application app = factory.createApplication();
+		assertThat(app.getManagementUrl(), is("http://" + getHostname() + ":8080/app/admin"));
+		assertThat(app.getHealthUrl(), is("http://" + getHostname() + ":8080/app/admin/health"));
+		assertThat(app.getServiceUrl(), is("http://" + getHostname() + ":8080/app"));
 	}
 
 	@Test
@@ -71,53 +67,48 @@ public class ApplicationFactoryTest {
 		load("server.context-path=app", "management.context-path=/admin", "local.server.port=8080",
 				"local.management.port=8081", "endpoints.health.path=/foo/bar");
 		ApplicationFactory factory = context.getBean(ApplicationFactory.class);
-
 		publishApplicationReadyEvent(factory);
 
-		assertThat(factory.doManagementUrl(),
-				is("http://" + getHostname() + ":8081/admin"));
-		assertThat(factory.doHealthUrl(),
-				is("http://" + getHostname() + ":8081/admin/foo/bar"));
-		assertThat(factory.doServiceUrl(), is("http://" + getHostname() + ":8080/app"));
+		Application app = factory.createApplication();
+		assertThat(app.getManagementUrl(), is("http://" + getHostname() + ":8081/admin"));
+		assertThat(app.getHealthUrl(), is("http://" + getHostname() + ":8081/admin/foo/bar"));
+		assertThat(app.getServiceUrl(), is("http://" + getHostname() + ":8080/app"));
 	}
 
 	@Test
 	public void test_contextPath() {
 		load("server.context-path=app", "local.server.port=80");
 		ApplicationFactory factory = context.getBean(ApplicationFactory.class);
-
 		publishApplicationReadyEvent(factory);
 
-		assertThat(factory.doManagementUrl(), is("http://" + getHostname() + ":80/app"));
-		assertThat(factory.doHealthUrl(),
-				is("http://" + getHostname() + ":80/app/health"));
-		assertThat(factory.doServiceUrl(), is("http://" + getHostname() + ":80/app"));
+		Application app = factory.createApplication();
+		assertThat(app.getManagementUrl(), is("http://" + getHostname() + ":80/app"));
+		assertThat(app.getHealthUrl(), is("http://" + getHostname() + ":80/app/health"));
+		assertThat(app.getServiceUrl(), is("http://" + getHostname() + ":80/app"));
 	}
 
 	@Test
 	public void test_servletPath() {
 		load("server.servlet-path=app", "server.context-path=srv", "local.server.port=80");
 		ApplicationFactory factory = context.getBean(ApplicationFactory.class);
-
 		publishApplicationReadyEvent(factory);
 
-		assertThat(factory.doManagementUrl(),
-				is("http://" + getHostname() + ":80/srv/app"));
-		assertThat(factory.doHealthUrl(),
-				is("http://" + getHostname() + ":80/srv/app/health"));
-		assertThat(factory.doServiceUrl(), is("http://" + getHostname() + ":80/srv"));
+		Application app = factory.createApplication();
+		assertThat(app.getManagementUrl(), is("http://" + getHostname() + ":80/srv/app"));
+		assertThat(app.getHealthUrl(), is("http://" + getHostname() + ":80/srv/app/health"));
+		assertThat(app.getServiceUrl(), is("http://" + getHostname() + ":80/srv"));
 	}
 
 	@Test
 	public void test_default() {
 		load("local.server.port=8080");
 		ApplicationFactory factory = context.getBean(ApplicationFactory.class);
-
 		publishApplicationReadyEvent(factory);
 
-		assertThat(factory.doManagementUrl(), is("http://" + getHostname() + ":8080"));
-		assertThat(factory.doHealthUrl(), is("http://" + getHostname() + ":8080/health"));
-		assertThat(factory.doServiceUrl(), is("http://" + getHostname() + ":8080"));
+		Application app = factory.createApplication();
+		assertThat(app.getManagementUrl(), is("http://" + getHostname() + ":8080"));
+		assertThat(app.getHealthUrl(), is("http://" + getHostname() + ":8080/health"));
+		assertThat(app.getServiceUrl(), is("http://" + getHostname() + ":8080"));
 	}
 
 	@Test
@@ -125,13 +116,12 @@ public class ApplicationFactoryTest {
 		load("server.ssl.key-store=somefile.jks", "server.ssl.key-store-password=password",
 				"local.server.port=8080");
 		ApplicationFactory factory = context.getBean(ApplicationFactory.class);
-
 		publishApplicationReadyEvent(factory);
 
-		assertThat(factory.doManagementUrl(), is("https://" + getHostname() + ":8080"));
-		assertThat(factory.doHealthUrl(),
-				is("https://" + getHostname() + ":8080/health"));
-		assertThat(factory.doServiceUrl(), is("https://" + getHostname() + ":8080"));
+		Application app = factory.createApplication();
+		assertThat(app.getManagementUrl(), is("https://" + getHostname() + ":8080"));
+		assertThat(app.getHealthUrl(), is("https://" + getHostname() + ":8080/health"));
+		assertThat(app.getServiceUrl(), is("https://" + getHostname() + ":8080"));
 	}
 
 	@Test
@@ -139,22 +129,22 @@ public class ApplicationFactoryTest {
 		load("management.ssl.key-store=somefile.jks", "management.ssl.key-store-password=password",
 				"local.server.port=8080", "local.management.port=9090");
 		ApplicationFactory factory = context.getBean(ApplicationFactory.class);
-
 		publishApplicationReadyEvent(factory);
 
-		assertThat(factory.doManagementUrl(), is("https://" + getHostname() + ":9090"));
-		assertThat(factory.doHealthUrl(), is("https://" + getHostname() + ":9090/health"));
-		assertThat(factory.doServiceUrl(), is("http://" + getHostname() + ":8080"));
+		Application app = factory.createApplication();
+		assertThat(app.getManagementUrl(), is("https://" + getHostname() + ":9090"));
+		assertThat(app.getHealthUrl(), is("https://" + getHostname() + ":9090/health"));
+		assertThat(app.getServiceUrl(), is("http://" + getHostname() + ":8080"));
 	}
 
 	@Test
 	public void test_preferIpAddress_serveraddress_missing() {
 		load("spring.boot.admin.client.prefer-ip=true", "local.server.port=8080");
 		ApplicationFactory factory = context.getBean(ApplicationFactory.class);
-
 		publishApplicationReadyEvent(factory);
 
-		assertTrue(factory.doServiceUrl()
+		Application app = factory.createApplication();
+		assertTrue(app.getServiceUrl()
 				.matches("http://\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}:8080"));
 	}
 
@@ -163,9 +153,10 @@ public class ApplicationFactoryTest {
 		load("spring.boot.admin.client.prefer-ip=true", "local.server.port=8080",
 				"local.management.port=8081");
 		ApplicationFactory factory = context.getBean(ApplicationFactory.class);
-
 		publishApplicationReadyEvent(factory);
-		assertTrue(factory.doManagementUrl()
+
+		Application app = factory.createApplication();
+		assertTrue(app.getManagementUrl()
 				.matches("http://\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}:8081"));
 	}
 
@@ -175,24 +166,24 @@ public class ApplicationFactoryTest {
 				"management.address=127.0.0.2", "local.server.port=8080",
 				"local.management.port=8081");
 		ApplicationFactory factory = context.getBean(ApplicationFactory.class);
-
 		publishApplicationReadyEvent(factory);
 
-		assertThat(factory.doManagementUrl(), is("http://127.0.0.2:8081"));
-		assertThat(factory.doHealthUrl(), is("http://127.0.0.2:8081/health"));
-		assertThat(factory.doServiceUrl(), is("http://127.0.0.1:8080"));
+		Application app = factory.createApplication();
+		assertThat(app.getManagementUrl(), is("http://127.0.0.2:8081"));
+		assertThat(app.getHealthUrl(), is("http://127.0.0.2:8081/health"));
+		assertThat(app.getServiceUrl(), is("http://127.0.0.1:8080"));
 	}
 
 	@Test
 	public void test_serveraddress() {
 		load("server.address=127.0.0.2", "local.server.port=8080");
 		ApplicationFactory factory = context.getBean(ApplicationFactory.class);
-
 		publishApplicationReadyEvent(factory);
 
-		assertThat(factory.doServiceUrl(), is("http://127.0.0.2:8080"));
-		assertThat(factory.doManagementUrl(), is("http://127.0.0.2:8080"));
-		assertThat(factory.doHealthUrl(), is("http://127.0.0.2:8080/health"));
+		Application app = factory.createApplication();
+		assertThat(app.getServiceUrl(), is("http://127.0.0.2:8080"));
+		assertThat(app.getManagementUrl(), is("http://127.0.0.2:8080"));
+		assertThat(app.getHealthUrl(), is("http://127.0.0.2:8080/health"));
 	}
 
 	@Test
@@ -200,12 +191,12 @@ public class ApplicationFactoryTest {
 		load("server.address=127.0.0.2", "management.address=127.0.0.3", "local.server.port=8080",
 				"local.management.port=8081");
 		ApplicationFactory factory = context.getBean(ApplicationFactory.class);
-
 		publishApplicationReadyEvent(factory);
 
-		assertThat(factory.doServiceUrl(), is("http://127.0.0.2:8080"));
-		assertThat(factory.doManagementUrl(), is("http://127.0.0.3:8081"));
-		assertThat(factory.doHealthUrl(), is("http://127.0.0.3:8081/health"));
+		Application app = factory.createApplication();
+		assertThat(app.getServiceUrl(), is("http://127.0.0.2:8080"));
+		assertThat(app.getManagementUrl(), is("http://127.0.0.3:8081"));
+		assertThat(app.getHealthUrl(), is("http://127.0.0.3:8081/health"));
 	}
 
 	@Test
@@ -214,12 +205,12 @@ public class ApplicationFactoryTest {
 				"spring.boot.admin.client.management-url=http://management",
 				"spring.boot.admin.client.health-url=http://health");
 		ApplicationFactory factory = context.getBean(ApplicationFactory.class);
-
 		publishApplicationReadyEvent(factory);
 
-		assertThat(factory.doServiceUrl(), is("http://service"));
-		assertThat(factory.doManagementUrl(), is("http://management"));
-		assertThat(factory.doHealthUrl(), is("http://health"));
+		Application app = factory.createApplication();
+		assertThat(app.getServiceUrl(), is("http://service"));
+		assertThat(app.getManagementUrl(), is("http://management"));
+		assertThat(app.getHealthUrl(), is("http://health"));
 	}
 
 	@Test
