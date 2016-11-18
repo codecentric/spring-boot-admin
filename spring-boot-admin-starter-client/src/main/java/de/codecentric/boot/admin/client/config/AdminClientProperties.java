@@ -18,7 +18,10 @@ package de.codecentric.boot.admin.client.config;
 import static org.springframework.util.StringUtils.trimLeadingCharacter;
 
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -180,8 +183,25 @@ public class AdminClientProperties {
 
 	private InetAddress getLocalHost() {
 		try {
+			Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+
+			while (networkInterfaces.hasMoreElements()) {
+				NetworkInterface networkInterface = networkInterfaces.nextElement();
+
+				Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+
+				while (addresses.hasMoreElements()) {
+					InetAddress address = addresses.nextElement();
+					if (address.isSiteLocalAddress()) {
+						return address;
+					}
+				}
+			}
+
 			return InetAddress.getLocalHost();
 		} catch (UnknownHostException ex) {
+			throw new IllegalArgumentException(ex.getMessage(), ex);
+		} catch (SocketException ex) {
 			throw new IllegalArgumentException(ex.getMessage(), ex);
 		}
 	}
