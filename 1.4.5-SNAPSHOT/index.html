@@ -517,7 +517,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 1.4.5-SNAPSHOT,</span>
-<span id="revdate">16.11.2016</span>
+<span id="revdate">20.11.2016</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -542,40 +542,6 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#spring-boot-admin-client">3.4. Spring Boot Admin Client</a></li>
 </ul>
 </li>
-<li><a href="#spring-boot-admin-server">4. Spring Boot Admin Server</a>
-<ul class="sectlevel2">
-<li><a href="#spring-cloud-discovery-support">4.1. Spring Cloud Discovery</a>
-<ul class="sectlevel3">
-<li><a href="#_serviceinstanceconverter">4.1.1. ServiceInstanceConverter</a></li>
-</ul>
-</li>
-<li><a href="#clustering-support">4.2. Clustering</a></li>
-<li><a href="#_notifications">4.3. Notifications</a>
-<ul class="sectlevel3">
-<li><a href="#_reminder_notifications">4.3.1. Reminder notifications</a></li>
-<li><a href="#filtering-notifications">4.3.2. Filtering notifications</a></li>
-<li><a href="#mail-notifications">4.3.3. Mail notifications</a></li>
-<li><a href="#pagerduty-notifications">4.3.4. Pagerduty notifications</a></li>
-<li><a href="#_hipchat_notifications">4.3.5. Hipchat notifications</a></li>
-<li><a href="#_slack_notifications">4.3.6. Slack notifications</a></li>
-</ul>
-</li>
-<li><a href="#_ui_modules">4.4. UI Modules</a>
-<ul class="sectlevel3">
-<li><a href="#_hystrix_ui_module">4.4.1. Hystrix UI Module</a></li>
-<li><a href="#_turbine_ui_module">4.4.2. Turbine UI Module</a></li>
-<li><a href="#_activiti_ui_module">4.4.3. Activiti UI Module</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#securing-spring-boot-admin">5. Security</a>
-<ul class="sectlevel2">
-<li><a href="#_securing_spring_boot_admin_server">5.1. Securing Spring Boot Admin Server</a></li>
-<li><a href="#_securing_client_s_actuator_endpoints">5.2. Securing Client&#8217;s Actuator Endpoints</a></li>
-</ul>
-</li>
-<li><a href="#faqs">6. FAQs</a></li>
 </ul>
 </div>
 </div>
@@ -841,7 +807,10 @@ In case you are deploying multiple applications to the same JVM and multiple Log
 <div class="sect2">
 <h3 id="spring-boot-admin-client"><a class="anchor" href="#spring-boot-admin-client"></a>3.4. Spring Boot Admin Client</h3>
 <div class="paragraph">
-<p>The Spring Boot Admin Client registers the application at the admin server. This is done by periodically doing a http post-request to the admin server providing informations about the application. It also adds Jolokia to your dependencies, so that JMX-beans are accessible via http, this is needed if you want to manage loglevels or JMX-beans via the admin UI.</p>
+<p>The Spring Boot Admin Client registers the application at the admin server. This is done by periodically doing a http post-request to the admin server providing information about the application. It also adds Jolokia to your dependencies, so that JMX-beans are accessible via http, this is needed if you want to manage loglevels or JMX-beans via the admin UI.</p>
+</div>
+<div class="paragraph">
+<p>There are plenty of properties to influence the way how the client registers your application. In case that doesn&#8217;t fit your needs, you can provide your own <code>AppliationFactory</code> implementation.</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
 <caption class="title">Table 1. Spring Boot Admin Client configuration options</caption>
@@ -926,742 +895,548 @@ spring.boot.admin.password</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="spring-boot-admin-server"><a class="anchor" href="#spring-boot-admin-server"></a>4. Spring Boot Admin Server</h2>
-<div class="sectionbody">
-<table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 2. Spring Boot Admin Server configuration options</caption>
-<colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Property name</th>
-<th class="tableblock halign-left valign-top">Description</th>
-<th class="tableblock halign-left valign-top">Default value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.context-path</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The context-path prefixes the path where the Admin Server&#8217;s statics assets and API should be served. Relative to the Dispatcher-Servlet.</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.monitor.period</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Time interval in ms to update the status of applications with expired status-informations.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">10.000</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.monitor.status-lifetime</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Lifetime of application statuses in ms. The applications /health-endpoint will not be queried until the lifetime has expired.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">10.000</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.routes.endpoints</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The enpoints which will be available via spring boot admin zuul proxy. If you write ui modules using other endpoints you need to add them.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"env, metrics, trace, dump, jolokia, info, configprops, trace, activiti, logfile, refresh, flyway, liquibase"</code></p></td>
-</tr>
-</tbody>
-</table>
-<div class="sect2">
-<h3 id="spring-cloud-discovery-support"><a class="anchor" href="#spring-cloud-discovery-support"></a>4.1. Spring Cloud Discovery</h3>
-<div class="paragraph">
-<p>The Spring Boot Admin Server is capable of using  Spring Clouds <code>DiscoveryClient</code> to discover applications. The advantage is that the clients don&#8217;t have to include the <code>spring-boot-admin-starter-client</code>. You just have to add a DiscoveryClient to your admin server - everything else is done by AutoConfiguration.
-The setup is explained <a href="#discover-clients-via-spring-cloud-discovery">above</a>.</p>
-</div>
-<div class="sect3">
-<h4 id="_serviceinstanceconverter"><a class="anchor" href="#_serviceinstanceconverter"></a>4.1.1. ServiceInstanceConverter</h4>
-<div class="paragraph">
-<p>The informations from the discovered services are converted by the <code>ServiceInstanceConverter</code>. Spring Boot Admin ships with a default and Eureka converter implementation. The correct one is selected by AutoConfiguration. You can use your own conversion by implementing the interface and adding the bean to your application context.</p>
-</div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-If you want to customize the default conversion of services you can either add <code>health.path</code>, <code>management.port</code> and/or <code>mangament.context-path</code> entries to the services metadata. This allows you to set the health or management path per application. In case you want to configure this for all of your discovered services, you can use the <code>spring.boot.admin.discovery.converter.*</code> properties for your Spring Boot Admin Server configuration. The services' metadata takes precedence over the server configuration. For the health-url the <code>EurekaServiceInstanceConverter</code> uses the healthCheckUrl registered in Eureka, which can be set for your client via <code>eureka.instance.healthCheckUrl</code>.
-</td>
-</tr>
-</table>
-</div>
-<table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 3. Discovery configuration options</caption>
-<colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Property name</th>
-<th class="tableblock halign-left valign-top">Description</th>
-<th class="tableblock halign-left valign-top">Default value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.discovery.enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enables the DiscoveryClient-support for the admin server.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.discovery.converter.management-context-path</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Will be appended to the service-url of the discovered service when the managment-url is converted by the <code>DefaultServiceInstanceConverter</code>.</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.discovery.converter.health-endpoint</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Will be appended to the management-url of the discovered service when the health-url is converted by the <code>DefaultServiceInstanceConverter</code>.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"health"</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.discovery.ignored-services</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">This services will be ignored when using discovery and not registered as application.</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="clustering-support"><a class="anchor" href="#clustering-support"></a>4.2. Clustering</h3>
-<div class="paragraph">
-<p>Spring Boot Admin Server supports cluster replication via Hazelcast. It is automatically enabled when a <code>HazelcastConfig</code>- or <code>HazelcastInstance</code>-Bean is present. You can also configure the Hazelcast instance to be persistent, to keep the status over restarts.
-Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-hazelcast/">Spring Boot support for Hazelcast</a>.</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Add Hazelcast to your dependencies:</p>
-<div class="listingblock">
-<div class="title">pom.xml</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
-    <span class="tag">&lt;groupId&gt;</span>com.hazelcast<span class="tag">&lt;/groupId&gt;</span>
-    <span class="tag">&lt;artifactId&gt;</span>hazelcast<span class="tag">&lt;/artifactId&gt;</span>
-<span class="tag">&lt;/dependency&gt;</span></code></pre>
-</div>
-</div>
-</li>
-<li>
-<p>Instantiate a HazelcastConfig:</p>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
-<span class="annotation">@EnableAutoConfiguration</span>
-<span class="annotation">@EnableAdminServer</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">SpringBootAdminApplication</span> {
-  <span class="annotation">@Bean</span>
-  <span class="directive">public</span> Config hazelcastConfig() {
-    <span class="keyword">return</span> <span class="keyword">new</span> Config().setProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">hazelcast.jmx</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>)
-        .addMapConfig(<span class="keyword">new</span> MapConfig(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-boot-admin-application-store</span><span class="delimiter">&quot;</span></span>).setBackupCount(<span class="integer">1</span>)
-            .setEvictionPolicy(EvictionPolicy.NONE))
-        .addListConfig(<span class="keyword">new</span> ListConfig(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-boot-admin-event-store</span><span class="delimiter">&quot;</span></span>).setBackupCount(<span class="integer">1</span>)
-            .setMaxSize(<span class="integer">1000</span>));
-  }
+<pre>[[spring-boot-admin-server]]
+== Spring Boot Admin Server ==
 
-  <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
-    SpringApplication.run(SpringBootAdminApplication.class, args);
-  }
-}</code></pre>
+.Spring Boot Admin Server configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.context-path
+| The context-path prefixes the path where the Admin Server's statics assets and API should be served. Relative to the Dispatcher-Servlet.
+|
+
+| spring.boot.admin.monitor.period
+| Time interval in ms to update the status of applications with expired status-informations.
+| 10.000
+
+| spring.boot.admin.monitor.status-lifetime
+| Lifetime of application statuses in ms. The applications /health-endpoint will not be queried until the lifetime has expired.
+| 10.000
+
+| spring.boot.admin.routes.endpoints
+| The enpoints which will be available via spring boot admin zuul proxy. If you write ui modules using other endpoints you need to add them.
+| `"env, metrics, trace, dump, jolokia, info, configprops, trace, activiti, logfile, refresh, flyway, liquibase"`
+|===
+
+[[spring-cloud-discovery-support]]
+=== Spring Cloud Discovery ===
+
+The Spring Boot Admin Server is capable of using  Spring Clouds `DiscoveryClient` to discover applications. The advantage is that the clients don't have to include the `spring-boot-admin-starter-client`. You just have to add a DiscoveryClient to your admin server - everything else is done by AutoConfiguration.
+The setup is explained &lt;&lt;discover-clients-via-spring-cloud-discovery,above&gt;&gt;.
+
+==== ServiceInstanceConverter ====
+
+The informations from the discovered services are converted by the `ServiceInstanceConverter`. Spring Boot Admin ships with a default and Eureka converter implementation. The correct one is selected by AutoConfiguration. You can use your own conversion by implementing the interface and adding the bean to your application context.
+
+TIP: If you want to customize the default conversion of services you can either add `health.path`, `management.port` and/or `mangament.context-path` entries to the services metadata. This allows you to set the health or management path per application. In case you want to configure this for all of your discovered services, you can use the `spring.boot.admin.discovery.converter.*` properties for your Spring Boot Admin Server configuration. The services' metadata takes precedence over the server configuration. For the health-url the `EurekaServiceInstanceConverter` uses the healthCheckUrl registered in Eureka, which can be set for your client via `eureka.instance.healthCheckUrl`.
+
+.Discovery configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.discovery.enabled
+| Enables the DiscoveryClient-support for the admin server.
+| `true`
+
+| spring.boot.admin.discovery.converter.management-context-path
+| Will be appended to the service-url of the discovered service when the managment-url is converted by the `DefaultServiceInstanceConverter`.
+|
+
+| spring.boot.admin.discovery.converter.health-endpoint
+| Will be appended to the management-url of the discovered service when the health-url is converted by the `DefaultServiceInstanceConverter`.
+| `"health"`
+
+| spring.boot.admin.discovery.ignored-services
+| This services will be ignored when using discovery and not registered as application.
+|
+|===
+
+
+[[clustering-support]]
+=== Clustering ===
+Spring Boot Admin Server supports cluster replication via Hazelcast. It is automatically enabled when a `HazelcastConfig`- or `HazelcastInstance`-Bean is present. You can also configure the Hazelcast instance to be persistent, to keep the status over restarts.
+Also have a look at the http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-hazelcast/[Spring Boot support for Hazelcast].
+
+. Add Hazelcast to your dependencies:
++
+[source,xml]
+.pom.xml</pre>
 </div>
 </div>
-</li>
-</ol>
-</div>
-<table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 4. Hazelcast configuration options</caption>
-<colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Property name</th>
-<th class="tableblock halign-left valign-top">Description</th>
-<th class="tableblock halign-left valign-top">Default value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.hazelcast.enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enables the Hazelcast support</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.hazelcast.application-store</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the Hazelcast-map to store the applications</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"spring-boot-admin-application-store"</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.hazelcast.event-store</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the Hazelcast-list to store the events</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"spring-boot-admin-event-store"</code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="_notifications"><a class="anchor" href="#_notifications"></a>4.3. Notifications</h3>
-<div class="sect3">
-<h4 id="_reminder_notifications"><a class="anchor" href="#_reminder_notifications"></a>4.3.1. Reminder notifications</h4>
 <div class="paragraph">
-<p>The <code>RemindingNotifier</code> sends reminders for down/offline applications, it delegates the sending of notifications to another notifier.</p>
-</div>
-<div class="paragraph">
-<p>By default a reminder is triggered when a registered application changes to <code>DOWN</code> or <code>OFFLINE</code>. You can alter this behaviour via <code>setReminderStatuses()</code>. The reminder ends when either the status changes to a non-triggering status or the regarding application gets deregistered.</p>
-</div>
-<div class="paragraph">
-<p>By default the reminders are sent every 10 minutes, to change this use <code>setReminderPeriod()</code>. The <code>RemindingNotifier</code> itself doesn&#8217;t start the background thread to send the reminders, you need to take care of this as shown in the given example below;</p>
+<p>&lt;dependency&gt;
+    &lt;groupId&gt;com.hazelcast&lt;/groupId&gt;
+    &lt;artifactId&gt;hazelcast&lt;/artifactId&gt;
+&lt;/dependency&gt;</p>
 </div>
 <div class="listingblock">
-<div class="title">How to configure reminders</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
-<span class="annotation">@EnableScheduling</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">NotifierConfiguration</span> {
-    <span class="annotation">@Autowired</span>
-    <span class="directive">private</span> Notifier notifier;
+<pre>. Instantiate a HazelcastConfig:
++
+[source,java]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>@Configuration
+@EnableAutoConfiguration
+@EnableAdminServer
+public class SpringBootAdminApplication {
+	@Bean
+	public Config hazelcastConfig() {
+		return new Config().setProperty("hazelcast.jmx", "true")
+				.addMapConfig(new MapConfig("spring-boot-admin-application-store").setBackupCount(1)
+						.setEvictionPolicy(EvictionPolicy.NONE))
+				.addListConfig(new ListConfig("spring-boot-admin-event-store").setBackupCount(1)
+						.setMaxSize(1000));
+	}</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>	public static void main(String[] args) {
+		SpringApplication.run(SpringBootAdminApplication.class, args);
+	}
+}</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>.Hazelcast configuration options
+|===
+| Property name |Description |Default value
 
-    <span class="annotation">@Bean</span>
-    <span class="annotation">@Primary</span>
-    <span class="directive">public</span> RemindingNotifier remindingNotifier() {
-        RemindingNotifier remindingNotifier = <span class="keyword">new</span> RemindingNotifier(notifier);
-        remindingNotifier.setReminderPeriod(<span class="predefined-type">TimeUnit</span>.MINUTES.toMillis(<span class="integer">5</span>)); <i class="conum" data-value="1"></i><b>(1)</b>
-        <span class="keyword">return</span> remindingNotifier;
-    }
+| spring.boot.admin.hazelcast.enabled
+| Enables the Hazelcast support
+| `true`
 
-    <span class="annotation">@Scheduled</span>(fixedRate = <span class="integer">60</span>_000L) <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="directive">public</span> <span class="type">void</span> remind() {
+| spring.boot.admin.hazelcast.application-store
+| Name of the Hazelcast-map to store the applications
+| `"spring-boot-admin-application-store"`
+
+| spring.boot.admin.hazelcast.event-store
+| Name of the Hazelcast-list to store the events
+| `"spring-boot-admin-event-store"`
+|===
+
+=== Notifications ===
+
+[reminder-notifications]
+==== Reminder notifications ====
+The `RemindingNotifier` sends reminders for down/offline applications, it delegates the sending of notifications to another notifier.
+
+By default a reminder is triggered when a registered application changes to `DOWN` or `OFFLINE`. You can alter this behaviour via `setReminderStatuses()`. The reminder ends when either the status changes to a non-triggering status or the regarding application gets deregistered.
+
+By default the reminders are sent every 10 minutes, to change this use `setReminderPeriod()`. The `RemindingNotifier` itself doesn't start the background thread to send the reminders, you need to take care of this as shown in the given example below;
+
+.How to configure reminders
+[source,java]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>@Configuration
+@EnableScheduling
+public class NotifierConfiguration {
+    @Autowired
+    private Notifier notifier;</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>@Bean
+@Primary
+public RemindingNotifier remindingNotifier() {
+    RemindingNotifier remindingNotifier = new RemindingNotifier(notifier);
+    remindingNotifier.setReminderPeriod(TimeUnit.MINUTES.toMillis(5)); <i class="conum" data-value="1"></i><b>(1)</b>
+    return remindingNotifier;
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>    @Scheduled(fixedRate = 60_000L) <i class="conum" data-value="2"></i><b>(2)</b>
+    public void remind() {
         remindingNotifier().sendReminders();
     }
-}</code></pre>
+}</pre>
 </div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The reminders will be sent every 5 minutes.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Schedules sending of due reminders every 60 seconds.</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect3">
-<h4 id="filtering-notifications"><a class="anchor" href="#filtering-notifications"></a>4.3.2. Filtering notifications</h4>
-<div class="paragraph">
-<p>The <code>FilteringNotifier</code> allows you to filter certain notification based on rules you can add/remove at runtime. It delegates the sending of notifications to another notifier.</p>
-</div>
-<div class="paragraph">
-<p>If you add a <code>FilteringNotifier</code> to your <code>ApplicationContext</code> a RESTful interface on <code>api/notifications/filter</code> gets available. When this happens the ui shows options to manage the filters.</p>
-</div>
-<div class="paragraph">
-<p>This notifier is useful if you don&#8217;t want recieve notifications when deploying your applications. Before stopping the application you can add an (expiring) filter either via a <code>POST</code> request or the ui.</p>
 </div>
 <div class="listingblock">
-<div class="title">How to configure filtering</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
-<span class="annotation">@EnableScheduling</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">NotifierConfiguration</span> {
-  <span class="annotation">@Autowired</span>
-  <span class="directive">private</span> Notifier delegate;
+<pre>&lt;1&gt; The reminders will be sent every 5 minutes.
+&lt;2&gt; Schedules sending of due reminders every 60 seconds.
 
-  <span class="annotation">@Bean</span>
-  <span class="directive">public</span> FilteringNotifier filteringNotifier() { <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="keyword">return</span> <span class="keyword">new</span> FilteringNotifier(delegate);
-  }
+[[filtering-notifications]]
+==== Filtering notifications ====
+The `FilteringNotifier` allows you to filter certain notification based on rules you can add/remove at runtime. It delegates the sending of notifications to another notifier.
 
-  <span class="annotation">@Bean</span>
-  <span class="annotation">@Primary</span>
-  <span class="directive">public</span> RemindingNotifier remindingNotifier() { <i class="conum" data-value="2"></i><b>(2)</b>
-    RemindingNotifier notifier = <span class="keyword">new</span> RemindingNotifier(filteringNotifier());
-    notifier.setReminderPeriod(<span class="predefined-type">TimeUnit</span>.SECONDS.toMillis(<span class="integer">10</span>));
-    <span class="keyword">return</span> notifier;
-  }
+If you add a `FilteringNotifier` to your `ApplicationContext` a RESTful interface on `api/notifications/filter` gets available. When this happens the ui shows options to manage the filters.
 
-  <span class="annotation">@Scheduled</span>(fixedRate = <span class="integer">1</span>_000L)
-  <span class="directive">public</span> <span class="type">void</span> remind() {
-    remindingNotifier().sendReminders();
-  }
-}</code></pre>
+This notifier is useful if you don't want recieve notifications when deploying your applications. Before stopping the application you can add an (expiring) filter either via a `POST` request or the ui.
+
+.How to configure filtering
+[source,java]</pre>
 </div>
 </div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Add the <code>FilteringNotifier</code> bean using a delegate (e.g. <code>MailNotifier</code> when configured)</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Add the <code>RemindingNotifier</code> as primary bean using the <code>FilteringNotifier</code> as delegate.</td>
-</tr>
-</table>
-</div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-This examples combines the reminding and filtering notifiers. This allows you to get notifications after the deployed applications hasn&#8217;t restarted in a certain amount of time (until the filter expires).
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect3">
-<h4 id="mail-notifications"><a class="anchor" href="#mail-notifications"></a>4.3.3. Mail notifications</h4>
 <div class="paragraph">
-<p>Configure a <code>JavaMailSender</code> using <code>spring-boot-starter-mail</code> and set a recipient.</p>
+<p>@Configuration
+@EnableScheduling
+public class NotifierConfiguration {
+	@Autowired
+	private Notifier delegate;</p>
 </div>
-<div class="listingblock">
-<div class="title">pom.xml</div>
+<div class="literalblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
-    <span class="tag">&lt;groupId&gt;</span>org.springframework.boot<span class="tag">&lt;/groupId&gt;</span>
-    <span class="tag">&lt;artifactId&gt;</span>spring-boot-starter-mail<span class="tag">&lt;/artifactId&gt;</span>
-<span class="tag">&lt;/dependency&gt;</span></code></pre>
+<pre>@Bean
+public FilteringNotifier filteringNotifier() { <i class="conum" data-value="1"></i><b>(1)</b>
+	return new FilteringNotifier(delegate);
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>@Bean
+@Primary
+public RemindingNotifier remindingNotifier() { <i class="conum" data-value="2"></i><b>(2)</b>
+	RemindingNotifier notifier = new RemindingNotifier(filteringNotifier());
+	notifier.setReminderPeriod(TimeUnit.SECONDS.toMillis(10));
+	return notifier;
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>	@Scheduled(fixedRate = 1_000L)
+	public void remind() {
+		remindingNotifier().sendReminders();
+	}
+}</pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">application.properties</div>
 <div class="content">
-<pre>spring.mail.host=smtp.example.com
-spring.boot.admin.notify.mail.to=admin@example.com</pre>
+<pre>&lt;1&gt; Add the `FilteringNotifier` bean using a delegate (e.g. `MailNotifier` when configured)
+&lt;2&gt; Add the `RemindingNotifier` as primary bean using the `FilteringNotifier` as delegate.
+
+TIP: This examples combines the reminding and filtering notifiers. This allows you to get notifications after the deployed applications hasn't restarted in a certain amount of time (until the filter expires).
+
+[[mail-notifications]]
+==== Mail notifications ====
+
+Configure a `JavaMailSender` using `spring-boot-starter-mail` and set a recipient.
+
+[source,xml]
+.pom.xml</pre>
 </div>
 </div>
-<table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 5. Mail notifications configuration options</caption>
-<colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Property name</th>
-<th class="tableblock halign-left valign-top">Description</th>
-<th class="tableblock halign-left valign-top">Default value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.mail.enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enable mail notifications</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.mail.ignore-changes</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Comma-delimited list of status changes to be ignored. Format: "&lt;from-status&gt;:&lt;to-status&gt;". Wildcards allowed.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"UNKNOWN:UP"</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.mail.to</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Comma-delimited list of mail recipients</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"root@localhost"</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.mail.cc</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Comma-delimited list of carbon-copy recipients</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.mail.from</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Mail sender</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.mail.subject</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Mail subject. SpEL-expressions are supported</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"#{application.name} (#{application.id}) is #{to.status}"</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.mail.text</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Mail body. SpEL-expressions are supported</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"#{application.name} (#{application.id})\nstatus changed from #{from.status} to #{to.status}\n\n#{application.healthUrl}"</code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect3">
-<h4 id="pagerduty-notifications"><a class="anchor" href="#pagerduty-notifications"></a>4.3.4. Pagerduty notifications</h4>
 <div class="paragraph">
-<p>To enable pagerduty notifications you just have to add a generic service to your pagerduty-account and set <code>spring.boot.admin.notify.pagerduty.service-key</code> to the service-key you received.</p>
+<p>&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-mail&lt;/artifactId&gt;
+&lt;/dependency&gt;</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 6. Pagerduty notifications configuration options</caption>
-<colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Property name</th>
-<th class="tableblock halign-left valign-top">Description</th>
-<th class="tableblock halign-left valign-top">Default value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.pagerduty.enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enable mail notifications</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.pagerduty.ignore-changes</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Comma-delimited list of status changes to be ignored. Format: "&lt;from-status&gt;:&lt;to-status&gt;". Wildcards allowed.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"UNKNOWN:UP"</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.pagerduty.service-key</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Service-key to use for Pagerduty</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.pagerduty.url</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The Pagerduty-rest-api url</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"https://events.pagerduty.com/generic/2010-04-15/create_event.json"</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.pagerduty.description</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Description to use in the event. SpEL-expressions are supported</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"#{application.name}/#{application.id} is #{to.status}"</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.pagerduty.client</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Client-name to use in the event</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.pagerduty.client-url</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Client-url to use in the event</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect3">
-<h4 id="_hipchat_notifications"><a class="anchor" href="#_hipchat_notifications"></a>4.3.5. Hipchat notifications</h4>
-<div class="paragraph">
-<p>To enable Hipchat notifications you need to create an API token from you Hipchat account and set the appropriate configuration properties.</p>
-</div>
-<table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 7. Hipchat notifications configuration options</caption>
-<colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Property name</th>
-<th class="tableblock halign-left valign-top">Description</th>
-<th class="tableblock halign-left valign-top">Default value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.hipchat.enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enable Hipchat notifications</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.hipchat.ignore-changes</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Comma-delimited list of status changes to be ignored. Format: "&lt;from-status&gt;:&lt;to-status&gt;". Wildcards allowed.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"UNKNOWN:UP"</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.hipchat.url</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The HipChat REST API (V2) URL</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.hipchat.auth-token</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The API token with access to the notification room</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.hipchat.room-id</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The ID or url-encoded name of the room to send notifications to</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.hipchat.notify</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the message should trigger a user notification</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.hipchat.description</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Description to use in the event. SpEL-expressions are supported</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"&lt;strong&gt;#{application.name}&lt;/strong&gt;/#{application.id} is &lt;strong&gt;#{to.status}&lt;/strong&gt;"</code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect3">
-<h4 id="_slack_notifications"><a class="anchor" href="#_slack_notifications"></a>4.3.6. Slack notifications</h4>
-<div class="paragraph">
-<p>To enable Slack notifications you need to add a incoming Webhook under custom integrations on your Slack
-account and configure it appropriately.</p>
-</div>
-<table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 8. Slack notifications configuration options</caption>
-<colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Property name</th>
-<th class="tableblock halign-left valign-top">Description</th>
-<th class="tableblock halign-left valign-top">Default value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.slack.enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enable Slack notifications</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.slack.ignore-changes</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Comma-delimited list of status changes to be ignored. Format: "&lt;from-status&gt;:&lt;to-status&gt;". Wildcards allowed.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"UNKNOWN:UP"</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.slack.webhook-url</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The Slack Webhook URL to send notifications</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.slack.channel</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Optional channel name (without # at the beginning). If different than channel in Slack Webhooks settings</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.slack.icon</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Optional icon name (without surrounding colons). If different than icon in Slack Webhooks settings</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.slack.username</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Optional username to send notification if different than in Slack Webhooks settings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Spring Boot Admin</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.slack.message</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Message to use in the event. SpEL-expressions and Slack markups are supported</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"*#{application.name}* (#{application.id}) is *#{to.status}*"</code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_ui_modules"><a class="anchor" href="#_ui_modules"></a>4.4. UI Modules</h3>
-<div class="paragraph">
-<p>Additional to the core UI there are following modules which can be included by adding the jar-file to the classpath:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>spring-boot-admin-server-ui-activiti</p>
-</li>
-<li>
-<p>spring-boot-admin-server-ui-hystrix</p>
-</li>
-<li>
-<p>spring-boot-admin-server-ui-turbine</p>
-</li>
-</ul>
-</div>
-<div class="sect3">
-<h4 id="_hystrix_ui_module"><a class="anchor" href="#_hystrix_ui_module"></a>4.4.1. Hystrix UI Module</h4>
-<div class="paragraph">
-<p>The Hystrix module uses the hystrix-dashboard to display the metrics from Hystrix streams.</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Add the ui module to your classpath:</p>
 <div class="listingblock">
-<div class="title">pom.xml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
-    <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
-    <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-server-ui-hystrix<span class="tag">&lt;/artifactId&gt;</span>
-    <span class="tag">&lt;version&gt;</span>1.4.5-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
-<span class="tag">&lt;/dependency&gt;</span></code></pre>
+<pre>.application.properties</pre>
 </div>
-</div>
-</li>
-<li>
-<p>Add the <code>/hystrix.stream</code> to the proxified endpoints:</p>
-<div class="listingblock">
-<div class="title">application.yml</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.routes.endpoints</span>: <span class="string"><span class="content">env,metrics,trace,dump,jolokia,info,configprops,trace,logfile,refresh,flyway,liquibase,heapdump,hystrix.stream</span></span></code></pre>
-</div>
-</div>
-</li>
-</ol>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_turbine_ui_module"><a class="anchor" href="#_turbine_ui_module"></a>4.4.2. Turbine UI Module</h4>
-<div class="paragraph">
-<p>The Turbine module uses the hystrix-dashboard to display the metrics from a Turbine stream. The UI module does not configure Turbine for you. Either you run Turbine as a separate application or integrate it into your Spring Boot Admin application. Please see <a href="http://cloud.spring.io/spring-cloud-static/Camden.SR2/#_turbine">Spring Cloud Reference</a> on setting up Turbine.</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Add the ui module to your classpath:</p>
-<div class="listingblock">
-<div class="title">pom.xml</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
-    <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
-    <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-server-ui-turbine<span class="tag">&lt;/artifactId&gt;</span>
-    <span class="tag">&lt;version&gt;</span>1.4.5-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
-<span class="tag">&lt;/dependency&gt;</span></code></pre>
-</div>
-</div>
-</li>
-<li>
-<p>Configure the Turbine URL and clusters</p>
-<div class="listingblock">
-<div class="title">application.yml</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.turbine</span>:
-  <span class="key">clusters</span>: <span class="string"><span class="content">default</span></span>
-  <span class="key">url</span>: <span class="string"><span class="content">http://localhost:8989/turbine.stream</span></span></code></pre>
-</div>
-</div>
-</li>
-</ol>
-</div>
-<table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 9. Turbine UI Module configuration options</caption>
-<colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Property name</th>
-<th class="tableblock halign-left valign-top">Description</th>
-<th class="tableblock halign-left valign-top">Default value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.turbine.enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enable the Spring Boot Admin backend configuration for Turbine.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.turbine.url</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">URL to the <code>turbine.stream</code>. Must be reachable from the admin server.</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.turbine.clusters</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">List of available Turbine clusters.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"default"</code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect3">
-<h4 id="_activiti_ui_module"><a class="anchor" href="#_activiti_ui_module"></a>4.4.3. Activiti UI Module</h4>
-<div class="paragraph">
-<p>The Activiti module shows information from the <code>/activti</code> endpoint.</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Add the ui module to your classpath:</p>
-<div class="listingblock">
-<div class="title">pom.xml</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
-    <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
-    <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-server-ui-activiti<span class="tag">&lt;/artifactId&gt;</span>
-    <span class="tag">&lt;version&gt;</span>1.4.5-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
-<span class="tag">&lt;/dependency&gt;</span></code></pre>
-</div>
-</div>
-</li>
-<li>
-<p>Add the <code>/activiti</code> to the proxified endpoints:</p>
-<div class="listingblock">
-<div class="title">application.yml</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.routes.endpoints</span>: <span class="string"><span class="content">env,metrics,trace,dump,jolokia,info,configprops,trace,logfile,refresh,flyway,liquibase,heapdump,activiti</span></span></code></pre>
-</div>
-</div>
-</li>
-</ol>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="securing-spring-boot-admin"><a class="anchor" href="#securing-spring-boot-admin"></a>5. Security</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_securing_spring_boot_admin_server"><a class="anchor" href="#_securing_spring_boot_admin_server"></a>5.1. Securing Spring Boot Admin Server</h3>
-<div class="paragraph">
-<p>Since there are several approaches on solving authentication and authorization in distributed web applications Spring Boot Admin doesn&#8217;t ship a default one.
-However you can include Spring Security to your Spring Boot Admin Server and configure it the way you like.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_securing_client_s_actuator_endpoints"><a class="anchor" href="#_securing_client_s_actuator_endpoints"></a>5.2. Securing Client&#8217;s Actuator Endpoints</h3>
-<div class="paragraph">
-<p>The simplest way to secure your actuator endpoints is to use basic authorization and the same username/password for all applications. This way the browser asks for the credentials and if you set <code>zuul.senstivieHeaders:</code> the Zuul Proxy in Spring Boot Admin Server forwards them to the clients.</p>
 </div>
 <div class="paragraph">
-<p>For more complex solutions (Spring Session, OAuth2, &#8230;&#8203;) please have a look at the samples in <a href="https://github.com/joshiste/spring-boot-admin-samples" target="_blank">joshiste/spring-boot-admin-samples</a>.</p>
+<p>spring.mail.host=smtp.example.com
+spring.boot.admin.notify.mail.to=<a href="mailto:admin@example.com">admin@example.com</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>.Mail notifications configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.mail.enabled
+| Enable mail notifications
+| `true`
+
+| spring.boot.admin.notify.mail.ignore-changes
+| Comma-delimited list of status changes to be ignored. Format: "&lt;from-status&gt;:&lt;to-status&gt;". Wildcards allowed.
+| `"UNKNOWN:UP"`
+
+| spring.boot.admin.notify.mail.to
+| Comma-delimited list of mail recipients
+| `"root@localhost"`
+
+| spring.boot.admin.notify.mail.cc
+| Comma-delimited list of carbon-copy recipients
+|
+
+| spring.boot.admin.notify.mail.from
+| Mail sender
+|
+
+| spring.boot.admin.notify.mail.subject
+| Mail subject. SpEL-expressions are supported
+| `+++"#{application.name} (#{application.id}) is #{to.status}"+++`
+
+| spring.boot.admin.notify.mail.text
+| Mail body. SpEL-expressions are supported
+| `+++"#{application.name} (#{application.id})\nstatus changed from #{from.status} to #{to.status}\n\n#{application.healthUrl}"+++`
+|===
+
+[[pagerduty-notifications]]
+==== Pagerduty notifications ====
+To enable pagerduty notifications you just have to add a generic service to your pagerduty-account and set `spring.boot.admin.notify.pagerduty.service-key` to the service-key you received.
+
+.Pagerduty notifications configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.pagerduty.enabled
+| Enable mail notifications
+| `true`
+
+| spring.boot.admin.notify.pagerduty.ignore-changes
+| Comma-delimited list of status changes to be ignored. Format: "&lt;from-status&gt;:&lt;to-status&gt;". Wildcards allowed.
+| `"UNKNOWN:UP"`
+
+| spring.boot.admin.notify.pagerduty.service-key
+| Service-key to use for Pagerduty
+|
+
+| spring.boot.admin.notify.pagerduty.url
+| The Pagerduty-rest-api url
+| `+++"https://events.pagerduty.com/generic/2010-04-15/create_event.json"+++`
+
+| spring.boot.admin.notify.pagerduty.description
+| Description to use in the event. SpEL-expressions are supported
+| `+++"#{application.name}/#{application.id} is #{to.status}"+++`
+
+| spring.boot.admin.notify.pagerduty.client
+| Client-name to use in the event
+|
+
+| spring.boot.admin.notify.pagerduty.client-url
+| Client-url to use in the event
+|
+|===
+
+[hipchat-notifications]
+==== Hipchat notifications ====
+To enable Hipchat notifications you need to create an API token from you Hipchat account and set the appropriate configuration properties.
+
+.Hipchat notifications configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.hipchat.enabled
+| Enable Hipchat notifications
+| `true`
+
+| spring.boot.admin.notify.hipchat.ignore-changes
+| Comma-delimited list of status changes to be ignored. Format: "&lt;from-status&gt;:&lt;to-status&gt;". Wildcards allowed.
+| `"UNKNOWN:UP"`
+
+| spring.boot.admin.notify.hipchat.url
+| The HipChat REST API (V2) URL
+|
+
+| spring.boot.admin.notify.hipchat.auth-token
+| The API token with access to the notification room
+|
+
+| spring.boot.admin.notify.hipchat.room-id
+| The ID or url-encoded name of the room to send notifications to
+|
+
+| spring.boot.admin.notify.hipchat.notify
+| Whether the message should trigger a user notification
+| `false`
+
+| spring.boot.admin.notify.hipchat.description
+| Description to use in the event. SpEL-expressions are supported
+| `+++"&amp;lt;strong&amp;gt;#{application.name}&amp;lt;/strong&amp;gt;/#{application.id} is &amp;lt;strong&amp;gt;#{to.status}&amp;lt;/strong&amp;gt;"+++`
+|
+|===
+
+[slack-notifications]
+==== Slack notifications ====
+To enable Slack notifications you need to add a incoming Webhook under custom integrations on your Slack
+account and configure it appropriately.
+
+.Slack notifications configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.slack.enabled
+| Enable Slack notifications
+| `true`
+
+| spring.boot.admin.notify.slack.ignore-changes
+| Comma-delimited list of status changes to be ignored. Format: "&lt;from-status&gt;:&lt;to-status&gt;". Wildcards allowed.
+| `"UNKNOWN:UP"`
+
+| spring.boot.admin.notify.slack.webhook-url
+| The Slack Webhook URL to send notifications
+|
+
+| spring.boot.admin.notify.slack.channel
+| Optional channel name (without # at the beginning). If different than channel in Slack Webhooks settings
+|
+
+| spring.boot.admin.notify.slack.icon
+| Optional icon name (without surrounding colons). If different than icon in Slack Webhooks settings
+|
+
+| spring.boot.admin.notify.slack.username
+| Optional username to send notification if different than in Slack Webhooks settings
+| `Spring Boot Admin`
+
+| spring.boot.admin.notify.slack.message
+| Message to use in the event. SpEL-expressions and Slack markups are supported
+| `+++"*#{application.name}* (#{application.id}) is *#{to.status}*"+++`
+|
+|===
+
+=== UI Modules ===
+
+Additional to the core UI there are following modules which can be included by adding the jar-file to the classpath:
+
+ - spring-boot-admin-server-ui-activiti
+ - spring-boot-admin-server-ui-hystrix
+ - spring-boot-admin-server-ui-turbine
+
+==== Hystrix UI Module ====
+
+The Hystrix module uses the hystrix-dashboard to display the metrics from Hystrix streams.
+
+. Add the ui module to your classpath:
++
+[source,xml,subs="verbatim,attributes"]
+.pom.xml</pre>
 </div>
 </div>
+<div class="paragraph">
+<p>&lt;dependency&gt;
+    &lt;groupId&gt;de.codecentric&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-admin-server-ui-hystrix&lt;/artifactId&gt;
+    &lt;version&gt;1.4.5-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>. Add the `/hystrix.stream` to the proxified endpoints:
++
+[source,yml]
+.application.yml</pre>
 </div>
 </div>
-<div class="sect1">
-<h2 id="faqs"><a class="anchor" href="#faqs"></a>6. FAQs</h2>
-<div class="sectionbody">
-<div class="qlist qanda">
-<ol>
-<li>
-<p><em>Can I include spring-boot-admin into my business application?</em></p>
-<p><strong>tl;dr</strong> You can, but you shouldn&#8217;t.<br>
-You can set <code>spring.boot.admin.context-path</code> to alter the path where the UI and REST-API is served, but depending on the complexity of your application you might get in trouble. On the other hand in my opinion it makes no sense for an application to monitor itself. In case your application goes down your monitoring tool also does.</p>
-</li>
-<li>
-<p><em>How do I customize the UI?</em></p>
-<p>You can only customize the UI by copying and modifying the source of <code>spring-boot-admin-ui</code> and adding your own module to your classpath.</p>
-</li>
-</ol>
+<div class="paragraph">
+<p>spring.boot.admin.routes.endpoints: env,metrics,trace,dump,jolokia,info,configprops,trace,logfile,refresh,flyway,liquibase,heapdump,hystrix.stream</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>==== Turbine UI Module ====
+
+The Turbine module uses the hystrix-dashboard to display the metrics from a Turbine stream. The UI module does not configure Turbine for you. Either you run Turbine as a separate application or integrate it into your Spring Boot Admin application. Please see http://cloud.spring.io/spring-cloud-static/{spring-cloud-version}/#_turbine[Spring Cloud Reference] on setting up Turbine.
+
+. Add the ui module to your classpath:
++
+[source,xml,subs="verbatim,attributes"]
+.pom.xml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>&lt;dependency&gt;
+    &lt;groupId&gt;de.codecentric&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-admin-server-ui-turbine&lt;/artifactId&gt;
+    &lt;version&gt;1.4.5-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>. Configure the Turbine URL and clusters
++
+[source,yml]
+.application.yml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>spring.boot.admin.turbine:
+  clusters: default
+  url: <a href="http://localhost:8989/turbine.stream" class="bare">localhost:8989/turbine.stream</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>.Turbine UI Module configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.turbine.enabled
+| Enable the Spring Boot Admin backend configuration for Turbine.
+| `true`
+
+| spring.boot.admin.turbine.url
+| URL to the `turbine.stream`. Must be reachable from the admin server.
+|
+
+| spring.boot.admin.turbine.clusters
+| List of available Turbine clusters.
+| `"default"`
+
+|
+|===
+
+==== Activiti UI Module ====
+
+The Activiti module shows information from the `/activti` endpoint.
+
+. Add the ui module to your classpath:
++
+[source,xml,subs="verbatim,attributes"]
+.pom.xml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>&lt;dependency&gt;
+    &lt;groupId&gt;de.codecentric&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-admin-server-ui-activiti&lt;/artifactId&gt;
+    &lt;version&gt;1.4.5-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>. Add the `/activiti` to the proxified endpoints:
++
+[source,yml]
+.application.yml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>spring.boot.admin.routes.endpoints: env,metrics,trace,dump,jolokia,info,configprops,trace,logfile,refresh,flyway,liquibase,heapdump,activiti</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>[[securing-spring-boot-admin]]
+== Security ==
+
+=== Securing Spring Boot Admin Server ===
+
+Since there are several approaches on solving authentication and authorization in distributed web applications Spring Boot Admin doesn't ship a default one.
+However you can include Spring Security to your Spring Boot Admin Server and configure it the way you like.
+
+=== Securing Client's Actuator Endpoints ===
+
+The simplest way to secure your actuator endpoints is to use basic authorization and the same username/password for all applications. This way the browser asks for the credentials and if you set `zuul.senstivieHeaders:` the Zuul Proxy in Spring Boot Admin Server forwards them to the clients.
+
+For more complex solutions (Spring Session, OAuth2, ...) please have a look at the samples in https://github.com/joshiste/spring-boot-admin-samples[joshiste/spring-boot-admin-samples^].
+
+[[faqs]]
+== FAQs ==
+[qanda]
+Can I include spring-boot-admin into my business application?::
+  *tl;dr* You can, but you shouldn't. +
+  You can set `spring.boot.admin.context-path` to alter the path where the UI and REST-API is served, but depending on the complexity of your application you might get in trouble. On the other hand in my opinion it makes no sense for an application to monitor itself. In case your application goes down your monitoring tool also does.
+
+How do I customize the UI?::
+  You can only customize the UI by copying and modifying the source of `spring-boot-admin-ui` and adding your own module to your classpath.</pre>
+</div>
+</div>
 </div>
 </div>
 </div>
