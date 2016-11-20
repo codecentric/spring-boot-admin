@@ -39,6 +39,7 @@ import de.codecentric.boot.admin.registry.ApplicationRegistry;
 public class ApplicationDiscoveryListener {
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(ApplicationDiscoveryListener.class);
+	private static final String SOURCE = "discovery";
 	private final DiscoveryClient discoveryClient;
 	private final ApplicationRegistry registry;
 	private final HeartbeatMonitor monitor = new HeartbeatMonitor();
@@ -98,7 +99,8 @@ public class ApplicationDiscoveryListener {
 	protected final Set<String> getAllApplicationIdsFromRegistry() {
 		Set<String> result = new HashSet<>();
 		for (Application application : registry.getApplications()) {
-			if (!ignoredServices.contains(application.getName())) {
+			if (!ignoredServices.contains(application.getName())
+					&& SOURCE.equals(application.getSource())) {
 				result.add(application.getId());
 			}
 		}
@@ -108,6 +110,7 @@ public class ApplicationDiscoveryListener {
 	protected String register(ServiceInstance instance) {
 		try {
 			Application application = converter.convert(instance);
+			application = Application.create(application).withSource(SOURCE).build();
 			if (application != null) {
 				LOGGER.debug("Registering discovered application {}", application);
 				return registry.register(application).getId();

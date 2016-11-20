@@ -32,7 +32,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
  */
 @JsonDeserialize(using = Application.Deserializer.class)
 public class Application implements Serializable {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 
 	private final String id;
 	private final String name;
@@ -40,6 +40,7 @@ public class Application implements Serializable {
 	private final String healthUrl;
 	private final String serviceUrl;
 	private final StatusInfo statusInfo;
+	private final String source;
 
 	protected Application(Builder builder) {
 		Assert.hasText(builder.name, "name must not be empty!");
@@ -51,6 +52,7 @@ public class Application implements Serializable {
 		this.name = builder.name;
 		this.id = builder.id;
 		this.statusInfo = builder.statusInfo;
+		this.source = builder.source;
 	}
 
 	public static Builder create(String name) {
@@ -68,6 +70,7 @@ public class Application implements Serializable {
 		private String healthUrl;
 		private String serviceUrl;
 		private StatusInfo statusInfo = StatusInfo.ofUnknown();
+		private String source;
 
 		private Builder(String name) {
 			this.name = name;
@@ -80,6 +83,7 @@ public class Application implements Serializable {
 			this.name = application.name;
 			this.id = application.id;
 			this.statusInfo = application.statusInfo;
+			this.source = application.source;
 		}
 
 		public Builder withName(String name) {
@@ -112,6 +116,11 @@ public class Application implements Serializable {
 			return this;
 		}
 
+		public Builder withSource(String source) {
+			this.source = source;
+			return this;
+		}
+
 		public Application build() {
 			return new Application(this);
 		}
@@ -139,6 +148,10 @@ public class Application implements Serializable {
 
 	public StatusInfo getStatusInfo() {
 		return statusInfo;
+	}
+
+	public String getSource() {
+		return source;
 	}
 
 	@Override

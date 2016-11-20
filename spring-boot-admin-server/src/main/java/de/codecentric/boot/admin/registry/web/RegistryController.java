@@ -51,13 +51,14 @@ public class RegistryController {
 	/**
 	 * Register an application within this admin application.
 	 *
-	 * @param app The application infos.
+	 * @param application The application infos.
 	 * @return The registered application.
 	 */
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Application> register(@RequestBody Application app) {
-		LOGGER.debug("Register application {}", app.toString());
-		Application registeredApp = registry.register(app);
+	public ResponseEntity<Application> register(@RequestBody Application application) {
+		application = Application.create(application).withSource("http-api").build();
+		LOGGER.debug("Register application {}", application.toString());
+		Application registeredApp = registry.register(application);
 		return ResponseEntity.status(HttpStatus.CREATED).body(registeredApp);
 	}
 

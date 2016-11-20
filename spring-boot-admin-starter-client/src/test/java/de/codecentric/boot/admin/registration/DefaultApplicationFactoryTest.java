@@ -30,7 +30,7 @@ public class DefaultApplicationFactoryTest {
 	private AdminClientProperties client = new AdminClientProperties();
 	private ServerProperties server = new ServerProperties();
 	private ManagementServerProperties management = new ManagementServerProperties();
-	DefaultApplicationFactory factory = new DefaultApplicationFactory(client, management,
+	private DefaultApplicationFactory factory = new DefaultApplicationFactory(client, management,
 			server, "/health");
 
 	@Before
@@ -166,7 +166,6 @@ public class DefaultApplicationFactoryTest {
 		assertThat(app.getServiceUrl(), is("http://127.0.0.1:8080"));
 	}
 
-
 	@Test
 	public void test_allcustom() {
 		client.setHealthUrl("http://health");
@@ -194,7 +193,7 @@ public class DefaultApplicationFactoryTest {
 		try {
 			return InetAddress.getLocalHost().getCanonicalHostName();
 		} catch (UnknownHostException e) {
-			throw new RuntimeException(e);
+			throw new IllegalStateException(e);
 		}
 	}
 

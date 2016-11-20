@@ -47,7 +47,7 @@
           <sba-status-info status-info="application.statusInfo"></sba-status-info>
           <span ng-show="application.refreshing"><i class="fa fa-spinner fa-pulse fa-lg"></i></span>
         </td>
-        <td>
+        <td style="text-align: right;">
           <sba-notification-settings ng-if="notificationFilters" application="application" filters="notificationFilters" refresh-callback="loadFilters()"></sba-notification-settings>
           <div class="btn-group">
             <a ng-if="views.length > 0" ng-href="{{views[0].href}}" target="{{views[0].target}}" class="btn btn-success" ng-bind-html="views[0].title"></a>
@@ -60,7 +60,7 @@
               </li>
             </ul>
           </div>
-          <div class="btn-group" title="remove">
+          <div class="btn-group" title="remove" ng-if="application.source == 'http-api'">
             <a class="btn btn-danger" ng-click="remove(application)"><i class="fa fa-times"></i></a>
           </div>
         </td>

@@ -19,7 +19,6 @@ import de.codecentric.boot.admin.client.registration.Application;
 
 public class ApplicationTest {
 
-
 	@Test
 	public void test_json_format() throws JsonProcessingException, IOException {
 		ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
