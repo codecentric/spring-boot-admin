@@ -47,7 +47,7 @@
           <sba-status-info status-info="application.statusInfo"></sba-status-info>
           <span ng-show="application.refreshing"><i class="fa fa-spinner fa-pulse fa-lg"></i></span>
         </td>
-        <td style="text-align: right;">
+        <td>
           <sba-notification-settings ng-if="notificationFilters" application="application" filters="notificationFilters" refresh-callback="loadFilters()"></sba-notification-settings>
           <div class="btn-group">
             <a ng-if="views.length > 0" ng-href="{{views[0].href}}" target="{{views[0].target}}" class="btn btn-success" ng-bind-html="views[0].title"></a>
