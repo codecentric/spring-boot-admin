@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
+import de.codecentric.boot.admin.config.AdminServerProperties;
 import de.codecentric.boot.admin.config.AdminServerWebConfiguration;
 import de.codecentric.boot.admin.config.RevereseZuulProxyConfiguration;
 import spring.boot.admin.turbine.web.TurbineController;
@@ -36,7 +37,7 @@ import spring.boot.admin.turbine.zuul.filters.StaticRouteLocator;
 
 /**
  * Configures all necessary components for the Turbine view.
- * 
+ *
  * @author Johannes Edmeier
  */
 @Configuration
@@ -61,9 +62,10 @@ public class TurbineAutoConfiguration {
 
 	@Bean
 	@Order(100)
-	public StaticRouteLocator staticRouteLocator() {
+	public StaticRouteLocator staticRouteLocator(AdminServerProperties admin) {
 		Collection<ZuulRoute> routes = Collections
-				.singleton(new ZuulRoute("/api/turbine/stream/**", properties.getUrl().toString()));
+				.singleton(new ZuulRoute(admin.getContextPath() + "/api/turbine/stream/**",
+						properties.getUrl().toString()));
 		return new StaticRouteLocator(routes, server.getServletPrefix(), zuulProperties);
 	}
 
