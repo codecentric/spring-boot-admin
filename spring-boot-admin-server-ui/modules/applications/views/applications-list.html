@@ -49,18 +49,8 @@
         </td>
         <td>
           <sba-notification-settings ng-if="notificationFilters" application="application" filters="notificationFilters" refresh-callback="loadFilters()"></sba-notification-settings>
-          <div class="btn-group">
-            <a ng-if="views.length > 0" ng-href="{{views[0].href}}" target="{{views[0].target}}" class="btn btn-success" ng-bind-html="views[0].title"></a>
-            <button class="btn btn-success dropdown-toggle" data-toggle="dropdown" ng-if="views.length > 1">
-                <i class="fa fa-caret-down"></i>
-              </button>
-            <ul class="dropdown-menu">
-              <li ng-repeat="view in views.slice(1)">
-                <a ng-href="{{view.href}}" target="{{view.target}}" ng-bind-html="view.title"></a>
-              </li>
-            </ul>
-          </div>
-          <div class="btn-group" title="remove" ng-if="application.source == 'http-api'">
+          <sba-btn-detail-views details-for="application"></sba-btn-detail-views>
+          <div class="btn-group" title="remove">
             <a class="btn btn-danger" ng-click="remove(application)"><i class="fa fa-times"></i></a>
           </div>
         </td>

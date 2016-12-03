@@ -39,6 +39,7 @@ module.component('sbaNotificationSettings', require('./components/notificationSe
 module.component('sbaPopover', require('./components/popover.js'));
 module.component('sbaLimitedText', require('./components/limitedText.js'));
 module.component('sbaStatusInfo', require('./components/statusInfo.js'));
+module.component('sbaBtnDetailViews', require('./components/btnDetailViews.js'));
 
 require('./css/module.css');
 
@@ -74,6 +75,10 @@ module.run(function ($rootScope, $state, Notification, Application, ApplicationG
 
   var refresh = function (group, application) {
     application.info = {};
+    if (application.statusInfo.status === 'OFFLINE') {
+      return;
+    }
+
     application.refreshing = true;
     application.getInfo().then(function (response) {
       var info = response.data;

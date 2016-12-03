@@ -36,9 +36,6 @@ module.run(function (ApplicationViews, $sce) {
   ApplicationViews.register({
     order: 10,
     title: $sce.trustAsHtml('<i class="fa fa-server fa-fw"></i>Environment'),
-    state: 'applications.environment',
-    show: function (application) {
-      return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';
-    }
+    state: 'applications.environment'
   });
 });

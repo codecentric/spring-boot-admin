@@ -1,11 +1,11 @@
 <div class="header--application">
   <div class="navbar-inner">
     <div class="container-fluid">
-      <div class="application--status pull-left">
-        <div class="status-{{application.statusInfo.status}}" ng-bind="application.statusInfo.status"></div>
+      <div class="application--title">
+        <span class="status-{{application.statusInfo.status}}" ng-bind="application.statusInfo.status"></span>
+        {{application.name}} <small class="muted">({{application.id}})</small>
       </div>
-      <div class="application--title pull-left">{{application.name}} <small class="muted">({{application.id}})</small></div>
-      <ul class="application--urls pull-right">
+      <ul class="application--urls">
         <li ng-if="application.healthUrl"><a href="{{ application.healthUrl }}" target="_blank" title="Health URL">{{ application.healthUrl }}<i class="fa fa-heartbeat fa-fw" ></i></a></li>
         <li ng-if="application.managementUrl"><a href="{{ application.managementUrl }}" target="_blank" title="Management URL">{{ application.managementUrl }}<i class="fa fa-wrench fa-fw"></i></a></li>
         <li ng-if="application.serviceUrl"><a href="{{ application.serviceUrl }}" target="_blank" title="Service URL">{{ application.serviceUrl }}<i class="fa fa-home fa-fw" ></i></a></li>
@@ -13,7 +13,7 @@
     </div>
     <div class="container-fluid">
       <ul class="nav nav-tabs">
-        <li ng-repeat="view in views" ng-class="{active: $state.includes(view.state)}"><a ng-href="{{view.href}}" target="{{view.target}}"><span ng-bind-html="view.title"></span></a></li>
+        <li ng-repeat="view in views" ng-class="{active: $state.includes(view.state)}" ng-show="view.show"><a ng-href="{{view.href}}" target="{{view.target}}"><span ng-bind-html="view.title"></span></a></li>
       </ul>
     </div>
   </div>

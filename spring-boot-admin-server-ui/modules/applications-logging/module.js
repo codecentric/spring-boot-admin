@@ -37,9 +37,6 @@ module.run(function (ApplicationViews, $sce) {
   ApplicationViews.register({
     order: 30,
     title: $sce.trustAsHtml('<i class="fa fa-sliders fa-fw"></i>Logging'),
-    state: 'applications.logging',
-    show: function (application) {
-      return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';
-    }
+    state: 'applications.logging'
   });
 });

@@ -15,7 +15,7 @@
  */
 'use strict';
 
-module.exports = function ($rootScope, $scope, $state, ApplicationViews, NotificationFilters) {
+module.exports = function ($rootScope, $scope, $state, NotificationFilters) {
   'ngInject';
   $scope.notificationFilters = null;
   $scope.notificationFiltersSupported = false;
@@ -35,10 +35,6 @@ module.exports = function ($rootScope, $scope, $state, ApplicationViews, Notific
   $scope.order = {
     column: 'name',
     descending: false
-  };
-
-  $scope.viewsForApplication = function (application) {
-    return ApplicationViews.getApplicationViews(application);
   };
 
   $scope.orderBy = function (column) {
