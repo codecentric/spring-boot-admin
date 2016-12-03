@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
   <div class="alert alert-error" ng-if="error">
     Unable to connect to Command Metric Stream '{{streamUrl}}'.<br>
     <b>Error:</b> {{ error }}
@@ -11,4 +11,3 @@
     <sba-hystrix-thread-pool event-source="hystrixStream"></sba-hystrix-thread-pool>
   </sba-info-panel>
 </div>
-
