@@ -15,15 +15,24 @@
  */
 'use strict';
 
-module.exports = function ($scope, application, ApplicationViews) {
-  'ngInject';
+module.exports = {
+  bindings: {
+    application: '<detailsFor'
+  },
+  controller: function (ApplicationViews) {
+    'ngInject';
 
-  $scope.application = application;
+    var ctrl = this;
+    ctrl.primaryView = null;
+    ctrl.secondaryViews = [];
+    ctrl.resolveViews = null;
 
-  var views = ApplicationViews.getApplicationViews(application);
-  views.resolve();
-  $scope.views = views.views;
-
-
-
+    ctrl.$onChanges = function () {
+      var result = ApplicationViews.getApplicationViews(ctrl.application);
+      ctrl.primaryView = result.views[0];
+      ctrl.secondaryViews = result.views.slice(1);
+      ctrl.resolveViews = result.resolve;
+    };
+  },
+  template: require('./btnDetailViews.tpl.html')
 };

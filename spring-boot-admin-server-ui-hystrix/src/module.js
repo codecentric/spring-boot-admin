@@ -59,9 +59,6 @@ module.run(function (ApplicationViews, $sce, $q, $http) {
     title: $sce.trustAsHtml('<i class="fa fa-gear fa-fw"></i>Hystrix'),
     state: 'applications.hystrix',
     show: function (application) {
-      if (!application.managementUrl || !application.statusInfo.status || application.statusInfo.status === 'OFFLINE') {
-        return false;
-      }
       return isEventSourceAvailable('api/applications/' + application.id + '/hystrix.stream');
     }
   });

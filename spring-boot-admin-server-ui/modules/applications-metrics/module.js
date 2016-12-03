@@ -37,9 +37,6 @@ module.run(function (ApplicationViews, $sce) {
   ApplicationViews.register({
     order: 5,
     title: $sce.trustAsHtml('<i class="fa fa-bar-chart fa-fw"></i>Metrics'),
-    state: 'applications.metrics',
-    show: function (application) {
-      return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';
-    }
+    state: 'applications.metrics'
   });
 });

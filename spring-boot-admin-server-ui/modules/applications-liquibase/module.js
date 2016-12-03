@@ -37,9 +37,6 @@ module.run(function (ApplicationViews, $http, $sce) {
     title: $sce.trustAsHtml('<i class="fa fa-database fa-fw"></i>Liquibase'),
     state: 'applications.liquibase',
     show: function (application) {
-      if (!application.managementUrl || !application.statusInfo.status || application.statusInfo.status === 'OFFLINE') {
-        return false;
-      }
       return $http.head('api/applications/' + application.id + '/liquibase').then(function () {
         return true;
       }).catch(function () {

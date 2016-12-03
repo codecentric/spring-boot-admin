@@ -33,7 +33,7 @@
   background-color: #666;
   border: 0;
   padding: 9px 13px 8px 13px;
-  border-bottom: 1px solid #34302D;
+  border-bottom: 1px solid transparent;
 }
 .header--application .nav-tabs > .active > a,
 .header--application .nav-tabs > .active > a:hover,
@@ -46,26 +46,23 @@
   border-top: 4px solid #6db33f;
   padding: 5px 12px 8px 12px;
 }
-.header--application .application--status {
-  font-size: 24px;
-  line-height: 24px;
-  margin: 20px;
-}
 .header--application .application--title {
   color: #f1f1f1;
   font-size: 24px;
   line-height: 24px;
-  margin: 20px 20px 20px 0;
+  margin: 20px 20px 0 0;
+  display: inline-block;
 }
 .application--urls {
   list-style: none;
   text-align: right;
   font-size: 14px;
   color: #888;
-  margin-top: 20px;
-  height: 0;
+  margin: 5px 0 5px 0;
+  display: block;
+  float: right;
 }
-.application--urls > li >a {
+.application--urls > li > a {
   color: #f1f1f1;
 }
 .application--urls > li > a:hover,

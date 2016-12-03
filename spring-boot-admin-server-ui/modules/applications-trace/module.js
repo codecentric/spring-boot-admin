@@ -38,9 +38,6 @@ module.run(function (ApplicationViews, $sce) {
   ApplicationViews.register({
     order: 60,
     title: $sce.trustAsHtml('<i class="fa fa-eye fa-fw"></i>Trace'),
-    state: 'applications.trace',
-    show: function (application) {
-      return application.managementUrl && application.statusInfo.status !== null && application.statusInfo.status !== 'OFFLINE';
-    }
+    state: 'applications.trace'
   });
 });

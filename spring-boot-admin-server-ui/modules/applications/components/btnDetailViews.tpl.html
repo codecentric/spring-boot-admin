@@ -1,0 +1,11 @@
+<div ng-show="$ctrl.application.managementUrl &amp;&amp; $ctrl.application.statusInfo.status !== null &amp;&amp; $ctrl.application.statusInfo.status !== 'OFFLINE'"
+  class="btn-group">
+  <a ng-show="$ctrl.primaryView" ng-href="{{$ctrl.primaryView.href}}" target="{{$ctrl.primaryView.target}}" class="btn btn-success"
+    ng-bind-html="$ctrl.primaryView.title"></a>
+  <button class="btn btn-success dropdown-toggle" data-toggle="dropdown" ng-show="$ctrl.secondaryViews" ng-click="$ctrl.resolveViews()"><i class="fa fa-caret-down"></i></button>
+  <ul class="dropdown-menu">
+    <li ng-repeat="view in $ctrl.secondaryViews track by view.href" ng-show="view.show == true">
+      <a ng-href="{{view.href}}" target="{{view.target}}" ng-bind-html="view.title"></a>
+    </li>
+  </ul>
+</div>

@@ -36,9 +36,6 @@ module.run(function (ApplicationViews, $http, $sce) {
     title: $sce.trustAsHtml('<i class="fa fa-database fa-fw"></i>Flyway'),
     state: 'applications.flyway',
     show: function (application) {
-      if (!application.managementUrl || !application.statusInfo.status || application.statusInfo.status === 'OFFLINE') {
-        return false;
-      }
       return $http.head('api/applications/' + application.id + '/flyway').then(function () {
         return true;
       }).catch(function () {

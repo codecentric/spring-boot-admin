@@ -15,38 +15,53 @@
  */
 'use strict';
 
-var angular = require('angular');
 module.exports = function ($state, $q) {
   'ngInject';
 
   var views = [];
   this.register = function (view) {
     views.push(view);
+    views.sort(function (v1, v2) {
+      return (v1.order || 0) - (v2.order || 0);
+    });
+  };
+
+  var instantiateView = function (view, application) {
+    var appView = {
+      order: view.order,
+      show: view.show || true,
+      title: view.title
+    };
+
+    if (view.state) {
+      appView.href = $state.href(view.state, {
+        id: application.id
+      });
+    } else {
+      appView.href = view.href.replace('{id}', application.id);
+      appView.target = '_blank';
+    }
+
+    return appView;
   };
 
   this.getApplicationViews = function (application) {
-    var applicationViews = [];
-
-    views.forEach(function (view) {
-      $q.when(!view.show || view.show(application)).then(function (result) {
-        if (result) {
-          var appView = angular.copy(view);
-          if (view.state) {
-            appView.href = $state.href(view.state, {
-              id: application.id
-            });
-          } else {
-            appView.href = view.href.replace('{id}', application.id);
-            appView.target = '_blank';
-          }
-
-          applicationViews.push(appView);
-          applicationViews.sort(function (v1, v2) {
-            return (v1.order || 0) - (v2.order || 0);
+    var result = views.map(function (view) {
+      return instantiateView(view, application);
+    });
+    var resolveDynamicViews = function () {
+      var deferred = $q.defer();
+      result.forEach(function (view) {
+        if (typeof view.show === 'function') {
+          $q.when(view.show(application)).then(function (result) {
+            view.show = result;
+            deferred.notify(view);
           });
+          return deferred.promise;
         }
       });
-    });
-    return applicationViews;
+    };
+
+    return { views: result, resolve: resolveDynamicViews };
   };
 };
