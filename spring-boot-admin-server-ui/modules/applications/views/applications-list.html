@@ -35,7 +35,7 @@
         </td>
       </tr>
       <tr ng-hide="group.collapsed" ng-repeat="application in filteredApps = (group.applications|orderBy:order.column:order.descending|orderBy:'statusInfo.status':false|filter:searchFilter) track by application.id"
-        ng-init="views = viewsForApplication(application)" ng-repeat-end>
+        ng-repeat-end>
         <td class="group-column" ng-if="$first" rowspan="{{filteredApps.length}}" ng-click="group.collapsed = filteredApps.length > 1"><i ng-show="filteredApps.length > 1" class="fa fa-minus"></i></td>
         <td>{{ application.name }} ({{ application.id }})<br/>
           <span class="muted">{{ application.serviceUrl || application.managementUrl || application.healthUrl }}</span></td>
