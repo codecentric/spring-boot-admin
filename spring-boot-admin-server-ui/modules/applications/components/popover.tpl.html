@@ -1,5 +1,5 @@
-<div class="popover fade bottom" ng-class="{'in' : $popover.isVisible()}" ng-style="{ display: $popover.isVisible() ? 'block' : 'none', top: $popover.offset.top+'px', left: $popover.offset.left + 'px' } ">
-	<div class="arrow"></div>
-	<h3 class="popover-title" ng-bind="$popover.title" ng-if="$popover.title"></h3>
-	<div class="popover-content" ng-transclude></div>
+<div ng-if="$popover.isVisible()" class="popover fade bottom" ng-class="{'in' : $popover.isVisible()}" ng-style="{ display: $popover.isVisible() ? 'block' : 'none', top: $popover.offset.top+'px', left: $popover.offset.left + 'px' } ">
+  <div class="arrow"></div>
+  <h3 class="popover-title" ng-bind="$popover.title" ng-if="$popover.title"></h3>
+  <div class="popover-content" ng-transclude></div>
 </div>

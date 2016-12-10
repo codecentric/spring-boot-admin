@@ -15,20 +15,22 @@
  */
 'use strict';
 
+var angular = require('angular');
 module.exports = function ($rootScope, $scope, $state, NotificationFilters) {
   'ngInject';
   $scope.notificationFilters = null;
   $scope.notificationFiltersSupported = false;
   $scope.expandAll = false;
+  $scope.searchFilter = '';
 
   $scope.remove = function (application) {
     application.$remove();
   };
 
-  $scope.toggleExpandAll = function (value) {
-    $scope.expandAll = value || !$scope.expandAll;
-    $rootScope.applicationGroups.groups.forEach(function (group) {
-      group.collapsed = !$scope.expandAll && group.applications.length > 1;
+  $scope.toggleExpandAll = function () {
+    $scope.expandAll = !$scope.expandAll;
+    angular.forEach($rootScope.applicationGroups.groups, function (group) {
+      group.collapsed = !$scope.expandAll;
     });
   };
 
