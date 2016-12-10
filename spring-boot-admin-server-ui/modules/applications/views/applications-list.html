@@ -1,8 +1,7 @@
 <div class="container-fluid">
   <h3>Spring Boot applications</h3>
   <div>
-    <input placeholder="Filter" class="input-xxlarge" type="search" ng-model="searchFilter" ng-keypress="toggleExpandAll(true)"
-    />
+    <input placeholder="Filter" class="input-xxlarge" type="search" ng-model="searchFilter" />
   </div>
   <table class="table application-list">
     <col style="width: 30px; ">
@@ -23,20 +22,22 @@
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat-start="group in applicationGroups.groups|orderBy:order.column:order.descending|orderBy:'status':false|filter:searchFilter track by group.name"
-        ng-init="group.collapsed = group.applications.length > 1 &amp;&amp; !expandAll" ng-show="group.collapsed">
-        <td class="group-column" ng-click="group.collapsed = false"><i class="fa fa-plus"></i></td>
-        <td ng-bind="group.name"></td>
-        <td><span ng-bind="group.version"></span></td>
+      <tr ng-repeat-start="application in filteredApps = (applicationGroups.applications|orderBy:order.column:order.descending|orderBy:'statusInfo.status':false|filter:searchFilter) track by application.id"
+        ng-show="application.group.applicationCount > 1 &amp;&amp; (application.group.collapsed || application.group.collapsed == undefined) &amp;&amp; ($first || filteredApps[$index - 1].group.name != application.group.name) &amp;&amp; (searchFilter == '' || searchFilter == undefined)">
+        <td class="group-column" ng-click="application.group.collapsed = false"><i class="fa fa-plus"></i></td>
+        <td ng-bind="application.group.name"></td>
+        <td><span ng-bind="application.group.version"></span></td>
         <td></td>
         <td colspan="2">
-          <span ng-repeat-start="(status, count) in group.statusCounter track by status" class="status-{{status}}" ng-bind="count + ' ' + status"></span>
+          <span ng-repeat-start="(status, count) in application.group.statusCounter track by status" class="status-{{status}}" ng-bind="count + ' ' + status"></span>
           <span ng-repeat-end ng-hide="$last"> / </span>
         </td>
       </tr>
-      <tr ng-hide="group.collapsed" ng-repeat="application in filteredApps = (group.applications|orderBy:order.column:order.descending|orderBy:'statusInfo.status':false|filter:searchFilter) track by application.id"
-        ng-repeat-end>
-        <td class="group-column" ng-if="$first" rowspan="{{filteredApps.length}}" ng-click="group.collapsed = filteredApps.length > 1"><i ng-show="filteredApps.length > 1" class="fa fa-minus"></i></td>
+      <tr ng-repeat-end ng-show="(!application.group.collapsed  && application.group.collapsed != undefined ) || application.group.applicationCount == 1 || (searchFilter != '' && searchFilter != undefined)">
+        <td class="group-column" ng-class="{'hidden': !($first || filteredApps[$index - 1].group.name != application.group.name) &amp;&amp; (searchFilter == '' || searchFilter == undefined) }"
+          rowspan="{{ (searchFilter != '' &amp;&amp; searchFilter != undefined) ? 1 : application.group.applicationCount }}"
+          ng-click="application.group.collapsed = application.group.applicationCount > 1"><i ng-show="application.group.applicationCount > 1 &amp;&amp; (searchFilter == '' || searchFilter == undefined)"
+            class="fa fa-minus"></i></td>
         <td>{{ application.name }} ({{ application.id }})<br/>
           <span class="muted">{{ application.serviceUrl || application.managementUrl || application.healthUrl }}</span></td>
         <td>{{ application.version }}</td>
@@ -48,7 +49,7 @@
           <span ng-show="application.refreshing"><i class="fa fa-spinner fa-pulse fa-lg"></i></span>
         </td>
         <td>
-          <sba-notification-settings ng-if="notificationFilters" application="application" filters="notificationFilters" refresh-callback="loadFilters()"></sba-notification-settings>
+          <sba-notification-settings ng-show="notificationFilters" application="application" filters="notificationFilters" refresh-callback="loadFilters()"></sba-notification-settings>
           <sba-btn-detail-views details-for="application"></sba-btn-detail-views>
           <div class="btn-group" title="remove">
             <a class="btn btn-danger" ng-click="remove(application)"><i class="fa fa-times"></i></a>
