@@ -78,7 +78,7 @@ module.run(function ($rootScope, $state, Notification, Application, ApplicationG
   var queueRefresh = function (application) {
     application.refreshing = true;
     if (runningRefreshs++ >= 15) {
-      refreshQueue.push([application]);
+      refreshQueue.push(application);
     } else {
       refresh(application);
     }
@@ -89,7 +89,7 @@ module.run(function ($rootScope, $state, Notification, Application, ApplicationG
       application.refreshing = false;
       runningRefreshs--;
       if (refreshQueue.length > 0) {
-        refresh(application);
+        refresh(refreshQueue.pop());
       }
     });
   };
