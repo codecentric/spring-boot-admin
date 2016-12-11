@@ -23,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.UnsupportedEncodingException;
 
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -40,8 +41,10 @@ import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
 
 public class RegistryControllerTest {
 
-	private static final String APPLICATION_TEST_JSON = "{ \"name\":\"test\", \"healthUrl\":\"http://localhost/mgmt/health\"}";
-	private static final String APPLICATION_TWICE_JSON = "{ \"name\":\"twice\", \"healthUrl\":\"http://localhost/mgmt/health\"}";
+	private static final String APPLICATION_TEST_JSON = new JSONObject().put("name", "test")
+			.put("healthUrl", "http://localhost/mgmt/health").toString();
+	private static final String APPLICATION_TWICE_JSON = new JSONObject().put("name", "twice")
+			.put("healthUrl", "http://localhost/mgmt/health").toString();
 	private MockMvc mvc;
 
 	@Before
@@ -82,7 +85,6 @@ public class RegistryControllerTest {
 				.andExpect(jsonPath("$.id").value(id));
 
 		mvc.perform(get("/api/applications/{id}", id)).andExpect(status().isNotFound());
-
 	}
 
 

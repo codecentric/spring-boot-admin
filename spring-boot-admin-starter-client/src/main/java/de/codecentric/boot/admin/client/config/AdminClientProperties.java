@@ -15,6 +15,9 @@
  */
 package de.codecentric.boot.admin.client.config;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -48,6 +51,11 @@ public class AdminClientProperties {
 	 * Should the registered urls be built with server.address or with hostname.
 	 */
 	private boolean preferIp = false;
+
+	/**
+	 * Metadata that should be associated with this application
+	 */
+	private Map<String, String> metadata = new HashMap<>();
 
 	public String getManagementUrl() {
 		return managementUrl;
@@ -87,5 +95,9 @@ public class AdminClientProperties {
 
 	public void setPreferIp(boolean preferIp) {
 		this.preferIp = preferIp;
+	}
+
+	public Map<String, String> getMetadata() {
+		return metadata;
 	}
 }

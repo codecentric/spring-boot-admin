@@ -116,6 +116,10 @@ spring.boot.admin.password
 | spring.boot.admin.client.prefer-ip
 | Use the ip-address rather then the hostname in the guessed urls. If `server.address` / `management.address` is set, it get used. Otherwise the IP address returned from `InetAddress.getLocalHost()` gets used.
 | `false`
+
+| spring.boot.admin.client.metadata.*
+| Metadata to be asscoiated with this instance
+|
 |===
 
 ----

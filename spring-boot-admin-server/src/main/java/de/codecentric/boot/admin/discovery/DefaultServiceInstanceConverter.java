@@ -19,6 +19,7 @@ import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang.StringUtils.stripStart;
 
 import java.net.URI;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +68,11 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 			builder.withServiceUrl(serviceUrl.toString());
 		}
 
+		Map<String, String> metadata = getMetadata(instance);
+		if (metadata != null) {
+			builder.withMetadata(metadata);
+		}
+
 		return builder.build();
 	}
 
@@ -94,6 +100,10 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 
 	protected URI getServiceUrl(ServiceInstance instance) {
 		return instance.getUri();
+	}
+
+	protected Map<String, String> getMetadata(ServiceInstance instance) {
+		return instance.getMetadata();
 	}
 
 	/**

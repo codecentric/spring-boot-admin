@@ -50,12 +50,4 @@ public class ApplicationTest {
 		assertThat(a1, not(is(a3)));
 		assertThat(a2, not(is(a3)));
 	}
-
-	@Test
-	public void test_builder_copy() {
-		Application app = Application.create("App").withHealthUrl("http://health")
-				.withManagementUrl("http://mgmgt").withServiceUrl("http://svc").build();
-		Application copy = Application.create(app).build();
-		assertThat(app, is(copy));
-	}
 }

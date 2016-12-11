@@ -17,15 +17,25 @@ package de.codecentric.boot.admin.model;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 import org.springframework.util.Assert;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 /**
  * The domain model for all registered application at the spring boot admin application.
@@ -41,6 +51,8 @@ public class Application implements Serializable {
 	private final String serviceUrl;
 	private final StatusInfo statusInfo;
 	private final String source;
+	@JsonSerialize(using = Application.MetadataSerializer.class)
+	private final Map<String, String> metadata;
 
 	protected Application(Builder builder) {
 		Assert.hasText(builder.name, "name must not be empty!");
@@ -53,6 +65,7 @@ public class Application implements Serializable {
 		this.id = builder.id;
 		this.statusInfo = builder.statusInfo;
 		this.source = builder.source;
+		this.metadata = Collections.unmodifiableMap(new HashMap<>(builder.metadata));
 	}
 
 	public static Builder create(String name) {
@@ -71,6 +84,7 @@ public class Application implements Serializable {
 		private String serviceUrl;
 		private StatusInfo statusInfo = StatusInfo.ofUnknown();
 		private String source;
+		private Map<String, String> metadata = new HashMap<>();
 
 		private Builder(String name) {
 			this.name = name;
@@ -84,6 +98,7 @@ public class Application implements Serializable {
 			this.id = application.id;
 			this.statusInfo = application.statusInfo;
 			this.source = application.source;
+			this.metadata.putAll(application.getMetadata());
 		}
 
 		public Builder withName(String name) {
@@ -121,6 +136,16 @@ public class Application implements Serializable {
 			return this;
 		}
 
+		public Builder withMetadata(String key, String value) {
+			this.metadata.put(key, value);
+			return this;
+		}
+
+		public Builder withMetadata(Map<String, String> metadata) {
+			this.metadata.putAll(metadata);
+			return this;
+		}
+
 		public Application build() {
 			return new Application(this);
 		}
@@ -154,6 +179,9 @@ public class Application implements Serializable {
 		return source;
 	}
 
+	public Map<String, String> getMetadata() {
+		return metadata;
+	}
 	@Override
 	public String toString() {
 		return "Application [id=" + id + ", name=" + name + ", managementUrl="
@@ -251,7 +279,53 @@ public class Application implements Serializable {
 					builder.withServiceUrl(node.get("serviceUrl").asText());
 				}
 			}
+
+			if (node.has("metadata")) {
+				Iterator<Entry<String, JsonNode>> it = node.get("metadata").fields();
+				while (it.hasNext()) {
+					Entry<String, JsonNode> entry = it.next();
+					builder.withMetadata(entry.getKey(), entry.getValue().asText());
+				}
+			}
 			return builder.build();
+		}
+	}
+
+	public static class MetadataSerializer extends StdSerializer<Map<String, String>> {
+		private static final long serialVersionUID = 1L;
+		private static Pattern[] keysToSanitize = createPatterns(".*password$", ".*secret$",
+				".*key$", ".*$token$", ".*credentials.*", ".*vcap_services$");
+
+		@SuppressWarnings("unchecked")
+		public MetadataSerializer() {
+			super((Class<Map<String, String>>) (Class<?>) Map.class);
+		}
+
+		private static Pattern[] createPatterns(String... keys) {
+			Pattern[] patterns = new Pattern[keys.length];
+			for (int i = 0; i < keys.length; i++) {
+				patterns[i] = Pattern.compile(keys[i]);
+			}
+			return patterns;
+		}
+
+		@Override
+		public void serialize(Map<String, String> value, JsonGenerator gen,
+				SerializerProvider provider) throws IOException {
+			gen.writeStartObject();
+			for (Entry<String, String> entry : value.entrySet()) {
+				gen.writeStringField(entry.getKey(), sanitize(entry.getKey(), entry.getValue()));
+			}
+			gen.writeEndObject();
+		}
+
+		private String sanitize(String key, String value) {
+			for (Pattern pattern : MetadataSerializer.keysToSanitize) {
+				if (pattern.matcher(key).matches()) {
+					return (value == null ? null : "******");
+				}
+			}
+			return value;
 		}
 	}
 }

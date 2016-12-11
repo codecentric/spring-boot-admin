@@ -1,12 +1,15 @@
 package de.codecentric.boot.admin.model;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
+import java.util.Collections;
 
+import org.json.JSONObject;
 import org.junit.Test;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
@@ -18,10 +21,8 @@ public class ApplicationTest {
 
 	@Test
 	public void test_1_2_json_format() throws JsonProcessingException, IOException {
-		String json = "{ \"name\" : \"test\", \"url\" : \"http://test\" }";
-
+		String json = new JSONObject().put("name", "test").put("url", "http://test").toString();
 		Application value = objectMapper.readValue(json, Application.class);
-
 		assertThat(value.getName(), is("test"));
 		assertThat(value.getManagementUrl(), is("http://test"));
 		assertThat(value.getHealthUrl(), is("http://test/health"));
@@ -30,10 +31,10 @@ public class ApplicationTest {
 
 	@Test
 	public void test_1_4_json_format() throws JsonProcessingException, IOException {
-		String json = "{ \"name\" : \"test\", \"managementUrl\" : \"http://test\" , \"healthUrl\" : \"http://health\" , \"serviceUrl\" : \"http://service\", \"statusInfo\": {\"status\":\"UNKNOWN\"} }";
-
+		String json = new JSONObject().put("name", "test").put("managementUrl", "http://test")
+				.put("healthUrl", "http://health").put("serviceUrl", "http://service")
+				.put("statusInfo", new JSONObject().put("status", "UNKNOWN")).toString();
 		Application value = objectMapper.readValue(json, Application.class);
-
 		assertThat(value.getName(), is("test"));
 		assertThat(value.getManagementUrl(), is("http://test"));
 		assertThat(value.getHealthUrl(), is("http://health"));
@@ -42,20 +43,21 @@ public class ApplicationTest {
 
 	@Test
 	public void test_1_5_json_format() throws JsonProcessingException, IOException {
-		String json = "{ \"name\" : \"test\", \"managementUrl\" : \"http://test\" , \"healthUrl\" : \"http://health\" , \"serviceUrl\" : \"http://service\"}";
-
+		String json = new JSONObject().put("name", "test").put("managementUrl", "http://test")
+				.put("healthUrl", "http://health").put("serviceUrl", "http://service")
+				.put("metadata", new JSONObject().put("labels", "foo,bar")).toString();
 		Application value = objectMapper.readValue(json, Application.class);
-
 		assertThat(value.getName(), is("test"));
 		assertThat(value.getManagementUrl(), is("http://test"));
 		assertThat(value.getHealthUrl(), is("http://health"));
 		assertThat(value.getServiceUrl(), is("http://service"));
+		assertThat(value.getMetadata(), is(Collections.singletonMap("labels", "foo,bar")));
 	}
 
-
 	@Test
-	public void test_onlyHealhUrl() throws JsonProcessingException, IOException {
-		String json = "{ \"name\" : \"test\", \"healthUrl\" : \"http://test\" }";
+	public void test_onlyHealthUrl() throws JsonProcessingException, IOException {
+		String json = new JSONObject().put("name", "test").put("healthUrl", "http://test")
+				.toString();
 		Application value = objectMapper.readValue(json, Application.class);
 		assertThat(value.getName(), is("test"));
 		assertThat(value.getHealthUrl(), is("http://test"));
@@ -65,14 +67,25 @@ public class ApplicationTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void test_name_expected() throws JsonProcessingException, IOException {
-		String json = "{ \"name\" : \"\", \"managementUrl\" : \"http://test\" , \"healthUrl\" : \"http://health\" , \"serviceUrl\" : \"http://service\"}";
+		String json = new JSONObject().put("name", "").put("managementUrl", "http://test")
+				.put("healthUrl", "http://health").put("serviceUrl", "http://service").toString();
 		objectMapper.readValue(json, Application.class);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void test_healthUrl_expected() throws JsonProcessingException, IOException {
-		String json = "{ \"name\" : \"test\", \"managementUrl\" : \"http://test\" , \"healthUrl\" : \"\" , \"serviceUrl\" : \"http://service\"}";
+		String json = new JSONObject().put("name", "test").put("managementUrl", "http://test")
+				.put("healthUrl", "").put("serviceUrl", "http://service").toString();
 		objectMapper.readValue(json, Application.class);
+	}
+
+	@Test
+	public void test_sanitize_metadata() throws JsonProcessingException {
+		Application app = Application.create("test").withHealthUrl("http://health")
+				.withMetadata("password", "qwertz123").withMetadata("user", "humptydumpty").build();
+		String json = objectMapper.writeValueAsString(app);
+		assertThat(json, not(containsString("qwertz123")));
+		assertThat(json, containsString("humptydumpty"));
 	}
 
 	@Test

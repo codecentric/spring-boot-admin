@@ -4,6 +4,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
@@ -43,9 +46,11 @@ public class DefaultServiceInstanceConverterTest {
 	@Test
 	public void test_convert_with_metadata() {
 		ServiceInstance service = new DefaultServiceInstance("test", "localhost", 80, false);
-		service.getMetadata().put("health.path", "ping");
-		service.getMetadata().put("management.context-path", "mgmt");
-		service.getMetadata().put("management.port", "1234");
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("health.path", "ping");
+		metadata.put("management.context-path", "mgmt");
+		metadata.put("management.port", "1234");
+		service.getMetadata().putAll(metadata);
 
 		Application application = new DefaultServiceInstanceConverter().convert(service);
 
@@ -54,6 +59,7 @@ public class DefaultServiceInstanceConverterTest {
 		assertThat(application.getServiceUrl(), is("http://localhost:80"));
 		assertThat(application.getManagementUrl(), is("http://localhost:1234/mgmt"));
 		assertThat(application.getHealthUrl(), is("http://localhost:1234/mgmt/ping"));
+		assertThat(application.getMetadata(), is(metadata));
 	}
 
 }
