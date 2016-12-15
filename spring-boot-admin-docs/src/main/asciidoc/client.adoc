@@ -117,4 +117,3 @@ spring.boot.admin.password
 | `false`
 |===
 
-----
