@@ -4,7 +4,7 @@
 [[show-version-in-application-list]]
 === Show version in application list ===
 
-To get the version show up in the admin's application list you can use the `build-info` goal from the `spring-boot-maven-plugin`, which generates the `META-INF/build-info.properties`. See also the http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#howto-build-info[Spring Boot Reference Guide].
+To have the version show up in the application list you can use the `build-info` goal from the `spring-boot-maven-plugin`, which generates the `META-INF/build-info.properties`. See also the http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#howto-build-info[Spring Boot Reference Guide].
 
 [source,xml]
 .pom.xml
@@ -56,9 +56,9 @@ NOTE: In case you are deploying multiple applications to the same JVM and multip
 [[spring-boot-admin-client]]
 === Spring Boot Admin Client ===
 
-The Spring Boot Admin Client registers the application at the admin server. This is done by periodically doing a http post-request to the admin server providing information about the application. It also adds Jolokia to your dependencies, so that JMX-beans are accessible via http, this is needed if you want to manage loglevels or JMX-beans via the admin UI.
+The Spring Boot Admin Client registers the application at the admin server. This is done by periodically doing a HTTP post request to the SBA Server providing information about the application. It also adds Jolokia to your application, so that JMX-beans are accessible via HTTP.
 
-There are plenty of properties to influence the way how the client registers your application. In case that doesn't fit your needs, you can provide your own `AppliationFactory` implementation.
+TIP: There are plenty of properties to influence the way how the SBA Client registers your application. In case that doesn't fit your needs, you can provide your own `AppliationFactory` implementation.
 
 .Spring Boot Admin Client configuration options
 |===
@@ -76,9 +76,9 @@ There are plenty of properties to influence the way how the client registers you
 | Http-path of registration endpoint at your admin server.
 | `"api/applications"`
 
-| spring.boot.admin.username
+| spring.boot.admin.username +
 spring.boot.admin.password
-| Username and password for http-basic authentication. If set the registration uses http-basic-authentication when registering at the admin server.
+| Username and password in case the SBA Server api is protected with HTTP Basic authentication.
 |
 
 | spring.boot.admin.period
@@ -118,8 +118,16 @@ spring.boot.admin.password
 | `false`
 
 | spring.boot.admin.client.metadata.*
-| Metadata to be asscoiated with this instance
+| Metadata key-value-pairs to be asscoiated with this instance.
 |
 |===
 
-----
+.Instance metadata options
+|===
+| Key |Value |Default value
+
+| user.name +
+user.password
+| Credentials being used to access the endpoints.
+|
+|===

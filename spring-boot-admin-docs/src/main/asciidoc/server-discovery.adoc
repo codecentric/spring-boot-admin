@@ -1,14 +1,16 @@
 [[spring-cloud-discovery-support]]
 === Spring Cloud Discovery ===
 
-The Spring Boot Admin Server is capable of using  Spring Clouds `DiscoveryClient` to discover applications. The advantage is that the clients don't have to include the `spring-boot-admin-starter-client`. You just have to add a DiscoveryClient to your admin server - everything else is done by AutoConfiguration.
+The Spring Boot Admin Server can use Spring Clouds `DiscoveryClient` to discover applications. The advantage is that the clients don't have to include the `spring-boot-admin-starter-client`. You just have to add a DiscoveryClient to your admin server - everything else is done by AutoConfiguration.
 The setup is explained <<discover-clients-via-spring-cloud-discovery,above>>.
 
 ==== ServiceInstanceConverter ====
 
-The informations from the discovered services are converted by the `ServiceInstanceConverter`. Spring Boot Admin ships with a default and Eureka converter implementation. The correct one is selected by AutoConfiguration. You can use your own conversion by implementing the interface and adding the bean to your application context.
+The information from the service registry are converted by the `ServiceInstanceConverter`. Spring Boot Admin ships with a default and Eureka converter implementation. The correct one is selected by AutoConfiguration.
 
-TIP: If you want to customize the default conversion of services you can either add `health.path`, `management.port` and/or `mangament.context-path` entries to the services metadata. This allows you to set the health or management path per application. In case you want to configure this for all of your discovered services, you can use the `spring.boot.admin.discovery.converter.*` properties for your Spring Boot Admin Server configuration. The services' metadata takes precedence over the server configuration. For the health-url the `EurekaServiceInstanceConverter` uses the healthCheckUrl registered in Eureka, which can be set for your client via `eureka.instance.healthCheckUrl`.
+TIP: You can modify how the information from the registry is used to register the application by using SBA Server configuration options and instance metadata. The values from the metadata takes precedence over the server config. If the plenty of options don't fit your needs you can provide your own `ServiceInstanceConverter`.
+
+NOTE: When using Eureka, the `healthCheckUrl` known to Eureka is used for health-checking, which can be set on your client using `eureka.instance.healthCheckUrl`.
 
 .Discovery configuration options
 |===
@@ -29,4 +31,26 @@ TIP: If you want to customize the default conversion of services you can either 
 | spring.boot.admin.discovery.ignored-services
 | This services will be ignored when using discovery and not registered as application.
 |
+|===
+
+.Instance metadata options
+|===
+| Key |Value |Default value
+
+| user.name +
+user.password
+| Credentials being used to access the endpoints.
+|
+
+| managment.port
+| The port is substituted in the service URL and will be used for accessing the actuator endpoints.
+|
+
+| managment.path
+| The path is appendend to the service URL and will be used for accessing the actuator endpoints.
+| `${spring.boot.admin.discovery.converter.mangement-context-path}`
+
+| health.path
+| The path is appendend to the service URL and will be used for the health-checking. Ignored by the `EurekaServiceInstanceConverter`.
+| `${spring.boot.admin.discovery.converter.health-endpoint}`
 |===

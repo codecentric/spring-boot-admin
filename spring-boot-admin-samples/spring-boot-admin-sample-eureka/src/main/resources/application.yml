@@ -5,13 +5,15 @@ spring:
     config:
       enabled: false
 # tag::configuration-eureka[]
-eureka:
+eureka:  #<1>
   instance:
     leaseRenewalIntervalInSeconds: 10
   client:
     registryFetchIntervalSeconds: 5
     serviceUrl:
       defaultZone: ${EUREKA_SERVICE_URL:http://localhost:8761}/eureka/
+
+management.security.enabled: false  #<2>
 # end::configuration-eureka[]
 
 # tag::configuration-ui-hystrix[]
@@ -23,3 +25,4 @@ spring.boot.admin.turbine:
   clusters: default
   url: http://localhost:8989/turbine.stream
 # end::configuration-ui-turbine[]
+

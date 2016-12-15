@@ -41,9 +41,11 @@ import org.springframework.core.annotation.Order;
 
 import de.codecentric.boot.admin.event.RoutesOutdatedEvent;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
+import de.codecentric.boot.admin.web.client.HttpHeadersProvider;
 import de.codecentric.boot.admin.zuul.ApplicationRouteLocator;
 import de.codecentric.boot.admin.zuul.OptionsDispatchingZuulController;
 import de.codecentric.boot.admin.zuul.filters.CompositeRouteLocator;
+import de.codecentric.boot.admin.zuul.filters.pre.ApplicationHeadersFilter;
 import de.codecentric.boot.admin.zuul.filters.route.SimpleHostRoutingFilter;
 
 @Configuration
@@ -104,6 +106,12 @@ public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
 	public PreDecorationFilter preDecorationFilter(RouteLocator routeLocator) {
 		return new PreDecorationFilter(routeLocator, this.server.getServletPrefix(),
 				zuulProperties, proxyRequestHelper());
+	}
+
+	@Bean
+	public ApplicationHeadersFilter applicationHeadersFilter(ApplicationRouteLocator routeLocator,
+			HttpHeadersProvider headersProvider) {
+		return new ApplicationHeadersFilter(headersProvider, routeLocator);
 	}
 
 	@Bean

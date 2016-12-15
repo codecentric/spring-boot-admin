@@ -4,10 +4,39 @@
 === Securing Spring Boot Admin Server ===
 
 Since there are several approaches on solving authentication and authorization in distributed web applications Spring Boot Admin doesn't ship a default one.
-However you can include Spring Security to your Spring Boot Admin Server and configure it the way you like.
+However you can include Spring Security to your SBA Server and configure it the way you like.
 
 === Securing Client's Actuator Endpoints ===
 
-The simplest way to secure your actuator endpoints is to use basic authorization and the same username/password for all applications. This way the browser asks for the credentials and if you set `zuul.senstivieHeaders:` the Zuul Proxy in Spring Boot Admin Server forwards them to the clients.
+When the actuator endpoints are secured using HTTP Basic authentication the SBA Server needs credentials to access them. You can submit the credentials in the metadata when registering the application. The `BasicAuthHttpHeaderProvider` then uses this metadata to add the `Authorization` header to access your application's actuator endpoints. You can provide your own `HttpHeadersProvider` to alter the behaviour (e.g. add some decryption) or add extra headers.
 
-For more complex solutions (Spring Session, OAuth2, ...) please have a look at the samples in https://github.com/joshiste/spring-boot-admin-samples[joshiste/spring-boot-admin-samples^].
+Submitting the credentials using SBA Client:
+[source,yaml]
+.application.yml
+----
+spring.boot.admin:
+  url: http://localhost:8080
+  client:
+    metadata:
+      user.name: ${security.user.name}
+      user.password: ${security.user.password}
+----
+
+Submitting the credentials using Eureka:
+[source,yaml]
+.application.yml
+----
+eureka:
+  instance:
+    metadata-map:
+      user.name: ${security.user.name}
+      user.password: ${security.user.password}
+----
+
+NOTE: The SBA Server masks certain metadata in the HTTP interface to prevent leaking of sensitive information.
+
+WARNING: You should configure HTTPS for your SBA Server or (service registry) when submitting credentials via the metadata.
+
+WARNING: When using Spring Cloud Discovery, you must be aware that anybody who can query your service registry can obtain the credentials.
+
+TIP: When using this approach the SBA Server decides whether or not the user can access the registered applications. There are more complex solutions possible (using OAuth2) to let the clients decide if the user can access the endpoints. For that please have a look at the samples in https://github.com/joshiste/spring-boot-admin-samples[joshiste/spring-boot-admin-samples^].

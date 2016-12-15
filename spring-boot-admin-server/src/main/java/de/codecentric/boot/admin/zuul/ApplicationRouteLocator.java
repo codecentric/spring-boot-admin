@@ -43,7 +43,7 @@ public class ApplicationRouteLocator implements RefreshableRouteLocator {
 
 	private ApplicationRegistry registry;
 	private PathMatcher pathMatcher = new AntPathMatcher();
-	private AtomicReference<List<Route>> routes = new AtomicReference<>();
+	private AtomicReference<List<ApplicationRoute>> routes = new AtomicReference<>();
 	private String prefix;
 	private String servletPath;
 	private String[] endpoints = {};
@@ -55,18 +55,17 @@ public class ApplicationRouteLocator implements RefreshableRouteLocator {
 		this.prefix = prefix;
 	}
 
-	protected List<Route> locateRoutes() {
+	protected List<ApplicationRoute> locateRoutes() {
 		Collection<Application> applications = registry.getApplications();
 
-		List<Route> locateRoutes = new ArrayList<>(
+		List<ApplicationRoute> locateRoutes = new ArrayList<>(
 				applications.size() * (endpoints.length + 1));
 
 		for (Application application : applications) {
-			addRoute(locateRoutes, application.getId(), "health", application.getHealthUrl());
-
+			addRoute(locateRoutes, application, "health", application.getHealthUrl());
 			if (!StringUtils.isEmpty(application.getManagementUrl())) {
 				for (String endpoint : endpoints) {
-					addRoute(locateRoutes, application.getId(), endpoint,
+					addRoute(locateRoutes, application, endpoint,
 							application.getManagementUrl() + "/" + endpoint);
 				}
 			}
@@ -75,16 +74,16 @@ public class ApplicationRouteLocator implements RefreshableRouteLocator {
 		return locateRoutes;
 	}
 
-	private void addRoute(List<Route> locateRoutes, String applicationId, String endpoint,
-			String targetUrl) {
-		String routeId = applicationId + "-" + endpoint;
-		Route route = new Route(routeId, "/**", targetUrl, prefix + applicationId + "/" + endpoint,
-				false, null);
+	private void addRoute(List<ApplicationRoute> locateRoutes, Application application,
+			String endpoint, String targetUrl) {
+		ApplicationRoute route = new ApplicationRoute(application,
+				application.getId() + "-" + endpoint, "/**", targetUrl,
+				prefix + application.getId() + "/" + endpoint);
 		locateRoutes.add(route);
 	}
 
 	@Override
-	public Route getMatchingRoute(final String path) {
+	public ApplicationRoute getMatchingRoute(final String path) {
 		LOGGER.debug("Finding route for path: {}", path);
 
 		if (this.routes.get() == null) {
@@ -95,7 +94,7 @@ public class ApplicationRouteLocator implements RefreshableRouteLocator {
 
 		String adjustedPath = stripServletPath(path);
 
-		for (Route route : this.routes.get()) {
+		for (ApplicationRoute route : this.routes.get()) {
 			String pattern = route.getFullPath();
 			LOGGER.debug("Matching pattern: {}", pattern);
 			if (this.pathMatcher.match(pattern, adjustedPath)) {
@@ -107,15 +106,15 @@ public class ApplicationRouteLocator implements RefreshableRouteLocator {
 		return null;
 	}
 
-	private Route adjustPathRoute(Route route, String path) {
+	private ApplicationRoute adjustPathRoute(ApplicationRoute route, String path) {
 		String adjustedPath;
 		if (path.startsWith(route.getPrefix())) {
 			adjustedPath = path.substring(route.getPrefix().length());
 		} else {
 			adjustedPath = path;
 		}
-		return new Route(route.getId(), adjustedPath, route.getLocation(), route.getPrefix(),
-				route.getRetryable(), null);
+		return new ApplicationRoute(route.getApplication(), route.getId(), adjustedPath,
+				route.getLocation(), route.getPrefix());
 	}
 
 	@Override
@@ -123,7 +122,7 @@ public class ApplicationRouteLocator implements RefreshableRouteLocator {
 		if (this.routes.get() == null) {
 			this.routes.set(locateRoutes());
 		}
-		return new ArrayList<>(routes.get());
+		return new ArrayList<Route>(routes.get());
 	}
 
 	@Override
@@ -148,10 +147,25 @@ public class ApplicationRouteLocator implements RefreshableRouteLocator {
 		String adjustedPath = path;
 
 		if (StringUtils.hasText(servletPath) && !"/".equals(servletPath)) {
-				adjustedPath = path.substring(this.servletPath.length());
+			adjustedPath = path.substring(this.servletPath.length());
 		}
 
 		LOGGER.debug("adjustedPath={}", path);
 		return adjustedPath;
+	}
+
+	public static class ApplicationRoute extends Route {
+		private final Application application;
+
+		public ApplicationRoute(Application application, String id, String path, String location,
+				String prefix) {
+			super(id, path, location, prefix, false, null);
+			this.application = application;
+		}
+
+		public Application getApplication() {
+			return application;
+		}
+
 	}
 }
