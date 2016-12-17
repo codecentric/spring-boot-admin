@@ -654,7 +654,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <div class="sect2">
 <h3 id="register-client-applications"><a class="anchor" href="#register-client-applications"></a>2.2. Registering client applications</h3>
 <div class="paragraph">
-<p>To register your application (next referred as "clients") at the SBA Server you can either include the SBA Client or use <a href="http://projects.spring.io/spring-cloud/spring-cloud.html">Spring Cloud Discovery</a> (e.g. Eureka)</p>
+<p>To register your application at the SBA Server you can either include the SBA Client or use <a href="http://projects.spring.io/spring-cloud/spring-cloud.html">Spring Cloud Discovery</a> (e.g. Eureka)</p>
 </div>
 <div class="sect3">
 <h4 id="register-clients-via-spring-boot-admin"><a class="anchor" href="#register-clients-via-spring-boot-admin"></a>2.2.1. spring-boot-admin-starter-client</h4>
@@ -705,7 +705,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <div class="sect3">
 <h4 id="discover-clients-via-spring-cloud-discovery"><a class="anchor" href="#discover-clients-via-spring-cloud-discovery"></a>2.2.2. Spring Cloud Discovery</h4>
 <div class="paragraph">
-<p>If you already use Spring Cloud Discovery for your applications you need not to add the Spring Boot Admin Client. Just make the Spring Boot Admin Server a DiscoveryClient, the rest is done by our AutoConfiguration.</p>
+<p>If you already use Spring Cloud Discovery for your applications you don&#8217;t need the SBA Client. Just make the Spring Boot Admin Server a DiscoveryClient, the rest is done by our AutoConfiguration.</p>
 </div>
 <div class="paragraph">
 <p>The following steps are for using Eureka, but other Spring Cloud Discovery implementations are supported as well. There are examples using <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-consul/">Consul</a> and <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-zookeeper/">Zookeeper</a>.</p>
@@ -869,7 +869,7 @@ In case you are deploying multiple applications to the same JVM and multiple Log
 <div class="sect2">
 <h3 id="spring-boot-admin-client"><a class="anchor" href="#spring-boot-admin-client"></a>3.4. Spring Boot Admin Client</h3>
 <div class="paragraph">
-<p>The Spring Boot Admin Client registers the application at the admin server. This is done by periodically doing a HTTP post request to the SBA Server providing information about the application. It also adds Jolokia to your dependencies, so that JMX-beans are accessible via HTTP.</p>
+<p>The Spring Boot Admin Client registers the application at the admin server. This is done by periodically doing a HTTP post request to the SBA Server providing information about the application. It also adds Jolokia to your application, so that JMX-beans are accessible via HTTP.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -1757,7 +1757,7 @@ However you can include Spring Security to your SBA Server and configure it the 
 <div class="sect2">
 <h3 id="_securing_client_s_actuator_endpoints"><a class="anchor" href="#_securing_client_s_actuator_endpoints"></a>5.2. Securing Client&#8217;s Actuator Endpoints</h3>
 <div class="paragraph">
-<p>When the actuator endpoints are secured using HTTP Basic authorization the SBA Server needs credentials to access them. You can submit the credentials in the metadata when registering the application. The <code>BasicAuthHttpHeaderProvider</code> then uses this metadata to add the <code>Authorization</code> header to access your application&#8217;s actuator endpoints. You can provide your own <code>HttpHeadersProvider</code> to alter the behaviour (e.g. add some decryption) or add addtional headers.</p>
+<p>When the actuator endpoints are secured using HTTP Basic authentication the SBA Server needs credentials to access them. You can submit the credentials in the metadata when registering the application. The <code>BasicAuthHttpHeaderProvider</code> then uses this metadata to add the <code>Authorization</code> header to access your application&#8217;s actuator endpoints. You can provide your own <code>HttpHeadersProvider</code> to alter the behaviour (e.g. add some decryption) or add extra headers.</p>
 </div>
 <div class="paragraph">
 <p>Submitting the credentials using SBA Client:</p>
@@ -1793,7 +1793,7 @@ However you can include Spring Security to your SBA Server and configure it the 
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-The SBA Server masks certain metadata when in the HTTP interface to prevent leaking of sensitive information.
+The SBA Server masks certain metadata in the HTTP interface to prevent leaking of sensitive information.
 </td>
 </tr>
 </table>
@@ -1805,7 +1805,7 @@ The SBA Server masks certain metadata when in the HTTP interface to prevent leak
 <i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-You should configure HTTPS for your SBA Server or service registry when submitting credentials via the metadata.
+You should configure HTTPS for your SBA Server or (service registry) when submitting credentials via the metadata.
 </td>
 </tr>
 </table>
@@ -1817,7 +1817,7 @@ You should configure HTTPS for your SBA Server or service registry when submitti
 <i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-When using Spring Cloud Discovery you must be aware that anybody who can query your service registry can obtain the credentials.
+When using Spring Cloud Discovery, you must be aware that anybody who can query your service registry can obtain the credentials.
 </td>
 </tr>
 </table>
@@ -1829,7 +1829,7 @@ When using Spring Cloud Discovery you must be aware that anybody who can query y
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-When using this solution the SBA Server decides whether or not the user can access the registered applications. There are more complex solutions possible (using OAuth2) to let the clients decide if the user can access the endpoints. For that please have a look at the samples in <a href="https://github.com/joshiste/spring-boot-admin-samples" target="_blank">joshiste/spring-boot-admin-samples</a>.
+When using this approach the SBA Server decides whether or not the user can access the registered applications. There are more complex solutions possible (using OAuth2) to let the clients decide if the user can access the endpoints. For that please have a look at the samples in <a href="https://github.com/joshiste/spring-boot-admin-samples" target="_blank">joshiste/spring-boot-admin-samples</a>.
 </td>
 </tr>
 </table>
