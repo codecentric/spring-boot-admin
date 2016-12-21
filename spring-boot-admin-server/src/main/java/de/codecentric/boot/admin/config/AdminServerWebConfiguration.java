@@ -62,6 +62,8 @@ import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
 import de.codecentric.boot.admin.registry.web.RegistryController;
 import de.codecentric.boot.admin.web.AdminController;
 import de.codecentric.boot.admin.web.PrefixHandlerMapping;
+import de.codecentric.boot.admin.web.client.BasicAuthHttpHeaderProvider;
+import de.codecentric.boot.admin.web.client.HttpHeadersProvider;
 import de.codecentric.boot.admin.web.servlet.resource.ConcatenatingResourceResolver;
 import de.codecentric.boot.admin.web.servlet.resource.PreferMinifiedFilteringResourceResolver;
 import de.codecentric.boot.admin.web.servlet.resource.ResourcePatternResolvingResourceResolver;
@@ -186,6 +188,12 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 
 	@Bean
 	@ConditionalOnMissingBean
+	public HttpHeadersProvider httpHeadersProvider() {
+		return new BasicAuthHttpHeaderProvider();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
 	public StatusUpdater statusUpdater() {
 		RestTemplateBuilder builder = restTemplBuilder
 				.messageConverters(new MappingJackson2HttpMessageConverter())
@@ -196,7 +204,8 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 			}
 		});
 
-		StatusUpdater statusUpdater = new StatusUpdater(builder.build(), applicationStore);
+		StatusUpdater statusUpdater = new StatusUpdater(builder.build(), applicationStore,
+				httpHeadersProvider());
 		statusUpdater.setStatusLifetime(adminServerProperties().getMonitor().getStatusLifetime());
 		return statusUpdater;
 	}

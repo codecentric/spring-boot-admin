@@ -1,9 +1,8 @@
-
 [[getting-started]]
 == Getting started ==
 
 [[set-up-admin-server]]
-=== Set up admin server ===
+=== Setting up Spring Boot Admin Server ===
 
 First you need to setup your server. To do this just setup a simple boot project (using http://start.spring.io for example).
 
@@ -24,7 +23,7 @@ First you need to setup your server. To do this just setup a simple boot project
 </dependency>
 ----
 
-. Pull in the Boot Admin Server configuration via adding `@EnableAdminServer` to your configuration:
+. Pull in the Spring Boot Admin Server configuration via adding `@EnableAdminServer` to your configuration:
 +
 [source,java]
 ----
@@ -38,21 +37,19 @@ public class SpringBootAdminApplication {
 }
 ----
 
-NOTE: If you want to setup the Spring Boot Admin Server via war-deployment in a servlet-container, please have a look at the https://github.com/codecentric/spring-boot-admin/blob/master/spring-boot-admin-samples/spring-boot-admin-sample-war/[spring-boot-admin-sample-war].
+TIP: If you want to setup the Spring Boot Admin Server via war-deployment in a servlet-container, please have a look at the https://github.com/codecentric/spring-boot-admin/blob/master/spring-boot-admin-samples/spring-boot-admin-sample-war/[spring-boot-admin-sample-war].
 
 See also the https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample/[spring-boot-admin-sample] project.
 
-
 [[register-client-applications]]
-=== Register client applications ===
+=== Registering client applications ===
 
-To register your application at the admin server (next referred as "clients").
-Either you can include the `spring-boot-admin` client or use http://projects.spring.io/spring-cloud/spring-cloud.html[Spring Cloud Discovery] (e.g. Eureka)
+To register your application at the SBA Server you can either include the SBA Client or use http://projects.spring.io/spring-cloud/spring-cloud.html[Spring Cloud Discovery] (e.g. Eureka)
 
 [[register-clients-via-spring-boot-admin]]
 ==== spring-boot-admin-starter-client ====
 
-Each application that want to register itself to the admin has to include the Spring Boot Admin Client.
+Each application that wants to register has to include the Spring Boot Admin Client.
 
 . Add spring-boot-admin-starter-client to your dependencies:
 +
@@ -66,18 +63,20 @@ Each application that want to register itself to the admin has to include the Sp
 </dependency>
 ----
 
-. Trigger the contained AutoConfiguration and tell the client where to find the admin to register at:
+. Enable the SBA Client by configuring the URL of the Spring Boot Admin Server:
 +
 [source,yml]
 .application.yml
 ----
 include::{samples-dir}/spring-boot-admin-sample/src/main/resources/application.yml[tags=configuration-sba-client]
 ----
+<1> The URL of the Spring Boot Admin Server to register at.
+<2> Since Spring Boot 1.5.x all endpoints are secured by default. For the sake of brevity we're disabling the security for now. Have a look at the <<securing-spring-boot-admin,security section>> on how to deal with secured endpoints.
 
 [[discover-clients-via-spring-cloud-discovery]]
 ==== Spring Cloud Discovery ====
 
-If you already using Spring Cloud Discovery for your applications you don't have to add the Spring Boot Admin Client to your applications. Just make the Spring Boot Admin Server a DiscoveryClient, the rest is done by our AutoConfiguration.
+If you already use Spring Cloud Discovery for your applications you don't need the SBA Client. Just make the Spring Boot Admin Server a DiscoveryClient, the rest is done by our AutoConfiguration.
 
 The following steps are for using Eureka, but other Spring Cloud Discovery implementations are supported as well. There are examples using https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-consul/[Consul] and https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-zookeeper/[Zookeeper].
 
@@ -105,7 +104,9 @@ include::{samples-dir}/spring-boot-admin-sample-eureka/src/main/java/de/codecent
 ----
 include::{samples-dir}/spring-boot-admin-sample-eureka/src/main/resources/application.yml[tags=configuration-eureka]
 ----
+<1> Configuration section for the Eureka client
+<2> Since Spring Boot 1.5.x all endpoints are secured by default. For the sake of brevity we're disabling the security for now. Have a look at the <<securing-spring-boot-admin,security section>> on how to deal with secured endpoints.
 
 See also https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-eureka/[spring-boot-admin-sample-eureka].
 
-NOTE: You can include the Spring Boot Admin to your Eureka server. Add the dependencies, add `@EnableAdminServer` to your configuration and set `spring.boot.admin.context-path` to something different than `"/"` so that the Spring Boot Admin Server UI won't clash with Eureka's one.
+TIP: You can include the Spring Boot Admin Server to your Eureka server. Setup everything as described above and set `spring.boot.admin.context-path` to something different than `"/"` so that the Spring Boot Admin Server UI won't clash with Eureka's one.

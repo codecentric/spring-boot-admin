@@ -11,9 +11,9 @@ spring:
     name: @pom.artifactId@
 
 # tag::configuration-sba-client[]
-spring.boot.admin.url: http://localhost:8080
+spring.boot.admin.url: http://localhost:8080  #<1>
+
+management.security.enabled: false  #<2>
 # end::configuration-sba-client[]
 
-endpoints:
-  health:
-    sensitive: false
+endpoints.health.sensitive: false

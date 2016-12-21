@@ -19,7 +19,8 @@ module.exports = function () {
   'ngInject';
 
   return function () {
-    this.groups = [];
+    this.groups = {};
+    this.applications = [];
 
     var getMaxStatus = function (statusCounter) {
       var order = ['OFFLINE', 'DOWN', 'OUT_OF_SERVICE', 'UNKNOWN', 'UP'];
@@ -31,62 +32,41 @@ module.exports = function () {
       return 'UNKNOWN';
     };
 
-    var findApplication = function (applications, application) {
-      for (var i = 0; i < applications.length; i++) {
-        if (applications[i].id === application.id) {
-          return i;
-        }
-      }
-      return -1;
-    };
-
-    var findGroup = function (groups, name) {
-      for (var i = 0; i < groups.length; i++) {
-        if (groups[i].name === name) {
-          return i;
-        }
-      }
-      return -1;
-    };
-
-    var updateStatus = function (group) {
+    this.updateStatus = function (group) {
       var statusCounter = {};
-      group.applications.forEach(function (application) {
-        statusCounter[application.statusInfo.status] = ++statusCounter[application.statusInfo.status] || 1;
+      var applicationCount = 0;
+      this.applications.forEach(function (application) {
+        if (application.name === group.name) {
+          applicationCount++;
+          statusCounter[application.statusInfo.status] = ++statusCounter[application.statusInfo.status] || 1;
+        }
       });
+      group.applicationCount = applicationCount;
       group.statusCounter = statusCounter;
       group.status = getMaxStatus(statusCounter);
     };
 
     this.addApplication = function (application, overwrite) {
-      var groupIdx = findGroup(this.groups, application.name);
-      var group = groupIdx > -1 ? this.groups[groupIdx] : { applications: [], statusCounter: {}, versionsCounter: [], name: application.name, status: 'UNKNOWN' };
-      if (groupIdx === -1) {
-        this.groups.push(group);
-      }
-      var index = findApplication(group.applications, application);
-      if (index === -1) {
-        group.applications.push(application);
+      var idx = this.applications.findIndex(function (app) {
+        return app.id === application.id;
+      });
+      this.groups[application.name] = this.groups[application.name] || { applicationCount: 0, statusCounter: {}, versionsCounter: [], name: application.name, status: 'UNKNOWN' };
+      application.group = this.groups[application.name];
+      if (idx < 0) {
+        this.applications.push(application);
       } else if (overwrite) {
-        group.applications[index] = application;
+        this.applications.splice(idx, 1, application);
       }
-      updateStatus(group);
-      return group;
+      this.updateStatus(this.groups[application.name]);
     };
 
-    this.removeApplication = function (application) {
-      var groupIdx = findGroup(this.groups, application.name);
-      if (groupIdx > -1) {
-        var group = this.groups[groupIdx];
-        var index = findApplication(group.applications, application);
-        if (index > -1) {
-          group.applications.splice(index, 1);
-          updateStatus(group);
-        }
-        if (group.length === 0) {
-          this.groups.splice(groupIdx, 1);
-        }
-      }
+    this.removeApplication = function (id) {
+      var idx = this.applications.findIndex(function (application) {
+        return id === application.id;
+      });
+      var group = this.applications[idx].group;
+      this.applications.splice(idx, 1);
+      this.updateStatus(group);
     };
   };
 };

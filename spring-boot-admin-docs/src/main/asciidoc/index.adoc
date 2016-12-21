@@ -15,9 +15,9 @@ Johannes Edmeier <https://twitter.com/joshiste[@joshiste]>
 
 == What is Spring Boot Admin? ==
 
-Spring Boot Admin is a simple application to manage and monitor your http://projects.spring.io/spring-boot/[Spring Boot Applications].
-The applications register with our Spring Boot Admin Client (via http) or are discovered using Spring Cloud (e.g. Eureka).
-The UI is just an Angular.js application on top of the Spring Boot Actuator endpoints. In case you want to use the more advanced features (e.g. jmx-, loglevel-management), Jolokia must be included in the client application.
+Spring Boot Admin is a application to manage and monitor your http://projects.spring.io/spring-boot/[Spring Boot Applications].
+The applications register with our Spring Boot Admin Client (via HTTP) or are discovered using Spring Cloud (e.g. Eureka).
+The UI is just an AngularJs application on top of the Spring Boot Actuator endpoints.
 
 include::getting-started.adoc[]
 

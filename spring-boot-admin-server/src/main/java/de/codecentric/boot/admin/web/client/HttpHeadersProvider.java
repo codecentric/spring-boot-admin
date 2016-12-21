@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2013-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use strict';
+package de.codecentric.boot.admin.web.client;
 
-var yaml = require('js-yaml');
+import org.springframework.http.HttpHeaders;
 
-module.exports = function () {
-  return function (input) {
-    if (typeof (input) === 'undefined' || (typeof (input) === 'object' && Object.keys(input).length === 0)) {
-      return '';
-    }
+import de.codecentric.boot.admin.model.Application;
 
-    return yaml.dump(input, {
-      skipInvalid: true,
-      sort: true,
-      lineWidth: Number.MAX_VALUE
-    });
-  };
-};
+/**
+ * Is responsible to provide the {@link HttpHeaders} used to interact with the given
+ * {@link Application}.
+ *
+ * @author Johannes Edmeier
+ */
+public interface HttpHeadersProvider {
+
+	HttpHeaders getHeaders(Application application);
+
+}

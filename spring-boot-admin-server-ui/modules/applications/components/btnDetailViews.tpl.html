@@ -4,7 +4,7 @@
     ng-bind-html="$ctrl.primaryView.title"></a>
   <button class="btn btn-success dropdown-toggle" data-toggle="dropdown" ng-show="$ctrl.secondaryViews" ng-click="$ctrl.resolveViews()"><i class="fa fa-caret-down"></i></button>
   <ul class="dropdown-menu">
-    <li ng-repeat="view in $ctrl.secondaryViews track by view.href" ng-show="view.show == true">
+    <li ng-if="$ctrl.viewsResolved" ng-repeat="view in $ctrl.secondaryViews track by view.href" ng-show="view.show == true">
       <a ng-href="{{view.href}}" target="{{view.target}}" ng-bind-html="view.title"></a>
     </li>
   </ul>

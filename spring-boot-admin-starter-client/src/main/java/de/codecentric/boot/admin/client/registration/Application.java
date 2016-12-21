@@ -15,20 +15,23 @@
  */
 package de.codecentric.boot.admin.client.registration;
 
-import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.util.Assert;
 
 /**
- * The domain model for all registered application at the spring boot admin application.
+ * Contains all informations which is used when this application is registered.
+ *
+ * @author Johannes Edmeier
  */
-public class Application implements Serializable {
-	private static final long serialVersionUID = 1L;
-
+public class Application {
 	private final String name;
 	private final String managementUrl;
 	private final String healthUrl;
 	private final String serviceUrl;
+	private final Map<String, String> metadata;
 
 	protected Application(Builder builder) {
 		Assert.hasText(builder.name, "name must not be empty!");
@@ -37,14 +40,11 @@ public class Application implements Serializable {
 		this.managementUrl = builder.managementUrl;
 		this.serviceUrl = builder.serviceUrl;
 		this.name = builder.name;
+		this.metadata = Collections.unmodifiableMap(new HashMap<>(builder.metadata));
 	}
 
 	public static Builder create(String name) {
 		return new Builder(name);
-	}
-
-	public static Builder create(Application application) {
-		return new Builder(application);
 	}
 
 	public static class Builder {
@@ -52,16 +52,10 @@ public class Application implements Serializable {
 		private String managementUrl;
 		private String healthUrl;
 		private String serviceUrl;
+		private Map<String, String> metadata = new HashMap<>();
 
 		private Builder(String name) {
 			this.name = name;
-		}
-
-		private Builder(Application application) {
-			this.healthUrl = application.healthUrl;
-			this.managementUrl = application.managementUrl;
-			this.serviceUrl = application.serviceUrl;
-			this.name = application.name;
 		}
 
 		public Builder withName(String name) {
@@ -81,6 +75,16 @@ public class Application implements Serializable {
 
 		public Builder withManagementUrl(String managementUrl) {
 			this.managementUrl = managementUrl;
+			return this;
+		}
+
+		public Builder withMetadata(String key, String value) {
+			this.metadata.put(key, value);
+			return this;
+		}
+
+		public Builder withMetadata(Map<String, String> metadata) {
+			this.metadata.putAll(metadata);
 			return this;
 		}
 
@@ -105,10 +109,14 @@ public class Application implements Serializable {
 		return serviceUrl;
 	}
 
+	public Map<String, String> getMetadata() {
+		return metadata;
+	}
+
 	@Override
 	public String toString() {
-		return "Application [name=" + name + ", managementUrl="
-				+ managementUrl + ", healthUrl=" + healthUrl + ", serviceUrl=" + serviceUrl + "]";
+		return "Application [name=" + name + ", managementUrl=" + managementUrl + ", healthUrl="
+				+ healthUrl + ", serviceUrl=" + serviceUrl + "]";
 	}
 
 	@Override

@@ -31,7 +31,11 @@ module.exports = {
       var result = ApplicationViews.getApplicationViews(ctrl.application);
       ctrl.primaryView = result.views[0];
       ctrl.secondaryViews = result.views.slice(1);
-      ctrl.resolveViews = result.resolve;
+      ctrl.viewsResolved = false;
+      ctrl.resolveViews = function () {
+        result.resolve();
+        ctrl.viewsResolved = true;
+      };
     };
   },
   template: require('./btnDetailViews.tpl.html')

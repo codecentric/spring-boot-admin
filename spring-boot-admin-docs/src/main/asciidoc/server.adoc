@@ -10,7 +10,7 @@
 |
 
 | spring.boot.admin.monitor.period
-| Time interval in ms to update the status of applications with expired status-informations.
+| Time interval in ms to update the status of applications with expired status-information.
 | 10.000
 
 | spring.boot.admin.monitor.status-lifetime

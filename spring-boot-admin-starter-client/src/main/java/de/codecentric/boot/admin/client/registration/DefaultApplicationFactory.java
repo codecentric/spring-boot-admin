@@ -4,6 +4,7 @@ import static org.springframework.util.StringUtils.trimLeadingCharacter;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Map;
 
 import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -43,7 +44,8 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 	@Override
 	public Application createApplication() {
 		return Application.create(getName()).withHealthUrl(getHealthUrl())
-				.withManagementUrl(getManagementUrl()).withServiceUrl(getServiceUrl()).build();
+				.withManagementUrl(getManagementUrl()).withServiceUrl(getServiceUrl())
+				.withMetadata(getMetadata()).build();
 	}
 
 	protected String getName() {
@@ -90,6 +92,10 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 		return UriComponentsBuilder.fromHttpUrl(getManagementUrl())
 				.pathSegment(trimLeadingCharacter(getHealthEndpointPath(), '/').split("/"))
 				.toUriString();
+	}
+
+	protected Map<String, String> getMetadata() {
+		return client.getMetadata();
 	}
 
 	protected String getServiceHost() {
