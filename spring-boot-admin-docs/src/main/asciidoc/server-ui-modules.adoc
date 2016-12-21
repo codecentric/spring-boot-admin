@@ -96,3 +96,19 @@ The Activiti module shows information from the `/activti` endpoint.
 ----
 spring.boot.admin.routes.endpoints: env,metrics,trace,dump,jolokia,info,configprops,trace,logfile,refresh,flyway,liquibase,heapdump,activiti
 ----
+
+==== Login UI Module ====
+
+The Login module just provides you a login page and a logout button.
+
+. Add the ui module to your classpath:
++
+[source,xml,subs="verbatim,attributes"]
+.pom.xml
+----
+<dependency>
+    <groupId>de.codecentric</groupId>
+    <artifactId>spring-boot-admin-server-ui-login</artifactId>
+    <version>{project-version}</version>
+</dependency>
+----

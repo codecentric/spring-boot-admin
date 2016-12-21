@@ -25,7 +25,7 @@
         </div>
         <ul class="nav pull-right">
           <li ng-repeat="view in mainViews" class="navbar-link" ng-class="{active: $state.includes(view.state)}">
-            <a ui-sref="{{view.state}}" ng-bind="view.title"></a>
+            <a ui-sref="{{view.state}}" ng-bind-html="view.title"></a>
           </li>
         </ul>
 
@@ -49,15 +49,15 @@
   <script type="text/javascript">
     sbaModules = [];
   </script>
-  <script src="core.js" type="text/javascript"></script>
-  <script src="all-modules.js" type="text/javascript"></script>
-  <script type="text/javascript">
-    angular.element(document).ready(function() {
-      angular.bootstrap(document, sbaModules.slice(0), {
-        strictDi: true
-      });
+<script src="core.js" type="text/javascript"></script>
+<script src="all-modules.js" type="text/javascript"></script>
+<script type="text/javascript">
+  angular.element(document).ready(function () {
+    angular.bootstrap(document, sbaModules.slice(0), {
+      strictDi: true
     });
-  </script>
+  });
+</script>
 </body>
 
 </html>

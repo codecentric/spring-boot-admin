@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html class="no-js">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Spring Boot Admin</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width">
+  <link rel="shortcut icon" type="image/x-icon" href="img/favicon.png" />
+  <link rel="stylesheet" type="text/css" href="core.css" />
+  <link rel="stylesheet" type="text/css" href="login.css" />
+</head>
+
+<body>
+  <header class="navbar header--navbar desktop-only">
+    <div class="navbar-inner">
+      <div class="container-fluid">
+
+        <div class="spring-logo--container">
+          <a class="spring-logo" href="#"><span></span></a>
+        </div>
+        <div class="spring-logo--container">
+          <a class="spring-boot-logo" href="#"><span></span></a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <form class="form-login" action="/login" method="post">
+      <h2 class="form-login-heading">Login</h2>
+      <div id="login-controls" class="control-group">
+        <input type="text" class="input-block-level" name="username" placeholder="Username">
+        <input type="password" class="input-block-level" name="password" placeholder="Password">
+        <span class="help-inline error-message">Invalid username or password!</div>
+        <input type="submit" class="btn btn-success" value="Login"></input>
+      </div>
+    </form>
+  </div>
+
+  <script type="text/javascript">
+    if (/\?error/.test(window.location.href)) {
+      document.getElementById("login-controls").classList.add("error")
+    }
+  </script>
+
+<footer class="footer">
+  <ul class="inline">
+    <li><a href="https://codecentric.github.io/spring-boot-admin/@project.version@" target="_blank">Reference Guide</a></li>
+    <li>-</li>
+    <li><a href="https://github.com/codecentric/spring-boot-admin" target="_blank">Sources</a></li>
+    <li>-</li>
+    <li>Code licensed under <a href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache License 2.0</a></li>
+  </ul>
+</footer>
+</body>
+
+</html>

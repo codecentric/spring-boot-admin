@@ -74,8 +74,8 @@ pre {
   text-transform: uppercase;
   text-shadow: none;
   font-size: 14px;
-  line-height: 14px;
-  padding: 28px 20px;
+  line-height: 70px;
+  padding: 0 20px;
   transition: all 0.15s;
   -webkit-transition: all 0.15s;
   -moz-transition: all 0.15s;
