@@ -517,7 +517,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 1.5.0-SNAPSHOT,</span>
-<span id="revdate">17.12.2016</span>
+<span id="revdate">21.12.2016</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -565,6 +565,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_hystrix_ui_module">4.4.1. Hystrix UI Module</a></li>
 <li><a href="#_turbine_ui_module">4.4.2. Turbine UI Module</a></li>
 <li><a href="#_activiti_ui_module">4.4.3. Activiti UI Module</a></li>
+<li><a href="#_login_ui_module">4.4.4. Login UI Module</a></li>
 </ul>
 </li>
 </ul>
@@ -572,7 +573,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#securing-spring-boot-admin">5. Security</a>
 <ul class="sectlevel2">
 <li><a href="#_securing_spring_boot_admin_server">5.1. Securing Spring Boot Admin Server</a></li>
-<li><a href="#_securing_client_s_actuator_endpoints">5.2. Securing Client&#8217;s Actuator Endpoints</a></li>
+<li><a href="#_securing_client_actuator_endpoints">5.2. Securing Client Actuator Endpoints</a></li>
 </ul>
 </li>
 <li><a href="#faqs">6. FAQs</a></li>
@@ -635,11 +636,11 @@ The UI is just an AngularJs application on top of the Spring Boot Actuator endpo
 </li>
 </ol>
 </div>
-<div class="admonitionblock tip">
+<div class="admonitionblock note">
 <table>
 <tr>
 <td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
+<i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
 If you want to setup the Spring Boot Admin Server via war-deployment in a servlet-container, please have a look at the <a href="https://github.com/codecentric/spring-boot-admin/blob/master/spring-boot-admin-samples/spring-boot-admin-sample-war/">spring-boot-admin-sample-war</a>.
@@ -648,7 +649,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 </table>
 </div>
 <div class="paragraph">
-<p>See also the <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample/">spring-boot-admin-sample</a> project.</p>
+<p>See also the <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample/">spring-boot-admin-sample</a> project, which also adds security.</p>
 </div>
 </div>
 <div class="sect2">
@@ -682,8 +683,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <div class="title">application.yml</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.url</span>: <span class="string"><span class="content">http://localhost:8080  </span></span><i class="conum" data-value="1"></i><b>(1)</b>
-
-<span class="key">management.security.enabled</span>: <span class="string"><span class="content">false  </span></span> <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+<span class="key">managment.security.enabled</span>: <span class="string"><span class="content">false  </span></span> <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1741,6 +1741,29 @@ account and configure it appropriately.</p>
 </ol>
 </div>
 </div>
+<div class="sect3">
+<h4 id="_login_ui_module"><a class="anchor" href="#_login_ui_module"></a>4.4.4. Login UI Module</h4>
+<div class="paragraph">
+<p>The Login module just provides you a login page and a logout button.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Add the ui module to your classpath:</p>
+<div class="listingblock">
+<div class="title">pom.xml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-server-ui-login<span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;version&gt;</span>1.5.0-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -1751,11 +1774,67 @@ account and configure it appropriately.</p>
 <h3 id="_securing_spring_boot_admin_server"><a class="anchor" href="#_securing_spring_boot_admin_server"></a>5.1. Securing Spring Boot Admin Server</h3>
 <div class="paragraph">
 <p>Since there are several approaches on solving authentication and authorization in distributed web applications Spring Boot Admin doesn&#8217;t ship a default one.
-However you can include Spring Security to your SBA Server and configure it the way you like.</p>
+If you include the <code>spring-boot-admin-server-ui-login</code> in your dependencies it will provide a login page and a logout button.</p>
+</div>
+<div class="paragraph">
+<p>A Spring Security configuration could look like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">  <span class="annotation">@Configuration</span>
+  <span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SecurityConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
+    <span class="annotation">@Override</span>
+    <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
+      <span class="comment">// Page with login form is served as /login.html and does a POST on /login</span>
+      http.formLogin().loginPage(<span class="string"><span class="delimiter">&quot;</span><span class="content">/login.html</span><span class="delimiter">&quot;</span></span>).loginProcessingUrl(<span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>).permitAll();
+      <span class="comment">// The UI does a POST on /logout on logout</span>
+      http.logout().logoutUrl(<span class="string"><span class="delimiter">&quot;</span><span class="content">/logout</span><span class="delimiter">&quot;</span></span>);
+      <span class="comment">// The ui currently doesn't support csrf</span>
+      http.csrf().disable();
+
+      <span class="comment">// Requests for the login page and the static assets are allowed</span>
+      http.authorizeRequests()
+          .antMatchers(<span class="string"><span class="delimiter">&quot;</span><span class="content">/login.html</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">/**/*.css</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">/img/**</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">/third-party/**</span><span class="delimiter">&quot;</span></span>)
+          .permitAll();
+      <span class="comment">// ... and any other request needs to be authorized</span>
+      http.authorizeRequests().antMatchers(<span class="string"><span class="delimiter">&quot;</span><span class="content">/**</span><span class="delimiter">&quot;</span></span>).authenticated();
+
+      <span class="comment">// Enable so that the clients can authenticate via HTTP basic for registering</span>
+      http.httpBasic();
+    }
+  }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For a complete sample look at <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample/">spring-boot-admin-sample</a>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If you protect the <code>/api/applications</code> endpoint don&#8217;t forget to configure the username and password on your SBA-Client using <code>spring.boot.admin.username</code> and <code>spring.boot.admin.password</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+There are more samples (e.g. using OAuth2) in <a href="https://github.com/joshiste/spring-boot-admin-samples" target="_blank">joshiste/spring-boot-admin-samples</a>.
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_securing_client_s_actuator_endpoints"><a class="anchor" href="#_securing_client_s_actuator_endpoints"></a>5.2. Securing Client&#8217;s Actuator Endpoints</h3>
+<h3 id="_securing_client_actuator_endpoints"><a class="anchor" href="#_securing_client_actuator_endpoints"></a>5.2. Securing Client Actuator Endpoints</h3>
 <div class="paragraph">
 <p>When the actuator endpoints are secured using HTTP Basic authentication the SBA Server needs credentials to access them. You can submit the credentials in the metadata when registering the application. The <code>BasicAuthHttpHeaderProvider</code> then uses this metadata to add the <code>Authorization</code> header to access your application&#8217;s actuator endpoints. You can provide your own <code>HttpHeadersProvider</code> to alter the behaviour (e.g. add some decryption) or add extra headers.</p>
 </div>
