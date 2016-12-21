@@ -4,9 +4,21 @@
 === Securing Spring Boot Admin Server ===
 
 Since there are several approaches on solving authentication and authorization in distributed web applications Spring Boot Admin doesn't ship a default one.
-However you can include Spring Security to your SBA Server and configure it the way you like.
+If you include the `spring-boot-admin-server-ui-login` in your dependencies it will provide a login page and a logout button.
 
-=== Securing Client's Actuator Endpoints ===
+A Spring Security configuration could look like this:
+[source,java]
+----
+include::{samples-dir}/spring-boot-admin-sample/src/main/java/de/codecentric/boot/admin/SpringBootAdminApplication.java[tags=configuration-spring-security]
+----
+
+For a complete sample look at https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample/[spring-boot-admin-sample].
+
+NOTE: If you protect the `/api/applications` endpoint don't forget to configure the username and password on your SBA-Client using `spring.boot.admin.username` and `spring.boot.admin.password`.
+
+TIP: There are more samples (e.g. using OAuth2) in https://github.com/joshiste/spring-boot-admin-samples[joshiste/spring-boot-admin-samples^].
+
+=== Securing Client Actuator Endpoints ===
 
 When the actuator endpoints are secured using HTTP Basic authentication the SBA Server needs credentials to access them. You can submit the credentials in the metadata when registering the application. The `BasicAuthHttpHeaderProvider` then uses this metadata to add the `Authorization` header to access your application's actuator endpoints. You can provide your own `HttpHeadersProvider` to alter the behaviour (e.g. add some decryption) or add extra headers.
 
