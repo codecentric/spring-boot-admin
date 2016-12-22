@@ -6,7 +6,6 @@ spring-boot-admin
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/8fd7bac6edac417a8451387286fe6917)](https://www.codacy.com/app/joshiste/spring-boot-admin)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.codecentric/spring-boot-admin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.codecentric/spring-boot-admin/)
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/codecentric/spring-boot-admin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![StackExchange](https://img.shields.io/stackexchange/stackoverflow/t/spring-boot-admin.svg)](http://stackoverflow.com/questions/tagged/spring-boot-admin)
 
 This is a simple admin interface for [Spring Boot](http://projects.spring.io/spring-boot/ "Official Spring-Boot website") applications.
 
@@ -34,6 +33,18 @@ This application provides a simple UI to administrate Spring Boot applications. 
 ## Getting Started
 
 [A quick guide](http://codecentric.github.io/spring-boot-admin/1.4.4/#getting-started) to get started can be found in our docs.
+
+## Getting Help
+
+Having trouble with Spring Boot Admin? We’d like to help!
+
+ * Check the [reference documentation](http://codecentric.github.io/spring-boot-admin/1.4.4/).
+ 
+ * Ask a question on [stackoverflow.com](http://stackoverflow.com/questions/tagged/spring-boot-admin) - we monitor questions tagged with `spring-boot-admin`.
+ 
+ * Ask for help in our [spring-boot-admin Gitter chat](https://gitter.im/codecentric/spring-boot-admin)
+ 
+ * Report bugs with Spring Boot Admin at http://github.com/codecentric/spring-boot-admin/issues.
 
 ## Reference Guide
 [Version 1.4.4](http://codecentric.github.io/spring-boot-admin/1.4.4/)
