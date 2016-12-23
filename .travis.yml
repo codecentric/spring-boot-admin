@@ -13,9 +13,9 @@ before_install:
   - 'if [[ ${TRAVIS_TAG} != "" ]]; then ./mvnw versions:set -DnewVersion="${TRAVIS_TAG}"; fi'
   - 'nvm install ${NODE_VERSION} && nvm use ${NODE_VERSION}'
 
-script: ./mvn clean verify
+script: ./mvnw clean verify
 
 after_success:
   - ./mvnw jacoco:report coveralls:report
-  - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} == '' ]] && ./mvn deploy -DreposityId=sonatype-nexus-snapshots -DskipTests --settings deploy-settings.xml"
-  - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} != '' ]] && ./mvn deploy -DreposityId=sonatype-nexus-staging -DskipTests --settings deploy-settings.xml"
+  - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} == '' ]] && ./mvnw deploy -DreposityId=sonatype-nexus-snapshots -DskipTests --settings deploy-settings.xml"
+  - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} != '' ]] && ./mvnw deploy -DreposityId=sonatype-nexus-staging -DskipTests --settings deploy-settings.xml"
