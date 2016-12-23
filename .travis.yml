@@ -10,12 +10,12 @@ cache:
 
 before_install:
   - 'if [[ -n "$DECRYPT_KEYPHRASE" ]]; then openssl aes-256-cbc -d -pass "env:DECRYPT_KEYPHRASE" -in .gnupg.tar.enc | tar xv; fi'
-  - 'if [[ ${TRAVIS_TAG} != "" ]]; then mvn versions:set -DnewVersion="${TRAVIS_TAG}"; fi'
+  - 'if [[ ${TRAVIS_TAG} != "" ]]; then ./mvnw versions:set -DnewVersion="${TRAVIS_TAG}"; fi'
   - 'nvm install ${NODE_VERSION} && nvm use ${NODE_VERSION}'
 
-script: mvn clean verify
+script: ./mvn clean verify
 
 after_success:
-  - mvn jacoco:report coveralls:report
-  - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} == '' ]] && mvn deploy -DreposityId=sonatype-nexus-snapshots -DskipTests --settings deploy-settings.xml"
-  - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} != '' ]] && mvn deploy -DreposityId=sonatype-nexus-staging -DskipTests --settings deploy-settings.xml"
+  - ./mvnw jacoco:report coveralls:report
+  - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} == '' ]] && ./mvn deploy -DreposityId=sonatype-nexus-snapshots -DskipTests --settings deploy-settings.xml"
+  - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} != '' ]] && ./mvn deploy -DreposityId=sonatype-nexus-staging -DskipTests --settings deploy-settings.xml"
