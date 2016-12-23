@@ -12,13 +12,13 @@ var DIST = path.resolve(__dirname, 'target/dist');
 var ROOT = __dirname;
 var isDevServer = path.basename(require.main.filename) === 'webpack-dev-server.js';
 
-var allModules = glob.sync(ROOT + '/modules/*/module.js').map(function (file) {
+var allModules = glob.sync(path.join(ROOT,'/modules/*/module.js')).map(function (file) {
   var name = /modules\/([^\/]+)\/module\.js/.exec(file)[1];
   return {
     name: name,
     bundle: name + '/module',
-    entry: './' + path.relative(ROOT, file),
-    outputPath: name + '/'
+    entry: '.' + path.sep + path.relative(ROOT, file),
+    outputPath: name + path.sep
   };
 });
 
@@ -94,19 +94,34 @@ module.exports = {
         loader: ExtractTextPlugin.extract('style', 'css?-minimize')
       }, {
         test: /\.(jpg|png|gif|eot|svg|ttf|woff(2)?)(\?.*)?$/,
-        include: /\/(third-party|node_modules)\//,
+        include: /third-party/,
         loader: 'file',
         query: {
-          name: 'third-party/[2]',
-          regExp: '(third-party|node_modules)/(.+)'
+          name: '[path][name].[ext]'
+		}
+      }, {
+        test: /\.(jpg|png|gif|eot|svg|ttf|woff(2)?)(\?.*)?$/,
+        include: /node_modules/,
+        loader: 'file',
+        query: {
+          name: 'third-party/[path][name].[ext]',
+		  context: 'node_modules'
         }
       }, {
         test: /\.(jpg|png|gif)$/,
-        include: /\/(core|modules)\//,
+        include: /core/,
         loader: 'file',
         query: {
-          name: '[2]',
-          regExp: '(core|modules)/(.+)$'
+          name: '[path][name].[ext]',
+          context: 'core'
+		}
+      }, {
+        test: /\.(jpg|png|gif)$/,
+        include: /modules/,
+        loader: 'file',
+        query: {
+          name: '[path][name].[ext]',
+          context: 'modules'
         }
       }]
   },

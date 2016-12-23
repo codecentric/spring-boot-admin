@@ -9,6 +9,8 @@ var NgAnnotatePlugin = require('ng-annotate-webpack-plugin'),
 var DIST = path.resolve(__dirname, 'target/dist');
 var ROOT = __dirname;
 
+var qPathSep = path.sep === '\\' ? '\\\\' : '/';
+
 module.exports = {
   context: ROOT,
   entry: { 'applications-hystrix': './src/module.js' },
@@ -30,21 +32,21 @@ module.exports = {
     preLoaders: [{
       test: /\.js$/,
       loader: 'eslint',
-      exclude: [/node_modules/, /target\/hystrix-dashboard/]
+      exclude: [/node_modules/, /hystrix-dashboard/]
     }],
     loaders: [
       {
-        test: /hystrix-dashboard\/js\/jquery\.tinysort\.min\.js$/,
+        test: new RegExp('hystrix-dashboard'+qPathSep+'js'+qPathSep+'jquery\.tinysort\.min\.js$'),
         loader: 'imports?jQuery=jquery'
       }, {
-        test: /hystrix-dashboard\/components\/hystrixCommand\/hystrixCommand\.js$/,
+        test: new RegExp('hystrix-dashboard'+qPathSep+'components'+qPathSep+'hystrixCommand'+qPathSep+'hystrixCommand\.js$'),
         loaders: [
           'imports?this=>global&jQuery=jquery&$=jquery&d3&tmpl=microtemplates&tsort',
           'exports?window.HystrixCommandMonitor',
           'regexp-replace?{"match": { "pattern": "\.\./components/hystrixCommand", "flags": "g" }, "replaceWith": "applications-hystrix/components/hystrixCommand"}'
         ]
       }, {
-        test: /hystrix-dashboard\/components\/hystrixThreadPool\/hystrixThreadPool\.js$/,
+        test: new RegExp('hystrix-dashboard'+qPathSep+'components'+qPathSep+'hystrixThreadPool'+qPathSep+'hystrixThreadPool\.js$'),
         loaders: [
           'imports?this=>global&jQuery=jquery&$=jquery&d3&tmpl=microtemplates&tsort',
           'exports?HystrixThreadPoolMonitor',
