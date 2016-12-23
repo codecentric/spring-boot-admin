@@ -30,7 +30,8 @@ module.exports = function ($state, $q) {
     var appView = {
       order: view.order,
       show: view.show || true,
-      title: view.title
+      title: view.title,
+      state: view.state
     };
 
     if (view.state) {
