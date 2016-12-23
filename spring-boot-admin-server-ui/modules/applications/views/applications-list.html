@@ -33,7 +33,7 @@
           <span ng-repeat-end ng-hide="$last"> / </span>
         </td>
       </tr>
-      <tr ng-repeat-end ng-show="(!application.group.collapsed  && application.group.collapsed != undefined ) || application.group.applicationCount == 1 || (searchFilter != '' && searchFilter != undefined)">
+      <tr ng-repeat-end ng-show="(!application.group.collapsed  &amp;&amp; application.group.collapsed != undefined ) || application.group.applicationCount == 1 || (searchFilter != '' &amp;&amp; searchFilter != undefined)">
         <td class="group-column" ng-class="{'hidden': !($first || filteredApps[$index - 1].group.name != application.group.name) &amp;&amp; (searchFilter == '' || searchFilter == undefined) }"
           rowspan="{{ (searchFilter != '' &amp;&amp; searchFilter != undefined) ? 1 : application.group.applicationCount }}"
           ng-click="application.group.collapsed = application.group.applicationCount > 1"><i ng-show="application.group.applicationCount > 1 &amp;&amp; (searchFilter == '' || searchFilter == undefined)"
@@ -51,7 +51,7 @@
         <td>
           <sba-notification-settings ng-show="notificationFilters" application="application" filters="notificationFilters" refresh-callback="loadFilters()"></sba-notification-settings>
           <sba-btn-detail-views details-for="application"></sba-btn-detail-views>
-          <div class="btn-group" title="remove">
+          <div class="btn-group" title="remove" ng-show="application.source == 'http-api'">
             <a class="btn btn-danger" ng-click="remove(application)"><i class="fa fa-times"></i></a>
           </div>
         </td>
