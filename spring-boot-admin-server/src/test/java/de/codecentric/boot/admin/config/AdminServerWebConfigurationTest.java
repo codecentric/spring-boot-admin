@@ -63,7 +63,8 @@ public class AdminServerWebConfigurationTest {
 
 	@Test
 	public void jacksonMapperPresentFromDefault() {
-		AdminServerWebConfiguration config = new AdminServerWebConfiguration();
+		AdminServerWebConfiguration config = new AdminServerWebConfiguration(null, null, null,
+				null);
 
 		List<HttpMessageConverter<?>> converters = new ArrayList<>();
 		converters.add(new MappingJackson2HttpMessageConverter());
@@ -76,7 +77,8 @@ public class AdminServerWebConfigurationTest {
 
 	@Test
 	public void jacksonMapperPresentNeedExtend() {
-		AdminServerWebConfiguration config = new AdminServerWebConfiguration();
+		AdminServerWebConfiguration config = new AdminServerWebConfiguration(null, null, null,
+				null);
 		List<HttpMessageConverter<?>> converters = new ArrayList<>();
 
 		config.extendMessageConverters(converters);
@@ -137,6 +139,7 @@ public class AdminServerWebConfigurationTest {
 		applicationContext.register(HazelcastAutoConfiguration.class);
 		applicationContext.register(HazelcastStoreConfiguration.class);
 		applicationContext.register(DiscoveryClientConfiguration.class);
+		applicationContext.register(AdminServerCoreConfiguration.class);
 		applicationContext.register(AdminServerWebConfiguration.class);
 
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);

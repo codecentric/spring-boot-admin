@@ -94,6 +94,7 @@ public class DiscoveryClientConfigurationTest {
 		applicationContext.register(PropertyPlaceholderAutoConfiguration.class);
 		applicationContext.register(RestTemplateConfiguration.class);
 		applicationContext.register(ServerPropertiesAutoConfiguration.class);
+		applicationContext.register(AdminServerCoreConfiguration.class);
 		applicationContext.register(AdminServerWebConfiguration.class);
 		applicationContext.register(DiscoveryClientConfiguration.class);
 

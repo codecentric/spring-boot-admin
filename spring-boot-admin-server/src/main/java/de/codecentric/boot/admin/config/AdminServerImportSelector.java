@@ -30,6 +30,7 @@ public class AdminServerImportSelector implements DeferredImportSelector {
 	public String[] selectImports(AnnotationMetadata importingClassMetadata) {
 		return new String[] { NotifierConfiguration.class.getCanonicalName(),
 				HazelcastStoreConfiguration.class.getCanonicalName(),
+				AdminServerCoreConfiguration.class.getCanonicalName(),
 				AdminServerWebConfiguration.class.getCanonicalName(),
 				DiscoveryClientConfiguration.class.getCanonicalName(),
 				RevereseZuulProxyConfiguration.class.getCanonicalName() };
