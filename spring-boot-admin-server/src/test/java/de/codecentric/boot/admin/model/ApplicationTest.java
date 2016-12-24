@@ -110,7 +110,7 @@ public class ApplicationTest {
 		Application app = Application.create("App").withId("-id-").withHealthUrl("http://health")
 				.withManagementUrl("http://mgmgt").withServiceUrl("http://svc")
 				.withStatusInfo(StatusInfo.ofUp()).build();
-		Application copy = Application.create(app).build();
+		Application copy = Application.copyOf(app).build();
 		assertThat(app, is(copy));
 	}
 }

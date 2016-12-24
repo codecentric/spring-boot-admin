@@ -56,7 +56,7 @@ public class RegistryController {
 	 */
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Application> register(@RequestBody Application application) {
-		application = Application.create(application).withSource("http-api").build();
+		application = Application.copyOf(application).withSource("http-api").build();
 		LOGGER.debug("Register application {}", application.toString());
 		Application registeredApp = registry.register(application);
 		return ResponseEntity.status(HttpStatus.CREATED).body(registeredApp);

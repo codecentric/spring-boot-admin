@@ -72,7 +72,7 @@ public class ApplicationRegistry implements ApplicationEventPublisherAware {
 
 		StatusInfo existingStatusInfo = getExistingStatusInfo(applicationId);
 
-		Application registering = Application.create(application).withId(applicationId)
+		Application registering = Application.copyOf(application).withId(applicationId)
 				.withStatusInfo(existingStatusInfo).build();
 
 		Application replaced = store.save(registering);

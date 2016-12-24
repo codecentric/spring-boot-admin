@@ -72,7 +72,7 @@ public class Application implements Serializable {
 		return new Builder(name);
 	}
 
-	public static Builder create(Application application) {
+	public static Builder copyOf(Application application) {
 		return new Builder(application);
 	}
 

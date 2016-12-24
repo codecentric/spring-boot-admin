@@ -110,7 +110,7 @@ public class ApplicationDiscoveryListener {
 	protected String register(ServiceInstance instance) {
 		try {
 			Application application = converter.convert(instance);
-			application = Application.create(application).withSource(SOURCE).build();
+			application = Application.copyOf(application).withSource(SOURCE).build();
 			if (application != null) {
 				LOGGER.debug("Registering discovered application {}", application);
 				return registry.register(application).getId();
