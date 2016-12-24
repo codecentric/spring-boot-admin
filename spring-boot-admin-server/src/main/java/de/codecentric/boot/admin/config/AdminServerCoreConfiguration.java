@@ -23,7 +23,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 
@@ -89,7 +88,7 @@ public class AdminServerCoreConfiguration {
 
 	@Bean
 	@Qualifier("updateTaskScheduler")
-	public TaskScheduler updateTaskScheduler() {
+	public ThreadPoolTaskScheduler updateTaskScheduler() {
 		ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
 		taskScheduler.setPoolSize(1);
 		taskScheduler.setRemoveOnCancelPolicy(true);
@@ -101,7 +100,7 @@ public class AdminServerCoreConfiguration {
 	@ConditionalOnMissingBean
 	public StatusUpdateApplicationListener statusUpdateApplicationListener(
 			StatusUpdater statusUpdater,
-			@Qualifier("updateTaskScheduler") TaskScheduler taskScheduler) {
+			@Qualifier("updateTaskScheduler") ThreadPoolTaskScheduler taskScheduler) {
 		StatusUpdateApplicationListener listener = new StatusUpdateApplicationListener(
 				statusUpdater, taskScheduler);
 		listener.setUpdatePeriod(adminServerProperties.getMonitor().getPeriod());

@@ -7,20 +7,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.context.WebApplicationContext;
 
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
 
 public class StatusUpdateApplicationListener {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatusUpdateApplicationListener.class);
-	private final TaskScheduler taskScheduler;
+	private final ThreadPoolTaskScheduler taskScheduler;
 	private final StatusUpdater statusUpdater;
 	private long updatePeriod = 10_000L;
 	private ScheduledFuture<?> scheduledTask;
 
 	public StatusUpdateApplicationListener(StatusUpdater statusUpdater,
-			TaskScheduler taskScheduler) {
+			ThreadPoolTaskScheduler taskScheduler) {
 		this.statusUpdater = statusUpdater;
 		this.taskScheduler = taskScheduler;
 	}
@@ -40,8 +40,13 @@ public class StatusUpdateApplicationListener {
 	}
 
 	@EventListener
-	public void onClientApplicationRegistered(ClientApplicationRegisteredEvent event) {
-		statusUpdater.updateStatus(event.getApplication());
+	public void onClientApplicationRegistered(final ClientApplicationRegisteredEvent event) {
+		taskScheduler.submit(new Runnable() {
+			@Override
+			public void run() {
+				statusUpdater.updateStatus(event.getApplication());
+			}
+		});
 	}
 
 	public void startStatusUpdate() {
