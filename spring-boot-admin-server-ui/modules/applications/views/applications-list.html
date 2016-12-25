@@ -22,7 +22,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat-start="application in filteredApps = (applicationGroups.applications|orderBy:order.column:order.descending|orderBy:'statusInfo.status':false|filter:searchFilter) track by application.id"
+      <tr ng-repeat-start="application in filteredApps = (applicationGroups.applications|orderBy:order.column:order.descending|orderBy:'group.status':false|filter:searchFilter) track by application.id"
         ng-show="application.group.applicationCount > 1 &amp;&amp; (application.group.collapsed || application.group.collapsed == undefined) &amp;&amp; ($first || filteredApps[$index - 1].group.name != application.group.name) &amp;&amp; (searchFilter == '' || searchFilter == undefined)">
         <td class="group-column" ng-click="application.group.collapsed = false"><i class="fa fa-plus"></i></td>
         <td ng-bind="application.group.name"></td>
