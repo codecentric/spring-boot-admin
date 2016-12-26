@@ -63,7 +63,7 @@ module.config(function ($stateProvider) {
   });
 });
 
-module.run(function ($rootScope, $state, Notification, Application, ApplicationGroups, MainViews, $timeout, $q) {
+module.run(function ($rootScope, $state, Notification, Application, ApplicationGroups, MainViews) {
   MainViews.register({
     title: 'Applications',
     state: 'applications-list',
@@ -73,62 +73,10 @@ module.run(function ($rootScope, $state, Notification, Application, ApplicationG
   var applicationGroups = new ApplicationGroups();
   $rootScope.applicationGroups = applicationGroups;
 
-  var refreshQueue = [];
-  var runningRefreshs = 0;
-
-  var queueRefresh = function (application) {
-    application.refreshing = true;
-    if (runningRefreshs++ >= 15) {
-      refreshQueue.push(application);
-    } else {
-      refresh(application);
-    }
-  };
-
-  var refresh = function (application) {
-    doRefresh(application).finally(function () {
-      application.refreshing = false;
-      runningRefreshs--;
-      if (refreshQueue.length > 0) {
-        refresh(refreshQueue.pop());
-      }
-    });
-  };
-
-  var doRefresh = function (application) {
-    application.info = {};
-    if (application.statusInfo.status === 'OFFLINE') {
-      return $q.reject();
-    }
-    return application.getInfo().then(function (response) {
-      var info = response.data;
-      application.version = info.version;
-      delete info.version;
-      if (info.build && info.build.version) {
-        application.version = info.build.version;
-      }
-      if (application.version) {
-        var group = application.group;
-        group.versionsCounter[application.version] = (group.versionsCounter[application.version] || 0) + 1;
-        var versions = Object.keys(group.versionsCounter);
-        versions.sort();
-        group.version = versions[0] + (versions.length > 1 ? ', ...' : '');
-      }
-      application.info = info;
-    });
-  };
-
   Application.query(function (applications) {
     applications.forEach(function (application) {
       applicationGroups.addApplication(application, true);
     });
-
-    //Defer refresh to give the browser time to render
-    $timeout(function () {
-      applicationGroups.applications.forEach(function (application) {
-        queueRefresh(application);
-      });
-    }, 50);
   });
 
   if (typeof (EventSource) !== 'undefined') {
@@ -148,14 +96,13 @@ module.run(function ($rootScope, $state, Notification, Application, ApplicationG
         body: 'Instance ' + event.application.id + '\n' + event.application.healthUrl,
         icon: require('./img/unknown.png'),
         timeout: 10000,
-        url: $state.href('apps.details', {
+        url: $state.href('applications.details', {
           id: event.application.id
         })
       };
 
       if (event.type === 'REGISTRATION') {
         applicationGroups.addApplication(event.application, false);
-        queueRefresh(event.application);
         title += ' instance registered.';
         options.tag = event.application.id + '-REGISTRY';
       } else if (event.type === 'DEREGISTRATION') {
@@ -164,7 +111,6 @@ module.run(function ($rootScope, $state, Notification, Application, ApplicationG
         options.tag = event.application.id + '-REGISTRY';
       } else if (event.type === 'STATUS_CHANGE') {
         applicationGroups.addApplication(event.application, true);
-        queueRefresh(event.application);
         title += ' instance is ' + event.to.status;
         options.tag = event.application.id + '-STATUS';
         options.icon = event.to.status !== 'UP' ? require('./img/error.png') : require('./img/ok.png');

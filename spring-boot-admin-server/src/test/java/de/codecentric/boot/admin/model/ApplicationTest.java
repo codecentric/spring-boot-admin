@@ -82,7 +82,7 @@ public class ApplicationTest {
 	@Test
 	public void test_sanitize_metadata() throws JsonProcessingException {
 		Application app = Application.create("test").withHealthUrl("http://health")
-				.withMetadata("password", "qwertz123").withMetadata("user", "humptydumpty").build();
+				.addMetadata("password", "qwertz123").addMetadata("user", "humptydumpty").build();
 		String json = objectMapper.writeValueAsString(app);
 		assertThat(json, not(containsString("qwertz123")));
 		assertThat(json, containsString("humptydumpty"));

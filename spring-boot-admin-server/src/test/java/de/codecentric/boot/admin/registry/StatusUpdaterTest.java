@@ -15,6 +15,7 @@
  */
 package de.codecentric.boot.admin.registry;
 
+import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 
@@ -32,44 +34,37 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.model.StatusInfo;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
-import de.codecentric.boot.admin.web.client.HttpHeadersProvider;
+import de.codecentric.boot.admin.web.client.ApplicationOperations;
 
 public class StatusUpdaterTest {
 
+	private ApplicationOperations applicationOps;
 	private StatusUpdater updater;
 	private SimpleApplicationStore store;
-	private RestTemplate template;
 	private ApplicationEventPublisher publisher;
 
 	@Before
 	public void setup() {
-		HttpHeadersProvider httpHeadersProvider = mock(HttpHeadersProvider.class);
-		when(httpHeadersProvider.getHeaders(any(Application.class))).thenReturn(new HttpHeaders());
-
 		store = new SimpleApplicationStore();
-		template = mock(RestTemplate.class);
-		updater = new StatusUpdater(template, store, httpHeadersProvider);
+		applicationOps = mock(ApplicationOperations.class);
+		updater = new StatusUpdater(store, applicationOps);
 		publisher = mock(ApplicationEventPublisher.class);
 		updater.setApplicationEventPublisher(publisher);
 	}
 
 	@Test
-	@SuppressWarnings("rawtypes")
 	public void test_update_statusChanged() {
-		when(template.exchange(eq("health"), eq(HttpMethod.GET), isA(HttpEntity.class),
-				eq(Map.class))).thenReturn(
-						ResponseEntity.ok().body((Map) Collections.singletonMap("status", "UP")));
+		when(applicationOps.getHealth(isA(Application.class))).thenReturn(ResponseEntity.ok()
+				.body(Collections.<String, Serializable>singletonMap("status", "UP")));
+		when(applicationOps.getInfo(isA(Application.class))).thenReturn(ResponseEntity.ok()
+				.body(Collections.<String, Serializable>singletonMap("foo", "bar")));
 
 		updater.updateStatus(
 				Application.create("foo").withId("id").withHealthUrl("health").build());
@@ -77,30 +72,30 @@ public class StatusUpdaterTest {
 		Application app = store.find("id");
 
 		assertThat(app.getStatusInfo().getStatus(), CoreMatchers.is("UP"));
+		assertThat((Map<String, ? extends Serializable>) app.getInfo().getValues(),
+				hasEntry("foo", (Serializable) "bar"));
 		verify(publisher)
 				.publishEvent(argThat(CoreMatchers.isA(ClientApplicationStatusChangedEvent.class)));
 	}
 
 	@Test
-	@SuppressWarnings("rawtypes")
 	public void test_update_statusUnchanged() {
-		when(template.exchange(eq("health"), eq(HttpMethod.GET), isA(HttpEntity.class),
-				eq(Map.class))).thenReturn(
-						ResponseEntity.ok((Map) Collections.singletonMap("status", "UNKNOWN")));
+		when(applicationOps.getHealth(any(Application.class))).thenReturn(ResponseEntity
+				.ok(Collections.<String, Serializable>singletonMap("status", "UNKNOWN")));
 
 		updater.updateStatus(
 				Application.create("foo").withId("id").withHealthUrl("health").build());
 
 		verify(publisher, never())
 				.publishEvent(argThat(CoreMatchers.isA(ClientApplicationStatusChangedEvent.class)));
+		verify(applicationOps, never()).getInfo(isA(Application.class));
 	}
 
 	@Test
-	@SuppressWarnings("rawtypes")
 	public void test_update_noBody() {
 		// HTTP 200 - UP
-		when(template.exchange(eq("health"), eq(HttpMethod.GET), isA(HttpEntity.class),
-				eq(Map.class))).thenReturn(ResponseEntity.ok((Map) null));
+		when(applicationOps.getHealth(any(Application.class)))
+				.thenReturn(ResponseEntity.ok((Map<String, Serializable>) null));
 
 		updater.updateStatus(
 				Application.create("foo").withId("id").withHealthUrl("health").build());
@@ -108,8 +103,8 @@ public class StatusUpdaterTest {
 		assertThat(store.find("id").getStatusInfo().getStatus(), CoreMatchers.is("UP"));
 
 		// HTTP != 200 - DOWN
-		when(template.exchange(eq("health"), eq(HttpMethod.GET), isA(HttpEntity.class),
-				eq(Map.class))).thenReturn(ResponseEntity.status(503).body((Map) null));
+		when(applicationOps.getHealth(any(Application.class)))
+				.thenReturn(ResponseEntity.status(503).body((Map<String, Serializable>) null));
 
 		updater.updateStatus(
 				Application.create("foo").withId("id").withHealthUrl("health").build());
@@ -119,8 +114,8 @@ public class StatusUpdaterTest {
 
 	@Test
 	public void test_update_offline() {
-		when(template.exchange(eq("health"), eq(HttpMethod.GET), isA(HttpEntity.class),
-				eq(Map.class))).thenThrow(new ResourceAccessException("error"));
+		when(applicationOps.getHealth(any(Application.class)))
+				.thenThrow(new ResourceAccessException("error"));
 
 		Application app = Application.create("foo").withId("id").withHealthUrl("health")
 				.withStatusInfo(StatusInfo.ofUp()).build();
@@ -130,21 +125,23 @@ public class StatusUpdaterTest {
 	}
 
 	@Test
-	@SuppressWarnings("rawtypes")
 	public void test_updateStatusForApplications() throws InterruptedException {
 		updater.setStatusLifetime(100L);
-		store.save(Application.create("foo").withId("id-1").withHealthUrl("health-1").build());
+		Application app1 = Application.create("foo").withId("id-1").withHealthUrl("health-1")
+				.build();
+		store.save(app1);
 		Thread.sleep(120L); // Let the StatusInfo of id-1 expire
-		store.save(Application.create("foo").withId("id-2").withHealthUrl("health-2").build());
+		Application app2 = Application.create("foo").withId("id-2").withHealthUrl("health-2")
+				.build();
+		store.save(app2);
 
-		when(template.exchange(eq("health-1"), eq(HttpMethod.GET), isA(HttpEntity.class),
-				eq(Map.class))).thenReturn(ResponseEntity.ok((Map) null));
+		when(applicationOps.getHealth(eq(app1)))
+				.thenReturn(ResponseEntity.ok((Map<String, Serializable>) null));
 
 		updater.updateStatusForAllApplications();
 
 		assertThat(store.find("id-1").getStatusInfo().getStatus(), CoreMatchers.is("UP"));
-		verify(template, never()).exchange(eq("health-2"), eq(HttpMethod.GET),
-				isA(HttpEntity.class), eq(Map.class));
+		verify(applicationOps, never()).getHealth(eq(app2));
 	}
 
 }

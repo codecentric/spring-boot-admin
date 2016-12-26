@@ -29,7 +29,6 @@ import org.springframework.util.StringUtils;
 import de.codecentric.boot.admin.event.ClientApplicationDeregisteredEvent;
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.model.Application;
-import de.codecentric.boot.admin.model.StatusInfo;
 import de.codecentric.boot.admin.registry.store.ApplicationStore;
 
 /**
@@ -70,13 +69,15 @@ public class ApplicationRegistry implements ApplicationEventPublisherAware {
 		String applicationId = generator.generateId(application);
 		Assert.notNull(applicationId, "ID must not be null");
 
-		StatusInfo existingStatusInfo = getExistingStatusInfo(applicationId);
-
-		Application registering = Application.copyOf(application).withId(applicationId)
-				.withStatusInfo(existingStatusInfo).build();
+		Application.Builder builder = Application.copyOf(application).withId(applicationId);
+		Application existing = getApplication(applicationId);
+		if (existing != null) {
+			// Copy Status and Info from existing registration.
+			builder.withStatusInfo(existing.getStatusInfo()).withInfo(existing.getInfo());
+		}
+		Application registering = builder.build();
 
 		Application replaced = store.save(registering);
-
 		if (replaced == null) {
 			LOGGER.info("New Application {} registered ", registering);
 			publisher.publishEvent(new ClientApplicationRegisteredEvent(registering));
@@ -90,13 +91,6 @@ public class ApplicationRegistry implements ApplicationEventPublisherAware {
 		return registering;
 	}
 
-	private StatusInfo getExistingStatusInfo(String applicationId) {
-		Application existing = getApplication(applicationId);
-		if (existing != null) {
-			return existing.getStatusInfo();
-		}
-		return StatusInfo.ofUnknown();
-	}
 
 	/**
 	 * Checks the syntax of the given URL.

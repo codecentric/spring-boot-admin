@@ -53,6 +53,7 @@ public class Application implements Serializable {
 	private final String source;
 	@JsonSerialize(using = Application.MetadataSerializer.class)
 	private final Map<String, String> metadata;
+	private final Info info;
 
 	protected Application(Builder builder) {
 		Assert.hasText(builder.name, "name must not be empty!");
@@ -66,6 +67,7 @@ public class Application implements Serializable {
 		this.statusInfo = builder.statusInfo;
 		this.source = builder.source;
 		this.metadata = Collections.unmodifiableMap(new HashMap<>(builder.metadata));
+		this.info = builder.info;
 	}
 
 	public static Builder create(String name) {
@@ -85,6 +87,7 @@ public class Application implements Serializable {
 		private StatusInfo statusInfo = StatusInfo.ofUnknown();
 		private String source;
 		private Map<String, String> metadata = new HashMap<>();
+		private Info info = Info.empty();
 
 		private Builder(String name) {
 			this.name = name;
@@ -99,6 +102,7 @@ public class Application implements Serializable {
 			this.statusInfo = application.statusInfo;
 			this.source = application.source;
 			this.metadata.putAll(application.getMetadata());
+			this.info = application.info;
 		}
 
 		public Builder withName(String name) {
@@ -136,13 +140,18 @@ public class Application implements Serializable {
 			return this;
 		}
 
-		public Builder withMetadata(String key, String value) {
+		public Builder addMetadata(String key, String value) {
 			this.metadata.put(key, value);
 			return this;
 		}
 
 		public Builder withMetadata(Map<String, String> metadata) {
-			this.metadata.putAll(metadata);
+			this.metadata = metadata;
+			return this;
+		}
+
+		public Builder withInfo(Info info) {
+			this.info = info;
 			return this;
 		}
 
@@ -182,6 +191,11 @@ public class Application implements Serializable {
 	public Map<String, String> getMetadata() {
 		return metadata;
 	}
+
+	public Info getInfo() {
+		return info;
+	}
+
 	@Override
 	public String toString() {
 		return "Application [id=" + id + ", name=" + name + ", managementUrl="
@@ -284,7 +298,7 @@ public class Application implements Serializable {
 				Iterator<Entry<String, JsonNode>> it = node.get("metadata").fields();
 				while (it.hasNext()) {
 					Entry<String, JsonNode> entry = it.next();
-					builder.withMetadata(entry.getKey(), entry.getValue().asText());
+					builder.addMetadata(entry.getKey(), entry.getValue().asText());
 				}
 			}
 			return builder.build();

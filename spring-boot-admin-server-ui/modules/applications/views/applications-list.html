@@ -15,7 +15,7 @@
         <th class="group-column" title="{{expandAll ? 'collapse' : 'expand'}} all" ng-click="toggleExpandAll()"><i class="fa" ng-class="{'fa-plus': !expandAll, 'fa-minus': expandAll}"></i></th>
         <th><span class="sortable" ng-class="orderByCssClass('name')" ng-click="orderBy('name')">Application</span> / <span class="sortable"
             ng-class="orderByCssClass('healthUrl')" ng-click="orderBy('healthUrl')">URL</span></th>
-        <th><span class="sortable" ng-class="orderByCssClass('info.version')" ng-click="orderBy('info.version')">Version</span></th>
+        <th><span class="sortable" ng-class="orderByCssClass('info.build.version')" ng-click="orderBy('info.build.version')">Version</span></th>
         <th>Info</th>
         <th>Status</th>
         <th></th>
@@ -39,8 +39,8 @@
           ng-click="application.group.collapsed = application.group.applicationCount > 1"><i ng-show="application.group.applicationCount > 1 &amp;&amp; (searchFilter == '' || searchFilter == undefined)"
             class="fa fa-minus"></i></td>
         <td>{{ application.name }} ({{ application.id }})<br/>
-          <span class="muted">{{ application.serviceUrl || application.managementUrl || application.healthUrl }}</span></td>
-        <td>{{ application.version }}</td>
+          <span class="muted" ng-bind="application.serviceUrl || application.managementUrl || application.healthUrl"></span></td>
+        <td ng-bind="application.info.build.version || application.info.version"></td>
         <td class="scroll">
           <sba-limited-text max-lines="3" bind-html="application.info | yaml | linkify:60"></sba-limited-text>
         </td>

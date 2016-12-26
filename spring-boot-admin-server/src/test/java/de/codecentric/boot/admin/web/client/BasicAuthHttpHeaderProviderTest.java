@@ -16,7 +16,7 @@ public class BasicAuthHttpHeaderProviderTest {
 	@Test
 	public void test_auth_header() {
 		Application app = Application.create("test").withHealthUrl("/health")
-				.withMetadata("user.name", "test").withMetadata("user.password", "drowssap")
+				.addMetadata("user.name", "test").addMetadata("user.password", "drowssap")
 				.build();
 		assertThat(headersProvider.getHeaders(app).get(HttpHeaders.AUTHORIZATION).get(0),
 				is("Basic dGVzdDpkcm93c3NhcA=="));

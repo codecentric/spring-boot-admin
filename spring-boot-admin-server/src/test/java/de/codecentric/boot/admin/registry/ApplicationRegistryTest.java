@@ -15,9 +15,12 @@
  */
 package de.codecentric.boot.admin.registry;
 
+import static java.util.Collections.singletonMap;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
@@ -27,12 +30,15 @@ import org.mockito.Mockito;
 import org.springframework.context.ApplicationEventPublisher;
 
 import de.codecentric.boot.admin.model.Application;
+import de.codecentric.boot.admin.model.Info;
+import de.codecentric.boot.admin.model.StatusInfo;
+import de.codecentric.boot.admin.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
 
 public class ApplicationRegistryTest {
-
-	private ApplicationRegistry registry = new ApplicationRegistry(new SimpleApplicationStore(),
-			new HashingApplicationUrlIdGenerator());
+	private ApplicationStore store = new SimpleApplicationStore();
+	private ApplicationIdGenerator idGenerator = new HashingApplicationUrlIdGenerator();
+	private ApplicationRegistry registry = new ApplicationRegistry(store, idGenerator);
 
 	public ApplicationRegistryTest() {
 		registry.setApplicationEventPublisher(Mockito.mock(ApplicationEventPublisher.class));
@@ -78,6 +84,25 @@ public class ApplicationRegistryTest {
 		assertEquals("http://localhost:8080/health", app.getHealthUrl());
 		assertEquals("abc", app.getName());
 		assertNotNull(app.getId());
+	}
+
+	@Test
+	public void refresh() throws Exception {
+		// Given application is already reegistered and has status and info.
+		StatusInfo status = StatusInfo.ofUp();
+		Info info = Info.from(singletonMap("foo", "bar"));
+		Application app = Application.create("abc").withHealthUrl("http://localhost:8080/health")
+				.withStatusInfo(status).withInfo(info).build();
+		String id = idGenerator.generateId(app);
+		store.save(Application.copyOf(app).withId(id).build());
+
+		// When application registers second time
+		Application registered = registry.register(
+				Application.create("abc").withHealthUrl("http://localhost:8080/health").build());
+
+		// Then info and status are retained
+		assertThat(registered.getInfo(), sameInstance(info));
+		assertThat(registered.getStatusInfo(), sameInstance(status));
 	}
 
 	@Test
