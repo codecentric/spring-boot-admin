@@ -83,7 +83,7 @@ public class CompositeRouteLocatorTest {
 		private Collection<String> ignoredPaths;
 		private List<Route> routes;
 
-		public TestRouteLocator(Collection<String> ignoredPaths, List<Route> routes) {
+		private TestRouteLocator(Collection<String> ignoredPaths, List<Route> routes) {
 			this.ignoredPaths = ignoredPaths;
 			this.routes = routes;
 		}

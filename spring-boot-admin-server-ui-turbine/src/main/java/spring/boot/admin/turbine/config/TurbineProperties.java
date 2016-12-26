@@ -16,6 +16,7 @@
 package spring.boot.admin.turbine.config;
 
 import java.net.URI;
+import java.util.Arrays;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -43,7 +44,7 @@ public class TurbineProperties {
 	}
 
 	public void setClusters(String[] clusters) {
-		this.clusters = clusters;
+		this.clusters = Arrays.copyOf(clusters, clusters.length);
 	}
 
 	public boolean isEnabled() {

@@ -1,5 +1,7 @@
 package de.codecentric.boot.admin.config;
 
+import java.util.Arrays;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("spring.boot.admin")
@@ -76,7 +78,7 @@ public class AdminServerProperties {
 		}
 
 		public void setEndpoints(String[] endpoints) {
-			this.endpoints = endpoints;
+			this.endpoints = Arrays.copyOf(endpoints, endpoints.length);
 		}
 	}
 }
