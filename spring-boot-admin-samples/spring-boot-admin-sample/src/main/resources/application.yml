@@ -1,3 +1,4 @@
+---
 info:
   scm-url: "@scm.url@"
   build-url: "http://travis-ci.org/@env.TRAVIS_REPO_SLUG@/builds/@env.TRAVIS_BUILD_ID@"
@@ -15,6 +16,27 @@ spring:
   boot:
     admin:
       url: http://localhost:8080
+  profiles:
+    active:
+      - secure
+
+---
+spring:
+  profiles: insecure
+
+management:
+  security:
+    enabled: false
+
+security:
+  basic:
+    enabled: false
+
+---
+spring:
+  profiles: secure
+  boot:
+    admin:
       username: "${security.user.name}"       #These two are needed so that the client
       password: "${security.user.password}"   #can register at the protected server api
       client:

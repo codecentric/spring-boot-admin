@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -40,6 +41,7 @@ public class SpringBootAdminApplication {
 		SpringApplication.run(SpringBootAdminApplication.class, args);
 	}
 
+	@Profile("secure")
 	// tag::configuration-spring-security[]
 	@Configuration
 	public static class SecurityConfig extends WebSecurityConfigurerAdapter {
