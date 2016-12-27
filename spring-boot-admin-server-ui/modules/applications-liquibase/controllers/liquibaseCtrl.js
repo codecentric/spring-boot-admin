@@ -23,7 +23,7 @@ module.exports = function ($scope, $http, application) {
 
   $scope.refresh = function () {
     $http.get('api/applications/' + application.id + '/liquibase').then(function (response) {
-      if (Array.isArray(response.data)) {
+      if (Array.isArray(response.data) && (response.data.length === 0 || response.data[0].hasOwnProperty('name'))) {
         $scope.reports = response.data;
       } else {
         $scope.reports = [{ name: 'liqibase', changeLogs: response.data }];

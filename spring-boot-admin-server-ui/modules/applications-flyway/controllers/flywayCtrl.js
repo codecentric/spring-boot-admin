@@ -26,7 +26,7 @@ module.exports = function ($scope, $http, application) {
 
   $scope.refresh = function () {
     $http.get('api/applications/' + application.id + '/flyway').then(function (response) {
-      if (Array.isArray(response.data)) {
+      if (Array.isArray(response.data) && (response.data.length === 0 || response.data[0].hasOwnProperty('name'))) {
         $scope.reports = response.data;
       } else {
         $scope.reports = [{ name: 'flyway', migrations: response.data }];
@@ -35,7 +35,7 @@ module.exports = function ($scope, $http, application) {
   };
   $scope.refresh();
 
-  $scope.inArray = function(migrationStatus, statusArray) {
+  $scope.inArray = function (migrationStatus, statusArray) {
     return statusArray.indexOf(migrationStatus) !== -1;
   };
 };
