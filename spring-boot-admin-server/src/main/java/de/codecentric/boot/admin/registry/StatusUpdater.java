@@ -100,31 +100,39 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
 	protected StatusInfo queryStatus(Application application) {
 		LOGGER.trace("Updating status for {}", application);
 		try {
-			ResponseEntity<Map<String, Serializable>> response = applicationOps
-					.getHealth(application);
-			if (response.hasBody() && response.getBody().get("status") instanceof String) {
-				return StatusInfo.valueOf((String) response.getBody().get("status"),
-						response.getBody());
-			} else if (response.getStatusCode().is2xxSuccessful()) {
-				return StatusInfo.ofUp();
-			} else {
-				return StatusInfo.ofDown();
-			}
+			return convertStatusInfo(applicationOps.getHealth(application));
 		} catch (Exception ex) {
 			if ("OFFLINE".equals(application.getStatusInfo().getStatus())) {
 				LOGGER.debug("Couldn't retrieve status for {}", application, ex);
 			} else {
 				LOGGER.info("Couldn't retrieve status for {}", application, ex);
 			}
-			return StatusInfo.ofOffline(toDetails(ex));
+			return convertStatusInfo(ex);
 		}
 	}
 
-	protected Map<String, Serializable> toDetails(Exception ex) {
+	private StatusInfo convertStatusInfo(ResponseEntity<Map<String, Serializable>> response) {
+		if (response.hasBody() && response.getBody().get("status") instanceof String) {
+			return StatusInfo.valueOf((String) response.getBody().get("status"),
+					response.getBody());
+		}
+		if (response.getStatusCode().is2xxSuccessful()) {
+			return StatusInfo.ofUp();
+		}
+		Map<String, Serializable> details = new HashMap<>();
+		details.put("status", response.getStatusCodeValue());
+		details.put("error", response.getStatusCode().getReasonPhrase());
+		if (response.hasBody()) {
+			details.putAll(response.getBody());
+		}
+		return StatusInfo.ofDown(details);
+	}
+
+	private StatusInfo convertStatusInfo(Exception ex) {
 		Map<String, Serializable> details = new HashMap<>();
 		details.put("message", ex.getMessage());
 		details.put("exception", ex.getClass().getName());
-		return details;
+		return StatusInfo.ofOffline(details);
 	}
 
 	public void setStatusLifetime(long statusLifetime) {

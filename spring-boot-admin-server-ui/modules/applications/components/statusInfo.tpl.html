@@ -4,10 +4,11 @@
   <table class="table cable-condensed">
     <tr ng-repeat="detail in $ctrl.details | orderBy:'name'">
       <td style="text-transform: capitalize;" ng-bind="detail.name"></td>
-      <td ng-bind="detail.status " class="status-{{detail.status}}"></td>
+      <td ng-bind="detail.status" class="status-{{detail.status}}"></td>
     </tr>
   </table>
-  <div style="max-width: 400px;" class="alert alert-error" ng-if="$ctrl.statusInfo.details.message">
+  <div style="max-width: 400px;" class="alert alert-error" ng-if="$ctrl.statusInfo.details.message || $ctrl.statusInfo.details.error">
+    <b style="word-break: break-all;" ng-if="$ctrl.statusInfo.details.status" ng-bind="$ctrl.statusInfo.details.status + ' ' + $ctrl.statusInfo.details.error"></b>
     <b style="word-break: break-all;" ng-if="$ctrl.statusInfo.details.exception" ng-bind="$ctrl.statusInfo.details.exception + ':'"></b><br>
     <span ng-bind="$ctrl.statusInfo.details.message"></span>
   </div>

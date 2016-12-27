@@ -92,8 +92,7 @@ public class StatusUpdaterTest {
 	}
 
 	@Test
-	public void test_update_noBody() {
-		// HTTP 200 - UP
+	public void test_update_up_noBody() {
 		when(applicationOps.getHealth(any(Application.class)))
 				.thenReturn(ResponseEntity.ok((Map<String, Serializable>) null));
 
@@ -102,14 +101,36 @@ public class StatusUpdaterTest {
 
 		assertThat(store.find("id").getStatusInfo().getStatus(), CoreMatchers.is("UP"));
 
-		// HTTP != 200 - DOWN
+	}
+
+	@Test
+	public void test_update_down() {
+		when(applicationOps.getHealth(any(Application.class)))
+				.thenReturn(
+						ResponseEntity.status(503).body(
+								Collections.<String, Serializable>singletonMap("foo", "bar")));
+
+		updater.updateStatus(
+				Application.create("foo").withId("id").withHealthUrl("health").build());
+
+		StatusInfo statusInfo = store.find("id").getStatusInfo();
+		assertThat(statusInfo.getStatus(), CoreMatchers.is("DOWN"));
+		assertThat(statusInfo.getDetails(), hasEntry("foo", (Serializable) "bar"));
+	}
+
+	@Test
+	public void test_update_down_noBody() {
 		when(applicationOps.getHealth(any(Application.class)))
 				.thenReturn(ResponseEntity.status(503).body((Map<String, Serializable>) null));
 
 		updater.updateStatus(
 				Application.create("foo").withId("id").withHealthUrl("health").build());
 
-		assertThat(store.find("id").getStatusInfo().getStatus(), CoreMatchers.is("DOWN"));
+		StatusInfo statusInfo = store.find("id").getStatusInfo();
+		assertThat(statusInfo.getStatus(), CoreMatchers.is("DOWN"));
+		assertThat(statusInfo.getDetails(), hasEntry("status", (Serializable) 503));
+		assertThat(statusInfo.getDetails(),
+				hasEntry("error", (Serializable) "Service Unavailable"));
 	}
 
 	@Test
@@ -121,7 +142,11 @@ public class StatusUpdaterTest {
 				.withStatusInfo(StatusInfo.ofUp()).build();
 		updater.updateStatus(app);
 
-		assertThat(store.find("id").getStatusInfo().getStatus(), CoreMatchers.is("OFFLINE"));
+		StatusInfo statusInfo = store.find("id").getStatusInfo();
+		assertThat(statusInfo.getStatus(), CoreMatchers.is("OFFLINE"));
+		assertThat(statusInfo.getDetails(), hasEntry("message", (Serializable) "error"));
+		assertThat(statusInfo.getDetails(), hasEntry("exception",
+				(Serializable) "org.springframework.web.client.ResourceAccessException"));
 	}
 
 	@Test

@@ -32,7 +32,7 @@ public class StatusInfo implements Serializable {
 
 	private final String status;
 	private final long timestamp;
-	private final Map<String, ? extends Serializable> details;
+	private final Map<String, Serializable> details;
 
 	protected StatusInfo(String status, long timestamp,
 			Map<String, ? extends Serializable> details) {
@@ -87,7 +87,7 @@ public class StatusInfo implements Serializable {
 		return timestamp;
 	}
 
-	public Map<String, ? extends Serializable> getDetails() {
+	public Map<String, Serializable> getDetails() {
 		return details;
 	}
 
