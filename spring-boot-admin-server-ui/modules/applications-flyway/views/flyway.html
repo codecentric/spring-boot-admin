@@ -3,7 +3,7 @@
         <input placeholder="Filter" class="input-xxlarge" type="search" ng-model="searchFilter" />
         <button class="btn" title="reload list" ng-click="refresh()"><i class="fa fa-repeat"></i></button>
     </div>
-    <sba-info-panel panel-title="Flyway Migrations" raw="api/applications/{{ application.id }}/flyway">
+    <sba-info-panel ng-repeat="report in reports" panel-title="'{{report.name}}' Migrations" raw="api/applications/{{ application.id }}/flyway">
         <table class="table">
             <thead>
                 <th>Type</th>
@@ -16,7 +16,7 @@
                 <th>Execution Time</th>
             </thead>
             <tbody>
-                <tr ng-repeat="migration in migrations | filter:searchFilter">
+                <tr ng-repeat="migration in report.migrations | filter:searchFilter">
                     <td ng-bind="migration.type"></td>
                     <td ng-bind="migration.checksum"></td>
                     <td ng-bind="migration.version"></td>

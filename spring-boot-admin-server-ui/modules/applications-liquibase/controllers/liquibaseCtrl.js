@@ -18,12 +18,16 @@
 module.exports = function ($scope, $http, application) {
   'ngInject';
 
-  $scope.changeLog = [];
+  $scope.reports = [];
   $scope.searchFilter = null;
 
   $scope.refresh = function () {
     $http.get('api/applications/' + application.id + '/liquibase').then(function (response) {
-      $scope.changeLog = response.data;
+      if (Array.isArray(response.data)) {
+        $scope.reports = response.data;
+      } else {
+        $scope.reports = [{ name: 'liqibase', changeLogs: response.data }];
+      }
     });
   };
   $scope.refresh();

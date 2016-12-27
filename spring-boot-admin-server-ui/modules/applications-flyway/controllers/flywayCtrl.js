@@ -18,7 +18,7 @@
 module.exports = function ($scope, $http, application) {
   'ngInject';
 
-  $scope.migrations = [];
+  $scope.reports = [];
   $scope.successStates = ['BASELINE', 'MISSING_SUCCESS', 'SUCCESS', 'OUT_OF_ORDER', 'FUTURE_SUCCESS'];
   $scope.warningStates = ['PENDING', 'ABOVE_TARGET', 'PREINIT', 'BELOW_BASELINE', 'IGNORED'];
   $scope.failedStates = ['MISSING_FAILED', 'FAILED', 'FUTURE_FAILED'];
@@ -26,7 +26,11 @@ module.exports = function ($scope, $http, application) {
 
   $scope.refresh = function () {
     $http.get('api/applications/' + application.id + '/flyway').then(function (response) {
-      $scope.migrations = response.data;
+      if (Array.isArray(response.data)) {
+        $scope.reports = response.data;
+      } else {
+        $scope.reports = [{ name: 'flyway', migrations: response.data }];
+      }
     });
   };
   $scope.refresh();
