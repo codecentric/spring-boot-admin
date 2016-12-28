@@ -15,17 +15,15 @@
  */
 package spring.boot.admin.turbine.config;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.cloud.netflix.zuul.filters.ZuulProperties.ZuulRoute;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
@@ -33,7 +31,7 @@ import de.codecentric.boot.admin.config.AdminServerProperties;
 import de.codecentric.boot.admin.config.AdminServerWebConfiguration;
 import de.codecentric.boot.admin.config.RevereseZuulProxyConfiguration;
 import spring.boot.admin.turbine.web.TurbineController;
-import spring.boot.admin.turbine.zuul.filters.StaticRouteLocator;
+import spring.boot.admin.turbine.zuul.filters.TurbineRouteLocator;
 
 /**
  * Configures all necessary components for the Turbine view.
@@ -43,7 +41,7 @@ import spring.boot.admin.turbine.zuul.filters.StaticRouteLocator;
 @Configuration
 @EnableConfigurationProperties(TurbineProperties.class)
 @AutoConfigureBefore({ AdminServerWebConfiguration.class, RevereseZuulProxyConfiguration.class })
-@Conditional(TurbineEnabledCondition.class)
+@ConditionalOnProperty(value = "spring.boot.admin.turbine.enabled", matchIfMissing = true)
 public class TurbineAutoConfiguration {
 
 	@Autowired
@@ -62,11 +60,12 @@ public class TurbineAutoConfiguration {
 
 	@Bean
 	@Order(100)
-	public StaticRouteLocator staticRouteLocator(AdminServerProperties admin) {
-		Collection<ZuulRoute> routes = Collections
-				.singleton(new ZuulRoute(admin.getContextPath() + "/api/turbine/stream/**",
-						properties.getUrl().toString()));
-		return new StaticRouteLocator(routes, server.getServletPrefix(), zuulProperties);
+	public TurbineRouteLocator staticRouteLocator(AdminServerProperties admin,
+			DiscoveryClient discovery) {
+		ZuulRoute turbineRoute = new ZuulRoute(admin.getContextPath() + "/api/turbine/stream/**",
+				properties.getLocation());
+		return new TurbineRouteLocator(turbineRoute, server.getServletPrefix(), zuulProperties,
+				discovery);
 	}
 
 }

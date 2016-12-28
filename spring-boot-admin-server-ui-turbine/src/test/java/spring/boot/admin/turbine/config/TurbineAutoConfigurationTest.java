@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration.RestTemplateConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.cloud.client.discovery.noop.NoopDiscoveryClientAutoConfiguration;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import de.codecentric.boot.admin.config.AdminServerCoreConfiguration;
@@ -36,12 +37,6 @@ public class TurbineAutoConfigurationTest {
 	}
 
 	@Test
-	public void test_missing_url() {
-		load();
-		assertThat(context.getBeansOfType(TurbineController.class).values(), empty());
-	}
-
-	@Test
 	public void test_enabled() {
 		load("spring.boot.admin.turbine.url:http://turbine.server:8989/turbine.stream");
 		assertThat(context.getBean(TurbineController.class), instanceOf(TurbineController.class));
@@ -52,6 +47,7 @@ public class TurbineAutoConfigurationTest {
 		applicationContext.register(PropertyPlaceholderAutoConfiguration.class);
 		applicationContext.register(RestTemplateConfiguration.class);
 		applicationContext.register(ServerPropertiesAutoConfiguration.class);
+		applicationContext.register(NoopDiscoveryClientAutoConfiguration.class);
 		applicationContext.register(AdminServerCoreConfiguration.class);
 		applicationContext.register(AdminServerWebConfiguration.class);
 		applicationContext.register(RevereseZuulProxyConfiguration.class);

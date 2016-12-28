@@ -46,13 +46,14 @@ The Turbine module uses the hystrix-dashboard to display the metrics from a Turb
 </dependency>
 ----
 
-. Configure the Turbine URL and clusters
+. Configure the Turbine server and clusters
 +
 [source,yml]
 .application.yml
 ----
 include::{samples-dir}/spring-boot-admin-sample-eureka/src/main/resources/application.yml[tags=configuration-ui-turbine]
 ----
+<1> Configures the service with id `turbine` as Turbine server. URLs are also allowed.
 
 .Turbine UI Module configuration options
 |===
@@ -62,9 +63,9 @@ include::{samples-dir}/spring-boot-admin-sample-eureka/src/main/resources/applic
 | Enable the Spring Boot Admin backend configuration for Turbine.
 | `true`
 
-| spring.boot.admin.turbine.url
-| URL to the `turbine.stream`. Must be reachable from the admin server.
-|
+| spring.boot.admin.turbine.location
+| ServiceId or URL (without the `/turbine.stream` path) for the Turbine server. Must be reachable from admin server.
+| `"turbine"`
 
 | spring.boot.admin.turbine.clusters
 | List of available Turbine clusters.

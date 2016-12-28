@@ -23,6 +23,6 @@ spring.boot.admin.routes.endpoints: env,metrics,trace,dump,jolokia,info,configpr
 # tag::configuration-ui-turbine[]
 spring.boot.admin.turbine:
   clusters: default
-  url: http://localhost:8989/turbine.stream
+  location: turbine  #<1>
 # end::configuration-ui-turbine[]
 

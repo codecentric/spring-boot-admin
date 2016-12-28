@@ -24,9 +24,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class TurbineProperties {
 
 	/**
-	 * URL to the <code>turbine.stream</code>. Must be reachable from the admin server.
+	 * ServiceId or URL (without the "/turbine.stream") for the Turbine server. Must be reachable
+	 * from admin server.
 	 */
-	private URI url;
+	private String location = "turbine";
 
 	/**
 	 * List of available Turbine clusters.
@@ -55,11 +56,16 @@ public class TurbineProperties {
 		this.enabled = enabled;
 	}
 
-	public URI getUrl() {
-		return url;
+	public void setLocation(String location) {
+		this.location = location;
 	}
 
+	public String getLocation() {
+		return location;
+	}
+
+	@Deprecated
 	public void setUrl(URI url) {
-		this.url = url;
+		this.location = url.toString().replace("/turbine.stream", "");
 	}
 }
