@@ -517,7 +517,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 1.5.0-SNAPSHOT,</span>
-<span id="revdate">27.12.2016</span>
+<span id="revdate">28.12.2016</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -1664,14 +1664,22 @@ account and configure it appropriately.</p>
 </div>
 </li>
 <li>
-<p>Configure the Turbine URL and clusters</p>
+<p>Configure the Turbine server and clusters</p>
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.turbine</span>:
   <span class="key">clusters</span>: <span class="string"><span class="content">default</span></span>
-  <span class="key">url</span>: <span class="string"><span class="content">http://localhost:8989/turbine.stream</span></span></code></pre>
+  <span class="key">location</span>: <span class="string"><span class="content">turbine  </span></span> <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Configures the service with id <code>turbine</code> as Turbine server. URLs are also allowed.</td>
+</tr>
+</table>
 </div>
 </li>
 </ol>
@@ -1697,9 +1705,9 @@ account and configure it appropriately.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.turbine.url</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">URL to the <code>turbine.stream</code>. Must be reachable from the admin server.</p></td>
-<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.turbine.location</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ServiceId or URL (without the <code>/turbine.stream</code> path) for the Turbine server. Must be reachable from admin server.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"turbine"</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.turbine.clusters</p></td>
