@@ -1,9 +1,7 @@
 package de.codecentric.boot.admin.registration;
 
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 
 import java.io.IOException;
 
@@ -41,13 +39,13 @@ public class ApplicationTest {
 		Application a2 = Application.create("foo").withHealthUrl("healthUrl")
 				.withManagementUrl("mgmt").withServiceUrl("svc").build();
 
-		assertThat(a1, is(a2));
-		assertThat(a1.hashCode(), is(a2.hashCode()));
+		assertThat(a1).isEqualTo(a2);
+		assertThat(a1.hashCode()).isEqualTo(a2.hashCode());
 
 		Application a3 = Application.create("foo").withHealthUrl("healthUrl2")
 				.withManagementUrl("mgmt").withServiceUrl("svc").build();
 
-		assertThat(a1, not(is(a3)));
-		assertThat(a2, not(is(a3)));
+		assertThat(a1).isNotEqualTo(a3);
+		assertThat(a2).isNotEqualTo(a3);
 	}
 }
