@@ -96,7 +96,8 @@ module.exports = function ($q) {
   this.read = function (url, mbean) {
     return outer.request(url, {
       type: 'read',
-      mbean: mbean
+      mbean: mbean,
+      config: { ignoreErrors: true }
     });
   };
 
@@ -104,7 +105,8 @@ module.exports = function ($q) {
     return outer.request(url, {
       type: 'read',
       mbean: mbean,
-      attribute: attr
+      attribute: attr,
+      config: { ignoreErrors: true }
     });
   };
 
@@ -119,14 +121,16 @@ module.exports = function ($q) {
 
   this.list = function (url) {
     return outer.request(url, {
-      type: 'list'
+      type: 'list',
+      config: { ignoreErrors: true }
     });
   };
 
   this.search = function (url, mbean) {
     return outer.request(url, {
       type: 'search',
-      mbean: mbean
+      mbean: mbean,
+      config: { ignoreErrors: true }
     });
   };
 };
