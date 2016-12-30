@@ -14,7 +14,7 @@ include::{samples-dir}/spring-boot-admin-sample/src/main/java/de/codecentric/boo
 
 For a complete sample look at https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample/[spring-boot-admin-sample].
 
-NOTE: If you protect the `/api/applications` endpoint don't forget to configure the username and password on your SBA-Client using `spring.boot.admin.username` and `spring.boot.admin.password`.
+NOTE: If you protect the `/api/applications` endpoint don't forget to configure the username and password on your SBA-Client using `spring.boot.admin.client.username` and `spring.boot.admin.instance.password`.
 
 TIP: There are more samples (e.g. using OAuth2) in https://github.com/joshiste/spring-boot-admin-samples[joshiste/spring-boot-admin-samples^].
 
@@ -26,12 +26,12 @@ Submitting the credentials using SBA Client:
 [source,yaml]
 .application.yml
 ----
-spring.boot.admin:
-  url: http://localhost:8080
-  client:
-    metadata:
-      user.name: ${security.user.name}
-      user.password: ${security.user.password}
+spring.boot.admin.client:
+    url: http://localhost:8080
+    instance:
+      metadata:
+        user.name: ${security.user.name}
+        user.password: ${security.user.password}
 ----
 
 Submitting the credentials using Eureka:

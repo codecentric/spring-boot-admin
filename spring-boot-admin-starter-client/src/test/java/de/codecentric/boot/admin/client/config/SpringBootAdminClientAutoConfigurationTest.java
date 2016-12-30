@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Configuration;
 import static org.junit.Assert.assertTrue;
 
 public class SpringBootAdminClientAutoConfigurationTest {
-
     private ConfigurableApplicationContext context;
 
     @After
@@ -32,27 +31,23 @@ public class SpringBootAdminClientAutoConfigurationTest {
 
     @Test
     public void active() {
-        load("spring.boot.admin.url:http://localhost:8081");
+        load("spring.boot.admin.client.url:http://localhost:8081");
         context.getBean(ApplicationRegistrator.class);
     }
 
     @Test
     public void disabled() {
-        load("spring.boot.admin.url:http://localhost:8081", "spring.boot.admin.client.enabled:false");
+        load("spring.boot.admin.client.url:http://localhost:8081", "spring.boot.admin.client.enabled:false");
         assertTrue(context.getBeansOfType(ApplicationRegistrator.class).isEmpty());
     }
 
     private void load(final String... environment) {
         SpringApplication springApplication = new SpringApplication(TestClientApplication.class);
-        springApplication.addInitializers(new ApplicationContextInitializer<ConfigurableApplicationContext>() {
-            @Override
-            public void initialize(ConfigurableApplicationContext applicationContext) {
-                EnvironmentTestUtils.addEnvironment(applicationContext, environment);
-            }
-        });
+        springApplication.addInitializers(
+                (ApplicationContextInitializer<ConfigurableApplicationContext>) applicationContext -> EnvironmentTestUtils
+                        .addEnvironment(applicationContext, environment));
         this.context = springApplication.run("--server.port=0");
     }
-
 
     @Configuration
     @EnableAutoConfiguration

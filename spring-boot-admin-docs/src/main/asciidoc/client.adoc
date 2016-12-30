@@ -68,65 +68,65 @@ TIP: There are plenty of properties to influence the way how the SBA Client regi
 | Enables the Spring Boot Admin Client.
 | `true`
 
-| spring.boot.admin.url
+| spring.boot.admin.client.url
 | Comma separated ordered list of URLs of the Spring Boot Admin server to register at. This triggers the AutoConfiguration. *Mandatory*.
 |
 
-| spring.boot.admin.api-path
+| spring.boot.admin.client.api-path
 | Http-path of registration endpoint at your admin server.
 | `"api/applications"`
 
-| spring.boot.admin.username +
-spring.boot.admin.password
+| spring.boot.admin.client.username +
+spring.boot.admin.client.password
 | Username and password in case the SBA Server api is protected with HTTP Basic authentication.
 |
 
-| spring.boot.admin.period
+| spring.boot.admin.client.period
 | Interval for repeating the registration (in ms).
 | `10.000`
 
-| spring.boot.admin.auto-registration
+| spring.boot.admin.client.auto-registration
 | If set to true the periodic task to register the application is automatically scheduled after the application is ready.
 | `true`
 
-| spring.boot.admin.auto-deregistration
+| spring.boot.admin.client.auto-deregistration
 | Switch to enable auto-deregistration at Spring Boot Admin server when context is closed.
 | `false`
 
-| spring.boot.admin.register-once
-| If set to true the client will only register against one admin server (in order defined by `spring.boot.admin.url`); if that admin server goes down, will automatically register against the next admin server. If false, will register against all admin servers.
+| spring.boot.admin.client.register-once
+| If set to true the client will only register against one admin server (in order defined by `spring.boot.admin.instance.url`); if that admin server goes down, will automatically register against the next admin server. If false, will register against all admin servers.
 | `true`
 
-| spring.boot.admin.client.health-url
-| Client-health-url to register with. Can be overridden in case the reachable URL is different (e.g. Docker). Must be unique in registry.
+| spring.boot.admin.client.instance.health-url
+| Health-url to register with. Can be overridden in case the reachable URL is different (e.g. Docker). Must be unique in registry.
 | Guessed based on management-url and `endpoints.health.id`.
 
-| spring.boot.admin.client.management-base-url
+| spring.boot.admin.client.instance.management-base-url
 | Base url for computing the management-url to register with. The path is inferred at runtime, and appended to the base url.
 | Guessed based on `management.port`, service-url and `server.servlet-path`.
 
-| spring.boot.admin.client.management-url
+| spring.boot.admin.client.instance.management-url
 | Management-url to register with. Can be overridden in case the reachable url is different (e.g. Docker).
 | Guessed based on managment-base-url and `management.context-path`.
 
-| spring.boot.admin.client.service-base-url
+| spring.boot.admin.client.instance.service-base-url
 | Base url for computing the service-url to register with. The path is inferred at runtime, and appended to the base url.
 | Guessed based on hostname, `server.port`.
 
-| spring.boot.admin.client.service-url
-| Client-service-url to register with. Can be overridden in case the reachable url is different (e.g. Docker).
+| spring.boot.admin.client.instance.service-url
+| Service-url to register with. Can be overridden in case the reachable url is different (e.g. Docker).
 | Guessed based on service-base-url and `server.context-path`.
 
-| spring.boot.admin.client.name
+| spring.boot.admin.client.instance.name
 | Name to register with.
 | `${spring.application.name}` if set, `"spring-boot-application"` otherwise.
 
-| spring.boot.admin.client.prefer-ip
+| spring.boot.admin.client.instance.prefer-ip
 | Use the ip-address rather then the hostname in the guessed urls. If `server.address` / `management.address` is set, it get used. Otherwise the IP address returned from `InetAddress.getLocalHost()` gets used.
 | `false`
 
-| spring.boot.admin.client.metadata.*
-| Metadata key-value-pairs to be associated with this instance.
+| spring.boot.admin.client.instance.metadata.*
+| Metadata key-value-pairs to be asscoiated with this instance.
 |
 |===
 

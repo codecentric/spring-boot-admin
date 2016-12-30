@@ -68,7 +68,7 @@ Each application that wants to register has to include the Spring Boot Admin Cli
 [source,yml]
 .application.yml
 ----
-spring.boot.admin.url: http://localhost:8080  #<1>
+spring.boot.admin.client.url: http://localhost:8080  #<1>
 management.security.enabled: false  #<2>
 ----
 <1> The URL of the Spring Boot Admin Server to register at.

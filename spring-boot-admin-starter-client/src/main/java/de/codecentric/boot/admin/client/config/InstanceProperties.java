@@ -20,8 +20,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "spring.boot.admin.client")
-public class AdminClientProperties {
+@ConfigurationProperties(prefix = "spring.boot.admin.client.instance")
+public class InstanceProperties {
     /**
      * Management-url to register with. Inferred at runtime, can be overridden in case the
      * reachable URL is different (e.g. Docker).

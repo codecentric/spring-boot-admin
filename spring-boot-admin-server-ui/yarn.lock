@@ -963,7 +963,7 @@ encoding@^0.1.11:
 
 engine.io-client@1.6.9:
   version "1.6.9"
-  resolved "https://registry.yarnpkg.com/engine.io-client/-/engine.io-client-1.6.9.tgz#1d6ad48048a5083c95096943b29d36efdb212401"
+  resolved "https://registry.yarnpkg.com/engine.io-client/-/engine.io-instance-1.6.9.tgz#1d6ad48048a5083c95096943b29d36efdb212401"
   dependencies:
     component-emitter "1.1.2"
     component-inherit "0.0.3"
@@ -3565,7 +3565,7 @@ socket.io-adapter@0.4.0:
 
 socket.io-client@1.4.6:
   version "1.4.6"
-  resolved "https://registry.yarnpkg.com/socket.io-client/-/socket.io-client-1.4.6.tgz#49b0ba537efd15b8297c84016e642e1c7c752c3d"
+  resolved "https://registry.yarnpkg.com/socket.io-client/-/socket.io-instance-1.4.6.tgz#49b0ba537efd15b8297c84016e642e1c7c752c3d"
   dependencies:
     backo2 "1.0.2"
     component-bind "1.0.0"
@@ -3612,7 +3612,7 @@ socket.io@1.4.7:
 
 sockjs-client@^1.0.3:
   version "1.1.4"
-  resolved "https://registry.yarnpkg.com/sockjs-client/-/sockjs-client-1.1.4.tgz#5babe386b775e4cf14e7520911452654016c8b12"
+  resolved "https://registry.yarnpkg.com/sockjs-client/-/sockjs-instance-1.1.4.tgz#5babe386b775e4cf14e7520911452654016c8b12"
   dependencies:
     debug "^2.6.6"
     eventsource "0.1.6"

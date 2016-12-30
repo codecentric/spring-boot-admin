@@ -15,7 +15,7 @@
  */
 package de.codecentric.boot.admin.client.registration;
 
-import de.codecentric.boot.admin.client.config.AdminProperties;
+import de.codecentric.boot.admin.client.config.ClientProperties;
 
 import java.util.Collections;
 import java.util.Map;
@@ -38,12 +38,14 @@ public class ApplicationRegistrator {
     private static final HttpHeaders HTTP_HEADERS = createHttpHeaders();
     private final AtomicInteger unsuccessfulAttempts = new AtomicInteger(0);
     private final AtomicReference<String> registeredId = new AtomicReference<>();
-    private final AdminProperties admin;
+    private final ClientProperties client;
     private final RestTemplate template;
     private final ApplicationFactory applicationFactory;
 
-    public ApplicationRegistrator(RestTemplate template, AdminProperties admin, ApplicationFactory applicationFactory) {
-        this.admin = admin;
+    public ApplicationRegistrator(RestTemplate template,
+                                  ClientProperties client,
+                                  ApplicationFactory applicationFactory) {
+        this.client = client;
         this.template = template;
         this.applicationFactory = applicationFactory;
     }
@@ -63,7 +65,7 @@ public class ApplicationRegistrator {
     public boolean register() {
         boolean isRegistrationSuccessful = false;
         Application self = createApplication();
-        for (String adminUrl : admin.getAdminUrl()) {
+        for (String adminUrl : client.getAdminUrl()) {
             try {
                 @SuppressWarnings("rawtypes") ResponseEntity<Map> response = template.postForEntity(adminUrl,
                         new HttpEntity<>(self, HTTP_HEADERS), Map.class);
@@ -76,7 +78,7 @@ public class ApplicationRegistrator {
                     }
 
                     isRegistrationSuccessful = true;
-                    if (admin.isRegisterOnce()) {
+                    if (client.isRegisterOnce()) {
                         break;
                     }
                 } else {
@@ -93,10 +95,10 @@ public class ApplicationRegistrator {
                 if (unsuccessfulAttempts.get() == 0) {
                     LOGGER.warn(
                             "Failed to register application as {} at spring-boot-admin ({}): {}. Further attempts are logged on DEBUG level",
-                            self, admin.getAdminUrl(), ex.getMessage());
+                            self, client.getAdminUrl(), ex.getMessage());
                 } else {
                     LOGGER.debug("Failed to register application as {} at spring-boot-admin ({}): {}", self,
-                            admin.getAdminUrl(), ex.getMessage());
+                            client.getAdminUrl(), ex.getMessage());
                 }
             }
         }
@@ -111,11 +113,11 @@ public class ApplicationRegistrator {
     public void deregister() {
         String id = registeredId.get();
         if (id != null) {
-            for (String adminUrl : admin.getAdminUrl()) {
+            for (String adminUrl : client.getAdminUrl()) {
                 try {
                     template.delete(adminUrl + "/" + id);
                     registeredId.compareAndSet(id, null);
-                    if (admin.isRegisterOnce()) {
+                    if (client.isRegisterOnce()) {
                         break;
                     }
                 } catch (Exception ex) {
@@ -127,10 +129,8 @@ public class ApplicationRegistrator {
     }
 
     /**
-     * Returns the id of this client as given by the admin server.
+     * @return the id of this client as given by the admin server.
      * Returns null if the client has not registered against the admin server yet.
-     *
-     * @return
      */
     public String getRegisteredId() {
         return registeredId.get();

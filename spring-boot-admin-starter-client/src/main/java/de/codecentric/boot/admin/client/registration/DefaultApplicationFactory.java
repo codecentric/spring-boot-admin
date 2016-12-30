@@ -1,6 +1,6 @@
 package de.codecentric.boot.admin.client.registration;
 
-import de.codecentric.boot.admin.client.config.AdminClientProperties;
+import de.codecentric.boot.admin.client.config.InstanceProperties;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -23,21 +23,20 @@ import org.springframework.web.util.UriComponentsBuilder;
  * @author Rene Felgenträger
  */
 public class DefaultApplicationFactory implements ApplicationFactory {
-
-    private AdminClientProperties client;
+    private InstanceProperties instance;
     private ServerProperties server;
     private ManagementServerProperties management;
     private Integer localServerPort;
     private Integer localManagementPort;
-    private final ServletContext servletContext;
+    private ServletContext servletContext;
     private String healthEndpointPath;
 
-    public DefaultApplicationFactory(AdminClientProperties client,
+    public DefaultApplicationFactory(InstanceProperties instance,
                                      ManagementServerProperties management,
                                      ServerProperties server,
                                      ServletContext servletContext,
                                      String healthEndpointPath) {
-        this.client = client;
+        this.instance = instance;
         this.management = management;
         this.server = server;
         this.servletContext = servletContext;
@@ -55,15 +54,15 @@ public class DefaultApplicationFactory implements ApplicationFactory {
     }
 
     protected String getName() {
-        return client.getName();
+        return instance.getName();
     }
 
     protected String getServiceUrl() {
-        if (client.getServiceUrl() != null) {
-            return UriComponentsBuilder.fromUriString(client.getServiceUrl()).toUriString();
+        if (instance.getServiceUrl() != null) {
+            return UriComponentsBuilder.fromUriString(instance.getServiceUrl()).toUriString();
         }
 
-        String baseUrl = client.getServiceBaseUrl();
+        String baseUrl = instance.getServiceBaseUrl();
         if (getLocalServerPort() == null && StringUtils.isEmpty(baseUrl)) {
             throw new IllegalStateException("service-base-url must be set when deployed to servlet-container");
         }
@@ -82,11 +81,11 @@ public class DefaultApplicationFactory implements ApplicationFactory {
     }
 
     protected String getManagementUrl() {
-        if (client.getManagementUrl() != null) {
-            return client.getManagementUrl();
+        if (instance.getManagementUrl() != null) {
+            return instance.getManagementUrl();
         }
 
-        String baseUrl = client.getManagementBaseUrl();
+        String baseUrl = instance.getManagementBaseUrl();
 
         UriComponentsBuilder builder;
         if (!StringUtils.isEmpty(baseUrl)) {
@@ -109,8 +108,8 @@ public class DefaultApplicationFactory implements ApplicationFactory {
     }
 
     protected String getHealthUrl() {
-        if (client.getHealthUrl() != null) {
-            return client.getHealthUrl();
+        if (instance.getHealthUrl() != null) {
+            return instance.getHealthUrl();
         }
         return UriComponentsBuilder.fromHttpUrl(getManagementUrl())
                                    .path("/")
@@ -120,7 +119,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
     }
 
     protected Map<String, String> getMetadata() {
-        return client.getMetadata();
+        return instance.getMetadata();
     }
 
     protected String getServiceHost() {
@@ -164,7 +163,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
     }
 
     protected String getHost(InetAddress address) {
-        return client.isPreferIp() ? address.getHostAddress() : address.getCanonicalHostName();
+        return instance.isPreferIp() ? address.getHostAddress() : address.getCanonicalHostName();
     }
 
     @EventListener

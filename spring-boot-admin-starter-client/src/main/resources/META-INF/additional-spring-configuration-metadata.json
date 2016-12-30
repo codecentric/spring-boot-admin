@@ -4,7 +4,7 @@
   {
     "name": "spring.boot.admin.client.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable Spring Admin Client.",
+    "description": "Enable Spring Boot Admin Client.",
     "defaultValue": "true"
   }
 ]}

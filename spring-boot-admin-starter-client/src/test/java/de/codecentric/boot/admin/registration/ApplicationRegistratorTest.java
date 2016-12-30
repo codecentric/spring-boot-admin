@@ -37,14 +37,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import de.codecentric.boot.admin.client.config.AdminProperties;
+import de.codecentric.boot.admin.client.config.ClientProperties;
 import de.codecentric.boot.admin.client.registration.Application;
 import de.codecentric.boot.admin.client.registration.ApplicationFactory;
 import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
 
 public class ApplicationRegistratorTest {
 
-	private AdminProperties adminProps;
+	private ClientProperties client;
 	private ApplicationRegistrator registrator;
 	private RestTemplate restTemplate;
 	private HttpHeaders headers;
@@ -53,8 +53,8 @@ public class ApplicationRegistratorTest {
 	public void setup() {
 		restTemplate = mock(RestTemplate.class);
 
-		adminProps = new AdminProperties();
-		adminProps.setUrl(new String[] { "http://sba:8080", "http://sba2:8080" });
+		client = new ClientProperties();
+		client.setUrl(new String[] { "http://sba:8080", "http://sba2:8080" });
 
 		ApplicationFactory factory = mock(ApplicationFactory.class);
 		when(factory.createApplication()).thenReturn(Application.create("AppName")
@@ -63,7 +63,7 @@ public class ApplicationRegistratorTest {
 			.withServiceUrl("http://localhost:8080")
 		.build());
 
-		registrator = new ApplicationRegistrator(restTemplate, adminProps, factory);
+		registrator = new ApplicationRegistrator(restTemplate, client, factory);
 
 		headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -127,7 +127,7 @@ public class ApplicationRegistratorTest {
 	@SuppressWarnings("rawtypes")
 	@Test
 	public void register_multiple() {
-		adminProps.setRegisterOnce(false);
+		client.setRegisterOnce(false);
 
 		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class)))
 				.thenReturn(new ResponseEntity<Map>(Collections.singletonMap("id", "-id-"),
@@ -156,7 +156,7 @@ public class ApplicationRegistratorTest {
 	@SuppressWarnings("rawtypes")
 	@Test
 	public void register_multiple_one_failure() {
-		adminProps.setRegisterOnce(false);
+		client.setRegisterOnce(false);
 
 		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class)))
 				.thenReturn(new ResponseEntity<Map>(Collections.singletonMap("id", "-id-"),
@@ -185,7 +185,7 @@ public class ApplicationRegistratorTest {
 
 	@Test
 	public void register_multiple_all_failures() {
-		adminProps.setRegisterOnce(false);
+		client.setRegisterOnce(false);
 
 		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class)))
 				.thenThrow(new RestClientException("Error"))

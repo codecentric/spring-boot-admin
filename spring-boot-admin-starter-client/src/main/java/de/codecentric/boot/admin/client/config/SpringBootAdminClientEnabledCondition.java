@@ -25,9 +25,9 @@ import org.springframework.util.StringUtils;
 
 /**
  * This condition checks if the client should be enabled. Two properties are checked:
- * spring.boot.admin.client.enabled and spring.boot.admin.url. The following table shows under which
- * conditions the client is active.
- *
+ * spring.boot.admin.client.enabled and spring.boot.admin.url. The following table shows under which conditions the
+ * client is active.
+ * <p>
  * <pre>
  *           | enabled: false | enabled: true (default) |
  * --------- | -------------- | ----------------------- |
@@ -38,31 +38,29 @@ import org.springframework.util.StringUtils;
  * </pre>
  */
 public class SpringBootAdminClientEnabledCondition extends SpringBootCondition {
-	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata annotatedTypeMetadata) {
+    @Override
+    public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata annotatedTypeMetadata) {
 
-		if (!isEnabled(context.getEnvironment())) {
-			return ConditionOutcome.noMatch(
-					"Spring Boot Client is disabled, because 'spring.boot.admin.client.enabled' is false.");
-		}
+        if (!isEnabled(context.getEnvironment())) {
+            return ConditionOutcome.noMatch(
+                    "Spring Boot Client is disabled, because 'spring.boot.admin.client.enabled' is false.");
+        }
 
-		if (isUrlEmpty(context.getEnvironment())) {
-			return ConditionOutcome.noMatch(
-					"Spring Boot Client is disabled, because 'spring.boot.admin.url' is empty.");
-		}
+        if (isUrlEmpty(context.getEnvironment())) {
+            return ConditionOutcome.noMatch(
+                    "Spring Boot Client is disabled, because 'spring.boot.admin.url' is empty.");
+        }
 
-		return ConditionOutcome.match();
-	}
+        return ConditionOutcome.match();
+    }
 
-	private boolean isEnabled(Environment env) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(env,
-				"spring.boot.admin.client.");
-		return resolver.getProperty("enabled", Boolean.class, Boolean.TRUE);
-	}
+    private boolean isEnabled(Environment env) {
+        RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(env, "spring.boot.admin.client.");
+        return resolver.getProperty("enabled", Boolean.class, Boolean.TRUE);
+    }
 
-	private boolean isUrlEmpty(Environment env) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(env, "spring.boot.admin.");
-		return StringUtils.isEmpty(resolver.getProperty("url", ""));
-	}
+    private boolean isUrlEmpty(Environment env) {
+        RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(env, "spring.boot.admin.client.");
+        return StringUtils.isEmpty(resolver.getProperty("url", ""));
+    }
 }

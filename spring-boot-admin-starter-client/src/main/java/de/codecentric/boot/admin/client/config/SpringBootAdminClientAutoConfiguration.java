@@ -37,31 +37,31 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 @Configuration
-@EnableConfigurationProperties({AdminProperties.class, AdminClientProperties.class})
+@EnableConfigurationProperties({ClientProperties.class, InstanceProperties.class})
 @Conditional(SpringBootAdminClientEnabledCondition.class)
 public class SpringBootAdminClientAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ApplicationRegistrator registrator(AdminProperties admin,
+    public ApplicationRegistrator registrator(ClientProperties client,
                                               ApplicationFactory applicationFactory,
                                               RestTemplateBuilder restTemplBuilder) {
         RestTemplateBuilder builder = restTemplBuilder.messageConverters(new MappingJackson2HttpMessageConverter())
                                                       .requestFactory(SimpleClientHttpRequestFactory.class);
-        if (admin.getUsername() != null) {
-            builder = builder.basicAuthorization(admin.getUsername(), admin.getPassword());
+        if (client.getUsername() != null) {
+            builder = builder.basicAuthorization(client.getUsername(), client.getPassword());
         }
-        return new ApplicationRegistrator(builder.build(), admin, applicationFactory);
+        return new ApplicationRegistrator(builder.build(), client, applicationFactory);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ApplicationFactory applicationFactory(AdminClientProperties client,
+    public ApplicationFactory applicationFactory(InstanceProperties instance,
                                                  ManagementServerProperties management,
                                                  ServerProperties server,
                                                  @Value("${endpoints.health.path:/${endpoints.health.id:health}}") String healthEndpointPath,
                                                  ServletContext servletContext) {
-        return new DefaultApplicationFactory(client, management, server, servletContext, healthEndpointPath);
+        return new DefaultApplicationFactory(instance, management, server, servletContext, healthEndpointPath);
     }
 
     @Bean
@@ -76,13 +76,13 @@ public class SpringBootAdminClientAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public RegistrationApplicationListener registrationListener(AdminProperties admin,
+    public RegistrationApplicationListener registrationListener(ClientProperties client,
                                                                 ApplicationRegistrator registrator) {
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator,
                 registrationTaskScheduler());
-        listener.setAutoRegister(admin.isAutoRegistration());
-        listener.setAutoDeregister(admin.isAutoDeregistration());
-        listener.setRegisterPeriod(admin.getPeriod());
+        listener.setAutoRegister(client.isAutoRegistration());
+        listener.setAutoDeregister(client.isAutoDeregistration());
+        listener.setRegisterPeriod(client.getPeriod());
         return listener;
     }
 }

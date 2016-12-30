@@ -2907,7 +2907,7 @@ sntp@1.x.x:
 
 sockjs-client@^1.0.3:
   version "1.1.4"
-  resolved "https://registry.yarnpkg.com/sockjs-client/-/sockjs-client-1.1.4.tgz#5babe386b775e4cf14e7520911452654016c8b12"
+  resolved "https://registry.yarnpkg.com/sockjs-client/-/sockjs-instance-1.1.4.tgz#5babe386b775e4cf14e7520911452654016c8b12"
   dependencies:
     debug "^2.6.6"
     eventsource "0.1.6"
