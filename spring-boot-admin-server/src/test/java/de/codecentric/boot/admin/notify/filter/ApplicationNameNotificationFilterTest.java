@@ -1,7 +1,6 @@
 package de.codecentric.boot.admin.notify.filter;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.concurrent.TimeUnit;
 
@@ -18,11 +17,11 @@ public class ApplicationNameNotificationFilterTest {
 
 		ClientApplicationRegisteredEvent fooEvent = new ClientApplicationRegisteredEvent(
 				Application.create("foo").withHealthUrl("http://health").build());
-		assertThat(filter.filter(fooEvent), is(true));
+		assertThat(filter.filter(fooEvent)).isTrue();
 
 		ClientApplicationRegisteredEvent barEvent = new ClientApplicationRegisteredEvent(
 				Application.create("bar").withHealthUrl("http://health").build());
-		assertThat(filter.filter(barEvent), is(false));
+		assertThat(filter.filter(barEvent)).isFalse();
 	}
 
 	@Test
@@ -33,11 +32,11 @@ public class ApplicationNameNotificationFilterTest {
 		ExpiringNotificationFilter filterLong = new ApplicationNameNotificationFilter("foo",
 				System.currentTimeMillis() + 500L);
 
-		assertThat(filterForever.isExpired(), is(false));
-		assertThat(filterLong.isExpired(), is(false));
-		assertThat(filterExpired.isExpired(), is(true));
+		assertThat(filterForever.isExpired()).isFalse();
+		assertThat(filterLong.isExpired()).isFalse();
+		assertThat(filterExpired.isExpired()).isTrue();
 
 		TimeUnit.MILLISECONDS.sleep(501);
-		assertThat(filterLong.isExpired(), is(true));
+		assertThat(filterLong.isExpired()).isTrue();
 	}
 }

@@ -15,9 +15,7 @@
  */
 package de.codecentric.boot.admin.event;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -38,8 +36,8 @@ public class ClientApplicationEventTest {
 				Application.create("test").withHealthUrl("http://health").build());
 		ClientApplicationEvent event2 = cloneBySerialization(event1);
 
-		assertThat(event1.hashCode(), is(event2.hashCode()));
-		assertThat(event1, is(event2));
+		assertThat(event1.hashCode()).isEqualTo(event2.hashCode());
+		assertThat(event1).isEqualTo(event2);
 	}
 
 	@Test
@@ -49,7 +47,7 @@ public class ClientApplicationEventTest {
 		ClientApplicationEvent event2 = new ClientApplicationDeregisteredEvent(
 				Application.create("test").withHealthUrl("http://health").build());
 
-		assertThat(event1, not(is(event2)));
+		assertThat(event1).isNotEqualTo(event2);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -8,7 +8,6 @@ import de.codecentric.boot.admin.model.Application;
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration.RestTemplateConfiguration;
 import org.springframework.cloud.client.ServiceInstance;
@@ -20,12 +19,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import com.netflix.discovery.EurekaClient;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DiscoveryClientConfigurationTest {
-
     private AnnotationConfigWebApplicationContext context;
 
     @After
@@ -38,22 +34,19 @@ public class DiscoveryClientConfigurationTest {
     @Test
     public void defaultServiceInstanceConverter() {
         load(SimpleDiscoveryClientAutoConfiguration.class);
-        assertThat(context.getBean(ServiceInstanceConverter.class),
-                is(instanceOf(DefaultServiceInstanceConverter.class)));
+        assertThat(context.getBean(ServiceInstanceConverter.class)).isInstanceOf(DefaultServiceInstanceConverter.class);
     }
 
     @Test
     public void eurekaServiceInstanceConverter() {
         load(EurekaClientConfig.class);
-        assertThat(context.getBean(ServiceInstanceConverter.class),
-                is(instanceOf(EurekaServiceInstanceConverter.class)));
+        assertThat(context.getBean(ServiceInstanceConverter.class)).isInstanceOf(EurekaServiceInstanceConverter.class);
     }
 
     @Test
     public void customServiceInstanceConverter() {
         load(SimpleDiscoveryClientAutoConfiguration.class, TestCustomServiceInstanceConverterConfig.class);
-        assertThat(context.getBean(ServiceInstanceConverter.class),
-                is(instanceOf(CustomServiceInstanceConverter.class)));
+        assertThat(context.getBean(ServiceInstanceConverter.class)).isInstanceOf(CustomServiceInstanceConverter.class);
     }
 
     @Configuration
@@ -89,10 +82,8 @@ public class DiscoveryClientConfigurationTest {
         for (Class<?> config : configs) {
             applicationContext.register(config);
         }
-
-        applicationContext.register(PropertyPlaceholderAutoConfiguration.class);
-        applicationContext.register(RestTemplateConfiguration.class);
         applicationContext.register(ServerPropertiesAutoConfiguration.class);
+        applicationContext.register(RestTemplateConfiguration.class);
         applicationContext.register(AdminServerCoreConfiguration.class);
         applicationContext.register(AdminServerWebConfiguration.class);
         applicationContext.register(UtilAutoConfiguration.class);

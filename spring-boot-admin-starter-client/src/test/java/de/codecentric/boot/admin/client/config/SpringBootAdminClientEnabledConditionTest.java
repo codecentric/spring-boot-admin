@@ -1,5 +1,8 @@
 package de.codecentric.boot.admin.client.config;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.BDDMockito;
@@ -13,46 +16,50 @@ import static org.mockito.Mockito.mock;
 
 public class SpringBootAdminClientEnabledConditionTest {
 
-    private SpringBootAdminClientEnabledCondition condition;
-    private AnnotatedTypeMetadata annotatedTypeMetadata;
-    private ConditionContext conditionContext;
+	private SpringBootAdminClientEnabledCondition condition;
+	private AnnotatedTypeMetadata annotatedTypeMetadata;
+	private ConditionContext conditionContext;
 
-    @Before
-    public void setUp() {
-        condition = new SpringBootAdminClientEnabledCondition();
-        annotatedTypeMetadata = mock(AnnotatedTypeMetadata.class);
-        conditionContext = mock(ConditionContext.class);
-    }
+	@Before
+	public void setUp() {
+		condition = new SpringBootAdminClientEnabledCondition();
+		annotatedTypeMetadata = mock(AnnotatedTypeMetadata.class);
+		conditionContext = mock(ConditionContext.class);
+	}
 
-    @Test
-    public void test_emptyUrl_enabled() {
-        MockEnvironment environment = new MockEnvironment();
-        BDDMockito.given(conditionContext.getEnvironment()).willReturn(environment);
-        assertFalse(condition.getMatchOutcome(conditionContext, annotatedTypeMetadata).isMatch());
-    }
+	@Test
+	public void test_emptyUrl_enabled() {
+		MockEnvironment environment = new MockEnvironment();
+		BDDMockito.given(conditionContext.getEnvironment()).willReturn(environment);
+		assertThat(condition.getMatchOutcome(conditionContext, annotatedTypeMetadata).isMatch())
+				.isFalse();
+	}
 
-    @Test
-    public void test_emptyUrl_disabled() {
-        MockEnvironment environment = new MockEnvironment();
-        environment.setProperty("spring.boot.admin.client.enabled", "false");
-        BDDMockito.given(conditionContext.getEnvironment()).willReturn(environment);
-        assertFalse(condition.getMatchOutcome(conditionContext, annotatedTypeMetadata).isMatch());
-    }
+	@Test
+	public void test_emptyUrl_disabled() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.boot.admin.client.enabled", "false");
+		BDDMockito.given(conditionContext.getEnvironment()).willReturn(environment);
+		assertThat(condition.getMatchOutcome(conditionContext, annotatedTypeMetadata).isMatch())
+				.isFalse();
+	}
 
-    @Test
-    public void test_nonEmptyUrl_disabled() {
-        MockEnvironment environment = new MockEnvironment();
-        environment.setProperty("spring.boot.admin.client.enabled", "false");
-        environment.setProperty("spring.boot.admin.client.url", "http://localhost:8080/management");
-        BDDMockito.given(conditionContext.getEnvironment()).willReturn(environment);
-        assertFalse(condition.getMatchOutcome(conditionContext, annotatedTypeMetadata).isMatch());
-    }
+	@Test
+	public void test_nonEmptyUrl_disabled() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.boot.admin.client.enabled", "false");
+		environment.setProperty("spring.boot.admin.client.url", "http://localhost:8080/management");
+		BDDMockito.given(conditionContext.getEnvironment()).willReturn(environment);
+		assertThat(condition.getMatchOutcome(conditionContext, annotatedTypeMetadata).isMatch())
+				.isFalse();
+	}
 
-    @Test
-    public void test_nonEmptyUrl_enabled() {
-        MockEnvironment environment = new MockEnvironment();
-        environment.setProperty("spring.boot.admin.client.url", "http://localhost:8080/management");
-        BDDMockito.given(conditionContext.getEnvironment()).willReturn(environment);
-        assertTrue(condition.getMatchOutcome(conditionContext, annotatedTypeMetadata).isMatch());
-    }
+	@Test
+	public void test_nonEmptyUrl_enabled() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.boot.admin.client.url", "http://localhost:8080/management");
+		BDDMockito.given(conditionContext.getEnvironment()).willReturn(environment);
+		assertThat(condition.getMatchOutcome(conditionContext, annotatedTypeMetadata).isMatch())
+				.isTrue();
+	}
 }

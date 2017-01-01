@@ -1,9 +1,6 @@
 package de.codecentric.boot.admin.notify.filter;
 
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.not;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
@@ -30,16 +27,14 @@ public class FilteringNotifierTest {
 		String id1 = notifier.addFilter(new ApplicationNameNotificationFilter("foo", 0L));
 		String id2 = notifier.addFilter(new ApplicationNameNotificationFilter("bar", -1L));
 
-		assertThat(notifier.getNotificationFilters(), hasKey(id1));
-		assertThat(notifier.getNotificationFilters(), hasKey(id2));
+		assertThat(notifier.getNotificationFilters()).containsKey(id1).containsKey(id2);
 
 		notifier.notify(EVENT);
 
-		assertThat(notifier.getNotificationFilters(), not(hasKey(id1)));
-		assertThat(notifier.getNotificationFilters(), hasKey(id2));
+		assertThat(notifier.getNotificationFilters()).doesNotContainKey(id1).containsKey(id2);
 
 		notifier.removeFilter(id2);
-		assertThat(notifier.getNotificationFilters(), not(hasKey(id2)));
+		assertThat(notifier.getNotificationFilters()).doesNotContainKey(id2);
 	}
 
 	@Test
@@ -56,11 +51,11 @@ public class FilteringNotifierTest {
 
 		notifier.notify(EVENT);
 
-		assertThat(delegate.getEvents(), not(hasItem(EVENT)));
+		assertThat(delegate.getEvents()).doesNotContain(EVENT);
 
 		notifier.removeFilter(idTrue);
 		notifier.notify(EVENT);
 
-		assertThat(delegate.getEvents(), hasItem(EVENT));
+		assertThat(delegate.getEvents()).contains(EVENT);
 	}
 }

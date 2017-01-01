@@ -15,9 +15,7 @@
  */
 package de.codecentric.boot.admin.registration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
@@ -57,11 +55,10 @@ public class ApplicationRegistratorTest {
 		client.setUrl(new String[] { "http://sba:8080", "http://sba2:8080" });
 
 		ApplicationFactory factory = mock(ApplicationFactory.class);
-		when(factory.createApplication()).thenReturn(Application.create("AppName")
-			.withManagementUrl("http://localhost:8080/mgmt")
-			.withHealthUrl("http://localhost:8080/health")
-			.withServiceUrl("http://localhost:8080")
-		.build());
+		when(factory.createApplication()).thenReturn(
+				Application.create("AppName").withManagementUrl("http://localhost:8080/mgmt")
+						.withHealthUrl("http://localhost:8080/health")
+						.withServiceUrl("http://localhost:8080").build());
 
 		registrator = new ApplicationRegistrator(restTemplate, client, factory);
 
@@ -74,18 +71,17 @@ public class ApplicationRegistratorTest {
 	@Test
 	public void register_successful() {
 		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class)))
-				.thenReturn(new ResponseEntity<Map>(Collections.singletonMap("id", "-id-"),
-						HttpStatus.CREATED));
+				.thenReturn(new ResponseEntity<>(Collections.singletonMap("id", "-id-"),
+                        HttpStatus.CREATED));
 
-		assertTrue(registrator.register());
-		assertEquals("-id-", registrator.getRegisteredId());
-		verify(restTemplate)
-				.postForEntity("http://sba:8080/api/applications",
-						new HttpEntity<>(Application.create("AppName")
-								.withHealthUrl("http://localhost:8080/health")
-								.withManagementUrl("http://localhost:8080/mgmt")
-								.withServiceUrl("http://localhost:8080").build(), headers),
-				Map.class);
+		assertThat(registrator.register()).isTrue();
+
+		Application applicationRef = Application.create("AppName")
+				.withHealthUrl("http://localhost:8080/health")
+				.withManagementUrl("http://localhost:8080/mgmt")
+				.withServiceUrl("http://localhost:8080").build();
+		verify(restTemplate).postForEntity("http://sba:8080/api/applications",
+				new HttpEntity<>(applicationRef, headers), Map.class);
 	}
 
 	@Test
@@ -93,8 +89,7 @@ public class ApplicationRegistratorTest {
 		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class),
 				eq(Application.class))).thenThrow(new RestClientException("Error"));
 
-		assertFalse(registrator.register());
-		assertEquals(null, registrator.getRegisteredId());
+		assertThat(registrator.register()).isFalse();
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -103,23 +98,22 @@ public class ApplicationRegistratorTest {
 		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class),
 				eq(Application.class))).thenThrow(new RestClientException("Error"));
 		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class)))
-				.thenReturn(new ResponseEntity<Map>(Collections.singletonMap("id", "-id-"),
-						HttpStatus.CREATED));
+				.thenReturn(new ResponseEntity<>(Collections.singletonMap("id", "-id-"),
+                        HttpStatus.CREATED));
 
-		assertTrue(registrator.register());
-		assertEquals("-id-", registrator.getRegisteredId());
+		assertThat(registrator.register()).isTrue();
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Test
 	public void deregister() {
 		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class)))
-				.thenReturn(new ResponseEntity<Map>(Collections.singletonMap("id", "-id-"),
-						HttpStatus.CREATED));
+				.thenReturn(new ResponseEntity<>(Collections.singletonMap("id", "-id-"),
+                        HttpStatus.CREATED));
 		registrator.register();
-		assertEquals("-id-", registrator.getRegisteredId());
+		assertThat(registrator.getRegisteredId()).isEqualTo("-id-");
 		registrator.deregister();
-		assertEquals(null, registrator.getRegisteredId());
+		assertThat(registrator.getRegisteredId()).isNull();
 
 		verify(restTemplate).delete("http://sba:8080/api/applications/-id-");
 	}
@@ -130,27 +124,19 @@ public class ApplicationRegistratorTest {
 		client.setRegisterOnce(false);
 
 		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class)))
-				.thenReturn(new ResponseEntity<Map>(Collections.singletonMap("id", "-id-"),
-						HttpStatus.CREATED));
+				.thenReturn(new ResponseEntity<>(Collections.singletonMap("id", "-id-"),
+                        HttpStatus.CREATED));
 
-		assertTrue(registrator.register());
-		assertEquals("-id-", registrator.getRegisteredId());
+		assertThat(registrator.register()).isTrue();
 
-		verify(restTemplate)
-				.postForEntity("http://sba:8080/api/applications",
-						new HttpEntity<>(Application.create("AppName")
-								.withHealthUrl("http://localhost:8080/health")
-								.withManagementUrl("http://localhost:8080/mgmt")
-								.withServiceUrl("http://localhost:8080").build(), headers),
-						Map.class);
-
-		verify(restTemplate)
-				.postForEntity("http://sba2:8080/api/applications",
-						new HttpEntity<>(Application.create("AppName")
-								.withHealthUrl("http://localhost:8080/health")
-								.withManagementUrl("http://localhost:8080/mgmt")
-								.withServiceUrl("http://localhost:8080").build(), headers),
-						Map.class);
+		Application applicationRef = Application.create("AppName")
+				.withHealthUrl("http://localhost:8080/health")
+				.withManagementUrl("http://localhost:8080/mgmt")
+				.withServiceUrl("http://localhost:8080").build();
+		verify(restTemplate).postForEntity("http://sba:8080/api/applications",
+				new HttpEntity<>(applicationRef, headers), Map.class);
+		verify(restTemplate).postForEntity("http://sba2:8080/api/applications",
+				new HttpEntity<>(applicationRef, headers), Map.class);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -159,28 +145,20 @@ public class ApplicationRegistratorTest {
 		client.setRegisterOnce(false);
 
 		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class)))
-				.thenReturn(new ResponseEntity<Map>(Collections.singletonMap("id", "-id-"),
-						HttpStatus.CREATED))
+				.thenReturn(new ResponseEntity<>(Collections.singletonMap("id", "-id-"),
+                        HttpStatus.CREATED))
 				.thenThrow(new RestClientException("Error"));
 
-		assertTrue(registrator.register());
-		assertEquals("-id-", registrator.getRegisteredId());
+		assertThat(registrator.register()).isTrue();
 
-		verify(restTemplate)
-				.postForEntity("http://sba:8080/api/applications",
-						new HttpEntity<>(Application.create("AppName")
-								.withHealthUrl("http://localhost:8080/health")
-								.withManagementUrl("http://localhost:8080/mgmt")
-								.withServiceUrl("http://localhost:8080").build(), headers),
-						Map.class);
-
-		verify(restTemplate)
-				.postForEntity("http://sba2:8080/api/applications",
-						new HttpEntity<>(Application.create("AppName")
-								.withHealthUrl("http://localhost:8080/health")
-								.withManagementUrl("http://localhost:8080/mgmt")
-								.withServiceUrl("http://localhost:8080").build(), headers),
-						Map.class);
+		Application applicationRef = Application.create("AppName")
+				.withHealthUrl("http://localhost:8080/health")
+				.withManagementUrl("http://localhost:8080/mgmt")
+				.withServiceUrl("http://localhost:8080").build();
+		verify(restTemplate).postForEntity("http://sba:8080/api/applications",
+				new HttpEntity<>(applicationRef, headers), Map.class);
+		verify(restTemplate).postForEntity("http://sba2:8080/api/applications",
+				new HttpEntity<>(applicationRef, headers), Map.class);
 	}
 
 	@Test
@@ -188,9 +166,8 @@ public class ApplicationRegistratorTest {
 		client.setRegisterOnce(false);
 
 		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class)))
-				.thenThrow(new RestClientException("Error"))
 				.thenThrow(new RestClientException("Error"));
 
-		assertFalse(registrator.register());
+		assertThat(registrator.register()).isFalse();
 	}
 }

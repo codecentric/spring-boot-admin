@@ -7,8 +7,7 @@
     "watch:js": "webpack -d --watch",
     "dev-server": "webpack-dev-server --port 9090"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "clean-webpack-plugin": "0.1.14",
     "copy-webpack-plugin": "4.0.0",

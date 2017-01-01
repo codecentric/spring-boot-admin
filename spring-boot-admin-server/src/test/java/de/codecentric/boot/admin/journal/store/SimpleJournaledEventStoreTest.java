@@ -15,11 +15,9 @@
  */
 package de.codecentric.boot.admin.journal.store;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.junit.Test;
@@ -44,8 +42,7 @@ public class SimpleJournaledEventStoreTest {
 			store.store(event);
 		}
 
-		assertThat(store.findAll(), is(
-				(Collection<ClientApplicationEvent>) Arrays.asList(events.get(1), events.get(0))));
+		assertThat(store.findAll()).containsExactly(events.get(1), events.get(0));
 	}
 
 	@Test
@@ -64,8 +61,7 @@ public class SimpleJournaledEventStoreTest {
 			store.store(event);
 		}
 
-		assertThat(store.findAll(), is(
-				(Collection<ClientApplicationEvent>) Arrays.asList(events.get(2), events.get(1))));
+		assertThat(store.findAll()).containsExactly(events.get(2), events.get(1));
 	}
 
 }

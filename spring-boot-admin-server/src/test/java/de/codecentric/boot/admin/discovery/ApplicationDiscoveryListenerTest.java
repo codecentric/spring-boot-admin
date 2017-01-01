@@ -17,13 +17,13 @@ package de.codecentric.boot.admin.discovery;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
-import static org.junit.Assert.assertEquals;
+import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
@@ -57,88 +57,78 @@ public class ApplicationDiscoveryListenerTest {
 
 	@Test
 	public void test_ignore() {
-		when(discovery.getServices()).thenReturn(Collections.singletonList("service"));
-		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
-				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
+		when(discovery.getServices()).thenReturn(singletonList("service"));
+		when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("service", "localhost", 80, false)));
 
 		listener.setIgnoredServices(singleton("service"));
 		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
-		assertEquals(0, registry.getApplications().size());
+		assertThat(registry.getApplications()).isEmpty();
 	}
 
 	@Test
 	public void test_matching() {
-		when(discovery.getServices()).thenReturn(Collections.singletonList("service"));
-		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
-				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
+		when(discovery.getServices()).thenReturn(singletonList("service"));
+		when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("service", "localhost", 80, false)));
 
 		listener.setServices(singleton("notService"));
 		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
-		assertEquals(0, registry.getApplications().size());
+		assertThat(registry.getApplications()).isEmpty();
 	}
 
 	@Test
 	public void test_ignore_pattern() {
 		when(discovery.getServices()).thenReturn(asList("service", "rabbit-1", "rabbit-2"));
-		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
-				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
+		when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("service", "localhost", 80, false)));
 
 		listener.setIgnoredServices(singleton("rabbit-*"));
 		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
 		Collection<Application> applications = registry.getApplications();
-		assertEquals(1, applications.size());
-		assertEquals("service", applications.iterator().next().getName());
+		assertThat(applications).extracting(Application::getName).containsOnly("service");
 	}
 
 	@Test
 	public void test_matching_pattern() {
 		when(discovery.getServices()).thenReturn(asList("service", "rabbit-1", "rabbit-2"));
-		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
-				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
+		when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("service", "localhost", 80, false)));
 
 		listener.setServices(singleton("ser*"));
 		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
 		Collection<Application> applications = registry.getApplications();
-		assertEquals(1, applications.size());
-		assertEquals("service", applications.iterator().next().getName());
+		assertThat(applications).extracting(Application::getName).containsOnly("service");
 	}
 
 	@Test
 	public void test_matching_and_ignore_pattern() {
 		when(discovery.getServices()).thenReturn(asList("service-1", "service", "rabbit-1", "rabbit-2"));
-		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
-				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
-		when(discovery.getInstances("service-1")).thenReturn(Collections.singletonList(
-				(ServiceInstance) new DefaultServiceInstance("service-1", "localhost", 80, false)));
+		when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("service", "localhost", 80, false)));
+		when(discovery.getInstances("service-1")).thenReturn(singletonList(new DefaultServiceInstance("service-1", "localhost", 80, false)));
 
 		listener.setServices(singleton("ser*"));
 		listener.setIgnoredServices(singleton("service-*"));
 		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
 		Collection<Application> applications = registry.getApplications();
-		assertEquals(1, applications.size());
-		assertEquals("service", applications.iterator().next().getName());
+		assertThat(applications).extracting(Application::getName).containsOnly("service");
 	}
 
 	@Test
 	public void test_register_and_convert() {
-		when(discovery.getServices()).thenReturn(Collections.singletonList("service"));
-		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
-				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
+		when(discovery.getServices()).thenReturn(singletonList("service"));
+		when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("service", "localhost", 80, false)));
 
 		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
-		assertEquals(1, registry.getApplications().size());
+		assertThat(registry.getApplications()).hasSize(1);
 		Application application = registry.getApplications().iterator().next();
 
-		assertEquals("http://localhost:80/health", application.getHealthUrl());
-		assertEquals("http://localhost:80", application.getManagementUrl());
-		assertEquals("http://localhost:80", application.getServiceUrl());
-		assertEquals("service", application.getName());
+		assertThat(application.getHealthUrl()).isEqualTo("http://localhost:80/health");
+		assertThat(application.getManagementUrl()).isEqualTo("http://localhost:80");
+		assertThat(application.getServiceUrl()).isEqualTo("http://localhost:80");
+		assertThat(application.getName()).isEqualTo("service");
 	}
 
 	@Test
@@ -146,15 +136,14 @@ public class ApplicationDiscoveryListenerTest {
 		Object heartbeat = new Object();
 		listener.onParentHeartbeat(new ParentHeartbeatEvent(new Object(), heartbeat));
 
-		when(discovery.getServices()).thenReturn(Collections.singletonList("service"));
-		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
-				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
+		when(discovery.getServices()).thenReturn(singletonList("service"));
+		when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("service", "localhost", 80, false)));
 
 		listener.onApplicationEvent(new HeartbeatEvent(new Object(), heartbeat));
-		assertEquals(0, registry.getApplications().size());
+		assertThat(registry.getApplications()).isEmpty();
 
 		listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
-		assertEquals(1, registry.getApplications().size());
+		assertThat(registry.getApplications()).hasSize(1);
 	}
 
 	@Test
@@ -169,20 +158,20 @@ public class ApplicationDiscoveryListenerTest {
 		instances.add(new DefaultServiceInstance("service", "localhost", 80, false));
 		instances.add(new DefaultServiceInstance("service", "example.net", 80, false));
 
-		when(discovery.getServices()).thenReturn(Collections.singletonList("service"));
+		when(discovery.getServices()).thenReturn(singletonList("service"));
 		when(discovery.getInstances("service")).thenReturn(instances);
 
 		listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
-		assertEquals(2, registry.getApplicationsByName("service").size());
-		assertEquals(1, registry.getApplicationsByName("ignored").size());
-		assertEquals(1, registry.getApplicationsByName("different-source").size());
+		assertThat(registry.getApplicationsByName("service")).hasSize(2);
+		assertThat(registry.getApplicationsByName("ignored")).hasSize(1);
+		assertThat(registry.getApplicationsByName("different-source")).hasSize(1);
 
 		instances.remove(0);
 
 		listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
-		assertEquals(1, registry.getApplicationsByName("service").size());
-		assertEquals(1, registry.getApplicationsByName("ignored").size());
-		assertEquals(1, registry.getApplicationsByName("different-source").size());
+		assertThat(registry.getApplicationsByName("service")).hasSize(1);
+		assertThat(registry.getApplicationsByName("ignored")).hasSize(1);
+		assertThat(registry.getApplicationsByName("different-source")).hasSize(1);
 	}
 
 }

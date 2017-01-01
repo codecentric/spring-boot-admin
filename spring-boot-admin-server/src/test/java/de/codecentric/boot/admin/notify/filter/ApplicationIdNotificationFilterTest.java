@@ -1,7 +1,6 @@
 package de.codecentric.boot.admin.notify.filter;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
@@ -17,10 +16,10 @@ public class ApplicationIdNotificationFilterTest {
 		ClientApplicationRegisteredEvent fooEvent = new ClientApplicationRegisteredEvent(
 				Application.create("foo").withId("cafebabe").withHealthUrl("http://health")
 						.build());
-		assertThat(filter.filter(fooEvent), is(true));
+		assertThat(filter.filter(fooEvent)).isTrue();
 
 		ClientApplicationRegisteredEvent barEvent = new ClientApplicationRegisteredEvent(
 				Application.create("foo").withId("1337").withHealthUrl("http://health").build());
-		assertThat(filter.filter(barEvent), is(false));
+		assertThat(filter.filter(barEvent)).isFalse();
 	}
 }

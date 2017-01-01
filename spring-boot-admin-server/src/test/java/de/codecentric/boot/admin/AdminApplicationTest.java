@@ -15,7 +15,7 @@
  */
 package de.codecentric.boot.admin;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +54,7 @@ public class AdminApplicationTest {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<List> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + port + "/api/applications", List.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
@@ -74,18 +74,18 @@ public class AdminApplicationTest {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> app = new TestRestTemplate()
 				.getForEntity(apiBaseUrl + "/" + entity.getBody().get("id"), Map.class);
-		assertEquals(HttpStatus.OK, app.getStatusCode());
-		assertEquals("TestApp", app.getBody().get("name"));
+		assertThat(app.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(app.getBody().get("name")).isEqualTo("TestApp");
 
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> info = new TestRestTemplate()
 				.getForEntity(apiBaseUrl + "/" + entity.getBody().get("id") + "/info", Map.class);
-		assertEquals(HttpStatus.OK, info.getStatusCode());
+		assertThat(info.getStatusCode()).isEqualTo(HttpStatus.OK);
 
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> health = new TestRestTemplate()
 				.getForEntity(apiBaseUrl + "/" + entity.getBody().get("id") + "/health", Map.class);
-		assertEquals(HttpStatus.OK, health.getStatusCode());
+		assertThat(health.getStatusCode()).isEqualTo(HttpStatus.OK);
 
 	}
 

@@ -16,8 +16,7 @@
 package de.codecentric.boot.admin.web.servlet.resource;
 
 import static java.util.Arrays.asList;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.util.StreamUtils.copyToByteArray;
@@ -41,11 +40,12 @@ public class ConcatenatingResourceResolverTest {
 		Resource resolvedResource = new ConcatenatingResourceResolver(";".getBytes())
 				.resolveResource(null, "/foo.txt", resources, null);
 
-		assertThat(resolvedResource.getFilename(), is("foo.txt"));
-		assertThat(resolvedResource.lastModified(), is(testResource.lastModified()));
-		assertThat(resolvedResource.getDescription(), is(
-				"Byte array resource [(class path resource [testResource.txt], class path resource [testResource.txt], class path resource [testResource.txt])]"));
-		assertThat(copyToByteArray(resolvedResource.getInputStream()), is("Foobar;Foobar;Foobar".getBytes()));
+		assertThat(resolvedResource.getFilename()).isEqualTo("foo.txt");
+		assertThat(resolvedResource.lastModified()).isEqualTo(testResource.lastModified());
+		assertThat(resolvedResource.getDescription()).isEqualTo(
+				"Byte array resource [(class path resource [testResource.txt], class path resource [testResource.txt], class path resource [testResource.txt])]");
+		assertThat(copyToByteArray(resolvedResource.getInputStream()))
+				.isEqualTo("Foobar;Foobar;Foobar".getBytes());
 	}
 
 	@Test(expected = ResourceAccessException.class)
@@ -63,6 +63,6 @@ public class ConcatenatingResourceResolverTest {
 		when(chain.resolveUrlPath(null, null)).thenReturn("/resources/resource.txt");
 		String url = new ConcatenatingResourceResolver(";".getBytes()).resolveUrlPath(null, null,
 				chain);
-		assertThat(url, is("/resources/resource.txt"));
+		assertThat(url).isEqualTo("/resources/resource.txt");
 	}
 }

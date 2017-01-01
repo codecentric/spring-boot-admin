@@ -11,7 +11,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
@@ -37,9 +36,8 @@ public class StatusUpdateApplicationListenerTest {
 		ScheduledFuture task = mock(ScheduledFuture.class);
 		when(scheduler.scheduleAtFixedRate(isA(Runnable.class), eq(10_000L))).thenReturn(task);
 
-		listener.onApplicationReady(
-				new ApplicationReadyEvent(mock(SpringApplication.class), null,
-						mock(ConfigurableWebApplicationContext.class)));
+		listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
+				mock(ConfigurableWebApplicationContext.class)));
 		verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(10_000L));
 
 		listener.onContextClosed(new ContextClosedEvent(mock(EmbeddedWebApplicationContext.class)));
@@ -50,15 +48,12 @@ public class StatusUpdateApplicationListenerTest {
 	public void test_newApplication() throws Exception {
 		StatusUpdater statusUpdater = mock(StatusUpdater.class);
 		ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
-		when(scheduler.submit(any(Runnable.class))).then(new Answer<Future<?>>() {
-			@Override
-			public Future<?> answer(InvocationOnMock invocation) throws Throwable {
-				invocation.getArgumentAt(0, Runnable.class).run();
-				SettableListenableFuture<?> future = new SettableListenableFuture<Void>();
-				future.set(null);
-				return future;
-			}
-		});
+		when(scheduler.submit(any(Runnable.class))).then((Answer<Future<?>>) invocation -> {
+            invocation.getArgumentAt(0, Runnable.class).run();
+            SettableListenableFuture<?> future = new SettableListenableFuture<Void>();
+            future.set(null);
+            return future;
+        });
 
 		StatusUpdateApplicationListener listener = new StatusUpdateApplicationListener(
 				statusUpdater, scheduler);

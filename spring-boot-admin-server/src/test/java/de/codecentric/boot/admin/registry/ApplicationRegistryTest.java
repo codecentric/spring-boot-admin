@@ -16,12 +16,7 @@
 package de.codecentric.boot.admin.registry;
 
 import static java.util.Collections.singletonMap;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
 
@@ -81,9 +76,9 @@ public class ApplicationRegistryTest {
 		Application app = registry.register(Application.create("abc")
 				.withHealthUrl("http://localhost:8080/health").build());
 
-		assertEquals("http://localhost:8080/health", app.getHealthUrl());
-		assertEquals("abc", app.getName());
-		assertNotNull(app.getId());
+		assertThat(app.getHealthUrl()).isEqualTo("http://localhost:8080/health");
+		assertThat(app.getName()).isEqualTo("abc");
+		assertThat(app.getId()).isNotNull();
 	}
 
 	@Test
@@ -101,8 +96,8 @@ public class ApplicationRegistryTest {
 				Application.create("abc").withHealthUrl("http://localhost:8080/health").build());
 
 		// Then info and status are retained
-		assertThat(registered.getInfo(), sameInstance(info));
-		assertThat(registered.getStatusInfo(), sameInstance(status));
+		assertThat(registered.getInfo()).isSameAs(info);
+		assertThat(registered.getStatusInfo()).isSameAs(status);
 	}
 
 	@Test
@@ -110,8 +105,8 @@ public class ApplicationRegistryTest {
 		Application app = registry.register(Application.create("abc")
 				.withHealthUrl("http://localhost/health")
 				.withManagementUrl("http://localhost:8080/").build());
-		assertEquals(app, registry.getApplication(app.getId()));
-		assertEquals("http://localhost:8080/", app.getManagementUrl());
+		assertThat(registry.getApplication(app.getId())).isEqualTo(app);
+		assertThat(app.getManagementUrl()).isEqualTo("http://localhost:8080/");
 	}
 
 	@Test
@@ -120,8 +115,7 @@ public class ApplicationRegistryTest {
 				.withHealthUrl("http://localhost/health").build());
 
 		Collection<Application> applications = registry.getApplications();
-		assertEquals(1, applications.size());
-		assertTrue(applications.contains(app));
+		assertThat(applications).containsOnly(app);
 	}
 
 	@Test
@@ -134,9 +128,6 @@ public class ApplicationRegistryTest {
 				.withHealthUrl("http://localhost:8082/health").build());
 
 		Collection<Application> applications = registry.getApplicationsByName("abc");
-		assertEquals(2, applications.size());
-		assertTrue(applications.contains(app));
-		assertTrue(applications.contains(app2));
-		assertFalse(applications.contains(app3));
+		assertThat(applications).containsOnly(app, app2);
 	}
 }

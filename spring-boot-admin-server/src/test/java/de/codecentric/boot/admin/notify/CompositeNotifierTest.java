@@ -1,7 +1,6 @@
 package de.codecentric.boot.admin.notify;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,7 +32,7 @@ public class CompositeNotifierTest {
 
 		compositeNotifier.notify(APP_DOWN);
 
-		assertThat(notifier1.getEvents(), is(Collections.singletonList(APP_DOWN)));
-		assertThat(notifier2.getEvents(), is(Collections.singletonList(APP_DOWN)));
+		assertThat(notifier1.getEvents()).containsOnly(APP_DOWN);
+		assertThat(notifier2.getEvents()).containsOnly(APP_DOWN);
 	}
 }

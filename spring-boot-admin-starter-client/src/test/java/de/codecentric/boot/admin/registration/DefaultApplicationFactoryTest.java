@@ -4,6 +4,11 @@ import de.codecentric.boot.admin.client.config.InstanceProperties;
 import de.codecentric.boot.admin.client.registration.Application;
 import de.codecentric.boot.admin.client.registration.DefaultApplicationFactory;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import org.junit.Before;

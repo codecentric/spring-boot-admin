@@ -11,7 +11,7 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SpringBootAdminClientAutoConfigurationTest {
     private ConfigurableApplicationContext context;
@@ -26,7 +26,7 @@ public class SpringBootAdminClientAutoConfigurationTest {
     @Test
     public void not_active() {
         load();
-        assertTrue(context.getBeansOfType(ApplicationRegistrator.class).isEmpty());
+        assertThat(context.getBeansOfType(ApplicationRegistrator.class)).isEmpty();
     }
 
     @Test
@@ -38,7 +38,7 @@ public class SpringBootAdminClientAutoConfigurationTest {
     @Test
     public void disabled() {
         load("spring.boot.admin.client.url:http://localhost:8081", "spring.boot.admin.client.enabled:false");
-        assertTrue(context.getBeansOfType(ApplicationRegistrator.class).isEmpty());
+        assertThat(context.getBeansOfType(ApplicationRegistrator.class)).isEmpty();
     }
 
     private void load(final String... environment) {

@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration.RestTemplateConfiguration;
@@ -42,15 +41,9 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import com.hazelcast.config.Config;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.isA;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AdminServerWebConfigurationTest {
-
     private AnnotationConfigWebApplicationContext context;
 
     @After
@@ -69,8 +62,8 @@ public class AdminServerWebConfigurationTest {
 
         config.extendMessageConverters(converters);
 
-        assertThat(converters, hasItem(isA(MappingJackson2HttpMessageConverter.class)));
-        assertThat(converters.size(), is(1));
+        assertThat(converters).hasOnlyElementsOfType(MappingJackson2HttpMessageConverter.class);
+        assertThat(converters).hasSize(1);
     }
 
     @Test
@@ -80,31 +73,32 @@ public class AdminServerWebConfigurationTest {
 
         config.extendMessageConverters(converters);
 
-        assertThat(converters, hasItem(isA(MappingJackson2HttpMessageConverter.class)));
-        assertThat(converters.size(), is(1));
+        assertThat(converters).hasOnlyElementsOfType(MappingJackson2HttpMessageConverter.class);
+        assertThat(converters).hasSize(1);
     }
 
     @Test
     public void simpleConfig() {
         load();
-        assertThat(context.getBean(ApplicationStore.class), is(instanceOf(SimpleApplicationStore.class)));
-        assertTrue(context.getBeansOfType(ApplicationDiscoveryListener.class).isEmpty());
-        assertTrue(context.getBeansOfType(MailNotifier.class).isEmpty());
-        assertThat(context.getBean(JournaledEventStore.class), is(instanceOf(SimpleJournaledEventStore.class)));
+
+        assertThat(context.getBean(ApplicationStore.class)).isInstanceOf(SimpleApplicationStore.class);
+        assertThat(context.getBeansOfType(ApplicationDiscoveryListener.class)).isEmpty();
+        assertThat(context.getBeansOfType(MailNotifier.class)).isEmpty();
+        assertThat(context.getBean(JournaledEventStore.class)).isInstanceOf(SimpleJournaledEventStore.class);
     }
 
     @Test
     public void hazelcastConfig() {
         load(TestHazelcastConfig.class);
-        assertThat(context.getBean(ApplicationStore.class), is(instanceOf(HazelcastApplicationStore.class)));
-        assertThat(context.getBean(JournaledEventStore.class), is(instanceOf(HazelcastJournaledEventStore.class)));
-        assertTrue(context.getBeansOfType(ApplicationDiscoveryListener.class).isEmpty());
+        assertThat(context.getBean(ApplicationStore.class)).isInstanceOf(HazelcastApplicationStore.class);
+        assertThat(context.getBean(JournaledEventStore.class)).isInstanceOf(HazelcastJournaledEventStore.class);
+        assertThat(context.getBeansOfType(ApplicationDiscoveryListener.class)).isEmpty();
     }
 
     @Test
     public void discoveryConfig() {
         load(SimpleDiscoveryClientAutoConfiguration.class);
-        assertThat(context.getBean(ApplicationStore.class), is(instanceOf(SimpleApplicationStore.class)));
+        assertThat(context.getBean(ApplicationStore.class)).isInstanceOf(SimpleApplicationStore.class);
         context.getBean(ApplicationDiscoveryListener.class);
     }
 
@@ -125,9 +119,8 @@ public class AdminServerWebConfigurationTest {
         if (config != null) {
             applicationContext.register(config);
         }
-        applicationContext.register(PropertyPlaceholderAutoConfiguration.class);
-        applicationContext.register(RestTemplateConfiguration.class);
         applicationContext.register(ServerPropertiesAutoConfiguration.class);
+        applicationContext.register(RestTemplateConfiguration.class);
         applicationContext.register(HazelcastAutoConfiguration.class);
         applicationContext.register(HazelcastStoreConfiguration.class);
         applicationContext.register(UtilAutoConfiguration.class);

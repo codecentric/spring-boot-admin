@@ -1,5 +1,7 @@
 package de.codecentric.boot.admin.client.config;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +22,10 @@ public class ClientApplicationTest {
     @Autowired
     private ClientProperties properties;
 
-    @Test
-    public void test_context() {
-        assertThat(properties, notNullValue());
-    }
+	@Test
+	public void test_context() {
+		assertThat(properties).isNotNull();
+	}
 }
 
 @Configuration

@@ -15,22 +15,16 @@
  */
 package de.codecentric.boot.admin.registry;
 
-import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationEventPublisher;
@@ -71,11 +65,10 @@ public class StatusUpdaterTest {
 
 		Application app = store.find("id");
 
-		assertThat(app.getStatusInfo().getStatus(), CoreMatchers.is("UP"));
-		assertThat((Map<String, ? extends Serializable>) app.getInfo().getValues(),
-				hasEntry("foo", (Serializable) "bar"));
+		assertThat(app.getStatusInfo().getStatus()).isEqualTo("UP");
+		assertThat(app.getInfo().getValues()).containsEntry("foo", "bar");
 		verify(publisher)
-				.publishEvent(argThat(CoreMatchers.isA(ClientApplicationStatusChangedEvent.class)));
+				.publishEvent(isA(ClientApplicationStatusChangedEvent.class));
 	}
 
 	@Test
@@ -87,7 +80,7 @@ public class StatusUpdaterTest {
 				Application.create("foo").withId("id").withHealthUrl("health").build());
 
 		verify(publisher, never())
-				.publishEvent(argThat(CoreMatchers.isA(ClientApplicationStatusChangedEvent.class)));
+				.publishEvent(isA(ClientApplicationStatusChangedEvent.class));
 		verify(applicationOps, never()).getInfo(isA(Application.class));
 	}
 
@@ -99,23 +92,20 @@ public class StatusUpdaterTest {
 		updater.updateStatus(
 				Application.create("foo").withId("id").withHealthUrl("health").build());
 
-		assertThat(store.find("id").getStatusInfo().getStatus(), CoreMatchers.is("UP"));
-
+		assertThat(store.find("id").getStatusInfo().getStatus()).isEqualTo("UP");
 	}
 
 	@Test
 	public void test_update_down() {
-		when(applicationOps.getHealth(any(Application.class)))
-				.thenReturn(
-						ResponseEntity.status(503).body(
-								Collections.<String, Serializable>singletonMap("foo", "bar")));
+		when(applicationOps.getHealth(any(Application.class))).thenReturn(ResponseEntity.status(503)
+				.body(Collections.<String, Serializable>singletonMap("foo", "bar")));
 
 		updater.updateStatus(
 				Application.create("foo").withId("id").withHealthUrl("health").build());
 
 		StatusInfo statusInfo = store.find("id").getStatusInfo();
-		assertThat(statusInfo.getStatus(), CoreMatchers.is("DOWN"));
-		assertThat(statusInfo.getDetails(), hasEntry("foo", (Serializable) "bar"));
+		assertThat(statusInfo.getStatus()).isEqualTo("DOWN");
+		assertThat(statusInfo.getDetails()).containsEntry("foo", "bar");
 	}
 
 	@Test
@@ -127,10 +117,9 @@ public class StatusUpdaterTest {
 				Application.create("foo").withId("id").withHealthUrl("health").build());
 
 		StatusInfo statusInfo = store.find("id").getStatusInfo();
-		assertThat(statusInfo.getStatus(), CoreMatchers.is("DOWN"));
-		assertThat(statusInfo.getDetails(), hasEntry("status", (Serializable) 503));
-		assertThat(statusInfo.getDetails(),
-				hasEntry("error", (Serializable) "Service Unavailable"));
+		assertThat(statusInfo.getStatus()).isEqualTo("DOWN");
+		assertThat(statusInfo.getDetails()).containsEntry("status", 503);
+		assertThat(statusInfo.getDetails()).containsEntry("error", "Service Unavailable");
 	}
 
 	@Test
@@ -143,10 +132,10 @@ public class StatusUpdaterTest {
 		updater.updateStatus(app);
 
 		StatusInfo statusInfo = store.find("id").getStatusInfo();
-		assertThat(statusInfo.getStatus(), CoreMatchers.is("OFFLINE"));
-		assertThat(statusInfo.getDetails(), hasEntry("message", (Serializable) "error"));
-		assertThat(statusInfo.getDetails(), hasEntry("exception",
-				(Serializable) "org.springframework.web.client.ResourceAccessException"));
+		assertThat(statusInfo.getStatus()).isEqualTo("OFFLINE");
+		assertThat(statusInfo.getDetails()).containsEntry("message", "error");
+		assertThat(statusInfo.getDetails()).containsEntry("exception",
+				"org.springframework.web.client.ResourceAccessException");
 	}
 
 	@Test
@@ -165,7 +154,7 @@ public class StatusUpdaterTest {
 
 		updater.updateStatusForAllApplications();
 
-		assertThat(store.find("id-1").getStatusInfo().getStatus(), CoreMatchers.is("UP"));
+		assertThat(store.find("id-1").getStatusInfo().getStatus()).isEqualTo("UP");
 		verify(applicationOps, never()).getHealth(eq(app2));
 	}
 

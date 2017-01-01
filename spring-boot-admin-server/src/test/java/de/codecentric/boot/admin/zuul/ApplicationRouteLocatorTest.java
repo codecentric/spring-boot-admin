@@ -15,12 +15,8 @@
  */
 package de.codecentric.boot.admin.zuul;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -50,15 +46,14 @@ public class ApplicationRouteLocatorTest {
 		when(registry.getApplications()).thenReturn(singletonList(Application.create("app1")
 				.withHealthUrl("http://localhost/health").withId("1234").build()));
 
-		assertEquals(1, locator.getRoutes().size());
-		assertEquals(asList(new Route("1234-health", "/**", "http://localhost/health",
-				"/api/applications/1234/health", false, null)), locator.getRoutes());
+		assertThat(locator.getRoutes()).containsOnly(new Route("1234-health", "/**",
+				"http://localhost/health", "/api/applications/1234/health", false, null));
 
 		Route matchingRoute = locator.getMatchingRoute("/api/applications/1234/health");
-		assertEquals(new Route("1234-health", "", "http://localhost/health",
-				"/api/applications/1234/health", false, null), matchingRoute);
+		assertThat(matchingRoute).isEqualTo(new Route("1234-health", "", "http://localhost/health",
+				"/api/applications/1234/health", false, null));
 
-		assertNull(locator.getMatchingRoute("/api/applications/1234/danger"));
+		assertThat(locator.getMatchingRoute("/api/applications/1234/danger")).isNull();
 	}
 
 	@Test
@@ -67,44 +62,41 @@ public class ApplicationRouteLocatorTest {
 				singletonList(Application.create("app1").withHealthUrl("http://localhost/health")
 						.withManagementUrl("http://localhost").withId("1234").build()));
 
-		assertEquals(2, locator.getRoutes().size());
-
-		assertEquals(asList(
+		assertThat(locator.getRoutes()).containsOnly(
 				new Route("1234-health", "/**", "http://localhost/health",
 						"/api/applications/1234/health", false, null),
 				new Route("1234-env", "/**", "http://localhost/env", "/api/applications/1234/env",
-						false, null)),
-				locator.getRoutes());
+						false, null));
 
 		Route matchingHealth = locator.getMatchingRoute("/api/applications/1234/health");
-		assertEquals(new Route("1234-health", "", "http://localhost/health",
-				"/api/applications/1234/health", false, null), matchingHealth);
+		assertThat(matchingHealth).isEqualTo(new Route("1234-health", "", "http://localhost/health",
+				"/api/applications/1234/health", false, null));
 
 		Route matchingEnv = locator.getMatchingRoute("/api/applications/1234/env/reset");
-		assertEquals(new Route("1234-env", "/reset", "http://localhost/env",
-				"/api/applications/1234/env", false, null), matchingEnv);
+		assertThat(matchingEnv).isEqualTo(new Route("1234-env", "/reset", "http://localhost/env",
+				"/api/applications/1234/env", false, null));
 
-		assertNull(locator.getMatchingRoute("/api/applications/1234/danger"));
+		assertThat(locator.getMatchingRoute("/api/applications/1234/danger")).isNull();
 	}
 
 	@Test
 	public void ignoredPaths() {
-		assertEquals(emptyList(), locator.getIgnoredPaths());
+		assertThat(locator.getIgnoredPaths()).isEmpty();
 	}
 
 	@Test
 	public void refresh() {
-		when(registry.getApplications()).thenReturn(Collections.<Application> emptyList());
+		when(registry.getApplications()).thenReturn(Collections.<Application>emptyList());
 		locator.refresh();
-		assertTrue(locator.getRoutes().isEmpty());
+		assertThat(locator.getRoutes()).isEmpty();
 
 		when(registry.getApplications()).thenReturn(singletonList(Application.create("app1")
 				.withHealthUrl("http://localhost/health").withId("1234").build()));
 		locator.refresh();
-		assertEquals(1, locator.getRoutes().size());
+		assertThat(locator.getRoutes()).hasSize(1);
 
-		when(registry.getApplications()).thenReturn(Collections.<Application> emptyList());
+		when(registry.getApplications()).thenReturn(Collections.<Application>emptyList());
 		locator.refresh();
-		assertTrue(locator.getRoutes().isEmpty());
+		assertThat(locator.getRoutes()).isEmpty();
 	}
 }

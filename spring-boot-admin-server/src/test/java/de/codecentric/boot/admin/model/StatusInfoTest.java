@@ -1,8 +1,7 @@
 package de.codecentric.boot.admin.model;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
@@ -14,38 +13,37 @@ public class StatusInfoTest {
 		StatusInfo up2 = StatusInfo.ofUp();
 		StatusInfo down = StatusInfo.ofDown();
 
-		assertThat(up, is(up2));
-		assertThat(up, not(is(down)));
-		assertThat(up.hashCode(), is(up2.hashCode()));
+		assertThat(up).isEqualTo(up2).isNotEqualTo(down);
+		assertThat(up.hashCode()).isEqualTo(up2.hashCode());
 	}
 
 	@Test
 	public void test_isMethods() {
 
-		assertThat(StatusInfo.valueOf("FOO").isUp(), is(false));
-		assertThat(StatusInfo.valueOf("FOO").isDown(), is(false));
-		assertThat(StatusInfo.valueOf("FOO").isUnknown(), is(false));
-		assertThat(StatusInfo.valueOf("FOO").isOffline(), is(false));
+		assertThat(StatusInfo.valueOf("FOO").isUp()).isFalse();
+		assertThat(StatusInfo.valueOf("FOO").isDown()).isFalse();
+		assertThat(StatusInfo.valueOf("FOO").isUnknown()).isFalse();
+		assertThat(StatusInfo.valueOf("FOO").isOffline()).isFalse();
 
-		assertThat(StatusInfo.ofUp().isUp(), is(true));
-		assertThat(StatusInfo.ofUp().isDown(), is(false));
-		assertThat(StatusInfo.ofUp().isUnknown(), is(false));
-		assertThat(StatusInfo.ofUp().isOffline(), is(false));
+		assertThat(StatusInfo.ofUp().isUp()).isTrue();
+		assertThat(StatusInfo.ofUp().isDown()).isFalse();
+		assertThat(StatusInfo.ofUp().isUnknown()).isFalse();
+		assertThat(StatusInfo.ofUp().isOffline()).isFalse();
 
-		assertThat(StatusInfo.ofDown().isUp(), is(false));
-		assertThat(StatusInfo.ofDown().isDown(), is(true));
-		assertThat(StatusInfo.ofDown().isUnknown(), is(false));
-		assertThat(StatusInfo.ofDown().isOffline(), is(false));
+		assertThat(StatusInfo.ofDown().isUp()).isFalse();
+		assertThat(StatusInfo.ofDown().isDown()).isTrue();
+		assertThat(StatusInfo.ofDown().isUnknown()).isFalse();
+		assertThat(StatusInfo.ofDown().isOffline()).isFalse();
 
-		assertThat(StatusInfo.ofUnknown().isUp(), is(false));
-		assertThat(StatusInfo.ofUnknown().isDown(), is(false));
-		assertThat(StatusInfo.ofUnknown().isUnknown(), is(true));
-		assertThat(StatusInfo.ofUnknown().isOffline(), is(false));
+		assertThat(StatusInfo.ofUnknown().isUp()).isFalse();
+		assertThat(StatusInfo.ofUnknown().isDown()).isFalse();
+		assertThat(StatusInfo.ofUnknown().isUnknown()).isTrue();
+		assertThat(StatusInfo.ofUnknown().isOffline()).isFalse();
 
-		assertThat(StatusInfo.ofOffline().isUp(), is(false));
-		assertThat(StatusInfo.ofOffline().isDown(), is(false));
-		assertThat(StatusInfo.ofOffline().isUnknown(), is(false));
-		assertThat(StatusInfo.ofOffline().isOffline(), is(true));
+		assertThat(StatusInfo.ofOffline().isUp()).isFalse();
+		assertThat(StatusInfo.ofOffline().isDown()).isFalse();
+		assertThat(StatusInfo.ofOffline().isUnknown()).isFalse();
+		assertThat(StatusInfo.ofOffline().isOffline()).isTrue();
 	}
 
 }

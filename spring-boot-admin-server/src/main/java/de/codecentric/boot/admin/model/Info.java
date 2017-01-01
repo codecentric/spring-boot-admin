@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Represents the info fetched from the info actuator endpoint at a certain time.
- * 
+ *
  * @author Johannes Edmeier
  */
 public class Info implements Serializable {
@@ -36,7 +36,7 @@ public class Info implements Serializable {
 
 	@JsonIgnore
 	private final long timestamp;
-	private final Map<String, ? extends Serializable> values;
+	private final Map<String, Serializable> values;
 
 	protected Info(long timestamp, Map<String, ? extends Serializable> values) {
 		this.timestamp = timestamp;
@@ -57,7 +57,7 @@ public class Info implements Serializable {
 	}
 
 	@JsonAnyGetter
-	public Map<String, ? extends Serializable> getValues() {
+	public Map<String, Serializable> getValues() {
 		return values;
 	}
 

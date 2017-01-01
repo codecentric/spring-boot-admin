@@ -15,9 +15,7 @@
  */
 package de.codecentric.boot.admin.web;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Method;
 
@@ -45,9 +43,9 @@ public class PrefixHandlerMappingTest {
 		PrefixHandlerMapping mapping = new PrefixHandlerMapping(controller);
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
-		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/test")).getHandler(),
-				equalTo((Object) new HandlerMethod(controller, this.method)));
-		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/noop")), nullValue());
+		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/test")).getHandler())
+				.isEqualTo(new HandlerMethod(controller, this.method));
+		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/noop"))).isNull();
 	}
 
 	@Test
@@ -57,9 +55,9 @@ public class PrefixHandlerMappingTest {
 		mapping.setApplicationContext(this.context);
 		mapping.setPrefix("/pre");
 		mapping.afterPropertiesSet();
-		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/pre/test")).getHandler(),
-				equalTo((Object) new HandlerMethod(controller, this.method)));
-		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/pre/noop")), nullValue());
+		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/pre/test")).getHandler())
+				.isEqualTo(new HandlerMethod(controller, this.method));
+		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/pre/noop"))).isNull();
 	}
 
 	private static class TestController {

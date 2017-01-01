@@ -15,9 +15,7 @@
  */
 package de.codecentric.boot.admin.journal;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
 
@@ -39,10 +37,10 @@ public class ApplicationEventJournalTest {
 		journal.onClientApplicationEvent(emittedEvent);
 
 		Collection<ClientApplicationEvent> events = journal.getEvents();
-		assertThat(events.size(), is(1));
+		assertThat(events).hasSize(1);
 
 		ClientApplicationEvent event = events.iterator().next();
-		assertThat(event, sameInstance(emittedEvent));
+		assertThat(event).isSameAs(emittedEvent);
 	}
 
 }

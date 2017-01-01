@@ -1,8 +1,6 @@
 package de.codecentric.boot.admin.zuul.filters.pre;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -36,13 +34,12 @@ public class ApplicationHeadersFilterTest {
 		RequestContext context = creteRequestContext("/health");
 		RequestContext.testSetCurrentContext(context);
 		filter.run();
-		assertThat(context.getZuulRequestHeaders().get("test"), is("qwertz"));
+		assertThat(context.getZuulRequestHeaders()).containsEntry("test", "qwertz");
 
 		context = creteRequestContext("/foobar");
 		RequestContext.testSetCurrentContext(context);
 		filter.run();
-		assertThat(context.getZuulRequestHeaders().get("test"), nullValue());
-
+		assertThat(context.getZuulRequestHeaders()).doesNotContainKey("test");
 	}
 
 	private RequestContext creteRequestContext(String uri) {

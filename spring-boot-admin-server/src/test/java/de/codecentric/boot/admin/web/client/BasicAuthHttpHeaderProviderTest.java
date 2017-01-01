@@ -1,8 +1,6 @@
 package de.codecentric.boot.admin.web.client;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
@@ -16,15 +14,14 @@ public class BasicAuthHttpHeaderProviderTest {
 	@Test
 	public void test_auth_header() {
 		Application app = Application.create("test").withHealthUrl("/health")
-				.addMetadata("user.name", "test").addMetadata("user.password", "drowssap")
-				.build();
-		assertThat(headersProvider.getHeaders(app).get(HttpHeaders.AUTHORIZATION).get(0),
-				is("Basic dGVzdDpkcm93c3NhcA=="));
+				.addMetadata("user.name", "test").addMetadata("user.password", "drowssap").build();
+		assertThat(headersProvider.getHeaders(app).get(HttpHeaders.AUTHORIZATION))
+				.containsOnly("Basic dGVzdDpkcm93c3NhcA==");
 	}
 
 	@Test
 	public void test_no_header() {
 		Application app = Application.create("test").withHealthUrl("/health").build();
-		assertTrue(headersProvider.getHeaders(app).isEmpty());
+		assertThat(headersProvider.getHeaders(app)).isEmpty();
 	}
 }

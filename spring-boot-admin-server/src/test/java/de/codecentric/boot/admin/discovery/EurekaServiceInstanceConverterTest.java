@@ -1,9 +1,7 @@
 package de.codecentric.boot.admin.discovery;
 
 import static java.util.Collections.singletonMap;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,11 +29,11 @@ public class EurekaServiceInstanceConverterTest {
 
 		Application application = new EurekaServiceInstanceConverter().convert(service);
 
-		assertThat(application.getId(), nullValue());
-		assertThat(application.getName(), is("test"));
-		assertThat(application.getServiceUrl(), is("http://localhost:80"));
-		assertThat(application.getManagementUrl(), is("http://localhost:80/mgmt"));
-		assertThat(application.getHealthUrl(), is("http://localhost:80/mgmt/ping"));
+		assertThat(application.getId()).isNull();
+		assertThat(application.getName()).isEqualTo("test");
+		assertThat(application.getServiceUrl()).isEqualTo("http://localhost:80");
+		assertThat(application.getManagementUrl()).isEqualTo("http://localhost:80/mgmt");
+		assertThat(application.getHealthUrl()).isEqualTo("http://localhost:80/mgmt/ping");
 	}
 
 	@Test
@@ -49,7 +47,7 @@ public class EurekaServiceInstanceConverterTest {
 
 		Application application = new EurekaServiceInstanceConverter().convert(service);
 
-		assertThat(application.getManagementUrl(), is("http://localhost:80"));
+		assertThat(application.getManagementUrl()).isEqualTo("http://localhost:80");
 	}
 
 	@Test
@@ -63,6 +61,6 @@ public class EurekaServiceInstanceConverterTest {
 
 		Application application = new EurekaServiceInstanceConverter().convert(service);
 
-		assertThat(application.getHealthUrl(), is("https://localhost:80/health"));
+		assertThat(application.getHealthUrl()).isEqualTo("https://localhost:80/health");
 	}
 }

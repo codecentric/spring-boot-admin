@@ -15,11 +15,7 @@
  */
 package de.codecentric.boot.admin.config;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,52 +60,51 @@ public class NotifierConfigurationTest {
 	public void test_notifierListener() {
 		load(TestSingleNotifierConfig.class);
 		context.publishEvent(APP_DOWN);
-		assertThat(context.getBean(TestNotifier.class).getEvents(), is(Arrays.asList(APP_DOWN)));
+		assertThat(context.getBean(TestNotifier.class).getEvents()).containsOnly(APP_DOWN);
 	}
 
 	@Test
 	public void test_no_notifierListener() {
 		load(null);
-		assertThat(context.getBeansOfType(NotifierListener.class).values(), empty());
+		assertThat(context.getBeansOfType(NotifierListener.class)).isEmpty();
 	}
 
 	@Test
 	public void test_mail() {
 		load(null, "spring.mail.host:localhost");
-		assertThat(context.getBean(MailNotifier.class), is(instanceOf(MailNotifier.class)));
+		assertThat(context.getBean(MailNotifier.class)).isInstanceOf(MailNotifier.class);
 	}
 
 	@Test
 	public void test_pagerduty() {
 		load(null, "spring.boot.admin.notify.pagerduty.service-key:foo");
-		assertThat(context.getBean(PagerdutyNotifier.class),
-				is(instanceOf(PagerdutyNotifier.class)));
+		assertThat(context.getBean(PagerdutyNotifier.class)).isInstanceOf(PagerdutyNotifier.class);
 	}
 
 	@Test
 	public void test_hipchat() {
 		load(null, "spring.boot.admin.notify.hipchat.url:http://example.com");
-		assertThat(context.getBean(HipchatNotifier.class), is(instanceOf(HipchatNotifier.class)));
+		assertThat(context.getBean(HipchatNotifier.class)).isInstanceOf(HipchatNotifier.class);
 	}
 
 	@Test
 	public void test_slack() {
 		load(null, "spring.boot.admin.notify.slack.webhook-url:http://example.com");
-		assertThat(context.getBean(SlackNotifier.class), is(instanceOf(SlackNotifier.class)));
+		assertThat(context.getBean(SlackNotifier.class)).isInstanceOf(SlackNotifier.class);
 	}
 
 	@Test
 	public void test_multipleNotifiers() {
 		load(TestMultipleNotifierConfig.class);
-		assertThat(context.getBean(Notifier.class), is(instanceOf(CompositeNotifier.class)));
-		assertThat(context.getBeansOfType(Notifier.class).values(), hasSize(3));
+		assertThat(context.getBean(Notifier.class)).isInstanceOf(CompositeNotifier.class);
+		assertThat(context.getBeansOfType(Notifier.class)).hasSize(3);
 	}
 
 	@Test
 	public void test_multipleNotifiersWithPrimary() {
 		load(TestMultipleWithPrimaryNotifierConfig.class);
-		assertThat(context.getBean(Notifier.class), is(instanceOf(TestNotifier.class)));
-		assertThat(context.getBeansOfType(Notifier.class).values(), hasSize(2));
+		assertThat(context.getBean(Notifier.class)).isInstanceOf(TestNotifier.class);
+		assertThat(context.getBeansOfType(Notifier.class)).hasSize(2);
 	}
 
 	private void load(Class<?> config, String... environment) {

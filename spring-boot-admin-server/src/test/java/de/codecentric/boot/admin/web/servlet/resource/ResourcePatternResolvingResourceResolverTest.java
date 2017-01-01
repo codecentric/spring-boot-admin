@@ -1,7 +1,6 @@
 package de.codecentric.boot.admin.web.servlet.resource;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -26,8 +25,8 @@ public class ResourcePatternResolvingResourceResolverTest {
 			@Override
 			public Resource resolveResource(HttpServletRequest request, String requestPath,
 					List<? extends Resource> locations) {
-				assertThat(locations.size(), is(1));
-				assertThat(locations.get(0).getFilename(), is("testResource.txt"));
+				assertThat(locations).extracting(Resource::getFilename)
+						.containsOnly("testResource.txt");
 				return null;
 			}
 
@@ -44,7 +43,7 @@ public class ResourcePatternResolvingResourceResolverTest {
 		when(chain.resolveUrlPath(null, null)).thenReturn("/resources/resource.txt");
 		String url = new ResourcePatternResolvingResourceResolver(null, null).resolveUrlPath(null,
 				null, chain);
-		assertThat(url, is("/resources/resource.txt"));
+		assertThat(url).isEqualTo("/resources/resource.txt");
 	}
 
 }

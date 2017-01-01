@@ -1,10 +1,7 @@
 package de.codecentric.boot.admin.notify;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.Arrays;
-import java.util.Collections;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
@@ -46,8 +43,7 @@ public class RemindingNotifierTest {
 		reminder.sendReminders();
 		reminder.sendReminders();
 
-		assertThat(notifier.getEvents(),
-				is(Arrays.asList(APP_DOWN, OTHER_APP_UP, APP_DOWN, APP_DOWN)));
+		assertThat(notifier.getEvents()).containsOnly(APP_DOWN, OTHER_APP_UP, APP_DOWN, APP_DOWN);
 
 	}
 
@@ -61,7 +57,7 @@ public class RemindingNotifierTest {
 		reminder.notify(APP_UP);
 		reminder.sendReminders();
 
-		assertThat(notifier.getEvents(), is(Arrays.asList(APP_DOWN, APP_UP)));
+		assertThat(notifier.getEvents()).containsOnly(APP_DOWN, APP_UP);
 	}
 
 	@Test
@@ -73,7 +69,7 @@ public class RemindingNotifierTest {
 		reminder.notify(APP_DOWN);
 		reminder.sendReminders();
 
-		assertThat(notifier.getEvents(), is(Collections.singletonList(APP_DOWN)));
+		assertThat(notifier.getEvents()).containsOnly(APP_DOWN);
 	}
 
 }

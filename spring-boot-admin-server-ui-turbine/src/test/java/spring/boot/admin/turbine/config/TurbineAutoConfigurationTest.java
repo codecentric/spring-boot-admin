@@ -15,9 +15,7 @@ import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAu
 import org.springframework.cloud.commons.util.UtilAutoConfiguration;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.Matchers.empty;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TurbineAutoConfigurationTest {
 
@@ -34,13 +32,13 @@ public class TurbineAutoConfigurationTest {
     public void test_disabled() {
         load("spring.boot.admin.turbine.enabled:false",
                 "spring.boot.admin.turbine.url:http://turbine.server:8989/turbine.stream");
-        assertThat(context.getBeansOfType(TurbineController.class).values(), empty());
+        assertThat(context.getBeansOfType(TurbineController.class)).isEmpty();
     }
 
     @Test
     public void test_enabled() {
         load("spring.boot.admin.turbine.url:http://turbine.server:8989/turbine.stream");
-        assertThat(context.getBean(TurbineController.class), instanceOf(TurbineController.class));
+        assertThat(context.getBean(TurbineController.class)).isInstanceOf(TurbineController.class);
     }
 
     private void load(String... environment) {

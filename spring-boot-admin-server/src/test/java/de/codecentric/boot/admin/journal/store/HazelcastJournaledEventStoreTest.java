@@ -15,12 +15,10 @@
  */
 package de.codecentric.boot.admin.journal.store;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -63,6 +61,6 @@ public class HazelcastJournaledEventStoreTest {
 		List<ClientApplicationEvent> reversed = new ArrayList<>(events);
 		Collections.reverse(reversed);
 
-		assertThat(store.findAll(), is((Collection<ClientApplicationEvent>) reversed));
+		assertThat(store.findAll()).isEqualTo(reversed);
 	}
 }
