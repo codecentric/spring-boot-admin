@@ -22,7 +22,6 @@ import org.springframework.context.annotation.Configuration;
 
 import de.codecentric.boot.admin.config.EnableAdminServer;
 
-
 // tag::application-eureka[]
 @Configuration
 @EnableAutoConfiguration

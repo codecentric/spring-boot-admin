@@ -39,7 +39,6 @@ public class TurbineProperties {
 	 */
 	private boolean enabled = true;
 
-
 	public String[] getClusters() {
 		return clusters;
 	}

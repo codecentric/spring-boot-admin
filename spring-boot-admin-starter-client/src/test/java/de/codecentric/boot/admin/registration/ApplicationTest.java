@@ -1,6 +1,5 @@
 package de.codecentric.boot.admin.registration;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;

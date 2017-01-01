@@ -13,7 +13,8 @@ import org.springframework.web.context.WebApplicationContext;
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
 
 public class StatusUpdateApplicationListener {
-	private static final Logger LOGGER = LoggerFactory.getLogger(StatusUpdateApplicationListener.class);
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(StatusUpdateApplicationListener.class);
 	private final ThreadPoolTaskScheduler taskScheduler;
 	private final StatusUpdater statusUpdater;
 	private long updatePeriod = 10_000L;

@@ -198,8 +198,8 @@ public class Application implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Application [id=" + id + ", name=" + name + ", managementUrl="
-				+ managementUrl + ", healthUrl=" + healthUrl + ", serviceUrl=" + serviceUrl + "]";
+		return "Application [id=" + id + ", name=" + name + ", managementUrl=" + managementUrl
+				+ ", healthUrl=" + healthUrl + ", serviceUrl=" + serviceUrl + "]";
 	}
 
 	@Override

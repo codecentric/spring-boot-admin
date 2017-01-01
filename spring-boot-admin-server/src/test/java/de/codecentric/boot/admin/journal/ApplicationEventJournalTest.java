@@ -32,8 +32,8 @@ public class ApplicationEventJournalTest {
 
 	@Test
 	public void test_registration() {
-		ClientApplicationEvent emittedEvent = new ClientApplicationRegisteredEvent(Application
-				.create("foo").withId("bar").withHealthUrl("http://health").build());
+		ClientApplicationEvent emittedEvent = new ClientApplicationRegisteredEvent(
+				Application.create("foo").withId("bar").withHealthUrl("http://health").build());
 		journal.onClientApplicationEvent(emittedEvent);
 
 		Collection<ClientApplicationEvent> events = journal.getEvents();

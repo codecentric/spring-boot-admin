@@ -6,7 +6,7 @@ import org.springframework.core.io.ByteArrayResource;
 
 /**
  * Extension of ByteArrayResource with lastModified and filename.
- * 
+ *
  * @author Johannes Edmeier
  */
 public class InMemoryFileResource extends ByteArrayResource {

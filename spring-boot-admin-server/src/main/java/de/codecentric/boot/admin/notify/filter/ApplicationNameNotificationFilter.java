@@ -17,7 +17,7 @@ package de.codecentric.boot.admin.notify.filter;
 
 import de.codecentric.boot.admin.event.ClientApplicationEvent;
 
-public  class ApplicationNameNotificationFilter extends ExpiringNotificationFilter {
+public class ApplicationNameNotificationFilter extends ExpiringNotificationFilter {
 	private final String name;
 
 	public ApplicationNameNotificationFilter(String name, long expiry) {

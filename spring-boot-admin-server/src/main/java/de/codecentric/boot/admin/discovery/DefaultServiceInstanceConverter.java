@@ -57,8 +57,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 	@Override
 	public Application convert(ServiceInstance instance) {
 		LOGGER.debug("Converting service '{}' running at '{}' with metadata {}",
-				instance.getServiceId(),
-				instance.getUri(), instance.getMetadata());
+				instance.getServiceId(), instance.getUri(), instance.getMetadata());
 
 		Application.Builder builder = Application.create(instance.getServiceId());
 		URI healthUrl = getHealthUrl(instance);

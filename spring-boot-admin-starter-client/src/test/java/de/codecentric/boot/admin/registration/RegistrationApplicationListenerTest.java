@@ -29,9 +29,8 @@ public class RegistrationApplicationListenerTest {
 		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator,
 				scheduler);
 
-		listener.onApplicationReady(
-				new ApplicationReadyEvent(mock(SpringApplication.class), null,
-						mock(ConfigurableWebApplicationContext.class)));
+		listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
+				mock(ConfigurableWebApplicationContext.class)));
 
 		verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(10_000L));
 	}
@@ -44,9 +43,8 @@ public class RegistrationApplicationListenerTest {
 				scheduler);
 		listener.setAutoRegister(false);
 
-		listener.onApplicationReady(
-				new ApplicationReadyEvent(mock(SpringApplication.class), null,
-						mock(ConfigurableWebApplicationContext.class)));
+		listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
+				mock(ConfigurableWebApplicationContext.class)));
 
 		verify(scheduler, never()).scheduleAtFixedRate(isA(Runnable.class), eq(10_000L));
 	}
@@ -62,9 +60,8 @@ public class RegistrationApplicationListenerTest {
 		ScheduledFuture task = mock(ScheduledFuture.class);
 		when(scheduler.scheduleAtFixedRate(isA(Runnable.class), eq(10_000L))).thenReturn(task);
 
-		listener.onApplicationReady(
-				new ApplicationReadyEvent(mock(SpringApplication.class), null,
-						mock(ConfigurableWebApplicationContext.class)));
+		listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
+				mock(ConfigurableWebApplicationContext.class)));
 
 		verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(10_000L));
 

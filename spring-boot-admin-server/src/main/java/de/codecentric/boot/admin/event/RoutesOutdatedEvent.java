@@ -19,7 +19,7 @@ import java.io.Serializable;
 
 /**
  * Signals that the routes needs to be recalculated.
- * 
+ *
  * @author Johannes Edmeier
  */
 public class RoutesOutdatedEvent implements Serializable {

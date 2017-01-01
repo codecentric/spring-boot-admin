@@ -36,8 +36,8 @@ public class TurbineRouteLocator extends SimpleRouteLocator {
 	private final Map<String, ZuulRoute> routes;
 	private DiscoveryClient discovery;
 
-	public TurbineRouteLocator(ZuulRoute route, String servletPath,
-			ZuulProperties zuulProperties, DiscoveryClient discovery) {
+	public TurbineRouteLocator(ZuulRoute route, String servletPath, ZuulProperties zuulProperties,
+			DiscoveryClient discovery) {
 		super(servletPath, zuulProperties);
 		this.routes = singletonMap(route.getPath(), route);
 		this.discovery = discovery;
@@ -68,8 +68,7 @@ public class TurbineRouteLocator extends SimpleRouteLocator {
 	private String resolveServiceId(String location) {
 		List<ServiceInstance> instances = discovery.getInstances(location);
 		if (instances.isEmpty()) {
-			throw new IllegalStateException(
-					"No instance found for serviceId '" + location + "'");
+			throw new IllegalStateException("No instance found for serviceId '" + location + "'");
 		}
 
 		return instances.get(0).getUri().toString();

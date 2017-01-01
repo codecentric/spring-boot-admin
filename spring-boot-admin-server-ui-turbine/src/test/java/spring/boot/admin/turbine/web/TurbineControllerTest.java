@@ -13,8 +13,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 public class TurbineControllerTest {
 
 	private MockMvc mvc = MockMvcBuilders
-			.standaloneSetup(new TurbineController(new String[] { "c1", "c2" }))
-			.build();
+			.standaloneSetup(new TurbineController(new String[] { "c1", "c2" })).build();
 
 	@Test
 	public void test_clusters() throws Exception {

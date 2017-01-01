@@ -28,7 +28,8 @@ public class CompositeNotifierTest {
 	public void test_all_notifiers_get_notified() throws Exception {
 		TestNotifier notifier1 = new TestNotifier();
 		TestNotifier notifier2 = new TestNotifier();
-		CompositeNotifier compositeNotifier = new CompositeNotifier(Arrays.<Notifier>asList(notifier1,notifier2));
+		CompositeNotifier compositeNotifier = new CompositeNotifier(
+				Arrays.<Notifier>asList(notifier1, notifier2));
 
 		compositeNotifier.notify(APP_DOWN);
 

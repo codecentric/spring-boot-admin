@@ -33,7 +33,8 @@ public class LoggingNotifier extends AbstractStatusChangeNotifier {
 	protected void doNotify(ClientApplicationEvent event) throws Exception {
 		if (event instanceof ClientApplicationStatusChangedEvent) {
 			LOGGER.info("Application {} ({}) is {}", event.getApplication().getName(),
-					event.getApplication().getId(), ((ClientApplicationStatusChangedEvent) event).getTo().getStatus());
+					event.getApplication().getId(),
+					((ClientApplicationStatusChangedEvent) event).getTo().getStatus());
 		} else {
 			LOGGER.info("Application {} ({}) {}", event.getApplication().getName(),
 					event.getApplication().getId(), event.getType());

@@ -43,7 +43,6 @@ public abstract class AbstractEventNotifier implements Notifier {
 		}
 	}
 
-
 	protected boolean shouldNotify(ClientApplicationEvent event) {
 		return true;
 	}

@@ -73,8 +73,8 @@ public class ApplicationRegistryTest {
 
 	@Test
 	public void register() throws Exception {
-		Application app = registry.register(Application.create("abc")
-				.withHealthUrl("http://localhost:8080/health").build());
+		Application app = registry.register(
+				Application.create("abc").withHealthUrl("http://localhost:8080/health").build());
 
 		assertThat(app.getHealthUrl()).isEqualTo("http://localhost:8080/health");
 		assertThat(app.getName()).isEqualTo("abc");
@@ -102,17 +102,17 @@ public class ApplicationRegistryTest {
 
 	@Test
 	public void getApplication() throws Exception {
-		Application app = registry.register(Application.create("abc")
-				.withHealthUrl("http://localhost/health")
-				.withManagementUrl("http://localhost:8080/").build());
+		Application app = registry
+				.register(Application.create("abc").withHealthUrl("http://localhost/health")
+						.withManagementUrl("http://localhost:8080/").build());
 		assertThat(registry.getApplication(app.getId())).isEqualTo(app);
 		assertThat(app.getManagementUrl()).isEqualTo("http://localhost:8080/");
 	}
 
 	@Test
 	public void getApplications() throws Exception {
-		Application app = registry.register(Application.create("abc")
-				.withHealthUrl("http://localhost/health").build());
+		Application app = registry.register(
+				Application.create("abc").withHealthUrl("http://localhost/health").build());
 
 		Collection<Application> applications = registry.getApplications();
 		assertThat(applications).containsOnly(app);
@@ -120,12 +120,12 @@ public class ApplicationRegistryTest {
 
 	@Test
 	public void getApplicationsByName() throws Exception {
-		Application app = registry.register(Application.create("abc")
-				.withHealthUrl("http://localhost/health").build());
-		Application app2 = registry.register(Application.create("abc")
-				.withHealthUrl("http://localhost:8081/health").build());
-		Application app3 = registry.register(Application.create("zzz")
-				.withHealthUrl("http://localhost:8082/health").build());
+		Application app = registry.register(
+				Application.create("abc").withHealthUrl("http://localhost/health").build());
+		Application app2 = registry.register(
+				Application.create("abc").withHealthUrl("http://localhost:8081/health").build());
+		Application app3 = registry.register(
+				Application.create("zzz").withHealthUrl("http://localhost:8082/health").build());
 
 		Collection<Application> applications = registry.getApplicationsByName("abc");
 		assertThat(applications).containsOnly(app, app2);

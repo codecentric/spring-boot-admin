@@ -1,6 +1,5 @@
 package de.codecentric.boot.admin.notify;
 
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;

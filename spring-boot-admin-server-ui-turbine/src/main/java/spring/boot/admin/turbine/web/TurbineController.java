@@ -27,7 +27,7 @@ import de.codecentric.boot.admin.web.AdminController;
 
 /**
  * Provides informations for the turbine view. Only available clusters until now.
- * 
+ *
  * @author Johannes Edmeier
  */
 @AdminController

@@ -48,7 +48,7 @@ public class NotificationFilterControllerTest {
 		String id = extractId(response);
 
 		mvc.perform(get("/api/notifications/filters")).andExpect(status().isOk())
-		.andExpect(jsonPath("$..id").value("1337"));
+				.andExpect(jsonPath("$..id").value("1337"));
 
 		mvc.perform(delete("/api/notifications/filters/{id}", id)).andExpect(status().isOk());
 

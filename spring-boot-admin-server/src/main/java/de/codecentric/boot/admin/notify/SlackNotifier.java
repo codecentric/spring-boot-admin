@@ -92,7 +92,8 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
 
 	protected String getColor(ClientApplicationEvent event) {
 		if (event instanceof ClientApplicationStatusChangedEvent) {
-			return "UP".equals(((ClientApplicationStatusChangedEvent) event).getTo().getStatus()) ? "good" : "danger";
+			return "UP".equals(((ClientApplicationStatusChangedEvent) event).getTo().getStatus())
+					? "good" : "danger";
 		} else {
 			return "#439FE0";
 		}

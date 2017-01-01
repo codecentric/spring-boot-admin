@@ -42,7 +42,7 @@ public class HazelcastJournaledEventStoreTest {
 	public void setup() {
 		HazelcastInstance hazelcast = HazelcastInstanceFactory.newHazelcastInstance(new Config());
 		store = new HazelcastJournaledEventStore(
-				hazelcast.<ClientApplicationEvent> getList("testList"));
+				hazelcast.<ClientApplicationEvent>getList("testList"));
 	}
 
 	@Test

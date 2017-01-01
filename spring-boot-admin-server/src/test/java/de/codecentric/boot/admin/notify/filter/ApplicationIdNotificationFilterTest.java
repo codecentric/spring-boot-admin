@@ -13,9 +13,8 @@ public class ApplicationIdNotificationFilterTest {
 	public void test_filterByName() {
 		NotificationFilter filter = new ApplicationIdNotificationFilter("cafebabe", -1L);
 
-		ClientApplicationRegisteredEvent fooEvent = new ClientApplicationRegisteredEvent(
-				Application.create("foo").withId("cafebabe").withHealthUrl("http://health")
-						.build());
+		ClientApplicationRegisteredEvent fooEvent = new ClientApplicationRegisteredEvent(Application
+				.create("foo").withId("cafebabe").withHealthUrl("http://health").build());
 		assertThat(filter.filter(fooEvent)).isTrue();
 
 		ClientApplicationRegisteredEvent barEvent = new ClientApplicationRegisteredEvent(
