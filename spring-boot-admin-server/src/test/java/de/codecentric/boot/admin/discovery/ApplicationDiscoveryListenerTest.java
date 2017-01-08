@@ -15,11 +15,14 @@
  */
 package de.codecentric.boot.admin.discovery;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.singleton;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -62,6 +65,20 @@ public class ApplicationDiscoveryListenerTest {
 		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
 		assertEquals(0, registry.getApplications().size());
+	}
+
+	@Test
+	public void test_ignore_pattern() {
+		when(discovery.getServices()).thenReturn(asList("service", "rabbit-1", "rabbit-2"));
+		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
+				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
+
+		listener.setIgnoredServices(singleton("rabbit-*"));
+		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
+
+		Collection<Application> applications = registry.getApplications();
+		assertEquals(1, applications.size());
+		assertEquals("service", applications.iterator().next().getName());
 	}
 
 	@Test

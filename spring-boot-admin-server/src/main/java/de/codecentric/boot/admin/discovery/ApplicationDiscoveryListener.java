@@ -27,6 +27,7 @@ import org.springframework.cloud.client.discovery.event.HeartbeatMonitor;
 import org.springframework.cloud.client.discovery.event.InstanceRegisteredEvent;
 import org.springframework.cloud.client.discovery.event.ParentHeartbeatEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.util.PatternMatchUtils;
 
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
@@ -46,7 +47,8 @@ public class ApplicationDiscoveryListener {
 	private ServiceInstanceConverter converter = new DefaultServiceInstanceConverter();
 
 	/**
-	 * Set of serviceIds to be ignored and not to be registered as application.
+	 * Set of serviceIds to be ignored and not to be registered as application. Supports simple
+	 * patterns (e.g. "foo*", "*foo", "foo*bar").
 	 */
 	private Set<String> ignoredServices = new HashSet<>();
 
@@ -80,7 +82,7 @@ public class ApplicationDiscoveryListener {
 	protected void discover() {
 		final Set<String> staleApplicationIds = getAllApplicationIdsFromRegistry();
 		for (String serviceId : discoveryClient.getServices()) {
-			if (!ignoredServices.contains(serviceId)) {
+			if (!ignoreService(serviceId)) {
 				for (ServiceInstance instance : discoveryClient.getInstances(serviceId)) {
 					String applicationId = register(instance);
 					staleApplicationIds.remove(applicationId);
@@ -96,10 +98,19 @@ public class ApplicationDiscoveryListener {
 		}
 	}
 
+	protected boolean ignoreService(final String serviceId) {
+		for (String pattern: ignoredServices) {
+			if (PatternMatchUtils.simpleMatch(pattern, serviceId)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	protected final Set<String> getAllApplicationIdsFromRegistry() {
 		Set<String> result = new HashSet<>();
 		for (Application application : registry.getApplications()) {
-			if (!ignoredServices.contains(application.getName())
+			if (!ignoreService(application.getName())
 					&& SOURCE.equals(application.getSource())) {
 				result.add(application.getId());
 			}

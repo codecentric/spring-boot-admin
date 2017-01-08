@@ -29,7 +29,7 @@ NOTE: When using Eureka, the `healthCheckUrl` known to Eureka is used for health
 | `"health"`
 
 | spring.boot.admin.discovery.ignored-services
-| This services will be ignored when using discovery and not registered as application.
+| This services will be ignored when using discovery and not registered as application. Supports simple patterns (e.g. "foo*", "*bar", "foo*bar*").
 |
 |===
 
