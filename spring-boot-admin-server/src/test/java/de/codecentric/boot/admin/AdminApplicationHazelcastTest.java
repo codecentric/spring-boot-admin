@@ -15,6 +15,7 @@
  */
 package de.codecentric.boot.admin;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -42,6 +43,7 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.EvictionPolicy;
 import com.hazelcast.config.ListConfig;
 import com.hazelcast.config.MapConfig;
+import com.hazelcast.config.TcpIpConfig;
 
 import de.codecentric.boot.admin.config.EnableAdminServer;
 
@@ -73,7 +75,7 @@ public class AdminApplicationHazelcastTest {
 	}
 
 	@Test
-	public void test() {
+	public void test() throws Exception {
 		// publish app on instance1
 		ResponseEntity<Map<String, String>> postResponse = registerApp("Hazelcast Test",
 				"http://127.0.0.1/health", instance1);
@@ -151,11 +153,19 @@ public class AdminApplicationHazelcastTest {
 	public static class TestAdminApplication {
 		@Bean
 		public Config hazelcastConfig() {
-			return new Config()
-					.addMapConfig(new MapConfig("spring-boot-admin-application-store")
-							.setBackupCount(1).setEvictionPolicy(EvictionPolicy.NONE))
-					.addListConfig(new ListConfig("spring-boot-admin-application-store")
-							.setBackupCount(1).setMaxSize(1000));
+			Config config = new Config();
+
+			config.addMapConfig(new MapConfig("spring-boot-admin-application-store")
+					.setBackupCount(1).setEvictionPolicy(EvictionPolicy.NONE));
+
+			config.addListConfig(new ListConfig("spring-boot-admin-application-store")
+					.setBackupCount(1).setMaxSize(1000));
+
+			config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
+			TcpIpConfig tcpIpConfig = config.getNetworkConfig().getJoin().getTcpIpConfig();
+			tcpIpConfig.setEnabled(true);
+			tcpIpConfig.setMembers(asList("127.0.0.1"));
+			return config;
 		}
 	}
 
