@@ -56,7 +56,8 @@
     <developers>
         <developer>
             <name>Johannes Edmeier</name>
-            <email>johannes.edmeier@gmail.com</email>
+            <email>johannes.edmeier@codecentric.de</email>
+            <organization>codecentric AG</organization>
         </developer>
         <developer>
             <name>Thomas Bosch</name>
