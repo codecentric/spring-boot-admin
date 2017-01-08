@@ -16,13 +16,17 @@
 package de.codecentric.boot.admin.discovery;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.cloud.client.DefaultServiceInstance;
@@ -62,6 +66,25 @@ public class ApplicationDiscoveryListenerTest {
 		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
 		assertEquals(0, registry.getApplications().size());
+	}
+
+	@Test
+	public void test_ignore_regular_expression() {
+		String rabbitaa = "rabbitaa";
+		when(discovery.getServices()).thenReturn(Lists.newArrayList("service", "rabbit-qq", rabbitaa));
+		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
+				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
+		when(discovery.getInstances("rabbit-qq")).thenReturn(Collections.singletonList(
+				(ServiceInstance) new DefaultServiceInstance("rabbit-qq", "localhost", 123, false)));
+		when(discovery.getInstances(rabbitaa)).thenReturn(Collections.singletonList(
+				(ServiceInstance) new DefaultServiceInstance(rabbitaa, "localhost", 125, false)));
+
+		listener.setIgnoredServices(Sets.newHashSet("service", "rabbit-qq"));
+		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
+
+		Collection<Application> applications = registry.getApplications();
+		assertEquals(1, applications.size());
+		assertEquals(rabbitaa, applications.iterator().next().getName());
 	}
 
 	@Test

@@ -15,9 +15,13 @@
  */
 package de.codecentric.boot.admin.discovery;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.ServiceInstance;
@@ -80,7 +84,7 @@ public class ApplicationDiscoveryListener {
 	protected void discover() {
 		final Set<String> staleApplicationIds = getAllApplicationIdsFromRegistry();
 		for (String serviceId : discoveryClient.getServices()) {
-			if (!ignoredServices.contains(serviceId)) {
+			if (!shouldIgnoreService(serviceId)) {
 				for (ServiceInstance instance : discoveryClient.getInstances(serviceId)) {
 					String applicationId = register(instance);
 					staleApplicationIds.remove(applicationId);
@@ -96,10 +100,19 @@ public class ApplicationDiscoveryListener {
 		}
 	}
 
+	private boolean shouldIgnoreService(final String serviceId) {
+		return !Collections2.filter(ignoredServices, new Predicate<String>() {
+			@Override
+			public boolean apply(String s) {
+				return Pattern.matches(s, serviceId);
+			}
+		}).isEmpty();
+	}
+
 	protected final Set<String> getAllApplicationIdsFromRegistry() {
 		Set<String> result = new HashSet<>();
 		for (Application application : registry.getApplications()) {
-			if (!ignoredServices.contains(application.getName())
+			if (!shouldIgnoreService(application.getName())
 					&& SOURCE.equals(application.getSource())) {
 				result.add(application.getId());
 			}
