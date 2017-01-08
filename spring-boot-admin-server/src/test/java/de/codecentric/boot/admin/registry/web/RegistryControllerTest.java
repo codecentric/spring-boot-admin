@@ -23,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.UnsupportedEncodingException;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,10 +42,20 @@ import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
 
 public class RegistryControllerTest {
 
-	private static final String APPLICATION_TEST_JSON = new JSONObject().put("name", "test")
-			.put("healthUrl", "http://localhost/mgmt/health").toString();
-	private static final String APPLICATION_TWICE_JSON = new JSONObject().put("name", "twice")
-			.put("healthUrl", "http://localhost/mgmt/health").toString();
+	private static final String APPLICATION_TEST_JSON;
+	private static final String APPLICATION_TWICE_JSON;
+
+	static {
+		try {
+			APPLICATION_TEST_JSON = new JSONObject().put("name", "test")
+					.put("healthUrl", "http://localhost/mgmt/health").toString();
+			APPLICATION_TWICE_JSON = new JSONObject().put("name", "twice")
+					.put("healthUrl", "http://localhost/mgmt/health").toString();
+		} catch (JSONException ex) {
+			throw new ExceptionInInitializerError(ex);
+		}
+	}
+
 	private MockMvc mvc;
 
 	@Before
@@ -86,7 +97,6 @@ public class RegistryControllerTest {
 
 		mvc.perform(get("/api/applications/{id}", id)).andExpect(status().isNotFound());
 	}
-
 
 	private String extractId(MvcResult result) throws UnsupportedEncodingException {
 		return JsonPath.compile("$.id").read(result.getResponse().getContentAsString());

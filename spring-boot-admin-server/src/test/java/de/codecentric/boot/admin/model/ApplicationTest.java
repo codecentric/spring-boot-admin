@@ -6,7 +6,6 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import java.io.IOException;
 import java.util.Collections;
 
 import org.json.JSONObject;
@@ -20,7 +19,7 @@ public class ApplicationTest {
 	private ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
 
 	@Test
-	public void test_1_2_json_format() throws JsonProcessingException, IOException {
+	public void test_1_2_json_format() throws Exception {
 		String json = new JSONObject().put("name", "test").put("url", "http://test").toString();
 		Application value = objectMapper.readValue(json, Application.class);
 		assertThat(value.getName(), is("test"));
@@ -30,7 +29,7 @@ public class ApplicationTest {
 	}
 
 	@Test
-	public void test_1_4_json_format() throws JsonProcessingException, IOException {
+	public void test_1_4_json_format() throws Exception {
 		String json = new JSONObject().put("name", "test").put("managementUrl", "http://test")
 				.put("healthUrl", "http://health").put("serviceUrl", "http://service")
 				.put("statusInfo", new JSONObject().put("status", "UNKNOWN")).toString();
@@ -42,7 +41,7 @@ public class ApplicationTest {
 	}
 
 	@Test
-	public void test_1_5_json_format() throws JsonProcessingException, IOException {
+	public void test_1_5_json_format() throws Exception {
 		String json = new JSONObject().put("name", "test").put("managementUrl", "http://test")
 				.put("healthUrl", "http://health").put("serviceUrl", "http://service")
 				.put("metadata", new JSONObject().put("labels", "foo,bar")).toString();
@@ -55,7 +54,7 @@ public class ApplicationTest {
 	}
 
 	@Test
-	public void test_onlyHealthUrl() throws JsonProcessingException, IOException {
+	public void test_onlyHealthUrl() throws Exception {
 		String json = new JSONObject().put("name", "test").put("healthUrl", "http://test")
 				.toString();
 		Application value = objectMapper.readValue(json, Application.class);
@@ -66,14 +65,14 @@ public class ApplicationTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void test_name_expected() throws JsonProcessingException, IOException {
+	public void test_name_expected() throws Exception {
 		String json = new JSONObject().put("name", "").put("managementUrl", "http://test")
 				.put("healthUrl", "http://health").put("serviceUrl", "http://service").toString();
 		objectMapper.readValue(json, Application.class);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void test_healthUrl_expected() throws JsonProcessingException, IOException {
+	public void test_healthUrl_expected() throws Exception {
 		String json = new JSONObject().put("name", "test").put("managementUrl", "http://test")
 				.put("healthUrl", "").put("serviceUrl", "http://service").toString();
 		objectMapper.readValue(json, Application.class);
