@@ -6,6 +6,7 @@ target/
 .classpath
 .project
 .factorypath
+.apt_generated/
 
 # Intellij
 .idea/
@@ -17,3 +18,6 @@ target/
 
 # gnupg keyring
 /.gnupg
+
+#nodejs
+node_modules/
