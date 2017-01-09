@@ -33,6 +33,7 @@ import org.springframework.context.event.EventListener;
 
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
+import org.springframework.util.PatternMatchUtils;
 
 /**
  * Listener for Heartbeats events to publish all services to the application registry.
@@ -103,7 +104,7 @@ public class ApplicationDiscoveryListener {
 		return !Collections2.filter(ignoredServices, new Predicate<String>() {
 			@Override
 			public boolean apply(String s) {
-				return Pattern.matches(s, serviceId);
+				return PatternMatchUtils.simpleMatch(s, serviceId);
 			}
 		}).isEmpty();
 	}
