@@ -19,9 +19,13 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.event.ClientApplicationEvent;
@@ -77,14 +81,19 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
 		return String.format("%s/room/%s/notification?auth_token=%s", url.toString(), roomId,
 				authToken);
 	}
+	
+	protected HttpEntity<String> createHipChatNotification(ClientApplicationEvent event) {
+		// create request body
+		JSONObject request = new JSONObject();
+		request.put("color", getColor(event));
+		request.put("message", getMessage(event));
+		request.put("notify", getNotify());
+		request.put("message_format", "html");
 
-	protected Map<String, Object> createHipChatNotification(ClientApplicationEvent event) {
-		Map<String, Object> result = new HashMap<>();
-		result.put("color", getColor(event));
-		result.put("message", getMessage(event));
-		result.put("notify", getNotify());
-		result.put("message_format", "html");
-		return result;
+		// set headers
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		return new HttpEntity<>(request.toString(), headers);
 	}
 
 	protected boolean getNotify() {
