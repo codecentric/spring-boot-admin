@@ -22,6 +22,9 @@ import java.util.Map;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.event.ClientApplicationEvent;
@@ -78,13 +81,17 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
 				authToken);
 	}
 
-	protected Map<String, Object> createHipChatNotification(ClientApplicationEvent event) {
-		Map<String, Object> result = new HashMap<>();
-		result.put("color", getColor(event));
-		result.put("message", getMessage(event));
-		result.put("notify", getNotify());
-		result.put("message_format", "html");
-		return result;
+	protected HttpEntity<Map<String, Object>> createHipChatNotification(
+			ClientApplicationEvent event) {
+		Map<String, Object> body = new HashMap<>();
+		body.put("color", getColor(event));
+		body.put("message", getMessage(event));
+		body.put("notify", getNotify());
+		body.put("message_format", "html");
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		return new HttpEntity<>(body, headers);
 	}
 
 	protected boolean getNotify() {
@@ -97,7 +104,8 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
 
 	protected String getColor(ClientApplicationEvent event) {
 		if (event instanceof ClientApplicationStatusChangedEvent) {
-			return "UP".equals(((ClientApplicationStatusChangedEvent) event).getTo().getStatus()) ? "green" : "red";
+			return "UP".equals(((ClientApplicationStatusChangedEvent) event).getTo().getStatus())
+					? "green" : "red";
 		} else {
 			return "gray";
 		}

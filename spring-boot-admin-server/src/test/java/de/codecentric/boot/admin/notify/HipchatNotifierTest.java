@@ -1,16 +1,20 @@
 package de.codecentric.boot.admin.notify;
 
-import static org.mockito.Matchers.any;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
@@ -40,17 +44,27 @@ public class HipchatNotifierTest {
 		StatusInfo infoDown = StatusInfo.ofDown();
 		StatusInfo infoUp = StatusInfo.ofUp();
 
+		@SuppressWarnings("unchecked")
+		ArgumentCaptor<HttpEntity<Map<String, Object>>> httpRequest = ArgumentCaptor
+				.forClass((Class<HttpEntity<Map<String, Object>>>) (Class<?>) HttpEntity.class);
+
+		when(restTemplate.postForEntity(isA(String.class), httpRequest.capture(), eq(Void.class)))
+				.thenReturn(ResponseEntity.ok((Void) null));
+
 		notifier.notify(new ClientApplicationStatusChangedEvent(
 				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
 				infoDown, infoUp));
 
-		Map<String, Object> expected = new HashMap<String, Object>();
-		expected.put("color", "green");
-		expected.put("message", "<strong>App</strong>/-id- is <strong>UP</strong>");
-		expected.put("notify", Boolean.TRUE);
-		expected.put("message_format", "html");
+		assertThat(httpRequest.getValue().getHeaders()).containsEntry("Content-Type",
+				asList("application/json"));
 
-		verify(restTemplate).postForEntity(any(String.class), eq(expected), eq(Void.class));
+		Map<String, Object> body = httpRequest.getValue().getBody();
+		assertThat(body).containsEntry("color", "green");
+		assertThat(body).containsEntry("message",
+				"<strong>App</strong>/-id- is <strong>UP</strong>");
+		assertThat(body).containsEntry("notify", Boolean.TRUE);
+		assertThat(body).containsEntry("message_format", "html");
+
 	}
 
 	@Test
@@ -58,16 +72,25 @@ public class HipchatNotifierTest {
 		StatusInfo infoDown = StatusInfo.ofDown();
 		StatusInfo infoUp = StatusInfo.ofUp();
 
+		@SuppressWarnings("unchecked")
+		ArgumentCaptor<HttpEntity<Map<String, Object>>> httpRequest = ArgumentCaptor
+				.forClass((Class<HttpEntity<Map<String, Object>>>) (Class<?>) HttpEntity.class);
+
+		when(restTemplate.postForEntity(isA(String.class), httpRequest.capture(), eq(Void.class)))
+				.thenReturn(ResponseEntity.ok((Void) null));
+
 		notifier.notify(new ClientApplicationStatusChangedEvent(
 				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
 				infoUp, infoDown));
 
-		Map<String, Object> expected = new HashMap<String, Object>();
-		expected.put("color", "red");
-		expected.put("message", "<strong>App</strong>/-id- is <strong>DOWN</strong>");
-		expected.put("notify", Boolean.TRUE);
-		expected.put("message_format", "html");
+		assertThat(httpRequest.getValue().getHeaders()).containsEntry("Content-Type",
+				asList("application/json"));
 
-		verify(restTemplate).postForEntity(any(String.class), eq(expected), eq(Void.class));
+		Map<String, Object> body = httpRequest.getValue().getBody();
+		assertThat(body).containsEntry("color", "red");
+		assertThat(body).containsEntry("message",
+				"<strong>App</strong>/-id- is <strong>DOWN</strong>");
+		assertThat(body).containsEntry("notify", Boolean.TRUE);
+		assertThat(body).containsEntry("message_format", "html");
 	}
 }
