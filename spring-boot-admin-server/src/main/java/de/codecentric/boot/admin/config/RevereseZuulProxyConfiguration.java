@@ -15,8 +15,6 @@
  */
 package de.codecentric.boot.admin.config;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.trace.TraceRepository;
@@ -36,7 +34,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.PayloadApplicationEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 
 import de.codecentric.boot.admin.event.RoutesOutdatedEvent;
@@ -44,7 +41,6 @@ import de.codecentric.boot.admin.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.web.client.HttpHeadersProvider;
 import de.codecentric.boot.admin.zuul.ApplicationRouteLocator;
 import de.codecentric.boot.admin.zuul.OptionsDispatchingZuulController;
-import de.codecentric.boot.admin.zuul.filters.CompositeRouteLocator;
 import de.codecentric.boot.admin.zuul.filters.pre.ApplicationHeadersFilter;
 import de.codecentric.boot.admin.zuul.filters.route.SimpleHostRoutingFilter;
 
@@ -62,12 +58,6 @@ public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
 	private AdminServerProperties adminServer;
 
 	@Bean
-	@Primary
-	public CompositeRouteLocator compositeRouteLocator(List<RouteLocator> locators) {
-		return new CompositeRouteLocator(locators);
-	}
-
-	@Bean
 	@Order(0)
 	public ApplicationRouteLocator applicationRouteLocator() {
 		ApplicationRouteLocator routeLocator = new ApplicationRouteLocator(
@@ -75,13 +65,6 @@ public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
 				adminServer.getContextPath() + "/api/applications/");
 		routeLocator.setEndpoints(adminServer.getRoutes().getEndpoints());
 		return routeLocator;
-	}
-
-	@Override
-	@Bean
-	@Order(-100)
-	public RouteLocator routeLocator() {
-		return super.routeLocator();
 	}
 
 	@Bean
@@ -104,8 +87,8 @@ public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
 	// pre filters
 	@Bean
 	public PreDecorationFilter preDecorationFilter(RouteLocator routeLocator) {
-		return new PreDecorationFilter(routeLocator, this.server.getServletPrefix(),
-				zuulProperties, proxyRequestHelper());
+		return new PreDecorationFilter(routeLocator, this.server.getServletPrefix(), zuulProperties,
+				proxyRequestHelper());
 	}
 
 	@Bean
