@@ -1,0 +1,10 @@
+<div class="auditevent" ng-class="$ctrl.getStatusClass()">
+  <div class="header" ng-click="$ctrl.toggle()">
+    <div class="time">{{$ctrl.auditevent.timestamp | date:'HH:mm:ss.sss'}}<br>
+      <small class="muted" ng-bind="$ctrl.event.timestamp | date:'dd.MM.yyyy'"></small>
+    </div>
+    <span class="title">{{$ctrl.auditevent.principal}}<button class="add-to-filter" ng-click="$ctrl.filterPrincipal($event)"><i class="fa fa-search-plus"></i></button></span>
+    <span class="title muted"> - {{$ctrl.auditevent.type}}<button class="add-to-filter" ng-click="$ctrl.filterType($event)"><i class="fa fa-search-plus"></i></button></span>
+  </div>
+  <pre ng-show="$ctrl.show" ng-bind="$ctrl.auditevent | json"></pre>
+</div>

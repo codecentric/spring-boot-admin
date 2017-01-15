@@ -1,0 +1,18 @@
+<div class="container">
+  <div class="alert alert-error" ng-if="error">
+    <b>Error:</b> {{ error }}
+  </div>
+  <form class="form-search">
+    <input placeholder="Principal" class="input-large search-query" type="search" ng-model="filter.principal" />
+    <input placeholder="Type" class="input-large search-query" type="search" ng-model="filter.type" />
+    <div class="input-append input-append">
+      <input placeholder="After" class="input-large search-query" type="datetime-local" ng-model="filter.after" />
+      <button title="search" class="btn" ng-click="search()"><i class="fa fa-search"></i></button>
+    </div>
+  </form>
+  <ul class="timeline">
+    <li ng-repeat="event in auditevents">
+      <sba-auditevent value="event" filter-callback="setFilter"></sba-auditevent>
+    </li>
+  </ul>
+</div>

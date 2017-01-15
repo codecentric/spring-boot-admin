@@ -1,0 +1,70 @@
+.auditevent {
+  position: relative;
+  width: 100%;
+  display: inline-block;
+  left: 15px;
+  padding-left: 5px;
+}
+
+.auditevent .header {
+  cursor: pointer;
+}
+.auditevent .time {
+  position: absolute;
+  left: -120px;
+  margin-left: -25px;
+  display: inline-block;
+  vertical-align: middle;
+  text-align: right;
+  width: 120px;
+}
+
+.auditevent .add-to-filter {
+  color: #5fa134;
+  position: absolute;
+  font-size: 75%;
+  line-height: 0;
+  vertical-align: baseline;
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+  box-shadow: none;
+  background: none;
+  opacity: 0;
+}
+
+.auditevent .title:hover .add-to-filter,
+.auditevent .add-to-filter:hover  {
+  opacity: 100;
+}
+
+.auditevent .header:before {
+  box-sizing: border-box;
+  content: ' ';
+  display: block;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 10px;
+  border: 4px solid #999999;
+  z-index: 10;
+  position: absolute;
+  left: -6px;
+  margin-left: -15px;
+}
+
+.auditevent .header:hover:before {
+  background: #ccc;
+}
+
+.auditevent.failure .header:before  {
+  border-color: #b30000;
+}
+
+.auditevent.success .header:before {
+  border-color: #6db33f;
+}
+
+.auditevent.unknown .header:before {
+  border-color: #999999;
+}

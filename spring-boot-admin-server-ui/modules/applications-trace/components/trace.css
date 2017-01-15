@@ -4,8 +4,12 @@
   display: inline-block;
   left: 15px;
   padding-left: 5px;
+}
+
+.trace-event .header {
   cursor: pointer;
 }
+
 .trace-event .time {
   position: absolute;
   left: -120px;
