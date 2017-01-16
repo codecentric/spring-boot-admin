@@ -24,7 +24,7 @@ NOTE: When using Eureka, the `healthCheckUrl` known to Eureka is used for health
 | Will be appended to the service-url of the discovered service when the managment-url is converted by the `DefaultServiceInstanceConverter`.
 |
 
-| spring.boot.admin.discovery.converter.health-endpoint
+| spring.boot.admin.discovery.converter.health-endpoint-path
 | Will be appended to the management-url of the discovered service when the health-url is converted by the `DefaultServiceInstanceConverter`.
 | `"health"`
 
