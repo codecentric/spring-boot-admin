@@ -30,7 +30,7 @@ public abstract class AbstractEventNotifier implements Notifier {
 	/**
 	 * Enables the notification.
 	 */
-	private boolean enabled = true;
+	public boolean enabled = true;
 
 	@Override
 	public void notify(ClientApplicationEvent event) {
