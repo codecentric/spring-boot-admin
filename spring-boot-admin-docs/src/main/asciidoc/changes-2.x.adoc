@@ -1,0 +1,9 @@
+* Raised minimum required Java version to 1.8
+
+* Updade to Spring Boot 2.x
+
+* All client properties from `spring.boot.admin.client.*` have been renamed to `sbadmin.client.instance` 
+
+* All client properties under `spring.boot.admin.*` have been renamed to `sbadmin.client`.
+
+* All server properties under `spring.boot.admin.*` have been renamed to `sbadmin.*`.
