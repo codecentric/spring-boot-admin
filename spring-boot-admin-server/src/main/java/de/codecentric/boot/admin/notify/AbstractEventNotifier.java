@@ -55,4 +55,8 @@ public abstract class AbstractEventNotifier implements Notifier {
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
 }

@@ -141,4 +141,8 @@ public class ApplicationDiscoveryListener {
 	public void setIgnoredServices(Set<String> ignoredServices) {
 		this.ignoredServices = ignoredServices;
 	}
+
+	public Set<String> getIgnoredServices() {
+		return ignoredServices;
+	}
 }

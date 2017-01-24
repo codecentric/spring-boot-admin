@@ -43,7 +43,15 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 	private static final String KEY_MANAGEMENT_PORT = "management.port";
 	private static final String KEY_MANAGEMENT_PATH = "management.context-path";
 	private static final String KEY_HEALTH_PATH = "health.path";
+
+	/**
+	 * Default context-path to be appended to the url of the discovered service for the
+	 * managment-url.
+	 */
 	private String managementContextPath = "";
+	/**
+	 * Default path of the health-endpoint to be used for the health-url of the discovered service.
+	 */
 	private String healthEndpointPath = "health";
 
 	@Override
@@ -106,22 +114,20 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 		return instance.getMetadata();
 	}
 
-	/**
-	 * Default <code>management.context-path</code> to be appended to the url of the discovered
-	 * service for the managment-url.
-	 *
-	 * @param managementContextPath the management context-path.
-	 */
+
 	public void setManagementContextPath(String managementContextPath) {
 		this.managementContextPath = managementContextPath;
 	}
 
-	/**
-	 * Default path of the health-endpoint to be used for the health-url of the discovered service.
-	 *
-	 * @param healthEndpointPath the path for the health-endpoint.
-	 */
+	public String getManagementContextPath() {
+		return managementContextPath;
+	}
+
 	public void setHealthEndpointPath(String healthEndpointPath) {
 		this.healthEndpointPath = healthEndpointPath;
+	}
+
+	public String getHealthEndpointPath() {
+		return healthEndpointPath;
 	}
 }

@@ -88,20 +88,40 @@ public class MailNotifier extends AbstractStatusChangeNotifier {
 		this.to = Arrays.copyOf(to, to.length);
 	}
 
+	public String[] getTo() {
+		return Arrays.copyOf(to, to.length);
+	}
+
 	public void setCc(String[] cc) {
 		this.cc = Arrays.copyOf(cc, cc.length);
+	}
+
+	public String[] getCc() {
+		return Arrays.copyOf(cc, cc.length);
 	}
 
 	public void setFrom(String from) {
 		this.from = from;
 	}
 
+	public String getFrom() {
+		return from;
+	}
+
 	public void setSubject(String subject) {
 		this.subject = parser.parseExpression(subject, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
+	public String getSubject() {
+		return subject.getExpressionString();
+	}
+
 	public void setText(String text) {
 		this.text = parser.parseExpression(text, ParserContext.TEMPLATE_EXPRESSION);
+	}
+
+	public String getText() {
+		return text.getExpressionString();
 	}
 
 }

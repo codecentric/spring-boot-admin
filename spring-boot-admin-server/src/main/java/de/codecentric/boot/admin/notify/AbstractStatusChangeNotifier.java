@@ -52,4 +52,7 @@ public abstract class AbstractStatusChangeNotifier extends AbstractEventNotifier
 		this.ignoreChanges = copy;
 	}
 
+	public String[] getIgnoreChanges() {
+		return ignoreChanges;
+	}
 }

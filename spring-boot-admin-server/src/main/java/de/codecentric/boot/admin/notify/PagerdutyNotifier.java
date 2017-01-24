@@ -15,8 +15,9 @@
  */
 package de.codecentric.boot.admin.notify;
 
+import static java.util.Collections.singletonList;
+
 import java.net.URI;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -103,7 +104,7 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 				context.put("type", "link");
 				context.put("href", event.getApplication().getHealthUrl());
 				context.put("text", "Application health-endpoint");
-				result.put("contexts", Arrays.asList(context));
+				result.put("contexts", singletonList(context));
 			}
 		}
 
@@ -127,20 +128,40 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 		this.url = url;
 	}
 
+	public URI getUrl() {
+		return url;
+	}
+
 	public void setClient(String client) {
 		this.client = client;
+	}
+
+	public String getClient() {
+		return client;
 	}
 
 	public void setClientUrl(URI clientUrl) {
 		this.clientUrl = clientUrl;
 	}
 
+	public URI getClientUrl() {
+		return clientUrl;
+	}
+
 	public void setServiceKey(String serviceKey) {
 		this.serviceKey = serviceKey;
 	}
 
+	public String getServiceKey() {
+		return serviceKey;
+	}
+
 	public void setDescription(String description) {
 		this.description = parser.parseExpression(description, ParserContext.TEMPLATE_EXPRESSION);
+	}
+
+	public String getDescription() {
+		return description.getExpressionString();
 	}
 
 	public void setRestTemplate(RestTemplate restTemplate) {

@@ -115,20 +115,40 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
 		this.url = url;
 	}
 
+	public URI getUrl() {
+		return url;
+	}
+
 	public void setAuthToken(String authToken) {
 		this.authToken = authToken;
+	}
+
+	public String getAuthToken() {
+		return authToken;
 	}
 
 	public void setRoomId(String roomId) {
 		this.roomId = roomId;
 	}
 
+	public String getRoomId() {
+		return roomId;
+	}
+
 	public void setNotify(boolean notify) {
 		this.notify = notify;
 	}
 
+	public boolean isNotify() {
+		return notify;
+	}
+
 	public void setDescription(String description) {
 		this.description = parser.parseExpression(description, ParserContext.TEMPLATE_EXPRESSION);
+	}
+
+	public String getDescription() {
+		return description.getExpressionString();
 	}
 
 	public void setRestTemplate(RestTemplate restTemplate) {

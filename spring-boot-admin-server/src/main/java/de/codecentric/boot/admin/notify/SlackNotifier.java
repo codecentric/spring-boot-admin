@@ -62,26 +62,6 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
 		this.restTemplate = restTemplate;
 	}
 
-	public void setWebhookUrl(URI webhookUrl) {
-		this.webhookUrl = webhookUrl;
-	}
-
-	public void setChannel(String channel) {
-		this.channel = channel;
-	}
-
-	public void setIcon(String icon) {
-		this.icon = icon;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public void setMessage(String message) {
-		this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
-	}
-
 	protected Object createMessage(ClientApplicationEvent event) {
 		Map<String, Object> messageJson = new HashMap<>();
 		messageJson.put("username", username);
@@ -110,5 +90,45 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
 		} else {
 			return "#439FE0";
 		}
+	}
+
+	public URI getWebhookUrl() {
+		return webhookUrl;
+	}
+
+	public void setWebhookUrl(URI webhookUrl) {
+		this.webhookUrl = webhookUrl;
+	}
+
+	public String getChannel() {
+		return channel;
+	}
+
+	public void setChannel(String channel) {
+		this.channel = channel;
+	}
+
+	public String getIcon() {
+		return icon;
+	}
+
+	public void setIcon(String icon) {
+		this.icon = icon;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getMessage() {
+		return message.getExpressionString();
+	}
+
+	public void setMessage(String message) {
+		this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
 	}
 }
