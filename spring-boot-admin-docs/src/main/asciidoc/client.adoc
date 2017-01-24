@@ -41,7 +41,7 @@ To interact with JMX-beans in the admin UI you have to include https://jolokia.o
 ----
 
 [[loglevel-management]]
-=== Loglevel managment ===
+=== Loglevel management ===
 For applications using Spring Boot 1.5.x (or later) you can manage loglevels out-of-the-box.
 For applications using older versions of Spring Boot the loglevel management is only available for http://logback.qos.ch/[Logback]. It is accessed via JMX so <<jmx-bean-management, include Jolokia>> in your application. In addition you have configure Logback's `JMXConfigurator`:
 
@@ -118,7 +118,7 @@ spring.boot.admin.password
 | `false`
 
 | spring.boot.admin.client.metadata.*
-| Metadata key-value-pairs to be asscoiated with this instance.
+| Metadata key-value-pairs to be associated with this instance.
 |
 |===
 

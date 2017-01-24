@@ -21,7 +21,7 @@ NOTE: When using Eureka, the `healthCheckUrl` known to Eureka is used for health
 | `true`
 
 | spring.boot.admin.discovery.converter.management-context-path
-| Will be appended to the service-url of the discovered service when the managment-url is converted by the `DefaultServiceInstanceConverter`.
+| Will be appended to the service-url of the discovered service when the management-url is converted by the `DefaultServiceInstanceConverter`.
 |
 
 | spring.boot.admin.discovery.converter.health-endpoint-path
@@ -42,15 +42,15 @@ user.password
 | Credentials being used to access the endpoints.
 |
 
-| managment.port
+| management.port
 | The port is substituted in the service URL and will be used for accessing the actuator endpoints.
 |
 
-| managment.path
-| The path is appendend to the service URL and will be used for accessing the actuator endpoints.
+| management.path
+| The path is appended to the service URL and will be used for accessing the actuator endpoints.
 | `${spring.boot.admin.discovery.converter.mangement-context-path}`
 
 | health.path
-| The path is appendend to the service URL and will be used for the health-checking. Ignored by the `EurekaServiceInstanceConverter`.
+| The path is appended to the service URL and will be used for the health-checking. Ignored by the `EurekaServiceInstanceConverter`.
 | `${spring.boot.admin.discovery.converter.health-endpoint}`
 |===

@@ -69,7 +69,7 @@ Each application that wants to register has to include the Spring Boot Admin Cli
 .application.yml
 ----
 spring.boot.admin.url: http://localhost:8080  #<1>
-managment.security.enabled: false  #<2>
+management.security.enabled: false  #<2>
 ----
 <1> The URL of the Spring Boot Admin Server to register at.
 <2> Since Spring Boot 1.5.x all endpoints are secured by default. For the sake of brevity we're disabling the security for now. Have a look at the <<securing-spring-boot-admin,security section>> on how to deal with secured endpoints.
