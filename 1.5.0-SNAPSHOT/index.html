@@ -517,7 +517,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 1.5.0-SNAPSHOT,</span>
-<span id="revdate">16.01.2017</span>
+<span id="revdate">24.01.2017</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -538,7 +538,7 @@ table.CodeRay td.code>pre{padding:0}
 <ul class="sectlevel2">
 <li><a href="#show-version-in-application-list">3.1. Show version in application list</a></li>
 <li><a href="#jmx-bean-management">3.2. JMX-bean management</a></li>
-<li><a href="#loglevel-management">3.3. Loglevel managment</a></li>
+<li><a href="#loglevel-management">3.3. Loglevel management</a></li>
 <li><a href="#spring-boot-admin-client">3.4. Spring Boot Admin Client</a></li>
 </ul>
 </li>
@@ -683,7 +683,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <div class="title">application.yml</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.url</span>: <span class="string"><span class="content">http://localhost:8080  </span></span><i class="conum" data-value="1"></i><b>(1)</b>
-<span class="key">managment.security.enabled</span>: <span class="string"><span class="content">false  </span></span> <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+<span class="key">management.security.enabled</span>: <span class="string"><span class="content">false  </span></span> <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -838,7 +838,7 @@ You can include the Spring Boot Admin Server to your Eureka server. Setup everyt
 </div>
 </div>
 <div class="sect2">
-<h3 id="loglevel-management"><a class="anchor" href="#loglevel-management"></a>3.3. Loglevel managment</h3>
+<h3 id="loglevel-management"><a class="anchor" href="#loglevel-management"></a>3.3. Loglevel management</h3>
 <div class="paragraph">
 <p>For applications using Spring Boot 1.5.x (or later) you can manage loglevels out-of-the-box.
 For applications using older versions of Spring Boot the loglevel management is only available for <a href="http://logback.qos.ch/">Logback</a>. It is accessed via JMX so <a href="#jmx-bean-management">include Jolokia</a> in your application. In addition you have configure Logback&#8217;s <code>JMXConfigurator</code>:</p>
@@ -966,7 +966,7 @@ spring.boot.admin.password</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.metadata.*</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Metadata key-value-pairs to be asscoiated with this instance.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Metadata key-value-pairs to be associated with this instance.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 </tbody>
@@ -1094,7 +1094,7 @@ When using Eureka, the <code>healthCheckUrl</code> known to Eureka is used for h
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.discovery.converter.management-context-path</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Will be appended to the service-url of the discovered service when the managment-url is converted by the <code>DefaultServiceInstanceConverter</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Will be appended to the service-url of the discovered service when the management-url is converted by the <code>DefaultServiceInstanceConverter</code>.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
@@ -1131,18 +1131,18 @@ user.password</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">managment.port</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">management.port</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The port is substituted in the service URL and will be used for accessing the actuator endpoints.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">managment.path</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The path is appendend to the service URL and will be used for accessing the actuator endpoints.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">management.path</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The path is appended to the service URL and will be used for accessing the actuator endpoints.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>${spring.boot.admin.discovery.converter.mangement-context-path}</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">health.path</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The path is appendend to the service URL and will be used for the health-checking. Ignored by the <code>EurekaServiceInstanceConverter</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The path is appended to the service URL and will be used for the health-checking. Ignored by the <code>EurekaServiceInstanceConverter</code>.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>${spring.boot.admin.discovery.converter.health-endpoint}</code></p></td>
 </tr>
 </tbody>
@@ -1927,18 +1927,18 @@ When using this approach the SBA Server decides whether or not the user can acce
 <div class="sect1">
 <h2 id="faqs"><a class="anchor" href="#faqs"></a>6. FAQs</h2>
 <div class="sectionbody">
-<div class="qlist qanda">
-<ol>
-<li>
-<p><em>Can I include spring-boot-admin into my business application?</em></p>
+<div class="dlist q-and-a">
+<dl>
+<dt>Can I include spring-boot-admin into my business application?</dt>
+<dd>
 <p><strong>tl;dr</strong> You can, but you shouldn&#8217;t.<br>
 You can set <code>spring.boot.admin.context-path</code> to alter the path where the UI and REST-API is served, but depending on the complexity of your application you might get in trouble. On the other hand in my opinion it makes no sense for an application to monitor itself. In case your application goes down your monitoring tool also does.</p>
-</li>
-<li>
-<p><em>How do I customize the UI?</em></p>
+</dd>
+<dt>How do I customize the UI?</dt>
+<dd>
 <p>You can only customize the UI by copying and modifying the source of <code>spring-boot-admin-ui</code> and adding your own module to your classpath.</p>
-</li>
-</ol>
+</dd>
+</dl>
 </div>
 </div>
 </div>
