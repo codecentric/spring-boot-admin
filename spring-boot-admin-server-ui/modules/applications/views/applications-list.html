@@ -4,30 +4,22 @@
     <input placeholder="Filter" class="input-xxlarge" type="search" ng-model="searchFilter" />
   </div>
   <table class="table application-list">
-    <col style="width: 30px; ">
-    <col style="width: 300px;">
-    <col style="width: 150px;">
-    <col style="width: auto;">
-    <col style="width: 100px;">
-    <col style="width: 250px;">
     <thead>
       <tr>
         <th class="group-column" title="{{expandAll ? 'collapse' : 'expand'}} all" ng-click="toggleExpandAll()"><i class="fa" ng-class="{'fa-plus': !expandAll, 'fa-minus': expandAll}"></i></th>
-        <th><span class="sortable" ng-class="orderByCssClass('name')" ng-click="orderBy('name')">Application</span> / <span class="sortable"
+        <th class="name-column"><span class="sortable" ng-class="orderByCssClass('name')" ng-click="orderBy('name')">Application</span> / <span class="sortable"
             ng-class="orderByCssClass('healthUrl')" ng-click="orderBy('healthUrl')">URL</span></th>
-        <th><span class="sortable" ng-class="orderByCssClass('info.build.version')" ng-click="orderBy('info.build.version')">Version</span></th>
-        <th>Info</th>
-        <th>Status</th>
-        <th></th>
+        <th class="version-column"><span class="sortable" ng-class="orderByCssClass('info.build.version')" ng-click="orderBy('info.build.version')">Version</span></th>
+        <th class="info-column">Info</th>
+        <th class="status-column">Status</th>
       </tr>
     </thead>
     <tbody>
       <tr ng-repeat-start="application in filteredApps = (applicationGroups.applications|orderBy:order.column:order.descending|orderBy:'group.status':false|filter:searchFilter) track by application.id"
         ng-show="application.group.applicationCount > 1 &amp;&amp; (application.group.collapsed || application.group.collapsed == undefined) &amp;&amp; ($first || filteredApps[$index - 1].group.name != application.group.name) &amp;&amp; (searchFilter == '' || searchFilter == undefined)">
         <td class="group-column" ng-click="application.group.collapsed = false"><i class="fa fa-plus"></i></td>
-        <td ng-bind="application.group.name"></td>
-        <td><span ng-bind="application.group.version"></span></td>
-        <td></td>
+        <td class="name-column" ng-bind="application.group.name"></td>
+        <td class="version-column"><span ng-bind="application.group.version"></span></td>
         <td colspan="2">
           <span ng-repeat-start="(status, count) in application.group.statusCounter track by status" class="status-{{status}}" ng-bind="count + ' ' + status"></span>
           <span ng-repeat-end ng-hide="$last"> / </span>
@@ -38,21 +30,23 @@
           rowspan="{{ (searchFilter != '' &amp;&amp; searchFilter != undefined) ? 1 : application.group.applicationCount }}"
           ng-click="application.group.collapsed = application.group.applicationCount > 1"><i ng-show="application.group.applicationCount > 1 &amp;&amp; (searchFilter == '' || searchFilter == undefined)"
             class="fa fa-minus"></i></td>
-        <td>{{ application.name }} ({{ application.id }})<br/>
+        <td class="name-column">{{ application.name }} ({{ application.id }})<br/>
           <span class="muted" ng-bind="application.serviceUrl || application.managementUrl || application.healthUrl"></span></td>
-        <td ng-bind="application.info.build.version || application.info.version"></td>
-        <td class="scroll">
+        <td class="version-column" ng-bind="application.info.build.version || application.info.version"></td>
+        <td class="info-column scroll">
           <sba-limited-text max-lines="3" bind-html="application.info | yaml | linkify:60"></sba-limited-text>
         </td>
-        <td>
-          <sba-status-info status-info="application.statusInfo"></sba-status-info>
-          <span ng-show="application.refreshing"><i class="fa fa-spinner fa-pulse fa-lg"></i></span>
-        </td>
-        <td>
-          <sba-notification-settings ng-show="notificationFilters" application="application" filters="notificationFilters" refresh-callback="loadFilters()"></sba-notification-settings>
-          <sba-btn-detail-views details-for="application"></sba-btn-detail-views>
-          <div class="btn-group" title="remove" ng-show="application.source == 'http-api'">
-            <a class="btn btn-danger" ng-click="remove(application)"><i class="fa fa-times"></i></a>
+        <td class="status-column">
+          <div>
+            <sba-status-info status-info="application.statusInfo"></sba-status-info>
+            <span ng-show="application.refreshing"><i class="fa fa-spinner fa-pulse fa-lg"></i></span>
+          </div>
+          <div>
+            <sba-notification-settings ng-show="notificationFilters" application="application" filters="notificationFilters" refresh-callback="loadFilters()"></sba-notification-settings>
+            <sba-btn-detail-views details-for="application"></sba-btn-detail-views>
+            <div class="btn-group" title="remove" ng-show="application.source == 'http-api'">
+              <a class="btn btn-danger" ng-click="remove(application)"><i class="fa fa-times"></i></a>
+            </div>
           </div>
         </td>
       </tr>

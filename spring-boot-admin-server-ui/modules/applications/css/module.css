@@ -74,7 +74,6 @@
 .application-list {
   background-color: #f9f9f9;
 }
-
 table.application-list {
   table-layout: fixed;
   width: 100%;
@@ -83,8 +82,38 @@ table.application-list {
   overflow-x: auto;
   max-width: 400px;
 }
+.application-list .group-column {
+  width:30px;
+}
+.application-list .name-column {
+    width: 300px;
+}
+.application-list .version-column {
+    width: 140px;
+}
+.application-list .info-column {
+    width: auto;
+}
+.application-list .status-column {
+    width: 240px;
+}
+.application-list td.status-column div {
+  text-align: center;
+  padding-bottom: 3px;
+}
 
-.table .group-column {
+@media (max-width: 992px) {
+  .application-list .info-column {
+    display: none;
+  }
+
+  .application-list .name-column {
+    width: auto;
+  }
+}
+
+
+.application-list td.group-column {
   border-right: 1px solid #dddddd;
   color: #999999;
   vertical-align: middle;
@@ -92,7 +121,7 @@ table.application-list {
   cursor: pointer;
 }
 
-.table .group-column:hover {
+.application-list td.group-column:hover {
   background-color: #c7c7c7;
   color: #f9f9f9;
 }
