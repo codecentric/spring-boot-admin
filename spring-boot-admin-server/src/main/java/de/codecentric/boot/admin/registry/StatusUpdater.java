@@ -80,12 +80,12 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
 		}
 	}
 
-	private Info queryInfo(Application application) {
+	protected Info queryInfo(Application application) {
 		try {
 			ResponseEntity<Map<String, Serializable>> response = applicationOps
 					.getInfo(application);
 			if (response.getStatusCode().is2xxSuccessful() && response.hasBody()) {
-				return Info.from(response.getBody());
+				return convertInfo(response);
 			} else {
 				LOGGER.info("Couldn't retrieve info for {}: {} - {}", application,
 						response.getStatusCode(), response.getBody());
@@ -93,8 +93,16 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
 			}
 		} catch (Exception ex) {
 			LOGGER.warn("Couldn't retrieve info for {}", application, ex);
-			return Info.empty();
+			return convertInfo(ex);
 		}
+	}
+
+	protected Info convertInfo(ResponseEntity<Map<String, Serializable>> response) {
+		return Info.from(response.getBody());
+	}
+
+	protected Info convertInfo(Exception ex) {
+		return Info.empty();
 	}
 
 	protected StatusInfo queryStatus(Application application) {
@@ -111,7 +119,7 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
 		}
 	}
 
-	private StatusInfo convertStatusInfo(ResponseEntity<Map<String, Serializable>> response) {
+	protected StatusInfo convertStatusInfo(ResponseEntity<Map<String, Serializable>> response) {
 		if (response.hasBody() && response.getBody().get("status") instanceof String) {
 			return StatusInfo.valueOf((String) response.getBody().get("status"),
 					response.getBody());
@@ -128,7 +136,7 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
 		return StatusInfo.ofDown(details);
 	}
 
-	private StatusInfo convertStatusInfo(Exception ex) {
+	protected StatusInfo convertStatusInfo(Exception ex) {
 		Map<String, Serializable> details = new HashMap<>();
 		details.put("message", ex.getMessage());
 		details.put("exception", ex.getClass().getName());
