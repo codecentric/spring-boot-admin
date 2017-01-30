@@ -1,11 +1,4 @@
 <div class="container">
-  <div ng-if="errorWhileListing">
-    <p>To make the JMX section work you need to make the /jolokia-endpoint accessible.
-      <br/> Include the jolokia-core.jar in your spring-boot-application:
-      <pre>&lt;dependency&gt; &lt;groupId>org.jolokia&lt;/groupId&gt; &lt;artifactId>jolokia-core&lt;/artifactId&gt; &lt;/dependency&gt;
-      </pre>
-    </p>
-  </div>
   <pre class="alert alert-error" ng-if="error"><b>Error:</b><br/>{{ error | json }}</pre>
   <sba-accordion>
     <sba-accordion-group ng-repeat="domain in domains | orderBy:'name' track by domain.name">

@@ -33,10 +33,21 @@ module.config(function ($stateProvider) {
   });
 });
 
-module.run(function (ApplicationViews, $sce) {
+module.run(function (ApplicationViews, $sce, $http) {
   ApplicationViews.register({
     order: 30,
     title: $sce.trustAsHtml('<i class="fa fa-sliders fa-fw"></i>Logging'),
-    state: 'applications.logging'
+    state: 'applications.logging',
+    show: function (application) {
+      return $http.head('api/applications/' + application.id + '/logging').then(function () {
+        return true;
+      }).catch(function () {
+        return $http.head('api/applications/' + application.id + '/jolokia').then(function () {
+          return true;
+        }).catch(function () {
+          return false;
+        });
+      });
+    }
   });
 });

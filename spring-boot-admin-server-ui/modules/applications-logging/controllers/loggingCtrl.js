@@ -90,12 +90,10 @@ module.exports = function ($scope, application, ApplicationLogging) {
           $scope.loggers = loggers;
         }).catch(function (response) {
           $scope.error = response;
-          $scope.errorWhileListing = true;
         });
       }
     ).catch(function (response) {
       $scope.error = response;
-      $scope.errorWhileListing = true;
     });
   };
 

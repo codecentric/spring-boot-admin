@@ -25,6 +25,5 @@ module.exports = function ($scope, application, ApplicationJmx) {
     $scope.domains = domains;
   }).catch(function (response) {
     $scope.error = response;
-    $scope.errorWhileListing = true;
   });
 };
