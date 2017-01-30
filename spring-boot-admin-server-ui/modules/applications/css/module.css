@@ -97,9 +97,14 @@ table.application-list {
 .application-list .status-column {
     width: 240px;
 }
-.application-list td.status-column div {
+
+.application-list td.status-column > div {
   text-align: center;
   padding-bottom: 3px;
+}
+
+.application-list td.status-column > div * {
+  text-align: left;
 }
 
 @media (max-width: 992px) {
@@ -111,7 +116,6 @@ table.application-list {
     width: auto;
   }
 }
-
 
 .application-list td.group-column {
   border-right: 1px solid #dddddd;
