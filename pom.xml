@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2014-2017 the original author or authors.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.4.RELEASE</version>
+        <version>2.0.0.BUILD-SNAPSHOT</version>
         <relativePath/>
     </parent>
     <groupId>de.codecentric</groupId>
@@ -18,8 +34,8 @@
     <properties>
         <java.version>1.8</java.version>
         <main.basedir>${basedir}</main.basedir>
-        <spring-boot.version>1.5.4.RELEASE</spring-boot.version>
-        <spring-cloud.version>Dalston.SR1</spring-cloud.version>
+        <spring-boot.version>2.0.0.BUILD-SNAPSHOT</spring-boot.version>
+        <spring-cloud.version>Finchley.BUILD-SNAPSHOT</spring-cloud.version>
         <hystrix-dashboard.version>1.5.5</hystrix-dashboard.version>
         <build-plugin.jacoco.version>0.7.7.201606060606</build-plugin.jacoco.version>
         <build-plugin.coveralls.version>4.2.0</build-plugin.coveralls.version>
@@ -30,11 +46,7 @@
     </properties>
     <modules>
         <module>spring-boot-admin-server</module>
-        <module>spring-boot-admin-server-ui</module>
-        <module>spring-boot-admin-server-ui-activiti</module>
-        <module>spring-boot-admin-server-ui-hystrix</module>
-        <module>spring-boot-admin-server-ui-turbine</module>
-        <module>spring-boot-admin-server-ui-login</module>
+        <!-- module>spring-boot-admin-server-ui</module -->
         <module>spring-boot-admin-samples</module>
         <module>spring-boot-admin-starter-client</module>
         <module>spring-boot-admin-docs</module>
@@ -228,26 +240,6 @@
             <dependency>
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-server-ui</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>de.codecentric</groupId>
-                <artifactId>spring-boot-admin-server-ui-activiti</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>de.codecentric</groupId>
-                <artifactId>spring-boot-admin-server-ui-hystrix</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>de.codecentric</groupId>
-                <artifactId>spring-boot-admin-server-ui-turbine</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>de.codecentric</groupId>
-                <artifactId>spring-boot-admin-server-ui-login</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

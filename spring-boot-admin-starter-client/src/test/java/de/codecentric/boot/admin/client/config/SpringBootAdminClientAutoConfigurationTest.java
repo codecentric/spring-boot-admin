@@ -6,8 +6,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
-import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
@@ -44,8 +43,7 @@ public class SpringBootAdminClientAutoConfigurationTest {
     private void load(final String... environment) {
         SpringApplication springApplication = new SpringApplication(TestClientApplication.class);
         springApplication.addInitializers(
-                (ApplicationContextInitializer<ConfigurableApplicationContext>) applicationContext -> EnvironmentTestUtils
-                        .addEnvironment(applicationContext, environment));
+                applicationContext -> TestPropertyValues.of(environment).applyTo(applicationContext));
         this.context = springApplication.run("--server.port=0");
     }
 

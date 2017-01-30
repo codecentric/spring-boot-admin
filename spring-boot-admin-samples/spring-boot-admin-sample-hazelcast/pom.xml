@@ -14,10 +14,10 @@
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-server</artifactId>
         </dependency>
-        <dependency>
+        <!-- dependency>
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-server-ui</artifactId>
-        </dependency>
+        </dependency -->
         <dependency>
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-starter-client</artifactId>
@@ -44,7 +44,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>de.codecentric.boot.admin.SpringBootAdminApplication</mainClass>
+                    <mainClass>de.codecentric.boot.admin.TestApplication</mainClass>
                     <addResources>false</addResources>
                 </configuration>
             </plugin>

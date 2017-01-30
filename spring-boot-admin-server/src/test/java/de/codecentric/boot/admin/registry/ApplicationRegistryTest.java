@@ -124,7 +124,7 @@ public class ApplicationRegistryTest {
 				Application.create("abc").withHealthUrl("http://localhost/health").build());
 		Application app2 = registry.register(
 				Application.create("abc").withHealthUrl("http://localhost:8081/health").build());
-		Application app3 = registry.register(
+		registry.register(
 				Application.create("zzz").withHealthUrl("http://localhost:8082/health").build());
 
 		Collection<Application> applications = registry.getApplicationsByName("abc");

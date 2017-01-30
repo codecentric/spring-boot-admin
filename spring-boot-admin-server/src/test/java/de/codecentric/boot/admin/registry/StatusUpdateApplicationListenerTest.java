@@ -13,7 +13,6 @@ import java.util.concurrent.ScheduledFuture;
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -22,6 +21,7 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.model.Application;
+import org.springframework.web.context.WebApplicationContext;
 
 public class StatusUpdateApplicationListenerTest {
 
@@ -40,7 +40,7 @@ public class StatusUpdateApplicationListenerTest {
 				mock(ConfigurableWebApplicationContext.class)));
 		verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(10_000L));
 
-		listener.onContextClosed(new ContextClosedEvent(mock(EmbeddedWebApplicationContext.class)));
+		listener.onContextClosed(new ContextClosedEvent(mock(WebApplicationContext.class)));
 		verify(task).cancel(true);
 	}
 
@@ -49,7 +49,7 @@ public class StatusUpdateApplicationListenerTest {
 		StatusUpdater statusUpdater = mock(StatusUpdater.class);
 		ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
 		when(scheduler.submit(any(Runnable.class))).then((Answer<Future<?>>) invocation -> {
-            invocation.getArgumentAt(0, Runnable.class).run();
+            invocation.<Runnable>getArgument(0).run();
             SettableListenableFuture<?> future = new SettableListenableFuture<Void>();
             future.set(null);
             return future;

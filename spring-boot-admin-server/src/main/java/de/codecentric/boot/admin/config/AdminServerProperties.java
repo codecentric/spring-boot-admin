@@ -1,11 +1,25 @@
+/*
+ * Copyright 2014-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package de.codecentric.boot.admin.config;
 
-import java.util.Arrays;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("spring.boot.admin")
 public class AdminServerProperties {
-
     /**
      * The context-path prefixes the path where the Admin Servers statics assets and api should be
      * served. Relative to the Dispatcher-Servlet.
@@ -13,8 +27,6 @@ public class AdminServerProperties {
     private String contextPath = "";
 
     private MonitorProperties monitor = new MonitorProperties();
-
-    private RoutesProperties routes = new RoutesProperties();
 
     public void setContextPath(String pathPrefix) {
         if (!pathPrefix.startsWith("/") || pathPrefix.endsWith("/")) {
@@ -29,10 +41,6 @@ public class AdminServerProperties {
 
     public MonitorProperties getMonitor() {
         return monitor;
-    }
-
-    public RoutesProperties getRoutes() {
-        return routes;
     }
 
     public static class MonitorProperties {
@@ -90,18 +98,4 @@ public class AdminServerProperties {
         }
     }
 
-    public static class RoutesProperties {
-        /**
-         * Endpoints to be proxified by spring boot admin.
-         */
-        private String[] endpoints = {"env", "metrics", "trace", "dump", "jolokia", "info", "logfile", "refresh", "flyway", "liquibase", "heapdump", "loggers", "auditevents"};
-
-        public String[] getEndpoints() {
-            return endpoints;
-        }
-
-        public void setEndpoints(String[] endpoints) {
-            this.endpoints = Arrays.copyOf(endpoints, endpoints.length);
-        }
-    }
 }

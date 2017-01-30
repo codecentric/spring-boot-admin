@@ -15,16 +15,13 @@
  */
 package de.codecentric.boot.admin.registration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import de.codecentric.boot.admin.client.config.ClientProperties;
+import de.codecentric.boot.admin.client.registration.Application;
+import de.codecentric.boot.admin.client.registration.ApplicationFactory;
+import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
 
 import java.util.Collections;
 import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
@@ -35,139 +32,142 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import de.codecentric.boot.admin.client.config.ClientProperties;
-import de.codecentric.boot.admin.client.registration.Application;
-import de.codecentric.boot.admin.client.registration.ApplicationFactory;
-import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ApplicationRegistratorTest {
 
-	private ClientProperties client;
-	private ApplicationRegistrator registrator;
-	private RestTemplate restTemplate;
-	private HttpHeaders headers;
+    private ClientProperties client;
+    private ApplicationRegistrator registrator;
+    private RestTemplate restTemplate;
+    private HttpHeaders headers;
 
-	@Before
-	public void setup() {
-		restTemplate = mock(RestTemplate.class);
+    @Before
+    public void setup() {
+        restTemplate = mock(RestTemplate.class);
 
-		client = new ClientProperties();
-		client.setUrl(new String[] { "http://sba:8080", "http://sba2:8080" });
+        client = new ClientProperties();
+        client.setUrl(new String[]{"http://sba:8080", "http://sba2:8080"});
 
-		ApplicationFactory factory = mock(ApplicationFactory.class);
-		when(factory.createApplication()).thenReturn(
-				Application.create("AppName").withManagementUrl("http://localhost:8080/mgmt")
-						.withHealthUrl("http://localhost:8080/health")
-						.withServiceUrl("http://localhost:8080").build());
+        ApplicationFactory factory = mock(ApplicationFactory.class);
+        when(factory.createApplication()).thenReturn(Application.create("AppName")
+                                                                .withManagementUrl("http://localhost:8080/mgmt")
+                                                                .withHealthUrl("http://localhost:8080/health")
+                                                                .withServiceUrl("http://localhost:8080")
+                                                                .build());
 
-		registrator = new ApplicationRegistrator(restTemplate, client, factory);
+        registrator = new ApplicationRegistrator(restTemplate, client, factory);
 
-		headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-	}
+        headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+    }
 
-	@SuppressWarnings("rawtypes")
-	@Test
-	public void register_successful() {
-		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class)))
-				.thenReturn(new ResponseEntity<>(Collections.singletonMap("id", "-id-"),
-                        HttpStatus.CREATED));
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void register_successful() {
+        when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class))).thenReturn(
+                new ResponseEntity<>(Collections.singletonMap("id", "-id-"), HttpStatus.CREATED));
 
-		assertThat(registrator.register()).isTrue();
+        assertThat(registrator.register()).isTrue();
 
-		Application applicationRef = Application.create("AppName")
-				.withHealthUrl("http://localhost:8080/health")
-				.withManagementUrl("http://localhost:8080/mgmt")
-				.withServiceUrl("http://localhost:8080").build();
-		verify(restTemplate).postForEntity("http://sba:8080/api/applications",
-				new HttpEntity<>(applicationRef, headers), Map.class);
-	}
+        Application applicationRef = Application.create("AppName")
+                                                .withHealthUrl("http://localhost:8080/health")
+                                                .withManagementUrl("http://localhost:8080/mgmt")
+                                                .withServiceUrl("http://localhost:8080")
+                                                .build();
+        verify(restTemplate).postForEntity("http://sba:8080/api/applications",
+                new HttpEntity<>(applicationRef, headers), Map.class);
+    }
 
-	@Test
-	public void register_failed() {
-		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class),
-				eq(Application.class))).thenThrow(new RestClientException("Error"));
+    @Test
+    public void register_failed() {
+        when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Application.class))).thenThrow(
+                new RestClientException("Error"));
 
-		assertThat(registrator.register()).isFalse();
-	}
+        assertThat(registrator.register()).isFalse();
+    }
 
-	@SuppressWarnings("rawtypes")
-	@Test
-	public void register_retry() {
-		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class),
-				eq(Application.class))).thenThrow(new RestClientException("Error"));
-		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class)))
-				.thenReturn(new ResponseEntity<>(Collections.singletonMap("id", "-id-"),
-                        HttpStatus.CREATED));
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void register_retry() {
+        when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Application.class))).thenThrow(
+                new RestClientException("Error"));
+        when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class))).thenReturn(
+                new ResponseEntity<>(Collections.singletonMap("id", "-id-"), HttpStatus.CREATED));
 
-		assertThat(registrator.register()).isTrue();
-	}
+        assertThat(registrator.register()).isTrue();
+    }
 
-	@SuppressWarnings("rawtypes")
-	@Test
-	public void deregister() {
-		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class)))
-				.thenReturn(new ResponseEntity<>(Collections.singletonMap("id", "-id-"),
-                        HttpStatus.CREATED));
-		registrator.register();
-		assertThat(registrator.getRegisteredId()).isEqualTo("-id-");
-		registrator.deregister();
-		assertThat(registrator.getRegisteredId()).isNull();
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void deregister() {
+        when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class))).thenReturn(
+                new ResponseEntity<>(Collections.singletonMap("id", "-id-"), HttpStatus.CREATED));
+        registrator.register();
+        assertThat(registrator.getRegisteredId()).isEqualTo("-id-");
+        registrator.deregister();
+        assertThat(registrator.getRegisteredId()).isNull();
 
-		verify(restTemplate).delete("http://sba:8080/api/applications/-id-");
-	}
+        verify(restTemplate).delete("http://sba:8080/api/applications/-id-");
+    }
 
-	@SuppressWarnings("rawtypes")
-	@Test
-	public void register_multiple() {
-		client.setRegisterOnce(false);
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void register_multiple() {
+        client.setRegisterOnce(false);
 
-		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class)))
-				.thenReturn(new ResponseEntity<>(Collections.singletonMap("id", "-id-"),
-                        HttpStatus.CREATED));
+        when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class))).thenReturn(
+                new ResponseEntity<>(Collections.singletonMap("id", "-id-"), HttpStatus.CREATED));
 
-		assertThat(registrator.register()).isTrue();
+        assertThat(registrator.register()).isTrue();
 
-		Application applicationRef = Application.create("AppName")
-				.withHealthUrl("http://localhost:8080/health")
-				.withManagementUrl("http://localhost:8080/mgmt")
-				.withServiceUrl("http://localhost:8080").build();
-		verify(restTemplate).postForEntity("http://sba:8080/api/applications",
-				new HttpEntity<>(applicationRef, headers), Map.class);
-		verify(restTemplate).postForEntity("http://sba2:8080/api/applications",
-				new HttpEntity<>(applicationRef, headers), Map.class);
-	}
+        Application applicationRef = Application.create("AppName")
+                                                .withHealthUrl("http://localhost:8080/health")
+                                                .withManagementUrl("http://localhost:8080/mgmt")
+                                                .withServiceUrl("http://localhost:8080")
+                                                .build();
+        verify(restTemplate).postForEntity("http://sba:8080/api/applications",
+                new HttpEntity<>(applicationRef, headers), Map.class);
+        verify(restTemplate).postForEntity("http://sba2:8080/api/applications",
+                new HttpEntity<>(applicationRef, headers), Map.class);
+    }
 
-	@SuppressWarnings("rawtypes")
-	@Test
-	public void register_multiple_one_failure() {
-		client.setRegisterOnce(false);
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void register_multiple_one_failure() {
+        client.setRegisterOnce(false);
 
-		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class)))
-				.thenReturn(new ResponseEntity<>(Collections.singletonMap("id", "-id-"),
-                        HttpStatus.CREATED))
-				.thenThrow(new RestClientException("Error"));
+        when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class))).thenReturn(
+                new ResponseEntity<>(Collections.singletonMap("id", "-id-"), HttpStatus.CREATED))
+                                                                                                 .thenThrow(
+                                                                                                         new RestClientException(
+                                                                                                                 "Error"));
 
-		assertThat(registrator.register()).isTrue();
+        assertThat(registrator.register()).isTrue();
 
-		Application applicationRef = Application.create("AppName")
-				.withHealthUrl("http://localhost:8080/health")
-				.withManagementUrl("http://localhost:8080/mgmt")
-				.withServiceUrl("http://localhost:8080").build();
-		verify(restTemplate).postForEntity("http://sba:8080/api/applications",
-				new HttpEntity<>(applicationRef, headers), Map.class);
-		verify(restTemplate).postForEntity("http://sba2:8080/api/applications",
-				new HttpEntity<>(applicationRef, headers), Map.class);
-	}
+        Application applicationRef = Application.create("AppName")
+                                                .withHealthUrl("http://localhost:8080/health")
+                                                .withManagementUrl("http://localhost:8080/mgmt")
+                                                .withServiceUrl("http://localhost:8080")
+                                                .build();
+        verify(restTemplate).postForEntity("http://sba:8080/api/applications",
+                new HttpEntity<>(applicationRef, headers), Map.class);
+        verify(restTemplate).postForEntity("http://sba2:8080/api/applications",
+                new HttpEntity<>(applicationRef, headers), Map.class);
+    }
 
-	@Test
-	public void register_multiple_all_failures() {
-		client.setRegisterOnce(false);
+    @Test
+    public void register_multiple_all_failures() {
+        client.setRegisterOnce(false);
 
-		when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class)))
-				.thenThrow(new RestClientException("Error"));
+        when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class))).thenThrow(
+                new RestClientException("Error"));
 
-		assertThat(registrator.register()).isFalse();
-	}
+        assertThat(registrator.register()).isFalse();
+    }
 }

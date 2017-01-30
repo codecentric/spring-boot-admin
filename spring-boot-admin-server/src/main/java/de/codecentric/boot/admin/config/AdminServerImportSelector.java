@@ -15,8 +15,11 @@
  */
 package de.codecentric.boot.admin.config;
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.DeferredImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.util.ClassUtils;
 
 /**
  * Defers the imports for our {@code @Configuration}-classes, because the need to be processed after
@@ -28,12 +31,16 @@ public class AdminServerImportSelector implements DeferredImportSelector {
 
 	@Override
 	public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-		return new String[] { NotifierConfiguration.class.getCanonicalName(),
+		String[] configs = {NotifierConfiguration.class.getCanonicalName(),
 				HazelcastStoreConfiguration.class.getCanonicalName(),
 				AdminServerCoreConfiguration.class.getCanonicalName(),
-				AdminServerWebConfiguration.class.getCanonicalName(),
-				DiscoveryClientConfiguration.class.getCanonicalName(),
-				RevereseZuulProxyConfiguration.class.getCanonicalName() };
+				AdminServerWebConfiguration.class.getCanonicalName()};
+
+		if (ClassUtils.isPresent("de.codecentric.boot.admin.ui.config.AdminServerWebUiConfiguration", this.getClass().getClassLoader())) {
+           configs =  Arrays.copyOf(configs, configs.length +1);
+           configs[configs.length -1] = "de.codecentric.boot.admin.ui.config.AdminServerWebUiConfiguration";
+		}
+		return configs;
 	}
 
 }

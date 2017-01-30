@@ -24,10 +24,10 @@
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-server</artifactId>
         </dependency>
-        <dependency>
+        <!-- dependency>
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-server-ui</artifactId>
-        </dependency>
+        </dependency -->
     </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName>

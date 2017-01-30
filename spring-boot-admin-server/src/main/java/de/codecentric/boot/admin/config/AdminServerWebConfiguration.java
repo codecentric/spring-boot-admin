@@ -19,20 +19,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
-import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.util.StringUtils;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,25 +41,17 @@ import de.codecentric.boot.admin.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.registry.web.RegistryController;
 import de.codecentric.boot.admin.web.AdminController;
 import de.codecentric.boot.admin.web.PrefixHandlerMapping;
-import de.codecentric.boot.admin.web.servlet.resource.ConcatenatingResourceResolver;
-import de.codecentric.boot.admin.web.servlet.resource.PreferMinifiedFilteringResourceResolver;
-import de.codecentric.boot.admin.web.servlet.resource.ResourcePatternResolvingResourceResolver;
 
 @Configuration
 public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 		implements ApplicationContextAware {
 	private final ApplicationEventPublisher publisher;
-	private final ServerProperties server;
-	private final ResourcePatternResolver resourcePatternResolver;
 	private final AdminServerProperties adminServerProperties;
 	private ApplicationContext applicationContext;
 
-	public AdminServerWebConfiguration(ApplicationEventPublisher publisher, ServerProperties server,
-			ResourcePatternResolver resourcePatternResolver,
+	public AdminServerWebConfiguration(ApplicationEventPublisher publisher,
 			AdminServerProperties adminServerProperties) {
 		this.publisher = publisher;
-		this.server = server;
-		this.resourcePatternResolver = resourcePatternResolver;
 		this.adminServerProperties = adminServerProperties;
 	}
 
@@ -90,36 +77,6 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 			}
 		}
 		return false;
-	}
-
-	@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler(adminServerProperties.getContextPath() + "/**")
-				.addResourceLocations("classpath:/META-INF/spring-boot-admin-server-ui/")
-				.resourceChain(true)
-				.addResolver(new PreferMinifiedFilteringResourceResolver(".min"));
-
-		registry.addResourceHandler(adminServerProperties.getContextPath() + "/all-modules.css")
-				.resourceChain(true)
-				.addResolver(new ResourcePatternResolvingResourceResolver(resourcePatternResolver,
-						"classpath*:/META-INF/spring-boot-admin-server-ui/*/module.css"))
-				.addResolver(new ConcatenatingResourceResolver("\n".getBytes()));
-
-		registry.addResourceHandler(adminServerProperties.getContextPath() + "/all-modules.js")
-				.resourceChain(true)
-				.addResolver(new ResourcePatternResolvingResourceResolver(resourcePatternResolver,
-						"classpath*:/META-INF/spring-boot-admin-server-ui/*/module.js"))
-				.addResolver(new PreferMinifiedFilteringResourceResolver(".min"))
-				.addResolver(new ConcatenatingResourceResolver(";\n".getBytes()));
-	}
-
-	@Override
-	public void addViewControllers(ViewControllerRegistry registry) {
-		String contextPath = adminServerProperties.getContextPath();
-		if (StringUtils.hasText(contextPath)) {
-			registry.addRedirectViewController(contextPath, server.getPath(contextPath) + "/");
-		}
-		registry.addViewController(contextPath + "/").setViewName("forward:index.html");
 	}
 
 	@Bean

@@ -4,9 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
-import com.google.common.net.HttpHeaders;
-
 import de.codecentric.boot.admin.model.Application;
+import org.springframework.http.HttpHeaders;
 
 public class BasicAuthHttpHeaderProviderTest {
 	private BasicAuthHttpHeaderProvider headersProvider = new BasicAuthHttpHeaderProvider();
