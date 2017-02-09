@@ -15,6 +15,7 @@
  */
 package de.codecentric.boot.admin.registration;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.eq;
@@ -77,6 +78,7 @@ public class ApplicationRegistratorTest {
 						HttpStatus.CREATED));
 
 		assertTrue(registrator.register());
+		assertEquals("-id-", registrator.getRegisteredId());
 		verify(restTemplate)
 				.postForEntity("http://sba:8080/api/applications",
 						new HttpEntity<>(Application.create("AppName")
@@ -92,6 +94,7 @@ public class ApplicationRegistratorTest {
 				eq(Application.class))).thenThrow(new RestClientException("Error"));
 
 		assertFalse(registrator.register());
+		assertEquals(null, registrator.getRegisteredId());
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -104,6 +107,7 @@ public class ApplicationRegistratorTest {
 						HttpStatus.CREATED));
 
 		assertTrue(registrator.register());
+		assertEquals("-id-", registrator.getRegisteredId());
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -113,7 +117,9 @@ public class ApplicationRegistratorTest {
 				.thenReturn(new ResponseEntity<Map>(Collections.singletonMap("id", "-id-"),
 						HttpStatus.CREATED));
 		registrator.register();
+		assertEquals("-id-", registrator.getRegisteredId());
 		registrator.deregister();
+		assertEquals(null, registrator.getRegisteredId());
 
 		verify(restTemplate).delete("http://sba:8080/api/applications/-id-");
 	}
@@ -128,6 +134,7 @@ public class ApplicationRegistratorTest {
 						HttpStatus.CREATED));
 
 		assertTrue(registrator.register());
+		assertEquals("-id-", registrator.getRegisteredId());
 
 		verify(restTemplate)
 				.postForEntity("http://sba:8080/api/applications",
@@ -157,6 +164,7 @@ public class ApplicationRegistratorTest {
 				.thenThrow(new RestClientException("Error"));
 
 		assertTrue(registrator.register());
+		assertEquals("-id-", registrator.getRegisteredId());
 
 		verify(restTemplate)
 				.postForEntity("http://sba:8080/api/applications",

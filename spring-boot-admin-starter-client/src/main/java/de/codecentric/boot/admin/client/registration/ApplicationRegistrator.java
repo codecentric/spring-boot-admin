@@ -111,6 +111,16 @@ public class ApplicationRegistrator {
 			}
 		}
 	}
+	
+	/**
+	 * Returns the id of this client as given by the admin server.
+	 * Returns null if the client has not registered against the admin server yet.
+	 *
+	 * @return
+	 */
+	public String getRegisteredId() {
+		return registeredId.get();
+	}
 
 	protected Application createApplication() {
 		return applicationFactory.createApplication();
