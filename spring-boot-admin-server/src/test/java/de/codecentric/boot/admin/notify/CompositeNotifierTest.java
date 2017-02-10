@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Test;
 
@@ -19,6 +20,10 @@ public class CompositeNotifierTest {
 					.withStatusInfo(StatusInfo.ofDown()).build(),
 			StatusInfo.ofUp(), StatusInfo.ofDown());
 
+	@Test(expected = IllegalArgumentException.class)
+	public void test_ctor_assert() {
+		new CompositeNotifier(null);
+	}
 
 	@Test
 	public void test_all_notifiers_get_notified() throws Exception {
@@ -28,7 +33,7 @@ public class CompositeNotifierTest {
 
 		compositeNotifier.notify(APP_DOWN);
 
-		assertThat(notifier1.getEvents(), is(Arrays.asList(APP_DOWN)));
-		assertThat(notifier2.getEvents(), is(Arrays.asList(APP_DOWN)));
+		assertThat(notifier1.getEvents(), is(Collections.singletonList(APP_DOWN)));
+		assertThat(notifier2.getEvents(), is(Collections.singletonList(APP_DOWN)));
 	}
 }

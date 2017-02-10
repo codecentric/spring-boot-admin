@@ -25,8 +25,10 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 import de.codecentric.boot.admin.event.ClientApplicationEvent;
+import de.codecentric.boot.admin.notify.AbstractEventNotifier;
 import de.codecentric.boot.admin.notify.Notifier;
 
 /**
@@ -34,7 +36,7 @@ import de.codecentric.boot.admin.notify.Notifier;
  *
  * @author Johannes Edmeier
  */
-public class FilteringNotifier implements Notifier {
+public class FilteringNotifier extends AbstractEventNotifier {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilteringNotifier.class);
 	private final ConcurrentMap<String, NotificationFilter> filters = new ConcurrentHashMap<>();
 	private final Notifier delegate;
@@ -43,11 +45,17 @@ public class FilteringNotifier implements Notifier {
 	private AtomicLong counter = new AtomicLong();
 
 	public FilteringNotifier(Notifier delegate) {
+		Assert.notNull(delegate, "'delegate' must not be null!");
 		this.delegate = delegate;
 	}
 
 	@Override
-	public void notify(ClientApplicationEvent event) {
+	protected boolean shouldNotify(ClientApplicationEvent event) {
+		return !filter(event);
+	}
+
+	@Override
+	public void doNotify(ClientApplicationEvent event) {
 		if (!filter(event)) {
 			delegate.notify(event);
 		}

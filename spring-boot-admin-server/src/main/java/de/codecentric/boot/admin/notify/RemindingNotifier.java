@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.util.Assert;
+
 import de.codecentric.boot.admin.event.ClientApplicationDeregisteredEvent;
 import de.codecentric.boot.admin.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
@@ -29,18 +31,19 @@ import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
  *
  * @author Johannes Edmeier
  */
-public class RemindingNotifier implements Notifier {
+public class RemindingNotifier extends AbstractEventNotifier {
 	private final ConcurrentHashMap<String, Reminder> reminders = new ConcurrentHashMap<>();
 	private long reminderPeriod = TimeUnit.MINUTES.toMillis(10L);
 	private String[] reminderStatuses = { "DOWN", "OFFLINE" };
 	private final Notifier delegate;
 
 	public RemindingNotifier(Notifier delegate) {
+		Assert.notNull(delegate, "'delegate' must not be null!");
 		this.delegate = delegate;
 	}
 
 	@Override
-	public void notify(ClientApplicationEvent event) {
+	public void doNotify(ClientApplicationEvent event) {
 		delegate.notify(event);
 		if (shouldEndReminder(event)) {
 			reminders.remove(event.getApplication().getId());

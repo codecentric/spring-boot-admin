@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Test;
 
@@ -28,6 +29,11 @@ public class RemindingNotifierTest {
 			Application.create("App").withId("id-2").withHealthUrl("http://health")
 					.withStatusInfo(StatusInfo.ofUp()).build(),
 			StatusInfo.ofDown(), StatusInfo.ofUp());
+
+	@Test(expected = IllegalArgumentException.class)
+	public void test_ctor_assert() {
+		new CompositeNotifier(null);
+	}
 
 	@Test
 	public void test_remind() throws Exception {
@@ -67,7 +73,7 @@ public class RemindingNotifierTest {
 		reminder.notify(APP_DOWN);
 		reminder.sendReminders();
 
-		assertThat(notifier.getEvents(), is(Arrays.asList(APP_DOWN)));
+		assertThat(notifier.getEvents(), is(Collections.singletonList(APP_DOWN)));
 	}
 
 }

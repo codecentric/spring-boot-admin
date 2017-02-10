@@ -1,9 +1,9 @@
 package de.codecentric.boot.admin.notify.filter;
 
+import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
@@ -16,6 +16,11 @@ public class FilteringNotifierTest {
 
 	private static final ClientApplicationRegisteredEvent EVENT = new ClientApplicationRegisteredEvent(
 			Application.create("foo").withHealthUrl("http://health").build());
+
+	@Test(expected = IllegalArgumentException.class)
+	public void test_ctor_assert() {
+		new FilteringNotifier(null);
+	}
 
 	@Test
 	public void test_expired_removal() {

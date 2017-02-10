@@ -44,7 +44,9 @@ public abstract class AbstractEventNotifier implements Notifier {
 	}
 
 
-	protected abstract boolean shouldNotify(ClientApplicationEvent event);
+	protected boolean shouldNotify(ClientApplicationEvent event) {
+		return true;
+	}
 
 	protected abstract void doNotify(ClientApplicationEvent event) throws Exception;
 
