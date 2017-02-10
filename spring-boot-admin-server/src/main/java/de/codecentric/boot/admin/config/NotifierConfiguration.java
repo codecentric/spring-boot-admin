@@ -116,7 +116,6 @@ public class NotifierConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = "spring.boot.admin.notify.mail", name = "enabled", matchIfMissing = true)
 		@ConfigurationProperties("spring.boot.admin.notify.mail")
 		public MailNotifier mailNotifier() {
 			return new MailNotifier(mailSender);
@@ -130,7 +129,6 @@ public class NotifierConfiguration {
 	public static class PagerdutyNotifierConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = "spring.boot.admin.notify.pagerduty", name = "enabled", matchIfMissing = true)
 		@ConfigurationProperties("spring.boot.admin.notify.pagerduty")
 		public PagerdutyNotifier pagerdutyNotifier() {
 			return new PagerdutyNotifier();
@@ -144,7 +142,6 @@ public class NotifierConfiguration {
 	public static class HipchatNotifierConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = "spring.boot.admin.notify.hipchat", name = "enabled", matchIfMissing = true)
 		@ConfigurationProperties("spring.boot.admin.notify.hipchat")
 		public HipchatNotifier hipchatNotifier() {
 			return new HipchatNotifier();
@@ -158,7 +155,6 @@ public class NotifierConfiguration {
 	public static class SlackNotifierConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = "spring.boot.admin.notify.slack", name = "enabled", matchIfMissing = true)
 		@ConfigurationProperties("spring.boot.admin.notify.slack")
 		public SlackNotifier slackNotifier() {
 			return new SlackNotifier();
