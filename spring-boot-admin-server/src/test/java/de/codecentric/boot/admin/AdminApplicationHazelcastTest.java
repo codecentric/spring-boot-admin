@@ -38,8 +38,11 @@ import org.springframework.http.ResponseEntity;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.config.EvictionPolicy;
+import com.hazelcast.config.JoinConfig;
 import com.hazelcast.config.ListConfig;
 import com.hazelcast.config.MapConfig;
+import com.hazelcast.config.NetworkConfig;
+import com.hazelcast.config.TcpIpConfig;
 
 import de.codecentric.boot.admin.config.EnableAdminServer;
 import de.codecentric.boot.admin.model.Application;
@@ -136,11 +139,16 @@ public class AdminApplicationHazelcastTest {
 	public static class TestAdminApplication {
 		@Bean
 		public Config hazelcastConfig() {
-			return new Config()
+			Config config = new Config()
 					.addMapConfig(new MapConfig("spring-boot-admin-application-store")
 							.setBackupCount(1).setEvictionPolicy(EvictionPolicy.NONE))
 					.addListConfig(new ListConfig("spring-boot-admin-application-store")
 							.setBackupCount(1).setMaxSize(1000));
+			JoinConfig joinConfig = new JoinConfig().setTcpIpConfig(new TcpIpConfig()
+					.setEnabled(true).setMembers(Collections.singletonList("127.0.0.1")));
+			joinConfig.getMulticastConfig().setEnabled(false);
+			config.setNetworkConfig(new NetworkConfig().setJoin(joinConfig));
+			return config;
 		}
 	}
 
