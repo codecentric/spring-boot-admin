@@ -15,6 +15,8 @@
  */
 package de.codecentric.boot.admin.notify;
 
+import org.springframework.util.Assert;
+
 import de.codecentric.boot.admin.event.ClientApplicationEvent;
 
 /**
@@ -22,16 +24,17 @@ import de.codecentric.boot.admin.event.ClientApplicationEvent;
  *
  * @author Sebastian Meiser
  */
-public class CompositeNotifier implements Notifier {
-	private final Iterable<Notifier> notifiers;
+public class CompositeNotifier extends AbstractEventNotifier {
+	private final Iterable<Notifier> delegates;
 
-	public CompositeNotifier(Iterable<Notifier> notifiers) {
-		this.notifiers = notifiers;
+	public CompositeNotifier(Iterable<Notifier> delegates) {
+		Assert.notNull(delegates, "'delegates' must not be null!");
+		this.delegates = delegates;
 	}
 
 	@Override
-	public void notify(ClientApplicationEvent event) {
-		for (Notifier notifier : notifiers) {
+	public void doNotify(ClientApplicationEvent event) {
+		for (Notifier notifier : delegates) {
 			notifier.notify(event);
 		}
 	}
