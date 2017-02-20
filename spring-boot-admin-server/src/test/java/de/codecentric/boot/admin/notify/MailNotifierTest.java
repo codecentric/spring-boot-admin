@@ -20,6 +20,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mail.MailSender;
@@ -51,6 +54,28 @@ public class MailNotifierTest {
 		notifier.notify(new ClientApplicationStatusChangedEvent(
 				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
 				StatusInfo.ofDown(), StatusInfo.ofUp()));
+
+		SimpleMailMessage expected = new SimpleMailMessage();
+		expected.setTo(new String[] { "foo@bar.com" });
+		expected.setCc(new String[] { "bar@foo.com" });
+		expected.setFrom("SBA <no-reply@example.com>");
+		expected.setText("App (-id-)\nstatus changed from DOWN to UP\n\nhttp://health");
+		expected.setSubject("-id- is UP");
+
+		verify(sender).send(eq(expected));
+	}
+
+	@Test
+	public void test_onApplicationHealthStatusChangedEvent() {
+		Map<String, Object> details = new LinkedHashMap<String, Object>();
+		details.put("total", 1000000);
+		details.put("free", 500000);
+		details.put("threshold", 100000);
+		Map<String, Map<String, Object>> indicators = new LinkedHashMap<String, Map<String, Object>>();
+		indicators.put("diskSpace", details);
+		notifier.notify(new ClientApplicationStatusChangedEvent(
+				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
+				StatusInfo.ofDown(), StatusInfo.ofUp(), indicators));
 
 		SimpleMailMessage expected = new SimpleMailMessage();
 		expected.setTo(new String[] { "foo@bar.com" });
