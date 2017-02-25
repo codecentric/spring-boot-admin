@@ -241,3 +241,41 @@ account and configure it appropriately.
 | `+++"*#{application.name}* (#{application.id}) is *#{to.status}*"+++`
 |
 |===
+
+[letschat-notifications]
+==== Let´s Chat notifications ====
+To enable Let´s Chat notifications you need to add the host url and add the API token and username from Let´s Chat
+
+.Let´s Chat notifications configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.letschat.enabled
+| Enable let´s Chat notifications
+| `true`
+
+| spring.boot.admin.notify.letschat.ignore-changes
+| Comma-delimited list of status changes to be ignored. Format: "<from-status>:<to-status>". Wildcards allowed.
+| `"UNKNOWN:UP"`
+
+| spring.boot.admin.notify.letschat.url
+| The let´s Chat Host URL to send notifications
+|
+
+| spring.boot.admin.notify.letschat.room
+| the room where to send the messages
+|
+
+| spring.boot.admin.notify.letschat.token
+| the token to access the let´s Chat API
+|
+
+| spring.boot.admin.notify.letschat.username
+| The username for which the token was created
+| `Spring Boot Admin`
+
+| spring.boot.admin.notify.letschat.message
+| Message to use in the event. SpEL-expressions are supported
+| `+++"*#{application.name}* (#{application.id}) is *#{to.status}*"+++`
+|
+|===

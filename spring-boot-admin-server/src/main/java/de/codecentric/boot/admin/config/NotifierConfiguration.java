@@ -40,6 +40,7 @@ import de.codecentric.boot.admin.notify.Notifier;
 import de.codecentric.boot.admin.notify.NotifierListener;
 import de.codecentric.boot.admin.notify.PagerdutyNotifier;
 import de.codecentric.boot.admin.notify.SlackNotifier;
+import de.codecentric.boot.admin.notify.LetsChatNotifier;
 import de.codecentric.boot.admin.notify.filter.FilteringNotifier;
 import de.codecentric.boot.admin.notify.filter.web.NotificationFilterController;
 import de.codecentric.boot.admin.web.PrefixHandlerMapping;
@@ -161,4 +162,16 @@ public class NotifierConfiguration {
 		}
 	}
 
+	@Configuration
+	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.letschat", name = "url")
+	@AutoConfigureBefore({ NotifierListenerConfiguration.class,
+			CompositeNotifierConfiguration.class })
+	public static class LetsChatNotifierConfiguration {
+		@Bean
+		@ConditionalOnMissingBean
+		@ConfigurationProperties("spring.boot.admin.notify.letschat")
+		public LetsChatNotifier letsChatNotifier() {
+			return new LetsChatNotifier();
+		}
+	}
 }
