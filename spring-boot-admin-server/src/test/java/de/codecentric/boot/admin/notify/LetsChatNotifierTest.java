@@ -9,8 +9,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.client.RestTemplate;
-import sun.misc.BASE64Encoder;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -74,7 +74,7 @@ public class LetsChatNotifierTest {
 	private HttpEntity<?> expectedMessage(String message) {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		String auth = new BASE64Encoder().encode(String.format("%s:%s", token, user).getBytes());
+		String auth = Base64Utils.encodeToString(String.format("%s:%s", token, user).getBytes());
 		httpHeaders.add(HttpHeaders.AUTHORIZATION, String.format("Basic %s", auth));
 		Map<String, Object> messageJson = new HashMap<>();
 		messageJson.put("text", message);

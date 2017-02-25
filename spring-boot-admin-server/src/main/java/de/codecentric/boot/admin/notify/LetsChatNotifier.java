@@ -8,10 +8,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,7 +60,7 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
 	protected void doNotify(ClientApplicationEvent event) throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		String auth = Base64.getEncoder().encodeToString(String.format("%s:%s", token, username).getBytes());
+		String auth = Base64Utils.encodeToString(String.format("%s:%s", token, username).getBytes());
 		headers.add(HttpHeaders.AUTHORIZATION, String.format("Basic %s", auth));
 
 		restTemplate.exchange(createUrl(), HttpMethod.POST, new HttpEntity<>(createMessage(event), headers), Void.class);
