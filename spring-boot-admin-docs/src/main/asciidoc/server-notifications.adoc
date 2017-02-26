@@ -243,10 +243,10 @@ account and configure it appropriately.
 |===
 
 [letschat-notifications]
-==== Let´s Chat notifications ====
-To enable Let´s Chat notifications you need to add the host url and add the API token and username from Let´s Chat
+==== Let's Chat notifications ====
+To enable Let's Chat notifications you need to add the host url and add the API token and username from Let's Chat
 
-.Let´s Chat notifications configuration options
+.Let's Chat notifications configuration options
 |===
 | Property name |Description |Default value
 
