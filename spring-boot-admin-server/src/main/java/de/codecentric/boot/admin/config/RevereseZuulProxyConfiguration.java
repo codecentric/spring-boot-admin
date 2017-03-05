@@ -25,8 +25,8 @@ import org.springframework.cloud.netflix.zuul.ZuulConfiguration;
 import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
 import org.springframework.cloud.netflix.zuul.filters.RouteLocator;
 import org.springframework.cloud.netflix.zuul.filters.TraceProxyRequestHelper;
-import org.springframework.cloud.netflix.zuul.filters.post.SendResponseFilter;
 import org.springframework.cloud.netflix.zuul.filters.pre.PreDecorationFilter;
+import org.springframework.cloud.netflix.zuul.filters.route.SimpleHostRoutingFilter;
 import org.springframework.cloud.netflix.zuul.web.ZuulController;
 import org.springframework.cloud.netflix.zuul.web.ZuulHandlerMapping;
 import org.springframework.context.ApplicationEvent;
@@ -42,7 +42,6 @@ import de.codecentric.boot.admin.web.client.HttpHeadersProvider;
 import de.codecentric.boot.admin.zuul.ApplicationRouteLocator;
 import de.codecentric.boot.admin.zuul.OptionsDispatchingZuulController;
 import de.codecentric.boot.admin.zuul.filters.pre.ApplicationHeadersFilter;
-import de.codecentric.boot.admin.zuul.filters.route.SimpleHostRoutingFilter;
 
 @Configuration
 @AutoConfigureAfter({ AdminServerWebConfiguration.class })
@@ -100,11 +99,6 @@ public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
 	@Bean
 	public SimpleHostRoutingFilter simpleHostRoutingFilter() {
 		return new SimpleHostRoutingFilter(proxyRequestHelper(), zuulProperties);
-	}
-
-	@Override
-	public SendResponseFilter sendResponseFilter() {
-		return new de.codecentric.boot.admin.zuul.filters.post.SendResponseFilter();
 	}
 
 	@Bean

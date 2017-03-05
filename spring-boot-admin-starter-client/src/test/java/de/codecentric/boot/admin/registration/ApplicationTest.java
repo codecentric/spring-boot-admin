@@ -1,9 +1,9 @@
 package de.codecentric.boot.admin.registration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 
@@ -28,10 +28,10 @@ public class ApplicationTest {
 
 		DocumentContext json = JsonPath.parse(objectMapper.writeValueAsString(app));
 
-		assertThat(json.read("$.name")).isEqualTo("test");
-		assertThat(json.read("$.serviceUrl")).isEqualTo("http://service");
-		assertThat(json.read("$.managementUrl")).isEqualTo("http://management");
-		assertThat(json.read("$.healthUrl")).isEqualTo("http://health");
+		assertThat((String)json.read("$.name")).isEqualTo("test");
+		assertThat((String)json.read("$.serviceUrl")).isEqualTo("http://service");
+		assertThat((String)json.read("$.managementUrl")).isEqualTo("http://management");
+		assertThat((String)json.read("$.healthUrl")).isEqualTo("http://health");
 	}
 
 	@Test
