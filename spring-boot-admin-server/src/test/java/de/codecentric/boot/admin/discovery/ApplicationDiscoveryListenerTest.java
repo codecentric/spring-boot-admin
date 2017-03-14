@@ -61,7 +61,7 @@ public class ApplicationDiscoveryListenerTest {
 		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
 				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
 
-		listener.setIgnoredServices(Collections.singleton("service"));
+		listener.setIgnoredServices(singleton("service"));
 		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
 		assertEquals(0, registry.getApplications().size());
@@ -73,7 +73,7 @@ public class ApplicationDiscoveryListenerTest {
 		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
 				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
 
-		listener.setMatchingServices(Collections.singleton("notService"));
+		listener.setServices(singleton("notService"));
 		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
 		assertEquals(0, registry.getApplications().size());
@@ -99,7 +99,7 @@ public class ApplicationDiscoveryListenerTest {
 		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
 				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
 
-		listener.setMatchingServices(singleton("ser*"));
+		listener.setServices(singleton("ser*"));
 		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
 		Collection<Application> applications = registry.getApplications();
@@ -115,7 +115,7 @@ public class ApplicationDiscoveryListenerTest {
 		when(discovery.getInstances("service-1")).thenReturn(Collections.singletonList(
 				(ServiceInstance) new DefaultServiceInstance("service-1", "localhost", 80, false)));
 
-		listener.setMatchingServices(singleton("ser*"));
+		listener.setServices(singleton("ser*"));
 		listener.setIgnoredServices(singleton("service-*"));
 		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
@@ -163,7 +163,7 @@ public class ApplicationDiscoveryListenerTest {
 				.withId("abcdef").build());
 		registry.register(Application.create("different-source").withHealthUrl("http://health2")
 				.withId("abcdef").withSource("http-api").build());
-		listener.setIgnoredServices(Collections.singleton("ignored"));
+		listener.setIgnoredServices(singleton("ignored"));
 
 		List<ServiceInstance> instances = new ArrayList<>();
 		instances.add(new DefaultServiceInstance("service", "localhost", 80, false));

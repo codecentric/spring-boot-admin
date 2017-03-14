@@ -17,8 +17,8 @@ package de.codecentric.boot.admin.discovery;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Collections;
 
-import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.ServiceInstance;
@@ -57,7 +57,7 @@ public class ApplicationDiscoveryListener {
 	 * Set of serviceIds that has to match to be registered as application. Supports simple
 	 * patterns (e.g. "foo*", "*foo", "foo*bar"). Default value is everything
 	 */
-	private Set<String> matchingServices = Sets.newHashSet("*");
+	private Set<String> services = new HashSet<>(Collections.singletonList("*"));
 
 	public ApplicationDiscoveryListener(DiscoveryClient discoveryClient,
 			ApplicationRegistry registry) {
@@ -110,7 +110,7 @@ public class ApplicationDiscoveryListener {
 	}
 
 	protected boolean isServiceMatch(final String serviceId) {
-		return checkPatternIsMatching(serviceId, matchingServices);
+		return checkPatternIsMatching(serviceId, services);
 	}
 
 	private boolean checkPatternIsMatching(String serviceId, Set<String> patterns) {
@@ -125,7 +125,7 @@ public class ApplicationDiscoveryListener {
 	protected final Set<String> getAllApplicationIdsFromRegistry() {
 		Set<String> result = new HashSet<>();
 		for (Application application : registry.getApplications()) {
-			if (!ignoreService(application.getName())
+			if (!ignoreService(application.getName()) && isServiceMatch(application.getName())
 					&& SOURCE.equals(application.getSource())) {
 				result.add(application.getId());
 			}
@@ -161,11 +161,11 @@ public class ApplicationDiscoveryListener {
 		return ignoredServices;
 	}
 
-	public Set<String> getMatchingServices() {
-		return matchingServices;
+	public Set<String> getServices() {
+		return services;
 	}
 
-	public void setMatchingServices(Set<String> matchingServices) {
-		this.matchingServices = matchingServices;
+	public void setServices(Set<String> services) {
+		this.services = services;
 	}
 }

@@ -32,7 +32,7 @@ NOTE: When using Eureka, the `healthCheckUrl` known to Eureka is used for health
 | This services will be ignored when using discovery and not registered as application. Supports simple patterns (e.g. "foo*", "*bar", "foo*bar*").
 |
 
-| spring.boot.admin.discovery.matching-services
+| spring.boot.admin.discovery.services
 | This services will be included when using discovery and registered as application. Supports simple patterns (e.g. "foo*", "*bar", "foo*bar*").
 | `"*"`
 |===
