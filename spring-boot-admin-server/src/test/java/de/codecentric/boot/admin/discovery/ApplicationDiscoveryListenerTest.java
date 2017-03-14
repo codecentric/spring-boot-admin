@@ -68,12 +68,55 @@ public class ApplicationDiscoveryListenerTest {
 	}
 
 	@Test
+	public void test_matching() {
+		when(discovery.getServices()).thenReturn(Collections.singletonList("service"));
+		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
+				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
+
+		listener.setMatchingServices(Collections.singleton("notService"));
+		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
+
+		assertEquals(0, registry.getApplications().size());
+	}
+
+	@Test
 	public void test_ignore_pattern() {
 		when(discovery.getServices()).thenReturn(asList("service", "rabbit-1", "rabbit-2"));
 		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
 				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
 
 		listener.setIgnoredServices(singleton("rabbit-*"));
+		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
+
+		Collection<Application> applications = registry.getApplications();
+		assertEquals(1, applications.size());
+		assertEquals("service", applications.iterator().next().getName());
+	}
+
+	@Test
+	public void test_matching_pattern() {
+		when(discovery.getServices()).thenReturn(asList("service", "rabbit-1", "rabbit-2"));
+		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
+				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
+
+		listener.setMatchingServices(singleton("ser*"));
+		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
+
+		Collection<Application> applications = registry.getApplications();
+		assertEquals(1, applications.size());
+		assertEquals("service", applications.iterator().next().getName());
+	}
+
+	@Test
+	public void test_matching_and_ignore_pattern() {
+		when(discovery.getServices()).thenReturn(asList("service-1", "service", "rabbit-1", "rabbit-2"));
+		when(discovery.getInstances("service")).thenReturn(Collections.singletonList(
+				(ServiceInstance) new DefaultServiceInstance("service", "localhost", 80, false)));
+		when(discovery.getInstances("service-1")).thenReturn(Collections.singletonList(
+				(ServiceInstance) new DefaultServiceInstance("service-1", "localhost", 80, false)));
+
+		listener.setMatchingServices(singleton("ser*"));
+		listener.setIgnoredServices(singleton("service-*"));
 		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
 		Collection<Application> applications = registry.getApplications();

@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.discovery;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.ServiceInstance;
@@ -52,6 +53,12 @@ public class ApplicationDiscoveryListener {
 	 */
 	private Set<String> ignoredServices = new HashSet<>();
 
+	/**
+	 * Set of serviceIds that has to match to be registered as application. Supports simple
+	 * patterns (e.g. "foo*", "*foo", "foo*bar"). Default value is everything
+	 */
+	private Set<String> matchingServices = Sets.newHashSet("*");
+
 	public ApplicationDiscoveryListener(DiscoveryClient discoveryClient,
 			ApplicationRegistry registry) {
 		this.discoveryClient = discoveryClient;
@@ -82,7 +89,7 @@ public class ApplicationDiscoveryListener {
 	protected void discover() {
 		final Set<String> staleApplicationIds = getAllApplicationIdsFromRegistry();
 		for (String serviceId : discoveryClient.getServices()) {
-			if (!ignoreService(serviceId)) {
+			if (!ignoreService(serviceId) && isServiceMatch(serviceId)) {
 				for (ServiceInstance instance : discoveryClient.getInstances(serviceId)) {
 					String applicationId = register(instance);
 					staleApplicationIds.remove(applicationId);
@@ -99,8 +106,16 @@ public class ApplicationDiscoveryListener {
 	}
 
 	protected boolean ignoreService(final String serviceId) {
-		for (String pattern: ignoredServices) {
-			if (PatternMatchUtils.simpleMatch(pattern, serviceId)) {
+		return checkPatternIsMatching(serviceId, ignoredServices);
+	}
+
+	protected boolean isServiceMatch(final String serviceId) {
+		return checkPatternIsMatching(serviceId, matchingServices);
+	}
+
+	private boolean checkPatternIsMatching(String serviceId, Set<String> patterns) {
+		for (String pattern : patterns) {
+			if(PatternMatchUtils.simpleMatch(pattern, serviceId)) {
 				return true;
 			}
 		}
@@ -144,5 +159,13 @@ public class ApplicationDiscoveryListener {
 
 	public Set<String> getIgnoredServices() {
 		return ignoredServices;
+	}
+
+	public Set<String> getMatchingServices() {
+		return matchingServices;
+	}
+
+	public void setMatchingServices(Set<String> matchingServices) {
+		this.matchingServices = matchingServices;
 	}
 }
