@@ -83,7 +83,7 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 		result.put("service_key", serviceKey);
 		result.put("incident_key",
 				event.getApplication().getName() + "/" + event.getApplication().getId());
-		result.put("description", getDescirption(event));
+		result.put("description", getDescription(event));
 
 		Map<String, Object> details = getDetails(event);
 		result.put("details", details);
@@ -111,7 +111,7 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 		return result;
 	}
 
-	protected String getDescirption(ClientApplicationEvent event) {
+	protected String getDescription(ClientApplicationEvent event) {
 		return description.getValue(event, String.class);
 	}
 
