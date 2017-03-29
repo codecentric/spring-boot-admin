@@ -50,7 +50,7 @@ user.password
 | The port is substituted in the service URL and will be used for accessing the actuator endpoints.
 |
 
-| management.path
+| management.context-path
 | The path is appended to the service URL and will be used for accessing the actuator endpoints.
 | `${spring.boot.admin.discovery.converter.mangement-context-path}`
 
