@@ -38,7 +38,7 @@ This application provides a simple UI to administrate Spring Boot applications. 
 
 Having trouble with Spring Boot Admin? We’d like to help!
 
- * Check the [reference documentation](http://codecentric.github.io/spring-boot-admin/1.4.6/).
+ * Check the [reference documentation](http://codecentric.github.io/spring-boot-admin/1.5.0/).
  
  * Ask a question on [stackoverflow.com](http://stackoverflow.com/questions/tagged/spring-boot-admin) - we monitor questions tagged with `spring-boot-admin`.
  
@@ -47,13 +47,9 @@ Having trouble with Spring Boot Admin? We’d like to help!
  * Report bugs with Spring Boot Admin at http://github.com/codecentric/spring-boot-admin/issues.
 
 ## Reference Guide
+[Version 1.5.0](http://codecentric.github.io/spring-boot-admin/1.5.0/)
+
 [Version 1.4.6](http://codecentric.github.io/spring-boot-admin/1.4.6/)
-
-[Version 1.4.5](http://codecentric.github.io/spring-boot-admin/1.4.5/)
-
-[Version 1.4.4](http://codecentric.github.io/spring-boot-admin/1.4.4/)
-
-[Version 1.4.3](http://codecentric.github.io/spring-boot-admin/1.4.3/)
 
 [Version 1.3.7](http://codecentric.github.io/spring-boot-admin/1.3.7/)
 
