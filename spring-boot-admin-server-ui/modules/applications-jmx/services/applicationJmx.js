@@ -18,11 +18,37 @@
 module.exports = function ($rootScope, jolokia, $q) {
   'ngInject';
 
+  function getBeanName(nameProps) {
+    var name = nameProps.name || nameProps.title || null;
+    var type = nameProps.type || nameProps.j2eetype || null;
+    var typeText = null;
+    if (type) {
+      typeText = '[' + type + ']';
+    }
+    var props = [];
+    for (var prop in nameProps) {
+      if (nameProps.hasOwnProperty(prop) && prop !== 'name' && prop !== 'title' && prop !== 'type' && prop !== 'j2eetype') {
+        props.push(prop + ': ' + nameProps[prop]);
+      }
+    }
+    var propText = null;
+    if (props.length > 0) {
+      propText = '(' + props.join(', ') + ')';
+    }
+    return [name, typeText, propText].filter(function (v) {
+      return v !== null;
+    }).join(' ');
+  }
+
   this.list = function (app) {
     return jolokia.list('api/applications/' + app.id + '/jolokia/').then(
       function (response) {
         var domains = [];
         for (var rDomainName in response.value) {
+          if (!response.value.hasOwnProperty(rDomainName)) {
+            continue;
+          }
+
           var rDomain = response.value[rDomainName];
           var domain = {
             name: rDomainName,
@@ -30,6 +56,9 @@ module.exports = function ($rootScope, jolokia, $q) {
           };
 
           for (var rBeanName in rDomain) {
+            if (!rDomain.hasOwnProperty(rBeanName)) {
+              continue;
+            }
             var rBean = rDomain[rBeanName];
             var bean = {
               id: domain.name + ':' + rBeanName,
@@ -40,39 +69,15 @@ module.exports = function ($rootScope, jolokia, $q) {
               operations: rBean.op,
               attributes: rBean.attr
             };
-            var name = '';
-            var type = '';
+
             var parts = rBeanName.split(',');
             for (var i = 0; i < parts.length; i++) {
               var tokens = parts[i].split('=');
-              if (tokens[0].toLowerCase() === 'name') {
-                name = tokens[1];
-              } else {
-                bean.nameProps[tokens[0]] = tokens[1];
-                if ((tokens[0].toLowerCase() === 'type' || tokens[0]
-                    .toLowerCase() === 'j2eetype') && type.length === 0) {
-                  type = tokens[1];
-                }
-              }
+              bean.nameProps[tokens[0].toLowerCase()] = tokens[1];
             }
-
-            if (name.length !== 0) {
-              bean.name = name;
-            }
-            if (type.length !== 0) {
-              if (bean.name !== 0) {
-                bean.name += ' ';
-              }
-              bean.name += '[' + type + ']';
-            }
-
-            if (bean.name.length === 0) {
-              bean.name = rBeanName;
-            }
-
+            bean.name = getBeanName(bean.nameProps);
             domain.beans.push(bean);
           }
-
           domains.push(domain);
         }
 
