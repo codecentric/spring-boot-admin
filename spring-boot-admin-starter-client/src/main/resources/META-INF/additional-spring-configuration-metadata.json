@@ -6,5 +6,11 @@
     "type": "java.lang.Boolean",
     "description": "Enable Spring Admin Client.",
     "defaultValue": "true"
+  },
+  {
+    "name": "spring.boot.admin.client.metrics",
+    "type": "java.util.Set",
+    "description": "Set of metric prefixes to interrogate service for on the metrics tab.",
+    "defaultValue": "counter, gauge"
   }
 ]}

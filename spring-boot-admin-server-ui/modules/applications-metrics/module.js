@@ -20,6 +20,8 @@ var angular = require('angular');
 var module = angular.module('sba-applications-metrics', ['sba-applications']);
 global.sbaModules.push(module.name);
 
+module.filter('capitalize', require('./filters/capitalize.js'));
+
 module.controller('metricsCtrl', require('./controllers/metricsCtrl.js'));
 
 module.directive('sbaSimpleMetricBar', require('./directives/simpleMetricBar.js'));

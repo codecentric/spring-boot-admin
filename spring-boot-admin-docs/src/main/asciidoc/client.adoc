@@ -117,6 +117,10 @@ spring.boot.admin.password
 | Use the ip-address rather then the hostname in the guessed urls. If `server.address` / `management.address` is set, it get used. Otherwise the IP address returned from `InetAddress.getLocalHost()` gets used.
 | `false`
 
+| spring.boot.admin.client.metrics
+| List of metrics to display on the metrics page. The values should be a comma separated list e.g. `spring.boot.admin.client.metrics: threads, web.access, jvm.memory, datasource.primary, counter, gauge`.
+| Will use `counter, gauge` as default when no values provided
+
 | spring.boot.admin.client.metadata.*
 | Metadata key-value-pairs to be associated with this instance.
 |

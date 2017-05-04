@@ -24,7 +24,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -48,10 +50,12 @@ public class ApplicationRegistratorTest {
 	private ApplicationRegistrator registrator;
 	private RestTemplate restTemplate;
 	private HttpHeaders headers;
+	private List<String> metrics;
 
 	@Before
 	public void setup() {
 		restTemplate = mock(RestTemplate.class);
+		metrics = Arrays.asList("gauge","counter","integration");
 
 		adminProps = new AdminProperties();
 		adminProps.setUrl(new String[] { "http://sba:8080", "http://sba2:8080" });
@@ -61,6 +65,7 @@ public class ApplicationRegistratorTest {
 			.withManagementUrl("http://localhost:8080/mgmt")
 			.withHealthUrl("http://localhost:8080/health")
 			.withServiceUrl("http://localhost:8080")
+			.withMetrics(metrics)
 		.build());
 
 		registrator = new ApplicationRegistrator(restTemplate, adminProps, factory);
@@ -84,7 +89,8 @@ public class ApplicationRegistratorTest {
 						new HttpEntity<>(Application.create("AppName")
 								.withHealthUrl("http://localhost:8080/health")
 								.withManagementUrl("http://localhost:8080/mgmt")
-								.withServiceUrl("http://localhost:8080").build(), headers),
+								.withServiceUrl("http://localhost:8080")
+								.withMetrics(metrics).build(), headers),
 				Map.class);
 	}
 
@@ -141,7 +147,8 @@ public class ApplicationRegistratorTest {
 						new HttpEntity<>(Application.create("AppName")
 								.withHealthUrl("http://localhost:8080/health")
 								.withManagementUrl("http://localhost:8080/mgmt")
-								.withServiceUrl("http://localhost:8080").build(), headers),
+								.withServiceUrl("http://localhost:8080")
+								.withMetrics(metrics).build(), headers),
 						Map.class);
 
 		verify(restTemplate)
@@ -149,7 +156,8 @@ public class ApplicationRegistratorTest {
 						new HttpEntity<>(Application.create("AppName")
 								.withHealthUrl("http://localhost:8080/health")
 								.withManagementUrl("http://localhost:8080/mgmt")
-								.withServiceUrl("http://localhost:8080").build(), headers),
+								.withServiceUrl("http://localhost:8080")
+								.withMetrics(metrics).build(), headers),
 						Map.class);
 	}
 
@@ -171,7 +179,8 @@ public class ApplicationRegistratorTest {
 						new HttpEntity<>(Application.create("AppName")
 								.withHealthUrl("http://localhost:8080/health")
 								.withManagementUrl("http://localhost:8080/mgmt")
-								.withServiceUrl("http://localhost:8080").build(), headers),
+								.withServiceUrl("http://localhost:8080")
+								.withMetrics(metrics).build(), headers),
 						Map.class);
 
 		verify(restTemplate)
@@ -179,7 +188,8 @@ public class ApplicationRegistratorTest {
 						new HttpEntity<>(Application.create("AppName")
 								.withHealthUrl("http://localhost:8080/health")
 								.withManagementUrl("http://localhost:8080/mgmt")
-								.withServiceUrl("http://localhost:8080").build(), headers),
+								.withServiceUrl("http://localhost:8080")
+								.withMetrics(metrics).build(), headers),
 						Map.class);
 	}
 

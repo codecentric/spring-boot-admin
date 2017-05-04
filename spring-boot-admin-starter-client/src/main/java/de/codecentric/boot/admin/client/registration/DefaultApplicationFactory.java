@@ -4,6 +4,8 @@ import static org.springframework.util.StringUtils.trimLeadingCharacter;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
@@ -45,7 +47,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 	public Application createApplication() {
 		return Application.create(getName()).withHealthUrl(getHealthUrl())
 				.withManagementUrl(getManagementUrl()).withServiceUrl(getServiceUrl())
-				.withMetadata(getMetadata()).build();
+				.withMetadata(getMetadata()).withMetrics(getMetrics()).build();
 	}
 
 	protected String getName() {
@@ -96,6 +98,10 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 
 	protected Map<String, String> getMetadata() {
 		return client.getMetadata();
+	}
+
+	protected List<String> getMetrics() {
+		return Arrays.asList(client.getMetrics());
 	}
 
 	protected String getServiceHost() {

@@ -18,8 +18,18 @@
 module.exports = function ($scope, application) {
   'ngInject';
 
-  $scope.counters = [];
-  $scope.countersMax = 0;
+  $scope.metricData = {};
+  $scope.metricDataMax = {};
+  var applicationMetrics = application.metrics || ['counter', 'gauge'];
+  $scope.hasGauges = applicationMetrics['gauge'] !== undefined;
+  for (var i = 0, size = applicationMetrics.length; i < size; i++) {
+    //gauges are handled by specific code ATM
+    if (applicationMetrics[i] !== 'gauge') {
+      $scope.metricData[applicationMetrics[i]] = [];
+      $scope.metricDataMax[applicationMetrics[i]] = 0
+    }
+  }
+
   $scope.gauges = [];
   $scope.gaugesMax = 0;
   $scope.showRichGauges = false;
@@ -50,16 +60,19 @@ module.exports = function ($scope, application) {
         }
       };
 
+      var regexes = [new RegExp("^(?!gauge)(" + applicationMetrics.join("|") + ")\..*"), /(gauge\..+)\.val/, /(gauge\..+)\.avg/, /(gauge\..+)\.min/, /(gauge\..+)\.max/, /(gauge\..+)\.count/, /(gauge\..+)\.alpha/, /(gauge\..+)/];
 
-      var regexes = [/counter\..+/, /(gauge\..+)\.val/, /(gauge\..+)\.avg/, /(gauge\..+)\.min/, /(gauge\..+)\.max/, /(gauge\..+)\.count/, /(gauge\..+)\.alpha/, /(gauge\..+)/];
       var callbacks = [
         function (metric, match, value) {
-          $scope.counters.push({
-            name: metric,
-            value: value
-          });
-          if (value > $scope.countersMax) {
-            $scope.countersMax = value;
+          if (match.length >= 2 && match[1] !== undefined && $scope.metricData[match[1]] !== undefined) {
+            $scope.metricData[match[1]].push({
+              name: metric,
+              value: value
+            });
+
+            if (value > $scope.metricDataMax[match[1]]) {
+              $scope.metricDataMax[match[1]] = value;
+            }
           }
         },
         function (metric, match, value) {
@@ -99,7 +112,8 @@ module.exports = function ($scope, application) {
             count: value
           });
         },
-        function () { /* NOP */ },
+        function () { /* NOP */
+        },
         function (metric, match, value) {
           merge($scope.gauges, {
             name: match[1],
@@ -111,7 +125,6 @@ module.exports = function ($scope, application) {
         }];
 
       find(response.data, regexes, callbacks);
-
     }
   ).catch(function (response) {
     $scope.error = response.data;

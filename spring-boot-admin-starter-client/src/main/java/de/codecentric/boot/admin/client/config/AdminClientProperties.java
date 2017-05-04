@@ -15,11 +15,11 @@
  */
 package de.codecentric.boot.admin.client.config;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @ConfigurationProperties(prefix = "spring.boot.admin.client")
 public class AdminClientProperties {
@@ -56,6 +56,8 @@ public class AdminClientProperties {
 	 * Metadata that should be associated with this application
 	 */
 	private Map<String, String> metadata = new HashMap<>();
+
+    private String[] metrics = new String[]{"counter", "gauge"};
 
 	public String getManagementUrl() {
 		return managementUrl;
@@ -100,4 +102,10 @@ public class AdminClientProperties {
 	public Map<String, String> getMetadata() {
 		return metadata;
 	}
+
+	public String[] getMetrics(){ return metrics; }
+
+    public void setMetrics(String[] metrics) {
+        this.metrics = metrics;
+    }
 }

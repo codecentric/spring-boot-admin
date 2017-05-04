@@ -15,17 +15,6 @@
  */
 package de.codecentric.boot.admin.model;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.regex.Pattern;
-
-import org.springframework.util.Assert;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -36,6 +25,19 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import org.springframework.util.Assert;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 /**
  * The domain model for all registered application at the spring boot admin application.
@@ -54,6 +56,7 @@ public class Application implements Serializable {
 	@JsonSerialize(using = Application.MetadataSerializer.class)
 	private final Map<String, String> metadata;
 	private final Info info;
+	private final List<String> metrics;
 
 	protected Application(Builder builder) {
 		Assert.hasText(builder.name, "name must not be empty!");
@@ -68,6 +71,7 @@ public class Application implements Serializable {
 		this.source = builder.source;
 		this.metadata = Collections.unmodifiableMap(new HashMap<>(builder.metadata));
 		this.info = builder.info;
+		this.metrics = Collections.unmodifiableList(new ArrayList<>(builder.metrics));
 	}
 
 	public static Builder create(String name) {
@@ -88,6 +92,7 @@ public class Application implements Serializable {
 		private String source;
 		private Map<String, String> metadata = new HashMap<>();
 		private Info info = Info.empty();
+		private List<String> metrics = new ArrayList<>();
 
 		private Builder(String name) {
 			this.name = name;
@@ -103,6 +108,7 @@ public class Application implements Serializable {
 			this.source = application.source;
 			this.metadata.putAll(application.getMetadata());
 			this.info = application.info;
+			this.metrics.addAll(application.getMetrics());
 		}
 
 		public Builder withName(String name) {
@@ -155,6 +161,16 @@ public class Application implements Serializable {
 			return this;
 		}
 
+		public Builder addMetric(String metric) {
+			this.metrics.add(metric);
+			return this;
+		}
+
+		public Builder withMetrics(List<String> metrics) {
+			this.metrics = metrics;
+			return this;
+		}
+
 		public Application build() {
 			return new Application(this);
 		}
@@ -194,6 +210,10 @@ public class Application implements Serializable {
 
 	public Info getInfo() {
 		return info;
+	}
+
+	public List<String> getMetrics() {
+		return metrics;
 	}
 
 	@Override
@@ -299,6 +319,17 @@ public class Application implements Serializable {
 				while (it.hasNext()) {
 					Entry<String, JsonNode> entry = it.next();
 					builder.addMetadata(entry.getKey(), entry.getValue().asText());
+				}
+			}
+
+			if (node.has("metrics")) {
+				JsonNode metricsNode = node.get("metrics");
+				if (metricsNode.isArray()) {
+					for (final JsonNode metric : metricsNode) {
+						builder.addMetric(metric.asText());
+					}
+				} else {
+					builder.withMetrics(Arrays.asList("counter", "gauge"));
 				}
 			}
 			return builder.build();
