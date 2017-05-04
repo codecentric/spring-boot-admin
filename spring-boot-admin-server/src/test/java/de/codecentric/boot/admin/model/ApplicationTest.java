@@ -1,19 +1,20 @@
 package de.codecentric.boot.admin.model;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-
-import java.util.Collections;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 public class ApplicationTest {
 	private ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
@@ -62,6 +63,38 @@ public class ApplicationTest {
 		assertThat(value.getHealthUrl(), is("http://test"));
 		assertThat(value.getManagementUrl(), nullValue());
 		assertThat(value.getServiceUrl(), nullValue());
+	}
+
+	@Test
+	public void test_metricsEmpty() throws Exception {
+		String json = new JSONObject().put("name", "test")
+				.put("healthUrl", "http://health")
+				.put("serviceUrl", "http://service")
+				.toString();
+		Application value = objectMapper.readValue(json, Application.class);
+		assertThat(value.getName(), is("test"));
+		assertThat(value.getHealthUrl(), is("http://health"));
+		assertThat(value.getServiceUrl(), is("http://service"));
+		assertThat(value.getMetrics(), emptyCollectionOf(String.class));
+		assertThat(value.getManagementUrl(), nullValue());
+	}
+
+	@Test
+	public void test_metricsValues() throws Exception {
+		JSONArray metrics = new JSONArray();
+		metrics.put("one");
+		metrics.put("two");
+		String json = new JSONObject().put("name", "test")
+				.put("healthUrl", "http://health")
+				.put("serviceUrl", "http://service")
+				.put("metrics", metrics)
+				.toString();
+		Application value = objectMapper.readValue(json, Application.class);
+		assertThat(value.getName(), is("test"));
+		assertThat(value.getHealthUrl(), is("http://health"));
+		assertThat(value.getServiceUrl(), is("http://service"));
+		assertThat(value.getMetrics(), containsInAnyOrder("one","two"));
+		assertThat(value.getManagementUrl(), nullValue());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
