@@ -20,19 +20,21 @@ module.exports = function ($scope, application) {
 
   $scope.metricData = {};
   $scope.metricDataMax = {};
+  $scope.hasGauges = false;
+  $scope.gauges = [];
+  $scope.gaugesMax = 0;
+  $scope.showRichGauges = false;
+
   var applicationMetrics = application.metrics || ['counter', 'gauge'];
-  $scope.hasGauges = applicationMetrics['gauge'] !== undefined;
+
   for (var i = 0, size = applicationMetrics.length; i < size; i++) {
+    $scope.hasGauges = $scope.hasGauges || applicationMetrics[i] === 'gauge';
     //gauges are handled by specific code ATM
     if (applicationMetrics[i] !== 'gauge') {
       $scope.metricData[applicationMetrics[i]] = [];
       $scope.metricDataMax[applicationMetrics[i]] = 0
     }
   }
-
-  $scope.gauges = [];
-  $scope.gaugesMax = 0;
-  $scope.showRichGauges = false;
 
   application.getMetrics().then(
     function (response) {
