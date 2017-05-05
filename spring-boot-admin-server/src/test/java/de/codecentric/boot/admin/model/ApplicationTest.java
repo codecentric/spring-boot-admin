@@ -7,13 +7,14 @@ import org.json.JSONObject;
 import org.junit.Test;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.emptyCollectionOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 public class ApplicationTest {
@@ -93,7 +94,7 @@ public class ApplicationTest {
 		assertThat(value.getName(), is("test"));
 		assertThat(value.getHealthUrl(), is("http://health"));
 		assertThat(value.getServiceUrl(), is("http://service"));
-		assertThat(value.getMetrics(), containsInAnyOrder("one","two"));
+		assertThat(value.getMetrics(), containsInAnyOrder("one", "two"));
 		assertThat(value.getManagementUrl(), nullValue());
 	}
 

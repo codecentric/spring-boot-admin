@@ -32,7 +32,7 @@ module.exports = function ($scope, application) {
     //gauges are handled by specific code ATM
     if (applicationMetrics[i] !== 'gauge') {
       $scope.metricData[applicationMetrics[i]] = [];
-      $scope.metricDataMax[applicationMetrics[i]] = 0
+      $scope.metricDataMax[applicationMetrics[i]] = 0;
     }
   }
 
@@ -62,11 +62,11 @@ module.exports = function ($scope, application) {
         }
       };
 
-      var regexes = [new RegExp("^(?!gauge)(" + applicationMetrics.join("|") + ")\..*"), /(gauge\..+)\.val/, /(gauge\..+)\.avg/, /(gauge\..+)\.min/, /(gauge\..+)\.max/, /(gauge\..+)\.count/, /(gauge\..+)\.alpha/, /(gauge\..+)/];
+      var regexes = [new RegExp('^(?!gauge)(' + applicationMetrics.join('|') + ')\..*'), /(gauge\..+)\.val/, /(gauge\..+)\.avg/, /(gauge\..+)\.min/, /(gauge\..+)\.max/, /(gauge\..+)\.count/, /(gauge\..+)\.alpha/, /(gauge\..+)/];
 
       var callbacks = [
         function (metric, match, value) {
-          if (match.length >= 2 && match[1] !== undefined && $scope.metricData[match[1]] !== undefined) {
+          if (match.length >= 2 && match[1] !== null && typeof $scope.metricData[match[1]] !== 'undefined') {
             $scope.metricData[match[1]].push({
               name: metric,
               value: value

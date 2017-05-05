@@ -18,7 +18,10 @@ package de.codecentric.boot.admin.client.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @ConfigurationProperties(prefix = "spring.boot.admin.client")
@@ -103,9 +106,11 @@ public class AdminClientProperties {
 		return metadata;
 	}
 
-	public String[] getMetrics(){ return metrics; }
+	public List<String> getMetrics(){
+		return Collections.unmodifiableList(Arrays.asList(metrics));
+	}
 
     public void setMetrics(String[] metrics) {
-        this.metrics = metrics;
+        this.metrics = Arrays.copyOf(metrics, metrics.length);
     }
 }

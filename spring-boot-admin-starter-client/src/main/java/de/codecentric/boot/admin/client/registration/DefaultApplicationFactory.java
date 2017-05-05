@@ -101,7 +101,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 	}
 
 	protected List<String> getMetrics() {
-		return Arrays.asList(client.getMetrics());
+		return client.getMetrics();
 	}
 
 	protected String getServiceHost() {
