@@ -50,7 +50,6 @@ module.run(function (ApplicationViews, $sce, $http, jolokia, ApplicationJmx) {
         return ApplicationJmx.list(application).then(function () {
           return true;
         }).catch(function () {
-          console.log(e);
           return false;
         });
       }).catch(function () {
