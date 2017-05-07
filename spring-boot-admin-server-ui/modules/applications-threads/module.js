@@ -33,10 +33,17 @@ module.config(function ($stateProvider) {
   });
 });
 
-module.run(function (ApplicationViews, $sce) {
+module.run(function (ApplicationViews, $http, $sce) {
   ApplicationViews.register({
     order: 50,
     title: $sce.trustAsHtml('<i class="fa fa-list fa-fw"></i>Threads'),
-    state: 'applications.threads'
+    state: 'applications.threads',
+    show: function (application) {
+      return $http.head('api/applications/' + application.id + '/dump').then(function () {
+        return true;
+      }).catch(function () {
+        return false;
+      });
+    }
   });
 });
