@@ -95,7 +95,7 @@ The Activiti module shows information from the `/activti` endpoint.
 [source,yml]
 .application.yml
 ----
-spring.boot.admin.routes.endpoints: env,metrics,trace,dump,jolokia,info,configprops,trace,logfile,refresh,flyway,liquibase,heapdump,activiti
+spring.boot.admin.routes.endpoints: env,metrics,dump,jolokia,info,configprops,trace,logfile,refresh,flyway,liquibase,heapdump,activiti
 ----
 
 ==== Login UI Module ====
