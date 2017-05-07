@@ -43,10 +43,17 @@ module.config(function ($stateProvider) {
   });
 });
 
-module.run(function (ApplicationViews, $sce) {
+module.run(function (ApplicationViews, $http, $sce) {
   ApplicationViews.register({
     order: 0,
     title: $sce.trustAsHtml('<i class="fa fa-info fa-fw"></i>Details'),
-    state: 'applications.details'
+    state: 'applications.details',
+    show: function (application) {
+      return $http.head('api/applications/' + application.id + '/metrics').then(function () {
+        return true;
+      }).catch(function () {
+        return false;
+      });
+    }
   });
 });
