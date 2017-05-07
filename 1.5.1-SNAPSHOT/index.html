@@ -517,7 +517,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 1.5.1-SNAPSHOT,</span>
-<span id="revdate">02.05.2017</span>
+<span id="revdate">07.05.2017</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -1034,7 +1034,7 @@ user.password</p></td>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.routes.endpoints</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The enpoints which will be available via spring boot admin zuul proxy. If you write ui modules using other endpoints you need to add them.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"env, metrics, trace, dump, jolokia, info, configprops, trace, activiti, logfile, refresh, flyway, liquibase, loggers"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"env, metrics, trace, dump, jolokia, info, configprops, activiti, logfile, refresh, flyway, liquibase, loggers"</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -1700,7 +1700,7 @@ account and configure it appropriately.</p>
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.routes.endpoints</span>: <span class="string"><span class="content">env,metrics,trace,dump,jolokia,info,configprops,trace,logfile,refresh,flyway,liquibase,heapdump,loggers,auditevents,hystrix.stream</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.routes.endpoints</span>: <span class="string"><span class="content">env,metrics,dump,jolokia,info,configprops,trace,logfile,refresh,flyway,liquibase,heapdump,loggers,auditevents,hystrix.stream</span></span></code></pre>
 </div>
 </div>
 </li>
@@ -1806,7 +1806,7 @@ account and configure it appropriately.</p>
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.routes.endpoints</span>: <span class="string"><span class="content">env,metrics,trace,dump,jolokia,info,configprops,trace,logfile,refresh,flyway,liquibase,heapdump,activiti</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.routes.endpoints</span>: <span class="string"><span class="content">env,metrics,dump,jolokia,info,configprops,trace,logfile,refresh,flyway,liquibase,heapdump,activiti</span></span></code></pre>
 </div>
 </div>
 </li>
