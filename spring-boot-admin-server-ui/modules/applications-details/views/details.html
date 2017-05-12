@@ -1,49 +1,60 @@
 <div class="container" ui-view>
-	<div class="alert alert-error" ng-if="error">
-		<b>Error:</b> {{ error }}
-	</div>
-	<form class="form-inline">
-		<button title="refresh" class="btn" ng-click="refresh()"><i class="fa fa-repeat"></i></button>
-		<div class="input-prepend input-append">
-			<button title="auto refresh" class="btn" ng-click="toggleAutoRefresh()" ng-class="{'active':refresher != null}">
-            <i class="fa fa-refresh" ng-class="{'fa-spin':refresher != null}"></i>
-          </button>
-			<input class="input-mini" type="number" min="1" ng-model="refreshInterval" ng-disabled="refresher != null" />
-			<span class="add-on">sec</span>
-		</div>
-	</form>
-	<div style="display: flex; flex-wrap: wrap; justify-content: space-around;">
-		<sba-info-panel class="span6" style="margin-left:0px" panel-title="Application" raw="api/applications/{{ application.id }}/info">
-			<table class="table">
-				<tr ng-repeat="(key, value) in info">
-					<td ng-bind="key"></td>
-					<td style="white-space: pre; padding: 8px 0 8px 8px; max-width: 400px; overflow-x: auto;" ng-bind-html="value | yaml | linkify:50"></td>
-				</tr>
-			</table>
-		</sba-info-panel>
-		<sba-info-panel class="span6" style="margin-left:0px" panel-title="Health" raw="api/applications/{{ application.id }}/health">
-			<sba-health-status health="health"></sba-health-status>
-		</sba-info-panel>
-		<sba-info-panel class="span6" style="margin-left:0px" panel-title="Memory" raw="api/applications/{{ application.id }}/metrics/mem.*%7Cheap.*">
-			<sba-memory-stats metrics=metrics></sba-memory-stats>
-		</sba-info-panel>
-		<sba-info-panel class="span6" style="margin-left:0px" panel-title="JVM" raw="api/applications/{{ application.id }}/metrics/systemload.*%7Cclasses.*%7Cuptime%7Cprocessors%7Cthreads.*">
-			<sba-jvm-stats metrics="metrics"></sba-jvm-stats>
-		</sba-info-panel>
-		<sba-info-panel class="span6" style="margin-left:0px" panel-title="Garbage Collection" raw="api/applications/{{ application.id }}/metrics/gc.*">
-			<sba-gc-stats metrics="metrics"></sba-gc-stats>
-		</sba-info-panel>
-		<sba-info-panel class="span6" style="margin-left:0px" panel-title="Servlet Container" raw="api/applications/{{ application.id }}/metrics/httpsessions.*"
-			ng-show="metrics['httpsessions.active'] != null">
-			<sba-servlet-container-stats metrics="metrics"></sba-servlet-container-stats>
-		</sba-info-panel>
-		<sba-info-panel class="span6" style="margin-left:0px" panel-title="Datasources" raw="api/applications/{{ application.id }}/metrics/datasource.*"
-			ng-show="hasDatasources">
-			<sba-datasource-stats metrics="metrics"></sba-datasource-stats>
-		</sba-info-panel>
-		<sba-info-panel class="span6" style="margin-left:0px" panel-title="Caches" raw="api/applications/{{ application.id }}/metrics/cache.*"
-			ng-show="hasCaches">
-			<sba-cache-stats metrics="metrics"></sba-cache-stats>
-		</sba-info-panel>
-	</div>
+    <div class="alert alert-error" ng-if="error">
+        <b>Error:</b> {{ error }}
+    </div>
+    <form class="form-inline">
+        <button title="refresh" class="btn" ng-click="refresh()"><i class="fa fa-repeat"></i></button>
+        <div class="input-prepend input-append">
+            <button title="auto refresh" class="btn" ng-click="toggleAutoRefresh()"
+                    ng-class="{'active':refresher != null}">
+                <i class="fa fa-refresh" ng-class="{'fa-spin':refresher != null}"></i>
+            </button>
+            <input class="input-mini" type="number" min="1" ng-model="refreshInterval" ng-disabled="refresher != null"/>
+            <span class="add-on">sec</span>
+        </div>
+    </form>
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-around;">
+        <sba-info-panel class="span6" style="margin-left:0px" panel-title="Application"
+                        raw="api/applications/{{ application.id }}/info">
+            <table class="table">
+                <tr ng-repeat="(key, value) in info">
+                    <td ng-bind="key"></td>
+                    <td style="white-space: pre; padding: 8px 0 8px 8px; max-width: 400px; overflow-x: auto;"
+                        ng-bind-html="value | yaml | linkify:50"></td>
+                </tr>
+            </table>
+        </sba-info-panel>
+        <sba-info-panel class="span6" style="margin-left:0px" panel-title="Health"
+                        raw="api/applications/{{ application.id }}/health">
+            <sba-health-status health="health"></sba-health-status>
+        </sba-info-panel>
+
+        <sba-info-panel ng-if-start="metrics" class="span6" style="margin-left:0px" panel-title="Memory"
+                        raw="api/applications/{{ application.id }}/metrics/mem.*%7Cheap.*">
+            <sba-memory-stats metrics=metrics></sba-memory-stats>
+        </sba-info-panel>
+        <sba-info-panel class="span6" style="margin-left:0px" panel-title="JVM"
+                        raw="api/applications/{{ application.id }}/metrics/systemload.*%7Cclasses.*%7Cuptime%7Cprocessors%7Cthreads.*">
+            <sba-jvm-stats metrics="metrics"></sba-jvm-stats>
+        </sba-info-panel>
+        <sba-info-panel class="span6" style="margin-left:0px" panel-title="Garbage Collection"
+                        raw="api/applications/{{ application.id }}/metrics/gc.*">
+            <sba-gc-stats metrics="metrics"></sba-gc-stats>
+        </sba-info-panel>
+        <sba-info-panel class="span6" style="margin-left:0px" panel-title="Servlet Container"
+                        raw="api/applications/{{ application.id }}/metrics/httpsessions.*"
+                        ng-show="metrics['httpsessions.active'] != null">
+            <sba-servlet-container-stats metrics="metrics"></sba-servlet-container-stats>
+        </sba-info-panel>
+        <sba-info-panel class="span6" style="margin-left:0px" panel-title="Datasources"
+                        raw="api/applications/{{ application.id }}/metrics/datasource.*"
+                        ng-show="hasDatasources">
+            <sba-datasource-stats metrics="metrics"></sba-datasource-stats>
+        </sba-info-panel>
+        <sba-info-panel ng-if-end class="span6" style="margin-left:0px" panel-title="Caches"
+                        raw="api/applications/{{ application.id }}/metrics/cache.*"
+                        ng-show="hasCaches">
+            <sba-cache-stats metrics="metrics"></sba-cache-stats>
+        </sba-info-panel>
+    </div>
 </div>

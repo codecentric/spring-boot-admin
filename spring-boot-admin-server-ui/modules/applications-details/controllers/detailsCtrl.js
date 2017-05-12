@@ -21,7 +21,7 @@ module.exports = function ($scope, application, $interval) {
   'ngInject';
 
   $scope.application = application;
-  $scope.metrics = {};
+  $scope.metrics = null;
   $scope.refreshInterval = 1;
   $scope.refresher = null;
 
@@ -52,8 +52,8 @@ module.exports = function ($scope, application, $interval) {
           }
         });
       }
-    ).catch(function (response) {
-      $scope.error = response.data;
+    ).catch(function () {
+      $scope.metrics = null;
     });
   };
 
