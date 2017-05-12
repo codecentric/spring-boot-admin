@@ -30,13 +30,13 @@ module.config(function ($stateProvider) {
     });
 });
 
-module.run(function (ApplicationViews, $sce, $q, $http) {
+module.run(function (ApplicationViews, $sce, $q) {
 
     ApplicationViews.register({
         order: 30,
         title: $sce.trustAsHtml('<i class="fa fa-music fa-fw"></i>Javamelody'),
         state: 'applications.javamelody',
-        show: function (application) {
+        show: function () {
             var deferred = $q.defer();
 
             deferred.resolve(true); // always visible
