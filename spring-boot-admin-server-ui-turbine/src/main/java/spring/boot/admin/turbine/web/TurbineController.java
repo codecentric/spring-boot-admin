@@ -17,8 +17,10 @@ package spring.boot.admin.turbine.web;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -29,20 +31,30 @@ import de.codecentric.boot.admin.web.AdminController;
  * Provides informations for the turbine view. Only available clusters until now.
  * 
  * @author Johannes Edmeier
+ * @author Jérôme Mirc
  */
 @AdminController
 @ResponseBody
 @RequestMapping("/api/turbine")
 public class TurbineController {
-	private final String[] clusters;
+	private final DiscoveryClient discoveryClient;
 
-	public TurbineController(String[] clusters) {
-		this.clusters = Arrays.copyOf(clusters, clusters.length);
+	public TurbineController(DiscoveryClient discoveryClient) {
+		this.discoveryClient = discoveryClient;
 	}
 
 	@RequestMapping(value = "/clusters", method = RequestMethod.GET)
 	public Map<String, ?> getClusters() {
-		return Collections.singletonMap("clusters", clusters);
+		String[] clusterNames = new String[]{"default"};
+
+		List<String> services = discoveryClient.getServices();
+
+		if (services != null) {
+			clusterNames = services.toArray(new String[0]);
+		}
+
+		Arrays.sort(clusterNames);
+		return Collections.singletonMap("clusters", clusterNames);
 	}
 
 }

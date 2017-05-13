@@ -49,4 +49,7 @@ security:
     name: user
     password: pass
 
-
+# tag::configuration-ui-turbine[]
+spring.boot.admin.turbine:
+  location: http://localhost:${server.port:8080}  #<1>
+# end::configuration-ui-turbine[]
