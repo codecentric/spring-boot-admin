@@ -8,8 +8,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Arrays;
-
 import org.junit.Test;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,7 +23,7 @@ public class TurbineControllerTest {
 
 	@Test
 	public void test_clusters() throws Exception {
-		when(discoveryClient.getServices()).thenReturn(Arrays.asList("c1", "c2"));
+		when(discoveryClient.getServices()).thenReturn(asList("c1", "c2"));
 		mvc.perform(get("/api/turbine/clusters")).andExpect(status().isOk())
 				.andExpect(jsonPath("$.clusters").value(is(asList("c1", "c2"))));
 	}

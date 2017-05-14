@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryProperties.SimpleServiceInstance;
-import org.springframework.cloud.netflix.turbine.SpringAggregatorFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.util.StringUtils;
 
