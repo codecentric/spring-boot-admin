@@ -34,6 +34,7 @@
         <module>spring-boot-admin-server-ui-activiti</module>
         <module>spring-boot-admin-server-ui-hystrix</module>
         <module>spring-boot-admin-server-ui-turbine</module>
+        <module>spring-boot-admin-server-ui-javamelody</module>
         <module>spring-boot-admin-server-ui-login</module>
         <module>spring-boot-admin-samples</module>
         <module>spring-boot-admin-starter-client</module>

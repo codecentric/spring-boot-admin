@@ -8,12 +8,40 @@
 		<version>1.5.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
+
 	<artifactId>spring-boot-admin-server-ui-javamelody</artifactId>
-	<dependencies>
+
+    <properties>
+        <javamelody.version>1.67.0</javamelody.version>
+        <ehcache.version>2.6.0</ehcache.version>
+    </properties>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-server</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>de.codecentric</groupId>
 			<artifactId>spring-boot-admin-server-ui</artifactId>
 			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.bull.javamelody</groupId>
+			<artifactId>javamelody-core</artifactId>
+			<version>${javamelody.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache-core</artifactId>
+			<version>${ehcache.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<version>RELEASE</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>
@@ -71,6 +99,9 @@
 			<resource>
 				<directory>target/dist</directory>
 				<targetPath>META-INF/spring-boot-admin-server-ui</targetPath>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
 			</resource>
 		</resources>
 	</build>
