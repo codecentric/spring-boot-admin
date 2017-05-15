@@ -13,7 +13,7 @@ import javax.servlet.Filter;
 
 // Always run, if you depend on this module, you will get this autoconfiguration
 @Configuration
-@ConditionalOnProperty(value = "javamelody.collectserver.enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "javamelody", name = "collectserver.enabled", matchIfMissing = true)
 public class JavamelodyAutoConfiguration {
 
     private static final String CONTEXT_ROOT = "/javamelody";
