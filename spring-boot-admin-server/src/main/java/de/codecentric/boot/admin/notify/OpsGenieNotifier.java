@@ -94,34 +94,33 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
         result.put("alias", event.getApplication().getName() + "/" + event.getApplication().getId());
         result.put("description", getDescription(event));
 
-        if (event instanceof ClientApplicationStatusChangedEvent) {
-            if (!"UP".equals(((ClientApplicationStatusChangedEvent) event).getTo().getStatus())) {
+        if (event instanceof ClientApplicationStatusChangedEvent &&
+            !"UP".equals(((ClientApplicationStatusChangedEvent) event).getTo().getStatus())) {
 
-                if (recipients != null){
-                    result.put("recipients", recipients);
-                }
-                if (actions != null){
-                    result.put("actions", actions);
-                }
-                if (source != null){
-                    result.put("source", source);
-                }
-                if (tags != null){
-                    result.put("tags", tags);
-                }
-                if (entity != null){
-                    result.put("entity", entity);
-                }
-                if (user != null){
-                    result.put("user", user);
-                }
-
-                Map<String, Object> details = new HashMap<>();
-                details.put("type", "link");
-                details.put("href", event.getApplication().getHealthUrl());
-                details.put("text", "Application health-endpoint");
-                result.put("details", details);
+            if (recipients != null){
+                result.put("recipients", recipients);
             }
+            if (actions != null){
+                result.put("actions", actions);
+            }
+            if (source != null){
+                result.put("source", source);
+            }
+            if (tags != null){
+                result.put("tags", tags);
+            }
+            if (entity != null){
+                result.put("entity", entity);
+            }
+            if (user != null){
+                result.put("user", user);
+            }
+
+            Map<String, Object> details = new HashMap<>();
+            details.put("type", "link");
+            details.put("href", event.getApplication().getHealthUrl());
+            details.put("text", "Application health-endpoint");
+            result.put("details", details);
         }
 
         return result;
