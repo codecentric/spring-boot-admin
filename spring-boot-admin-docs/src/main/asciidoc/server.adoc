@@ -17,6 +17,14 @@
 | Lifetime of application statuses in ms. The applications /health-endpoint will not be queried until the lifetime has expired.
 | 10.000
 
+| spring.boot.admin.monitor.connect-timeout
+| Lifetime of application statuses in ms. The applications /health-endpoint will not be queried until the lifetime has expired.
+| 2.000
+
+| spring.boot.admin.monitor.read-timeout
+| Lifetime of application statuses in ms. The applications /health-endpoint will not be queried until the lifetime has expired.
+| 5.000
+
 | spring.boot.admin.routes.endpoints
 | The enpoints which will be available via spring boot admin zuul proxy. If you write ui modules using other endpoints you need to add them.
 | `"env, metrics, trace, dump, jolokia, info, configprops, activiti, logfile, refresh, flyway, liquibase, loggers"`
