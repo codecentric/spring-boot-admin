@@ -60,7 +60,7 @@ public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
 	@Order(0)
 	public ApplicationRouteLocator applicationRouteLocator() {
 		ApplicationRouteLocator routeLocator = new ApplicationRouteLocator(
-				this.server.getServletPrefix(), registry,
+				this.server.getServlet().getServletPrefix(), registry,
 				adminServer.getContextPath() + "/api/applications/");
 		routeLocator.setEndpoints(adminServer.getRoutes().getEndpoints());
 		return routeLocator;
@@ -86,7 +86,7 @@ public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
 	// pre filters
 	@Bean
 	public PreDecorationFilter preDecorationFilter(RouteLocator routeLocator) {
-		return new PreDecorationFilter(routeLocator, this.server.getServletPrefix(), zuulProperties,
+		return new PreDecorationFilter(routeLocator, this.server.getServlet().getServletPrefix(), zuulProperties,
 				proxyRequestHelper());
 	}
 
