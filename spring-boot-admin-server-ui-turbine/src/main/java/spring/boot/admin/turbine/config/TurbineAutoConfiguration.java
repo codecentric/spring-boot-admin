@@ -17,6 +17,7 @@ package spring.boot.admin.turbine.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -25,11 +26,16 @@ import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.cloud.netflix.zuul.filters.ZuulProperties.ZuulRoute;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
+
+import com.netflix.turbine.discovery.InstanceDiscovery;
 
 import de.codecentric.boot.admin.config.AdminServerProperties;
 import de.codecentric.boot.admin.config.AdminServerWebConfiguration;
 import de.codecentric.boot.admin.config.RevereseZuulProxyConfiguration;
+import spring.boot.admin.turbine.discovery.ApplicationDiscoveryClient;
+import spring.boot.admin.turbine.discovery.ApplicationInstanceDiscovery;
 import spring.boot.admin.turbine.web.TurbineController;
 import spring.boot.admin.turbine.zuul.filters.TurbineRouteLocator;
 
@@ -53,19 +59,33 @@ public class TurbineAutoConfiguration {
 	@Autowired
 	private ZuulProperties zuulProperties;
 
+	@Configuration
+	@ConditionalOnMissingClass("com.netflix.discovery.EurekaClient")
+	public static class ApplicationDiscoveryConfiguration {
+		@Primary
+		@Bean
+		public DiscoveryClient applicationDiscoveryClient() {
+			return new ApplicationDiscoveryClient();
+		}
+	}
+
 	@Bean
-	public TurbineController TurbineController() {
-		return new TurbineController(properties.getClusters());
+	public TurbineController TurbineController(DiscoveryClient discoveryClient) {
+		return new TurbineController(discoveryClient);
 	}
 
 	@Bean
 	@Order(100)
-	public TurbineRouteLocator staticRouteLocator(AdminServerProperties admin,
-			DiscoveryClient discovery) {
+	public TurbineRouteLocator staticRouteLocator(AdminServerProperties admin, DiscoveryClient discovery) {
 		ZuulRoute turbineRoute = new ZuulRoute(admin.getContextPath() + "/api/turbine/stream/**",
 				properties.getLocation());
 		return new TurbineRouteLocator(turbineRoute, server.getServletPrefix(), zuulProperties,
 				discovery);
+	}
+
+	@Bean
+	public InstanceDiscovery instanceDiscovery(DiscoveryClient discoveryClient) {
+		return new ApplicationInstanceDiscovery(discoveryClient);
 	}
 
 }

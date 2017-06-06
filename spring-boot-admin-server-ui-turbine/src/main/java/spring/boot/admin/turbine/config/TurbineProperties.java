@@ -30,23 +30,9 @@ public class TurbineProperties {
 	private String location = "turbine";
 
 	/**
-	 * List of available Turbine clusters.
-	 */
-	private String[] clusters = { "default" };
-
-	/**
 	 * Enable the Spring Boot Admin backend configuration for Turbine.
 	 */
 	private boolean enabled = true;
-
-
-	public String[] getClusters() {
-		return clusters;
-	}
-
-	public void setClusters(String[] clusters) {
-		this.clusters = Arrays.copyOf(clusters, clusters.length);
-	}
 
 	public boolean isEnabled() {
 		return enabled;
