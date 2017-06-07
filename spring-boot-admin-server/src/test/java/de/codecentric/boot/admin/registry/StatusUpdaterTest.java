@@ -15,21 +15,11 @@
  */
 package de.codecentric.boot.admin.registry;
 
-import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.Map;
-
+import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.model.Application;
+import de.codecentric.boot.admin.model.StatusInfo;
+import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
+import de.codecentric.boot.admin.web.client.ApplicationOperations;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,11 +27,19 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.ResourceAccessException;
 
-import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.model.Application;
-import de.codecentric.boot.admin.model.StatusInfo;
-import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
-import de.codecentric.boot.admin.web.client.ApplicationOperations;
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.Map;
+
+import static org.hamcrest.Matchers.hasEntry;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class StatusUpdaterTest {
 
@@ -75,7 +73,7 @@ public class StatusUpdaterTest {
 		assertThat((Map<String, ? extends Serializable>) app.getInfo().getValues(),
 				hasEntry("foo", (Serializable) "bar"));
 		verify(publisher)
-				.publishEvent(argThat(CoreMatchers.isA(ClientApplicationStatusChangedEvent.class)));
+				.publishEvent(any(ClientApplicationStatusChangedEvent.class));
 	}
 
 	@Test
@@ -87,7 +85,7 @@ public class StatusUpdaterTest {
 				Application.create("foo").withId("id").withHealthUrl("health").build());
 
 		verify(publisher, never())
-				.publishEvent(argThat(CoreMatchers.isA(ClientApplicationStatusChangedEvent.class)));
+				.publishEvent(any(ClientApplicationStatusChangedEvent.class));
 		verify(applicationOps, never()).getInfo(isA(Application.class));
 	}
 

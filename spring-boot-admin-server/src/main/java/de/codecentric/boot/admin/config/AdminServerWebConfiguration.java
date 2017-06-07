@@ -117,7 +117,7 @@ public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
 	public void addViewControllers(ViewControllerRegistry registry) {
 		String contextPath = adminServerProperties.getContextPath();
 		if (StringUtils.hasText(contextPath)) {
-			registry.addRedirectViewController(contextPath, server.getPath(contextPath) + "/");
+			registry.addRedirectViewController(contextPath, server.getServlet().getPath(contextPath) + "/");
 		}
 		registry.addViewController(contextPath + "/").setViewName("forward:index.html");
 	}

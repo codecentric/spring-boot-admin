@@ -1,24 +1,23 @@
 package de.codecentric.boot.admin.registration;
 
+import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
+import de.codecentric.boot.admin.client.registration.RegistrationApplicationListener;
+import org.junit.Test;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.web.context.ConfigurableWebApplicationContext;
+
+import java.util.concurrent.ScheduledFuture;
+
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.util.concurrent.ScheduledFuture;
-
-import org.junit.Test;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.ContextClosedEvent;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.web.context.ConfigurableWebApplicationContext;
-
-import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
-import de.codecentric.boot.admin.client.registration.RegistrationApplicationListener;
 
 public class RegistrationApplicationListenerTest {
 
@@ -68,7 +67,7 @@ public class RegistrationApplicationListenerTest {
 
 		verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(10_000L));
 
-		listener.onClosedContext(new ContextClosedEvent(mock(EmbeddedWebApplicationContext.class)));
+		listener.onClosedContext(new ContextClosedEvent(mock(ServletWebServerApplicationContext.class)));
 		verify(task).cancel(true);
 	}
 
@@ -97,7 +96,7 @@ public class RegistrationApplicationListenerTest {
 		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator,
 				scheduler);
 
-		listener.onClosedContext(new ContextClosedEvent(mock(EmbeddedWebApplicationContext.class)));
+		listener.onClosedContext(new ContextClosedEvent(mock(ServletWebServerApplicationContext.class)));
 
 		verify(registrator, never()).deregister();
 	}
@@ -110,7 +109,7 @@ public class RegistrationApplicationListenerTest {
 				scheduler);
 		listener.setAutoDeregister(true);
 
-		listener.onClosedContext(new ContextClosedEvent(mock(EmbeddedWebApplicationContext.class)));
+		listener.onClosedContext(new ContextClosedEvent(mock(ServletWebServerApplicationContext.class)));
 
 		verify(registrator).deregister();
 	}
