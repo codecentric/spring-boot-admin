@@ -15,34 +15,24 @@
  */
 package de.codecentric.boot.admin.event;
 
-import java.io.Serializable;
-
 import de.codecentric.boot.admin.model.Application;
+import org.springframework.context.ApplicationEvent;
 
 /**
- * Abstract Event regearding spring boot admin clients
+ * Abstract Event regarding spring boot admin clients
  *
  * @author Johannes Edmeier
  */
-public abstract class ClientApplicationEvent implements Serializable {
-	private static final long serialVersionUID = 1L;
+public abstract class ClientApplicationEvent extends ApplicationEvent {
 
 	private final Application application;
 
-	private final long timestamp;
 	private final String type;
 
 	protected ClientApplicationEvent(Application application, String type) {
+		super(application);
 		this.application = application;
-		this.timestamp = System.currentTimeMillis();
 		this.type = type;
-	}
-
-	/**
-	 * @return system time in milliseconds when the event happened.
-	 */
-	public final long getTimestamp() {
-		return this.timestamp;
 	}
 
 	/**
@@ -64,7 +54,7 @@ public abstract class ClientApplicationEvent implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((application == null) ? 0 : application.hashCode());
-		result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
+		result = prime * result + (int) (getTimestamp() ^ (getTimestamp() >>> 32));
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
@@ -88,7 +78,7 @@ public abstract class ClientApplicationEvent implements Serializable {
 		} else if (!application.equals(other.application)) {
 			return false;
 		}
-		if (timestamp != other.timestamp) {
+		if (getTimestamp() != other.getTimestamp()) {
 			return false;
 		}
 		if (type == null) {
