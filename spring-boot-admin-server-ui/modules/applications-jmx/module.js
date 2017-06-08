@@ -40,14 +40,18 @@ module.config(function ($stateProvider) {
   });
 });
 
-module.run(function (ApplicationViews, $sce, $http) {
+module.run(function (ApplicationViews, $sce, $http, jolokia, ApplicationJmx) {
   ApplicationViews.register({
     order: 40,
     title: $sce.trustAsHtml('<i class="fa fa-cogs fa-fw"></i>JMX'),
     state: 'applications.jmx',
     show: function (application) {
       return $http.head('api/applications/' + application.id + '/jolokia').then(function () {
-        return true;
+        return ApplicationJmx.list(application).then(function () {
+          return true;
+        }).catch(function () {
+          return false;
+        });
       }).catch(function () {
         return false;
       });

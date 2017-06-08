@@ -32,10 +32,17 @@ module.config(function ($stateProvider) {
   });
 });
 
-module.run(function (ApplicationViews, $sce) {
+module.run(function (ApplicationViews, $http, $sce) {
   ApplicationViews.register({
     order: 10,
     title: $sce.trustAsHtml('<i class="fa fa-server fa-fw"></i>Environment'),
-    state: 'applications.environment'
+    state: 'applications.environment',
+    show: function (application) {
+      return $http.head('api/applications/' + application.id + '/env').then(function () {
+        return true;
+      }).catch(function () {
+        return false;
+      });
+    }
   });
 });

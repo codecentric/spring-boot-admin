@@ -16,7 +16,7 @@
 'use strict';
 
 var angular = require('angular');
-module.exports = function ($rootScope, $scope, $state, NotificationFilters) {
+module.exports = function ($rootScope, $scope, $state, NotificationFilters, $filter) {
   'ngInject';
   $scope.notificationFilters = null;
   $scope.notificationFiltersSupported = false;
@@ -62,4 +62,14 @@ module.exports = function ($rootScope, $scope, $state, NotificationFilters) {
     });
   };
   $scope.loadFilters();
+
+  $scope.doFilter = function (value) {
+    if (!$scope.searchFilter) {
+      return true;
+    }
+    var projection = angular.copy(value);
+    delete projection.statusInfo;
+    delete projection.group;
+    return $filter('filter')([projection], $scope.searchFilter).length > 0;
+  };
 };

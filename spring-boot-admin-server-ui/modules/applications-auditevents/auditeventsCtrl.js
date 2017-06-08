@@ -17,8 +17,13 @@
 
 module.exports = function ($scope, $http, application) {
   'ngInject';
+  var halfAnHourBefore = new Date();
+  halfAnHourBefore.setMinutes(halfAnHourBefore.getMinutes() - 30);
+  halfAnHourBefore.setSeconds(0);
+  halfAnHourBefore.setMilliseconds(0);
+
   $scope.auditevents = [];
-  $scope.filter = { principal: null, type: null, after: null };
+  $scope.filter = {principal: null, type: null, after: halfAnHourBefore};
 
   $scope.setFilter = function (key, value) {
     $scope.filter[key] = value;

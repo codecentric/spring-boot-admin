@@ -1,6 +1,6 @@
 <table class="table">
 	<tr ng-repeat-start="cache in $ctrl.caches track by cache.name">
-		<td rowspan="2" ng-bind="cache.name"></td>
+		<td rowspan="{{cache.hitRatio || cache.missRatio ? 2 : 1}}" ng-bind="cache.name"></td>
 		<td>size</td>
 		<td ng-bind="cache.size">
 	</tr>
