@@ -53,4 +53,18 @@ public class AdminServerPropertiesTest {
 		adminServerProperties.getMonitor().setStatusLifetime(1l);
 		assertTrue(adminServerProperties.getMonitor().getStatusLifetime() == 1l);
 	}
+
+	@Test
+	public void getConnectTimeout() {
+		AdminServerProperties adminServerProperties = new AdminServerProperties();
+		adminServerProperties.getMonitor().setConnectTimeout(1);
+		assertTrue(adminServerProperties.getMonitor().getConnectTimeout() == 1);
+	}
+
+	@Test
+	public void getReadTimeout() {
+		AdminServerProperties adminServerProperties = new AdminServerProperties();
+		adminServerProperties.getMonitor().setReadTimeout(1);
+		assertTrue(adminServerProperties.getMonitor().getReadTimeout() == 1);
+	}
 }
