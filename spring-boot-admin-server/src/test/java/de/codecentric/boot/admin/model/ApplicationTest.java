@@ -68,56 +68,6 @@ public class ApplicationTest {
 		assertThat(value.getServiceUrl(), nullValue());
 	}
 
-	@Test
-	public void test_metricsEmpty() throws Exception {
-		String json = new JSONObject().put("name", "test")
-				.put("healthUrl", "http://health")
-				.put("serviceUrl", "http://service")
-				.toString();
-		Application value = objectMapper.readValue(json, Application.class);
-		assertThat(value.getName(), is("test"));
-		assertThat(value.getHealthUrl(), is("http://health"));
-		assertThat(value.getServiceUrl(), is("http://service"));
-		assertThat(value.getMetrics(), emptyCollectionOf(String.class));
-		assertThat(value.getManagementUrl(), nullValue());
-	}
-
-	@Test
-	public void test_metricsValues() throws Exception {
-		JSONArray metrics = new JSONArray();
-		metrics.put("one");
-		metrics.put("two");
-		String json = new JSONObject().put("name", "test")
-				.put("healthUrl", "http://health")
-				.put("serviceUrl", "http://service")
-				.put("metrics", metrics)
-				.toString();
-		Application value = objectMapper.readValue(json, Application.class);
-		assertThat(value.getName(), is("test"));
-		assertThat(value.getHealthUrl(), is("http://health"));
-		assertThat(value.getServiceUrl(), is("http://service"));
-		assertThat(value.getMetrics(), containsInAnyOrder("one", "two"));
-		assertThat(value.getManagementUrl(), nullValue());
-	}
-
-	@Test
-	public void test_metricsValues_defaults() throws Exception {
-		JSONArray metrics = new JSONArray();
-		metrics.put("one");
-		metrics.put("two");
-		String json = new JSONObject().put("name", "test")
-				.put("healthUrl", "http://health")
-				.put("serviceUrl", "http://service")
-				.put("metrics", "not array")
-				.toString();
-		Application value = objectMapper.readValue(json, Application.class);
-		assertThat(value.getName(), is("test"));
-		assertThat(value.getHealthUrl(), is("http://health"));
-		assertThat(value.getServiceUrl(), is("http://service"));
-		assertThat(value.getMetrics(), containsInAnyOrder("counter", "gauge"));
-		assertThat(value.getManagementUrl(), nullValue());
-	}
-
 	@Test(expected = IllegalArgumentException.class)
 	public void test_name_expected() throws Exception {
 		String json = new JSONObject().put("name", "").put("managementUrl", "http://test")
@@ -165,18 +115,5 @@ public class ApplicationTest {
 				.withStatusInfo(StatusInfo.ofUp()).build();
 		Application copy = Application.copyOf(app).build();
 		assertThat(app, is(copy));
-	}
-
-	@Test
-	public void test_builder_metrics() {
-		List<String> metrics = Arrays.asList("counter", "gauge", "custom");
-		Application app = Application.create("App").withId("-id-").withName("metrics-app")
-				.withHealthUrl("http://health")
-				.withManagementUrl("http://mgmgt")
-				.withServiceUrl("http://svc")
-				.withMetrics(metrics)
-				.withStatusInfo(StatusInfo.ofUp()).build();
-		assertThat(app.getMetrics(), containsInAnyOrder("counter", "custom", "gauge"));
-		assertThat(app.getName(), is("metrics-app"));
 	}
 }

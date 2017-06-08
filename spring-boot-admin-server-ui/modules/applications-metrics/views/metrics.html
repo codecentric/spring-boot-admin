@@ -2,28 +2,20 @@
   <div class="alert alert-error" ng-if="error">
     <b>Error:</b> {{ error }}
   </div>
-  <span ng-repeat="(metricName, metricValues) in metricData">
-    <sba-info-panel panel-title="{{ metricName | capitalize }}" raw="api/applications/{{ application.id }}/metrics/{{ metricName }}.*">
-      <table class="table" ng-if="metricValues !== null && metricValues.length > 0">
-        <tr ng-repeat="m in metricValues">
+  <div>
+    <input placeholder="Filter" class="input-xxlarge" type="search" ng-model="search.name" />
+  </div>
+  <span ng-repeat="metric in metrics | filter:search | orderBy:'name' ">
+    <sba-info-panel panel-title="{{ metric.name | capitalize }}" raw="api/applications/{{ application.id }}/metrics/{{ metric.name }}.*">
+      <table class="table" ng-if="metric.values !== null && metric.values.length > 0">
+        <tr ng-if="showRichGauges" ng-repeat="m in metric.values">
           <td>
-            <sba-simple-metric-bar for-metric="m" global-max="metricDataMax[metricName]"></sba-simple-metric-bar>
+            <sba-rich-metric-bar for-metric="m" global-max="metric.max"></sba-rich-metric-bar>
           </td>
         </tr>
-      </table>
-    </sba-info-panel>
-  </span>
-  <span ng-if="hasGauges">
-    <sba-info-panel panel-title="Gauges" raw="api/applications/{{ application.id }}/metrics/gauge.*">
-      <table class="table" ng-if="gauges.length > 0">
-        <tr ng-if="showRichGauges" ng-repeat="gauge in gauges">
+        <tr ng-if="!showRichGauges" ng-repeat="m in metric.values">
           <td>
-            <sba-rich-metric-bar for-metric="gauge" global-max="gaugesMax"></sba-rich-metric-bar>
-          </td>
-        </tr>
-        <tr ng-if="!showRichGauges" ng-repeat="gauge in gauges">
-          <td>
-            <sba-simple-metric-bar for-metric="gauge" global-max="gaugesMax"></sba-simple-metric-bar>
+            <sba-simple-metric-bar for-metric="m" global-max="metric.max"></sba-simple-metric-bar>
           </td>
         </tr>
       </table>

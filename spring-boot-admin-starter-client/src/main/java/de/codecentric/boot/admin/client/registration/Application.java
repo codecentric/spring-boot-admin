@@ -17,11 +17,9 @@ package de.codecentric.boot.admin.client.registration;
 
 import org.springframework.util.Assert;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,7 +34,6 @@ public class Application {
 	private final String healthUrl;
 	private final String serviceUrl;
 	private final Map<String, String> metadata;
-	private final List<String> metrics;
 
 	protected Application(Builder builder) {
 		Assert.hasText(builder.name, "name must not be empty!");
@@ -46,7 +43,6 @@ public class Application {
 		this.serviceUrl = builder.serviceUrl;
 		this.name = builder.name;
 		this.metadata = Collections.unmodifiableMap(new HashMap<>(builder.metadata));
-		this.metrics = Collections.unmodifiableList(new ArrayList<>(builder.metrics));
 	}
 
 	public static Builder create(String name) {
@@ -95,11 +91,6 @@ public class Application {
 			return this;
 		}
 
-		public Builder withMetrics(List<String> metrics) {
-			this.metrics.addAll(metrics);
-			return this;
-		}
-
 		public Application build() {
 			return new Application(this);
 		}
@@ -125,14 +116,10 @@ public class Application {
 		return metadata;
 	}
 
-	public List<String> getMetrics() {
-		return metrics;
-	}
-
 	@Override
 	public String toString() {
 		return "Application [name=" + name + ", managementUrl=" + managementUrl + ", healthUrl="
-				+ healthUrl + ", serviceUrl=" + serviceUrl + ", metrics=" + metrics + "]";
+				+ healthUrl + ", serviceUrl=" + serviceUrl + "]";
 	}
 
 	@Override

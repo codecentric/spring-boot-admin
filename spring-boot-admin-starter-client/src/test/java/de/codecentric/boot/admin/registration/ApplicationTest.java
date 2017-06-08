@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -24,7 +23,7 @@ public class ApplicationTest {
 
 		Application app = Application.create("test").withHealthUrl("http://health")
 				.withServiceUrl("http://service").withManagementUrl("http://management")
-				.withMetrics(Arrays.asList("one","two")).build();
+				.build();
 
 		DocumentContext json = JsonPath.parse(objectMapper.writeValueAsString(app));
 
@@ -32,7 +31,6 @@ public class ApplicationTest {
 		assertThat((String)json.read("$.serviceUrl")).isEqualTo("http://service");
 		assertThat((String)json.read("$.managementUrl")).isEqualTo("http://management");
 		assertThat((String)json.read("$.healthUrl")).isEqualTo("http://health");
-		assertThat(json.read("$.metrics")).asList().contains("one").contains("two");
 	}
 
 	@Test

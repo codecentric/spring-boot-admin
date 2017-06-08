@@ -17,7 +17,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -171,13 +170,11 @@ public class DefaultApplicationFactoryTest {
 		client.setHealthUrl("http://health");
 		client.setManagementUrl("http://management");
 		client.setServiceUrl("http://service");
-		client.setMetrics(new String[] { "one", "two" });
 
 		Application app = factory.createApplication();
 		assertThat(app.getServiceUrl(), is("http://service"));
 		assertThat(app.getManagementUrl(), is("http://management"));
 		assertThat(app.getHealthUrl(), is("http://health"));
-		assertThat(app.getMetrics(), containsInAnyOrder("two", "one"));
 	}
 
 	@Test

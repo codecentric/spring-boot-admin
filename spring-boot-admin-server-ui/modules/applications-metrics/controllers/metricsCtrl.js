@@ -18,23 +18,10 @@
 module.exports = function ($scope, application) {
   'ngInject';
 
-  $scope.metricData = {};
-  $scope.metricDataMax = {};
-  $scope.hasGauges = false;
-  $scope.gauges = [];
-  $scope.gaugesMax = 0;
+  var metricData = {'gauge': []};
+  var metricDataMax = {'gauge': 0};
   $scope.showRichGauges = false;
-
-  var applicationMetrics = application.metrics || ['counter', 'gauge'];
-
-  for (var i = 0, size = applicationMetrics.length; i < size; i++) {
-    $scope.hasGauges = $scope.hasGauges || applicationMetrics[i] === 'gauge';
-    //gauges are handled by specific code ATM
-    if (applicationMetrics[i] !== 'gauge') {
-      $scope.metricData[applicationMetrics[i]] = [];
-      $scope.metricDataMax[applicationMetrics[i]] = 0;
-    }
-  }
+  $scope.metrics = [];
 
   application.getMetrics().then(
     function (response) {
@@ -52,64 +39,80 @@ module.exports = function ($scope, application) {
 
       var find = function (metrics, regexes, callbacks) {
         for (var metric in metrics) {
-          for (var i = 0; i < regexes.length; i++) {
-            var match = regexes[i].exec(metric);
-            if (match !== null) {
-              callbacks[i](metric, match, metrics[metric]);
-              break;
+          if(metrics.hasOwnProperty(metric)) {
+            for (var i = 0; i < regexes.length; i++) {
+              var match = regexes[i].exec(metric);
+              if (match !== null) {
+                callbacks[i](metric, match, metrics[metric]);
+                break;
+              }
             }
           }
         }
+
+        for (var key in metricData) {
+          $scope.metrics.push({
+            name: key,
+            values: metricData[key],
+            max: metricDataMax[key] || 0
+          })
+        }
       };
 
-      var regexes = [new RegExp('^(?!gauge)(' + applicationMetrics.join('|') + ')\..*'), /(gauge\..+)\.val/, /(gauge\..+)\.avg/, /(gauge\..+)\.min/, /(gauge\..+)\.max/, /(gauge\..+)\.count/, /(gauge\..+)\.alpha/, /(gauge\..+)/];
+      var regexes = [/^(?!gauge)([a-zA-Z0-9]+)\..*/gi, /(gauge\..+)\.val/, /(gauge\..+)\.avg/, /(gauge\..+)\.min/, /(gauge\..+)\.max/, /(gauge\..+)\.count/, /(gauge\..+)\.alpha/, /(gauge\..+)/];
 
       var callbacks = [
         function (metric, match, value) {
-          if (match.length >= 2 && match[1] !== null && typeof $scope.metricData[match[1]] !== 'undefined') {
-            $scope.metricData[match[1]].push({
+          if(typeof metricData[match[1]] === 'undefined'){
+            metricData[match[1]] = [];
+          }
+          if(typeof metricDataMax[match[1]] === 'undefined'){
+            metricDataMax[match[1]] = 0
+          }
+          if (match.length >= 2 && match[1] !== null) {
+            metricData[match[1]].push({
               name: metric,
               value: value
             });
 
-            if (value > $scope.metricDataMax[match[1]]) {
-              $scope.metricDataMax[match[1]] = value;
+            if (value > metricDataMax[match[1]]) {
+              metricDataMax[match[1]] = value;
             }
           }
         },
         function (metric, match, value) {
-          merge($scope.gauges, {
+          merge(metricData['gauge'], {
             name: match[1],
             value: value
           });
           $scope.showRichGauges = true;
-          if (value > $scope.gaugesMax) {
-            $scope.gaugesMax = value;
+          if (value > metricDataMax['gauge']) {
+            metricDataMax['gauge'] = value;
           }
         },
         function (metric, match, value) {
-          merge($scope.gauges, {
+          merge(metricData['gauge'], {
             name: match[1],
             avg: value.toFixed(2)
           });
         },
         function (metric, match, value) {
-          merge($scope.gauges, {
+          merge(metricData['gauge'], {
             name: match[1],
             min: value
           });
         },
         function (metric, match, value) {
-          merge($scope.gauges, {
+          merge(metricData['gauge'], {
             name: match[1],
             max: value
           });
-          if (value > $scope.gaugesMax) {
-            $scope.gaugesMax = value;
+          if (value > metricDataMax['gauge']) {
+            metricDataMax['gauge'] = value;
           }
         },
         function (metric, match, value) {
-          merge($scope.gauges, {
+          merge(metricData['gauge'], {
             name: match[1],
             count: value
           });
@@ -117,12 +120,12 @@ module.exports = function ($scope, application) {
         function () { /* NOP */
         },
         function (metric, match, value) {
-          merge($scope.gauges, {
+          merge(metricData['gauge'], {
             name: match[1],
             value: value
           });
-          if (value > $scope.gaugesMax) {
-            $scope.gaugesMax = value;
+          if (value > metricDataMax['gauge']) {
+            metricDataMax['gauge'] = value;
           }
         }];
 
