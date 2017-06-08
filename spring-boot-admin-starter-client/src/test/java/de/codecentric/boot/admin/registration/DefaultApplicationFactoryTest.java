@@ -1,16 +1,8 @@
 package de.codecentric.boot.admin.registration;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
+import de.codecentric.boot.admin.client.config.AdminClientProperties;
+import de.codecentric.boot.admin.client.registration.Application;
+import de.codecentric.boot.admin.client.registration.DefaultApplicationFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
@@ -21,9 +13,16 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
-import de.codecentric.boot.admin.client.config.AdminClientProperties;
-import de.codecentric.boot.admin.client.registration.Application;
-import de.codecentric.boot.admin.client.registration.DefaultApplicationFactory;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class DefaultApplicationFactoryTest {
 

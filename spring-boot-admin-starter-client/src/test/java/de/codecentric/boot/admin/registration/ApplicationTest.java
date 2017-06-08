@@ -1,21 +1,19 @@
 package de.codecentric.boot.admin.registration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-
-import java.io.IOException;
-
-import org.junit.Test;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-
 import de.codecentric.boot.admin.client.registration.Application;
+import org.junit.Test;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+
+import java.io.IOException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 
 public class ApplicationTest {
 
@@ -24,7 +22,8 @@ public class ApplicationTest {
 		ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
 
 		Application app = Application.create("test").withHealthUrl("http://health")
-				.withServiceUrl("http://service").withManagementUrl("http://management").build();
+				.withServiceUrl("http://service").withManagementUrl("http://management")
+				.build();
 
 		DocumentContext json = JsonPath.parse(objectMapper.writeValueAsString(app));
 

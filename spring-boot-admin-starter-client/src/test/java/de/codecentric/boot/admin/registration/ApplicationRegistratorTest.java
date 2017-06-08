@@ -61,6 +61,7 @@ public class ApplicationRegistratorTest {
 			.withManagementUrl("http://localhost:8080/mgmt")
 			.withHealthUrl("http://localhost:8080/health")
 			.withServiceUrl("http://localhost:8080")
+			
 		.build());
 
 		registrator = new ApplicationRegistrator(restTemplate, adminProps, factory);
@@ -84,7 +85,8 @@ public class ApplicationRegistratorTest {
 						new HttpEntity<>(Application.create("AppName")
 								.withHealthUrl("http://localhost:8080/health")
 								.withManagementUrl("http://localhost:8080/mgmt")
-								.withServiceUrl("http://localhost:8080").build(), headers),
+								.withServiceUrl("http://localhost:8080")
+								.build(), headers),
 				Map.class);
 	}
 
@@ -141,7 +143,8 @@ public class ApplicationRegistratorTest {
 						new HttpEntity<>(Application.create("AppName")
 								.withHealthUrl("http://localhost:8080/health")
 								.withManagementUrl("http://localhost:8080/mgmt")
-								.withServiceUrl("http://localhost:8080").build(), headers),
+								.withServiceUrl("http://localhost:8080")
+								.build(), headers),
 						Map.class);
 
 		verify(restTemplate)
@@ -149,7 +152,8 @@ public class ApplicationRegistratorTest {
 						new HttpEntity<>(Application.create("AppName")
 								.withHealthUrl("http://localhost:8080/health")
 								.withManagementUrl("http://localhost:8080/mgmt")
-								.withServiceUrl("http://localhost:8080").build(), headers),
+								.withServiceUrl("http://localhost:8080")
+								.build(), headers),
 						Map.class);
 	}
 
@@ -171,7 +175,8 @@ public class ApplicationRegistratorTest {
 						new HttpEntity<>(Application.create("AppName")
 								.withHealthUrl("http://localhost:8080/health")
 								.withManagementUrl("http://localhost:8080/mgmt")
-								.withServiceUrl("http://localhost:8080").build(), headers),
+								.withServiceUrl("http://localhost:8080")
+								.build(), headers),
 						Map.class);
 
 		verify(restTemplate)
@@ -179,7 +184,8 @@ public class ApplicationRegistratorTest {
 						new HttpEntity<>(Application.create("AppName")
 								.withHealthUrl("http://localhost:8080/health")
 								.withManagementUrl("http://localhost:8080/mgmt")
-								.withServiceUrl("http://localhost:8080").build(), headers),
+								.withServiceUrl("http://localhost:8080")
+								.build(), headers),
 						Map.class);
 	}
 

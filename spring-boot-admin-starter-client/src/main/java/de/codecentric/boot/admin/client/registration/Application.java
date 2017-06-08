@@ -15,11 +15,11 @@
  */
 package de.codecentric.boot.admin.client.registration;
 
+import org.springframework.util.Assert;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.springframework.util.Assert;
 
 /**
  * Contains all informations which is used when this application is registered.
