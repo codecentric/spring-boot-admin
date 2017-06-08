@@ -19,9 +19,7 @@ import org.springframework.util.Assert;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Contains all informations which is used when this application is registered.
@@ -55,7 +53,6 @@ public class Application {
 		private String healthUrl;
 		private String serviceUrl;
 		private Map<String, String> metadata = new HashMap<>();
-		private Set<String> metrics = new HashSet<>();
 
 		private Builder(String name) {
 			this.name = name;

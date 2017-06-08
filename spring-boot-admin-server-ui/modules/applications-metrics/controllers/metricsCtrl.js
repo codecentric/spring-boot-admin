@@ -51,11 +51,13 @@ module.exports = function ($scope, application) {
         }
 
         for (var key in metricData) {
-          $scope.metrics.push({
-            name: key,
-            values: metricData[key],
-            max: metricDataMax[key] || 0
-          })
+          if(metricData.hasOwnProperty(key)) {
+            $scope.metrics.push({
+              name: key,
+              values: metricData[key],
+              max: metricDataMax[key] || 0
+            });
+          }
         }
       };
 
@@ -67,7 +69,7 @@ module.exports = function ($scope, application) {
             metricData[match[1]] = [];
           }
           if(typeof metricDataMax[match[1]] === 'undefined'){
-            metricDataMax[match[1]] = 0
+            metricDataMax[match[1]] = 0;
           }
           if (match.length >= 2 && match[1] !== null) {
             metricData[match[1]].push({
