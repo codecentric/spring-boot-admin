@@ -7,7 +7,8 @@ import java.util.Arrays;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class AdminServerPropertiesSpec {
+public class AdminServerPropertiesTest {
+
 	@Test(expected = IllegalArgumentException.class)
 	public void setContextPathSingleSlash() {
 		new AdminServerProperties().setContextPath("/");
@@ -39,5 +40,17 @@ public class AdminServerPropertiesSpec {
 		assertTrue(Arrays.equals(adminServerProperties.getRoutes().getEndpoints(), endpoints));
 	}
 
+	@Test
+	public void setPeriod() {
+		AdminServerProperties adminServerProperties = new AdminServerProperties();
+		adminServerProperties.getMonitor().setPeriod(1l);
+		assertTrue(adminServerProperties.getMonitor().getPeriod() == 1l);
+	}
 
+	@Test
+	public void getStatusLifetime() {
+		AdminServerProperties adminServerProperties = new AdminServerProperties();
+		adminServerProperties.getMonitor().setStatusLifetime(1l);
+		assertTrue(adminServerProperties.getMonitor().getStatusLifetime() == 1l);
+	}
 }
