@@ -16,7 +16,6 @@
 package de.codecentric.boot.admin.server.config;
 
 import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.event.RoutesOutdatedEvent;
 import de.codecentric.boot.admin.server.journal.store.HazelcastJournaledEventStore;
 import de.codecentric.boot.admin.server.journal.store.JournaledEventStore;
 import de.codecentric.boot.admin.server.model.Application;
@@ -34,14 +33,9 @@ import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfigurati
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import com.hazelcast.core.EntryAdapter;
-import com.hazelcast.core.EntryEvent;
-import com.hazelcast.core.EntryListener;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IList;
 import com.hazelcast.core.IMap;
-import com.hazelcast.core.MapEvent;
-import com.hazelcast.map.listener.MapListener;
 
 @Configuration
 @ConditionalOnSingleCandidate(HazelcastInstance.class)
@@ -66,7 +60,6 @@ public class HazelcastStoreConfiguration {
     public ApplicationStore applicationStore() {
         IMap<String, Application> map = hazelcastInstance.getMap(hazelcastMapName);
         map.addIndex("name", false);
-        map.addEntryListener((MapListener) entryListener(), false);
         return new HazelcastApplicationStore(map);
     }
 
@@ -77,18 +70,4 @@ public class HazelcastStoreConfiguration {
         return new HazelcastJournaledEventStore(list);
     }
 
-    @Bean
-    public EntryListener<String, Application> entryListener() {
-        return new EntryAdapter<String, Application>() {
-            @Override
-            public void onEntryEvent(EntryEvent<String, Application> event) {
-                publisher.publishEvent(new RoutesOutdatedEvent());
-            }
-
-            @Override
-            public void onMapEvent(MapEvent event) {
-                publisher.publishEvent(new RoutesOutdatedEvent());
-            }
-        };
-    }
 }

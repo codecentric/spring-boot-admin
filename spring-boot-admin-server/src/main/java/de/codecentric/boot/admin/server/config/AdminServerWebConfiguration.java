@@ -15,9 +15,6 @@
  */
 package de.codecentric.boot.admin.server.config;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationDeregisteredEvent;
-import de.codecentric.boot.admin.server.event.ClientApplicationRegisteredEvent;
-import de.codecentric.boot.admin.server.event.RoutesOutdatedEvent;
 import de.codecentric.boot.admin.server.journal.ApplicationEventJournal;
 import de.codecentric.boot.admin.server.journal.web.JournalController;
 import de.codecentric.boot.admin.server.registry.ApplicationRegistry;
@@ -33,7 +30,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.EventListener;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -96,16 +92,6 @@ public class AdminServerWebConfiguration implements WebMvcConfigurer, Applicatio
     @ConditionalOnMissingBean
     public JournalController journalController(ApplicationEventJournal applicationEventJournal) {
         return new JournalController(applicationEventJournal);
-    }
-
-    @EventListener
-    public void onClientApplicationRegistered(ClientApplicationRegisteredEvent event) {
-        publisher.publishEvent(new RoutesOutdatedEvent());
-    }
-
-    @EventListener
-    public void onClientApplicationDeregistered(ClientApplicationDeregisteredEvent event) {
-        publisher.publishEvent(new RoutesOutdatedEvent());
     }
 
 }
