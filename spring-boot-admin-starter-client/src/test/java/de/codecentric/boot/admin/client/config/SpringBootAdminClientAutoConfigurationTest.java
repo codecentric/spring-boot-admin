@@ -51,5 +51,4 @@ public class SpringBootAdminClientAutoConfigurationTest {
     @EnableAutoConfiguration
     static class TestClientApplication {
     }
-
 }

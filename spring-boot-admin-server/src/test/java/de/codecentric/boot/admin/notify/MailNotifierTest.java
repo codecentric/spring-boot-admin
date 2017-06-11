@@ -15,94 +15,94 @@
  */
 package de.codecentric.boot.admin.notify;
 
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import de.codecentric.boot.admin.event.ClientApplicationEvent;
+import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.model.Application;
+import de.codecentric.boot.admin.model.StatusInfo;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 
-import de.codecentric.boot.admin.event.ClientApplicationEvent;
-import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.model.Application;
-import de.codecentric.boot.admin.model.StatusInfo;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class MailNotifierTest {
 
-	private MailSender sender;
-	private MailNotifier notifier;
+    private MailSender sender;
+    private MailNotifier notifier;
 
-	@Before
-	public void setup() {
-		sender = mock(MailSender.class);
+    @Before
+    public void setup() {
+        sender = mock(MailSender.class);
 
-		notifier = new MailNotifier(sender);
-		notifier.setTo(new String[] { "foo@bar.com" });
-		notifier.setCc(new String[] { "bar@foo.com" });
-		notifier.setFrom("SBA <no-reply@example.com>");
-		notifier.setSubject("#{application.id} is #{to.status}");
-	}
+        notifier = new MailNotifier(sender);
+        notifier.setTo(new String[]{"foo@bar.com"});
+        notifier.setCc(new String[]{"bar@foo.com"});
+        notifier.setFrom("SBA <no-reply@example.com>");
+        notifier.setSubject("#{application.id} is #{to.status}");
+    }
 
-	@Test
-	public void test_onApplicationEvent() {
-		notifier.notify(new ClientApplicationStatusChangedEvent(
-				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
-				StatusInfo.ofDown(), StatusInfo.ofUp()));
+    @Test
+    public void test_onApplicationEvent() {
+        notifier.notify(new ClientApplicationStatusChangedEvent(
+                Application.create("App").withId("-id-").withHealthUrl("http://health").build(), StatusInfo.ofDown(),
+                StatusInfo.ofUp()));
 
-		SimpleMailMessage expected = new SimpleMailMessage();
-		expected.setTo(new String[] { "foo@bar.com" });
-		expected.setCc(new String[] { "bar@foo.com" });
-		expected.setFrom("SBA <no-reply@example.com>");
-		expected.setText("App (-id-)\nstatus changed from DOWN to UP\n\nhttp://health");
-		expected.setSubject("-id- is UP");
+        SimpleMailMessage expected = new SimpleMailMessage();
+        expected.setTo(new String[]{"foo@bar.com"});
+        expected.setCc(new String[]{"bar@foo.com"});
+        expected.setFrom("SBA <no-reply@example.com>");
+        expected.setText("App (-id-)\nstatus changed from DOWN to UP\n\nhttp://health");
+        expected.setSubject("-id- is UP");
 
-		verify(sender).send(eq(expected));
-	}
+        verify(sender).send(eq(expected));
+    }
 
-	// The following tests are rather for AbstractNotifier
+    // The following tests are rather for AbstractNotifier
 
-	@Test
-	public void test_onApplicationEvent_disbaled() {
-		notifier.setEnabled(false);
-		notifier.notify(new ClientApplicationStatusChangedEvent(
-				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
-				StatusInfo.ofDown(), StatusInfo.ofUp()));
+    @Test
+    public void test_onApplicationEvent_disbaled() {
+        notifier.setEnabled(false);
+        notifier.notify(new ClientApplicationStatusChangedEvent(
+                Application.create("App").withId("-id-").withHealthUrl("http://health").build(), StatusInfo.ofDown(),
+                StatusInfo.ofUp()));
 
-		verifyNoMoreInteractions(sender);
-	}
+        verifyNoMoreInteractions(sender);
+    }
 
-	@Test
-	public void test_onApplicationEvent_noSend() {
-		notifier.notify(new ClientApplicationStatusChangedEvent(
-				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
-				StatusInfo.ofUnknown(), StatusInfo.ofUp()));
+    @Test
+    public void test_onApplicationEvent_noSend() {
+        notifier.notify(new ClientApplicationStatusChangedEvent(
+                Application.create("App").withId("-id-").withHealthUrl("http://health").build(), StatusInfo.ofUnknown(),
+                StatusInfo.ofUp()));
 
-		verifyNoMoreInteractions(sender);
-	}
+        verifyNoMoreInteractions(sender);
+    }
 
-	@Test
-	public void test_onApplicationEvent_noSend_wildcard() {
-		notifier.setIgnoreChanges(new String[] { "*:UP" });
-		notifier.notify(new ClientApplicationStatusChangedEvent(
-				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
-				StatusInfo.ofOffline(), StatusInfo.ofUp()));
+    @Test
+    public void test_onApplicationEvent_noSend_wildcard() {
+        notifier.setIgnoreChanges(new String[]{"*:UP"});
+        notifier.notify(new ClientApplicationStatusChangedEvent(
+                Application.create("App").withId("-id-").withHealthUrl("http://health").build(), StatusInfo.ofOffline(),
+                StatusInfo.ofUp()));
 
-		verifyNoMoreInteractions(sender);
-	}
+        verifyNoMoreInteractions(sender);
+    }
 
-	@Test
-	public void test_onApplicationEvent_throw_doesnt_propagate() {
-		Notifier notifier = new AbstractStatusChangeNotifier() {
-			@Override
-			protected void doNotify(ClientApplicationEvent event) throws Exception {
-				throw new IllegalStateException("test");
-			}
-		};
-		notifier.notify(new ClientApplicationStatusChangedEvent(
-				Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
-				StatusInfo.ofOffline(), StatusInfo.ofUp()));
-	}
+    @Test
+    public void test_onApplicationEvent_throw_doesnt_propagate() {
+        Notifier notifier = new AbstractStatusChangeNotifier() {
+            @Override
+            protected void doNotify(ClientApplicationEvent event) throws Exception {
+                throw new IllegalStateException("test");
+            }
+        };
+        notifier.notify(new ClientApplicationStatusChangedEvent(
+                Application.create("App").withId("-id-").withHealthUrl("http://health").build(), StatusInfo.ofOffline(),
+                StatusInfo.ofUp()));
+    }
 }

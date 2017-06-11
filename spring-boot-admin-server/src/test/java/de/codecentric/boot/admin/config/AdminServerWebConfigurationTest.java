@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfigu
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration;
 import org.springframework.cloud.commons.util.UtilAutoConfiguration;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -126,7 +127,7 @@ public class AdminServerWebConfigurationTest {
         applicationContext.register(AdminServerCoreConfiguration.class);
         applicationContext.register(AdminServerWebConfiguration.class);
 
-        EnvironmentTestUtils.addEnvironment(applicationContext, environment);
+        TestPropertyValues.of(environment).applyTo(applicationContext);
         applicationContext.refresh();
         this.context = applicationContext;
     }

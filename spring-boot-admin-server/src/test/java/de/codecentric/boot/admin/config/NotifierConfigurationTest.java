@@ -31,7 +31,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -108,7 +108,7 @@ public class NotifierConfigurationTest {
         context.register(MailSenderAutoConfiguration.class);
         context.register(NotifierConfiguration.class);
 
-        EnvironmentTestUtils.addEnvironment(context, environment);
+        TestPropertyValues.of(environment).applyTo(context);
         context.refresh();
     }
 
