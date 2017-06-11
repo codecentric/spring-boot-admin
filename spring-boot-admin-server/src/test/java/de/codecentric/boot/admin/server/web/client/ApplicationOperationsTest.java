@@ -1,6 +1,8 @@
 package de.codecentric.boot.admin.server.web.client;
 
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
+import de.codecentric.boot.admin.server.model.Registration;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -13,7 +15,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -25,49 +27,42 @@ public class ApplicationOperationsTest {
     private RestTemplate restTemplate = mock(RestTemplate.class);
     private HttpHeadersProvider headersProvider = mock(HttpHeadersProvider.class);
     private ApplicationOperations ops = new ApplicationOperations(restTemplate, headersProvider);
+    private final Application application = Application.create(ApplicationId.of("id"),
+            Registration.create("test", "http://health").managementUrl("http://mgmt").build()).build();
 
     @Test
-    @SuppressWarnings("rawtypes")
     public void test_getInfo() {
-        Application app = Application.create("test")
-                                     .withHealthUrl("http://health")
-                                     .withManagementUrl("http://mgmt")
-                                     .build();
+
         ArgumentCaptor<HttpEntity> requestEntity = ArgumentCaptor.forClass(HttpEntity.class);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("auth", "foo:bar");
-        when(headersProvider.getHeaders(eq(app))).thenReturn(headers);
+        when(headersProvider.getHeaders(eq(application))).thenReturn(headers);
 
         when(restTemplate.exchange(eq(URI.create("http://mgmt/info")), eq(HttpMethod.GET), requestEntity.capture(),
-                eq(Map.class))).thenReturn(ResponseEntity.ok().body((Map) singletonMap("foo", "bar")));
+                eq(Map.class))).thenReturn(ResponseEntity.ok().body(singletonMap("foo", "bar")));
 
-        ResponseEntity<Map<String, Serializable>> response = ops.getInfo(app);
+        ResponseEntity<Map<String, Serializable>> response = ops.getInfo(application);
 
         assertThat(response.getBody()).containsEntry("foo", "bar");
-        assertThat(requestEntity.getValue().getHeaders()).containsEntry("auth", asList("foo:bar"));
+        assertThat(requestEntity.getValue().getHeaders()).containsEntry("auth", singletonList("foo:bar"));
     }
 
     @Test
-    @SuppressWarnings("rawtypes")
     public void test_getHealth() {
-        Application app = Application.create("test")
-                                     .withHealthUrl("http://health")
-                                     .withManagementUrl("http://mgmt")
-                                     .build();
         ArgumentCaptor<HttpEntity> requestEntity = ArgumentCaptor.forClass(HttpEntity.class);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("auth", "foo:bar");
-        when(headersProvider.getHeaders(eq(app))).thenReturn(headers);
+        when(headersProvider.getHeaders(eq(application))).thenReturn(headers);
 
         when(restTemplate.exchange(eq(URI.create("http://health")), eq(HttpMethod.GET), requestEntity.capture(),
-                eq(Map.class))).thenReturn(ResponseEntity.ok().body((Map) singletonMap("foo", "bar")));
+                eq(Map.class))).thenReturn(ResponseEntity.ok().body(singletonMap("foo", "bar")));
 
-        ResponseEntity<Map<String, Serializable>> response = ops.getHealth(app);
+        ResponseEntity<Map<String, Serializable>> response = ops.getHealth(application);
 
         assertThat(response.getBody()).containsEntry("foo", "bar");
-        assertThat(requestEntity.getValue().getHeaders()).containsEntry("auth", asList("foo:bar"));
+        assertThat(requestEntity.getValue().getHeaders()).containsEntry("auth", singletonList("foo:bar"));
     }
 
 }

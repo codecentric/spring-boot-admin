@@ -4,6 +4,7 @@ import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.ApplicationId;
+import de.codecentric.boot.admin.server.model.Registration;
 import de.codecentric.boot.admin.server.model.StatusInfo;
 
 import java.util.Arrays;
@@ -12,12 +13,9 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CompositeNotifierTest {
-
     private static final ClientApplicationEvent APP_DOWN = new ClientApplicationStatusChangedEvent(
-            Application.create("App").withId(ApplicationId.of("id-1"))
-                       .withHealthUrl("http://health")
-                       .withStatusInfo(StatusInfo.ofDown())
-                       .build(), StatusInfo.ofUp(), StatusInfo.ofDown());
+            Application.create(ApplicationId.of("-"), Registration.create("name", "http://health").build()).build(),
+            StatusInfo.ofUp(), StatusInfo.ofDown());
 
     @Test(expected = IllegalArgumentException.class)
     public void test_ctor_assert() {

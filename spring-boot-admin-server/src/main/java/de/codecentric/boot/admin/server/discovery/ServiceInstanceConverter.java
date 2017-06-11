@@ -17,6 +17,7 @@ package de.codecentric.boot.admin.server.discovery;
 
 
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.Registration;
 
 import org.springframework.cloud.client.ServiceInstance;
 
@@ -33,5 +34,5 @@ public interface ServiceInstanceConverter {
      * @param instance the service instance.
      * @return Application
      */
-    Application convert(ServiceInstance instance);
+    Registration convert(ServiceInstance instance);
 }

@@ -50,7 +50,7 @@ public class SimpleApplicationStore implements ApplicationStore {
     public Collection<Application> findByName(String name) {
         List<Application> result = new ArrayList<>();
         for (Application a : map.values()) {
-            if (name.equals(a.getName())) {
+            if (name.equals(a.getRegistration().getName())) {
                 result.add(a);
             }
         }

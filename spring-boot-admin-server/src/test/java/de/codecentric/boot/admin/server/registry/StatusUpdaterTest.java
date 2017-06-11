@@ -18,17 +18,18 @@ package de.codecentric.boot.admin.server.registry;
 import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.ApplicationId;
+import de.codecentric.boot.admin.server.model.Registration;
 import de.codecentric.boot.admin.server.model.StatusInfo;
 import de.codecentric.boot.admin.server.registry.store.SimpleApplicationStore;
 import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
 
-import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.ResourceAccessException;
 
+import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -39,11 +40,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class StatusUpdaterTest {
-
     private ApplicationOperations applicationOps;
     private StatusUpdater updater;
     private SimpleApplicationStore store;
     private ApplicationEventPublisher publisher;
+    private final Application application = Application.create(ApplicationId.of("id"),
+            Registration.create("foo", "http://health").build()).build();
 
     @Before
     public void setup() {
@@ -57,12 +59,11 @@ public class StatusUpdaterTest {
     @Test
     public void test_update_statusChanged() {
         when(applicationOps.getHealth(isA(Application.class))).thenReturn(
-                ResponseEntity.ok().body(Collections.singletonMap("status", "UP")));
+                ResponseEntity.ok().body(singletonMap("status", "UP")));
         when(applicationOps.getInfo(isA(Application.class))).thenReturn(
-                ResponseEntity.ok().body(Collections.singletonMap("foo", "bar")));
+                ResponseEntity.ok().body(singletonMap("foo", "bar")));
 
-        updater.updateStatus(
-                Application.create("foo").withId(ApplicationId.of("id")).withHealthUrl("health").build());
+        updater.updateStatus(application);
 
         Application app = store.find(ApplicationId.of("id"));
 
@@ -74,10 +75,9 @@ public class StatusUpdaterTest {
     @Test
     public void test_update_statusUnchanged() {
         when(applicationOps.getHealth(any(Application.class))).thenReturn(
-                ResponseEntity.ok(Collections.singletonMap("status", "UNKNOWN")));
+                ResponseEntity.ok(singletonMap("status", "UNKNOWN")));
 
-        updater.updateStatus(
-                Application.create("foo").withId(ApplicationId.of("id")).withHealthUrl("health").build());
+        updater.updateStatus(application);
 
         verify(publisher, never()).publishEvent(isA(ClientApplicationStatusChangedEvent.class));
         verify(applicationOps, never()).getInfo(isA(Application.class));
@@ -87,8 +87,7 @@ public class StatusUpdaterTest {
     public void test_update_up_noBody() {
         when(applicationOps.getHealth(any(Application.class))).thenReturn(ResponseEntity.ok().build());
 
-        updater.updateStatus(
-                Application.create("foo").withId(ApplicationId.of("id")).withHealthUrl("health").build());
+        updater.updateStatus(application);
 
         assertThat(store.find(ApplicationId.of("id")).getStatusInfo().getStatus()).isEqualTo("UP");
     }
@@ -96,10 +95,9 @@ public class StatusUpdaterTest {
     @Test
     public void test_update_down() {
         when(applicationOps.getHealth(any(Application.class))).thenReturn(
-                ResponseEntity.status(503).body(Collections.singletonMap("foo", "bar")));
+                ResponseEntity.status(503).body(singletonMap("foo", "bar")));
 
-        updater.updateStatus(
-                Application.create("foo").withId(ApplicationId.of("id")).withHealthUrl("health").build());
+        updater.updateStatus(application);
 
         StatusInfo statusInfo = store.find(ApplicationId.of("id")).getStatusInfo();
         assertThat(statusInfo.getStatus()).isEqualTo("DOWN");
@@ -110,8 +108,7 @@ public class StatusUpdaterTest {
     public void test_update_down_noBody() {
         when(applicationOps.getHealth(any(Application.class))).thenReturn(ResponseEntity.status(503).body(null));
 
-        updater.updateStatus(
-                Application.create("foo").withId(ApplicationId.of("id")).withHealthUrl("health").build());
+        updater.updateStatus(application);
 
         StatusInfo statusInfo = store.find(ApplicationId.of("id")).getStatusInfo();
         assertThat(statusInfo.getStatus()).isEqualTo("DOWN");
@@ -123,11 +120,7 @@ public class StatusUpdaterTest {
     public void test_update_offline() {
         when(applicationOps.getHealth(any(Application.class))).thenThrow(new ResourceAccessException("error"));
 
-        Application app = Application.create("foo").withId(ApplicationId.of("id"))
-                                     .withHealthUrl("health")
-                                     .withStatusInfo(StatusInfo.ofUp())
-                                     .build();
-        updater.updateStatus(app);
+        updater.updateStatus(application);
 
         StatusInfo statusInfo = store.find(ApplicationId.of("id")).getStatusInfo();
         assertThat(statusInfo.getStatus()).isEqualTo("OFFLINE");
@@ -139,16 +132,13 @@ public class StatusUpdaterTest {
     @Test
     public void test_updateStatusForApplications() throws InterruptedException {
         updater.setStatusLifetime(100L);
-        Application app1 = Application.create("foo")
-                                      .withId(ApplicationId.of("id-1"))
-                                      .withHealthUrl("health-1")
-                                      .build();
+        Application app1 = Application.create(ApplicationId.of("id-1"),
+                Registration.create("foo", "http://health-1").build()).build();
         store.save(app1);
+
         Thread.sleep(120L); // Let the StatusInfo of id-1 expire
-        Application app2 = Application.create("foo")
-                                      .withId(ApplicationId.of("id-2"))
-                                      .withHealthUrl("health-2")
-                                      .build();
+        Application app2 = Application.create(ApplicationId.of("id-2"),
+                Registration.create("foo", "http://health-2").build()).build();
         store.save(app2);
 
         when(applicationOps.getHealth(eq(app1))).thenReturn(ResponseEntity.ok().build());

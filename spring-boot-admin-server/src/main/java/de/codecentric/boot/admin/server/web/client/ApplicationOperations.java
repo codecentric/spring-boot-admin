@@ -31,6 +31,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import static java.util.Collections.singletonList;
 /**
  * Handles all rest operations invoked on a registered application.
  *
@@ -49,12 +50,15 @@ public class ApplicationOperations {
     }
 
     public ResponseEntity<Map<String, Serializable>> getInfo(Application application) {
-        URI uri = UriComponentsBuilder.fromHttpUrl(application.getManagementUrl()).pathSegment("info").build().toUri();
+        URI uri = UriComponentsBuilder.fromHttpUrl(application.getRegistration().getManagementUrl())
+                                      .pathSegment("info")
+                                      .build()
+                                      .toUri();
         return doGet(application, uri, RESPONSE_TYPE_MAP);
     }
 
     public ResponseEntity<Map<String, Serializable>> getHealth(Application application) {
-        URI uri = UriComponentsBuilder.fromHttpUrl(application.getHealthUrl()).build().toUri();
+        URI uri = UriComponentsBuilder.fromHttpUrl(application.getRegistration().getHealthUrl()).build().toUri();
         return doGet(application, uri, RESPONSE_TYPE_MAP);
     }
 
@@ -62,7 +66,7 @@ public class ApplicationOperations {
         LOGGER.debug("Fetching '{}' for {}", uri, application);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
         headers.putAll(httpHeadersProvider.getHeaders(application));
 
         ResponseEntity<T> response = restTemplate.exchange(uri, HttpMethod.GET, new HttpEntity<Void>(headers),

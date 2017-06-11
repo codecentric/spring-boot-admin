@@ -71,8 +71,8 @@ public class RegistryControllerTest {
         MvcResult result = mvc.perform(
                 post("/api/applications").contentType(MediaType.APPLICATION_JSON).content(APPLICATION_TEST_JSON))
                               .andExpect(status().isCreated())
-                              .andExpect(jsonPath("$.name").value("test"))
-                              .andExpect(jsonPath("$.healthUrl").value("http://localhost/mgmt/health"))
+                              .andExpect(jsonPath("$.registration.name").value("test"))
+                              .andExpect(jsonPath("$.registration.healthUrl").value("http://localhost/mgmt/health"))
                               .andExpect(jsonPath("$.id").isNotEmpty())
                               .andReturn();
 
@@ -80,8 +80,8 @@ public class RegistryControllerTest {
 
         mvc.perform(post("/api/applications").contentType(MediaType.APPLICATION_JSON).content(APPLICATION_TWICE_JSON))
            .andExpect(status().isCreated())
-           .andExpect(jsonPath("$.name").value("twice"))
-           .andExpect(jsonPath("$.healthUrl").value("http://localhost/mgmt/health"))
+           .andExpect(jsonPath("$.registration.name").value("twice"))
+           .andExpect(jsonPath("$.registration.healthUrl").value("http://localhost/mgmt/health"))
            .andExpect(jsonPath("$.id").value(id));
 
         mvc.perform(get("/api/applications")).andExpect(status().isOk()).andExpect(jsonPath("$[0].id").value(id));

@@ -47,7 +47,7 @@ public class HazelcastApplicationStore implements ApplicationStore {
 
     @Override
     public Collection<Application> findByName(String name) {
-        return store.values(Predicates.equal("name", name));
+        return store.values(Predicates.equal("registration.name", name));
     }
 
     @Override

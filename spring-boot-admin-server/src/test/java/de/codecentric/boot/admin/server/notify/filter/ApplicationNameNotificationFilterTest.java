@@ -2,6 +2,8 @@ package de.codecentric.boot.admin.server.notify.filter;
 
 import de.codecentric.boot.admin.server.event.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
+import de.codecentric.boot.admin.server.model.Registration;
 
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
@@ -14,13 +16,15 @@ public class ApplicationNameNotificationFilterTest {
     public void test_filterByName() {
         NotificationFilter filter = new ApplicationNameNotificationFilter("foo", -1L);
 
-        ClientApplicationRegisteredEvent fooEvent = new ClientApplicationRegisteredEvent(
-                Application.create("foo").withHealthUrl("http://health").build());
-        assertThat(filter.filter(fooEvent)).isTrue();
+        Application filteredApplication = Application.create(ApplicationId.of("-"),
+                Registration.create("foo", "http://health").build()).build();
+        ClientApplicationRegisteredEvent filteredEvent = new ClientApplicationRegisteredEvent(filteredApplication);
+        assertThat(filter.filter(filteredEvent)).isTrue();
 
-        ClientApplicationRegisteredEvent barEvent = new ClientApplicationRegisteredEvent(
-                Application.create("bar").withHealthUrl("http://health").build());
-        assertThat(filter.filter(barEvent)).isFalse();
+        Application ignoredApplication = Application.create(ApplicationId.of("-"),
+                Registration.create("bar", "http://health").build()).build();
+        ClientApplicationRegisteredEvent ignoredEvent = new ClientApplicationRegisteredEvent(ignoredApplication);
+        assertThat(filter.filter(ignoredEvent)).isFalse();
     }
 
     @Test

@@ -20,6 +20,7 @@ import de.codecentric.boot.admin.server.event.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.server.journal.store.SimpleJournaledEventStore;
 import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.ApplicationId;
+import de.codecentric.boot.admin.server.model.Registration;
 
 import java.util.Collection;
 import org.junit.Test;
@@ -32,7 +33,8 @@ public class ApplicationEventJournalTest {
     @Test
     public void test_registration() {
         ClientApplicationEvent emittedEvent = new ClientApplicationRegisteredEvent(
-                Application.create("foo").withId(ApplicationId.of("-id-")).withHealthUrl("http://health").build());
+                Application.create(ApplicationId.of("id"), Registration.create("foo", "http://health").build())
+                           .build());
         journal.onClientApplicationEvent(emittedEvent);
 
         Collection<ClientApplicationEvent> events = journal.getEvents();

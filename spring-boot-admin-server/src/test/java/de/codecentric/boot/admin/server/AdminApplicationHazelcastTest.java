@@ -92,7 +92,9 @@ public class AdminApplicationHazelcastTest {
         Map<String, String> app3 = registerApp("Do not find", "http://127.0.0.1:3/health", instance1).getBody();
         Collection<Map<String, String>> apps = getAppByName("Hazelcast Test", instance1).getBody();
 
-        assertThat(apps).extracting("id").containsExactly(app.get("id"), app2.get("id")).doesNotContain(app3.get("id"));
+        assertThat(apps).extracting("id")
+                        .containsExactlyInAnyOrder(app.get("id"), app2.get("id"))
+                        .doesNotContain(app3.get("id"));
     }
 
     private ResponseEntity<Map<String, String>> getApp(String id, ServletWebServerApplicationContext context) {
@@ -126,7 +128,7 @@ public class AdminApplicationHazelcastTest {
     }
 
     @Configuration
-    @EnableAutoConfiguration(exclude = {})
+    @EnableAutoConfiguration()
     @EnableAdminServer
     public static class TestAdminApplication {
         @Bean

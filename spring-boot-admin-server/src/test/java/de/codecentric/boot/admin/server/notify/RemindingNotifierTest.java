@@ -4,6 +4,7 @@ import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.ApplicationId;
+import de.codecentric.boot.admin.server.model.Registration;
 import de.codecentric.boot.admin.server.model.StatusInfo;
 
 import org.junit.Test;
@@ -13,21 +14,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RemindingNotifierTest {
 
     private static final ClientApplicationEvent APP_DOWN = new ClientApplicationStatusChangedEvent(
-            Application.create("App").withId(ApplicationId.of("id-1"))
-                       .withHealthUrl("http://health")
-                       .withStatusInfo(StatusInfo.ofDown())
+            Application.create(ApplicationId.of("id-1"), Registration.create("App", "http://health").build())
+                       .statusInfo(StatusInfo.ofDown())
                        .build(), StatusInfo.ofUp(), StatusInfo.ofDown());
 
     private static final ClientApplicationEvent APP_UP = new ClientApplicationStatusChangedEvent(
-            Application.create("App").withId(ApplicationId.of("id-1"))
-                       .withHealthUrl("http://health")
-                       .withStatusInfo(StatusInfo.ofUp())
+            Application.create(ApplicationId.of("id-1"), Registration.create("App", "http://health").build())
+                       .statusInfo(StatusInfo.ofUp())
                        .build(), StatusInfo.ofDown(), StatusInfo.ofUp());
 
     private static final ClientApplicationEvent OTHER_APP_UP = new ClientApplicationStatusChangedEvent(
-            Application.create("App").withId(ApplicationId.of("id-2"))
-                       .withHealthUrl("http://health")
-                       .withStatusInfo(StatusInfo.ofUp())
+            Application.create(ApplicationId.of("id-2"), Registration.create("App2", "http://health").build())
+                       .statusInfo(StatusInfo.ofUp())
                        .build(), StatusInfo.ofDown(), StatusInfo.ofUp());
 
     @Test(expected = IllegalArgumentException.class)

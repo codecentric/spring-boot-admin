@@ -29,6 +29,7 @@ import static java.util.Collections.unmodifiableMap;
  *
  * @author Johannes Edmeier
  */
+@lombok.Data
 public class Info implements Serializable {
     private static final long serialVersionUID = 2L;
     private static Info EMPTY = new Info(0L, null);
@@ -39,9 +40,7 @@ public class Info implements Serializable {
 
     protected Info(long timestamp, Map<String, ? extends Serializable> values) {
         this.timestamp = timestamp;
-        this.values = values != null ?
-                unmodifiableMap(new LinkedHashMap<>(values)) :
-                Collections.<String, Serializable>emptyMap();
+        this.values = values != null ? unmodifiableMap(new LinkedHashMap<>(values)) : Collections.emptyMap();
     }
 
     public static Info from(Map<String, ? extends Serializable> values) {
@@ -50,10 +49,6 @@ public class Info implements Serializable {
 
     public static Info empty() {
         return EMPTY;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
     }
 
     public String getVersion() {
@@ -69,7 +64,6 @@ public class Info implements Serializable {
         if (version instanceof String) {
             return (String) version;
         }
-
         return "";
     }
 
@@ -77,10 +71,4 @@ public class Info implements Serializable {
     public Map<String, Serializable> getValues() {
         return values;
     }
-
-    @Override
-    public String toString() {
-        return "Info [timestamp=" + timestamp + ", values=" + values + "]";
-    }
-
 }

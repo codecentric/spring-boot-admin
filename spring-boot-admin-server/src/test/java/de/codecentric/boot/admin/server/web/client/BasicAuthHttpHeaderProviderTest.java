@@ -1,6 +1,8 @@
 package de.codecentric.boot.admin.server.web.client;
 
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
+import de.codecentric.boot.admin.server.model.Registration;
 
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
@@ -12,18 +14,19 @@ public class BasicAuthHttpHeaderProviderTest {
 
     @Test
     public void test_auth_header() {
-        Application app = Application.create("test")
-                                     .withHealthUrl("/health")
-                                     .addMetadata("user.name", "test")
-                                     .addMetadata("user.password", "drowssap")
-                                     .build();
-        assertThat(headersProvider.getHeaders(app).get(HttpHeaders.AUTHORIZATION)).containsOnly(
+        Registration registration = Registration.create("foo", "http://health")
+                                                .metadata("user.name", "test")
+                                                .metadata("user.password", "drowssap")
+                                                .build();
+        Application application = Application.create(ApplicationId.of("id"), registration).build();
+        assertThat(headersProvider.getHeaders(application).get(HttpHeaders.AUTHORIZATION)).containsOnly(
                 "Basic dGVzdDpkcm93c3NhcA==");
     }
 
     @Test
     public void test_no_header() {
-        Application app = Application.create("test").withHealthUrl("/health").build();
-        assertThat(headersProvider.getHeaders(app)).isEmpty();
+        Registration registration = Registration.create("foo", "http://health").build();
+        Application application = Application.create(ApplicationId.of("id"), registration).build();
+        assertThat(headersProvider.getHeaders(application)).isEmpty();
     }
 }

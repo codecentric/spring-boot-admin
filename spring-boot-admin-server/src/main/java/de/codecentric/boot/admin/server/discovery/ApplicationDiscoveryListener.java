@@ -17,6 +17,7 @@ package de.codecentric.boot.admin.server.discovery;
 
 import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.ApplicationId;
+import de.codecentric.boot.admin.server.model.Registration;
 import de.codecentric.boot.admin.server.registry.ApplicationRegistry;
 
 import java.util.Collections;
@@ -89,8 +90,8 @@ public class ApplicationDiscoveryListener {
         for (String serviceId : discoveryClient.getServices()) {
             if (!ignoreService(serviceId) && registerService(serviceId)) {
                 for (ServiceInstance instance : discoveryClient.getInstances(serviceId)) {
-                    ApplicationId applicationId = register(instance);
-                    staleApplicationIds.remove(applicationId);
+                    ApplicationId id = register(instance);
+                    staleApplicationIds.remove(id);
                 }
             } else {
                 LOGGER.debug("Ignoring discovered service {}", serviceId);
@@ -122,9 +123,9 @@ public class ApplicationDiscoveryListener {
     protected final Set<ApplicationId> getAllApplicationIdsFromRegistry() {
         Set<ApplicationId> result = new HashSet<>();
         for (Application application : registry.getApplications()) {
-            if (!ignoreService(application.getName()) &&
-                registerService(application.getName()) &&
-                SOURCE.equals(application.getSource())) {
+            if (!ignoreService(application.getRegistration().getName()) &&
+                registerService(application.getRegistration().getName()) &&
+                SOURCE.equals(application.getRegistration().getSource())) {
                 result.add(application.getId());
             }
         }
@@ -133,14 +134,9 @@ public class ApplicationDiscoveryListener {
 
     protected ApplicationId register(ServiceInstance instance) {
         try {
-            Application application = converter.convert(instance);
-            application = Application.copyOf(application).withSource(SOURCE).build();
-            if (application != null) {
-                LOGGER.debug("Registering discovered application {}", application);
-                return registry.register(application).getId();
-            } else {
-                LOGGER.warn("No application for service {} registered", instance);
-            }
+            Registration registration = converter.convert(instance).toBuilder().source(SOURCE).build();
+            LOGGER.debug("Registering discovered application {}", registration);
+            return registry.register(registration).getId();
         } catch (Exception ex) {
             LOGGER.error("Couldn't register application for service {}", instance, ex);
         }

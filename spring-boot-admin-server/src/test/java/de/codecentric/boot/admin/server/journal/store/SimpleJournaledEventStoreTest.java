@@ -20,6 +20,7 @@ import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.ApplicationId;
+import de.codecentric.boot.admin.server.model.Registration;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,14 +29,13 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SimpleJournaledEventStoreTest {
+    private final Application application = Application.create(ApplicationId.of("id"),
+            Registration.create("foo", "http://health").build()).build();
 
     @Test
     public void test_store() {
         SimpleJournaledEventStore store = new SimpleJournaledEventStore();
-        Application application = Application.create("foo")
-                                             .withId(ApplicationId.of("id"))
-                                             .withHealthUrl("http://health")
-                                             .build();
+
         List<ClientApplicationEvent> events = Arrays.asList(new ClientApplicationRegisteredEvent(application),
                 new ClientApplicationDeregisteredEvent(application));
 
@@ -51,10 +51,6 @@ public class SimpleJournaledEventStoreTest {
         SimpleJournaledEventStore store = new SimpleJournaledEventStore();
         store.setCapacity(2);
 
-        Application application = Application.create("foo")
-                                             .withId(ApplicationId.of("id"))
-                                             .withHealthUrl("http://health")
-                                             .build();
         List<ClientApplicationEvent> events = Arrays.asList(new ClientApplicationRegisteredEvent(application),
                 new ClientApplicationDeregisteredEvent(application),
                 new ClientApplicationDeregisteredEvent(application));

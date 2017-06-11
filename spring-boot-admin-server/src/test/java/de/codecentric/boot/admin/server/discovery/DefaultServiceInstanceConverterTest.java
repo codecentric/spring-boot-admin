@@ -16,7 +16,7 @@
 
 package de.codecentric.boot.admin.server.discovery;
 
-import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.Registration;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,13 +31,12 @@ public class DefaultServiceInstanceConverterTest {
     @Test
     public void test_convert_with_defaults() {
         ServiceInstance service = new DefaultServiceInstance("test", "localhost", 80, false);
-        Application application = new DefaultServiceInstanceConverter().convert(service);
+        Registration registration = new DefaultServiceInstanceConverter().convert(service);
 
-        assertThat(application.getId()).isNull();
-        assertThat(application.getName()).isEqualTo("test");
-        assertThat(application.getServiceUrl()).isEqualTo("http://localhost:80");
-        assertThat(application.getManagementUrl()).isEqualTo("http://localhost:80");
-        assertThat(application.getHealthUrl()).isEqualTo("http://localhost:80/health");
+        assertThat(registration.getName()).isEqualTo("test");
+        assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80");
+        assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80");
+        assertThat(registration.getHealthUrl()).isEqualTo("http://localhost:80/health");
     }
 
     @Test
@@ -47,13 +46,12 @@ public class DefaultServiceInstanceConverterTest {
         converter.setManagementContextPath("mgmt");
 
         ServiceInstance service = new DefaultServiceInstance("test", "localhost", 80, false);
-        Application application = converter.convert(service);
+        Registration registration = converter.convert(service);
 
-        assertThat(application.getId()).isNull();
-        assertThat(application.getName()).isEqualTo("test");
-        assertThat(application.getServiceUrl()).isEqualTo("http://localhost:80");
-        assertThat(application.getManagementUrl()).isEqualTo("http://localhost:80/mgmt");
-        assertThat(application.getHealthUrl()).isEqualTo("http://localhost:80/mgmt/ping");
+        assertThat(registration.getName()).isEqualTo("test");
+        assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80");
+        assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80/mgmt");
+        assertThat(registration.getHealthUrl()).isEqualTo("http://localhost:80/mgmt/ping");
     }
 
     @Test
@@ -65,14 +63,13 @@ public class DefaultServiceInstanceConverterTest {
         metadata.put("management.port", "1234");
         service.getMetadata().putAll(metadata);
 
-        Application application = new DefaultServiceInstanceConverter().convert(service);
+        Registration registration = new DefaultServiceInstanceConverter().convert(service);
 
-        assertThat(application.getId()).isNull();
-        assertThat(application.getName()).isEqualTo("test");
-        assertThat(application.getServiceUrl()).isEqualTo("http://localhost:80");
-        assertThat(application.getManagementUrl()).isEqualTo("http://localhost:1234/mgmt");
-        assertThat(application.getHealthUrl()).isEqualTo("http://localhost:1234/mgmt/ping");
-        assertThat(application.getMetadata()).isEqualTo(metadata);
+        assertThat(registration.getName()).isEqualTo("test");
+        assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80");
+        assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:1234/mgmt");
+        assertThat(registration.getHealthUrl()).isEqualTo("http://localhost:1234/mgmt/ping");
+        assertThat(registration.getMetadata()).isEqualTo(metadata);
     }
 
 }

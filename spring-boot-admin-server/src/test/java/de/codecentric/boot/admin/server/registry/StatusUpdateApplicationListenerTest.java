@@ -2,6 +2,8 @@ package de.codecentric.boot.admin.server.registry;
 
 import de.codecentric.boot.admin.server.event.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
+import de.codecentric.boot.admin.server.model.Registration;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
@@ -55,7 +57,8 @@ public class StatusUpdateApplicationListenerTest {
 
         StatusUpdateApplicationListener listener = new StatusUpdateApplicationListener(statusUpdater, scheduler);
 
-        Application application = Application.create("test").withHealthUrl("http://example.com").build();
+        Application application = Application.create(ApplicationId.of("id"),
+                Registration.builder().name("test").healthUrl("http://example.com").build()).build();
 
         listener.onClientApplicationRegistered(new ClientApplicationRegisteredEvent(application));
 

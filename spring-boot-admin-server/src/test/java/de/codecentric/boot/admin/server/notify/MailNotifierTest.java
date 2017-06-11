@@ -19,6 +19,7 @@ import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.ApplicationId;
+import de.codecentric.boot.admin.server.model.Registration;
 import de.codecentric.boot.admin.server.model.StatusInfo;
 
 import org.junit.Before;
@@ -32,7 +33,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class MailNotifierTest {
-
+    private final Application application = Application.create(ApplicationId.of("-id-"),
+            Registration.create("App", "http://health").build()).build();
     private MailSender sender;
     private MailNotifier notifier;
 
@@ -49,9 +51,7 @@ public class MailNotifierTest {
 
     @Test
     public void test_onApplicationEvent() {
-        notifier.notify(new ClientApplicationStatusChangedEvent(
-                Application.create("App").withId(ApplicationId.of("-id-")).withHealthUrl("http://health").build(),
-                StatusInfo.ofDown(), StatusInfo.ofUp()));
+        notifier.notify(new ClientApplicationStatusChangedEvent(application, StatusInfo.ofDown(), StatusInfo.ofUp()));
 
         SimpleMailMessage expected = new SimpleMailMessage();
         expected.setTo(new String[]{"foo@bar.com"});
@@ -68,18 +68,15 @@ public class MailNotifierTest {
     @Test
     public void test_onApplicationEvent_disbaled() {
         notifier.setEnabled(false);
-        notifier.notify(new ClientApplicationStatusChangedEvent(
-                Application.create("App").withId(ApplicationId.of("-id-")).withHealthUrl("http://health").build(),
-                StatusInfo.ofDown(), StatusInfo.ofUp()));
+        notifier.notify(new ClientApplicationStatusChangedEvent(application, StatusInfo.ofDown(), StatusInfo.ofUp()));
 
         verifyNoMoreInteractions(sender);
     }
 
     @Test
     public void test_onApplicationEvent_noSend() {
-        notifier.notify(new ClientApplicationStatusChangedEvent(
-                Application.create("App").withId(ApplicationId.of("-id-")).withHealthUrl("http://health").build(),
-                StatusInfo.ofUnknown(), StatusInfo.ofUp()));
+        notifier.notify(
+                new ClientApplicationStatusChangedEvent(application, StatusInfo.ofUnknown(), StatusInfo.ofUp()));
 
         verifyNoMoreInteractions(sender);
     }
@@ -87,9 +84,8 @@ public class MailNotifierTest {
     @Test
     public void test_onApplicationEvent_noSend_wildcard() {
         notifier.setIgnoreChanges(new String[]{"*:UP"});
-        notifier.notify(new ClientApplicationStatusChangedEvent(
-                Application.create("App").withId(ApplicationId.of("-id-")).withHealthUrl("http://health").build(),
-                StatusInfo.ofOffline(), StatusInfo.ofUp()));
+        notifier.notify(
+                new ClientApplicationStatusChangedEvent(application, StatusInfo.ofOffline(), StatusInfo.ofUp()));
 
         verifyNoMoreInteractions(sender);
     }
@@ -102,8 +98,7 @@ public class MailNotifierTest {
                 throw new IllegalStateException("test");
             }
         };
-        notifier.notify(new ClientApplicationStatusChangedEvent(
-                Application.create("App").withId(ApplicationId.of("-id-")).withHealthUrl("http://health").build(),
-                StatusInfo.ofOffline(), StatusInfo.ofUp()));
+        notifier.notify(
+                new ClientApplicationStatusChangedEvent(application, StatusInfo.ofOffline(), StatusInfo.ofUp()));
     }
 }

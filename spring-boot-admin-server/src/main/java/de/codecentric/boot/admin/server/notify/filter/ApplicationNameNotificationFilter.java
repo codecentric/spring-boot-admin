@@ -27,7 +27,7 @@ public class ApplicationNameNotificationFilter extends ExpiringNotificationFilte
 
     @Override
     protected boolean doFilter(ClientApplicationEvent event) {
-        return name.equals(event.getApplication().getName());
+        return name.equals(event.getApplication().getRegistration().getName());
     }
 
     public String getName() {

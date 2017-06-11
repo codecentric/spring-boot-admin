@@ -62,12 +62,12 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
     public void updateStatus(Application application) {
         StatusInfo oldStatus = application.getStatusInfo();
         StatusInfo newStatus = queryStatus(application);
-        boolean statusChanged = !newStatus.equals(oldStatus);
+        boolean statusChanged = !newStatus.getStatus().equals(oldStatus.getStatus());
 
-        Application.Builder builder = Application.copyOf(application).withStatusInfo(newStatus);
+        Application.Builder builder = Application.copyOf(application).statusInfo(newStatus);
 
         if (statusChanged && !newStatus.isOffline() && !newStatus.isUnknown()) {
-            builder.withInfo(queryInfo(application));
+            builder.info(queryInfo(application));
         }
 
         Application newState = builder.build();

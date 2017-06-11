@@ -35,7 +35,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Jamie Brown
  */
 public class HipchatNotifier extends AbstractStatusChangeNotifier {
-    private static final String DEFAULT_DESCRIPTION = "<strong>#{application.name}</strong>/#{application.id} is <strong>#{to.status}</strong>";
+    private static final String DEFAULT_DESCRIPTION = "<strong>#{application.registration.name}</strong>/#{application.id} is <strong>#{to.status}</strong>";
 
     private final SpelExpressionParser parser = new SpelExpressionParser();
     private RestTemplate restTemplate = new RestTemplate();

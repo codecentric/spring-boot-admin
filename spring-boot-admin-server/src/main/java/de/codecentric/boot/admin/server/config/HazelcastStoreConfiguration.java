@@ -60,7 +60,7 @@ public class HazelcastStoreConfiguration {
     @ConditionalOnMissingBean
     public ApplicationStore applicationStore() {
         IMap<ApplicationId, Application> map = hazelcastInstance.getMap(hazelcastMapName);
-        map.addIndex("name", false);
+        map.addIndex("registration.name", false);
         return new HazelcastApplicationStore(map);
     }
 

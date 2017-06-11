@@ -19,7 +19,7 @@ package de.codecentric.boot.admin.server.config;
 import de.codecentric.boot.admin.server.discovery.DefaultServiceInstanceConverter;
 import de.codecentric.boot.admin.server.discovery.EurekaServiceInstanceConverter;
 import de.codecentric.boot.admin.server.discovery.ServiceInstanceConverter;
-import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.Registration;
 
 import org.junit.After;
 import org.junit.Test;
@@ -74,7 +74,7 @@ public class DiscoveryClientConfigurationTest {
 
     static class CustomServiceInstanceConverter implements ServiceInstanceConverter {
         @Override
-        public Application convert(ServiceInstance instance) {
+        public Registration convert(ServiceInstance instance) {
             return null;
         }
     }

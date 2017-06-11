@@ -3,6 +3,7 @@ package de.codecentric.boot.admin.server.notify;
 import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.ApplicationId;
+import de.codecentric.boot.admin.server.model.Registration;
 import de.codecentric.boot.admin.server.model.StatusInfo;
 
 import java.net.URI;
@@ -70,7 +71,8 @@ public class LetsChatNotifierTest {
 
     private ClientApplicationStatusChangedEvent getEvent(StatusInfo infoDown, StatusInfo infoUp) {
         return new ClientApplicationStatusChangedEvent(
-                Application.create(appName).withId(id).withHealthUrl("http://health").build(), infoDown, infoUp);
+                Application.create(id, Registration.create(appName, "http://health").build()).build(), infoDown,
+                infoUp);
     }
 
     private HttpEntity<?> expectedMessage(String message) {

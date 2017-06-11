@@ -3,6 +3,7 @@ package de.codecentric.boot.admin.server.notify;
 import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.ApplicationId;
+import de.codecentric.boot.admin.server.model.Registration;
 import de.codecentric.boot.admin.server.model.StatusInfo;
 
 import java.net.URI;
@@ -51,8 +52,8 @@ public class HipchatNotifierTest {
                 ResponseEntity.ok().build());
 
         notifier.notify(new ClientApplicationStatusChangedEvent(
-                Application.create("App").withId(ApplicationId.of("-id-")).withHealthUrl("http://health").build(),
-                infoDown, infoUp));
+                Application.create(ApplicationId.of("-id-"), Registration.create("App", "http://health").build())
+                           .build(), infoDown, infoUp));
 
         assertThat(httpRequest.getValue().getHeaders()).containsEntry("Content-Type",
                 Collections.singletonList("application/json"));
@@ -77,12 +78,12 @@ public class HipchatNotifierTest {
                 ResponseEntity.ok().build());
 
         notifier.notify(new ClientApplicationStatusChangedEvent(
-                Application.create("App").withId(ApplicationId.of("-id-")).withHealthUrl("http://health").build(),
-                infoUp, infoDown));
+                Application.create(ApplicationId.of("-id-"), Registration.create("App", "http://health").build())
+                           .build(), infoUp, infoDown));
 
-        assertThat(httpRequest.getValue().getHeaders()).containsEntry("Content-Type",
-                Collections.singletonList("application/json"));
-
+        assertThat(httpRequest.getValue().
+                getHeaders()).
+                                     containsEntry("Content-Type", Collections.singletonList("application/json"));
         Map<String, Object> body = httpRequest.getValue().getBody();
         assertThat(body).containsEntry("color", "red");
         assertThat(body).containsEntry("message", "<strong>App</strong>/-id- is <strong>DOWN</strong>");

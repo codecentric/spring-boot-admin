@@ -17,6 +17,7 @@ package de.codecentric.boot.admin.server.registry.web;
 
 import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.ApplicationId;
+import de.codecentric.boot.admin.server.model.Registration;
 import de.codecentric.boot.admin.server.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.server.web.AdminController;
 
@@ -51,14 +52,14 @@ public class RegistryController {
     /**
      * Register an application within this admin application.
      *
-     * @param application The application infos.
+     * @param registration registration info
      * @return The registered application.
      */
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Application> register(@RequestBody Application application) {
-        Application applicationWithSource = Application.copyOf(application).withSource("http-api").build();
-        LOGGER.debug("Register application {}", applicationWithSource.toString());
-        Application registeredApp = registry.register(applicationWithSource);
+    public ResponseEntity<Application> register(@RequestBody Registration registration) {
+        Registration withSource = Registration.copyOf(registration).source("http-api").build();
+        LOGGER.debug("Register application {}", withSource);
+        Application registeredApp = registry.register(withSource);
         return ResponseEntity.status(HttpStatus.CREATED).body(registeredApp);
     }
 

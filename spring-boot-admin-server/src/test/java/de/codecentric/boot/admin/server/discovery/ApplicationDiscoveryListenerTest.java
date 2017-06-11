@@ -17,6 +17,7 @@ package de.codecentric.boot.admin.server.discovery;
 
 import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.ApplicationId;
+import de.codecentric.boot.admin.server.model.Registration;
 import de.codecentric.boot.admin.server.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.server.registry.HashingApplicationUrlIdGenerator;
 import de.codecentric.boot.admin.server.registry.store.SimpleApplicationStore;
@@ -88,7 +89,7 @@ public class ApplicationDiscoveryListenerTest {
         listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
         Collection<Application> applications = registry.getApplications();
-        assertThat(applications).extracting(Application::getName).containsOnly("service");
+        assertThat(applications).extracting(a -> a.getRegistration().getName()).containsOnly("service");
     }
 
     @Test
@@ -101,7 +102,7 @@ public class ApplicationDiscoveryListenerTest {
         listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
         Collection<Application> applications = registry.getApplications();
-        assertThat(applications).extracting(Application::getName).containsOnly("service");
+        assertThat(applications).extracting(a -> a.getRegistration().getName()).containsOnly("service");
     }
 
     @Test
@@ -117,7 +118,7 @@ public class ApplicationDiscoveryListenerTest {
         listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
         Collection<Application> applications = registry.getApplications();
-        assertThat(applications).extracting(Application::getName).containsOnly("service");
+        assertThat(applications).extracting(a -> a.getRegistration().getName()).containsOnly("service");
     }
 
     @Test
@@ -131,10 +132,10 @@ public class ApplicationDiscoveryListenerTest {
         assertThat(registry.getApplications()).hasSize(1);
         Application application = registry.getApplications().iterator().next();
 
-        assertThat(application.getHealthUrl()).isEqualTo("http://localhost:80/health");
-        assertThat(application.getManagementUrl()).isEqualTo("http://localhost:80");
-        assertThat(application.getServiceUrl()).isEqualTo("http://localhost:80");
-        assertThat(application.getName()).isEqualTo("service");
+        assertThat(application.getRegistration().getHealthUrl()).isEqualTo("http://localhost:80/health");
+        assertThat(application.getRegistration().getManagementUrl()).isEqualTo("http://localhost:80");
+        assertThat(application.getRegistration().getServiceUrl()).isEqualTo("http://localhost:80");
+        assertThat(application.getRegistration().getName()).isEqualTo("service");
     }
 
     @Test
@@ -155,12 +156,8 @@ public class ApplicationDiscoveryListenerTest {
 
     @Test
     public void deregister_removed_app() {
-        registry.register(Application.create("ignored").withHealthUrl("http://health").withId(ApplicationId.of("abcdef")).build());
-        registry.register(Application.create("different-source")
-                                     .withHealthUrl("http://health2")
-                                     .withId(ApplicationId.of("abcdef"))
-                                     .withSource("http-api")
-                                     .build());
+        registry.register(Registration.create("ignored", "http://health").build());
+        registry.register(Registration.create("different-source", "http://health2").source("http-api").build());
         listener.setIgnoredServices(singleton("ignored"));
 
         List<ServiceInstance> instances = new ArrayList<>();

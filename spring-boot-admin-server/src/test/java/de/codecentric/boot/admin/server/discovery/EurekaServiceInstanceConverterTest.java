@@ -16,7 +16,7 @@
 
 package de.codecentric.boot.admin.server.discovery;
 
-import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.Registration;
 
 import java.net.URI;
 import org.junit.Test;
@@ -41,13 +41,12 @@ public class EurekaServiceInstanceConverterTest {
         when(service.getServiceId()).thenReturn("test");
         when(service.getMetadata()).thenReturn(singletonMap("management.context-path", "/mgmt"));
 
-        Application application = new EurekaServiceInstanceConverter().convert(service);
+        Registration registration = new EurekaServiceInstanceConverter().convert(service);
 
-        assertThat(application.getId()).isNull();
-        assertThat(application.getName()).isEqualTo("test");
-        assertThat(application.getServiceUrl()).isEqualTo("http://localhost:80");
-        assertThat(application.getManagementUrl()).isEqualTo("http://localhost:80/mgmt");
-        assertThat(application.getHealthUrl()).isEqualTo("http://localhost:80/mgmt/ping");
+        assertThat(registration.getName()).isEqualTo("test");
+        assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80");
+        assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80/mgmt");
+        assertThat(registration.getHealthUrl()).isEqualTo("http://localhost:80/mgmt/ping");
     }
 
     @Test
@@ -59,9 +58,9 @@ public class EurekaServiceInstanceConverterTest {
         when(service.getUri()).thenReturn(URI.create("http://localhost:80"));
         when(service.getServiceId()).thenReturn("test");
 
-        Application application = new EurekaServiceInstanceConverter().convert(service);
+        Registration registration = new EurekaServiceInstanceConverter().convert(service);
 
-        assertThat(application.getManagementUrl()).isEqualTo("http://localhost:80");
+        assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80");
     }
 
     @Test
@@ -73,8 +72,8 @@ public class EurekaServiceInstanceConverterTest {
         when(service.getUri()).thenReturn(URI.create("http://localhost:80"));
         when(service.getServiceId()).thenReturn("test");
 
-        Application application = new EurekaServiceInstanceConverter().convert(service);
+        Registration registration = new EurekaServiceInstanceConverter().convert(service);
 
-        assertThat(application.getHealthUrl()).isEqualTo("https://localhost:80/health");
+        assertThat(registration.getHealthUrl()).isEqualTo("https://localhost:80/health");
     }
 }

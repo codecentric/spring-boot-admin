@@ -1,8 +1,9 @@
 package de.codecentric.boot.admin.server.notify.filter;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
+import de.codecentric.boot.admin.server.model.Registration;
 import de.codecentric.boot.admin.server.notify.TestNotifier;
 
 import org.junit.Test;
@@ -10,9 +11,8 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class FilteringNotifierTest {
-
     private static final ClientApplicationRegisteredEvent EVENT = new ClientApplicationRegisteredEvent(
-            Application.create("foo").withHealthUrl("http://health").build());
+            Application.create(ApplicationId.of("-"), Registration.create("foo", "http://health").build()).build());
 
     @Test(expected = IllegalArgumentException.class)
     public void test_ctor_assert() {
@@ -42,12 +42,7 @@ public class FilteringNotifierTest {
         TestNotifier delegate = new TestNotifier();
         FilteringNotifier notifier = new FilteringNotifier(delegate);
 
-        String idTrue = notifier.addFilter(new NotificationFilter() {
-            @Override
-            public boolean filter(ClientApplicationEvent event) {
-                return true;
-            }
-        });
+        String idTrue = notifier.addFilter(event -> true);
 
         notifier.notify(EVENT);
 

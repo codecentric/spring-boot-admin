@@ -17,8 +17,8 @@ public class BasicAuthHttpHeaderProvider implements HttpHeadersProvider {
 
     @Override
     public HttpHeaders getHeaders(Application application) {
-        String username = application.getMetadata().get("user.name");
-        String password = application.getMetadata().get("user.password");
+        String username = application.getRegistration().getMetadata().get("user.name");
+        String password = application.getRegistration().getMetadata().get("user.password");
 
         HttpHeaders headers = new HttpHeaders();
 
@@ -33,5 +33,4 @@ public class BasicAuthHttpHeaderProvider implements HttpHeadersProvider {
         String token = Base64Utils.encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8));
         return "Basic " + token;
     }
-
 }

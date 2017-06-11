@@ -21,7 +21,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Artur Dobosiewicz
  */
 public class SlackNotifier extends AbstractStatusChangeNotifier {
-    private static final String DEFAULT_MESSAGE = "*#{application.name}* (#{application.id}) is *#{to.status}*";
+    private static final String DEFAULT_MESSAGE = "*#{application.registration.name}* (#{application.id}) is *#{to.status}*";
 
     private final SpelExpressionParser parser = new SpelExpressionParser();
     private RestTemplate restTemplate = new RestTemplate();

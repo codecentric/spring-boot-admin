@@ -15,17 +15,17 @@
  */
 package de.codecentric.boot.admin.server.registry;
 
-import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.ApplicationId;
+import de.codecentric.boot.admin.server.model.Registration;
 
 public interface ApplicationIdGenerator {
 
     /**
      * Generate an id based on the given Application
      *
-     * @param a the application the id is computed for.
+     * @param registration the registration the id is computed for.
      * @return the application id
      */
-    ApplicationId generateId(Application a);
+    ApplicationId generateId(Registration registration);
 
 }

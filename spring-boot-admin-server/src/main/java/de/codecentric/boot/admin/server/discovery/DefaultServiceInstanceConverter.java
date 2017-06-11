@@ -16,6 +16,7 @@
 package de.codecentric.boot.admin.server.discovery;
 
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.Registration;
 
 import java.net.URI;
 import java.util.Map;
@@ -53,29 +54,25 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
     private String healthEndpointPath = "health";
 
     @Override
-    public Application convert(ServiceInstance instance) {
+    public Registration convert(ServiceInstance instance) {
         LOGGER.debug("Converting service '{}' running at '{}' with metadata {}", instance.getServiceId(),
                 instance.getUri(), instance.getMetadata());
 
-        Application.Builder builder = Application.create(instance.getServiceId());
-        URI healthUrl = getHealthUrl(instance);
-        if (healthUrl != null) {
-            builder.withHealthUrl(healthUrl.toString());
-        }
+        Registration.Builder builder = Registration.create(instance.getServiceId(), getHealthUrl(instance).toString());
 
         URI managementUrl = getManagementUrl(instance);
         if (managementUrl != null) {
-            builder.withManagementUrl(managementUrl.toString());
+            builder.managementUrl(managementUrl.toString());
         }
 
         URI serviceUrl = getServiceUrl(instance);
         if (serviceUrl != null) {
-            builder.withServiceUrl(serviceUrl.toString());
+            builder.serviceUrl(serviceUrl.toString());
         }
 
         Map<String, String> metadata = getMetadata(instance);
         if (metadata != null) {
-            builder.withMetadata(metadata);
+            builder.metadata(metadata);
         }
 
         return builder.build();

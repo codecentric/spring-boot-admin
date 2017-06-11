@@ -19,6 +19,7 @@ import de.codecentric.boot.admin.server.event.ClientApplicationDeregisteredEvent
 import de.codecentric.boot.admin.server.event.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.ApplicationId;
+import de.codecentric.boot.admin.server.model.Registration;
 import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 
 import java.net.MalformedURLException;
@@ -29,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * Registry for all applications that should be managed/administrated by the Spring Boot Admin
@@ -51,42 +51,32 @@ public class ApplicationRegistry implements ApplicationEventPublisherAware {
     /**
      * Register application.
      *
-     * @param application application to be registered.
+     * @param registration application to be registered.
      * @return the registered application.
      */
-    public Application register(Application application) {
-        Assert.notNull(application, "Application must not be null");
-        Assert.hasText(application.getName(), "Name must not be null");
-        Assert.hasText(application.getHealthUrl(), "Health-URL must not be null");
-        Assert.isTrue(checkUrl(application.getHealthUrl()), "Health-URL is not valid");
-        Assert.isTrue(StringUtils.isEmpty(application.getManagementUrl()) || checkUrl(application.getManagementUrl()),
-                "URL is not valid");
-        Assert.isTrue(StringUtils.isEmpty(application.getServiceUrl()) || checkUrl(application.getServiceUrl()),
-                "URL is not valid");
-
-        ApplicationId applicationId = generator.generateId(application);
+    public Application register(Registration registration) {
+        Assert.notNull(registration, "Application must not be null");
+        ApplicationId applicationId = generator.generateId(registration);
         Assert.notNull(applicationId, "ID must not be null");
 
-        Application.Builder builder = Application.copyOf(application).withId(applicationId);
         Application existing = getApplication(applicationId);
-        if (existing != null) {
-            // Copy Status and Info from existing registration.
-            builder.withStatusInfo(existing.getStatusInfo()).withInfo(existing.getInfo());
+        if (existing != null && existing.getRegistration().equals(registration)) {
+            return existing;
         }
-        Application registering = builder.build();
 
-        Application replaced = store.save(registering);
+        Application.Builder builder = existing != null ?
+                Application.copyOf(existing) :
+                Application.builder().id(applicationId);
+
+        Application application = builder.registration(registration).build();
+        Application replaced = store.save(application);
         if (replaced == null) {
-            LOGGER.info("New Application {} registered ", registering);
-            publisher.publishEvent(new ClientApplicationRegisteredEvent(registering));
+            LOGGER.info("New Application {} registered ", application);
+            publisher.publishEvent(new ClientApplicationRegisteredEvent(application));
         } else {
-            if (registering.getId().equals(replaced.getId())) {
-                LOGGER.debug("Application {} refreshed", registering);
-            } else {
-                LOGGER.warn("Application {} replaced by Application {}", registering, replaced);
-            }
+            LOGGER.debug("Application {} refreshed", application);
         }
-        return registering;
+        return application;
     }
 
     /**

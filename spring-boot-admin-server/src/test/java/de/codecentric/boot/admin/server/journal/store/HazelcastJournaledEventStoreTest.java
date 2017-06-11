@@ -20,6 +20,7 @@ import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.ApplicationId;
+import de.codecentric.boot.admin.server.model.Registration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,10 +46,8 @@ public class HazelcastJournaledEventStoreTest {
 
     @Test
     public void test_store() {
-        Application application = Application.create("foo")
-                                             .withId(ApplicationId.of("-id-"))
-                                             .withHealthUrl("http://health")
-                                             .build();
+        Application application = Application.create(ApplicationId.of("id"),
+                Registration.create("foo", "http://health").build()).build();
         List<ClientApplicationEvent> events = Arrays.asList(new ClientApplicationRegisteredEvent(application),
                 new ClientApplicationDeregisteredEvent(application));
 
@@ -60,6 +59,6 @@ public class HazelcastJournaledEventStoreTest {
         List<ClientApplicationEvent> reversed = new ArrayList<>(events);
         Collections.reverse(reversed);
 
-        assertThat(store.findAll()).isEqualTo(reversed);
+        assertThat(store.findAll()).containsOnlyElementsOf(reversed);
     }
 }

@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.registry;
 import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.model.Info;
+import de.codecentric.boot.admin.server.model.Registration;
 import de.codecentric.boot.admin.server.model.StatusInfo;
 import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.server.registry.store.SimpleApplicationStore;
@@ -44,40 +45,12 @@ public class ApplicationRegistryTest {
         registry.register(null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void registerFailed_no_name() throws Exception {
-        registry.register(Application.create("").withHealthUrl("http://localhost/health").build());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void registerFailed_no_healthUrl() throws Exception {
-        registry.register(Application.create("name").build());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void registerFailed_invalid_healthUrl() throws Exception {
-        registry.register(Application.create("name").withHealthUrl("not-a-url").build());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void registerFailed_invalid_mgmtUrl() throws Exception {
-        registry.register(
-                Application.create("").withHealthUrl("http://localhost/health").withManagementUrl("not-a-url").build());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void registerFailed_invalid_svcUrl() throws Exception {
-        registry.register(
-                Application.create("").withHealthUrl("http://localhost/health").withServiceUrl("not-a-url").build());
-    }
-
     @Test
     public void register() throws Exception {
-        Application app = registry.register(
-                Application.create("abc").withHealthUrl("http://localhost:8080/health").build());
+        Application app = registry.register(Registration.create("abc", "http://localhost:8080/health").build());
 
-        assertThat(app.getHealthUrl()).isEqualTo("http://localhost:8080/health");
-        assertThat(app.getName()).isEqualTo("abc");
+        assertThat(app.getRegistration().getHealthUrl()).isEqualTo("http://localhost:8080/health");
+        assertThat(app.getRegistration().getName()).isEqualTo("abc");
         assertThat(app.getId()).isNotNull();
     }
 
@@ -86,17 +59,13 @@ public class ApplicationRegistryTest {
         // Given application is already reegistered and has status and info.
         StatusInfo status = StatusInfo.ofUp();
         Info info = Info.from(singletonMap("foo", "bar"));
-        Application app = Application.create("abc")
-                                     .withHealthUrl("http://localhost:8080/health")
-                                     .withStatusInfo(status)
-                                     .withInfo(info)
-                                     .build();
-        ApplicationId id = idGenerator.generateId(app);
-        store.save(Application.copyOf(app).withId(id).build());
+        Registration registration = Registration.create("abc", "http://localhost:8080/health").build();
+        ApplicationId id = idGenerator.generateId(registration);
+        Application app = Application.create(id, registration).statusInfo(status).info(info).build();
+        store.save(app);
 
         // When application registers second time
-        Application registered = registry.register(
-                Application.create("abc").withHealthUrl("http://localhost:8080/health").build());
+        Application registered = registry.register(Registration.create("abc", "http://localhost:8080/health").build());
 
         // Then info and status are retained
         assertThat(registered.getInfo()).isSameAs(info);
@@ -105,17 +74,15 @@ public class ApplicationRegistryTest {
 
     @Test
     public void getApplication() throws Exception {
-        Application app = registry.register(Application.create("abc")
-                                                       .withHealthUrl("http://localhost/health")
-                                                       .withManagementUrl("http://localhost:8080/")
-                                                       .build());
+        Application app = registry.register(
+                Registration.create("abc", "http://localhost/health").managementUrl("http://localhost:8080/").build());
         assertThat(registry.getApplication(app.getId())).isEqualTo(app);
-        assertThat(app.getManagementUrl()).isEqualTo("http://localhost:8080/");
+        assertThat(app.getRegistration().getManagementUrl()).isEqualTo("http://localhost:8080/");
     }
 
     @Test
     public void getApplications() throws Exception {
-        Application app = registry.register(Application.create("abc").withHealthUrl("http://localhost/health").build());
+        Application app = registry.register(Registration.create("abc", "http://localhost/health").build());
 
         Collection<Application> applications = registry.getApplications();
         assertThat(applications).containsOnly(app);
@@ -123,10 +90,9 @@ public class ApplicationRegistryTest {
 
     @Test
     public void getApplicationsByName() throws Exception {
-        Application app = registry.register(Application.create("abc").withHealthUrl("http://localhost/health").build());
-        Application app2 = registry.register(
-                Application.create("abc").withHealthUrl("http://localhost:8081/health").build());
-        registry.register(Application.create("zzz").withHealthUrl("http://localhost:8082/health").build());
+        Application app = registry.register(Registration.create("abc", "http://localhost/health").build());
+        Application app2 = registry.register(Registration.create("abc", "http://localhost:8081/health").build());
+        registry.register(Registration.create("zzz", "http://localhost:8082/health").build());
 
         Collection<Application> applications = registry.getApplicationsByName("abc");
         assertThat(applications).containsOnly(app, app2);
