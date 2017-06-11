@@ -13,23 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.codecentric.boot.admin;
+package de.codecentric.boot.admin.server.discovery;
 
-import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.context.annotation.Configuration;
+import de.codecentric.boot.admin.server.model.Application;
 
-@Configuration
-@EnableAutoConfiguration
-@EnableDiscoveryClient
-@EnableAdminServer
-public class SpringBootAdminApplication {
+import org.springframework.cloud.client.ServiceInstance;
 
-    public static void main(String[] args) {
-        SpringApplication.run(SpringBootAdminApplication.class, args);
-    }
+/**
+ * Converts {@link ServiceInstance}s to {@link Application}s.
+ *
+ * @author Johannes Edmeier
+ */
+public interface ServiceInstanceConverter {
 
+    /**
+     * Converts a service instance to a application to be registered.
+     *
+     * @param instance the service instance.
+     * @return Application
+     */
+    Application convert(ServiceInstance instance);
 }

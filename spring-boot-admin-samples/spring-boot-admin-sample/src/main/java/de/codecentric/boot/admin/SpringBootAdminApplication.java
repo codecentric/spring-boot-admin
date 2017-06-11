@@ -15,8 +15,13 @@
  */
 package de.codecentric.boot.admin;
 
-import java.util.concurrent.TimeUnit;
+import de.codecentric.boot.admin.server.config.EnableAdminServer;
+import de.codecentric.boot.admin.server.notify.LoggingNotifier;
+import de.codecentric.boot.admin.server.notify.Notifier;
+import de.codecentric.boot.admin.server.notify.RemindingNotifier;
+import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
 
+import java.util.concurrent.TimeUnit;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -26,12 +31,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-
-import de.codecentric.boot.admin.config.EnableAdminServer;
-import de.codecentric.boot.admin.notify.LoggingNotifier;
-import de.codecentric.boot.admin.notify.Notifier;
-import de.codecentric.boot.admin.notify.RemindingNotifier;
-import de.codecentric.boot.admin.notify.filter.FilteringNotifier;
 
 @Configuration
 @EnableAutoConfiguration
@@ -55,9 +54,7 @@ public class SpringBootAdminApplication {
             http.csrf().disable();
 
             // Requests for the login page and the static assets are allowed
-            http.authorizeRequests()
-                    .antMatchers("/login.html", "/**/*.css", "/img/**", "/third-party/**")
-                    .permitAll();
+            http.authorizeRequests().antMatchers("/login.html", "/**/*.css", "/img/**", "/third-party/**").permitAll();
             // ... and any other request needs to be authorized
             http.authorizeRequests().antMatchers("/**").authenticated();
 
