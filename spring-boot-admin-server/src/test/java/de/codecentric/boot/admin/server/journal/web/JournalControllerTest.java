@@ -20,6 +20,7 @@ import de.codecentric.boot.admin.server.event.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.server.journal.ApplicationEventJournal;
 import de.codecentric.boot.admin.server.journal.store.SimpleJournaledEventStore;
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 
 import org.junit.Test;
 import org.springframework.http.MediaType;
@@ -38,7 +39,7 @@ public class JournalControllerTest {
     @Test
     public void test_getJournal() throws Exception {
         ClientApplicationEvent emittedEvent = new ClientApplicationRegisteredEvent(
-                Application.create("foo").withId("bar").withHealthUrl("http://health").build());
+                Application.create("foo").withId(ApplicationId.of("id")).withHealthUrl("http://health").build());
         journal.onClientApplicationEvent(emittedEvent);
 
         mvc.perform(get("/api/journal").accept(MediaType.APPLICATION_JSON))

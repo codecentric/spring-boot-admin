@@ -16,6 +16,7 @@
 package de.codecentric.boot.admin.server.registry;
 
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.model.Info;
 import de.codecentric.boot.admin.server.model.StatusInfo;
 import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
@@ -90,7 +91,7 @@ public class ApplicationRegistryTest {
                                      .withStatusInfo(status)
                                      .withInfo(info)
                                      .build();
-        String id = idGenerator.generateId(app);
+        ApplicationId id = idGenerator.generateId(app);
         store.save(Application.copyOf(app).withId(id).build());
 
         // When application registers second time

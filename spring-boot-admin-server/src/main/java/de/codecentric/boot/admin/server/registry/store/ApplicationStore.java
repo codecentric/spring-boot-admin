@@ -16,6 +16,7 @@
 package de.codecentric.boot.admin.server.registry.store;
 
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 
 import java.util.Collection;
 
@@ -42,7 +43,7 @@ public interface ApplicationStore {
      * @param id the applications id
      * @return the Application with the specified id;
      */
-    Application find(String id);
+    Application find(ApplicationId id);
 
     /**
      * @param name the applications name
@@ -54,5 +55,5 @@ public interface ApplicationStore {
      * @param id id of the Application to be removed
      * @return the Application associated previosly with the applications id.
      */
-    Application delete(String id);
+    Application delete(ApplicationId id);
 }

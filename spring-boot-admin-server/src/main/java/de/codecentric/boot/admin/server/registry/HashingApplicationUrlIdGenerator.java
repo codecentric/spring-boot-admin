@@ -16,6 +16,7 @@
 package de.codecentric.boot.admin.server.registry;
 
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -28,11 +29,11 @@ public class HashingApplicationUrlIdGenerator implements ApplicationIdGenerator 
     private static final char[] HEX_CHARS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
     @Override
-    public String generateId(Application a) {
+    public ApplicationId generateId(Application a) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-1");
             byte[] bytes = digest.digest(a.getHealthUrl().getBytes(StandardCharsets.UTF_8));
-            return new String(encodeHex(bytes, 0, 8));
+            return ApplicationId.of(new String(encodeHex(bytes, 0, 8)));
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException(e);
         }

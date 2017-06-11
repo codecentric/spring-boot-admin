@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.notify;
 import de.codecentric.boot.admin.server.event.ClientApplicationDeregisteredEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +32,7 @@ import org.springframework.util.Assert;
  * @author Johannes Edmeier
  */
 public class RemindingNotifier extends AbstractEventNotifier {
-    private final ConcurrentHashMap<String, Reminder> reminders = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<ApplicationId, Reminder> reminders = new ConcurrentHashMap<>();
     private long reminderPeriod = TimeUnit.MINUTES.toMillis(10L);
     private String[] reminderStatuses = {"DOWN", "OFFLINE"};
     private final Notifier delegate;

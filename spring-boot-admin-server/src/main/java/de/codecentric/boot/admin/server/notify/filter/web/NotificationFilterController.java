@@ -15,6 +15,7 @@
  */
 package de.codecentric.boot.admin.server.notify.filter.web;
 
+import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.notify.filter.ApplicationIdNotificationFilter;
 import de.codecentric.boot.admin.server.notify.filter.ApplicationNameNotificationFilter;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
@@ -58,7 +59,7 @@ public class NotificationFilterController {
                                        @RequestParam(name = "name", required = false) String name,
                                        @RequestParam(name = "ttl", required = false, defaultValue = "-1") long ttl) {
         if (hasText(id) || hasText(name)) {
-            NotificationFilter filter = createFilter(id, name, ttl);
+            NotificationFilter filter = createFilter(hasText(id) ? ApplicationId.of(id) : null, name, ttl);
             String filterId = filteringNotifier.addFilter(filter);
             return ResponseEntity.ok(Collections.singletonMap(filterId, filter));
         } else {
@@ -76,13 +77,11 @@ public class NotificationFilterController {
         }
     }
 
-    private NotificationFilter createFilter(String id, String name, long ttl) {
+    private NotificationFilter createFilter(ApplicationId id, String name, long ttl) {
         long expiry = ttl > 0L ? System.currentTimeMillis() + ttl : ttl;
 
-        NotificationFilter filter = hasText(id) ?
+        return id != null ?
                 new ApplicationIdNotificationFilter(id, expiry) :
                 new ApplicationNameNotificationFilter(name, expiry);
-
-        return filter;
     }
 }

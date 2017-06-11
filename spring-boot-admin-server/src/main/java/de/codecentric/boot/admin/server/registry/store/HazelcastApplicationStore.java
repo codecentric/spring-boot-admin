@@ -16,6 +16,7 @@
 package de.codecentric.boot.admin.server.registry.store;
 
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 
 import java.util.Collection;
 import com.hazelcast.core.IMap;
@@ -23,9 +24,9 @@ import com.hazelcast.query.Predicates;
 
 public class HazelcastApplicationStore implements ApplicationStore {
 
-    private IMap<String, Application> store;
+    private IMap<ApplicationId, Application> store;
 
-    public HazelcastApplicationStore(IMap<String, Application> store) {
+    public HazelcastApplicationStore(IMap<ApplicationId, Application> store) {
         this.store = store;
     }
 
@@ -40,7 +41,7 @@ public class HazelcastApplicationStore implements ApplicationStore {
     }
 
     @Override
-    public Application find(String id) {
+    public Application find(ApplicationId id) {
         return store.get(id);
     }
 
@@ -50,7 +51,7 @@ public class HazelcastApplicationStore implements ApplicationStore {
     }
 
     @Override
-    public Application delete(String id) {
+    public Application delete(ApplicationId id) {
         return store.remove(id);
     }
 

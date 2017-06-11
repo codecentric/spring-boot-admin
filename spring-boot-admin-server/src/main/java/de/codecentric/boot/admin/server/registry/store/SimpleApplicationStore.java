@@ -16,6 +16,7 @@
 package de.codecentric.boot.admin.server.registry.store;
 
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,7 +29,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class SimpleApplicationStore implements ApplicationStore {
 
-    private final ConcurrentMap<String, Application> map = new ConcurrentHashMap<>();
+    private final ConcurrentMap<ApplicationId, Application> map = new ConcurrentHashMap<>();
 
     @Override
     public Application save(Application app) {
@@ -41,7 +42,7 @@ public class SimpleApplicationStore implements ApplicationStore {
     }
 
     @Override
-    public Application find(String id) {
+    public Application find(ApplicationId id) {
         return map.get(id);
     }
 
@@ -57,7 +58,7 @@ public class SimpleApplicationStore implements ApplicationStore {
     }
 
     @Override
-    public Application delete(String id) {
+    public Application delete(ApplicationId id) {
         return map.remove(id);
     }
 

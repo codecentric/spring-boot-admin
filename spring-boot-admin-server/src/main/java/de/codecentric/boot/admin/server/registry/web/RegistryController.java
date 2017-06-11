@@ -16,6 +16,7 @@
 package de.codecentric.boot.admin.server.registry.web;
 
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.server.web.AdminController;
 
@@ -86,7 +87,7 @@ public class RegistryController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<?> get(@PathVariable String id) {
         LOGGER.debug("Deliver registered application with ID '{}'", id);
-        Application application = registry.getApplication(id);
+        Application application = registry.getApplication(ApplicationId.of(id));
         if (application != null) {
             return ResponseEntity.ok(application);
         } else {
@@ -103,7 +104,7 @@ public class RegistryController {
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> unregister(@PathVariable String id) {
         LOGGER.debug("Unregister application with ID '{}'", id);
-        Application application = registry.deregister(id);
+        Application application = registry.deregister(ApplicationId.of(id));
         if (application != null) {
             return ResponseEntity.ok(application);
         } else {

@@ -2,6 +2,7 @@ package de.codecentric.boot.admin.server.notify;
 
 import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.model.StatusInfo;
 
 import java.net.URI;
@@ -25,7 +26,7 @@ public class SlackNotifierTest {
     private static final String icon = "icon";
     private static final String user = "user";
     private static final String appName = "App";
-    private static final String id = "-id-";
+    private static final ApplicationId id = ApplicationId.of("-id-");
     private static final String message = "test";
 
     private SlackNotifier notifier;
@@ -145,7 +146,7 @@ public class SlackNotifierTest {
         return new HttpEntity<>(messageJson, headers);
     }
 
-    private String standardMessage(String status, String appName, String id) {
+    private String standardMessage(String status, String appName, ApplicationId id) {
         return "*" + appName + "* (" + id + ") is *" + status + "*";
     }
 }

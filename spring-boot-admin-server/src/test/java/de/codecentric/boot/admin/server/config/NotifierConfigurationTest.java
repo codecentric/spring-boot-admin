@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.config;
 import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.model.StatusInfo;
 import de.codecentric.boot.admin.server.notify.CompositeNotifier;
 import de.codecentric.boot.admin.server.notify.HipchatNotifier;
@@ -40,8 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class NotifierConfigurationTest {
     private static final ClientApplicationEvent APP_DOWN = new ClientApplicationStatusChangedEvent(
-            Application.create("App")
-                       .withId("id-1")
+            Application.create("App").withId(ApplicationId.of("id-2"))
                        .withHealthUrl("http://health")
                        .withStatusInfo(StatusInfo.ofDown())
                        .build(), StatusInfo.ofUp(), StatusInfo.ofDown());

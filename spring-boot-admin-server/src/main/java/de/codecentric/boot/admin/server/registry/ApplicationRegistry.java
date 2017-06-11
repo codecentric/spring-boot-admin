@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.registry;
 import de.codecentric.boot.admin.server.event.ClientApplicationDeregisteredEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 
 import java.net.MalformedURLException;
@@ -63,7 +64,7 @@ public class ApplicationRegistry implements ApplicationEventPublisherAware {
         Assert.isTrue(StringUtils.isEmpty(application.getServiceUrl()) || checkUrl(application.getServiceUrl()),
                 "URL is not valid");
 
-        String applicationId = generator.generateId(application);
+        ApplicationId applicationId = generator.generateId(application);
         Assert.notNull(applicationId, "ID must not be null");
 
         Application.Builder builder = Application.copyOf(application).withId(applicationId);
@@ -128,7 +129,7 @@ public class ApplicationRegistry implements ApplicationEventPublisherAware {
      * @param id Id.
      * @return Application.
      */
-    public Application getApplication(String id) {
+    public Application getApplication(ApplicationId id) {
         return store.find(id);
     }
 
@@ -138,7 +139,7 @@ public class ApplicationRegistry implements ApplicationEventPublisherAware {
      * @param id the applications id to unregister
      * @return the unregistered Application
      */
-    public Application deregister(String id) {
+    public Application deregister(ApplicationId id) {
         Application app = store.delete(id);
         if (app != null) {
             LOGGER.info("Application {} unregistered ", app);

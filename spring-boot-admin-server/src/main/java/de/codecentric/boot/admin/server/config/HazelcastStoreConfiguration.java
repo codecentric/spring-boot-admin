@@ -19,6 +19,7 @@ import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.journal.store.HazelcastJournaledEventStore;
 import de.codecentric.boot.admin.server.journal.store.JournaledEventStore;
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.server.registry.store.HazelcastApplicationStore;
 
@@ -58,7 +59,7 @@ public class HazelcastStoreConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public ApplicationStore applicationStore() {
-        IMap<String, Application> map = hazelcastInstance.getMap(hazelcastMapName);
+        IMap<ApplicationId, Application> map = hazelcastInstance.getMap(hazelcastMapName);
         map.addIndex("name", false);
         return new HazelcastApplicationStore(map);
     }
@@ -69,5 +70,4 @@ public class HazelcastStoreConfiguration {
         IList<ClientApplicationEvent> list = hazelcastInstance.getList(eventListName);
         return new HazelcastJournaledEventStore(list);
     }
-
 }

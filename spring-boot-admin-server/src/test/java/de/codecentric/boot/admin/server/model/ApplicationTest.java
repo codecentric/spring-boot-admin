@@ -99,14 +99,12 @@ public class ApplicationTest {
         Application a1 = Application.create("foo")
                                     .withHealthUrl("healthUrl")
                                     .withManagementUrl("mgmt")
-                                    .withServiceUrl("svc")
-                                    .withId("id")
+                                    .withServiceUrl("svc").withId(ApplicationId.of("id"))
                                     .build();
         Application a2 = Application.create("foo")
                                     .withHealthUrl("healthUrl")
                                     .withManagementUrl("mgmt")
-                                    .withServiceUrl("svc")
-                                    .withId("id")
+                                    .withServiceUrl("svc").withId(ApplicationId.of("id"))
                                     .build();
 
         assertThat(a1).isEqualTo(a2);
@@ -115,8 +113,7 @@ public class ApplicationTest {
         Application a3 = Application.create("foo")
                                     .withHealthUrl("healthUrl2")
                                     .withManagementUrl("mgmt")
-                                    .withServiceUrl("svc")
-                                    .withId("other")
+                                    .withServiceUrl("svc").withId(ApplicationId.of("other"))
                                     .build();
 
         assertThat(a1).isNotEqualTo(a3);
@@ -125,8 +122,7 @@ public class ApplicationTest {
 
     @Test
     public void test_builder_copy() {
-        Application app = Application.create("App")
-                                     .withId("-id-")
+        Application app = Application.create("App").withId(ApplicationId.of("id"))
                                      .withHealthUrl("http://health")
                                      .withManagementUrl("http://mgmgt")
                                      .withServiceUrl("http://svc")

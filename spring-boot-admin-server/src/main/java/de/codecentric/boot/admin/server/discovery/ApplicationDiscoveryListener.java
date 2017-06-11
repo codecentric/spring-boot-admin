@@ -16,6 +16,7 @@
 package de.codecentric.boot.admin.server.discovery;
 
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.registry.ApplicationRegistry;
 
 import java.util.Collections;
@@ -84,18 +85,18 @@ public class ApplicationDiscoveryListener {
     }
 
     protected void discover() {
-        final Set<String> staleApplicationIds = getAllApplicationIdsFromRegistry();
+        final Set<ApplicationId> staleApplicationIds = getAllApplicationIdsFromRegistry();
         for (String serviceId : discoveryClient.getServices()) {
             if (!ignoreService(serviceId) && registerService(serviceId)) {
                 for (ServiceInstance instance : discoveryClient.getInstances(serviceId)) {
-                    String applicationId = register(instance);
+                    ApplicationId applicationId = register(instance);
                     staleApplicationIds.remove(applicationId);
                 }
             } else {
                 LOGGER.debug("Ignoring discovered service {}", serviceId);
             }
         }
-        for (String staleApplicationId : staleApplicationIds) {
+        for (ApplicationId staleApplicationId : staleApplicationIds) {
             LOGGER.info("Application ({}) missing in DiscoveryClient services ", staleApplicationId);
             registry.deregister(staleApplicationId);
         }
@@ -118,8 +119,8 @@ public class ApplicationDiscoveryListener {
         return false;
     }
 
-    protected final Set<String> getAllApplicationIdsFromRegistry() {
-        Set<String> result = new HashSet<>();
+    protected final Set<ApplicationId> getAllApplicationIdsFromRegistry() {
+        Set<ApplicationId> result = new HashSet<>();
         for (Application application : registry.getApplications()) {
             if (!ignoreService(application.getName()) &&
                 registerService(application.getName()) &&
@@ -130,7 +131,7 @@ public class ApplicationDiscoveryListener {
         return result;
     }
 
-    protected String register(ServiceInstance instance) {
+    protected ApplicationId register(ServiceInstance instance) {
         try {
             Application application = converter.convert(instance);
             application = Application.copyOf(application).withSource(SOURCE).build();

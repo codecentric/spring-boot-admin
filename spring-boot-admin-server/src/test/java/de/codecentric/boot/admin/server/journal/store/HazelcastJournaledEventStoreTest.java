@@ -19,6 +19,7 @@ import de.codecentric.boot.admin.server.event.ClientApplicationDeregisteredEvent
 import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,12 +40,15 @@ public class HazelcastJournaledEventStoreTest {
     @Before
     public void setup() {
         HazelcastInstance hazelcast = HazelcastInstanceFactory.newHazelcastInstance(new Config());
-        store = new HazelcastJournaledEventStore(hazelcast.<ClientApplicationEvent>getList("testList"));
+        store = new HazelcastJournaledEventStore(hazelcast.getList("testList"));
     }
 
     @Test
     public void test_store() {
-        Application application = Application.create("foo").withId("bar").withHealthUrl("http://health").build();
+        Application application = Application.create("foo")
+                                             .withId(ApplicationId.of("-id-"))
+                                             .withHealthUrl("http://health")
+                                             .build();
         List<ClientApplicationEvent> events = Arrays.asList(new ClientApplicationRegisteredEvent(application),
                 new ClientApplicationDeregisteredEvent(application));
 

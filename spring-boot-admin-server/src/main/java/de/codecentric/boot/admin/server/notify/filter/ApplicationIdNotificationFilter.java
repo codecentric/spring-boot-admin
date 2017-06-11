@@ -16,11 +16,12 @@
 package de.codecentric.boot.admin.server.notify.filter;
 
 import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 
 public class ApplicationIdNotificationFilter extends ExpiringNotificationFilter {
-    private final String id;
+    private final ApplicationId id;
 
-    public ApplicationIdNotificationFilter(String id, long expiry) {
+    public ApplicationIdNotificationFilter(ApplicationId id, long expiry) {
         super(expiry);
         this.id = id;
     }
@@ -30,7 +31,7 @@ public class ApplicationIdNotificationFilter extends ExpiringNotificationFilter 
         return id.equals(event.getApplication().getId());
     }
 
-    public String getId() {
+    public ApplicationId getId() {
         return id;
     }
 

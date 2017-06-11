@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.notify;
 import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.model.StatusInfo;
 
 import org.junit.Before;
@@ -49,8 +50,8 @@ public class MailNotifierTest {
     @Test
     public void test_onApplicationEvent() {
         notifier.notify(new ClientApplicationStatusChangedEvent(
-                Application.create("App").withId("-id-").withHealthUrl("http://health").build(), StatusInfo.ofDown(),
-                StatusInfo.ofUp()));
+                Application.create("App").withId(ApplicationId.of("-id-")).withHealthUrl("http://health").build(),
+                StatusInfo.ofDown(), StatusInfo.ofUp()));
 
         SimpleMailMessage expected = new SimpleMailMessage();
         expected.setTo(new String[]{"foo@bar.com"});
@@ -68,8 +69,8 @@ public class MailNotifierTest {
     public void test_onApplicationEvent_disbaled() {
         notifier.setEnabled(false);
         notifier.notify(new ClientApplicationStatusChangedEvent(
-                Application.create("App").withId("-id-").withHealthUrl("http://health").build(), StatusInfo.ofDown(),
-                StatusInfo.ofUp()));
+                Application.create("App").withId(ApplicationId.of("-id-")).withHealthUrl("http://health").build(),
+                StatusInfo.ofDown(), StatusInfo.ofUp()));
 
         verifyNoMoreInteractions(sender);
     }
@@ -77,8 +78,8 @@ public class MailNotifierTest {
     @Test
     public void test_onApplicationEvent_noSend() {
         notifier.notify(new ClientApplicationStatusChangedEvent(
-                Application.create("App").withId("-id-").withHealthUrl("http://health").build(), StatusInfo.ofUnknown(),
-                StatusInfo.ofUp()));
+                Application.create("App").withId(ApplicationId.of("-id-")).withHealthUrl("http://health").build(),
+                StatusInfo.ofUnknown(), StatusInfo.ofUp()));
 
         verifyNoMoreInteractions(sender);
     }
@@ -87,8 +88,8 @@ public class MailNotifierTest {
     public void test_onApplicationEvent_noSend_wildcard() {
         notifier.setIgnoreChanges(new String[]{"*:UP"});
         notifier.notify(new ClientApplicationStatusChangedEvent(
-                Application.create("App").withId("-id-").withHealthUrl("http://health").build(), StatusInfo.ofOffline(),
-                StatusInfo.ofUp()));
+                Application.create("App").withId(ApplicationId.of("-id-")).withHealthUrl("http://health").build(),
+                StatusInfo.ofOffline(), StatusInfo.ofUp()));
 
         verifyNoMoreInteractions(sender);
     }
@@ -102,7 +103,7 @@ public class MailNotifierTest {
             }
         };
         notifier.notify(new ClientApplicationStatusChangedEvent(
-                Application.create("App").withId("-id-").withHealthUrl("http://health").build(), StatusInfo.ofOffline(),
-                StatusInfo.ofUp()));
+                Application.create("App").withId(ApplicationId.of("-id-")).withHealthUrl("http://health").build(),
+                StatusInfo.ofOffline(), StatusInfo.ofUp()));
     }
 }

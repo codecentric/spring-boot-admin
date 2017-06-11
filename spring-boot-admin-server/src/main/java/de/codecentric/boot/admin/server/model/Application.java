@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 import org.springframework.util.Assert;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -42,7 +41,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 public class Application implements Serializable {
     private static final long serialVersionUID = 2L;
 
-    private final String id;
+    private final ApplicationId id;
     private final String name;
     private final String managementUrl;
     private final String healthUrl;
@@ -77,7 +76,7 @@ public class Application implements Serializable {
     }
 
     public static class Builder {
-        private String id;
+        private ApplicationId id;
         private String name;
         private String managementUrl;
         private String healthUrl;
@@ -108,7 +107,7 @@ public class Application implements Serializable {
             return this;
         }
 
-        public Builder withId(String id) {
+        public Builder withId(ApplicationId id) {
             this.id = id;
             return this;
         }
@@ -158,7 +157,7 @@ public class Application implements Serializable {
         }
     }
 
-    public String getId() {
+    public ApplicationId getId() {
         return id;
     }
 
@@ -279,8 +278,7 @@ public class Application implements Serializable {
         }
 
         @Override
-        public Application deserialize(JsonParser p,
-                                       DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        public Application deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             JsonNode node = p.readValueAsTree();
 
             Builder builder = create(node.get("name").asText());

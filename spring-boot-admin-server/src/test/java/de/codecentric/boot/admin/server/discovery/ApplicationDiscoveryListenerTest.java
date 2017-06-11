@@ -16,6 +16,7 @@
 package de.codecentric.boot.admin.server.discovery;
 
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.server.registry.HashingApplicationUrlIdGenerator;
 import de.codecentric.boot.admin.server.registry.store.SimpleApplicationStore;
@@ -154,10 +155,10 @@ public class ApplicationDiscoveryListenerTest {
 
     @Test
     public void deregister_removed_app() {
-        registry.register(Application.create("ignored").withHealthUrl("http://health").withId("abcdef").build());
+        registry.register(Application.create("ignored").withHealthUrl("http://health").withId(ApplicationId.of("abcdef")).build());
         registry.register(Application.create("different-source")
                                      .withHealthUrl("http://health2")
-                                     .withId("abcdef")
+                                     .withId(ApplicationId.of("abcdef"))
                                      .withSource("http-api")
                                      .build());
         listener.setIgnoredServices(singleton("ignored"));

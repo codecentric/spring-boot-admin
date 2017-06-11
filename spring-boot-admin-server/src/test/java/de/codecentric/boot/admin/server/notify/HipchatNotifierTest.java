@@ -2,9 +2,11 @@ package de.codecentric.boot.admin.server.notify;
 
 import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.model.StatusInfo;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +15,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
@@ -47,12 +48,14 @@ public class HipchatNotifierTest {
                 (Class<HttpEntity<Map<String, Object>>>) (Class<?>) HttpEntity.class);
 
         when(restTemplate.postForEntity(isA(String.class), httpRequest.capture(), eq(Void.class))).thenReturn(
-                ResponseEntity.ok((Void) null));
+                ResponseEntity.ok().build());
 
         notifier.notify(new ClientApplicationStatusChangedEvent(
-                Application.create("App").withId("-id-").withHealthUrl("http://health").build(), infoDown, infoUp));
+                Application.create("App").withId(ApplicationId.of("-id-")).withHealthUrl("http://health").build(),
+                infoDown, infoUp));
 
-        assertThat(httpRequest.getValue().getHeaders()).containsEntry("Content-Type", asList("application/json"));
+        assertThat(httpRequest.getValue().getHeaders()).containsEntry("Content-Type",
+                Collections.singletonList("application/json"));
 
         Map<String, Object> body = httpRequest.getValue().getBody();
         assertThat(body).containsEntry("color", "green");
@@ -71,12 +74,14 @@ public class HipchatNotifierTest {
                 (Class<HttpEntity<Map<String, Object>>>) (Class<?>) HttpEntity.class);
 
         when(restTemplate.postForEntity(isA(String.class), httpRequest.capture(), eq(Void.class))).thenReturn(
-                ResponseEntity.ok((Void) null));
+                ResponseEntity.ok().build());
 
         notifier.notify(new ClientApplicationStatusChangedEvent(
-                Application.create("App").withId("-id-").withHealthUrl("http://health").build(), infoUp, infoDown));
+                Application.create("App").withId(ApplicationId.of("-id-")).withHealthUrl("http://health").build(),
+                infoUp, infoDown));
 
-        assertThat(httpRequest.getValue().getHeaders()).containsEntry("Content-Type", asList("application/json"));
+        assertThat(httpRequest.getValue().getHeaders()).containsEntry("Content-Type",
+                Collections.singletonList("application/json"));
 
         Map<String, Object> body = httpRequest.getValue().getBody();
         assertThat(body).containsEntry("color", "red");

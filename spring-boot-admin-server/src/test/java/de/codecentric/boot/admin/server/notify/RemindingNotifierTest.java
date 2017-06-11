@@ -3,6 +3,7 @@ package de.codecentric.boot.admin.server.notify;
 import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.model.StatusInfo;
 
 import org.junit.Test;
@@ -12,22 +13,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RemindingNotifierTest {
 
     private static final ClientApplicationEvent APP_DOWN = new ClientApplicationStatusChangedEvent(
-            Application.create("App")
-                       .withId("id-1")
+            Application.create("App").withId(ApplicationId.of("id-1"))
                        .withHealthUrl("http://health")
                        .withStatusInfo(StatusInfo.ofDown())
                        .build(), StatusInfo.ofUp(), StatusInfo.ofDown());
 
     private static final ClientApplicationEvent APP_UP = new ClientApplicationStatusChangedEvent(
-            Application.create("App")
-                       .withId("id-1")
+            Application.create("App").withId(ApplicationId.of("id-1"))
                        .withHealthUrl("http://health")
                        .withStatusInfo(StatusInfo.ofUp())
                        .build(), StatusInfo.ofDown(), StatusInfo.ofUp());
 
     private static final ClientApplicationEvent OTHER_APP_UP = new ClientApplicationStatusChangedEvent(
-            Application.create("App")
-                       .withId("id-2")
+            Application.create("App").withId(ApplicationId.of("id-2"))
                        .withHealthUrl("http://health")
                        .withStatusInfo(StatusInfo.ofUp())
                        .build(), StatusInfo.ofDown(), StatusInfo.ofUp());
