@@ -1,11 +1,11 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2014-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,13 +17,12 @@ package de.codecentric.boot.admin.server.registry;
 
 import de.codecentric.boot.admin.server.event.ClientApplicationDeregisteredEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationRegisteredEvent;
+import de.codecentric.boot.admin.server.event.ClientApplicationRegistrationUpdatedEvent;
 import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.model.Registration;
 import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,27 +70,13 @@ public class ApplicationRegistry implements ApplicationEventPublisherAware {
         Application application = builder.registration(registration).build();
         Application replaced = store.save(application);
         if (replaced == null) {
-            LOGGER.info("New Application {} registered ", application);
-            publisher.publishEvent(new ClientApplicationRegisteredEvent(application));
+            LOGGER.info("New Application {} registered", application);
+            publisher.publishEvent(new ClientApplicationRegisteredEvent(application, registration));
         } else {
             LOGGER.debug("Application {} refreshed", application);
+            publisher.publishEvent(new ClientApplicationRegistrationUpdatedEvent(application, registration));
         }
         return application;
-    }
-
-    /**
-     * Checks the syntax of the given URL.
-     *
-     * @param url The URL.
-     * @return true, if valid.
-     */
-    private boolean checkUrl(String url) {
-        try {
-            new URL(url);
-        } catch (MalformedURLException e) {
-            return false;
-        }
-        return true;
     }
 
     /**

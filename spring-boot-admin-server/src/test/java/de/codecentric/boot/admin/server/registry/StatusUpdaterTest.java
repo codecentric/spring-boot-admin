@@ -1,11 +1,11 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2014-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,6 +36,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -60,15 +62,12 @@ public class StatusUpdaterTest {
     public void test_update_statusChanged() {
         when(applicationOps.getHealth(isA(Application.class))).thenReturn(
                 ResponseEntity.ok().body(singletonMap("status", "UP")));
-        when(applicationOps.getInfo(isA(Application.class))).thenReturn(
-                ResponseEntity.ok().body(singletonMap("foo", "bar")));
 
         updater.updateStatus(application);
 
         Application app = store.find(ApplicationId.of("id"));
 
         assertThat(app.getStatusInfo().getStatus()).isEqualTo("UP");
-        assertThat(app.getInfo().getValues()).containsEntry("foo", "bar");
         verify(publisher).publishEvent(isA(ClientApplicationStatusChangedEvent.class));
     }
 
@@ -135,17 +134,21 @@ public class StatusUpdaterTest {
         Application app1 = Application.create(ApplicationId.of("id-1"),
                 Registration.create("foo", "http://health-1").build()).build();
         store.save(app1);
-
-        Thread.sleep(120L); // Let the StatusInfo of id-1 expire
         Application app2 = Application.create(ApplicationId.of("id-2"),
                 Registration.create("foo", "http://health-2").build()).build();
         store.save(app2);
 
         when(applicationOps.getHealth(eq(app1))).thenReturn(ResponseEntity.ok().build());
+        when(applicationOps.getHealth(eq(app2))).thenReturn(ResponseEntity.ok().build());
+
+        Thread.sleep(120L); //let both statuses expire
+        updater.updateStatus(app2); //and refresh it for app2
+        reset(applicationOps);
+        when(applicationOps.getHealth(eq(app1))).thenReturn(ResponseEntity.ok().build());
 
         updater.updateStatusForAllApplications();
 
-        assertThat(store.find(ApplicationId.of("id-1")).getStatusInfo().getStatus()).isEqualTo("UP");
+        verify(applicationOps, times(1)).getHealth(eq(app1));
         verify(applicationOps, never()).getHealth(eq(app2));
     }
 

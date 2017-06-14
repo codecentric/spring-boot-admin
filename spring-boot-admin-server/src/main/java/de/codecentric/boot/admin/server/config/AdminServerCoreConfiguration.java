@@ -1,11 +1,11 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2014-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,12 +15,14 @@
  */
 package de.codecentric.boot.admin.server.config;
 
-import de.codecentric.boot.admin.server.journal.ApplicationEventJournal;
-import de.codecentric.boot.admin.server.journal.store.JournaledEventStore;
-import de.codecentric.boot.admin.server.journal.store.SimpleJournaledEventStore;
+import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.server.eventstore.ClientApplicationEventStore;
+import de.codecentric.boot.admin.server.eventstore.SimpleEventStore;
 import de.codecentric.boot.admin.server.registry.ApplicationIdGenerator;
 import de.codecentric.boot.admin.server.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.server.registry.HashingApplicationUrlIdGenerator;
+import de.codecentric.boot.admin.server.registry.InfoUpdater;
 import de.codecentric.boot.admin.server.registry.StatusUpdateApplicationListener;
 import de.codecentric.boot.admin.server.registry.StatusUpdater;
 import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
@@ -29,12 +31,16 @@ import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
 import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider;
 import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -84,8 +90,6 @@ public class AdminServerCoreConfiguration {
         return new ApplicationOperations(builder.build(), headersProvider);
     }
 
-    ;
-
     @Bean
     @ConditionalOnMissingBean
     public StatusUpdater statusUpdater(ApplicationStore applicationStore, ApplicationOperations applicationOperations) {
@@ -93,6 +97,12 @@ public class AdminServerCoreConfiguration {
         StatusUpdater statusUpdater = new StatusUpdater(applicationStore, applicationOperations);
         statusUpdater.setStatusLifetime(adminServerProperties.getMonitor().getStatusLifetime());
         return statusUpdater;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public InfoUpdater infoUpdater(ApplicationStore applicationStore, ApplicationOperations applicationOperations) {
+        return new InfoUpdater(applicationStore, applicationOperations);
     }
 
     @Bean
@@ -116,14 +126,8 @@ public class AdminServerCoreConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ApplicationEventJournal applicationEventJournal(JournaledEventStore journaledEventStore) {
-        return new ApplicationEventJournal(journaledEventStore);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public JournaledEventStore journaledEventStore() {
-        return new SimpleJournaledEventStore();
+    public ClientApplicationEventStore journaledEventStore() {
+        return new SimpleEventStore();
     }
 
     @Bean
@@ -132,4 +136,21 @@ public class AdminServerCoreConfiguration {
         return new SimpleApplicationStore();
     }
 
+
+    @Autowired
+    private InfoUpdater infoUpdater;
+
+    @EventListener
+    public void onClientApplicationStatusChangedEvent(ClientApplicationStatusChangedEvent event) {
+        infoUpdater.updateInfo(event.getApplication());
+    }
+
+    @Autowired
+    private ClientApplicationEventStore eventStore;
+
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    @EventListener
+    public void onClientApplicationEvent(ClientApplicationEvent event) {
+        eventStore.store(event);
+    }
 }

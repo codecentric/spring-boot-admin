@@ -16,16 +16,21 @@
 package de.codecentric.boot.admin.server.event;
 
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.Info;
 
 /**
- * This event gets emitted when an application is unregistered.
+ * This event gets emitted when an application is registered.
  *
  * @author Johannes Stelzer
  */
-public class ClientApplicationDeregisteredEvent extends ClientApplicationEvent {
+@lombok.Data
+@lombok.EqualsAndHashCode(callSuper = true)
+public class ClientApplicationInfoChangedEvent extends ClientApplicationEvent {
     private static final long serialVersionUID = 1L;
+    private final Info info;
 
-    public ClientApplicationDeregisteredEvent(Application application) {
-        super(application, "DEREGISTERED");
+    public ClientApplicationInfoChangedEvent(Application application, Info info) {
+        super(application, "INFO_CHANGED");
+        this.info = info;
     }
 }

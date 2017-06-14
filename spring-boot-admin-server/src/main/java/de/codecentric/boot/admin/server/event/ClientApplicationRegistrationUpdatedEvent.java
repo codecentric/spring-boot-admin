@@ -13,19 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.event;
 
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.Registration;
 
 /**
- * This event gets emitted when an application is unregistered.
+ * This event gets emitted when an application is registered.
  *
  * @author Johannes Stelzer
  */
-public class ClientApplicationDeregisteredEvent extends ClientApplicationEvent {
+@lombok.Data
+@lombok.EqualsAndHashCode(callSuper = true)
+public class ClientApplicationRegistrationUpdatedEvent extends ClientApplicationEvent {
     private static final long serialVersionUID = 1L;
+    private final Registration registration;
 
-    public ClientApplicationDeregisteredEvent(Application application) {
-        super(application, "DEREGISTERED");
+    public ClientApplicationRegistrationUpdatedEvent(Application application, Registration registration) {
+        super(application, "REGISTRATION_UPDATED");
+        this.registration = registration;
     }
 }
+

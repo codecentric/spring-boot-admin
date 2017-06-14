@@ -1,11 +1,11 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2014-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,23 +15,29 @@
  */
 package de.codecentric.boot.admin.server.registry.web;
 
+import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.eventstore.ClientApplicationEventStore;
 import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.model.Registration;
 import de.codecentric.boot.admin.server.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.server.web.AdminController;
+import reactor.core.publisher.Flux;
 
+import java.net.URI;
 import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * REST controller for controlling registration of managed applications.
@@ -40,13 +46,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ResponseBody
 @RequestMapping("/api/applications")
 public class RegistryController {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(RegistryController.class);
-
     private final ApplicationRegistry registry;
+    private final ClientApplicationEventStore eventStore;
 
-    public RegistryController(ApplicationRegistry registry) {
+    public RegistryController(ApplicationRegistry registry, ClientApplicationEventStore eventStore) {
         this.registry = registry;
+        this.eventStore = eventStore;
     }
 
     /**
@@ -56,11 +62,12 @@ public class RegistryController {
      * @return The registered application.
      */
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Application> register(@RequestBody Registration registration) {
+    public ResponseEntity<Application> register(@RequestBody Registration registration, UriComponentsBuilder builder) {
         Registration withSource = Registration.copyOf(registration).source("http-api").build();
         LOGGER.debug("Register application {}", withSource);
         Application registeredApp = registry.register(withSource);
-        return ResponseEntity.status(HttpStatus.CREATED).body(registeredApp);
+        URI location = builder.path("/api/applications/{id}").buildAndExpand(registeredApp.getId()).toUri();
+        return ResponseEntity.created(location).body(registeredApp);
     }
 
     /**
@@ -107,10 +114,20 @@ public class RegistryController {
         LOGGER.debug("Unregister application with ID '{}'", id);
         Application application = registry.deregister(ApplicationId.of(id));
         if (application != null) {
-            return ResponseEntity.ok(application);
+            return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping(value = "/events", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Collection<ClientApplicationEvent> events() {
+        return eventStore.findAll();
+    }
+
+    @GetMapping(value = "/events", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
+    public Flux<? extends ClientApplicationEvent> eventStream() {
+        return Flux.from(eventStore);
     }
 
 }

@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 the original author or authors.
+ * Copyright 2014-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,31 +20,27 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import static java.util.Collections.unmodifiableMap;
 
 /**
- * Represents the info fetched from the info actuator endpoint at a certain time.
+ * Represents the info fetched from the info actuator endpoint
  *
  * @author Johannes Edmeier
  */
 @lombok.Data
 public class Info implements Serializable {
-    private static final long serialVersionUID = 2L;
-    private static Info EMPTY = new Info(0L, null);
+    private static final long serialVersionUID = 3L;
+    private static Info EMPTY = new Info(null);
 
-    @JsonIgnore
-    private final long timestamp;
     private final Map<String, Serializable> values;
 
-    protected Info(long timestamp, Map<String, ? extends Serializable> values) {
-        this.timestamp = timestamp;
+    private Info(Map<String, ? extends Serializable> values) {
         this.values = values != null ? unmodifiableMap(new LinkedHashMap<>(values)) : Collections.emptyMap();
     }
 
     public static Info from(Map<String, ? extends Serializable> values) {
-        return new Info(System.currentTimeMillis(), values);
+        return new Info(values);
     }
 
     public static Info empty() {

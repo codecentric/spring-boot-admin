@@ -1,11 +1,11 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2014-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,7 @@ package de.codecentric.boot.admin.server.registry;
 
 import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.server.model.Application;
-import de.codecentric.boot.admin.server.model.Info;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.model.StatusInfo;
 import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
@@ -39,11 +39,11 @@ import org.springframework.http.ResponseEntity;
  */
 public class StatusUpdater implements ApplicationEventPublisherAware {
     private static final Logger LOGGER = LoggerFactory.getLogger(StatusUpdater.class);
-
     private final ApplicationStore store;
     private final ApplicationOperations applicationOps;
     private ApplicationEventPublisher publisher;
     private long statusLifetime = 10_000L;
+    private Map<ApplicationId, Long> lastQueried = new HashMap<>();
 
     public StatusUpdater(ApplicationStore store, ApplicationOperations applicationOps) {
         this.store = store;
@@ -53,7 +53,7 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
     public void updateStatusForAllApplications() {
         long now = System.currentTimeMillis();
         for (Application application : store.findAll()) {
-            if (now - statusLifetime > application.getStatusInfo().getTimestamp()) {
+            if (now - statusLifetime > lastQueried.getOrDefault(application.getId(), 0L)) {
                 updateStatus(application);
             }
         }
@@ -62,48 +62,16 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
     public void updateStatus(Application application) {
         StatusInfo oldStatus = application.getStatusInfo();
         StatusInfo newStatus = queryStatus(application);
-        boolean statusChanged = !newStatus.getStatus().equals(oldStatus.getStatus());
-
-        Application.Builder builder = Application.copyOf(application).statusInfo(newStatus);
-
-        if (statusChanged && !newStatus.isOffline() && !newStatus.isUnknown()) {
-            builder.info(queryInfo(application));
-        }
-
-        Application newState = builder.build();
-        store.save(newState);
-
-        if (statusChanged) {
+        if (!newStatus.getStatus().equals(oldStatus.getStatus())) {
+            Application newState = Application.copyOf(application).statusInfo(newStatus).build();
+            store.save(newState);
             publisher.publishEvent(new ClientApplicationStatusChangedEvent(newState, oldStatus, newStatus));
         }
     }
 
-    protected Info queryInfo(Application application) {
-        try {
-            ResponseEntity<Map<String, Serializable>> response = applicationOps.getInfo(application);
-            if (response.getStatusCode().is2xxSuccessful() && response.hasBody()) {
-                return convertInfo(response);
-            } else {
-                LOGGER.info("Couldn't retrieve info for {}: {} - {}", application, response.getStatusCode(),
-                        response.getBody());
-                return Info.empty();
-            }
-        } catch (Exception ex) {
-            LOGGER.warn("Couldn't retrieve info for {}", application, ex);
-            return convertInfo(ex);
-        }
-    }
-
-    protected Info convertInfo(ResponseEntity<Map<String, Serializable>> response) {
-        return Info.from(response.getBody());
-    }
-
-    protected Info convertInfo(Exception ex) {
-        return Info.empty();
-    }
-
     protected StatusInfo queryStatus(Application application) {
         LOGGER.trace("Updating status for {}", application);
+        lastQueried.put(application.getId(), System.currentTimeMillis());
         try {
             return convertStatusInfo(applicationOps.getHealth(application));
         } catch (Exception ex) {
