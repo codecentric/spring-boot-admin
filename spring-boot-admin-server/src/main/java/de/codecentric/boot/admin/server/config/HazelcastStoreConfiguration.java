@@ -66,7 +66,7 @@ public class HazelcastStoreConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ClientApplicationEventStore journaledEventStore() {
+    public ClientApplicationEventStore eventStore() {
         IList<ClientApplicationEvent> list = hazelcastInstance.getList(eventListName);
         return new HazelcastEventStore(list);
     }

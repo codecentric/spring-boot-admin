@@ -15,7 +15,6 @@
  */
 package de.codecentric.boot.admin.server;
 
-import de.codecentric.boot.admin.server.AdminApplicationTest.TestAdminApplication;
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import de.codecentric.boot.admin.server.model.Registration;
 import reactor.core.publisher.Flux;
@@ -24,20 +23,16 @@ import reactor.test.StepVerifier;
 import java.net.URI;
 import java.util.concurrent.atomic.AtomicReference;
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,18 +41,18 @@ import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = TestAdminApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-        "spring.main.web-application-type=servlet", "management.context-path=/mgmt", "info.test=foobar"})
 public class AdminApplicationTest {
     private WebTestClient webClient;
-    @LocalServerPort
     private int port;
-    @Autowired
-    private ObjectMapper mapper;
+    private ServletWebServerApplicationContext instance;
 
     @Before
-    public void setup() {
+    public void setUp() {
+        instance = (ServletWebServerApplicationContext) SpringApplication.run(TestAdminApplication.class,
+                "--server.port=0", "--management.context-path=/mgmt", "--info.test=foobar");
+        port = instance.getWebServer().getPort();
+
+        ObjectMapper mapper = new ObjectMapper().registerModule(new JsonOrgModule());
         webClient = WebTestClient.bindToServer()
                                  .baseUrl("http://localhost:" + port)
                                  .exchangeStrategies(ExchangeStrategies.builder().codecs((configurer) -> {
@@ -65,6 +60,11 @@ public class AdminApplicationTest {
                                      configurer.defaultCodecs().jackson2JsonEncoder(new Jackson2JsonEncoder(mapper));
                                  }).build())
                                  .build();
+    }
+
+    @After
+    public void shutdown() {
+        instance.close();
     }
 
     @Test
@@ -163,9 +163,5 @@ public class AdminApplicationTest {
     @EnableAutoConfiguration
     @SpringBootConfiguration
     public static class TestAdminApplication {
-        @Bean
-        public JsonOrgModule jsonOrgModule() {
-            return new JsonOrgModule();
-        }
     }
 }

@@ -16,14 +16,14 @@
 package de.codecentric.boot.admin.server.config;
 
 import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.server.eventstore.ClientApplicationEventStore;
 import de.codecentric.boot.admin.server.eventstore.SimpleEventStore;
 import de.codecentric.boot.admin.server.registry.ApplicationIdGenerator;
 import de.codecentric.boot.admin.server.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.server.registry.HashingApplicationUrlIdGenerator;
+import de.codecentric.boot.admin.server.registry.InfoUpdateTrigger;
 import de.codecentric.boot.admin.server.registry.InfoUpdater;
-import de.codecentric.boot.admin.server.registry.StatusUpdateApplicationListener;
+import de.codecentric.boot.admin.server.registry.StatusUpdateTrigger;
 import de.codecentric.boot.admin.server.registry.StatusUpdater;
 import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.server.registry.store.SimpleApplicationStore;
@@ -31,8 +31,7 @@ import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
 import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider;
 import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.reactivestreams.Publisher;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -43,7 +42,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 
 @Configuration
@@ -93,10 +91,18 @@ public class AdminServerCoreConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public StatusUpdater statusUpdater(ApplicationStore applicationStore, ApplicationOperations applicationOperations) {
-
         StatusUpdater statusUpdater = new StatusUpdater(applicationStore, applicationOperations);
         statusUpdater.setStatusLifetime(adminServerProperties.getMonitor().getStatusLifetime());
         return statusUpdater;
+    }
+
+    @Bean(initMethod = "start", destroyMethod = "stop")
+    @ConditionalOnMissingBean
+    public StatusUpdateTrigger statusUpdateTrigger(StatusUpdater statusUpdater,
+                                                   Publisher<ClientApplicationEvent> events) {
+        StatusUpdateTrigger trigger = new StatusUpdateTrigger(statusUpdater, events);
+        trigger.setUpdateInterval(adminServerProperties.getMonitor().getPeriod());
+        return trigger;
     }
 
     @Bean
@@ -105,28 +111,15 @@ public class AdminServerCoreConfiguration {
         return new InfoUpdater(applicationStore, applicationOperations);
     }
 
-    @Bean
-    @Qualifier("updateTaskScheduler")
-    public ThreadPoolTaskScheduler updateTaskScheduler() {
-        ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-        taskScheduler.setPoolSize(1);
-        taskScheduler.setRemoveOnCancelPolicy(true);
-        taskScheduler.setThreadNamePrefix("updateTask");
-        return taskScheduler;
+    @Bean(initMethod = "start", destroyMethod = "stop")
+    @ConditionalOnMissingBean
+    public InfoUpdateTrigger infoUpdateTrigger(InfoUpdater infoUpdater, Publisher<ClientApplicationEvent> events) {
+        return new InfoUpdateTrigger(infoUpdater, events);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public StatusUpdateApplicationListener statusUpdateApplicationListener(StatusUpdater statusUpdater,
-                                                                           @Qualifier("updateTaskScheduler") ThreadPoolTaskScheduler taskScheduler) {
-        StatusUpdateApplicationListener listener = new StatusUpdateApplicationListener(statusUpdater, taskScheduler);
-        listener.setUpdatePeriod(adminServerProperties.getMonitor().getPeriod());
-        return listener;
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public ClientApplicationEventStore journaledEventStore() {
+    public ClientApplicationEventStore eventStore() {
         return new SimpleEventStore();
     }
 
@@ -136,21 +129,9 @@ public class AdminServerCoreConfiguration {
         return new SimpleApplicationStore();
     }
 
-
-    @Autowired
-    private InfoUpdater infoUpdater;
-
-    @EventListener
-    public void onClientApplicationStatusChangedEvent(ClientApplicationStatusChangedEvent event) {
-        infoUpdater.updateInfo(event.getApplication());
-    }
-
-    @Autowired
-    private ClientApplicationEventStore eventStore;
-
     @Order(Ordered.HIGHEST_PRECEDENCE)
     @EventListener
     public void onClientApplicationEvent(ClientApplicationEvent event) {
-        eventStore.store(event);
+        eventStore().store(event);
     }
 }
