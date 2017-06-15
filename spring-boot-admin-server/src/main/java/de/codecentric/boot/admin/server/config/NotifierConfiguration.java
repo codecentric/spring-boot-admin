@@ -1,11 +1,11 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2014-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,19 +15,20 @@
  */
 package de.codecentric.boot.admin.server.config;
 
+import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.notify.CompositeNotifier;
 import de.codecentric.boot.admin.server.notify.HipchatNotifier;
 import de.codecentric.boot.admin.server.notify.LetsChatNotifier;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
+import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
-import de.codecentric.boot.admin.server.notify.NotifierListener;
 import de.codecentric.boot.admin.server.notify.SlackNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
 import de.codecentric.boot.admin.server.notify.filter.web.NotificationFilterController;
 import de.codecentric.boot.admin.server.web.PrefixHandlerMapping;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.reactivestreams.Publisher;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -48,20 +49,17 @@ public class NotifierConfiguration {
 
     @Configuration
     @ConditionalOnBean(Notifier.class)
-    public static class NotifierListenerConfiguration {
-        @Autowired
-        private Notifier notifier;
-
-        @Bean
+    public static class NotifierTriggerConfiguration {
+        @Bean(initMethod = "start", destroyMethod = "stop")
         @ConditionalOnMissingBean
-        public NotifierListener notifierListener() {
-            return new NotifierListener(notifier);
+        public NotificationTrigger notificationTrigger(Notifier notifier, Publisher<ClientApplicationEvent> events) {
+            return new NotificationTrigger(notifier, events);
         }
     }
 
     @Configuration
     @ConditionalOnBean(Notifier.class)
-    @AutoConfigureBefore({NotifierListenerConfiguration.class})
+    @AutoConfigureBefore({NotifierTriggerConfiguration.class})
     public static class CompositeNotifierConfiguration {
         @Bean
         @Primary
@@ -84,12 +82,14 @@ public class NotifierConfiguration {
     @Configuration
     @ConditionalOnSingleCandidate(FilteringNotifier.class)
     public static class FilteringNotifierWebConfiguration {
+        private final FilteringNotifier filteringNotifier;
+        private final AdminServerProperties adminServer;
 
-        @Autowired
-        private FilteringNotifier filteringNotifier;
-
-        @Autowired
-        private AdminServerProperties adminServer;
+        public FilteringNotifierWebConfiguration(FilteringNotifier filteringNotifier,
+                                                 AdminServerProperties adminServer) {
+            this.filteringNotifier = filteringNotifier;
+            this.adminServer = adminServer;
+        }
 
         @Bean
         public NotificationFilterController notificationFilterController() {
@@ -107,22 +107,19 @@ public class NotifierConfiguration {
     @Configuration
     @ConditionalOnBean(MailSender.class)
     @AutoConfigureAfter({MailSenderAutoConfiguration.class})
-    @AutoConfigureBefore({NotifierListenerConfiguration.class, CompositeNotifierConfiguration.class})
+    @AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
     public static class MailNotifierConfiguration {
-        @Autowired
-        private MailSender mailSender;
-
         @Bean
         @ConditionalOnMissingBean
         @ConfigurationProperties("spring.boot.admin.notify.mail")
-        public MailNotifier mailNotifier() {
+        public MailNotifier mailNotifier(MailSender mailSender) {
             return new MailNotifier(mailSender);
         }
     }
 
     @Configuration
     @ConditionalOnProperty(prefix = "spring.boot.admin.notify.hipchat", name = "url")
-    @AutoConfigureBefore({NotifierListenerConfiguration.class, CompositeNotifierConfiguration.class})
+    @AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
     public static class HipchatNotifierConfiguration {
         @Bean
         @ConditionalOnMissingBean
@@ -134,7 +131,7 @@ public class NotifierConfiguration {
 
     @Configuration
     @ConditionalOnProperty(prefix = "spring.boot.admin.notify.slack", name = "webhook-url")
-    @AutoConfigureBefore({NotifierListenerConfiguration.class, CompositeNotifierConfiguration.class})
+    @AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
     public static class SlackNotifierConfiguration {
         @Bean
         @ConditionalOnMissingBean
@@ -146,7 +143,7 @@ public class NotifierConfiguration {
 
     @Configuration
     @ConditionalOnProperty(prefix = "spring.boot.admin.notify.letschat", name = "url")
-    @AutoConfigureBefore({NotifierListenerConfiguration.class, CompositeNotifierConfiguration.class})
+    @AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
     public static class LetsChatNotifierConfiguration {
         @Bean
         @ConditionalOnMissingBean

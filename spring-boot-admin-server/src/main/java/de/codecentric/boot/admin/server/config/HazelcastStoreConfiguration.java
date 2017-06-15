@@ -23,7 +23,6 @@ import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.server.registry.store.HazelcastApplicationStore;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -31,7 +30,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.hazelcast.core.HazelcastInstance;
@@ -50,15 +48,9 @@ public class HazelcastStoreConfiguration {
     @Value("${spring.boot.admin.hazelcast.event-store:spring-boot-admin-event-store}")
     private String eventListName;
 
-    @Autowired
-    private ApplicationEventPublisher publisher;
-
-    @Autowired
-    private HazelcastInstance hazelcastInstance;
-
     @Bean
     @ConditionalOnMissingBean
-    public ApplicationStore applicationStore() {
+    public ApplicationStore applicationStore(HazelcastInstance hazelcastInstance) {
         IMap<ApplicationId, Application> map = hazelcastInstance.getMap(hazelcastMapName);
         map.addIndex("registration.name", false);
         return new HazelcastApplicationStore(map);
@@ -66,7 +58,7 @@ public class HazelcastStoreConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ClientApplicationEventStore eventStore() {
+    public ClientApplicationEventStore eventStore(HazelcastInstance hazelcastInstance) {
         IList<ClientApplicationEvent> list = hazelcastInstance.getList(eventListName);
         return new HazelcastEventStore(list);
     }

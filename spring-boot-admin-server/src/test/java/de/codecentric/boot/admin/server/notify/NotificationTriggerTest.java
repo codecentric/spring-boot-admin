@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin.server.registry;
+package de.codecentric.boot.admin.server.notify;
 
 import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.event.ClientApplicationInfoChangedEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationRegisteredEvent;
+import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.ApplicationId;
-import de.codecentric.boot.admin.server.model.Info;
 import de.codecentric.boot.admin.server.model.Registration;
+import de.codecentric.boot.admin.server.model.StatusInfo;
 import reactor.test.publisher.TestPublisher;
 
 import org.junit.Test;
 
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -36,57 +35,31 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class StatusUpdateTriggerTest {
+public class NotificationTriggerTest {
     private final Application application = Application.create(ApplicationId.of("id-1"),
             Registration.create("foo", "http://health-1").build()).build();
 
     @Test
-    public void should_start_and_stop_monitor() throws Exception {
+    public void should_notify_on_event() throws InterruptedException {
         //given
-        StatusUpdater updater = mock(StatusUpdater.class);
-        StatusUpdateTrigger trigger = new StatusUpdateTrigger(updater, TestPublisher.create());
-        trigger.setUpdateInterval(10L);
-
-        //when trigger is initialized
-        trigger.start();
-        Thread.sleep(15L);
-        //then it should start updating
-        verify(updater, atLeastOnce()).updateStatusForAllApplications();
-
-        //when trigger ist destroyed
-        trigger.stop();
-        reset(updater);
-        Thread.sleep(15L);
-
-        // it should stop updating
-        verify(updater, never()).updateStatusForAllApplications();
-    }
-
-    @Test
-    public void should_update_on_event() {
-        //given
-        StatusUpdater updater = mock(StatusUpdater.class);
+        Notifier notifier = mock(Notifier.class);
         TestPublisher<ClientApplicationEvent> events = TestPublisher.create();
-        StatusUpdateTrigger trigger = new StatusUpdateTrigger(updater, events);
+        NotificationTrigger trigger = new NotificationTrigger(notifier, events);
         trigger.start();
-        doNothing().when(updater).updateStatus(isA(Application.class));
-
-        //when some non-registered event is emitted
-        events.next(new ClientApplicationInfoChangedEvent(application, Info.empty()));
-        //then should not update
-        verify(updater, never()).updateStatus(application);
+        doNothing().when(notifier).notify(isA(ClientApplicationEvent.class));
 
         //when registered event is emitted
-        events.next(new ClientApplicationRegisteredEvent(application, application.getRegistration()));
-        //then should update
-        verify(updater, times(1)).updateStatus(application);
+        ClientApplicationStatusChangedEvent event = new ClientApplicationStatusChangedEvent(application,
+                StatusInfo.ofUp(), StatusInfo.ofDown());
+        events.next(event);
+        //then should notify
+        verify(notifier, times(1)).notify(event);
 
         //when registered event is emitted but the trigger has been stopped
         trigger.stop();
-        reset(updater);
+        reset(notifier);
         events.next(new ClientApplicationRegisteredEvent(application, application.getRegistration()));
-        //then should not update
-        verify(updater, never()).updateStatus(application);
+        //then should not notify
+        verify(notifier, never()).notify(event);
     }
-
 }

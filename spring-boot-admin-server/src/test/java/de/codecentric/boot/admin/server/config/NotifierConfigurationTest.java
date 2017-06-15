@@ -1,11 +1,11 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2014-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,8 +24,8 @@ import de.codecentric.boot.admin.server.model.StatusInfo;
 import de.codecentric.boot.admin.server.notify.CompositeNotifier;
 import de.codecentric.boot.admin.server.notify.HipchatNotifier;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
+import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
-import de.codecentric.boot.admin.server.notify.NotifierListener;
 import de.codecentric.boot.admin.server.notify.SlackNotifier;
 
 import java.util.ArrayList;
@@ -33,6 +33,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -65,7 +66,7 @@ public class NotifierConfigurationTest {
     @Test
     public void test_no_notifierListener() {
         load(null);
-        assertThat(context.getBeansOfType(NotifierListener.class)).isEmpty();
+        assertThat(context.getBeansOfType(NotificationTrigger.class)).isEmpty();
     }
 
     @Test
@@ -105,6 +106,8 @@ public class NotifierConfigurationTest {
         if (config != null) {
             context.register(config);
         }
+        context.register(RestTemplateAutoConfiguration.class);
+        context.register(AdminServerCoreConfiguration.class);
         context.register(MailSenderAutoConfiguration.class);
         context.register(NotifierConfiguration.class);
 

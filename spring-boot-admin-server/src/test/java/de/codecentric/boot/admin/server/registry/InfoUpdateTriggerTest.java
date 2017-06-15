@@ -27,6 +27,8 @@ import reactor.test.publisher.TestPublisher;
 
 import org.junit.Test;
 
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -44,6 +46,7 @@ public class InfoUpdateTriggerTest {
         TestPublisher<ClientApplicationEvent> events = TestPublisher.create();
         InfoUpdateTrigger trigger = new InfoUpdateTrigger(updater, events);
         trigger.start();
+        doNothing().when(updater).updateInfo(isA(Application.class));
 
         //when some non-registered event is emitted
         events.next(new ClientApplicationRegisteredEvent(application, application.getRegistration()));
