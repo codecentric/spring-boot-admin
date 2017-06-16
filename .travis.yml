@@ -5,6 +5,7 @@ env:
   - NODE_VERSION=4
 
 cache:
+  yarn: true
   directories:
     - $HOME/.m2
 
@@ -12,6 +13,7 @@ before_install:
   - 'if [[ -n "$DECRYPT_KEYPHRASE" ]]; then openssl aes-256-cbc -d -pass "env:DECRYPT_KEYPHRASE" -in .gnupg.tar.enc | tar xv; fi'
   - 'if [[ ${TRAVIS_TAG} != "" ]]; then ./mvnw versions:set -DnewVersion="${TRAVIS_TAG}"; fi'
   - 'nvm install ${NODE_VERSION} && nvm use ${NODE_VERSION}'
+  - 'npm install -g yarn'
 
 script: ./mvnw clean verify
 
