@@ -20,9 +20,11 @@ import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.Info;
 import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
+import reactor.core.publisher.Mono;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -36,8 +38,7 @@ import org.springframework.http.ResponseEntity;
  * @author Johannes Edmeier
  */
 public class InfoUpdater implements ApplicationEventPublisherAware {
-    private static final Logger LOGGER = LoggerFactory.getLogger(InfoUpdater.class);
-
+    private static final Logger log = LoggerFactory.getLogger(InfoUpdater.class);
     private final ApplicationStore store;
     private final ApplicationOperations applicationOps;
     private ApplicationEventPublisher publisher;
@@ -52,35 +53,32 @@ public class InfoUpdater implements ApplicationEventPublisherAware {
             return;
         }
 
-        Info info = queryInfo(application);
-        if (!info.equals(application.getInfo())) {
+        queryInfo(application).filter(info -> !info.equals(application.getInfo())).doOnNext(info -> {
             Application newState = Application.copyOf(application).info(info).build();
             store.save(newState);
             publisher.publishEvent(new ClientApplicationInfoChangedEvent(newState, info));
+        }).subscribe();
+    }
+
+    protected Mono<Info> queryInfo(Application application) {
+        return applicationOps.getInfo(application)
+                             .log(log.getName(), Level.FINEST)
+                             .map(response -> convertInfo(application, response))
+                             .onErrorResume(ex -> Mono.just(convertInfo(application, ex)));
+    }
+
+    protected Info convertInfo(Application application, ResponseEntity<Map<String, Serializable>> response) {
+        if (response.getStatusCode().is2xxSuccessful() && response.hasBody()) {
+            return Info.from(response.getBody());
+        } else {
+            log.info("Couldn't retrieve info for {}: {} - {}", application, response.getStatusCode(),
+                    response.getBody());
+            return Info.empty();
         }
     }
 
-    protected Info queryInfo(Application application) {
-        try {
-            ResponseEntity<Map<String, Serializable>> response = applicationOps.getInfo(application);
-            if (response.getStatusCode().is2xxSuccessful() && response.hasBody()) {
-                return convertInfo(response);
-            } else {
-                LOGGER.info("Couldn't retrieve info for {}: {} - {}", application, response.getStatusCode(),
-                        response.getBody());
-                return Info.empty();
-            }
-        } catch (Exception ex) {
-            LOGGER.warn("Couldn't retrieve info for {}", application, ex);
-            return convertInfo(ex);
-        }
-    }
-
-    protected Info convertInfo(ResponseEntity<Map<String, Serializable>> response) {
-        return Info.from(response.getBody());
-    }
-
-    protected Info convertInfo(Exception ex) {
+    protected Info convertInfo(Application application, Throwable ex) {
+        log.warn("Couldn't retrieve info for {}", application, ex);
         return Info.empty();
     }
 

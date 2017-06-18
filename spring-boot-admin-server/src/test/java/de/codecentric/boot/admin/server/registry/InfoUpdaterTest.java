@@ -24,6 +24,7 @@ import de.codecentric.boot.admin.server.model.Registration;
 import de.codecentric.boot.admin.server.model.StatusInfo;
 import de.codecentric.boot.admin.server.registry.store.SimpleApplicationStore;
 import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
+import reactor.core.publisher.Mono;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -69,7 +70,8 @@ public class InfoUpdaterTest {
                                          .id(ApplicationId.of("unk"))
                                          .statusInfo(StatusInfo.ofUnknown())
                                          .build();
-        when(applicationOps.getInfo(any(Application.class))).thenReturn(ResponseEntity.ok(singletonMap("foo", "bar")));
+        when(applicationOps.getInfo(any(Application.class))).thenReturn(
+                Mono.just(ResponseEntity.ok(singletonMap("foo", "bar"))));
 
         updater.updateInfo(offline);
         verify(publisher, never()).publishEvent(isA(ClientApplicationInfoChangedEvent.class));
@@ -90,7 +92,7 @@ public class InfoUpdaterTest {
                                              .info(Info.from(singletonMap("foo", "bar")))
                                              .build();
 
-        when(applicationOps.getInfo(any(Application.class))).thenReturn(ResponseEntity.status(500).build());
+        when(applicationOps.getInfo(any(Application.class))).thenReturn(Mono.just(ResponseEntity.status(500).build()));
 
         updater.updateInfo(application);
         assertThat(store.find(application.getId()).getInfo()).isEqualTo(Info.empty());
@@ -105,7 +107,8 @@ public class InfoUpdaterTest {
                                              .info(Info.from(singletonMap("foo", "bar")))
                                              .build();
 
-        when(applicationOps.getHealth(any(Application.class))).thenThrow(new ResourceAccessException("error"));
+        when(applicationOps.getInfo(any(Application.class))).thenReturn(
+                Mono.error(new ResourceAccessException("error")));
 
         updater.updateInfo(application);
         assertThat(store.find(application.getId()).getInfo()).isEqualTo(Info.empty());

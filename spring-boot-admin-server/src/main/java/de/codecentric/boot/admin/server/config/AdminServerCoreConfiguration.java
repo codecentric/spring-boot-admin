@@ -30,19 +30,18 @@ import de.codecentric.boot.admin.server.registry.store.SimpleApplicationStore;
 import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
 import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider;
 import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
+import io.netty.channel.ChannelOption;
 
 import org.reactivestreams.Publisher;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 @EnableConfigurationProperties(AdminServerProperties.class)
@@ -74,18 +73,13 @@ public class AdminServerCoreConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ApplicationOperations applicationOperations(RestTemplateBuilder restTemplBuilder,
-                                                       HttpHeadersProvider headersProvider) {
-        RestTemplateBuilder builder = restTemplBuilder.messageConverters(new MappingJackson2HttpMessageConverter())
-                                                      .errorHandler(new DefaultResponseErrorHandler() {
-                                                          @Override
-                                                          protected boolean hasError(HttpStatus statusCode) {
-                                                              return false;
-                                                          }
-                                                      });
-        builder = builder.setConnectTimeout(adminServerProperties.getMonitor().getConnectTimeout())
-                         .setReadTimeout(adminServerProperties.getMonitor().getReadTimeout());
-        return new ApplicationOperations(builder.build(), headersProvider);
+    public ApplicationOperations applicationOperations(HttpHeadersProvider headersProvider) {
+        WebClient webClient = WebClient.builder().clientConnector(new ReactorClientHttpConnector(options -> {
+            options.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,
+                    adminServerProperties.getMonitor().getConnectTimeout());
+            options.option(ChannelOption.SO_TIMEOUT, adminServerProperties.getMonitor().getReadTimeout());
+        })).build();
+        return new ApplicationOperations(webClient, headersProvider);
     }
 
     @Bean

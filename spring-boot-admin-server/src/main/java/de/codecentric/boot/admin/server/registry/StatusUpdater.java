@@ -21,10 +21,12 @@ import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.model.StatusInfo;
 import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
+import reactor.core.publisher.Mono;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -38,7 +40,7 @@ import org.springframework.http.ResponseEntity;
  * @author Johannes Edmeier
  */
 public class StatusUpdater implements ApplicationEventPublisherAware {
-    private static final Logger LOGGER = LoggerFactory.getLogger(StatusUpdater.class);
+    private static final Logger log = LoggerFactory.getLogger(StatusUpdater.class);
     private final ApplicationStore store;
     private final ApplicationOperations applicationOps;
     private ApplicationEventPublisher publisher;
@@ -61,27 +63,25 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
 
     public void updateStatus(Application application) {
         StatusInfo oldStatus = application.getStatusInfo();
-        StatusInfo newStatus = queryStatus(application);
-        if (!newStatus.getStatus().equals(oldStatus.getStatus())) {
-            Application newState = Application.copyOf(application).statusInfo(newStatus).build();
-            store.save(newState);
-            publisher.publishEvent(new ClientApplicationStatusChangedEvent(newState, oldStatus, newStatus));
-        }
+        queryStatus(application).filter(newStatus -> !newStatus.getStatus().equals(oldStatus.getStatus()))
+                                .doOnNext(newStatus -> {
+                                    Application newState = Application.copyOf(application)
+                                                                      .statusInfo(newStatus)
+                                                                      .build();
+                                    store.save(newState);
+                                    publisher.publishEvent(
+                                            new ClientApplicationStatusChangedEvent(newState, oldStatus, newStatus));
+                                })
+                                .subscribe();
     }
 
-    protected StatusInfo queryStatus(Application application) {
-        LOGGER.trace("Updating status for {}", application);
+    protected Mono<StatusInfo> queryStatus(Application application) {
+        log.trace("Updating status for {}", application);
         lastQueried.put(application.getId(), System.currentTimeMillis());
-        try {
-            return convertStatusInfo(applicationOps.getHealth(application));
-        } catch (Exception ex) {
-            if ("OFFLINE".equals(application.getStatusInfo().getStatus())) {
-                LOGGER.debug("Couldn't retrieve status for {}", application, ex);
-            } else {
-                LOGGER.info("Couldn't retrieve status for {}", application, ex);
-            }
-            return convertStatusInfo(ex);
-        }
+        return applicationOps.getHealth(application)
+                             .log(log.getName(), Level.FINEST)
+                             .map(this::convertStatusInfo)
+                             .onErrorResume(ex -> Mono.just(convertStatusInfo(application, ex)));
     }
 
     protected StatusInfo convertStatusInfo(ResponseEntity<Map<String, Serializable>> response) {
@@ -100,7 +100,13 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
         return StatusInfo.ofDown(details);
     }
 
-    protected StatusInfo convertStatusInfo(Exception ex) {
+    protected StatusInfo convertStatusInfo(Application application, Throwable ex) {
+        if ("OFFLINE".equals(application.getStatusInfo().getStatus())) {
+            log.debug("Couldn't retrieve status for {}", application, ex);
+        } else {
+            log.info("Couldn't retrieve status for {}", application, ex);
+        }
+
         Map<String, Serializable> details = new HashMap<>();
         details.put("message", ex.getMessage());
         details.put("exception", ex.getClass().getName());

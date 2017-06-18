@@ -22,6 +22,7 @@ import de.codecentric.boot.admin.server.model.Registration;
 import de.codecentric.boot.admin.server.model.StatusInfo;
 import de.codecentric.boot.admin.server.registry.store.SimpleApplicationStore;
 import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
+import reactor.core.publisher.Mono;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -61,7 +62,7 @@ public class StatusUpdaterTest {
     @Test
     public void test_update_statusChanged() {
         when(applicationOps.getHealth(isA(Application.class))).thenReturn(
-                ResponseEntity.ok().body(singletonMap("status", "UP")));
+                Mono.just(ResponseEntity.ok().body(singletonMap("status", "UP"))));
 
         updater.updateStatus(application);
 
@@ -74,7 +75,7 @@ public class StatusUpdaterTest {
     @Test
     public void test_update_statusUnchanged() {
         when(applicationOps.getHealth(any(Application.class))).thenReturn(
-                ResponseEntity.ok(singletonMap("status", "UNKNOWN")));
+                Mono.just(ResponseEntity.ok(singletonMap("status", "UNKNOWN"))));
 
         updater.updateStatus(application);
 
@@ -84,7 +85,7 @@ public class StatusUpdaterTest {
 
     @Test
     public void test_update_up_noBody() {
-        when(applicationOps.getHealth(any(Application.class))).thenReturn(ResponseEntity.ok().build());
+        when(applicationOps.getHealth(any(Application.class))).thenReturn(Mono.just(ResponseEntity.ok().build()));
 
         updater.updateStatus(application);
 
@@ -94,7 +95,7 @@ public class StatusUpdaterTest {
     @Test
     public void test_update_down() {
         when(applicationOps.getHealth(any(Application.class))).thenReturn(
-                ResponseEntity.status(503).body(singletonMap("foo", "bar")));
+                Mono.just(ResponseEntity.status(503).body(singletonMap("foo", "bar"))));
 
         updater.updateStatus(application);
 
@@ -105,7 +106,8 @@ public class StatusUpdaterTest {
 
     @Test
     public void test_update_down_noBody() {
-        when(applicationOps.getHealth(any(Application.class))).thenReturn(ResponseEntity.status(503).body(null));
+        when(applicationOps.getHealth(any(Application.class))).thenReturn(
+                Mono.just(ResponseEntity.status(503).body(null)));
 
         updater.updateStatus(application);
 
@@ -117,7 +119,8 @@ public class StatusUpdaterTest {
 
     @Test
     public void test_update_offline() {
-        when(applicationOps.getHealth(any(Application.class))).thenThrow(new ResourceAccessException("error"));
+        when(applicationOps.getHealth(any(Application.class))).thenReturn(
+                Mono.error(new ResourceAccessException("error")));
 
         updater.updateStatus(application);
 
@@ -138,13 +141,13 @@ public class StatusUpdaterTest {
                 Registration.create("foo", "http://health-2").build()).build();
         store.save(app2);
 
-        when(applicationOps.getHealth(eq(app1))).thenReturn(ResponseEntity.ok().build());
-        when(applicationOps.getHealth(eq(app2))).thenReturn(ResponseEntity.ok().build());
+        when(applicationOps.getHealth(eq(app1))).thenReturn(Mono.just(ResponseEntity.ok().build()));
+        when(applicationOps.getHealth(eq(app2))).thenReturn(Mono.just(ResponseEntity.ok().build()));
 
         Thread.sleep(120L); //let both statuses expire
         updater.updateStatus(app2); //and refresh it for app2
         reset(applicationOps);
-        when(applicationOps.getHealth(eq(app1))).thenReturn(ResponseEntity.ok().build());
+        when(applicationOps.getHealth(eq(app1))).thenReturn(Mono.just(ResponseEntity.ok().build()));
 
         updater.updateStatusForAllApplications();
 
