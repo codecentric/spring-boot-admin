@@ -21,25 +21,36 @@ import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.model.Registration;
 import de.codecentric.boot.admin.server.notify.TestNotifier;
+import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class FilteringNotifierTest {
     private final Application application = Application.create(ApplicationId.of("-"),
             Registration.create("foo", "http://health").build()).build();
-    private final ClientApplicationRegisteredEvent event = new ClientApplicationRegisteredEvent(application,
+    private final ClientApplicationRegisteredEvent event = new ClientApplicationRegisteredEvent(application.getId(),
             application.getRegistration());
+    private ApplicationStore store;
+
+    @Before
+    public void setUp() throws Exception {
+        store = mock(ApplicationStore.class);
+        when(store.find(application.getId())).thenReturn(application);
+    }
 
     @Test(expected = IllegalArgumentException.class)
     public void test_ctor_assert() {
-        new FilteringNotifier(null);
+        new FilteringNotifier(null, store);
     }
 
     @Test
     public void test_expired_removal() {
-        FilteringNotifier notifier = new FilteringNotifier(new TestNotifier());
+        FilteringNotifier notifier = new FilteringNotifier(new TestNotifier(), store);
         notifier.setCleanupInterval(0L);
 
         String id1 = notifier.addFilter(new ApplicationNameNotificationFilter("foo", 0L));
@@ -58,9 +69,9 @@ public class FilteringNotifierTest {
     @Test
     public void test_filter() {
         TestNotifier delegate = new TestNotifier();
-        FilteringNotifier notifier = new FilteringNotifier(delegate);
+        FilteringNotifier notifier = new FilteringNotifier(delegate, store);
 
-        String idTrue = notifier.addFilter(event -> true);
+        String idTrue = notifier.addFilter((event, application) -> true);
 
         notifier.notify(event);
 

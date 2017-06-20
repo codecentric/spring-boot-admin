@@ -53,6 +53,7 @@ public class StatusUpdaterTest {
     @Before
     public void setup() {
         store = new SimpleApplicationStore();
+        store.save(application);
         applicationOps = mock(ApplicationOperations.class);
         updater = new StatusUpdater(store, applicationOps);
         publisher = mock(ApplicationEventPublisher.class);
@@ -64,7 +65,7 @@ public class StatusUpdaterTest {
         when(applicationOps.getHealth(isA(Application.class))).thenReturn(
                 Mono.just(ResponseEntity.ok().body(singletonMap("status", "UP"))));
 
-        updater.updateStatus(application);
+        updater.updateStatus(application.getId());
 
         Application app = store.find(ApplicationId.of("id"));
 
@@ -77,7 +78,7 @@ public class StatusUpdaterTest {
         when(applicationOps.getHealth(any(Application.class))).thenReturn(
                 Mono.just(ResponseEntity.ok(singletonMap("status", "UNKNOWN"))));
 
-        updater.updateStatus(application);
+        updater.updateStatus(application.getId());
 
         verify(publisher, never()).publishEvent(isA(ClientApplicationStatusChangedEvent.class));
         verify(applicationOps, never()).getInfo(isA(Application.class));
@@ -87,7 +88,7 @@ public class StatusUpdaterTest {
     public void test_update_up_noBody() {
         when(applicationOps.getHealth(any(Application.class))).thenReturn(Mono.just(ResponseEntity.ok().build()));
 
-        updater.updateStatus(application);
+        updater.updateStatus(application.getId());
 
         assertThat(store.find(ApplicationId.of("id")).getStatusInfo().getStatus()).isEqualTo("UP");
     }
@@ -97,7 +98,7 @@ public class StatusUpdaterTest {
         when(applicationOps.getHealth(any(Application.class))).thenReturn(
                 Mono.just(ResponseEntity.status(503).body(singletonMap("foo", "bar"))));
 
-        updater.updateStatus(application);
+        updater.updateStatus(application.getId());
 
         StatusInfo statusInfo = store.find(ApplicationId.of("id")).getStatusInfo();
         assertThat(statusInfo.getStatus()).isEqualTo("DOWN");
@@ -109,7 +110,7 @@ public class StatusUpdaterTest {
         when(applicationOps.getHealth(any(Application.class))).thenReturn(
                 Mono.just(ResponseEntity.status(503).body(null)));
 
-        updater.updateStatus(application);
+        updater.updateStatus(application.getId());
 
         StatusInfo statusInfo = store.find(ApplicationId.of("id")).getStatusInfo();
         assertThat(statusInfo.getStatus()).isEqualTo("DOWN");
@@ -122,7 +123,7 @@ public class StatusUpdaterTest {
         when(applicationOps.getHealth(any(Application.class))).thenReturn(
                 Mono.error(new ResourceAccessException("error")));
 
-        updater.updateStatus(application);
+        updater.updateStatus(application.getId());
 
         StatusInfo statusInfo = store.find(ApplicationId.of("id")).getStatusInfo();
         assertThat(statusInfo.getStatus()).isEqualTo("OFFLINE");
@@ -134,24 +135,21 @@ public class StatusUpdaterTest {
     @Test
     public void test_updateStatusForApplications() throws InterruptedException {
         updater.setStatusLifetime(100L);
-        Application app1 = Application.create(ApplicationId.of("id-1"),
-                Registration.create("foo", "http://health-1").build()).build();
-        store.save(app1);
         Application app2 = Application.create(ApplicationId.of("id-2"),
                 Registration.create("foo", "http://health-2").build()).build();
         store.save(app2);
 
-        when(applicationOps.getHealth(eq(app1))).thenReturn(Mono.just(ResponseEntity.ok().build()));
+        when(applicationOps.getHealth(eq(application))).thenReturn(Mono.just(ResponseEntity.ok().build()));
         when(applicationOps.getHealth(eq(app2))).thenReturn(Mono.just(ResponseEntity.ok().build()));
 
         Thread.sleep(120L); //let both statuses expire
-        updater.updateStatus(app2); //and refresh it for app2
+        updater.updateStatus(app2.getId()); //and refresh it for app2
         reset(applicationOps);
-        when(applicationOps.getHealth(eq(app1))).thenReturn(Mono.just(ResponseEntity.ok().build()));
+        when(applicationOps.getHealth(eq(application))).thenReturn(Mono.just(ResponseEntity.ok().build()));
 
         updater.updateStatusForAllApplications();
 
-        verify(applicationOps, times(1)).getHealth(eq(app1));
+        verify(applicationOps, times(1)).getHealth(eq(application));
         verify(applicationOps, never()).getHealth(eq(app2));
     }
 

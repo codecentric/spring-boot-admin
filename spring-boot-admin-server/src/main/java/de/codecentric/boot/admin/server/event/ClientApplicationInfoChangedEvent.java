@@ -15,7 +15,7 @@
  */
 package de.codecentric.boot.admin.server.event;
 
-import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.model.Info;
 
 /**
@@ -29,7 +29,7 @@ public class ClientApplicationInfoChangedEvent extends ClientApplicationEvent {
     private static final long serialVersionUID = 1L;
     private final Info info;
 
-    public ClientApplicationInfoChangedEvent(Application application, Info info) {
+    public ClientApplicationInfoChangedEvent(ApplicationId application, Info info) {
         super(application, "INFO_CHANGED");
         this.info = info;
     }

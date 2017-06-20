@@ -69,24 +69,24 @@ public class StatusUpdateTriggerTest {
         TestPublisher<ClientApplicationEvent> events = TestPublisher.create();
         StatusUpdateTrigger trigger = new StatusUpdateTrigger(updater, events);
         trigger.start();
-        doNothing().when(updater).updateStatus(isA(Application.class));
+        doNothing().when(updater).updateStatus(isA(ApplicationId.class));
 
         //when some non-registered event is emitted
-        events.next(new ClientApplicationInfoChangedEvent(application, Info.empty()));
+        events.next(new ClientApplicationInfoChangedEvent(application.getId(), Info.empty()));
         //then should not update
-        verify(updater, never()).updateStatus(application);
+        verify(updater, never()).updateStatus(application.getId());
 
         //when registered event is emitted
-        events.next(new ClientApplicationRegisteredEvent(application, application.getRegistration()));
+        events.next(new ClientApplicationRegisteredEvent(application.getId(), application.getRegistration()));
         //then should update
-        verify(updater, times(1)).updateStatus(application);
+        verify(updater, times(1)).updateStatus(application.getId());
 
         //when registered event is emitted but the trigger has been stopped
         trigger.stop();
         reset(updater);
-        events.next(new ClientApplicationRegisteredEvent(application, application.getRegistration()));
+        events.next(new ClientApplicationRegisteredEvent(application.getId(), application.getRegistration()));
         //then should not update
-        verify(updater, never()).updateStatus(application);
+        verify(updater, never()).updateStatus(application.getId());
     }
 
 }

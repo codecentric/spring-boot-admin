@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.notify;
 
 import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.utils.reactive.ReactiveUtils;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
@@ -42,8 +43,7 @@ public class NotificationTrigger {
         subscription = Flux.from(events)
                            .log(log.getName(), Level.FINEST)
                            .subscribeOn(Schedulers.newSingle("notifications"))
-                           .doOnNext(this::sendNotifications)
-                           .retry()
+                           .doOnNext(this::sendNotifications).retryWhen(ReactiveUtils.logAndRetryAny(log))
                            .subscribe();
     }
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 the original author or authors.
+ * Copyright 2014-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,10 +15,16 @@
  */
 package de.codecentric.boot.admin.server.notify;
 
+import de.codecentric.boot.admin.server.event.ClientApplicationDeregisteredEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
+import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Abstract Notifier for status change which allows filtering of certain status changes.
@@ -26,24 +32,48 @@ import java.util.Arrays;
  * @author Johannes Edmeier
  */
 public abstract class AbstractStatusChangeNotifier extends AbstractEventNotifier {
-
+    private final Map<ApplicationId, String> lastStatuses = new HashMap<>();
     /**
      * List of changes to ignore. Must be in Format OLD:NEW, for any status use * as wildcard, e.g.
      * *:UP or OFFLINE:*
      */
     private String[] ignoreChanges = {"UNKNOWN:UP"};
 
+    public AbstractStatusChangeNotifier(ApplicationStore store) {
+        super(store);
+    }
+
     @Override
-    protected boolean shouldNotify(ClientApplicationEvent event) {
+    public void notify(ClientApplicationEvent event) {
+        super.notify(event);
+        updateLastStatus(event);
+    }
+
+    @Override
+    protected boolean shouldNotify(ClientApplicationEvent event, Application application) {
         if (event instanceof ClientApplicationStatusChangedEvent) {
             ClientApplicationStatusChangedEvent statusChange = (ClientApplicationStatusChangedEvent) event;
-            String from = statusChange.getFrom().getStatus();
-            String to = statusChange.getTo().getStatus();
+            String from = getLastStatus(event.getApplication());
+            String to = statusChange.getStatusInfo().getStatus();
             return Arrays.binarySearch(ignoreChanges, from + ":" + to) < 0 &&
                    Arrays.binarySearch(ignoreChanges, "*:" + to) < 0 &&
                    Arrays.binarySearch(ignoreChanges, from + ":*") < 0;
         }
         return false;
+    }
+
+    protected final String getLastStatus(ApplicationId applicationId) {
+        return lastStatuses.getOrDefault(applicationId, "UNKNOWN");
+    }
+
+    protected void updateLastStatus(ClientApplicationEvent event) {
+        if (event instanceof ClientApplicationDeregisteredEvent) {
+            lastStatuses.remove(event.getApplication());
+        }
+        if (event instanceof ClientApplicationStatusChangedEvent) {
+            lastStatuses.put(event.getApplication(),
+                    ((ClientApplicationStatusChangedEvent) event).getStatusInfo().getStatus());
+        }
     }
 
     public void setIgnoreChanges(String[] ignoreChanges) {

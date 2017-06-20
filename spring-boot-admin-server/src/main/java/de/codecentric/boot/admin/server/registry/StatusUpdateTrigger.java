@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.registry;
 
 import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationRegisteredEvent;
+import de.codecentric.boot.admin.server.utils.reactive.ReactiveUtils;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
@@ -48,8 +49,7 @@ public class StatusUpdateTrigger {
                                 .subscribeOn(Schedulers.newSingle("status-updater"))
                                 .ofType(ClientApplicationRegisteredEvent.class)
                                 .cast(ClientApplicationRegisteredEvent.class)
-                                .doOnNext(this::updateStatus)
-                                .retry()
+                                .doOnNext(this::updateStatus).retryWhen(ReactiveUtils.logAndRetryAny(log))
                                 .subscribe();
 
         log.debug("Scheduled status update every {}ms", updateInterval);
@@ -57,7 +57,7 @@ public class StatusUpdateTrigger {
                                    .log(log.getName(), Level.FINEST)
                                    .subscribeOn(Schedulers.newSingle("status-monitor"))
                                    .doOnNext((i) -> this.updateStatusForAllApplications())
-                                   .retry()
+                                   .retryWhen(ReactiveUtils.logAndRetryAny(log))
                                    .subscribe();
     }
 

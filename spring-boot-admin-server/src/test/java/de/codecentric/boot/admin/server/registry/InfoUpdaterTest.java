@@ -61,25 +61,28 @@ public class InfoUpdaterTest {
     public void should_update_info_for_online_only() {
         Application application = Application.create(ApplicationId.of("onl"),
                 Registration.create("foo", "http://health").build()).statusInfo(StatusInfo.ofUp()).build();
+        store.save(application);
 
         Application offline = Application.copyOf(application)
                                          .id(ApplicationId.of("off"))
                                          .statusInfo(StatusInfo.ofOffline())
                                          .build();
+        store.save(offline);
         Application unknown = Application.copyOf(application)
                                          .id(ApplicationId.of("unk"))
                                          .statusInfo(StatusInfo.ofUnknown())
                                          .build();
+        store.save(unknown);
         when(applicationOps.getInfo(any(Application.class))).thenReturn(
                 Mono.just(ResponseEntity.ok(singletonMap("foo", "bar"))));
 
-        updater.updateInfo(offline);
+        updater.updateInfo(offline.getId());
         verify(publisher, never()).publishEvent(isA(ClientApplicationInfoChangedEvent.class));
 
-        updater.updateInfo(unknown);
+        updater.updateInfo(unknown.getId());
         verify(publisher, never()).publishEvent(isA(ClientApplicationInfoChangedEvent.class));
 
-        updater.updateInfo(application);
+        updater.updateInfo(application.getId());
         assertThat(store.find(application.getId()).getInfo()).isEqualTo(Info.from(singletonMap("foo", "bar")));
         verify(publisher, times(1)).publishEvent(isA(ClientApplicationInfoChangedEvent.class));
     }
@@ -91,10 +94,11 @@ public class InfoUpdaterTest {
                                              .statusInfo(StatusInfo.ofUp())
                                              .info(Info.from(singletonMap("foo", "bar")))
                                              .build();
+        store.save(application);
 
         when(applicationOps.getInfo(any(Application.class))).thenReturn(Mono.just(ResponseEntity.status(500).build()));
 
-        updater.updateInfo(application);
+        updater.updateInfo(application.getId());
         assertThat(store.find(application.getId()).getInfo()).isEqualTo(Info.empty());
         verify(publisher, times(1)).publishEvent(isA(ClientApplicationInfoChangedEvent.class));
     }
@@ -106,11 +110,12 @@ public class InfoUpdaterTest {
                                              .statusInfo(StatusInfo.ofUp())
                                              .info(Info.from(singletonMap("foo", "bar")))
                                              .build();
+        store.save(application);
 
         when(applicationOps.getInfo(any(Application.class))).thenReturn(
                 Mono.error(new ResourceAccessException("error")));
 
-        updater.updateInfo(application);
+        updater.updateInfo(application.getId());
         assertThat(store.find(application.getId()).getInfo()).isEqualTo(Info.empty());
         verify(publisher, times(1)).publishEvent(isA(ClientApplicationInfoChangedEvent.class));
     }

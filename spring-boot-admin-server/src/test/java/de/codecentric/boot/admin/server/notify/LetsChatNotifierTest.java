@@ -1,3 +1,19 @@
+/*
+ * Copyright 2014-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package de.codecentric.boot.admin.server.notify;
 
 import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
@@ -5,6 +21,7 @@ import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.model.Registration;
 import de.codecentric.boot.admin.server.model.StatusInfo;
+import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -20,23 +37,28 @@ import org.springframework.web.client.RestTemplate;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class LetsChatNotifierTest {
-    private static final String room = "text_room";
-    private static final String token = "text_token";
-    private static final String user = "api_user";
-    private static final String appName = "App";
-    private static final ApplicationId id = ApplicationId.of("-id-");
-    private static final String host = "http://localhost";
-
+    private final String room = "text_room";
+    private final String token = "text_token";
+    private final String user = "api_user";
+    private final String host = "http://localhost";
+    private final Application application = Application.create(ApplicationId.of("-id-"),
+            Registration.create("App", "http://health").build()).build();
+    private ApplicationStore store;
     private LetsChatNotifier notifier;
     private RestTemplate restTemplate;
 
     @Before
     public void setUp() {
+        store = mock(ApplicationStore.class);
+        when(store.find(application.getId())).thenReturn(application);
+
         restTemplate = mock(RestTemplate.class);
-        notifier = new LetsChatNotifier();
+        notifier = new LetsChatNotifier(store);
         notifier.setUsername(user);
         notifier.setUrl(URI.create(host));
         notifier.setRoom(room);
@@ -46,33 +68,27 @@ public class LetsChatNotifierTest {
 
     @Test
     public void test_onApplicationEvent_resolve() {
-        StatusInfo infoDown = StatusInfo.ofDown();
-        StatusInfo infoUp = StatusInfo.ofUp();
+        notifier.notify(new ClientApplicationStatusChangedEvent(application.getId(), StatusInfo.ofDown()));
+        reset(restTemplate);
 
-        notifier.notify(getEvent(infoDown, infoUp));
+        notifier.notify(new ClientApplicationStatusChangedEvent(application.getId(), StatusInfo.ofUp()));
 
-        HttpEntity<?> expected = expectedMessage(standardMessage(infoUp.getStatus(), appName, id));
+        HttpEntity<?> expected = expectedMessage(standardMessage("UP"));
         verify(restTemplate).exchange(eq(URI.create(String.format("%s/rooms/%s/messages", host, room))),
                 eq(HttpMethod.POST), eq(expected), eq(Void.class));
     }
 
     @Test
     public void test_onApplicationEvent_resolve_with_custom_message() {
-        StatusInfo infoDown = StatusInfo.ofDown();
-        StatusInfo infoUp = StatusInfo.ofUp();
-
         notifier.setMessage("TEST");
-        notifier.notify(getEvent(infoDown, infoUp));
+        notifier.notify(new ClientApplicationStatusChangedEvent(application.getId(), StatusInfo.ofDown()));
+        reset(restTemplate);
+
+        notifier.notify(new ClientApplicationStatusChangedEvent(application.getId(), StatusInfo.ofUp()));
 
         HttpEntity<?> expected = expectedMessage("TEST");
         verify(restTemplate).exchange(eq(URI.create(String.format("%s/rooms/%s/messages", host, room))),
                 eq(HttpMethod.POST), eq(expected), eq(Void.class));
-    }
-
-    private ClientApplicationStatusChangedEvent getEvent(StatusInfo infoDown, StatusInfo infoUp) {
-        return new ClientApplicationStatusChangedEvent(
-                Application.create(id, Registration.create(appName, "http://health").build()).build(), infoDown,
-                infoUp);
     }
 
     private HttpEntity<?> expectedMessage(String message) {
@@ -85,8 +101,8 @@ public class LetsChatNotifierTest {
         return new HttpEntity<>(messageJson, httpHeaders);
     }
 
-    private String standardMessage(String status, String appName, ApplicationId id) {
-        return "*" + appName + "* (" + id + ") is *" + status + "*";
+    private String standardMessage(String status) {
+        return "*" + application.getRegistration().getName() + "* (" + application.getId() + ") is *" + status + "*";
     }
 
 }

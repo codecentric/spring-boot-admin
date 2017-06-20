@@ -15,7 +15,7 @@
  */
 package de.codecentric.boot.admin.server.event;
 
-import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 
 import java.io.Serializable;
 
@@ -27,11 +27,11 @@ import java.io.Serializable;
 @lombok.Data
 public abstract class ClientApplicationEvent implements Serializable {
     private static final long serialVersionUID = 1L;
-    private final Application application;
+    private final ApplicationId application;
     private final long timestamp;
     private final String type;
 
-    protected ClientApplicationEvent(Application application, String type) {
+    protected ClientApplicationEvent(ApplicationId application, String type) {
         this.application = application;
         this.timestamp = System.currentTimeMillis();
         this.type = type;

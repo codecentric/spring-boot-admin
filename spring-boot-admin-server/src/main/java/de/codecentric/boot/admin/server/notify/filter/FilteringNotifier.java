@@ -1,11 +1,11 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2014-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,8 +16,10 @@
 package de.codecentric.boot.admin.server.notify.filter;
 
 import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.notify.AbstractEventNotifier;
 import de.codecentric.boot.admin.server.notify.Notifier;
+import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,27 +45,28 @@ public class FilteringNotifier extends AbstractEventNotifier {
     private long cleanupInterval = 10_000L;
     private AtomicLong counter = new AtomicLong();
 
-    public FilteringNotifier(Notifier delegate) {
+    public FilteringNotifier(Notifier delegate, ApplicationStore store) {
+        super(store);
         Assert.notNull(delegate, "'delegate' must not be null!");
         this.delegate = delegate;
     }
 
     @Override
-    protected boolean shouldNotify(ClientApplicationEvent event) {
-        return !filter(event);
+    protected boolean shouldNotify(ClientApplicationEvent event, Application application) {
+        return !filter(event, application);
     }
 
     @Override
-    public void doNotify(ClientApplicationEvent event) {
-        if (!filter(event)) {
+    public void doNotify(ClientApplicationEvent event, Application application) {
+        if (!filter(event, application)) {
             delegate.notify(event);
         }
     }
 
-    private boolean filter(ClientApplicationEvent event) {
+    private boolean filter(ClientApplicationEvent event, Application application) {
         cleanUp();
         for (Entry<String, NotificationFilter> entry : getNotificationFilters().entrySet()) {
-            if (entry.getValue().filter(event)) {
+            if (entry.getValue().filter(event, application)) {
                 LOGGER.debug("The event '{}' was suppressed by filter '{}'", event, entry);
                 return true;
             }

@@ -1,11 +1,11 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2014-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,9 +17,9 @@ package de.codecentric.boot.admin;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import de.codecentric.boot.admin.server.notify.LoggingNotifier;
-import de.codecentric.boot.admin.server.notify.Notifier;
 import de.codecentric.boot.admin.server.notify.RemindingNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
+import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 
 import java.util.concurrent.TimeUnit;
 import org.springframework.boot.SpringApplication;
@@ -66,10 +66,16 @@ public class SpringBootAdminApplication {
 
     @Configuration
     public static class NotifierConfig {
+        private final ApplicationStore applicationStore;
+
+        public NotifierConfig(ApplicationStore applicationStore) {
+            this.applicationStore = applicationStore;
+        }
+
         @Bean
         @Primary
         public RemindingNotifier remindingNotifier() {
-            RemindingNotifier notifier = new RemindingNotifier(filteringNotifier(loggerNotifier()));
+            RemindingNotifier notifier = new RemindingNotifier(filteringNotifier(), applicationStore);
             notifier.setReminderPeriod(TimeUnit.SECONDS.toMillis(10));
             return notifier;
         }
@@ -80,13 +86,13 @@ public class SpringBootAdminApplication {
         }
 
         @Bean
-        public FilteringNotifier filteringNotifier(Notifier delegate) {
-            return new FilteringNotifier(delegate);
+        public FilteringNotifier filteringNotifier() {
+            return new FilteringNotifier(loggerNotifier(), applicationStore);
         }
 
         @Bean
         public LoggingNotifier loggerNotifier() {
-            return new LoggingNotifier();
+            return new LoggingNotifier(applicationStore);
         }
     }
 }

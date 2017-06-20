@@ -28,19 +28,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ApplicationIdNotificationFilterTest {
     @Test
     public void test_filterByName() {
-
         NotificationFilter filter = new ApplicationIdNotificationFilter(ApplicationId.of("cafebabe"), -1L);
 
         Application filteredApplication = Application.create(ApplicationId.of("cafebabe"),
                 Registration.create("foo", "http://health").build()).build();
-        ClientApplicationRegisteredEvent filteredEvent = new ClientApplicationRegisteredEvent(filteredApplication,
-                filteredApplication.getRegistration());
-        assertThat(filter.filter(filteredEvent)).isTrue();
+        ClientApplicationRegisteredEvent filteredEvent = new ClientApplicationRegisteredEvent(
+                filteredApplication.getId(), filteredApplication.getRegistration());
+        assertThat(filter.filter(filteredEvent, filteredApplication)).isTrue();
 
         Application ignoredApplication = Application.create(ApplicationId.of("-"),
                 Registration.create("foo", "http://health").build()).build();
-        ClientApplicationRegisteredEvent ignoredEvent = new ClientApplicationRegisteredEvent(ignoredApplication,
+        ClientApplicationRegisteredEvent ignoredEvent = new ClientApplicationRegisteredEvent(ignoredApplication.getId(),
                 ignoredApplication.getRegistration());
-        assertThat(filter.filter(ignoredEvent)).isFalse();
+        assertThat(filter.filter(ignoredEvent, ignoredApplication)).isFalse();
     }
 }

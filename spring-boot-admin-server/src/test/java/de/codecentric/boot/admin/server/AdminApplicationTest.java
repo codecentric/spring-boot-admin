@@ -21,6 +21,7 @@ import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicReference;
 import org.json.JSONObject;
 import org.junit.After;
@@ -88,8 +89,7 @@ public class AdminApplicationTest {
                     })
                     .assertNext((event) -> assertThat(event.opt("type")).isEqualTo("DEREGISTERED"))
                     .then(this::listEmptyApplications)
-                    .thenCancel()
-                    .verify();
+                    .thenCancel().verify(Duration.ofSeconds(30));
     }
 
     private Flux<JSONObject> getEventStream() {

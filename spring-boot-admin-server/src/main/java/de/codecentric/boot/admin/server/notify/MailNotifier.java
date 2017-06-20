@@ -1,11 +1,11 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2014-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,9 +16,13 @@
 package de.codecentric.boot.admin.server.notify;
 
 import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 
 import java.util.Arrays;
-import org.springframework.expression.EvaluationContext;
+import java.util.HashMap;
+import java.util.Map;
+import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -32,8 +36,8 @@ import org.springframework.mail.SimpleMailMessage;
  * @author Johannes Edmeier
  */
 public class MailNotifier extends AbstractStatusChangeNotifier {
-    private static final String DEFAULT_SUBJECT = "#{application.registration.name} (#{application.id}) is #{to.status}";
-    private static final String DEFAULT_TEXT = "#{application.registration.name} (#{application.id})\nstatus changed from #{from.status} to #{to.status}\n\n#{application.registration.healthUrl}";
+    private static final String DEFAULT_SUBJECT = "#{application.registration.name} (#{application.id}) is #{event.statusInfo.status}";
+    private static final String DEFAULT_TEXT = "#{application.registration.name} (#{application.id})\nstatus changed from #{lastStatus} to #{event.statusInfo.status}\n\n#{application.registration.healthUrl}";
 
     private final SpelExpressionParser parser = new SpelExpressionParser();
     private final MailSender sender;
@@ -63,15 +67,21 @@ public class MailNotifier extends AbstractStatusChangeNotifier {
      */
     private Expression subject;
 
-    public MailNotifier(MailSender sender) {
+    public MailNotifier(MailSender sender, ApplicationStore store) {
+        super(store);
         this.sender = sender;
         this.subject = parser.parseExpression(DEFAULT_SUBJECT, ParserContext.TEMPLATE_EXPRESSION);
         this.text = parser.parseExpression(DEFAULT_TEXT, ParserContext.TEMPLATE_EXPRESSION);
     }
 
     @Override
-    protected void doNotify(ClientApplicationEvent event) {
-        EvaluationContext context = new StandardEvaluationContext(event);
+    protected void doNotify(ClientApplicationEvent event, Application application) {
+        Map<String, Object> root = new HashMap<>();
+        root.put("event", event);
+        root.put("application", application);
+        root.put("lastStatus", getLastStatus(event.getApplication()));
+        StandardEvaluationContext context = new StandardEvaluationContext(root);
+        context.addPropertyAccessor(new MapAccessor());
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);

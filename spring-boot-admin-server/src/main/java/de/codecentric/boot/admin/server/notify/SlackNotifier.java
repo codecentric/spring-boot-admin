@@ -1,18 +1,38 @@
+/*
+ * Copyright 2014-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package de.codecentric.boot.admin.server.notify;
 
 import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -21,7 +41,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Artur Dobosiewicz
  */
 public class SlackNotifier extends AbstractStatusChangeNotifier {
-    private static final String DEFAULT_MESSAGE = "*#{application.registration.name}* (#{application.id}) is *#{to.status}*";
+    private static final String DEFAULT_MESSAGE = "*#{application.registration.name}* (#{application.id}) is *#{event.statusInfo.status}*";
 
     private final SpelExpressionParser parser = new SpelExpressionParser();
     private RestTemplate restTemplate = new RestTemplate();
@@ -51,20 +71,21 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
      */
     private Expression message;
 
-    public SlackNotifier() {
+    public SlackNotifier(ApplicationStore store) {
+        super(store);
         this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
     }
 
     @Override
-    protected void doNotify(ClientApplicationEvent event) throws Exception {
-        restTemplate.postForEntity(webhookUrl, createMessage(event), Void.class);
+    protected void doNotify(ClientApplicationEvent event, Application application) throws Exception {
+        restTemplate.postForEntity(webhookUrl, createMessage(event, application), Void.class);
     }
 
     public void setRestTemplate(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
-    protected Object createMessage(ClientApplicationEvent event) {
+    protected Object createMessage(ClientApplicationEvent event, Application application) {
         Map<String, Object> messageJson = new HashMap<>();
         messageJson.put("username", username);
         if (icon != null) {
@@ -75,7 +96,7 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
         }
 
         Map<String, Object> attachments = new HashMap<>();
-        attachments.put("text", getText(event));
+        attachments.put("text", getText(event, application));
         attachments.put("color", getColor(event));
         attachments.put("mrkdwn_in", Collections.singletonList("text"));
         messageJson.put("attachments", Collections.singletonList(attachments));
@@ -85,13 +106,21 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
         return new HttpEntity<>(messageJson, headers);
     }
 
-    protected String getText(ClientApplicationEvent event) {
-        return message.getValue(event, String.class);
+    protected String getText(ClientApplicationEvent event, Application application) {
+        Map<String, Object> root = new HashMap<>();
+        root.put("event", event);
+        root.put("application", application);
+        root.put("lastStatus", getLastStatus(event.getApplication()));
+        StandardEvaluationContext context = new StandardEvaluationContext(root);
+        context.addPropertyAccessor(new MapAccessor());
+        return message.getValue(context, String.class);
     }
 
     protected String getColor(ClientApplicationEvent event) {
         if (event instanceof ClientApplicationStatusChangedEvent) {
-            return "UP".equals(((ClientApplicationStatusChangedEvent) event).getTo().getStatus()) ? "good" : "danger";
+            return "UP".equals(((ClientApplicationStatusChangedEvent) event).getStatusInfo().getStatus()) ?
+                    "good" :
+                    "danger";
         } else {
             return "#439FE0";
         }

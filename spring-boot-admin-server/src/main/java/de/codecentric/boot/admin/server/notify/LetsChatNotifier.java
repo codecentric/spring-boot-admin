@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,13 +16,17 @@
 package de.codecentric.boot.admin.server.notify;
 
 import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -37,7 +41,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Rico Pahlisch
  */
 public class LetsChatNotifier extends AbstractStatusChangeNotifier {
-    private static final String DEFAULT_MESSAGE = "*#{application.registration.name}* (#{application.id}) is *#{to.status}*";
+    private static final String DEFAULT_MESSAGE = "*#{application.registration.name}* (#{application.id}) is *#{event.statusInfo.status}*";
 
     private final SpelExpressionParser parser = new SpelExpressionParser();
     private RestTemplate restTemplate = new RestTemplate();
@@ -67,19 +71,20 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
      */
     private Expression message;
 
-    public LetsChatNotifier() {
+    public LetsChatNotifier(ApplicationStore store) {
+        super(store);
         this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
     }
 
     @Override
-    protected void doNotify(ClientApplicationEvent event) throws Exception {
+    protected void doNotify(ClientApplicationEvent event, Application application) throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         // Let's Chat requiers the token as basic username, the password can be an arbitrary string.
         String auth = Base64Utils.encodeToString(String.format("%s:%s", token, username).getBytes());
         headers.add(HttpHeaders.AUTHORIZATION, String.format("Basic %s", auth));
-        restTemplate.exchange(createUrl(), HttpMethod.POST, new HttpEntity<>(createMessage(event), headers),
-                Void.class);
+        restTemplate.exchange(createUrl(), HttpMethod.POST,
+                new HttpEntity<>(createMessage(event, application), headers), Void.class);
     }
 
     private URI createUrl() {
@@ -110,14 +115,20 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
         this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
     }
 
-    protected Object createMessage(ClientApplicationEvent event) {
+    protected Object createMessage(ClientApplicationEvent event, Application application) {
         Map<String, String> messageJson = new HashMap<>();
-        messageJson.put("text", getText(event));
+        messageJson.put("text", getText(event, application));
         return messageJson;
     }
 
-    protected String getText(ClientApplicationEvent event) {
-        return message.getValue(event, String.class);
+    protected String getText(ClientApplicationEvent event, Application application) {
+        Map<String, Object> root = new HashMap<>();
+        root.put("event", event);
+        root.put("application", application);
+        root.put("lastStatus", getLastStatus(event.getApplication()));
+        StandardEvaluationContext context = new StandardEvaluationContext(root);
+        context.addPropertyAccessor(new MapAccessor());
+        return message.getValue(context, String.class);
     }
 
 

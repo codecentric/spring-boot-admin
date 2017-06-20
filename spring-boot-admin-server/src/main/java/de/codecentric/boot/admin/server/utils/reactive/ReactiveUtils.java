@@ -13,11 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.codecentric.boot.admin.server.notify.filter;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.model.Application;
+package de.codecentric.boot.admin.server.utils.reactive;
 
-public interface NotificationFilter {
-    boolean filter(ClientApplicationEvent event, Application application);
+import reactor.core.publisher.Flux;
+import reactor.retry.Retry;
+
+import java.util.function.Function;
+import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
+
+public abstract class ReactiveUtils {
+
+    public static Function<Flux<Throwable>, ? extends Publisher<?>> logAndRetryAny(Logger log) {
+        return Retry.any().doOnRetry(ctx -> log.error("Resubscribing after uncaught error", ctx.exception()));
+    }
 }

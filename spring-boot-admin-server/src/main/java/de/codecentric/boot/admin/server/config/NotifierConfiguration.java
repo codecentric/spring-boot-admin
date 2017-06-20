@@ -25,6 +25,7 @@ import de.codecentric.boot.admin.server.notify.Notifier;
 import de.codecentric.boot.admin.server.notify.SlackNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
 import de.codecentric.boot.admin.server.notify.filter.web.NotificationFilterController;
+import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.server.web.PrefixHandlerMapping;
 
 import java.util.List;
@@ -112,8 +113,8 @@ public class NotifierConfiguration {
         @Bean
         @ConditionalOnMissingBean
         @ConfigurationProperties("spring.boot.admin.notify.mail")
-        public MailNotifier mailNotifier(MailSender mailSender) {
-            return new MailNotifier(mailSender);
+        public MailNotifier mailNotifier(MailSender mailSender, ApplicationStore store) {
+            return new MailNotifier(mailSender, store);
         }
     }
 
@@ -124,8 +125,8 @@ public class NotifierConfiguration {
         @Bean
         @ConditionalOnMissingBean
         @ConfigurationProperties("spring.boot.admin.notify.hipchat")
-        public HipchatNotifier hipchatNotifier() {
-            return new HipchatNotifier();
+        public HipchatNotifier hipchatNotifier(ApplicationStore store) {
+            return new HipchatNotifier(store);
         }
     }
 
@@ -136,8 +137,8 @@ public class NotifierConfiguration {
         @Bean
         @ConditionalOnMissingBean
         @ConfigurationProperties("spring.boot.admin.notify.slack")
-        public SlackNotifier slackNotifier() {
-            return new SlackNotifier();
+        public SlackNotifier slackNotifier(ApplicationStore store) {
+            return new SlackNotifier(store);
         }
     }
 
@@ -148,8 +149,8 @@ public class NotifierConfiguration {
         @Bean
         @ConditionalOnMissingBean
         @ConfigurationProperties("spring.boot.admin.notify.letschat")
-        public LetsChatNotifier letsChatNotifier() {
-            return new LetsChatNotifier();
+        public LetsChatNotifier letsChatNotifier(ApplicationStore store) {
+            return new LetsChatNotifier(store);
         }
     }
 }

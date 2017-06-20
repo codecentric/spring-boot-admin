@@ -15,7 +15,7 @@
  */
 package de.codecentric.boot.admin.server.event;
 
-import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 
 /**
  * This event gets emitted when an application is unregistered.
@@ -25,7 +25,7 @@ import de.codecentric.boot.admin.server.model.Application;
 public class ClientApplicationDeregisteredEvent extends ClientApplicationEvent {
     private static final long serialVersionUID = 1L;
 
-    public ClientApplicationDeregisteredEvent(Application application) {
+    public ClientApplicationDeregisteredEvent(ApplicationId application) {
         super(application, "DEREGISTERED");
     }
 }

@@ -37,8 +37,8 @@ public class SimpleEventStoreTest {
         SimpleEventStore store = new SimpleEventStore();
 
         List<ClientApplicationEvent> events = Arrays.asList(
-                new ClientApplicationRegisteredEvent(application, application.getRegistration()),
-                new ClientApplicationDeregisteredEvent(application));
+                new ClientApplicationRegisteredEvent(application.getId(), application.getRegistration()),
+                new ClientApplicationDeregisteredEvent(application.getId()));
 
         for (ClientApplicationEvent event : events) {
             store.store(event);
@@ -53,9 +53,9 @@ public class SimpleEventStoreTest {
         store.setCapacity(2);
 
         List<ClientApplicationEvent> events = Arrays.asList(
-                new ClientApplicationRegisteredEvent(application, application.getRegistration()),
-                new ClientApplicationDeregisteredEvent(application),
-                new ClientApplicationDeregisteredEvent(application));
+                new ClientApplicationRegisteredEvent(application.getId(), application.getRegistration()),
+                new ClientApplicationDeregisteredEvent(application.getId()),
+                new ClientApplicationDeregisteredEvent(application.getId()));
 
         for (ClientApplicationEvent event : events) {
             store.store(event);

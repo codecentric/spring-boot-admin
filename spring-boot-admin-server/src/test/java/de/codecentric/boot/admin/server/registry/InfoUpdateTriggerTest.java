@@ -46,24 +46,24 @@ public class InfoUpdateTriggerTest {
         TestPublisher<ClientApplicationEvent> events = TestPublisher.create();
         InfoUpdateTrigger trigger = new InfoUpdateTrigger(updater, events);
         trigger.start();
-        doNothing().when(updater).updateInfo(isA(Application.class));
+        doNothing().when(updater).updateInfo(isA(ApplicationId.class));
 
         //when some non-registered event is emitted
-        events.next(new ClientApplicationRegisteredEvent(application, application.getRegistration()));
+        events.next(new ClientApplicationRegisteredEvent(application.getId(), application.getRegistration()));
         //then should not update
-        verify(updater, never()).updateInfo(application);
+        verify(updater, never()).updateInfo(application.getId());
 
         //when registered event is emitted
-        events.next(new ClientApplicationStatusChangedEvent(application, StatusInfo.ofUp(), StatusInfo.ofDown()));
+        events.next(new ClientApplicationStatusChangedEvent(application.getId(), StatusInfo.ofDown()));
         //then should update
-        verify(updater, times(1)).updateInfo(application);
+        verify(updater, times(1)).updateInfo(application.getId());
 
         //when registered event is emitted but the trigger has been stopped
         trigger.stop();
         reset(updater);
-        events.next(new ClientApplicationRegisteredEvent(application, application.getRegistration()));
+        events.next(new ClientApplicationRegisteredEvent(application.getId(), application.getRegistration()));
         //then should not update
-        verify(updater, never()).updateInfo(application);
+        verify(updater, never()).updateInfo(application.getId());
     }
 
 }

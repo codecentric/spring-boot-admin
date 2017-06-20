@@ -1,11 +1,11 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2014-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,13 +17,17 @@ package de.codecentric.boot.admin.server.notify;
 
 import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -35,7 +39,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Jamie Brown
  */
 public class HipchatNotifier extends AbstractStatusChangeNotifier {
-    private static final String DEFAULT_DESCRIPTION = "<strong>#{application.registration.name}</strong>/#{application.id} is <strong>#{to.status}</strong>";
+    private static final String DEFAULT_DESCRIPTION = "<strong>#{application.registration.name}</strong>/#{application.id} is <strong>#{event.statusInfo.status}</strong>";
 
     private final SpelExpressionParser parser = new SpelExpressionParser();
     private RestTemplate restTemplate = new RestTemplate();
@@ -65,23 +69,25 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
      */
     private Expression description;
 
-    public HipchatNotifier() {
+    public HipchatNotifier(ApplicationStore store) {
+        super(store);
         this.description = parser.parseExpression(DEFAULT_DESCRIPTION, ParserContext.TEMPLATE_EXPRESSION);
     }
 
     @Override
-    protected void doNotify(ClientApplicationEvent event) {
-        restTemplate.postForEntity(buildUrl(), createHipChatNotification(event), Void.class);
+    protected void doNotify(ClientApplicationEvent event, Application application) {
+        restTemplate.postForEntity(buildUrl(), createHipChatNotification(event, application), Void.class);
     }
 
     protected String buildUrl() {
         return String.format("%s/room/%s/notification?auth_token=%s", url.toString(), roomId, authToken);
     }
 
-    protected HttpEntity<Map<String, Object>> createHipChatNotification(ClientApplicationEvent event) {
+    protected HttpEntity<Map<String, Object>> createHipChatNotification(ClientApplicationEvent event,
+                                                                        Application application) {
         Map<String, Object> body = new HashMap<>();
         body.put("color", getColor(event));
-        body.put("message", getMessage(event));
+        body.put("message", getMessage(event, application));
         body.put("notify", getNotify());
         body.put("message_format", "html");
 
@@ -94,13 +100,21 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
         return notify;
     }
 
-    protected String getMessage(ClientApplicationEvent event) {
-        return description.getValue(event, String.class);
+    protected String getMessage(ClientApplicationEvent event, Application application) {
+        Map<String, Object> root = new HashMap<>();
+        root.put("event", event);
+        root.put("application", application);
+        root.put("lastStatus", getLastStatus(event.getApplication()));
+        StandardEvaluationContext context = new StandardEvaluationContext(root);
+        context.addPropertyAccessor(new MapAccessor());
+        return description.getValue(context, String.class);
     }
 
     protected String getColor(ClientApplicationEvent event) {
         if (event instanceof ClientApplicationStatusChangedEvent) {
-            return "UP".equals(((ClientApplicationStatusChangedEvent) event).getTo().getStatus()) ? "green" : "red";
+            return "UP".equals(((ClientApplicationStatusChangedEvent) event).getStatusInfo().getStatus()) ?
+                    "green" :
+                    "red";
         } else {
             return "gray";
         }

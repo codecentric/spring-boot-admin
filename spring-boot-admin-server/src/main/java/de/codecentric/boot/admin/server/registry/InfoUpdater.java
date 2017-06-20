@@ -17,6 +17,7 @@ package de.codecentric.boot.admin.server.registry;
 
 import de.codecentric.boot.admin.server.event.ClientApplicationInfoChangedEvent;
 import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.model.Info;
 import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
@@ -48,7 +49,14 @@ public class InfoUpdater implements ApplicationEventPublisherAware {
         this.applicationOps = applicationOps;
     }
 
-    public void updateInfo(Application application) {
+    public void updateInfo(ApplicationId id) {
+        Application application = store.find(id);
+        if (application != null) {
+            updateInfo(application);
+        }
+    }
+
+    private void updateInfo(Application application) {
         if (application.getStatusInfo().isOffline() || application.getStatusInfo().isUnknown()) {
             return;
         }
@@ -56,7 +64,7 @@ public class InfoUpdater implements ApplicationEventPublisherAware {
         queryInfo(application).filter(info -> !info.equals(application.getInfo())).doOnNext(info -> {
             Application newState = Application.copyOf(application).info(info).build();
             store.save(newState);
-            publisher.publishEvent(new ClientApplicationInfoChangedEvent(newState, info));
+            publisher.publishEvent(new ClientApplicationInfoChangedEvent(application.getId(), info));
         }).subscribe();
     }
 

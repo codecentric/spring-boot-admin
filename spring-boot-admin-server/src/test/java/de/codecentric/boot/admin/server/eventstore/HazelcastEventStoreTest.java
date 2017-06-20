@@ -49,8 +49,8 @@ public class HazelcastEventStoreTest {
         Application application = Application.create(ApplicationId.of("id"),
                 Registration.create("foo", "http://health").build()).build();
         List<ClientApplicationEvent> events = Arrays.asList(
-                new ClientApplicationRegisteredEvent(application, application.getRegistration()),
-                new ClientApplicationDeregisteredEvent(application));
+                new ClientApplicationRegisteredEvent(application.getId(), application.getRegistration()),
+                new ClientApplicationDeregisteredEvent(application.getId()));
 
         for (ClientApplicationEvent event : events) {
             store.store(event);

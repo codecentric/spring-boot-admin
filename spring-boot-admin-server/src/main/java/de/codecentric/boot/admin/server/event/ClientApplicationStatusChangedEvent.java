@@ -15,7 +15,7 @@
  */
 package de.codecentric.boot.admin.server.event;
 
-import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.model.StatusInfo;
 
 /**
@@ -25,20 +25,14 @@ import de.codecentric.boot.admin.server.model.StatusInfo;
  */
 public class ClientApplicationStatusChangedEvent extends ClientApplicationEvent {
     private static final long serialVersionUID = 1L;
-    private final StatusInfo from;
-    private final StatusInfo to;
+    private final StatusInfo statusInfo;
 
-    public ClientApplicationStatusChangedEvent(Application application, StatusInfo from, StatusInfo to) {
+    public ClientApplicationStatusChangedEvent(ApplicationId application, StatusInfo statusInfo) {
         super(application, "STATUS_CHANGED");
-        this.from = from;
-        this.to = to;
+        this.statusInfo = statusInfo;
     }
 
-    public StatusInfo getFrom() {
-        return from;
-    }
-
-    public StatusInfo getTo() {
-        return to;
+    public StatusInfo getStatusInfo() {
+        return statusInfo;
     }
 }

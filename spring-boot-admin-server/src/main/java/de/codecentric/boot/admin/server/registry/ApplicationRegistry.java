@@ -71,10 +71,10 @@ public class ApplicationRegistry implements ApplicationEventPublisherAware {
         Application replaced = store.save(application);
         if (replaced == null) {
             LOGGER.info("New Application {} registered", application);
-            publisher.publishEvent(new ClientApplicationRegisteredEvent(application, registration));
+            publisher.publishEvent(new ClientApplicationRegisteredEvent(applicationId, registration));
         } else {
             LOGGER.debug("Application {} refreshed", application);
-            publisher.publishEvent(new ClientApplicationRegistrationUpdatedEvent(application, registration));
+            publisher.publishEvent(new ClientApplicationRegistrationUpdatedEvent(applicationId, registration));
         }
         return application;
     }
@@ -118,7 +118,7 @@ public class ApplicationRegistry implements ApplicationEventPublisherAware {
         Application app = store.delete(id);
         if (app != null) {
             LOGGER.info("Application {} unregistered ", app);
-            publisher.publishEvent(new ClientApplicationDeregisteredEvent(app));
+            publisher.publishEvent(new ClientApplicationDeregisteredEvent(id));
         }
         return app;
     }

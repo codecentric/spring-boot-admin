@@ -1,11 +1,11 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2014-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@ import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.model.Registration;
 import de.codecentric.boot.admin.server.model.StatusInfo;
+import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,27 +32,33 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 public class MailNotifierTest {
     private final Application application = Application.create(ApplicationId.of("-id-"),
             Registration.create("App", "http://health").build()).build();
     private MailSender sender;
     private MailNotifier notifier;
+    private ApplicationStore store;
 
     @Before
     public void setup() {
+        store = mock(ApplicationStore.class);
+        when(store.find(application.getId())).thenReturn(application);
+
         sender = mock(MailSender.class);
 
-        notifier = new MailNotifier(sender);
+        notifier = new MailNotifier(sender, store);
         notifier.setTo(new String[]{"foo@bar.com"});
         notifier.setCc(new String[]{"bar@foo.com"});
         notifier.setFrom("SBA <no-reply@example.com>");
-        notifier.setSubject("#{application.id} is #{to.status}");
+        notifier.setSubject("#{application.id} is #{event.statusInfo.status}");
     }
 
     @Test
     public void test_onApplicationEvent() {
-        notifier.notify(new ClientApplicationStatusChangedEvent(application, StatusInfo.ofDown(), StatusInfo.ofUp()));
+        notifier.notify(new ClientApplicationStatusChangedEvent(application.getId(), StatusInfo.ofDown()));
+        notifier.notify(new ClientApplicationStatusChangedEvent(application.getId(), StatusInfo.ofUp()));
 
         SimpleMailMessage expected = new SimpleMailMessage();
         expected.setTo(new String[]{"foo@bar.com"});
@@ -68,15 +75,14 @@ public class MailNotifierTest {
     @Test
     public void test_onApplicationEvent_disbaled() {
         notifier.setEnabled(false);
-        notifier.notify(new ClientApplicationStatusChangedEvent(application, StatusInfo.ofDown(), StatusInfo.ofUp()));
+        notifier.notify(new ClientApplicationStatusChangedEvent(application.getId(), StatusInfo.ofUp()));
 
         verifyNoMoreInteractions(sender);
     }
 
     @Test
     public void test_onApplicationEvent_noSend() {
-        notifier.notify(
-                new ClientApplicationStatusChangedEvent(application, StatusInfo.ofUnknown(), StatusInfo.ofUp()));
+        notifier.notify(new ClientApplicationStatusChangedEvent(application.getId(), StatusInfo.ofUp()));
 
         verifyNoMoreInteractions(sender);
     }
@@ -84,21 +90,19 @@ public class MailNotifierTest {
     @Test
     public void test_onApplicationEvent_noSend_wildcard() {
         notifier.setIgnoreChanges(new String[]{"*:UP"});
-        notifier.notify(
-                new ClientApplicationStatusChangedEvent(application, StatusInfo.ofOffline(), StatusInfo.ofUp()));
+        notifier.notify(new ClientApplicationStatusChangedEvent(application.getId(), StatusInfo.ofUp()));
 
         verifyNoMoreInteractions(sender);
     }
 
     @Test
     public void test_onApplicationEvent_throw_doesnt_propagate() {
-        Notifier notifier = new AbstractStatusChangeNotifier() {
+        Notifier notifier = new AbstractStatusChangeNotifier(store) {
             @Override
-            protected void doNotify(ClientApplicationEvent event) throws Exception {
+            protected void doNotify(ClientApplicationEvent event, Application application) throws Exception {
                 throw new IllegalStateException("test");
             }
         };
-        notifier.notify(
-                new ClientApplicationStatusChangedEvent(application, StatusInfo.ofOffline(), StatusInfo.ofUp()));
+        notifier.notify(new ClientApplicationStatusChangedEvent(application.getId(), StatusInfo.ofUp()));
     }
 }

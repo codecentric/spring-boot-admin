@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.registry;
 
 import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.server.utils.reactive.ReactiveUtils;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
@@ -45,8 +46,7 @@ public class InfoUpdateTrigger {
                            .subscribeOn(Schedulers.newSingle("info-updater"))
                            .ofType(ClientApplicationStatusChangedEvent.class)
                            .cast(ClientApplicationStatusChangedEvent.class)
-                           .doOnNext(this::updateInfo)
-                           .retry()
+                           .doOnNext(this::updateInfo).retryWhen(ReactiveUtils.logAndRetryAny(log))
                            .subscribe();
     }
 

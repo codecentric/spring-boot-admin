@@ -49,8 +49,8 @@ public class NotificationTriggerTest {
         doNothing().when(notifier).notify(isA(ClientApplicationEvent.class));
 
         //when registered event is emitted
-        ClientApplicationStatusChangedEvent event = new ClientApplicationStatusChangedEvent(application,
-                StatusInfo.ofUp(), StatusInfo.ofDown());
+        ClientApplicationStatusChangedEvent event = new ClientApplicationStatusChangedEvent(application.getId(),
+                StatusInfo.ofDown());
         events.next(event);
         //then should notify
         verify(notifier, times(1)).notify(event);
@@ -58,7 +58,7 @@ public class NotificationTriggerTest {
         //when registered event is emitted but the trigger has been stopped
         trigger.stop();
         reset(notifier);
-        events.next(new ClientApplicationRegisteredEvent(application, application.getRegistration()));
+        events.next(new ClientApplicationRegisteredEvent(application.getId(), application.getRegistration()));
         //then should not notify
         verify(notifier, never()).notify(event);
     }

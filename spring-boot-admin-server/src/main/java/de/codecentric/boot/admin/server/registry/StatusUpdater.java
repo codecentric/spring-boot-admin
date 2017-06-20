@@ -61,7 +61,14 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
         }
     }
 
-    public void updateStatus(Application application) {
+    public void updateStatus(ApplicationId id) {
+        Application application = store.find(id);
+        if (application != null) {
+            updateStatus(application);
+        }
+    }
+
+    private void updateStatus(Application application) {
         StatusInfo oldStatus = application.getStatusInfo();
         queryStatus(application).filter(newStatus -> !newStatus.getStatus().equals(oldStatus.getStatus()))
                                 .doOnNext(newStatus -> {
@@ -70,18 +77,19 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
                                                                       .build();
                                     store.save(newState);
                                     publisher.publishEvent(
-                                            new ClientApplicationStatusChangedEvent(newState, oldStatus, newStatus));
+                                            new ClientApplicationStatusChangedEvent(application.getId(), newStatus));
                                 })
                                 .subscribe();
     }
 
     protected Mono<StatusInfo> queryStatus(Application application) {
-        log.trace("Updating status for {}", application);
+        log.debug("Querying status for {}", application);
         lastQueried.put(application.getId(), System.currentTimeMillis());
         return applicationOps.getHealth(application)
                              .log(log.getName(), Level.FINEST)
                              .map(this::convertStatusInfo)
-                             .onErrorResume(ex -> Mono.just(convertStatusInfo(application, ex)));
+                             .doOnError(ex -> logError(application, ex))
+                             .onErrorResume(ex -> Mono.just(convertStatusInfo(ex)));
     }
 
     protected StatusInfo convertStatusInfo(ResponseEntity<Map<String, Serializable>> response) {
@@ -100,13 +108,15 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
         return StatusInfo.ofDown(details);
     }
 
-    protected StatusInfo convertStatusInfo(Application application, Throwable ex) {
+    protected void logError(Application application, Throwable ex) {
         if ("OFFLINE".equals(application.getStatusInfo().getStatus())) {
             log.debug("Couldn't retrieve status for {}", application, ex);
         } else {
             log.info("Couldn't retrieve status for {}", application, ex);
         }
+    }
 
+    protected StatusInfo convertStatusInfo(Throwable ex) {
         Map<String, Serializable> details = new HashMap<>();
         details.put("message", ex.getMessage());
         details.put("exception", ex.getClass().getName());

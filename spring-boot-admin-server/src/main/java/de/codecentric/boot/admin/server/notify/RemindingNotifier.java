@@ -1,11 +1,11 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2014-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,9 @@ package de.codecentric.boot.admin.server.notify;
 import de.codecentric.boot.admin.server.event.ClientApplicationDeregisteredEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.server.model.Application;
 import de.codecentric.boot.admin.server.model.ApplicationId;
+import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,18 +39,19 @@ public class RemindingNotifier extends AbstractEventNotifier {
     private String[] reminderStatuses = {"DOWN", "OFFLINE"};
     private final Notifier delegate;
 
-    public RemindingNotifier(Notifier delegate) {
+    public RemindingNotifier(Notifier delegate, ApplicationStore store) {
+        super(store);
         Assert.notNull(delegate, "'delegate' must not be null!");
         this.delegate = delegate;
     }
 
     @Override
-    public void doNotify(ClientApplicationEvent event) {
+    public void doNotify(ClientApplicationEvent event, Application application) {
         delegate.notify(event);
         if (shouldEndReminder(event)) {
-            reminders.remove(event.getApplication().getId());
+            reminders.remove(event.getApplication());
         } else if (shouldStartReminder(event)) {
-            reminders.putIfAbsent(event.getApplication().getId(), new Reminder(event));
+            reminders.putIfAbsent(event.getApplication(), new Reminder(event));
         }
     }
 
@@ -64,7 +67,8 @@ public class RemindingNotifier extends AbstractEventNotifier {
 
     protected boolean shouldStartReminder(ClientApplicationEvent event) {
         if (event instanceof ClientApplicationStatusChangedEvent) {
-            return Arrays.binarySearch(reminderStatuses, event.getApplication().getStatusInfo().getStatus()) >= 0;
+            return Arrays.binarySearch(reminderStatuses,
+                    ((ClientApplicationStatusChangedEvent) event).getStatusInfo().getStatus()) >= 0;
         }
         return false;
     }
@@ -74,7 +78,8 @@ public class RemindingNotifier extends AbstractEventNotifier {
             return true;
         }
         if (event instanceof ClientApplicationStatusChangedEvent) {
-            return Arrays.binarySearch(reminderStatuses, event.getApplication().getStatusInfo().getStatus()) < 0;
+            return Arrays.binarySearch(reminderStatuses,
+                    ((ClientApplicationStatusChangedEvent) event).getStatusInfo().getStatus()) < 0;
         }
         return false;
     }

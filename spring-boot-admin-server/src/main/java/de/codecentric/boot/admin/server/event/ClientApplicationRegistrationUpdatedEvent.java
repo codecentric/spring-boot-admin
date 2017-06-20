@@ -16,7 +16,7 @@
 
 package de.codecentric.boot.admin.server.event;
 
-import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.model.ApplicationId;
 import de.codecentric.boot.admin.server.model.Registration;
 
 /**
@@ -30,7 +30,7 @@ public class ClientApplicationRegistrationUpdatedEvent extends ClientApplication
     private static final long serialVersionUID = 1L;
     private final Registration registration;
 
-    public ClientApplicationRegistrationUpdatedEvent(Application application, Registration registration) {
+    public ClientApplicationRegistrationUpdatedEvent(ApplicationId application, Registration registration) {
         super(application, "REGISTRATION_UPDATED");
         this.registration = registration;
     }
