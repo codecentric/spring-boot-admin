@@ -68,7 +68,7 @@ public class StatusUpdater implements ApplicationEventPublisherAware {
         }
     }
 
-    private void updateStatus(Application application) {
+    protected void updateStatus(Application application) {
         StatusInfo oldStatus = application.getStatusInfo();
         queryStatus(application).filter(newStatus -> !newStatus.getStatus().equals(oldStatus.getStatus()))
                                 .doOnNext(newStatus -> {

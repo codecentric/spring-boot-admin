@@ -40,6 +40,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -74,11 +76,16 @@ public class AdminServerCoreConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public ApplicationOperations applicationOperations(HttpHeadersProvider headersProvider) {
-        WebClient webClient = WebClient.builder().clientConnector(new ReactorClientHttpConnector(options -> {
+        ReactorClientHttpConnector httpConnector = new ReactorClientHttpConnector(options -> {
             options.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,
                     adminServerProperties.getMonitor().getConnectTimeout());
             options.option(ChannelOption.SO_TIMEOUT, adminServerProperties.getMonitor().getReadTimeout());
-        })).build();
+        });
+
+        WebClient webClient = WebClient.builder()
+                                       .clientConnector(httpConnector)
+                                       .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                                       .build();
         return new ApplicationOperations(webClient, headersProvider);
     }
 

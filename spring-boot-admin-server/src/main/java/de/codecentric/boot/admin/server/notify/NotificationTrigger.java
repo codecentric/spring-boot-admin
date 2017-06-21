@@ -43,7 +43,8 @@ public class NotificationTrigger {
         subscription = Flux.from(events)
                            .log(log.getName(), Level.FINEST)
                            .subscribeOn(Schedulers.newSingle("notifications"))
-                           .doOnNext(this::sendNotifications).retryWhen(ReactiveUtils.logAndRetryAny(log))
+                           .doOnNext(this::sendNotifications)
+                           .retryWhen(ReactiveUtils.logAndRetryAny(log))
                            .subscribe();
     }
 

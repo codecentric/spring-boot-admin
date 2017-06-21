@@ -88,8 +88,7 @@ public class AdminApplicationTest {
                         deregisterApplication(location.get());
                     })
                     .assertNext((event) -> assertThat(event.opt("type")).isEqualTo("DEREGISTERED"))
-                    .then(this::listEmptyApplications)
-                    .thenCancel().verify(Duration.ofSeconds(30));
+                    .then(this::listEmptyApplications).thenCancel().verify(Duration.ofSeconds(30));
     }
 
     private Flux<JSONObject> getEventStream() {

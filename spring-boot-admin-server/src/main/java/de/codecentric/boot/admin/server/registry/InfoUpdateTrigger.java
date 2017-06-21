@@ -46,7 +46,8 @@ public class InfoUpdateTrigger {
                            .subscribeOn(Schedulers.newSingle("info-updater"))
                            .ofType(ClientApplicationStatusChangedEvent.class)
                            .cast(ClientApplicationStatusChangedEvent.class)
-                           .doOnNext(this::updateInfo).retryWhen(ReactiveUtils.logAndRetryAny(log))
+                           .doOnNext(this::updateInfo)
+                           .retryWhen(ReactiveUtils.logAndRetryAny(log))
                            .subscribe();
     }
 

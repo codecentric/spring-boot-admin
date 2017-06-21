@@ -49,7 +49,8 @@ public class StatusUpdateTrigger {
                                 .subscribeOn(Schedulers.newSingle("status-updater"))
                                 .ofType(ClientApplicationRegisteredEvent.class)
                                 .cast(ClientApplicationRegisteredEvent.class)
-                                .doOnNext(this::updateStatus).retryWhen(ReactiveUtils.logAndRetryAny(log))
+                                .doOnNext(this::updateStatus)
+                                .retryWhen(ReactiveUtils.logAndRetryAny(log))
                                 .subscribe();
 
         log.debug("Scheduled status update every {}ms", updateInterval);
