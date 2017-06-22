@@ -16,28 +16,26 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.event.ClientApplicationRegisteredEvent;
-import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.server.model.Application;
-import de.codecentric.boot.admin.server.model.ApplicationId;
-import de.codecentric.boot.admin.server.model.Registration;
-import de.codecentric.boot.admin.server.model.StatusInfo;
+import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationRegisteredEvent;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.values.Registration;
+import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import reactor.test.publisher.TestPublisher;
 
 import org.junit.Test;
 
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class NotificationTriggerTest {
-    private final Application application = Application.create(ApplicationId.of("id-1"),
-            Registration.create("foo", "http://health-1").build()).build();
+    private final Application application = Application.create(ApplicationId.of("id-1"))
+                                                       .register(Registration.create("foo", "http://health-1").build());
 
     @Test
     public void should_notify_on_event() throws InterruptedException {
@@ -46,19 +44,20 @@ public class NotificationTriggerTest {
         TestPublisher<ClientApplicationEvent> events = TestPublisher.create();
         NotificationTrigger trigger = new NotificationTrigger(notifier, events);
         trigger.start();
-        doNothing().when(notifier).notify(isA(ClientApplicationEvent.class));
+        Thread.sleep(500L); //wait for subscription
 
         //when registered event is emitted
         ClientApplicationStatusChangedEvent event = new ClientApplicationStatusChangedEvent(application.getId(),
-                StatusInfo.ofDown());
+                application.getVersion(), StatusInfo.ofDown());
         events.next(event);
         //then should notify
         verify(notifier, times(1)).notify(event);
 
         //when registered event is emitted but the trigger has been stopped
         trigger.stop();
-        reset(notifier);
-        events.next(new ClientApplicationRegisteredEvent(application.getId(), application.getRegistration()));
+        clearInvocations(notifier);
+        events.next(new ClientApplicationRegisteredEvent(application.getId(), application.getVersion(),
+                application.getRegistration()));
         //then should not notify
         verify(notifier, never()).notify(event);
     }

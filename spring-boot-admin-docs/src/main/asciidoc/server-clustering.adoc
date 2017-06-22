@@ -27,11 +27,7 @@ include::{samples-dir}/spring-boot-admin-sample-hazelcast/src/main/java/de/codec
 | Enables the Hazelcast support
 | `true`
 
-| spring.boot.admin.hazelcast.application-store
-| Name of the Hazelcast-map to store the applications
-| `"spring-boot-admin-application-store"`
-
 | spring.boot.admin.hazelcast.event-store
-| Name of the Hazelcast-list to store the events
+| Name of the Hazelcast-map to store the events
 | `"spring-boot-admin-event-store"`
 |===

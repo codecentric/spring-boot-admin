@@ -15,7 +15,9 @@
  */
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import org.springframework.util.Assert;
 
@@ -33,9 +35,7 @@ public class CompositeNotifier implements Notifier {
     }
 
     @Override
-    public void notify(ClientApplicationEvent event) {
-        for (Notifier notifier : delegates) {
-            notifier.notify(event);
-        }
+    public Mono<Void> notify(ClientApplicationEvent event) {
+        return Flux.fromIterable(delegates).flatMap(d -> d.notify(event)).then();
     }
 }

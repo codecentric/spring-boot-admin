@@ -16,8 +16,8 @@
 package de.codecentric.boot.admin.server.discovery;
 
 
-import de.codecentric.boot.admin.server.model.Application;
-import de.codecentric.boot.admin.server.model.Registration;
+import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.values.Registration;
 
 import org.springframework.cloud.client.ServiceInstance;
 

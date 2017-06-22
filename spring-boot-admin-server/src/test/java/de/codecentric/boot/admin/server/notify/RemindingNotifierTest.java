@@ -16,51 +16,59 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.server.model.Application;
-import de.codecentric.boot.admin.server.model.ApplicationId;
-import de.codecentric.boot.admin.server.model.Registration;
-import de.codecentric.boot.admin.server.model.StatusInfo;
-import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
+import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.values.Registration;
+import de.codecentric.boot.admin.server.domain.values.StatusInfo;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class RemindingNotifierTest {
-    private final Application application1 = Application.create(ApplicationId.of("id-1"),
-            Registration.create("App", "http://health").build()).statusInfo(StatusInfo.ofDown()).build();
+    private final Application application1 = Application.create(ApplicationId.of("id-1"))
+                                                        .register(Registration.create("App", "http://health").build())
+                                                        .withStatusInfo(StatusInfo.ofDown());
+    private final Application application2 = Application.create(ApplicationId.of("id-2"))
+                                                        .register(Registration.create("App", "http://health").build())
+                                                        .withStatusInfo(StatusInfo.ofDown());
     private final ClientApplicationEvent appDown = new ClientApplicationStatusChangedEvent(application1.getId(),
-            StatusInfo.ofDown());
+            application1.getVersion(), StatusInfo.ofDown());
     private final ClientApplicationEvent appUp = new ClientApplicationStatusChangedEvent(application1.getId(),
+            application1.getVersion(), StatusInfo.ofUp());
+    private final ClientApplicationEvent otherAppUp = new ClientApplicationStatusChangedEvent(application2.getId(), 0L,
             StatusInfo.ofUp());
-    private final ClientApplicationEvent otherAppUp = new ClientApplicationStatusChangedEvent(ApplicationId.of("id-2"),
-            StatusInfo.ofUp());
-    private ApplicationStore store;
+    private ApplicationRepository repository;
 
     @Before
     public void setUp() throws Exception {
-        store = mock(ApplicationStore.class);
-        when(store.find(application1.getId())).thenReturn(application1);
+        repository = mock(ApplicationRepository.class);
+        when(repository.find(application1.getId())).thenReturn(Mono.just(application1));
+        when(repository.find(application2.getId())).thenReturn(Mono.just(application2));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test_ctor_assert() {
-        new CompositeNotifier(null);
+        assertThatThrownBy(() -> new CompositeNotifier(null)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void test_remind() throws Exception {
         TestNotifier notifier = new TestNotifier();
-        RemindingNotifier reminder = new RemindingNotifier(notifier, store);
+        RemindingNotifier reminder = new RemindingNotifier(notifier, repository);
         reminder.setReminderPeriod(-1000L);
 
-        reminder.notify(appDown);
-        reminder.notify(otherAppUp);
+        StepVerifier.create(reminder.notify(appDown)).verifyComplete();
+        StepVerifier.create(reminder.notify(otherAppUp)).verifyComplete();
         reminder.sendReminders();
         reminder.sendReminders();
 
@@ -71,11 +79,11 @@ public class RemindingNotifierTest {
     @Test
     public void test_no_remind_after_up() throws Exception {
         TestNotifier notifier = new TestNotifier();
-        RemindingNotifier reminder = new RemindingNotifier(notifier, store);
+        RemindingNotifier reminder = new RemindingNotifier(notifier, repository);
         reminder.setReminderPeriod(0L);
 
-        reminder.notify(appDown);
-        reminder.notify(appUp);
+        StepVerifier.create(reminder.notify(appDown)).verifyComplete();
+        StepVerifier.create(reminder.notify(appUp)).verifyComplete();
         reminder.sendReminders();
 
         assertThat(notifier.getEvents()).containsOnly(appDown, appUp);
@@ -84,10 +92,10 @@ public class RemindingNotifierTest {
     @Test
     public void test_no_remind_before_end() throws Exception {
         TestNotifier notifier = new TestNotifier();
-        RemindingNotifier reminder = new RemindingNotifier(notifier, store);
+        RemindingNotifier reminder = new RemindingNotifier(notifier, repository);
         reminder.setReminderPeriod(Long.MAX_VALUE);
 
-        reminder.notify(appDown);
+        StepVerifier.create(reminder.notify(appDown)).verifyComplete();
         reminder.sendReminders();
 
         assertThat(notifier.getEvents()).containsOnly(appDown);

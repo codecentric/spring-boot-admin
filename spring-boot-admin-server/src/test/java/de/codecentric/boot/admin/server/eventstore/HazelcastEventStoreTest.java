@@ -15,51 +15,15 @@
  */
 package de.codecentric.boot.admin.server.eventstore;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationDeregisteredEvent;
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.event.ClientApplicationRegisteredEvent;
-import de.codecentric.boot.admin.server.model.Application;
-import de.codecentric.boot.admin.server.model.ApplicationId;
-import de.codecentric.boot.admin.server.model.Registration;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import com.hazelcast.config.Config;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.instance.HazelcastInstanceFactory;
+import com.hazelcast.test.TestHazelcastInstanceFactory;
 
-import static org.assertj.core.api.Assertions.assertThat;
+public class HazelcastEventStoreTest extends AbstractEventStoreTest {
 
-public class HazelcastEventStoreTest {
-
-    private HazelcastEventStore store;
-
-    @Before
-    public void setup() {
-        HazelcastInstance hazelcast = HazelcastInstanceFactory.newHazelcastInstance(new Config());
-        store = new HazelcastEventStore(hazelcast.getList("testList"));
+    @Override
+    protected ClientApplicationEventStore createStore(int maxLogSizePerAggregate) {
+        HazelcastInstance hazelcast = new TestHazelcastInstanceFactory(1).newHazelcastInstance();
+        return new HazelcastEventStore(maxLogSizePerAggregate, hazelcast.getMap("testList"));
     }
 
-    @Test
-    public void test_store() {
-        Application application = Application.create(ApplicationId.of("id"),
-                Registration.create("foo", "http://health").build()).build();
-        List<ClientApplicationEvent> events = Arrays.asList(
-                new ClientApplicationRegisteredEvent(application.getId(), application.getRegistration()),
-                new ClientApplicationDeregisteredEvent(application.getId()));
-
-        for (ClientApplicationEvent event : events) {
-            store.store(event);
-        }
-
-        // Items are stored in reverse order
-        List<ClientApplicationEvent> reversed = new ArrayList<>(events);
-        Collections.reverse(reversed);
-
-        assertThat(store.findAll()).containsOnlyElementsOf(reversed);
-    }
 }

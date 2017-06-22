@@ -15,8 +15,8 @@
  */
 package de.codecentric.boot.admin.server.notify.filter;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
 
 public interface NotificationFilter {
     boolean filter(ClientApplicationEvent event, Application application);

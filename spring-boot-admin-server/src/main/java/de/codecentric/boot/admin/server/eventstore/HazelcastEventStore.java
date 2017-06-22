@@ -15,48 +15,46 @@
  */
 package de.codecentric.boot.admin.server.eventstore;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.values.ApplicationId;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import com.hazelcast.core.IList;
-import com.hazelcast.core.ItemEvent;
-import com.hazelcast.core.ItemListener;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.hazelcast.core.EntryAdapter;
+import com.hazelcast.core.EntryEvent;
+import com.hazelcast.core.IMap;
+import com.hazelcast.map.listener.MapListener;
 
 /**
- * Event-Store backed by a Hazelcast-list.
+ * Event-Store backed by a Hazelcast-map.
  *
  * @author Johannes Edmeier
  */
-public class HazelcastEventStore extends ClientApplicationEventPublisher implements ClientApplicationEventStore {
+public class HazelcastEventStore extends ConcurrentMapEventStore {
 
-    private IList<ClientApplicationEvent> store;
+    private static final Logger log = LoggerFactory.getLogger(HazelcastEventStore.class);
 
-    public HazelcastEventStore(IList<ClientApplicationEvent> store) {
-        this.store = store;
-        store.addItemListener(new ItemListener<ClientApplicationEvent>() {
+    public HazelcastEventStore(IMap<ApplicationId, List<ClientApplicationEvent>> eventLogs) {
+        this(100, eventLogs);
+    }
+
+    public HazelcastEventStore(int maxLogSizePerAggregate, IMap<ApplicationId, List<ClientApplicationEvent>> eventLog) {
+        super(maxLogSizePerAggregate, eventLog);
+
+        eventLog.addEntryListener((MapListener) new EntryAdapter<ApplicationId, List<ClientApplicationEvent>>() {
             @Override
-            public void itemAdded(ItemEvent<ClientApplicationEvent> item) {
-                HazelcastEventStore.this.publish(item.getItem());
-            }
-
-            @Override
-            public void itemRemoved(ItemEvent<ClientApplicationEvent> item) {
+            public void entryUpdated(EntryEvent<ApplicationId, List<ClientApplicationEvent>> event) {
+                log.debug("Updated {}", event);
+                long lastKnownVersion = getLastVersion(event.getOldValue());
+                List<ClientApplicationEvent> newEvents = event.getValue()
+                                                              .stream()
+                                                              .filter(e -> e.getVersion() > lastKnownVersion)
+                                                              .collect(Collectors.toList());
+                HazelcastEventStore.this.publish(newEvents);
             }
         }, true);
-    }
-
-    @Override
-    public Collection<ClientApplicationEvent> findAll() {
-        ArrayList<ClientApplicationEvent> list = new ArrayList<>(store);
-        Collections.reverse(list);
-        return list;
-    }
-
-    @Override
-    public void store(ClientApplicationEvent event) {
-        store.add(event);
     }
 
 }

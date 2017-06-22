@@ -15,15 +15,14 @@
  */
 package de.codecentric.boot.admin.server.discovery;
 
-import de.codecentric.boot.admin.server.model.Application;
-import de.codecentric.boot.admin.server.model.ApplicationId;
-import de.codecentric.boot.admin.server.model.Registration;
-import de.codecentric.boot.admin.server.registry.ApplicationRegistry;
-import de.codecentric.boot.admin.server.registry.HashingApplicationUrlIdGenerator;
-import de.codecentric.boot.admin.server.registry.store.SimpleApplicationStore;
+import de.codecentric.boot.admin.server.domain.entities.EventSourcingApplicationRepository;
+import de.codecentric.boot.admin.server.domain.values.Registration;
+import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
+import de.codecentric.boot.admin.server.services.ApplicationRegistry;
+import de.codecentric.boot.admin.server.services.HashingApplicationUrlIdGenerator;
+import reactor.test.StepVerifier;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +32,6 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.event.HeartbeatEvent;
 import org.springframework.cloud.client.discovery.event.InstanceRegisteredEvent;
 import org.springframework.cloud.client.discovery.event.ParentHeartbeatEvent;
-import org.springframework.context.ApplicationEventPublisher;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
@@ -49,10 +47,12 @@ public class ApplicationDiscoveryListenerTest {
 
     @Before
     public void setup() {
-        registry = new ApplicationRegistry(new SimpleApplicationStore(), new HashingApplicationUrlIdGenerator());
-        registry.setApplicationEventPublisher(mock(ApplicationEventPublisher.class));
         discovery = mock(DiscoveryClient.class);
-        listener = new ApplicationDiscoveryListener(discovery, registry);
+        EventSourcingApplicationRepository repository = new EventSourcingApplicationRepository(
+                new InMemoryEventStore());
+        repository.start();
+        registry = new ApplicationRegistry(repository, new HashingApplicationUrlIdGenerator());
+        listener = new ApplicationDiscoveryListener(discovery, registry, repository);
     }
 
     @Test
@@ -64,7 +64,7 @@ public class ApplicationDiscoveryListenerTest {
         listener.setIgnoredServices(singleton("service"));
         listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
-        assertThat(registry.getApplications()).isEmpty();
+        StepVerifier.create(registry.getApplications()).verifyComplete();
     }
 
     @Test
@@ -76,7 +76,7 @@ public class ApplicationDiscoveryListenerTest {
         listener.setServices(singleton("notService"));
         listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
-        assertThat(registry.getApplications()).isEmpty();
+        StepVerifier.create(registry.getApplications()).verifyComplete();
     }
 
     @Test
@@ -88,8 +88,9 @@ public class ApplicationDiscoveryListenerTest {
         listener.setIgnoredServices(singleton("rabbit-*"));
         listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
-        Collection<Application> applications = registry.getApplications();
-        assertThat(applications).extracting(a -> a.getRegistration().getName()).containsOnly("service");
+        StepVerifier.create(registry.getApplications())
+                    .assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service"))
+                    .verifyComplete();
     }
 
     @Test
@@ -101,8 +102,9 @@ public class ApplicationDiscoveryListenerTest {
         listener.setServices(singleton("ser*"));
         listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
-        Collection<Application> applications = registry.getApplications();
-        assertThat(applications).extracting(a -> a.getRegistration().getName()).containsOnly("service");
+        StepVerifier.create(registry.getApplications())
+                    .assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service"))
+                    .verifyComplete();
     }
 
     @Test
@@ -117,8 +119,9 @@ public class ApplicationDiscoveryListenerTest {
         listener.setIgnoredServices(singleton("service-*"));
         listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
-        Collection<Application> applications = registry.getApplications();
-        assertThat(applications).extracting(a -> a.getRegistration().getName()).containsOnly("service");
+        StepVerifier.create(registry.getApplications())
+                    .assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service"))
+                    .verifyComplete();
     }
 
     @Test
@@ -129,13 +132,15 @@ public class ApplicationDiscoveryListenerTest {
 
         listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
-        assertThat(registry.getApplications()).hasSize(1);
-        Application application = registry.getApplications().iterator().next();
+        StepVerifier.create(registry.getApplications()).assertNext(application -> {
+            Registration registration = application.getRegistration();
+            assertThat(registration.getHealthUrl()).isEqualTo("http://localhost:80/health");
+            assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80");
+            assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80");
+            assertThat(registration.getName()).isEqualTo("service");
+        }).verifyComplete();
 
-        assertThat(application.getRegistration().getHealthUrl()).isEqualTo("http://localhost:80/health");
-        assertThat(application.getRegistration().getManagementUrl()).isEqualTo("http://localhost:80");
-        assertThat(application.getRegistration().getServiceUrl()).isEqualTo("http://localhost:80");
-        assertThat(application.getRegistration().getName()).isEqualTo("service");
+
     }
 
     @Test
@@ -148,16 +153,23 @@ public class ApplicationDiscoveryListenerTest {
                 singletonList(new DefaultServiceInstance("service", "localhost", 80, false)));
 
         listener.onApplicationEvent(new HeartbeatEvent(new Object(), heartbeat));
-        assertThat(registry.getApplications()).isEmpty();
+        StepVerifier.create(registry.getApplications()).verifyComplete();
 
         listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
-        assertThat(registry.getApplications()).hasSize(1);
+        StepVerifier.create(registry.getApplications())
+                    .assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service"))
+                    .verifyComplete();
     }
 
     @Test
     public void deregister_removed_app() {
-        registry.register(Registration.create("ignored", "http://health").build());
-        registry.register(Registration.create("different-source", "http://health2").source("http-api").build());
+        StepVerifier.create(registry.register(Registration.create("ignored", "http://health").build()))
+                    .consumeNextWith((id) -> {})
+                    .verifyComplete();
+        StepVerifier.create(
+                registry.register(Registration.create("different-source", "http://health2").source("http-api").build()))
+                    .consumeNextWith((id) -> {})
+                    .verifyComplete();
         listener.setIgnoredServices(singleton("ignored"));
 
         List<ServiceInstance> instances = new ArrayList<>();
@@ -168,16 +180,35 @@ public class ApplicationDiscoveryListenerTest {
         when(discovery.getInstances("service")).thenReturn(instances);
 
         listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
-        assertThat(registry.getApplicationsByName("service")).hasSize(2);
-        assertThat(registry.getApplicationsByName("ignored")).hasSize(1);
-        assertThat(registry.getApplicationsByName("different-source")).hasSize(1);
+
+        StepVerifier.create(registry.getApplicationsByName("service"))
+                    .assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service"))
+                    .assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service"))
+                    .verifyComplete();
+
+        StepVerifier.create(registry.getApplicationsByName("ignored"))
+                    .assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("ignored"))
+                    .verifyComplete();
+
+        StepVerifier.create(registry.getApplicationsByName("different-source"))
+                    .assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("different-source"))
+                    .verifyComplete();
+
 
         instances.remove(0);
 
         listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
-        assertThat(registry.getApplicationsByName("service")).hasSize(1);
-        assertThat(registry.getApplicationsByName("ignored")).hasSize(1);
-        assertThat(registry.getApplicationsByName("different-source")).hasSize(1);
+        StepVerifier.create(registry.getApplicationsByName("service"))
+                    .assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service"))
+                    .verifyComplete();
+
+        StepVerifier.create(registry.getApplicationsByName("ignored"))
+                    .assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("ignored"))
+                    .verifyComplete();
+
+        StepVerifier.create(registry.getApplicationsByName("different-source"))
+                    .assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("different-source"))
+                    .verifyComplete();
     }
 
 }

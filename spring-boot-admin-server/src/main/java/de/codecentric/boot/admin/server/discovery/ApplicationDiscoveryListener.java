@@ -15,14 +15,18 @@
  */
 package de.codecentric.boot.admin.server.discovery;
 
-import de.codecentric.boot.admin.server.model.Application;
-import de.codecentric.boot.admin.server.model.ApplicationId;
-import de.codecentric.boot.admin.server.model.Registration;
-import de.codecentric.boot.admin.server.registry.ApplicationRegistry;
+import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
+import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.values.Registration;
+import de.codecentric.boot.admin.server.services.ApplicationRegistry;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.ServiceInstance;
@@ -40,10 +44,11 @@ import org.springframework.util.PatternMatchUtils;
  * @author Johannes Edmeier
  */
 public class ApplicationDiscoveryListener {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationDiscoveryListener.class);
+    private static final Logger log = LoggerFactory.getLogger(ApplicationDiscoveryListener.class);
     private static final String SOURCE = "discovery";
     private final DiscoveryClient discoveryClient;
     private final ApplicationRegistry registry;
+    private final ApplicationRepository repository;
     private final HeartbeatMonitor monitor = new HeartbeatMonitor();
     private ServiceInstanceConverter converter = new DefaultServiceInstanceConverter();
 
@@ -59,9 +64,12 @@ public class ApplicationDiscoveryListener {
      */
     private Set<String> services = new HashSet<>(Collections.singletonList("*"));
 
-    public ApplicationDiscoveryListener(DiscoveryClient discoveryClient, ApplicationRegistry registry) {
+    public ApplicationDiscoveryListener(DiscoveryClient discoveryClient,
+                                        ApplicationRegistry registry,
+                                        ApplicationRepository repository) {
         this.discoveryClient = discoveryClient;
         this.registry = registry;
+        this.repository = repository;
     }
 
     @EventListener
@@ -86,61 +94,46 @@ public class ApplicationDiscoveryListener {
     }
 
     protected void discover() {
-        final Set<ApplicationId> staleApplicationIds = getAllApplicationIdsFromRegistry();
-        for (String serviceId : discoveryClient.getServices()) {
-            if (!ignoreService(serviceId) && registerService(serviceId)) {
-                for (ServiceInstance instance : discoveryClient.getInstances(serviceId)) {
-                    ApplicationId id = register(instance);
-                    staleApplicationIds.remove(id);
-                }
-            } else {
-                LOGGER.debug("Ignoring discovered service {}", serviceId);
-            }
+        Flux.fromIterable(discoveryClient.getServices())
+            .filter(this::shouldRegisterService)
+            .flatMapIterable(discoveryClient::getInstances)
+            .flatMap(this::registerInstance)
+            .collect(Collectors.toSet())
+            .flatMap(this::removeStaleInstances)
+            .subscribe();
+    }
+
+    protected Mono<Void> removeStaleInstances(Set<ApplicationId> registeredApplicationIds) {
+        return repository.findAll()
+                         .filter(application -> SOURCE.equals(application.getRegistration().getSource()))
+                         .map(Application::getId)
+                         .filter(id -> !registeredApplicationIds.contains(id))
+                         .doOnNext(id -> log.info("Application ({}) missing in DiscoveryClient services ", id))
+                         .flatMap(registry::deregister)
+                         .then();
+    }
+
+    protected boolean shouldRegisterService(final String serviceId) {
+        boolean shouldRegister = matchesPattern(serviceId, services) && !matchesPattern(serviceId, ignoredServices);
+        if (!shouldRegister) {
+            log.debug("Ignoring discovered service {}", serviceId);
         }
-        for (ApplicationId staleApplicationId : staleApplicationIds) {
-            LOGGER.info("Application ({}) missing in DiscoveryClient services ", staleApplicationId);
-            registry.deregister(staleApplicationId);
-        }
+        return shouldRegister;
     }
 
-    protected boolean ignoreService(final String serviceId) {
-        return checkPatternIsMatching(serviceId, ignoredServices);
+    protected boolean matchesPattern(String serviceId, Set<String> patterns) {
+        return patterns.stream().anyMatch(pattern -> PatternMatchUtils.simpleMatch(pattern, serviceId));
     }
 
-    protected boolean registerService(final String serviceId) {
-        return checkPatternIsMatching(serviceId, services);
-    }
-
-    protected boolean checkPatternIsMatching(String serviceId, Set<String> patterns) {
-        for (String pattern : patterns) {
-            if (PatternMatchUtils.simpleMatch(pattern, serviceId)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    protected final Set<ApplicationId> getAllApplicationIdsFromRegistry() {
-        Set<ApplicationId> result = new HashSet<>();
-        for (Application application : registry.getApplications()) {
-            if (!ignoreService(application.getRegistration().getName()) &&
-                registerService(application.getRegistration().getName()) &&
-                SOURCE.equals(application.getRegistration().getSource())) {
-                result.add(application.getId());
-            }
-        }
-        return result;
-    }
-
-    protected ApplicationId register(ServiceInstance instance) {
+    protected Mono<ApplicationId> registerInstance(ServiceInstance instance) {
         try {
             Registration registration = converter.convert(instance).toBuilder().source(SOURCE).build();
-            LOGGER.debug("Registering discovered application {}", registration);
-            return registry.register(registration).getId();
+            log.debug("Registering discovered application {}", registration);
+            return registry.register(registration);
         } catch (Exception ex) {
-            LOGGER.error("Couldn't register application for service {}", instance, ex);
+            log.error("Couldn't register application for service {}", instance, ex);
         }
-        return null;
+        return Mono.empty();
     }
 
     public void setConverter(ServiceInstanceConverter converter) {

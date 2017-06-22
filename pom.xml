@@ -36,7 +36,6 @@
         <main.basedir>${basedir}</main.basedir>
         <spring-boot.version>2.0.0.BUILD-SNAPSHOT</spring-boot.version>
         <spring-cloud.version>Finchley.BUILD-SNAPSHOT</spring-cloud.version>
-        <hystrix-dashboard.version>1.5.5</hystrix-dashboard.version>
         <build-plugin.jacoco.version>0.7.7.201606060606</build-plugin.jacoco.version>
         <build-plugin.coveralls.version>4.2.0</build-plugin.coveralls.version>
         <build-plugin.gpg.version>1.6</build-plugin.gpg.version>
@@ -116,6 +115,13 @@
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
                 </configuration>
             </plugin>
         </plugins>

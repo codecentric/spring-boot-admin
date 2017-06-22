@@ -16,10 +16,10 @@
 
 package de.codecentric.boot.admin.server.notify.filter;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationRegisteredEvent;
-import de.codecentric.boot.admin.server.model.Application;
-import de.codecentric.boot.admin.server.model.ApplicationId;
-import de.codecentric.boot.admin.server.model.Registration;
+import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationRegisteredEvent;
+import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.values.Registration;
 
 import org.junit.Test;
 
@@ -30,16 +30,16 @@ public class ApplicationIdNotificationFilterTest {
     public void test_filterByName() {
         NotificationFilter filter = new ApplicationIdNotificationFilter(ApplicationId.of("cafebabe"), -1L);
 
-        Application filteredApplication = Application.create(ApplicationId.of("cafebabe"),
-                Registration.create("foo", "http://health").build()).build();
+        Application filteredApplication = Application.create(ApplicationId.of("cafebabe"))
+                                                     .register(Registration.create("foo", "http://health").build());
         ClientApplicationRegisteredEvent filteredEvent = new ClientApplicationRegisteredEvent(
-                filteredApplication.getId(), filteredApplication.getRegistration());
+                filteredApplication.getId(), filteredApplication.getVersion(), filteredApplication.getRegistration());
         assertThat(filter.filter(filteredEvent, filteredApplication)).isTrue();
 
-        Application ignoredApplication = Application.create(ApplicationId.of("-"),
-                Registration.create("foo", "http://health").build()).build();
+        Application ignoredApplication = Application.create(ApplicationId.of("-"))
+                                                    .register(Registration.create("foo", "http://health").build());
         ClientApplicationRegisteredEvent ignoredEvent = new ClientApplicationRegisteredEvent(ignoredApplication.getId(),
-                ignoredApplication.getRegistration());
+                ignoredApplication.getVersion(), ignoredApplication.getRegistration());
         assertThat(filter.filter(ignoredEvent, ignoredApplication)).isFalse();
     }
 }

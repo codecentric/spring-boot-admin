@@ -15,11 +15,12 @@
  */
 package de.codecentric.boot.admin.server.notify.filter;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.notify.AbstractEventNotifier;
 import de.codecentric.boot.admin.server.notify.Notifier;
-import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
+import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,8 +46,8 @@ public class FilteringNotifier extends AbstractEventNotifier {
     private long cleanupInterval = 10_000L;
     private AtomicLong counter = new AtomicLong();
 
-    public FilteringNotifier(Notifier delegate, ApplicationStore store) {
-        super(store);
+    public FilteringNotifier(Notifier delegate, ApplicationRepository repository) {
+        super(repository);
         Assert.notNull(delegate, "'delegate' must not be null!");
         this.delegate = delegate;
     }
@@ -57,9 +58,11 @@ public class FilteringNotifier extends AbstractEventNotifier {
     }
 
     @Override
-    public void doNotify(ClientApplicationEvent event, Application application) {
+    public Mono<Void> doNotify(ClientApplicationEvent event, Application application) {
         if (!filter(event, application)) {
-            delegate.notify(event);
+            return delegate.notify(event);
+        } else {
+            return Mono.empty();
         }
     }
 

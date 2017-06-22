@@ -15,14 +15,12 @@
  */
 package de.codecentric.boot.admin.server.config;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.values.ApplicationId;
 import de.codecentric.boot.admin.server.eventstore.ClientApplicationEventStore;
 import de.codecentric.boot.admin.server.eventstore.HazelcastEventStore;
-import de.codecentric.boot.admin.server.model.Application;
-import de.codecentric.boot.admin.server.model.ApplicationId;
-import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
-import de.codecentric.boot.admin.server.registry.store.HazelcastApplicationStore;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -33,7 +31,6 @@ import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfigurati
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IList;
 import com.hazelcast.core.IMap;
 
 @Configuration
@@ -42,24 +39,15 @@ import com.hazelcast.core.IMap;
 @AutoConfigureBefore(AdminServerWebConfiguration.class)
 @AutoConfigureAfter(HazelcastAutoConfiguration.class)
 public class HazelcastStoreConfiguration {
-    @Value("${spring.boot.admin.hazelcast.application-store:spring-boot-admin-application-store}")
-    private String hazelcastMapName;
 
     @Value("${spring.boot.admin.hazelcast.event-store:spring-boot-admin-event-store}")
-    private String eventListName;
-
-    @Bean
-    @ConditionalOnMissingBean
-    public ApplicationStore applicationStore(HazelcastInstance hazelcastInstance) {
-        IMap<ApplicationId, Application> map = hazelcastInstance.getMap(hazelcastMapName);
-        map.addIndex("registration.name", false);
-        return new HazelcastApplicationStore(map);
-    }
+    private String mapName;
 
     @Bean
     @ConditionalOnMissingBean
     public ClientApplicationEventStore eventStore(HazelcastInstance hazelcastInstance) {
-        IList<ClientApplicationEvent> list = hazelcastInstance.getList(eventListName);
-        return new HazelcastEventStore(list);
+        IMap<ApplicationId, List<ClientApplicationEvent>> map = hazelcastInstance.getMap(mapName);
+
+        return new HazelcastEventStore(map);
     }
 }

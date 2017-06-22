@@ -15,10 +15,11 @@
  */
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.server.model.Application;
-import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
+import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
+import reactor.core.publisher.Mono;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,19 +32,22 @@ import org.slf4j.LoggerFactory;
 public class LoggingNotifier extends AbstractStatusChangeNotifier {
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggingNotifier.class);
 
-    public LoggingNotifier(ApplicationStore store) {
-        super(store);
+    public LoggingNotifier(ApplicationRepository repository) {
+        super(repository);
     }
 
     @Override
-    protected void doNotify(ClientApplicationEvent event, Application application) throws Exception {
-        if (event instanceof ClientApplicationStatusChangedEvent) {
-            LOGGER.info("Application {} ({}) is {}", application.getRegistration().getName(), event.getApplication(),
-                    ((ClientApplicationStatusChangedEvent) event).getStatusInfo().getStatus());
-        } else {
-            LOGGER.info("Application {} ({}) {}", application.getRegistration().getName(), event.getApplication(),
-                    event.getType());
-        }
+    protected Mono<Void> doNotify(ClientApplicationEvent event, Application application) {
+        return Mono.fromRunnable(() -> {
+            if (event instanceof ClientApplicationStatusChangedEvent) {
+                LOGGER.info("Application {} ({}) is {}", application.getRegistration().getName(),
+                        event.getApplication(),
+                        ((ClientApplicationStatusChangedEvent) event).getStatusInfo().getStatus());
+            } else {
+                LOGGER.info("Application {} ({}) {}", application.getRegistration().getName(), event.getApplication(),
+                        event.getType());
+            }
+        });
     }
 
 }

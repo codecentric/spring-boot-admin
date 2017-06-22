@@ -15,9 +15,12 @@
  */
 package de.codecentric.boot.admin.server.eventstore;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.Collection;
+import java.util.List;
 import org.reactivestreams.Publisher;
 
 /**
@@ -26,8 +29,9 @@ import org.reactivestreams.Publisher;
  * @author Johannes Stelzer
  */
 public interface ClientApplicationEventStore extends Publisher<ClientApplicationEvent> {
+    Flux<ClientApplicationEvent> findAll();
 
-    Collection<ClientApplicationEvent> findAll();
+    Flux<ClientApplicationEvent> find(ApplicationId id);
 
-    void store(ClientApplicationEvent event);
+    Mono<Void> append(List<ClientApplicationEvent> events);
 }

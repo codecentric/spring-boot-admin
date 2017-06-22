@@ -15,9 +15,10 @@
  */
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.model.Application;
-import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
+import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -67,15 +68,15 @@ public class MailNotifier extends AbstractStatusChangeNotifier {
      */
     private Expression subject;
 
-    public MailNotifier(MailSender sender, ApplicationStore store) {
-        super(store);
+    public MailNotifier(MailSender sender, ApplicationRepository repository) {
+        super(repository);
         this.sender = sender;
         this.subject = parser.parseExpression(DEFAULT_SUBJECT, ParserContext.TEMPLATE_EXPRESSION);
         this.text = parser.parseExpression(DEFAULT_TEXT, ParserContext.TEMPLATE_EXPRESSION);
     }
 
     @Override
-    protected void doNotify(ClientApplicationEvent event, Application application) {
+    protected Mono<Void> doNotify(ClientApplicationEvent event, Application application) {
         Map<String, Object> root = new HashMap<>();
         root.put("event", event);
         root.put("application", application);
@@ -90,7 +91,7 @@ public class MailNotifier extends AbstractStatusChangeNotifier {
         message.setText(text.getValue(context, String.class));
         message.setCc(cc);
 
-        sender.send(message);
+        return Mono.fromRunnable(() -> sender.send(message));
     }
 
     public void setTo(String[] to) {

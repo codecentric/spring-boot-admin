@@ -16,7 +16,7 @@
 
 package de.codecentric.boot.admin.server.discovery;
 
-import de.codecentric.boot.admin.server.model.Registration;
+import de.codecentric.boot.admin.server.domain.values.Registration;
 
 import java.util.HashMap;
 import java.util.Map;

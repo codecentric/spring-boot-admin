@@ -16,10 +16,10 @@
 package de.codecentric.boot.admin.server.config;
 
 import de.codecentric.boot.admin.server.eventstore.ClientApplicationEventStore;
-import de.codecentric.boot.admin.server.registry.ApplicationRegistry;
-import de.codecentric.boot.admin.server.registry.web.RegistryController;
+import de.codecentric.boot.admin.server.services.ApplicationRegistry;
 import de.codecentric.boot.admin.server.web.AdminController;
 import de.codecentric.boot.admin.server.web.PrefixHandlerMapping;
+import de.codecentric.boot.admin.server.web.RegistryController;
 
 import java.util.List;
 import java.util.Map;

@@ -16,16 +16,17 @@
 
 package de.codecentric.boot.admin.server.notify.filter.web;
 
+import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
+import de.codecentric.boot.admin.server.domain.entities.EventSourcingApplicationRepository;
+import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
 import de.codecentric.boot.admin.server.notify.LoggingNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
-import de.codecentric.boot.admin.server.registry.store.SimpleApplicationStore;
 
 import java.io.IOException;
 import java.util.Map;
 import org.junit.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.hamcrest.Matchers.isEmptyString;
@@ -39,9 +40,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class NotificationFilterControllerTest {
 
-    private final SimpleApplicationStore store = new SimpleApplicationStore();
+    private final ApplicationRepository repository = new EventSourcingApplicationRepository(new InMemoryEventStore());
     private MockMvc mvc = MockMvcBuilders.standaloneSetup(
-            new NotificationFilterController(new FilteringNotifier(new LoggingNotifier(store), store))).build();
+            new NotificationFilterController(new FilteringNotifier(new LoggingNotifier(repository), repository)))
+                                         .build();
 
     @Test
     public void test_missing_parameters() throws Exception {
@@ -73,7 +75,7 @@ public class NotificationFilterControllerTest {
         mvc.perform(get("/api/notifications/filters")).andExpect(status().isOk()).andExpect(jsonPath("$").isEmpty());
     }
 
-    private String extractId(String response) throws JsonProcessingException, IOException {
+    private String extractId(String response) throws IOException {
         Map<?, ?> map = new ObjectMapper().readerFor(Map.class).readValue(response);
         return map.keySet().iterator().next().toString();
     }

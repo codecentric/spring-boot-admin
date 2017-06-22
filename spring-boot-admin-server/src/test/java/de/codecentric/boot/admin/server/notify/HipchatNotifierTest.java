@@ -16,12 +16,14 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.server.model.Application;
-import de.codecentric.boot.admin.server.model.ApplicationId;
-import de.codecentric.boot.admin.server.model.Registration;
-import de.codecentric.boot.admin.server.model.StatusInfo;
-import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
+import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.values.Registration;
+import de.codecentric.boot.admin.server.domain.values.StatusInfo;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import java.net.URI;
 import java.util.Collections;
@@ -43,19 +45,19 @@ import static org.mockito.Mockito.when;
  * @author Jamie Brown
  */
 public class HipchatNotifierTest {
-    public final Application application = Application.create(ApplicationId.of("-id-"),
-            Registration.create("App", "http://health").build()).build();
+    public final Application application = Application.create(ApplicationId.of("-id-"))
+                                                      .register(Registration.create("App", "http://health").build());
     private HipchatNotifier notifier;
     private RestTemplate restTemplate;
-    private ApplicationStore store;
+    private ApplicationRepository repository;
 
     @Before
     public void setUp() {
-        store = mock(ApplicationStore.class);
-        when(store.find(application.getId())).thenReturn(application);
+        repository = mock(ApplicationRepository.class);
+        when(repository.find(application.getId())).thenReturn(Mono.just(application));
 
         restTemplate = mock(RestTemplate.class);
-        notifier = new HipchatNotifier(store);
+        notifier = new HipchatNotifier(repository);
         notifier.setNotify(true);
         notifier.setAuthToken("--token-");
         notifier.setRoomId("-room-");
@@ -71,8 +73,12 @@ public class HipchatNotifierTest {
         when(restTemplate.postForEntity(isA(String.class), httpRequest.capture(), eq(Void.class))).thenReturn(
                 ResponseEntity.ok().build());
 
-        notifier.notify(new ClientApplicationStatusChangedEvent(application.getId(), StatusInfo.ofDown()));
-        notifier.notify(new ClientApplicationStatusChangedEvent(application.getId(), StatusInfo.ofUp()));
+        StepVerifier.create(notifier.notify(
+                new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(),
+                        StatusInfo.ofDown()))).verifyComplete();
+        StepVerifier.create(notifier.notify(
+                new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(),
+                        StatusInfo.ofUp()))).verifyComplete();
 
         assertThat(httpRequest.getValue().getHeaders()).containsEntry("Content-Type",
                 Collections.singletonList("application/json"));
@@ -95,8 +101,12 @@ public class HipchatNotifierTest {
         when(restTemplate.postForEntity(isA(String.class), httpRequest.capture(), eq(Void.class))).thenReturn(
                 ResponseEntity.ok().build());
 
-        notifier.notify(new ClientApplicationStatusChangedEvent(application.getId(), StatusInfo.ofUp()));
-        notifier.notify(new ClientApplicationStatusChangedEvent(application.getId(), infoDown));
+        StepVerifier.create(notifier.notify(
+                new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(),
+                        StatusInfo.ofUp()))).verifyComplete();
+        StepVerifier.create(notifier.notify(
+                new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(), infoDown)))
+                    .verifyComplete();
 
         assertThat(httpRequest.getValue().
                 getHeaders()).

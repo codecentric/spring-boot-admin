@@ -16,9 +16,9 @@
 
 package de.codecentric.boot.admin.server.web.client;
 
-import de.codecentric.boot.admin.server.model.Application;
-import de.codecentric.boot.admin.server.model.ApplicationId;
-import de.codecentric.boot.admin.server.model.Registration;
+import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.values.Registration;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -49,9 +49,10 @@ public class ApplicationOperationsTest {
 
     private HttpHeadersProvider headersProvider = mock(HttpHeadersProvider.class);
     private ApplicationOperations ops = new ApplicationOperations(webClient, headersProvider);
-    private final Application application = Application.create(ApplicationId.of("id"),Registration.create("test", "http://health")
+    private final Application application = Application.create(ApplicationId.of("id"))
+                                                       .register(Registration.create("test", "http://health")
                                                                              .managementUrl("http://mgmt")
-                                                                             .build()).build();
+                                                                             .build());
 
     @Test
     @Ignore("Needs resolving of https://jira.spring.io/browse/SPR-15286")

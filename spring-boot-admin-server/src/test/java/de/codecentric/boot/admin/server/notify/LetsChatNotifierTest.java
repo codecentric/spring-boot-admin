@@ -16,12 +16,14 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.server.model.Application;
-import de.codecentric.boot.admin.server.model.ApplicationId;
-import de.codecentric.boot.admin.server.model.Registration;
-import de.codecentric.boot.admin.server.model.StatusInfo;
-import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
+import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.values.Registration;
+import de.codecentric.boot.admin.server.domain.values.StatusInfo;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -36,8 +38,8 @@ import org.springframework.util.Base64Utils;
 import org.springframework.web.client.RestTemplate;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -46,19 +48,19 @@ public class LetsChatNotifierTest {
     private final String token = "text_token";
     private final String user = "api_user";
     private final String host = "http://localhost";
-    private final Application application = Application.create(ApplicationId.of("-id-"),
-            Registration.create("App", "http://health").build()).build();
-    private ApplicationStore store;
+    private final Application application = Application.create(ApplicationId.of("-id-"))
+                                                       .register(Registration.create("App", "http://health").build());
+    private ApplicationRepository repository;
     private LetsChatNotifier notifier;
     private RestTemplate restTemplate;
 
     @Before
     public void setUp() {
-        store = mock(ApplicationStore.class);
-        when(store.find(application.getId())).thenReturn(application);
+        repository = mock(ApplicationRepository.class);
+        when(repository.find(application.getId())).thenReturn(Mono.just(application));
 
         restTemplate = mock(RestTemplate.class);
-        notifier = new LetsChatNotifier(store);
+        notifier = new LetsChatNotifier(repository);
         notifier.setUsername(user);
         notifier.setUrl(URI.create(host));
         notifier.setRoom(room);
@@ -68,10 +70,14 @@ public class LetsChatNotifierTest {
 
     @Test
     public void test_onApplicationEvent_resolve() {
-        notifier.notify(new ClientApplicationStatusChangedEvent(application.getId(), StatusInfo.ofDown()));
-        reset(restTemplate);
+        StepVerifier.create(notifier.notify(
+                new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(),
+                        StatusInfo.ofDown()))).verifyComplete();
+        clearInvocations(restTemplate);
 
-        notifier.notify(new ClientApplicationStatusChangedEvent(application.getId(), StatusInfo.ofUp()));
+        StepVerifier.create(notifier.notify(
+                new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(),
+                        StatusInfo.ofUp()))).verifyComplete();
 
         HttpEntity<?> expected = expectedMessage(standardMessage("UP"));
         verify(restTemplate).exchange(eq(URI.create(String.format("%s/rooms/%s/messages", host, room))),
@@ -81,10 +87,14 @@ public class LetsChatNotifierTest {
     @Test
     public void test_onApplicationEvent_resolve_with_custom_message() {
         notifier.setMessage("TEST");
-        notifier.notify(new ClientApplicationStatusChangedEvent(application.getId(), StatusInfo.ofDown()));
-        reset(restTemplate);
+        StepVerifier.create(notifier.notify(
+                new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(),
+                        StatusInfo.ofDown()))).verifyComplete();
+        clearInvocations(restTemplate);
 
-        notifier.notify(new ClientApplicationStatusChangedEvent(application.getId(), StatusInfo.ofUp()));
+        StepVerifier.create(notifier.notify(
+                new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(),
+                        StatusInfo.ofUp()))).verifyComplete();
 
         HttpEntity<?> expected = expectedMessage("TEST");
         verify(restTemplate).exchange(eq(URI.create(String.format("%s/rooms/%s/messages", host, room))),

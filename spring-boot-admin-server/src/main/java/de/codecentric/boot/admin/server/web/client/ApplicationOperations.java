@@ -15,7 +15,7 @@
  */
 package de.codecentric.boot.admin.server.web.client;
 
-import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.domain.entities.Application;
 import reactor.core.publisher.Mono;
 
 import java.io.Serializable;

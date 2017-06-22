@@ -15,9 +15,10 @@
  */
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.model.Application;
-import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
+import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -71,20 +72,20 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
      */
     private Expression message;
 
-    public LetsChatNotifier(ApplicationStore store) {
-        super(store);
+    public LetsChatNotifier(ApplicationRepository repository) {
+        super(repository);
         this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
     }
 
     @Override
-    protected void doNotify(ClientApplicationEvent event, Application application) throws Exception {
+    protected Mono<Void> doNotify(ClientApplicationEvent event, Application application) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         // Let's Chat requiers the token as basic username, the password can be an arbitrary string.
         String auth = Base64Utils.encodeToString(String.format("%s:%s", token, username).getBytes());
         headers.add(HttpHeaders.AUTHORIZATION, String.format("Basic %s", auth));
-        restTemplate.exchange(createUrl(), HttpMethod.POST,
-                new HttpEntity<>(createMessage(event, application), headers), Void.class);
+        return Mono.fromRunnable(() -> restTemplate.exchange(createUrl(), HttpMethod.POST,
+                new HttpEntity<>(createMessage(event, application), headers), Void.class));
     }
 
     private URI createUrl() {

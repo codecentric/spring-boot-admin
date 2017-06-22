@@ -15,9 +15,10 @@
  */
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.model.Application;
-import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
+import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import reactor.core.publisher.Mono;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,33 +29,34 @@ import org.slf4j.LoggerFactory;
  * @author Johannes Edmeier
  */
 public abstract class AbstractEventNotifier implements Notifier {
-    private final ApplicationStore store;
+    private final ApplicationRepository repository;
     /**
      * Enables the notification.
      */
     private boolean enabled = true;
 
-    protected AbstractEventNotifier(ApplicationStore store) {
-        this.store = store;
+    protected AbstractEventNotifier(ApplicationRepository repository) {
+        this.repository = repository;
     }
 
     @Override
-    public void notify(ClientApplicationEvent event) {
-        Application application = store.find(event.getApplication());
-        if (enabled && shouldNotify(event, application)) {
-            try {
-                doNotify(event, application);
-            } catch (Exception ex) {
-                getLogger().error("Couldn't notify for event {} ", event, ex);
-            }
+    public Mono<Void> notify(ClientApplicationEvent event) {
+        if (!enabled) {
+            return Mono.empty();
         }
+
+        return repository.find(event.getApplication())
+                         .filter(application -> shouldNotify(event, application))
+                         .flatMap(application -> doNotify(event, application))
+                         .doOnError(ex -> getLogger().error("Couldn't notify for event {} ", event, ex))
+                         .then();
     }
 
     protected boolean shouldNotify(ClientApplicationEvent event, Application application) {
         return true;
     }
 
-    protected abstract void doNotify(ClientApplicationEvent event, Application application) throws Exception;
+    protected abstract Mono<Void> doNotify(ClientApplicationEvent event, Application application);
 
     private Logger getLogger() {
         return LoggerFactory.getLogger(this.getClass());

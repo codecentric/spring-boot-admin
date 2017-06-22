@@ -16,10 +16,11 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.server.model.Application;
-import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
+import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
+import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.util.Collections;
@@ -71,14 +72,15 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
      */
     private Expression message;
 
-    public SlackNotifier(ApplicationStore store) {
-        super(store);
+    public SlackNotifier(ApplicationRepository repository) {
+        super(repository);
         this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
     }
 
     @Override
-    protected void doNotify(ClientApplicationEvent event, Application application) throws Exception {
-        restTemplate.postForEntity(webhookUrl, createMessage(event, application), Void.class);
+    protected Mono<Void> doNotify(ClientApplicationEvent event, Application application) {
+        return Mono.fromRunnable(
+                () -> restTemplate.postForEntity(webhookUrl, createMessage(event, application), Void.class));
     }
 
     public void setRestTemplate(RestTemplate restTemplate) {

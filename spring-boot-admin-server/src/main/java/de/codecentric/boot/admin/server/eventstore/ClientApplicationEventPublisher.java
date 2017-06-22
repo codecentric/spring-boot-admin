@@ -16,16 +16,19 @@
 
 package de.codecentric.boot.admin.server.eventstore;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.UnicastProcessor;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.List;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ClientApplicationEventPublisher implements Publisher<ClientApplicationEvent> {
+    private static final Logger log = LoggerFactory.getLogger(ClientApplicationEventPublisher.class);
     private final Flux<ClientApplicationEvent> publishedFlux;
     private final FluxSink<ClientApplicationEvent> sink;
 
@@ -35,8 +38,11 @@ public class ClientApplicationEventPublisher implements Publisher<ClientApplicat
         this.sink = unicastProcessor.sink();
     }
 
-    protected void publish(ClientApplicationEvent event) {
-        sink.next(event);
+    protected void publish(List<ClientApplicationEvent> events) {
+        events.forEach(event -> {
+            log.debug("Event published {}", event);
+            this.sink.next(event);
+        });
     }
 
     @Override

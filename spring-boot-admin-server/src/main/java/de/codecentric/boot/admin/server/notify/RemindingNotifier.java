@@ -15,12 +15,13 @@
  */
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationDeregisteredEvent;
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.server.model.Application;
-import de.codecentric.boot.admin.server.model.ApplicationId;
-import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
+import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationDeregisteredEvent;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,20 +40,21 @@ public class RemindingNotifier extends AbstractEventNotifier {
     private String[] reminderStatuses = {"DOWN", "OFFLINE"};
     private final Notifier delegate;
 
-    public RemindingNotifier(Notifier delegate, ApplicationStore store) {
-        super(store);
+    public RemindingNotifier(Notifier delegate, ApplicationRepository repository) {
+        super(repository);
         Assert.notNull(delegate, "'delegate' must not be null!");
         this.delegate = delegate;
     }
 
     @Override
-    public void doNotify(ClientApplicationEvent event, Application application) {
-        delegate.notify(event);
-        if (shouldEndReminder(event)) {
-            reminders.remove(event.getApplication());
-        } else if (shouldStartReminder(event)) {
-            reminders.putIfAbsent(event.getApplication(), new Reminder(event));
-        }
+    public Mono<Void> doNotify(ClientApplicationEvent event, Application application) {
+        return delegate.notify(event).then(Mono.fromRunnable(() -> {
+            if (shouldEndReminder(event)) {
+                reminders.remove(event.getApplication());
+            } else if (shouldStartReminder(event)) {
+                reminders.putIfAbsent(event.getApplication(), new Reminder(event));
+            }
+        }));
     }
 
     public void sendReminders() {

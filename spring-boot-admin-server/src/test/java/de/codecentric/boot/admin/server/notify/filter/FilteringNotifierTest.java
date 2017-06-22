@@ -16,12 +16,14 @@
 
 package de.codecentric.boot.admin.server.notify.filter;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationRegisteredEvent;
-import de.codecentric.boot.admin.server.model.Application;
-import de.codecentric.boot.admin.server.model.ApplicationId;
-import de.codecentric.boot.admin.server.model.Registration;
+import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationRegisteredEvent;
+import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.notify.TestNotifier;
-import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,26 +33,26 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class FilteringNotifierTest {
-    private final Application application = Application.create(ApplicationId.of("-"),
-            Registration.create("foo", "http://health").build()).build();
+    private final Application application = Application.create(ApplicationId.of("-"))
+                                                       .register(Registration.create("foo", "http://health").build());
     private final ClientApplicationRegisteredEvent event = new ClientApplicationRegisteredEvent(application.getId(),
-            application.getRegistration());
-    private ApplicationStore store;
+            application.getVersion(), application.getRegistration());
+    private ApplicationRepository repository;
 
     @Before
     public void setUp() throws Exception {
-        store = mock(ApplicationStore.class);
-        when(store.find(application.getId())).thenReturn(application);
+        repository = mock(ApplicationRepository.class);
+        when(repository.find(application.getId())).thenReturn(Mono.just(application));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void test_ctor_assert() {
-        new FilteringNotifier(null, store);
+        new FilteringNotifier(null, repository);
     }
 
     @Test
     public void test_expired_removal() {
-        FilteringNotifier notifier = new FilteringNotifier(new TestNotifier(), store);
+        FilteringNotifier notifier = new FilteringNotifier(new TestNotifier(), repository);
         notifier.setCleanupInterval(0L);
 
         String id1 = notifier.addFilter(new ApplicationNameNotificationFilter("foo", 0L));
@@ -58,7 +60,7 @@ public class FilteringNotifierTest {
 
         assertThat(notifier.getNotificationFilters()).containsKey(id1).containsKey(id2);
 
-        notifier.notify(event);
+        StepVerifier.create(notifier.notify(event)).verifyComplete();
 
         assertThat(notifier.getNotificationFilters()).doesNotContainKey(id1).containsKey(id2);
 
@@ -69,16 +71,16 @@ public class FilteringNotifierTest {
     @Test
     public void test_filter() {
         TestNotifier delegate = new TestNotifier();
-        FilteringNotifier notifier = new FilteringNotifier(delegate, store);
+        FilteringNotifier notifier = new FilteringNotifier(delegate, repository);
 
         String idTrue = notifier.addFilter((event, application) -> true);
 
-        notifier.notify(event);
+        StepVerifier.create(notifier.notify(event)).verifyComplete();
 
         assertThat(delegate.getEvents()).doesNotContain(event);
 
         notifier.removeFilter(idTrue);
-        notifier.notify(event);
+        StepVerifier.create(notifier.notify(event)).verifyComplete();
 
         assertThat(delegate.getEvents()).contains(event);
     }

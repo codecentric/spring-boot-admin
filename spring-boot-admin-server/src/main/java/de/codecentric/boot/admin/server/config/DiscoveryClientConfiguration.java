@@ -19,9 +19,9 @@ import de.codecentric.boot.admin.server.discovery.ApplicationDiscoveryListener;
 import de.codecentric.boot.admin.server.discovery.DefaultServiceInstanceConverter;
 import de.codecentric.boot.admin.server.discovery.EurekaServiceInstanceConverter;
 import de.codecentric.boot.admin.server.discovery.ServiceInstanceConverter;
-import de.codecentric.boot.admin.server.registry.ApplicationRegistry;
+import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
+import de.codecentric.boot.admin.server.services.ApplicationRegistry;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -40,17 +40,14 @@ import com.netflix.discovery.EurekaClient;
 @AutoConfigureAfter({SimpleDiscoveryClientAutoConfiguration.class})
 public class DiscoveryClientConfiguration {
 
-    @Autowired
-    private DiscoveryClient discoveryClient;
-
-    @Autowired
-    private ApplicationRegistry registry;
-
     @Bean
     @ConditionalOnMissingBean
     @ConfigurationProperties(prefix = "spring.boot.admin.discovery")
-    public ApplicationDiscoveryListener applicationDiscoveryListener(ServiceInstanceConverter serviceInstanceConverter) {
-        ApplicationDiscoveryListener listener = new ApplicationDiscoveryListener(discoveryClient, registry);
+    public ApplicationDiscoveryListener applicationDiscoveryListener(ServiceInstanceConverter serviceInstanceConverter,
+                                                                     DiscoveryClient discoveryClient,
+                                                                     ApplicationRegistry registry,
+                                                                     ApplicationRepository repository) {
+        ApplicationDiscoveryListener listener = new ApplicationDiscoveryListener(discoveryClient, registry, repository);
         listener.setConverter(serviceInstanceConverter);
         return listener;
     }

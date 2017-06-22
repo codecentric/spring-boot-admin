@@ -15,10 +15,11 @@
  */
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.server.model.Application;
-import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
+import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
+import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -69,14 +70,16 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
      */
     private Expression description;
 
-    public HipchatNotifier(ApplicationStore store) {
-        super(store);
+    public HipchatNotifier(ApplicationRepository repository) {
+        super(repository);
         this.description = parser.parseExpression(DEFAULT_DESCRIPTION, ParserContext.TEMPLATE_EXPRESSION);
     }
 
     @Override
-    protected void doNotify(ClientApplicationEvent event, Application application) {
-        restTemplate.postForEntity(buildUrl(), createHipChatNotification(event, application), Void.class);
+    protected Mono<Void> doNotify(ClientApplicationEvent event, Application application) {
+        return Mono.fromRunnable(
+                () -> restTemplate.postForEntity(buildUrl(), createHipChatNotification(event, application),
+                        Void.class));
     }
 
     protected String buildUrl() {

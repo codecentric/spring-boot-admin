@@ -15,18 +15,23 @@
  */
 package de.codecentric.boot.admin.server.config;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.server.model.ApplicationId;
-import de.codecentric.boot.admin.server.model.StatusInfo;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.values.StatusInfo;
+import de.codecentric.boot.admin.server.eventstore.ClientApplicationEventStore;
 import de.codecentric.boot.admin.server.notify.CompositeNotifier;
 import de.codecentric.boot.admin.server.notify.HipchatNotifier;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
 import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
 import de.codecentric.boot.admin.server.notify.SlackNotifier;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.junit.After;
 import org.junit.Test;
@@ -41,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class NotifierConfigurationTest {
     private static final ClientApplicationEvent APP_DOWN = new ClientApplicationStatusChangedEvent(
-            ApplicationId.of("id-2"), StatusInfo.ofDown());
+            ApplicationId.of("id-2"), 1L, StatusInfo.ofDown());
 
     private AnnotationConfigWebApplicationContext context;
 
@@ -55,8 +60,15 @@ public class NotifierConfigurationTest {
     @Test
     public void test_notifierListener() {
         load(TestSingleNotifierConfig.class);
-        context.publishEvent(APP_DOWN);
-        assertThat(context.getBean(TestNotifier.class).getEvents()).containsOnly(APP_DOWN);
+        ClientApplicationEventStore store = context.getBean(ClientApplicationEventStore.class);
+
+        StepVerifier.create(store)
+                    .expectSubscription()
+                    .then(() -> StepVerifier.create(store.append(Collections.singletonList(APP_DOWN))).verifyComplete())
+                    .expectNext(APP_DOWN)
+                    .then(() -> assertThat(context.getBean(TestNotifier.class).getEvents()).containsOnly(APP_DOWN))
+                    .thenCancel()
+                    .verify(Duration.ofMillis(500L));
     }
 
     @Test
@@ -148,8 +160,9 @@ public class NotifierConfigurationTest {
         private List<ClientApplicationEvent> events = new ArrayList<>();
 
         @Override
-        public void notify(ClientApplicationEvent event) {
+        public Mono<Void> notify(ClientApplicationEvent event) {
             this.events.add(event);
+            return null;
         }
 
         public List<ClientApplicationEvent> getEvents() {

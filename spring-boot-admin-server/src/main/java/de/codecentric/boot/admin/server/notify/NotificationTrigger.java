@@ -16,42 +16,24 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.utils.reactive.ReactiveUtils;
-import reactor.core.Disposable;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.services.ResubscribingEventHandler;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
-import java.util.logging.Level;
 import org.reactivestreams.Publisher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class NotificationTrigger {
-    private static final Logger log = LoggerFactory.getLogger(NotificationTrigger.class);
+public class NotificationTrigger extends ResubscribingEventHandler<ClientApplicationEvent> {
     private final Notifier notifier;
-    private final Publisher<ClientApplicationEvent> events;
-    private Disposable subscription;
 
-    public NotificationTrigger(Notifier notifier, Publisher<ClientApplicationEvent> events) {
+    public NotificationTrigger(Notifier notifier, Publisher<ClientApplicationEvent> publisher) {
+        super(publisher, ClientApplicationEvent.class);
         this.notifier = notifier;
-        this.events = events;
     }
 
-    public void start() {
-        log.debug("Subscribed to {} events for notifications", ClientApplicationEvent.class);
-        subscription = Flux.from(events)
-                           .log(log.getName(), Level.FINEST)
-                           .subscribeOn(Schedulers.newSingle("notifications"))
-                           .doOnNext(this::sendNotifications)
-                           .retryWhen(ReactiveUtils.logAndRetryAny(log))
-                           .subscribe();
-    }
-
-    public void stop() {
-        if (subscription != null) {
-            subscription.dispose();
-        }
+    @Override
+    protected Publisher<?> handle(Flux<ClientApplicationEvent> publisher) {
+        return publisher.subscribeOn(Schedulers.newSingle("notifications")).doOnNext(this::sendNotifications);
     }
 
     protected void sendNotifications(ClientApplicationEvent event) {

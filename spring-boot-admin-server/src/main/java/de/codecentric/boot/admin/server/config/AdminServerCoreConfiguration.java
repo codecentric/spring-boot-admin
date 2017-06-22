@@ -15,18 +15,18 @@
  */
 package de.codecentric.boot.admin.server.config;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
+import de.codecentric.boot.admin.server.domain.entities.EventSourcingApplicationRepository;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.eventstore.ClientApplicationEventStore;
-import de.codecentric.boot.admin.server.eventstore.SimpleEventStore;
-import de.codecentric.boot.admin.server.registry.ApplicationIdGenerator;
-import de.codecentric.boot.admin.server.registry.ApplicationRegistry;
-import de.codecentric.boot.admin.server.registry.HashingApplicationUrlIdGenerator;
-import de.codecentric.boot.admin.server.registry.InfoUpdateTrigger;
-import de.codecentric.boot.admin.server.registry.InfoUpdater;
-import de.codecentric.boot.admin.server.registry.StatusUpdateTrigger;
-import de.codecentric.boot.admin.server.registry.StatusUpdater;
-import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
-import de.codecentric.boot.admin.server.registry.store.SimpleApplicationStore;
+import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
+import de.codecentric.boot.admin.server.services.ApplicationIdGenerator;
+import de.codecentric.boot.admin.server.services.ApplicationRegistry;
+import de.codecentric.boot.admin.server.services.HashingApplicationUrlIdGenerator;
+import de.codecentric.boot.admin.server.services.InfoUpdateTrigger;
+import de.codecentric.boot.admin.server.services.InfoUpdater;
+import de.codecentric.boot.admin.server.services.StatusUpdateTrigger;
+import de.codecentric.boot.admin.server.services.StatusUpdater;
 import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
 import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider;
 import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
@@ -37,9 +37,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.EventListener;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -56,9 +53,9 @@ public class AdminServerCoreConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ApplicationRegistry applicationRegistry(ApplicationStore applicationStore,
+    public ApplicationRegistry applicationRegistry(ApplicationRepository applicationRepository,
                                                    ApplicationIdGenerator applicationIdGenerator) {
-        return new ApplicationRegistry(applicationStore, applicationIdGenerator);
+        return new ApplicationRegistry(applicationRepository, applicationIdGenerator);
     }
 
     @Bean
@@ -91,10 +88,9 @@ public class AdminServerCoreConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public StatusUpdater statusUpdater(ApplicationStore applicationStore, ApplicationOperations applicationOperations) {
-        StatusUpdater statusUpdater = new StatusUpdater(applicationStore, applicationOperations);
-        statusUpdater.setStatusLifetime(adminServerProperties.getMonitor().getStatusLifetime());
-        return statusUpdater;
+    public StatusUpdater statusUpdater(ApplicationRepository applicationRepository,
+                                       ApplicationOperations applicationOperations) {
+        return new StatusUpdater(applicationRepository, applicationOperations);
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
@@ -103,13 +99,15 @@ public class AdminServerCoreConfiguration {
                                                    Publisher<ClientApplicationEvent> events) {
         StatusUpdateTrigger trigger = new StatusUpdateTrigger(statusUpdater, events);
         trigger.setUpdateInterval(adminServerProperties.getMonitor().getPeriod());
+        trigger.setStatusLifetime(adminServerProperties.getMonitor().getStatusLifetime());
         return trigger;
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public InfoUpdater infoUpdater(ApplicationStore applicationStore, ApplicationOperations applicationOperations) {
-        return new InfoUpdater(applicationStore, applicationOperations);
+    public InfoUpdater infoUpdater(ApplicationRepository applicationRepository,
+                                   ApplicationOperations applicationOperations) {
+        return new InfoUpdater(applicationRepository, applicationOperations);
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
@@ -121,18 +119,12 @@ public class AdminServerCoreConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public ClientApplicationEventStore eventStore() {
-        return new SimpleEventStore();
+        return new InMemoryEventStore();
     }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public ApplicationStore applicationStore() {
-        return new SimpleApplicationStore();
-    }
-
-    @Order(Ordered.HIGHEST_PRECEDENCE)
-    @EventListener
-    public void onClientApplicationEvent(ClientApplicationEvent event) {
-        eventStore().store(event);
+    @Bean(initMethod = "start", destroyMethod = "stop")
+    @ConditionalOnMissingBean(ApplicationRepository.class)
+    public EventSourcingApplicationRepository applicationRepository() {
+        return new EventSourcingApplicationRepository(eventStore());
     }
 }

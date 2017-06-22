@@ -15,12 +15,13 @@
  */
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.event.ClientApplicationDeregisteredEvent;
-import de.codecentric.boot.admin.server.event.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.event.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.server.model.Application;
-import de.codecentric.boot.admin.server.model.ApplicationId;
-import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
+import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationDeregisteredEvent;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -39,14 +40,13 @@ public abstract class AbstractStatusChangeNotifier extends AbstractEventNotifier
      */
     private String[] ignoreChanges = {"UNKNOWN:UP"};
 
-    public AbstractStatusChangeNotifier(ApplicationStore store) {
-        super(store);
+    public AbstractStatusChangeNotifier(ApplicationRepository repositpry) {
+        super(repositpry);
     }
 
     @Override
-    public void notify(ClientApplicationEvent event) {
-        super.notify(event);
-        updateLastStatus(event);
+    public Mono<Void> notify(ClientApplicationEvent event) {
+        return super.notify(event).then(Mono.fromRunnable(() -> updateLastStatus(event)));
     }
 
     @Override

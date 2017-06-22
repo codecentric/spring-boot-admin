@@ -19,7 +19,7 @@ package de.codecentric.boot.admin.server.config;
 import de.codecentric.boot.admin.server.discovery.DefaultServiceInstanceConverter;
 import de.codecentric.boot.admin.server.discovery.EurekaServiceInstanceConverter;
 import de.codecentric.boot.admin.server.discovery.ServiceInstanceConverter;
-import de.codecentric.boot.admin.server.model.Registration;
+import de.codecentric.boot.admin.server.domain.values.Registration;
 
 import org.junit.After;
 import org.junit.Test;

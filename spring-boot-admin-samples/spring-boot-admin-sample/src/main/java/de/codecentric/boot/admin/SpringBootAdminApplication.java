@@ -16,10 +16,10 @@
 package de.codecentric.boot.admin;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
+import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
 import de.codecentric.boot.admin.server.notify.LoggingNotifier;
 import de.codecentric.boot.admin.server.notify.RemindingNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
-import de.codecentric.boot.admin.server.registry.store.ApplicationStore;
 
 import java.util.concurrent.TimeUnit;
 import org.springframework.boot.SpringApplication;
@@ -66,16 +66,16 @@ public class SpringBootAdminApplication {
 
     @Configuration
     public static class NotifierConfig {
-        private final ApplicationStore applicationStore;
+        private final ApplicationRepository repository;
 
-        public NotifierConfig(ApplicationStore applicationStore) {
-            this.applicationStore = applicationStore;
+        public NotifierConfig(ApplicationRepository repository) {
+            this.repository = repository;
         }
 
         @Bean
         @Primary
         public RemindingNotifier remindingNotifier() {
-            RemindingNotifier notifier = new RemindingNotifier(filteringNotifier(), applicationStore);
+            RemindingNotifier notifier = new RemindingNotifier(filteringNotifier(), repository);
             notifier.setReminderPeriod(TimeUnit.SECONDS.toMillis(10));
             return notifier;
         }
@@ -87,12 +87,12 @@ public class SpringBootAdminApplication {
 
         @Bean
         public FilteringNotifier filteringNotifier() {
-            return new FilteringNotifier(loggerNotifier(), applicationStore);
+            return new FilteringNotifier(loggerNotifier(), repository);
         }
 
         @Bean
         public LoggingNotifier loggerNotifier() {
-            return new LoggingNotifier(applicationStore);
+            return new LoggingNotifier(repository);
         }
     }
 }

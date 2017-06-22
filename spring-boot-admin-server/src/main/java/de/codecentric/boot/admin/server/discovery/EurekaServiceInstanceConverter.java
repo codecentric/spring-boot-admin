@@ -15,7 +15,7 @@
  */
 package de.codecentric.boot.admin.server.discovery;
 
-import de.codecentric.boot.admin.server.model.Application;
+import de.codecentric.boot.admin.server.domain.entities.Application;
 
 import java.net.URI;
 import org.springframework.cloud.client.ServiceInstance;
