@@ -11,19 +11,19 @@
 
 | spring.boot.admin.monitor.period
 | Time interval in ms to update the status of applications with expired status-information.
-| 10.000
+| 10,000
 
 | spring.boot.admin.monitor.status-lifetime
 | Lifetime of application statuses in ms. The applications /health-endpoint will not be queried until the lifetime has expired.
-| 10.000
+| 10,000
 
 | spring.boot.admin.monitor.connect-timeout
-| Lifetime of application statuses in ms. The applications /health-endpoint will not be queried until the lifetime has expired.
-| 2.000
+| Connect timeout in ms when querying the applications' status and info.
+| 2,000
 
 | spring.boot.admin.monitor.read-timeout
-| Lifetime of application statuses in ms. The applications /health-endpoint will not be queried until the lifetime has expired.
-| 5.000
+| Read timeout in ms when querying the applications' status and info.
+| 5,000
 
 | spring.boot.admin.routes.endpoints
 | The enpoints which will be available via spring boot admin zuul proxy. If you write ui modules using other endpoints you need to add them.
