@@ -25,7 +25,7 @@
 
   module.config(['$stateProvider', function ($stateProvider) {
     $stateProvider.state('logout', {
-      template: '<form id="logout-form" action="/logout" method="post"></form>',
+      template: '<form id="logout-form" action="logout" method="post"></form>',
       name: 'logout',
       url: '/logout',
       controller: 'logoutCtrl'
@@ -39,4 +39,4 @@
       order: 9999
     });
   }]);
-} (sbaModules, angular));
+}(sbaModules, angular));
