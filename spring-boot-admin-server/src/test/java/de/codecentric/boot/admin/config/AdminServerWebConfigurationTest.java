@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfigurat
 import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration.RestTemplateConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration;
+import org.springframework.cloud.commons.util.UtilAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -129,6 +130,7 @@ public class AdminServerWebConfigurationTest {
         applicationContext.register(ServerPropertiesAutoConfiguration.class);
         applicationContext.register(HazelcastAutoConfiguration.class);
         applicationContext.register(HazelcastStoreConfiguration.class);
+        applicationContext.register(UtilAutoConfiguration.class);
         applicationContext.register(DiscoveryClientConfiguration.class);
         applicationContext.register(AdminServerCoreConfiguration.class);
         applicationContext.register(AdminServerWebConfiguration.class);
