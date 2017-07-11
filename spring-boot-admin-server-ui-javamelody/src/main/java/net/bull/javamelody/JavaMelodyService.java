@@ -14,7 +14,6 @@ import java.io.IOException;
  * Service class in the javamelody package, so we can access the javamelody Parameters class in which we can
  * register and unregister applications. Using the {@link EventListener annotations} we receive notifications from service discovery.
  */
-@Service
 public class JavaMelodyService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JavaMelodyService.class);
