@@ -100,7 +100,7 @@ public class ApplicationDiscoveryListener {
             .flatMap(this::registerInstance)
             .collect(Collectors.toSet())
             .flatMap(this::removeStaleInstances)
-            .subscribe();
+            .subscribe(v -> {}, ex -> log.error("Unexpected error.", ex));
     }
 
     protected Mono<Void> removeStaleInstances(Set<ApplicationId> registeredApplicationIds) {

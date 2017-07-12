@@ -24,12 +24,6 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.codec.json.Jackson2JsonDecoder;
-import org.springframework.http.codec.json.Jackson2JsonEncoder;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.client.ExchangeStrategies;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.EvictionPolicy;
 import com.hazelcast.config.InMemoryFormat;
@@ -48,7 +42,7 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
     private ServletWebServerApplicationContext instance2;
 
     @Before
-    public void setup() throws InterruptedException {
+    public void setUp() throws Exception {
         System.setProperty("hazelcast.wait.seconds.before.join", "0");
         instance1 = (ServletWebServerApplicationContext) SpringApplication.run(TestAdminApplication.class,
                 "--server.port=0", "--spring.jmx.enabled=false", "--management.context-path=/mgmt",
@@ -57,23 +51,7 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
                 "--server.port=0", "--spring.jmx.enabled=false", "--management.context-path=/mgmt",
                 "--info.test=foobar");
 
-        int port = instance1.getWebServer().getPort();
-        super.setPort(port);
-
-        WebTestClient webClient = createWebClient(port);
-
-        super.setWebClient(webClient);
-    }
-
-    private WebTestClient createWebClient(int port) {
-        ObjectMapper mapper = new ObjectMapper().registerModule(new JsonOrgModule());
-        return WebTestClient.bindToServer()
-                            .baseUrl("http://localhost:" + port)
-                            .exchangeStrategies(ExchangeStrategies.builder().codecs((configurer) -> {
-                                configurer.defaultCodecs().jackson2JsonDecoder(new Jackson2JsonDecoder(mapper));
-                                configurer.defaultCodecs().jackson2JsonEncoder(new Jackson2JsonEncoder(mapper));
-                            }).build())
-                            .build();
+        super.setUp(instance1.getWebServer().getPort());
     }
 
     @After

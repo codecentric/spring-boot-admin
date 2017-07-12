@@ -25,7 +25,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.json.Jackson2JsonDecoder;
+import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,16 +39,14 @@ public abstract class AbstractAdminApplicationTest {
     private WebTestClient webClient;
     private int port;
 
-    public void setWebClient(WebTestClient webClient) {
-        this.webClient = webClient;
-    }
 
-    public void setPort(int port) {
+    public void setUp(int port) throws Exception {
         this.port = port;
+        this.webClient = createWebClient(port);
     }
 
     @Test
-    public void lifecycle() throws InterruptedException {
+    public void lifecycle() {
         Flux<JSONObject> events = getEventStream();
         AtomicReference<URI> location = new AtomicReference<>();
 
@@ -67,7 +70,7 @@ public abstract class AbstractAdminApplicationTest {
                     .verify(Duration.ofSeconds(30));
     }
 
-    private Flux<JSONObject> getEventStream() {
+    protected Flux<JSONObject> getEventStream() {
         //@formatter:off
         return webClient.get().uri("/api/applications/events").accept(MediaType.APPLICATION_STREAM_JSON)
                         .exchange()
@@ -77,7 +80,7 @@ public abstract class AbstractAdminApplicationTest {
         //@formatter:on
     }
 
-    private URI registerApplication() {
+    protected URI registerApplication() {
         //@formatter:off
        return webClient.post().uri("/api/applications").contentType(MediaType.APPLICATION_JSON).syncBody(createRegistration())
                        .exchange()
@@ -87,7 +90,7 @@ public abstract class AbstractAdminApplicationTest {
         //@formatter:on
     }
 
-    private void getApplication(URI uri) {
+    protected void getApplication(URI uri) {
         //@formatter:off
         webClient.get().uri(uri).accept(MediaType.APPLICATION_JSON_UTF8)
                  .exchange()
@@ -99,7 +102,7 @@ public abstract class AbstractAdminApplicationTest {
        //@formatter:on
     }
 
-    private void listApplications() {
+    protected void listApplications() {
         //@formatter:off
         webClient.get().uri("/api/applications").accept(MediaType.APPLICATION_JSON_UTF8)
                  .exchange()
@@ -111,7 +114,7 @@ public abstract class AbstractAdminApplicationTest {
        //@formatter:on
     }
 
-    private void listEmptyApplications() {
+    protected void listEmptyApplications() {
         //@formatter:off
         webClient.get().uri("/api/applications").accept(MediaType.APPLICATION_JSON_UTF8)
                  .exchange()
@@ -120,7 +123,7 @@ public abstract class AbstractAdminApplicationTest {
        //@formatter:on
     }
 
-    private void deregisterApplication(URI uri) {
+    protected void deregisterApplication(URI uri) {
         webClient.delete().uri(uri).exchange().expectStatus().isNoContent();
     }
 
@@ -132,5 +135,24 @@ public abstract class AbstractAdminApplicationTest {
                            .managementUrl("http://localhost:" + port + "/mgmt")
                            .serviceUrl("http://localhost:" + port)
                            .build();
+    }
+
+    protected WebTestClient createWebClient(int port) {
+        ObjectMapper mapper = new ObjectMapper().registerModule(new JsonOrgModule());
+        return WebTestClient.bindToServer()
+                            .baseUrl("http://localhost:" + port)
+                            .exchangeStrategies(ExchangeStrategies.builder().codecs((configurer) -> {
+                                configurer.defaultCodecs().jackson2JsonDecoder(new Jackson2JsonDecoder(mapper));
+                                configurer.defaultCodecs().jackson2JsonEncoder(new Jackson2JsonEncoder(mapper));
+                            }).build())
+                            .build();
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public WebTestClient getWebClient() {
+        return webClient;
     }
 }
