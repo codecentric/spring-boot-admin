@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin.registration;
-
-import de.codecentric.boot.admin.client.registration.Application;
+package de.codecentric.boot.admin.client.registration;
 
 import java.io.IOException;
 import org.junit.Test;

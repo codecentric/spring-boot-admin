@@ -13,12 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.codecentric.boot.admin.registration;
+package de.codecentric.boot.admin.client.registration;
 
 import de.codecentric.boot.admin.client.config.ClientProperties;
-import de.codecentric.boot.admin.client.registration.Application;
-import de.codecentric.boot.admin.client.registration.ApplicationFactory;
-import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
 
 import java.util.Collections;
 import java.util.Map;

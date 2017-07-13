@@ -21,8 +21,6 @@ import de.codecentric.boot.admin.client.config.InstanceProperties;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
-import javax.servlet.ServletContext;
-
 import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -45,18 +43,15 @@ public class DefaultApplicationFactory implements ApplicationFactory {
     private ManagementServerProperties management;
     private Integer localServerPort;
     private Integer localManagementPort;
-    private ServletContext servletContext;
     private String healthEndpointPath;
 
     public DefaultApplicationFactory(InstanceProperties instance,
                                      ManagementServerProperties management,
                                      ServerProperties server,
-                                     ServletContext servletContext,
                                      String healthEndpointPath) {
         this.instance = instance;
         this.management = management;
         this.server = server;
-        this.servletContext = servletContext;
         this.healthEndpointPath = healthEndpointPath;
     }
 
@@ -94,7 +89,11 @@ public class DefaultApplicationFactory implements ApplicationFactory {
                                           .port(getLocalServerPort());
         }
 
-        return builder.path("/").path(servletContext.getContextPath()).path("/").toUriString();
+        return builder.path("/").path(getServerContextPath()).path("/").toUriString();
+    }
+
+    protected String getServerContextPath() {
+        return "";
     }
 
     protected String getManagementUrl() {
@@ -108,9 +107,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
         if (!StringUtils.isEmpty(baseUrl)) {
             builder = UriComponentsBuilder.fromUriString(baseUrl);
         } else if (isManagementPortEqual()) {
-            builder = UriComponentsBuilder.fromHttpUrl(getServiceUrl())
-                                          .path("/")
-                                          .path(server.getServlet().getServletPrefix());
+            builder = UriComponentsBuilder.fromHttpUrl(getServiceUrl()).path("/").path(getDispatcherServletPrefix());
         } else {
             Ssl ssl = management.getSsl() != null ? management.getSsl() : server.getSsl();
             builder = UriComponentsBuilder.newInstance()
@@ -119,11 +116,19 @@ public class DefaultApplicationFactory implements ApplicationFactory {
                                           .port(getLocalManagementPort());
         }
 
-        return builder.path("/").path(management.getContextPath()).path("/").toUriString();
+        return builder.path("/").path(getManagementContextPath()).path("/").toUriString();
+    }
+
+    protected String getDispatcherServletPrefix() {
+        return "";
     }
 
     protected boolean isManagementPortEqual() {
         return getLocalManagementPort() == null || getLocalManagementPort().equals(getLocalServerPort());
+    }
+
+    protected String getManagementContextPath() {
+        return management.getContextPath();
     }
 
     protected String getHealthUrl() {
@@ -196,5 +201,4 @@ public class DefaultApplicationFactory implements ApplicationFactory {
                                        .getProperty("local.management.port", Integer.class, localServerPort);
         }
     }
-
 }

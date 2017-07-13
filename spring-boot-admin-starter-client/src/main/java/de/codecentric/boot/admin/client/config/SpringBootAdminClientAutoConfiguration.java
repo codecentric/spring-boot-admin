@@ -1,11 +1,11 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2014-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,10 +21,13 @@ import de.codecentric.boot.admin.client.registration.DefaultApplicationFactory;
 import de.codecentric.boot.admin.client.registration.RegistrationApplicationListener;
 
 import javax.servlet.ServletContext;
+import de.codecentric.boot.admin.client.registration.ServletApplicationFactory;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -36,10 +39,26 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
+import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+
 @Configuration
 @EnableConfigurationProperties({ClientProperties.class, InstanceProperties.class})
 @Conditional(SpringBootAdminClientEnabledCondition.class)
 public class SpringBootAdminClientAutoConfiguration {
+
+    @Configuration
+    @ConditionalOnWebApplication(type = Type.SERVLET)
+    public static class ServletConfiguration {
+        @Bean
+        @ConditionalOnMissingBean
+        public ApplicationFactory applicationFactory(InstanceProperties instance,
+                                                     ManagementServerProperties management,
+                                                     ServerProperties server,
+                                                     @Value("${endpoints.health.path:/${endpoints.health.id:health}}") String healthEndpointPath,
+                                                     ServletContext servletContext) {
+            return new ServletApplicationFactory(instance, management, server, servletContext, healthEndpointPath);
+        }
+    }
 
     @Bean
     @ConditionalOnMissingBean
@@ -59,9 +78,8 @@ public class SpringBootAdminClientAutoConfiguration {
     public ApplicationFactory applicationFactory(InstanceProperties instance,
                                                  ManagementServerProperties management,
                                                  ServerProperties server,
-                                                 @Value("${endpoints.health.path:/${endpoints.health.id:health}}") String healthEndpointPath,
-                                                 ServletContext servletContext) {
-        return new DefaultApplicationFactory(instance, management, server, servletContext, healthEndpointPath);
+                                                 @Value("${endpoints.health.path:/${endpoints.health.id:health}}") String healthEndpointPath) {
+        return new DefaultApplicationFactory(instance, management, server, healthEndpointPath);
     }
 
     @Bean
