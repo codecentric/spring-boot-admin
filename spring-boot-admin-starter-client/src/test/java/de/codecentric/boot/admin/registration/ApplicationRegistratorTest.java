@@ -1,11 +1,11 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2014-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,9 +55,9 @@ public class ApplicationRegistratorTest {
 
         ApplicationFactory factory = mock(ApplicationFactory.class);
         when(factory.createApplication()).thenReturn(Application.create("AppName")
-                                                                .withManagementUrl("http://localhost:8080/mgmt")
-                                                                .withHealthUrl("http://localhost:8080/health")
-                                                                .withServiceUrl("http://localhost:8080")
+                                                                .managementUrl("http://localhost:8080/mgmt")
+                                                                .healthUrl("http://localhost:8080/health")
+                                                                .serviceUrl("http://localhost:8080")
                                                                 .build());
 
         registrator = new ApplicationRegistrator(restTemplate, client, factory);
@@ -76,9 +76,9 @@ public class ApplicationRegistratorTest {
         assertThat(registrator.register()).isTrue();
 
         Application applicationRef = Application.create("AppName")
-                                                .withHealthUrl("http://localhost:8080/health")
-                                                .withManagementUrl("http://localhost:8080/mgmt")
-                                                .withServiceUrl("http://localhost:8080")
+                                                .healthUrl("http://localhost:8080/health")
+                                                .managementUrl("http://localhost:8080/mgmt")
+                                                .serviceUrl("http://localhost:8080")
                                                 .build();
         verify(restTemplate).postForEntity("http://sba:8080/api/applications",
                 new HttpEntity<>(applicationRef, headers), Map.class);
@@ -127,9 +127,9 @@ public class ApplicationRegistratorTest {
         assertThat(registrator.register()).isTrue();
 
         Application applicationRef = Application.create("AppName")
-                                                .withHealthUrl("http://localhost:8080/health")
-                                                .withManagementUrl("http://localhost:8080/mgmt")
-                                                .withServiceUrl("http://localhost:8080")
+                                                .healthUrl("http://localhost:8080/health")
+                                                .managementUrl("http://localhost:8080/mgmt")
+                                                .serviceUrl("http://localhost:8080")
                                                 .build();
         verify(restTemplate).postForEntity("http://sba:8080/api/applications",
                 new HttpEntity<>(applicationRef, headers), Map.class);
@@ -151,9 +151,9 @@ public class ApplicationRegistratorTest {
         assertThat(registrator.register()).isTrue();
 
         Application applicationRef = Application.create("AppName")
-                                                .withHealthUrl("http://localhost:8080/health")
-                                                .withManagementUrl("http://localhost:8080/mgmt")
-                                                .withServiceUrl("http://localhost:8080")
+                                                .healthUrl("http://localhost:8080/health")
+                                                .managementUrl("http://localhost:8080/mgmt")
+                                                .serviceUrl("http://localhost:8080")
                                                 .build();
         verify(restTemplate).postForEntity("http://sba:8080/api/applications",
                 new HttpEntity<>(applicationRef, headers), Map.class);

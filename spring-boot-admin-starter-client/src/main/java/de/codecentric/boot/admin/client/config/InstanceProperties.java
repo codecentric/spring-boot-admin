@@ -20,6 +20,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+@lombok.Data
 @ConfigurationProperties(prefix = "spring.boot.admin.client.instance")
 public class InstanceProperties {
     /**
@@ -66,67 +67,4 @@ public class InstanceProperties {
      */
     private Map<String, String> metadata = new HashMap<>();
 
-    public String getManagementUrl() {
-        return managementUrl;
-    }
-
-    public void setManagementUrl(String managementUrl) {
-        this.managementUrl = managementUrl;
-    }
-
-    public String getServiceUrl() {
-        return serviceUrl;
-    }
-
-    public void setServiceUrl(String serviceUrl) {
-        this.serviceUrl = serviceUrl;
-    }
-
-    public String getHealthUrl() {
-        return healthUrl;
-    }
-
-    public void setHealthUrl(String healthUrl) {
-        this.healthUrl = healthUrl;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isPreferIp() {
-        return preferIp;
-    }
-
-    public void setPreferIp(boolean preferIp) {
-        this.preferIp = preferIp;
-    }
-
-    public Map<String, String> getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
-    }
-
-    public String getManagementBaseUrl() {
-        return managementBaseUrl;
-    }
-
-    public void setManagementBaseUrl(String managementBaseUrl) {
-        this.managementBaseUrl = managementBaseUrl;
-    }
-
-    public String getServiceBaseUrl() {
-        return serviceBaseUrl;
-    }
-
-    public void setServiceBaseUrl(String serviceBaseUrl) {
-        this.serviceBaseUrl = serviceBaseUrl;
-    }
 }

@@ -17,6 +17,7 @@ package de.codecentric.boot.admin.client.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+@lombok.Data
 @ConfigurationProperties(prefix = "spring.boot.admin.client")
 public class ClientProperties {
 
@@ -65,83 +66,11 @@ public class ClientProperties {
      */
     private boolean enabled = true;
 
-    public void setUrl(String[] url) {
-        this.url = url.clone();
-    }
-
-    public String[] getUrl() {
-        return url.clone();
-    }
-
-    public void setApiPath(String apiPath) {
-        this.apiPath = apiPath;
-    }
-
-    public String getApiPath() {
-        return apiPath;
-    }
-
     public String[] getAdminUrl() {
         String adminUrls[] = url.clone();
         for (int i = 0; i < adminUrls.length; i++) {
             adminUrls[i] += "/" + apiPath;
         }
         return adminUrls;
-    }
-
-    public long getPeriod() {
-        return period;
-    }
-
-    public void setPeriod(int period) {
-        this.period = period;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public boolean isAutoDeregistration() {
-        return autoDeregistration;
-    }
-
-    public void setAutoDeregistration(boolean autoDeregistration) {
-        this.autoDeregistration = autoDeregistration;
-    }
-
-    public boolean isAutoRegistration() {
-        return autoRegistration;
-    }
-
-    public void setAutoRegistration(boolean autoRegistration) {
-        this.autoRegistration = autoRegistration;
-    }
-
-    public boolean isRegisterOnce() {
-        return registerOnce;
-    }
-
-    public void setRegisterOnce(boolean registerOnce) {
-        this.registerOnce = registerOnce;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 }
