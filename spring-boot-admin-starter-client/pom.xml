@@ -69,5 +69,11 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.tomakehurst</groupId>
+            <artifactId>wiremock-standalone</artifactId>
+            <version>2.5.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
