@@ -14,6 +14,9 @@ import javax.annotation.Nullable;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
@@ -121,7 +124,7 @@ public class SlackNotifierTest {
 				infoDown, infoUp);
 	}
 
-	private Object expectedMessage(String color, String user, @Nullable String icon,
+	private HttpEntity<Map<String, Object>> expectedMessage(String color, String user, @Nullable String icon,
 			@Nullable String channel, String message) {
 		Map<String, Object> messageJson = new HashMap<>();
 		messageJson.put("username", user);
@@ -139,7 +142,9 @@ public class SlackNotifierTest {
 
 		messageJson.put("attachments", Collections.singletonList(attachments));
 
-		return messageJson;
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		return new HttpEntity<>(messageJson, headers);
 	}
 
 	private String standardMessage(String status, String appName, String id) {

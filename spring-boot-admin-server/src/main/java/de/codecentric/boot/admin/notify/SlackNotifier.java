@@ -8,6 +8,9 @@ import java.util.Map;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.event.ClientApplicationEvent;
@@ -62,7 +65,7 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
 		this.restTemplate = restTemplate;
 	}
 
-	protected Object createMessage(ClientApplicationEvent event) {
+	protected HttpEntity<Map<String, Object>> createMessage(ClientApplicationEvent event) {
 		Map<String, Object> messageJson = new HashMap<>();
 		messageJson.put("username", username);
 		if (icon != null) {
@@ -77,7 +80,10 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
 		attachments.put("color", getColor(event));
 		attachments.put("mrkdwn_in", Collections.singletonList("text"));
 		messageJson.put("attachments", Collections.singletonList(attachments));
-		return messageJson;
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		return new HttpEntity<>(messageJson, headers);
 	}
 
 	protected String getText(ClientApplicationEvent event) {
