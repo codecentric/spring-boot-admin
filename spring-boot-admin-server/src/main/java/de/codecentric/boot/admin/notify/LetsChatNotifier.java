@@ -38,85 +38,107 @@ import de.codecentric.boot.admin.event.ClientApplicationEvent;
  * @author Rico Pahlisch
  */
 public class LetsChatNotifier extends AbstractStatusChangeNotifier {
-	private static final String DEFAULT_MESSAGE = "*#{application.name}* (#{application.id}) is *#{to.status}*";
+    private static final String DEFAULT_MESSAGE = "*#{application.name}* (#{application.id}) is *#{to.status}*";
 
-	private final SpelExpressionParser parser = new SpelExpressionParser();
-	private RestTemplate restTemplate = new RestTemplate();
+    private final SpelExpressionParser parser = new SpelExpressionParser();
+    private RestTemplate restTemplate = new RestTemplate();
 
-	/**
-	 * Host URL for Let´s Chat
-	 */
-	private URI url;
+    /**
+     * Host URL for Let´s Chat
+     */
+    private URI url;
 
-	/**
-	 * Name of the room
-	 */
-	private String room;
+    /**
+     * Name of the room
+     */
+    private String room;
 
-	/**
-	 * Token for the Let´s chat API
-	 */
-	private String token;
+    /**
+     * Token for the Let´s chat API
+     */
+    private String token;
 
-	/**
-	 * username which sends notification
-	 */
-	private String username = "Spring Boot Admin";
+    /**
+     * username which sends notification
+     */
+    private String username = "Spring Boot Admin";
 
-	/**
-	 * Message template. SpEL template using event as root
-	 */
-	private Expression message;
+    /**
+     * Message template. SpEL template using event as root
+     */
+    private Expression message;
 
-	public LetsChatNotifier() {
-		this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
-	}
+    public LetsChatNotifier() {
+        this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
+    }
 
-	@Override
-	protected void doNotify(ClientApplicationEvent event) throws Exception {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		// Let's Chat requiers the token as basic username, the password can be an arbitrary string.
-		String auth = Base64Utils.encodeToString(String.format("%s:%s", token, username).getBytes());
-		headers.add(HttpHeaders.AUTHORIZATION, String.format("Basic %s", auth));
-		restTemplate.exchange(createUrl(), HttpMethod.POST, new HttpEntity<>(createMessage(event), headers), Void.class);
-	}
+    @Override
+    protected void doNotify(ClientApplicationEvent event) throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        // Let's Chat requiers the token as basic username, the password can be an arbitrary string.
+        String auth = Base64Utils.encodeToString(String.format("%s:%s", token, username).getBytes());
+        headers.add(HttpHeaders.AUTHORIZATION, String.format("Basic %s", auth));
+        restTemplate.exchange(createUrl(), HttpMethod.POST, new HttpEntity<>(createMessage(event), headers),
+                Void.class);
+    }
 
-	private URI createUrl() {
-		return URI.create(String.format("%s/rooms/%s/messages", url, room));
-	}
+    private URI createUrl() {
+        return URI.create(String.format("%s/rooms/%s/messages", url, room));
+    }
 
-	public void setRestTemplate(RestTemplate restTemplate) {
-		this.restTemplate = restTemplate;
-	}
+    public void setRestTemplate(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
-	public void setUrl(URI url) {
-		this.url = url;
-	}
+    public void setUrl(URI url) {
+        this.url = url;
+    }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	public void setRoom(String room) {
-		this.room = room;
-	}
+    public void setRoom(String room) {
+        this.room = room;
+    }
 
-	public void setToken(String token) {
-		this.token = token;
-	}
+    public void setToken(String token) {
+        this.token = token;
+    }
 
-	public void setMessage(String message) {
-		this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
-	}
+    public void setMessage(String message) {
+        this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
+    }
 
-	protected Object createMessage(ClientApplicationEvent event) {
-		Map<String, String> messageJson = new HashMap<>();
-		messageJson.put("text", getText(event));
-		return messageJson;
-	}
+    protected Object createMessage(ClientApplicationEvent event) {
+        Map<String, String> messageJson = new HashMap<>();
+        messageJson.put("text", getText(event));
+        return messageJson;
+    }
 
-	protected String getText(ClientApplicationEvent event) {
-		return message.getValue(event, String.class);
-	}
+    protected String getText(ClientApplicationEvent event) {
+        return message.getValue(event, String.class);
+    }
+
+
+    public URI getUrl() {
+        return url;
+    }
+
+    public String getRoom() {
+        return room;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getMessage() {
+        return message.getExpressionString();
+    }
 }
