@@ -15,10 +15,11 @@
  */
 package de.codecentric.boot.admin.notify;
 
+import de.codecentric.boot.admin.event.ClientApplicationEvent;
+
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -28,8 +29,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.client.RestTemplate;
-
-import de.codecentric.boot.admin.event.ClientApplicationEvent;
 
 
 /**

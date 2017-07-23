@@ -101,13 +101,21 @@ spring.boot.admin.password
 | Client-health-url to register with. Can be overridden in case the reachable URL is different (e.g. Docker). Must be unique in registry.
 | Guessed based on management-url and `endpoints.health.id`.
 
+| spring.boot.admin.client.management-base-url
+| Base url for computing the management-url to register with. The path is inferred at runtime, and appended to the base url.
+| Guessed based on `management.port`, service-url and `server.servlet-path`.
+
 | spring.boot.admin.client.management-url
-| Client-management-url to register with. Can be overridden in case the reachable url is different (e.g. Docker).
-| Guessed based on service-url, `server.servlet-path`, `management.port` and `management.context-path`.
+| Management-url to register with. Can be overridden in case the reachable url is different (e.g. Docker).
+| Guessed based on managment-base-url and `management.context-path`.
+
+| spring.boot.admin.client.service-base-url
+| Base url for computing the service-url to register with. The path is inferred at runtime, and appended to the base url.
+| Guessed based on hostname, `server.port`.
 
 | spring.boot.admin.client.service-url
 | Client-service-url to register with. Can be overridden in case the reachable url is different (e.g. Docker).
-| Guessed based on hostname, `server.port` and `server.context-path`.
+| Guessed based on service-base-url and `server.context-path`.
 
 | spring.boot.admin.client.name
 | Name to register with.

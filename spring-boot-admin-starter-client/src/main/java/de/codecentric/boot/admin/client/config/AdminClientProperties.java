@@ -17,91 +17,116 @@ package de.codecentric.boot.admin.client.config;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "spring.boot.admin.client")
 public class AdminClientProperties {
-	/**
-	 * Client-management-URL to register with. Inferred at runtime, can be overridden in case the
-	 * reachable URL is different (e.g. Docker).
-	 */
-	private String managementUrl;
+    /**
+     * Management-url to register with. Inferred at runtime, can be overridden in case the
+     * reachable URL is different (e.g. Docker).
+     */
+    private String managementUrl;
 
-	/**
-	 * Client-service-URL register with. Inferred at runtime, can be overridden in case the reachable
-	 * URL is different (e.g. Docker).
-	 */
-	private String serviceUrl;
+    /**
+     * Base url for computing the management-url to register with. The path is inferred at runtime, and appended to the base url.
+     */
+    private String managementBaseUrl;
 
-	/**
-	 * Client-health-URL to register with. Inferred at runtime, can be overridden in case the
-	 * reachable URL is different (e.g. Docker). Must be unique in registry.
-	 */
-	private String healthUrl;
+    /**
+     * Client-service-URL register with. Inferred at runtime, can be overridden in case the reachable
+     * URL is different (e.g. Docker).
+     */
+    private String serviceUrl;
 
-	/**
-	 * Name to register with. Defaults to ${spring.application.name}
-	 */
-	@Value("${spring.application.name:spring-boot-application}")
-	private String name;
+    /**
+     * Base url for computing the service-url to register with. The path is inferred at runtime, and appended to the base url.
+     */
+    private String serviceBaseUrl;
 
-	/**
-	 * Should the registered urls be built with server.address or with hostname.
-	 */
-	private boolean preferIp = false;
+    /**
+     * Client-health-URL to register with. Inferred at runtime, can be overridden in case the
+     * reachable URL is different (e.g. Docker). Must be unique in registry.
+     */
+    private String healthUrl;
 
-	/**
-	 * Metadata that should be associated with this application
-	 */
-	private Map<String, String> metadata = new HashMap<>();
+    /**
+     * Name to register with. Defaults to ${spring.application.name}
+     */
+    @Value("${spring.application.name:spring-boot-application}")
+    private String name;
 
-	public String getManagementUrl() {
-		return managementUrl;
-	}
+    /**
+     * Should the registered urls be built with server.address or with hostname.
+     */
+    private boolean preferIp = false;
 
-	public void setManagementUrl(String managementUrl) {
-		this.managementUrl = managementUrl;
-	}
+    /**
+     * Metadata that should be associated with this application
+     */
+    private Map<String, String> metadata = new HashMap<>();
 
-	public String getServiceUrl() {
-		return serviceUrl;
-	}
+    public String getManagementUrl() {
+        return managementUrl;
+    }
 
-	public void setServiceUrl(String serviceUrl) {
-		this.serviceUrl = serviceUrl;
-	}
+    public void setManagementUrl(String managementUrl) {
+        this.managementUrl = managementUrl;
+    }
 
-	public String getHealthUrl() {
-		return healthUrl;
-	}
+    public String getServiceUrl() {
+        return serviceUrl;
+    }
 
-	public void setHealthUrl(String healthUrl) {
-		this.healthUrl = healthUrl;
-	}
+    public void setServiceUrl(String serviceUrl) {
+        this.serviceUrl = serviceUrl;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getHealthUrl() {
+        return healthUrl;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setHealthUrl(String healthUrl) {
+        this.healthUrl = healthUrl;
+    }
 
-	public boolean isPreferIp() {
-		return preferIp;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setPreferIp(boolean preferIp) {
-		this.preferIp = preferIp;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public Map<String, String> getMetadata() {
-		return metadata;
-	}
+    public boolean isPreferIp() {
+        return preferIp;
+    }
 
-	public void setMetadata(Map<String, String> metadata) {
-		this.metadata = metadata;
-	}
+    public void setPreferIp(boolean preferIp) {
+        this.preferIp = preferIp;
+    }
+
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
+    }
+
+    public String getManagementBaseUrl() {
+        return managementBaseUrl;
+    }
+
+    public void setManagementBaseUrl(String managementBaseUrl) {
+        this.managementBaseUrl = managementBaseUrl;
+    }
+
+    public String getServiceBaseUrl() {
+        return serviceBaseUrl;
+    }
+
+    public void setServiceBaseUrl(String serviceBaseUrl) {
+        this.serviceBaseUrl = serviceBaseUrl;
+    }
 }
