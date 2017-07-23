@@ -942,14 +942,24 @@ spring.boot.admin.password</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Guessed based on management-url and <code>endpoints.health.id</code>.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.management-base-url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Base url for computing the management-url to register with. The path is inferred at runtime, and appended to the base url.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Guessed based on <code>management.port</code>, service-url and <code>server.servlet-path</code>.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.management-url</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Client-management-url to register with. Can be overridden in case the reachable url is different (e.g. Docker).</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Guessed based on service-url, <code>server.servlet-path</code>, <code>management.port</code> and <code>management.context-path</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Management-url to register with. Can be overridden in case the reachable url is different (e.g. Docker).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Guessed based on managment-base-url and <code>management.context-path</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.service-base-url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Base url for computing the service-url to register with. The path is inferred at runtime, and appended to the base url.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Guessed based on hostname, <code>server.port</code>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.service-url</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Client-service-url to register with. Can be overridden in case the reachable url is different (e.g. Docker).</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Guessed based on hostname, <code>server.port</code> and <code>server.context-path</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Guessed based on service-base-url and <code>server.context-path</code>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.name</p></td>
