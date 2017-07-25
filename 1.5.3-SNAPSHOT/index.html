@@ -517,7 +517,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 1.5.3-SNAPSHOT,</span>
-<span id="revdate">24.07.2017</span>
+<span id="revdate">25.07.2017</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -546,7 +546,9 @@ table.CodeRay td.code>pre{padding:0}
 <ul class="sectlevel2">
 <li><a href="#spring-cloud-discovery-support">4.1. Spring Cloud Discovery</a>
 <ul class="sectlevel3">
-<li><a href="#_serviceinstanceconverter">4.1.1. ServiceInstanceConverter</a></li>
+<li><a href="#spring-cloud-discovery-static-config">4.1.1. SimpleDiscoveryClient configuration</a></li>
+<li><a href="#_other_discoveryclient_implementations_eureka_zookeeper_consul">4.1.2. Other DiscoveryClient implementations (Eureka, Zookeeper, Consul, &#8230;&#8203;)</a></li>
+<li><a href="#_converting_serviceinstances_into_monitored_applications">4.1.3. Converting ServiceInstances into monitored applications</a></li>
 </ul>
 </li>
 <li><a href="#clustering-support">4.2. Clustering</a></li>
@@ -656,7 +658,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <div class="sect2">
 <h3 id="register-client-applications"><a class="anchor" href="#register-client-applications"></a>2.2. Registering client applications</h3>
 <div class="paragraph">
-<p>To register your application at the SBA Server you can either include the SBA Client or use <a href="http://projects.spring.io/spring-cloud/spring-cloud.html">Spring Cloud Discovery</a> (e.g. Eureka)</p>
+<p>To register your application at the SBA Server you can either include the SBA Client or use <a href="http://projects.spring.io/spring-cloud/spring-cloud.html">Spring Cloud Discovery</a> (e.g. Eureka, Consul, &#8230;&#8203;). There is also a <a href="#spring-cloud-discovery-static-config">simple option using a static configuration on the SBA Server side</a>.</p>
 </div>
 <div class="sect3">
 <h4 id="register-clients-via-spring-boot-admin"><a class="anchor" href="#register-clients-via-spring-boot-admin"></a>2.2.1. spring-boot-admin-starter-client</h4>
@@ -1057,11 +1059,41 @@ user.password</p></td>
 <div class="sect2">
 <h3 id="spring-cloud-discovery-support"><a class="anchor" href="#spring-cloud-discovery-support"></a>4.1. Spring Cloud Discovery</h3>
 <div class="paragraph">
-<p>The Spring Boot Admin Server can use Spring Clouds <code>DiscoveryClient</code> to discover applications. The advantage is that the clients don&#8217;t have to include the <code>spring-boot-admin-starter-client</code>. You just have to add a DiscoveryClient to your admin server - everything else is done by AutoConfiguration.
-The setup is explained <a href="#discover-clients-via-spring-cloud-discovery">above</a>.</p>
+<p>The Spring Boot Admin Server can use Spring Clouds <code>DiscoveryClient</code> to discover applications. The advantage is that the clients don&#8217;t have to include the <code>spring-boot-admin-starter-client</code>. You just have to add a <code>DiscoveryClient</code> implementation to your admin server - everything else is done by AutoConfiguration.</p>
 </div>
 <div class="sect3">
-<h4 id="_serviceinstanceconverter"><a class="anchor" href="#_serviceinstanceconverter"></a>4.1.1. ServiceInstanceConverter</h4>
+<h4 id="spring-cloud-discovery-static-config"><a class="anchor" href="#spring-cloud-discovery-static-config"></a>4.1.1. SimpleDiscoveryClient configuration</h4>
+<div class="paragraph">
+<p>Spring Boot Admin ships with the <code>SimpleDiscoveryClient</code> included. This allows you to specify client applications via configuration, without adding the SBA Client or a DiscoveryClient implementation to your monitored applications:</p>
+</div>
+<div class="listingblock">
+<div class="title">application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring</span>:
+  <span class="key">cloud</span>:
+    <span class="key">discovery</span>:
+      <span class="key">client</span>:
+        <span class="key">simple</span>:
+          <span class="key">instances</span>:
+            <span class="key">test</span>:
+              - <span class="string"><span class="content">uri: http://instance1.intern:8080</span></span>
+                <span class="key">metadata</span>:
+                  <span class="key">management.context-path</span>: <span class="string"><span class="content">/actuator</span></span>
+              - <span class="string"><span class="content">uri: http://instance2.intern:8080</span></span>
+                <span class="key">metadata</span>:
+                  <span class="key">management.context-path</span>: <span class="string"><span class="content">/actuator</span></span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_other_discoveryclient_implementations_eureka_zookeeper_consul"><a class="anchor" href="#_other_discoveryclient_implementations_eureka_zookeeper_consul"></a>4.1.2. Other DiscoveryClient implementations (Eureka, Zookeeper, Consul, &#8230;&#8203;)</h4>
+<div class="paragraph">
+<p>Spring Boot Admin supports all other implementation of Spring Cloud&#8217;s <code>DiscoveryClient</code>. You need to add it to the Spring Boot Admin Server and configure it properly.
+An <a href="#discover-clients-via-spring-cloud-discovery">example setup using Eureka</a> is shown above.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_converting_serviceinstances_into_monitored_applications"><a class="anchor" href="#_converting_serviceinstances_into_monitored_applications"></a>4.1.3. Converting ServiceInstances into monitored applications</h4>
 <div class="paragraph">
 <p>The information from the service registry are converted by the <code>ServiceInstanceConverter</code>. Spring Boot Admin ships with a default and Eureka converter implementation. The correct one is selected by AutoConfiguration.</p>
 </div>
@@ -1090,7 +1122,45 @@ When using Eureka, the <code>healthCheckUrl</code> known to Eureka is used for h
 </table>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 4. Discovery configuration options</caption>
+<caption class="title">Table 4. Instance metadata options</caption>
+<colgroup>
+<col style="width: 33%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Key</th>
+<th class="tableblock halign-left valign-top">Value</th>
+<th class="tableblock halign-left valign-top">Default value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user.name<br>
+user.password</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Credentials being used to access the endpoints.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">management.port</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The port is substituted in the service URL and will be used for accessing the actuator endpoints.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">management.context-path</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The path is appended to the service URL and will be used for accessing the actuator endpoints.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>${spring.boot.admin.discovery.converter.mangement-context-path}</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">health.path</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The path is appended to the service URL and will be used for the health-checking. Ignored by the <code>EurekaServiceInstanceConverter</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>${spring.boot.admin.discovery.converter.health-endpoint}</code></p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 5. Discovery configuration options</caption>
 <colgroup>
 <col style="width: 33%;">
 <col style="width: 33%;">
@@ -1128,44 +1198,6 @@ When using Eureka, the <code>healthCheckUrl</code> known to Eureka is used for h
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.discovery.services</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">This services will be included when using discovery and registered as application. Supports simple patterns (e.g. "foo*", "<strong>bar", "foo*bar</strong>").</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>"*"</code></p></td>
-</tr>
-</tbody>
-</table>
-<table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 5. Instance metadata options</caption>
-<colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Key</th>
-<th class="tableblock halign-left valign-top">Value</th>
-<th class="tableblock halign-left valign-top">Default value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">user.name<br>
-user.password</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Credentials being used to access the endpoints.</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">management.port</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The port is substituted in the service URL and will be used for accessing the actuator endpoints.</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">management.context-path</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The path is appended to the service URL and will be used for accessing the actuator endpoints.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>${spring.boot.admin.discovery.converter.mangement-context-path}</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">health.path</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The path is appended to the service URL and will be used for the health-checking. Ignored by the <code>EurekaServiceInstanceConverter</code>.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>${spring.boot.admin.discovery.converter.health-endpoint}</code></p></td>
 </tr>
 </tbody>
 </table>
