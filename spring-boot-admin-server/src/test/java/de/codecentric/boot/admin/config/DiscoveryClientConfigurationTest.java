@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration.Res
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration;
+import org.springframework.cloud.commons.util.UtilAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -94,6 +95,7 @@ public class DiscoveryClientConfigurationTest {
         applicationContext.register(ServerPropertiesAutoConfiguration.class);
         applicationContext.register(AdminServerCoreConfiguration.class);
         applicationContext.register(AdminServerWebConfiguration.class);
+        applicationContext.register(UtilAutoConfiguration.class);
         applicationContext.register(DiscoveryClientConfiguration.class);
 
         applicationContext.refresh();

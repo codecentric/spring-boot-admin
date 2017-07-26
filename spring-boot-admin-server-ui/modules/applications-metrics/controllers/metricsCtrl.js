@@ -1,11 +1,11 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2014-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,101 +17,120 @@
 
 module.exports = function ($scope, application) {
   'ngInject';
-
-  $scope.counters = [];
-  $scope.countersMax = 0;
-  $scope.gauges = [];
-  $scope.gaugesMax = 0;
   $scope.showRichGauges = false;
+  $scope.metrics = [];
+
+  function merge(array, obj) {
+    for (var i = 0; i < array.length; i++) {
+      if (array[i].name === obj.name) {
+        for (var a in obj) {
+          if (obj.hasOwnProperty(a)) {
+            array[i][a] = obj[a];
+          }
+        }
+        return;
+      }
+    }
+    array.push(obj);
+  }
 
   application.getMetrics().then(
     function (response) {
-      function merge(array, obj) {
-        for (var i = 0; i < array.length; i++) {
-          if (array[i].name === obj.name) {
-            for (var a in obj) {
-              array[i][a] = obj[a];
-            }
-            return;
-          }
+      var metricData = {};
+
+      function addData(groupname, valueObj, max) {
+        var group = metricData[groupname] || {max: 0, values: []};
+        merge(group.values, valueObj);
+        if (typeof max !== 'undefined' && max > group.max) {
+          group.max = max;
         }
-        array.push(obj);
+        metricData[groupname] = group;
       }
 
-      var find = function (metrics, regexes, callbacks) {
-        for (var metric in metrics) {
-          for (var i = 0; i < regexes.length; i++) {
-            var match = regexes[i].exec(metric);
+      var matchers = [{
+        regex: /(gauge\..+)\.val/,
+        callback: function (metric, match, value) {
+          addData('gauge', {
+            name: match[1],
+            value: value
+          }, value);
+          $scope.showRichGauges = true;
+        }
+      }, {
+        regex: /(gauge\..+)\.avg/,
+        callback: function (metric, match, value) {
+          addData('gauge', {
+            name: match[1],
+            avg: value.toFixed(2)
+          });
+        }
+      }, {
+        regex: /(gauge\..+)\.min/,
+        callback: function (metric, match, value) {
+          addData('gauge', {
+            name: match[1],
+            min: value
+          });
+        }
+      }, {
+        regex: /(gauge\..+)\.max/,
+        callback: function (metric, match, value) {
+          addData('gauge', {
+            name: match[1],
+            max: value
+          }, value);
+        }
+      }, {
+        regex: /(gauge\..+)\.count/,
+        callback: function (metric, match, value) {
+          addData('gauge', {
+            name: match[1],
+            count: value
+          });
+        }
+      }, {
+        regex: /(gauge\..+)\.alpha/,
+        callback: function () { /* NOP */
+        }
+      }, {
+        regex: /(gauge\..+)/,
+        callback: function (metric, match, value) {
+          addData('gauge', {
+            name: match[1],
+            value: value
+          }, value);
+        }
+      }, {
+        regex: /^([^.]+).*/,
+        callback: function (metric, match, value) {
+          addData(match[1], {
+            name: metric,
+            value: value
+          }, value);
+        }
+      }];
+
+      var metrics = response.data;
+      for (var metric in metrics) {
+        if (metrics.hasOwnProperty(metric)) {
+          for (var i = 0; i < matchers.length; i++) {
+            var match = matchers[i].regex.exec(metric);
             if (match !== null) {
-              callbacks[i](metric, match, metrics[metric]);
+              matchers[i].callback(metric, match, metrics[metric]);
               break;
             }
           }
         }
-      };
-
-
-      var regexes = [/counter\..+/, /(gauge\..+)\.val/, /(gauge\..+)\.avg/, /(gauge\..+)\.min/, /(gauge\..+)\.max/, /(gauge\..+)\.count/, /(gauge\..+)\.alpha/, /(gauge\..+)/];
-      var callbacks = [
-        function (metric, match, value) {
-          $scope.counters.push({
-            name: metric,
-            value: value
+      }
+      for (var groupname in metricData) {
+        if (metricData.hasOwnProperty(groupname)) {
+          $scope.metrics.push({
+            name: groupname,
+            values: metricData[groupname].values,
+            max: metricData[groupname].max || 0
           });
-          if (value > $scope.countersMax) {
-            $scope.countersMax = value;
-          }
-        },
-        function (metric, match, value) {
-          merge($scope.gauges, {
-            name: match[1],
-            value: value
-          });
-          $scope.showRichGauges = true;
-          if (value > $scope.gaugesMax) {
-            $scope.gaugesMax = value;
-          }
-        },
-        function (metric, match, value) {
-          merge($scope.gauges, {
-            name: match[1],
-            avg: value.toFixed(2)
-          });
-        },
-        function (metric, match, value) {
-          merge($scope.gauges, {
-            name: match[1],
-            min: value
-          });
-        },
-        function (metric, match, value) {
-          merge($scope.gauges, {
-            name: match[1],
-            max: value
-          });
-          if (value > $scope.gaugesMax) {
-            $scope.gaugesMax = value;
-          }
-        },
-        function (metric, match, value) {
-          merge($scope.gauges, {
-            name: match[1],
-            count: value
-          });
-        },
-        function () { /* NOP */ },
-        function (metric, match, value) {
-          merge($scope.gauges, {
-            name: match[1],
-            value: value
-          });
-          if (value > $scope.gaugesMax) {
-            $scope.gaugesMax = value;
-          }
-        }];
-
-      find(response.data, regexes, callbacks);
-
+        }
+      }
     }
   ).catch(function (response) {
     $scope.error = response.data;

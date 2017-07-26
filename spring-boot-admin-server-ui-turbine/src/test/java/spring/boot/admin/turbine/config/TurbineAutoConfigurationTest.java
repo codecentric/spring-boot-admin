@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfigurat
 import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration.RestTemplateConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration;
+import org.springframework.cloud.commons.util.UtilAutoConfiguration;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -47,6 +48,7 @@ public class TurbineAutoConfigurationTest {
         applicationContext.register(PropertyPlaceholderAutoConfiguration.class);
         applicationContext.register(RestTemplateConfiguration.class);
         applicationContext.register(ServerPropertiesAutoConfiguration.class);
+        applicationContext.register(UtilAutoConfiguration.class);
         applicationContext.register(SimpleDiscoveryClientAutoConfiguration.class);
         applicationContext.register(AdminServerCoreConfiguration.class);
         applicationContext.register(AdminServerWebConfiguration.class);

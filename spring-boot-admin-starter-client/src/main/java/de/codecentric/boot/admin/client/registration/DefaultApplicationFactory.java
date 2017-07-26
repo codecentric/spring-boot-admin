@@ -1,20 +1,19 @@
 package de.codecentric.boot.admin.client.registration;
 
-import static org.springframework.util.StringUtils.trimLeadingCharacter;
+import de.codecentric.boot.admin.client.config.AdminClientProperties;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
-
+import javax.servlet.ServletContext;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import de.codecentric.boot.admin.client.config.AdminClientProperties;
 
 /**
  * Default implementation for creating the {@link Application} instance which gets registered at the
@@ -25,130 +24,158 @@ import de.codecentric.boot.admin.client.config.AdminClientProperties;
  */
 public class DefaultApplicationFactory implements ApplicationFactory {
 
-	private AdminClientProperties client;
-	private ServerProperties server;
-	private ManagementServerProperties management;
-	private Integer localServerPort;
-	private Integer localManagementPort;
-	private String healthEndpointPath;
+    private AdminClientProperties client;
+    private ServerProperties server;
+    private ManagementServerProperties management;
+    private Integer localServerPort;
+    private Integer localManagementPort;
+    private final ServletContext servletContext;
+    private String healthEndpointPath;
 
-	public DefaultApplicationFactory(AdminClientProperties client,
-			ManagementServerProperties management, ServerProperties server,
-			String healthEndpointPath) {
-		this.client = client;
-		this.management = management;
-		this.server = server;
-		this.healthEndpointPath = healthEndpointPath;
-	}
+    public DefaultApplicationFactory(AdminClientProperties client,
+                                     ManagementServerProperties management,
+                                     ServerProperties server,
+                                     ServletContext servletContext,
+                                     String healthEndpointPath) {
+        this.client = client;
+        this.management = management;
+        this.server = server;
+        this.servletContext = servletContext;
+        this.healthEndpointPath = healthEndpointPath;
+    }
 
-	@Override
-	public Application createApplication() {
-		return Application.create(getName()).withHealthUrl(getHealthUrl())
-				.withManagementUrl(getManagementUrl()).withServiceUrl(getServiceUrl())
-				.withMetadata(getMetadata()).build();
-	}
+    @Override
+    public Application createApplication() {
+        return Application.create(getName())
+                          .withHealthUrl(getHealthUrl())
+                          .withManagementUrl(getManagementUrl())
+                          .withServiceUrl(getServiceUrl())
+                          .withMetadata(getMetadata())
+                          .build();
+    }
 
-	protected String getName() {
-		return client.getName();
-	}
+    protected String getName() {
+        return client.getName();
+    }
 
-	protected String getServiceUrl() {
-		if (client.getServiceUrl() != null) {
-			return client.getServiceUrl();
-		}
+    protected String getServiceUrl() {
+        if (client.getServiceUrl() != null) {
+            return UriComponentsBuilder.fromUriString(client.getServiceUrl()).toUriString();
+        }
 
-		if (getLocalServerPort() == null) {
-			throw new IllegalStateException(
-					"serviceUrl must be set when deployed to servlet-container");
-		}
+        String baseUrl = client.getServiceBaseUrl();
+        if (getLocalServerPort() == null && StringUtils.isEmpty(baseUrl)) {
+            throw new IllegalStateException("service-base-url must be set when deployed to servlet-container");
+        }
 
-		return UriComponentsBuilder.newInstance().scheme(getScheme(server.getSsl()))
-				.host(getServiceHost()).port(getLocalServerPort()).path(server.getContextPath())
-				.toUriString();
-	}
+        UriComponentsBuilder builder;
+        if (!StringUtils.isEmpty(baseUrl)) {
+            builder = UriComponentsBuilder.fromUriString(baseUrl);
+        } else {
+            builder = UriComponentsBuilder.newInstance()
+                                          .scheme(getScheme(server.getSsl()))
+                                          .host(getServiceHost())
+                                          .port(getLocalServerPort());
+        }
 
-	protected String getManagementUrl() {
-		if (client.getManagementUrl() != null) {
-			return client.getManagementUrl();
-		}
+        return builder.path("/").path(servletContext.getContextPath()).path("/").toUriString();
+    }
 
-		if (getLocalManagementPort() == null
-				|| getLocalManagementPort().equals(getLocalServerPort())) {
-			return UriComponentsBuilder.fromHttpUrl(getServiceUrl())
-					.pathSegment(server.getServletPrefix().split("/"))
-					.pathSegment(trimLeadingCharacter(management.getContextPath(), '/').split("/"))
-					.toUriString();
-		}
+    protected String getManagementUrl() {
+        if (client.getManagementUrl() != null) {
+            return client.getManagementUrl();
+        }
 
-		Ssl ssl = management.getSsl() != null ? management.getSsl() : server.getSsl();
-		return UriComponentsBuilder.newInstance().scheme(getScheme(ssl)).host(getManagementHost())
-				.port(getLocalManagementPort()).path(management.getContextPath()).toUriString();
-	}
+        String baseUrl = client.getManagementBaseUrl();
 
-	protected String getHealthUrl() {
-		if (client.getHealthUrl() != null) {
-			return client.getHealthUrl();
-		}
-		return UriComponentsBuilder.fromHttpUrl(getManagementUrl())
-				.pathSegment(trimLeadingCharacter(getHealthEndpointPath(), '/').split("/"))
-				.toUriString();
-	}
+        UriComponentsBuilder builder;
+        if (!StringUtils.isEmpty(baseUrl)) {
+            builder = UriComponentsBuilder.fromUriString(baseUrl);
+        } else if (isManagementPortEqual()) {
+            builder = UriComponentsBuilder.fromHttpUrl(getServiceUrl()).path("/").path(server.getServletPrefix());
+        } else {
+            Ssl ssl = management.getSsl() != null ? management.getSsl() : server.getSsl();
+            builder = UriComponentsBuilder.newInstance()
+                                          .scheme(getScheme(ssl))
+                                          .host(getManagementHost())
+                                          .port(getLocalManagementPort());
+        }
 
-	protected Map<String, String> getMetadata() {
-		return client.getMetadata();
-	}
+        return builder.path("/").path(management.getContextPath()).path("/").toUriString();
+    }
 
-	protected String getServiceHost() {
-		InetAddress address = server.getAddress();
-		if (address == null) {
-			address = getLocalHost();
-		}
-		return getHost(address);
-	}
+    protected boolean isManagementPortEqual() {
+        return getLocalManagementPort() == null || getLocalManagementPort().equals(getLocalServerPort());
+    }
 
-	protected String getManagementHost() {
-		InetAddress address = management.getAddress();
-		if (address != null) {
-			return getHost(address);
-		}
-		return getServiceHost();
-	}
+    protected String getHealthUrl() {
+        if (client.getHealthUrl() != null) {
+            return client.getHealthUrl();
+        }
+        return UriComponentsBuilder.fromHttpUrl(getManagementUrl())
+                                   .path("/")
+                                   .path(getHealthEndpointPath())
+                                   .path("/")
+                                   .toUriString();
+    }
 
-	protected InetAddress getLocalHost() {
-		try {
-			return InetAddress.getLocalHost();
-		} catch (UnknownHostException ex) {
-			throw new IllegalArgumentException(ex.getMessage(), ex);
-		}
-	}
+    protected Map<String, String> getMetadata() {
+        return client.getMetadata();
+    }
 
-	protected Integer getLocalServerPort() {
-		return localServerPort;
-	}
+    protected String getServiceHost() {
+        InetAddress address = server.getAddress();
+        if (address == null) {
+            address = getLocalHost();
+        }
+        return getHost(address);
+    }
 
-	protected Integer getLocalManagementPort() {
-		return localManagementPort;
-	}
+    protected String getManagementHost() {
+        InetAddress address = management.getAddress();
+        if (address != null) {
+            return getHost(address);
+        }
+        return getServiceHost();
+    }
 
-	protected String getHealthEndpointPath() {
-		return healthEndpointPath;
-	}
+    protected InetAddress getLocalHost() {
+        try {
+            return InetAddress.getLocalHost();
+        } catch (UnknownHostException ex) {
+            throw new IllegalArgumentException(ex.getMessage(), ex);
+        }
+    }
 
-	protected String getScheme(Ssl ssl) {
-		return ssl != null && ssl.isEnabled() ? "https" : "http";
-	}
+    protected Integer getLocalServerPort() {
+        return localServerPort;
+    }
 
-	protected String getHost(InetAddress address) {
-		return client.isPreferIp() ? address.getHostAddress() : address.getCanonicalHostName();
-	}
+    protected Integer getLocalManagementPort() {
+        return localManagementPort;
+    }
 
-	@EventListener
-	public void onApplicationReady(ApplicationReadyEvent event) {
-		if (event.getApplicationContext() instanceof WebApplicationContext) {
-			localServerPort = event.getApplicationContext().getEnvironment()
-					.getProperty("local.server.port", Integer.class);
-			localManagementPort = event.getApplicationContext().getEnvironment()
-					.getProperty("local.management.port", Integer.class, localServerPort);
-		}
-	}
+    protected String getHealthEndpointPath() {
+        return healthEndpointPath;
+    }
+
+    protected String getScheme(Ssl ssl) {
+        return ssl != null && ssl.isEnabled() ? "https" : "http";
+    }
+
+    protected String getHost(InetAddress address) {
+        return client.isPreferIp() ? address.getHostAddress() : address.getCanonicalHostName();
+    }
+
+    @EventListener
+    public void onApplicationReady(ApplicationReadyEvent event) {
+        if (event.getApplicationContext() instanceof WebApplicationContext) {
+            localServerPort = event.getApplicationContext()
+                                   .getEnvironment()
+                                   .getProperty("local.server.port", Integer.class);
+            localManagementPort = event.getApplicationContext()
+                                       .getEnvironment()
+                                       .getProperty("local.management.port", Integer.class, localServerPort);
+        }
+    }
 }

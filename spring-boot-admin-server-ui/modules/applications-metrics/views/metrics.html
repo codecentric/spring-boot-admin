@@ -1,28 +1,24 @@
 <div class="container">
-  <div class="alert alert-error" ng-if="error">
-    <b>Error:</b> {{ error }}
-  </div>
-  <sba-info-panel panel-title="Counter" raw="api/applications/{{ application.id }}/metrics/counter.*">
-    <table class="table" ng-if="counters.length > 0">
-      <tr ng-repeat="counter in counters">
-        <td>
-          <sba-simple-metric-bar for-metric="counter" global-max="countersMax"></sba-simple-metric-bar>
-        </td>
-      </tr>
-    </table>
-  </sba-info-panel>
-  <sba-info-panel panel-title="Gauges" raw="api/applications/{{ application.id }}/metrics/gauge.*">
-    <table class="table" ng-if="gauges.length > 0">
-      <tr ng-if="showRichGauges" ng-repeat="gauge in gauges">
-        <td>
-          <sba-rich-metric-bar for-metric="gauge" global-max="gaugesMax"></sba-rich-metric-bar>
-        </td>
-      </tr>
-      <tr ng-if="!showRichGauges" ng-repeat="gauge in gauges">
-        <td>
-          <sba-simple-metric-bar for-metric="gauge" global-max="gaugesMax"></sba-simple-metric-bar>
-        </td>
-      </tr>
-    </table>
-  </sba-info-panel>
+    <div class="alert alert-error" ng-if="error">
+        <b>Error:</b> {{ error }}
+    </div>
+    <div>
+        <input placeholder="Filter" class="input-xxlarge" type="search" ng-model="searchFilter"/>
+    </div>
+    <sba-info-panel ng-repeat="metric in metrics | orderBy:'name'" panel-title="{{ metric.name }}"
+                    raw="api/applications/{{ application.id }}/metrics/{{ metric.name }}.*"
+                    ng-show="!searchFilter || (metric.values | filter:searchFilter).length > 0">
+        <table class="table">
+            <tr ng-if="showRichGauges" ng-repeat="m in metric.values | filter:searchFilter">
+                <td>
+                    <sba-rich-metric-bar for-metric="m" global-max="metric.max"></sba-rich-metric-bar>
+                </td>
+            </tr>
+            <tr ng-if="!showRichGauges" ng-repeat="m in metric.values | filter:searchFilter">
+                <td>
+                    <sba-simple-metric-bar for-metric="m" global-max="metric.max"></sba-simple-metric-bar>
+                </td>
+            </tr>
+        </table>
+    </sba-info-panel>
 </div>
