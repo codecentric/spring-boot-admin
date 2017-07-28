@@ -25,6 +25,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import de.codecentric.boot.admin.notify.CompositeNotifier;
+import de.codecentric.boot.admin.notify.HipchatNotifier;
+import de.codecentric.boot.admin.notify.MailNotifier;
+import de.codecentric.boot.admin.notify.Notifier;
+import de.codecentric.boot.admin.notify.NotifierListener;
+import de.codecentric.boot.admin.notify.OpsGenieNotifier;
+import de.codecentric.boot.admin.notify.PagerdutyNotifier;
+import de.codecentric.boot.admin.notify.SlackNotifier;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
@@ -37,13 +45,6 @@ import de.codecentric.boot.admin.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.model.StatusInfo;
-import de.codecentric.boot.admin.notify.CompositeNotifier;
-import de.codecentric.boot.admin.notify.HipchatNotifier;
-import de.codecentric.boot.admin.notify.MailNotifier;
-import de.codecentric.boot.admin.notify.Notifier;
-import de.codecentric.boot.admin.notify.NotifierListener;
-import de.codecentric.boot.admin.notify.PagerdutyNotifier;
-import de.codecentric.boot.admin.notify.SlackNotifier;
 
 public class NotifierConfigurationTest {
 	private static final ClientApplicationEvent APP_DOWN = new ClientApplicationStatusChangedEvent(
@@ -84,6 +85,13 @@ public class NotifierConfigurationTest {
 		load(null, "spring.boot.admin.notify.pagerduty.service-key:foo");
 		assertThat(context.getBean(PagerdutyNotifier.class),
 				is(instanceOf(PagerdutyNotifier.class)));
+	}
+
+	@Test
+	public void test_opsgenie() {
+		load(null, "spring.boot.admin.notify.opsgenie.api-key:foo");
+		assertThat(context.getBean(OpsGenieNotifier.class),
+				is(instanceOf(OpsGenieNotifier.class)));
 	}
 
 	@Test
