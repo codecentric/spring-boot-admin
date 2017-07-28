@@ -17,7 +17,15 @@ package de.codecentric.boot.admin.config;
 
 import java.util.List;
 
-import de.codecentric.boot.admin.notify.*;
+import de.codecentric.boot.admin.notify.CompositeNotifier;
+import de.codecentric.boot.admin.notify.MailNotifier;
+import de.codecentric.boot.admin.notify.Notifier;
+import de.codecentric.boot.admin.notify.NotifierListener;
+import de.codecentric.boot.admin.notify.PagerdutyNotifier;
+import de.codecentric.boot.admin.notify.OpsGenieNotifier;
+import de.codecentric.boot.admin.notify.HipchatNotifier;
+import de.codecentric.boot.admin.notify.SlackNotifier;
+import de.codecentric.boot.admin.notify.LetsChatNotifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
