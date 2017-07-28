@@ -165,6 +165,60 @@ To enable pagerduty notifications you just have to add a generic service to your
 |
 |===
 
+
+[[opsgenie-notifications]]
+==== OpsGenie notifications ====
+To enable OpsGenie notifications you just have to add a new JSON Rest API integration to your OpsGenie account and set `spring.boot.admin.notify.opsgenie.api-key` to the apiKey you received.
+
+.OpsGenie notifications configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.opsgenie.enabled
+| Enable OpsGenie notifications
+| `true`
+
+| spring.boot.admin.notify.opsgenie.ignore-changes
+| Comma-delimited list of status changes to be ignored. Format: "<from-status>:<to-status>". Wildcards allowed.
+| `"UNKNOWN:UP"`
+
+| spring.boot.admin.notify.opsgenie.api-key
+| apiKey you received when creating the integration
+|
+
+| spring.boot.admin.notify.opsgenie.url
+| OpsGenie Alert API url
+| `+++"https://api.opsgenie.com/v1/json/alert"+++`
+
+| spring.boot.admin.notify.opsgenie.description
+| Description to use in the event. SpEL-expressions are supported
+| `+++"#{application.name}/#{application.id} is #{to.status}"+++`
+
+| spring.boot.admin.notify.opsgenie.recipients
+| User, group, schedule or escalation names to calculate which users will receive the notifications of the alert.
+|
+
+| spring.boot.admin.notify.opsgenie.actions
+| Comma separated list of actions that can be executed.
+|
+
+| spring.boot.admin.notify.opsgenie.source
+| Field to specify source of alert. By default, it will be assigned to IP address of incoming request.
+|
+
+| spring.boot.admin.notify.opsgenie.tags
+| Comma separated list of labels attached to the alert.
+|
+
+| spring.boot.admin.notify.opsgenie.entity
+| The entity the alert is related to.
+|
+
+| spring.boot.admin.notify.opsgenie.user
+| Default owner of the execution. If user is not specified, the system becomes owner of the execution.
+|
+|===
+
 [hipchat-notifications]
 ==== Hipchat notifications ====
 To enable Hipchat notifications you need to create an API token from you Hipchat account and set the appropriate configuration properties.
