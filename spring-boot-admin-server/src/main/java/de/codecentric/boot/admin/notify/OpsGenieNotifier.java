@@ -7,6 +7,10 @@ import java.util.Map;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.event.ClientApplicationEvent;
@@ -75,19 +79,17 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 
     @Override
     protected void doNotify(ClientApplicationEvent event) throws Exception {
-        restTemplate.postForEntity(buildUrl(event), createEvent(event), Void.class);
+        restTemplate.exchange(buildUrl(event), HttpMethod.POST, createEvent(event), Void.class);
     }
 
     protected String buildUrl(ClientApplicationEvent event) {
-        if (event instanceof ClientApplicationStatusChangedEvent) {
-            if ("UP".equals(((ClientApplicationStatusChangedEvent) event).getTo().getStatus())) {
+        if ((event instanceof ClientApplicationStatusChangedEvent) && ("UP".equals(((ClientApplicationStatusChangedEvent) event).getTo().getStatus()))) {
                 return String.format("%s/close", url.toString());
-            }
         }
         return url.toString();
     }
 
-    protected Map<String, Object> createEvent(ClientApplicationEvent event) {
+    protected HttpEntity createEvent(ClientApplicationEvent event) {
         Map<String, Object> result = new HashMap<>();
         result.put("apiKey", apiKey);
         result.put("message", getMessage(event));
@@ -123,7 +125,9 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
             result.put("details", details);
         }
 
-        return result;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new HttpEntity<>(result, headers);
     }
 
     protected String getMessage(ClientApplicationEvent event) {

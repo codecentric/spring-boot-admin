@@ -25,7 +25,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import de.codecentric.boot.admin.notify.*;
+import de.codecentric.boot.admin.notify.CompositeNotifier;
+import de.codecentric.boot.admin.notify.HipchatNotifier;
+import de.codecentric.boot.admin.notify.MailNotifier;
+import de.codecentric.boot.admin.notify.Notifier;
+import de.codecentric.boot.admin.notify.NotifierListener;
+import de.codecentric.boot.admin.notify.OpsGenieNotifier;
+import de.codecentric.boot.admin.notify.PagerdutyNotifier;
+import de.codecentric.boot.admin.notify.SlackNotifier;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;

@@ -1,10 +1,15 @@
 package de.codecentric.boot.admin.notify;
 
+import de.codecentric.boot.admin.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.model.StatusInfo;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,10 +18,13 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-/**
- * Created by fernando on 5/16/17.
- */
 public class OpsGenieNotifierTest {
+    public static final String apiKey = "--service--";
+    public static final String recipients = "--recipients--";
+    public static final String appName = "App";
+    public static final String appId = "-id-";
+    public static final String appHealthUrl = "http://health";
+
     private OpsGenieNotifier notifier;
     private RestTemplate restTemplate;
 
@@ -24,8 +32,8 @@ public class OpsGenieNotifierTest {
     public void setUp() {
         restTemplate = mock(RestTemplate.class);
         notifier = new OpsGenieNotifier();
-        notifier.setApiKey("--service--");
-        notifier.setRecipients("--recipients--");
+        notifier.setApiKey(apiKey);
+        notifier.setRecipients(recipients);
         notifier.setRestTemplate(restTemplate);
     }
 
@@ -33,46 +41,69 @@ public class OpsGenieNotifierTest {
     public void test_onApplicationEvent_resolve() {
         StatusInfo infoDown = StatusInfo.ofDown();
         StatusInfo infoUp = StatusInfo.ofUp();
+        ClientApplicationStatusChangedEvent event =  getEvent(infoDown,infoUp);
 
-        notifier.notify(new ClientApplicationStatusChangedEvent(
-                Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
-                infoDown, infoUp));
-
-        Map<String, Object> expected = new HashMap<String, Object>();
-        expected.put("apiKey", "--service--");
-        expected.put("alias", "App/-id-");
-        expected.put("description","Application App (-id-) went from DOWN to UP");
-        expected.put("message", "App/-id- is UP");
+        notifier.notify(event);
 
         String url = String.format("%s/close", OpsGenieNotifier.DEFAULT_URI);
-        verify(restTemplate).postForEntity(eq(url), eq(expected),
-                eq(Void.class));
+        verify(restTemplate).exchange(eq(url), eq(HttpMethod.POST),  eq(expectedEvent(event)), eq(Void.class));
     }
 
     @Test
     public void test_onApplicationEvent_trigger() {
         StatusInfo infoDown = StatusInfo.ofDown();
         StatusInfo infoUp = StatusInfo.ofUp();
+        ClientApplicationStatusChangedEvent event =  getEvent(infoUp,infoDown);
 
-        notifier.notify(new ClientApplicationStatusChangedEvent(
-                Application.create("App").withId("-id-").withHealthUrl("http://health").build(),
-                infoUp, infoDown));
+        notifier.notify(event);
 
-        Map<String, Object> expected = new HashMap<String, Object>();
-        expected.put("apiKey", "--service--");
-        expected.put("recipients","--recipients--");
-        expected.put("alias", "App/-id-");
-        expected.put("description","Application App (-id-) went from UP to DOWN");
-        expected.put("message", "App/-id- is DOWN");
+        verify(restTemplate).exchange(eq(OpsGenieNotifier.DEFAULT_URI.toString()), eq(HttpMethod.POST),
+                eq(expectedEvent(event)), eq(Void.class));
+    }
 
-        Map<String, Object> details = new HashMap<String, Object>();
-        details.put("type","link");
-        details.put("href", "http://health");
-        details.put("text", "Application health-endpoint");
-        expected.put("details", details);
 
-        verify(restTemplate).postForEntity(eq(OpsGenieNotifier.DEFAULT_URI.toString()), eq(expected),
-                eq(Void.class));
+
+    private ClientApplicationStatusChangedEvent getEvent(StatusInfo from, StatusInfo to) {
+        return new ClientApplicationStatusChangedEvent(
+                Application.create(appName).withId(appId).withHealthUrl(appHealthUrl).build(), from, to);
+    }
+
+    private String getMessage(ClientApplicationEvent event) {
+        return String.format("%s/%s is %s", event.getApplication().getName(),
+                event.getApplication().getId(), ((ClientApplicationStatusChangedEvent)event).getTo().getStatus());
+    }
+
+    private String getDescription(ClientApplicationEvent event) {
+        return String.format("Application %s (%s) went from %s to %s", event.getApplication().getName(),
+                event.getApplication().getId(), ((ClientApplicationStatusChangedEvent) event).getFrom().getStatus(),
+                ((ClientApplicationStatusChangedEvent)event).getTo().getStatus());
+    }
+
+
+    protected HttpEntity expectedEvent(ClientApplicationEvent event) {
+        Map<String, Object> expected = new HashMap<>();
+        expected.put("apiKey", apiKey);
+        expected.put("message", getMessage(event));
+        expected.put("alias", event.getApplication().getName() + "/" + event.getApplication().getId());
+        expected.put("description", getDescription(event));
+
+        if (event instanceof ClientApplicationStatusChangedEvent &&
+                !"UP".equals(((ClientApplicationStatusChangedEvent) event).getTo().getStatus())) {
+
+            if (recipients != null){
+                expected.put("recipients", recipients);
+            }
+
+            Map<String, Object> details = new HashMap<>();
+            details.put("type", "link");
+            details.put("href", event.getApplication().getHealthUrl());
+            details.put("text", "Application health-endpoint");
+            expected.put("details", details);
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new HttpEntity<>(expected, headers);
     }
 
 }
