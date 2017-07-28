@@ -145,7 +145,6 @@ public class NotifierConfiguration {
 	public static class OpsGenieNotifierConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = "spring.boot.admin.notify.opsgenie", name = "enabled", matchIfMissing = true)
 		@ConfigurationProperties("spring.boot.admin.notify.opsgenie")
 		public OpsGenieNotifier opsgenieNotifier() {
 			return new OpsGenieNotifier();
