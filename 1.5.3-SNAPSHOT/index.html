@@ -517,7 +517,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 1.5.3-SNAPSHOT,</span>
-<span id="revdate">25.07.2017</span>
+<span id="revdate">30.07.2017</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -558,9 +558,10 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#filtering-notifications">4.3.2. Filtering notifications</a></li>
 <li><a href="#mail-notifications">4.3.3. Mail notifications</a></li>
 <li><a href="#pagerduty-notifications">4.3.4. Pagerduty notifications</a></li>
-<li><a href="#_hipchat_notifications">4.3.5. Hipchat notifications</a></li>
-<li><a href="#_slack_notifications">4.3.6. Slack notifications</a></li>
-<li><a href="#_let_s_chat_notifications">4.3.7. Let&#8217;s Chat notifications</a></li>
+<li><a href="#opsgenie-notifications">4.3.5. OpsGenie notifications</a></li>
+<li><a href="#_hipchat_notifications">4.3.6. Hipchat notifications</a></li>
+<li><a href="#_slack_notifications">4.3.7. Slack notifications</a></li>
+<li><a href="#_let_s_chat_notifications">4.3.8. Let&#8217;s Chat notifications</a></li>
 </ul>
 </li>
 <li><a href="#_ui_modules">4.4. UI Modules</a>
@@ -1530,12 +1531,90 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_hipchat_notifications"><a class="anchor" href="#_hipchat_notifications"></a>4.3.5. Hipchat notifications</h4>
+<h4 id="opsgenie-notifications"><a class="anchor" href="#opsgenie-notifications"></a>4.3.5. OpsGenie notifications</h4>
+<div class="paragraph">
+<p>To enable OpsGenie notifications you just have to add a new JSON Rest API integration to your OpsGenie account and set <code>spring.boot.admin.notify.opsgenie.api-key</code> to the apiKey you received.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 9. OpsGenie notifications configuration options</caption>
+<colgroup>
+<col style="width: 33%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.opsgenie.enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enable OpsGenie notifications</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.opsgenie.ignore-changes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Comma-delimited list of status changes to be ignored. Format: "&lt;from-status&gt;:&lt;to-status&gt;". Wildcards allowed.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"UNKNOWN:UP"</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.opsgenie.api-key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">apiKey you received when creating the integration</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.opsgenie.url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OpsGenie Alert API url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"https://api.opsgenie.com/v1/json/alert"</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.opsgenie.description</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description to use in the event. SpEL-expressions are supported</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"#{application.name}/#{application.id} is #{to.status}"</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.opsgenie.recipients</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">User, group, schedule or escalation names to calculate which users will receive the notifications of the alert.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.opsgenie.actions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Comma separated list of actions that can be executed.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.opsgenie.source</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Field to specify source of alert. By default, it will be assigned to IP address of incoming request.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.opsgenie.tags</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Comma separated list of labels attached to the alert.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.opsgenie.entity</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The entity the alert is related to.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.opsgenie.user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default owner of the execution. If user is not specified, the system becomes owner of the execution.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_hipchat_notifications"><a class="anchor" href="#_hipchat_notifications"></a>4.3.6. Hipchat notifications</h4>
 <div class="paragraph">
 <p>To enable Hipchat notifications you need to create an API token from you Hipchat account and set the appropriate configuration properties.</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 9. Hipchat notifications configuration options</caption>
+<caption class="title">Table 10. Hipchat notifications configuration options</caption>
 <colgroup>
 <col style="width: 33%;">
 <col style="width: 33%;">
@@ -1588,13 +1667,13 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_slack_notifications"><a class="anchor" href="#_slack_notifications"></a>4.3.6. Slack notifications</h4>
+<h4 id="_slack_notifications"><a class="anchor" href="#_slack_notifications"></a>4.3.7. Slack notifications</h4>
 <div class="paragraph">
 <p>To enable Slack notifications you need to add a incoming Webhook under custom integrations on your Slack
 account and configure it appropriately.</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 10. Slack notifications configuration options</caption>
+<caption class="title">Table 11. Slack notifications configuration options</caption>
 <colgroup>
 <col style="width: 33%;">
 <col style="width: 33%;">
@@ -1647,12 +1726,12 @@ account and configure it appropriately.</p>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_let_s_chat_notifications"><a class="anchor" href="#_let_s_chat_notifications"></a>4.3.7. Let&#8217;s Chat notifications</h4>
+<h4 id="_let_s_chat_notifications"><a class="anchor" href="#_let_s_chat_notifications"></a>4.3.8. Let&#8217;s Chat notifications</h4>
 <div class="paragraph">
 <p>To enable Let&#8217;s Chat notifications you need to add the host url and add the API token and username from Let&#8217;s Chat</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 11. Let&#8217;s Chat notifications configuration options</caption>
+<caption class="title">Table 12. Let&#8217;s Chat notifications configuration options</caption>
 <colgroup>
 <col style="width: 33%;">
 <col style="width: 33%;">
@@ -1797,7 +1876,7 @@ account and configure it appropriately.</p>
 </ol>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 12. Turbine UI Module configuration options</caption>
+<caption class="title">Table 13. Turbine UI Module configuration options</caption>
 <colgroup>
 <col style="width: 33%;">
 <col style="width: 33%;">
