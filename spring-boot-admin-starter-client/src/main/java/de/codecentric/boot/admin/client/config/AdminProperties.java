@@ -36,6 +36,16 @@ public class AdminProperties {
 	private long period = 10_000L;
 
 	/**
+	 * Connect timeout (in ms) for the registration.
+	 */
+	private int connectTimeout = 5_000;
+
+	/**
+	 * Read timeout (in ms) for the registration.
+	 */
+	private int readTimeout = 5_000;
+
+	/**
 	 * Username for basic authentication on admin server
 	 */
 	private String username;
@@ -90,6 +100,22 @@ public class AdminProperties {
 
 	public void setPeriod(int period) {
 		this.period = period;
+	}
+
+	public int getConnectTimeout() {
+		return connectTimeout;
+	}
+
+	public void setConnectTimeout(int connectTimeout) {
+		this.connectTimeout = connectTimeout;
+	}
+
+	public int getReadTimeout() {
+		return readTimeout;
+	}
+
+	public void setReadTimeout(int readTimeout) {
+		this.readTimeout = readTimeout;
 	}
 
 	public void setUsername(String username) {
