@@ -19,13 +19,10 @@ import de.codecentric.boot.admin.server.domain.entities.Application;
 import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
 import de.codecentric.boot.admin.server.domain.values.ApplicationId;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
-import de.codecentric.boot.admin.server.eventstore.OptimisticLockingException;
 import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
 import reactor.core.publisher.Mono;
-import reactor.retry.Retry;
 
 import java.io.Serializable;
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -50,18 +47,15 @@ public class StatusUpdater {
     }
 
     public Mono<Void> updateStatus(ApplicationId id) {
-        return repository.find(id)
-                         .filter(Application::isRegistered)
-                         .flatMap(this::doUpdateStatus)
-                         .flatMap(repository::save)
-                         .retryWhen(Retry.anyOf(OptimisticLockingException.class)
-                                         .fixedBackoff(Duration.ofMillis(50L))
-                                         .retryMax(10)
-                                         .doOnRetry(ctx -> log.debug("Retrying after OptimisticLockingException",
-                                                 ctx.exception())));
+        return repository.computeIfPresent(id, (key, application) -> this.doUpdateStatus(application));
+
     }
 
     protected Mono<Application> doUpdateStatus(Application application) {
+        if (!application.isRegistered()) {
+            return Mono.empty();
+        }
+
         log.debug("Update status for {}", application);
         return applicationOps.getHealth(application)
                              .log(log.getName(), Level.FINEST)

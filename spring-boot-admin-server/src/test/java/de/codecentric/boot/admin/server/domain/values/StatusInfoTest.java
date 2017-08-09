@@ -19,8 +19,15 @@ package de.codecentric.boot.admin.server.domain.values;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class StatusInfoTest {
+
+    @Test
+    public void invariants() {
+        assertThatThrownBy(() -> StatusInfo.valueOf("")).isInstanceOf(IllegalArgumentException.class)
+                                                        .hasMessage("'status' must not be empty.");
+    }
 
     @Test
     public void test_isMethods() {

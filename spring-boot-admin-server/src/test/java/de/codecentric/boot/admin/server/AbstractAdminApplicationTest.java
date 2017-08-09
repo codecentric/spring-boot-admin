@@ -58,6 +58,7 @@ public abstract class AbstractAdminApplicationTest {
                     })
                     .assertNext((event) -> assertThat(event.opt("type")).isEqualTo("REGISTERED"))
                     .assertNext((event) -> assertThat(event.opt("type")).isEqualTo("STATUS_CHANGED"))
+                    .assertNext((event) -> assertThat(event.opt("type")).isEqualTo("ENDPOINTS_DETECTED"))
                     .assertNext((event) -> assertThat(event.opt("type")).isEqualTo("INFO_CHANGED"))
                     .then(() -> {
                         getApplication(location.get());

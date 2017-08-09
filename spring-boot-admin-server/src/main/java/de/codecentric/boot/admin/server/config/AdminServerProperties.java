@@ -28,6 +28,14 @@ public class AdminServerProperties {
 
     private MonitorProperties monitor = new MonitorProperties();
 
+    /**
+     * For Spring Boot 2.x applications the endpoints should be discovered automatically.
+     * For Spring Boot 1.x application SBA probes for the specified endpoints using an OPTIONS request.
+     * If the path differs from the id you can specify this as id:path (e.g. health:ping).
+     */
+    private String[] probedEndpoints = {"health", "env", "metrics", "trace", "dump", "jolokia", "info", "logfile",
+            "refresh", "flyway", "liquibase", "heapdump", "loggers", "auditevents"};
+
     public void setContextPath(String pathPrefix) {
         if (!pathPrefix.startsWith("/") || pathPrefix.endsWith("/")) {
             throw new IllegalArgumentException("ContextPath must start with '/' and not end with '/'");
@@ -41,6 +49,14 @@ public class AdminServerProperties {
 
     public MonitorProperties getMonitor() {
         return monitor;
+    }
+
+    public String[] getProbedEndpoints() {
+        return probedEndpoints;
+    }
+
+    public void setProbedEndpoints(String[] probedEndpoints) {
+        this.probedEndpoints = probedEndpoints;
     }
 
     public static class MonitorProperties {
@@ -97,5 +113,4 @@ public class AdminServerProperties {
             this.readTimeout = readTimeout;
         }
     }
-
 }

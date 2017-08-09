@@ -16,7 +16,6 @@
 
 package de.codecentric.boot.admin.server.services;
 
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEndpointsDetectedEvent;
 import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
 import reactor.core.publisher.Flux;
@@ -25,23 +24,20 @@ import reactor.core.scheduler.Schedulers;
 
 import org.reactivestreams.Publisher;
 
-public class InfoUpdateTrigger extends ResubscribingEventHandler<ClientApplicationEvent> {
-    private final InfoUpdater infoUpdater;
+public class EndpointDetectionTrigger extends ResubscribingEventHandler<ClientApplicationStatusChangedEvent> {
+    private final EndpointDetector endpointDetector;
 
-    public InfoUpdateTrigger(InfoUpdater infoUpdater, Publisher<ClientApplicationEvent> publisher) {
-        super(publisher, ClientApplicationEvent.class);
-        this.infoUpdater = infoUpdater;
+    public EndpointDetectionTrigger(EndpointDetector endpointDetector, Publisher<ClientApplicationEvent> publisher) {
+        super(publisher, ClientApplicationStatusChangedEvent.class);
+        this.endpointDetector = endpointDetector;
     }
 
     @Override
-    protected Publisher<?> handle(Flux<ClientApplicationEvent> publisher) {
-        return publisher.subscribeOn(Schedulers.newSingle("info-updater"))
-                        .filter(event -> event instanceof ClientApplicationEndpointsDetectedEvent ||
-                                         event instanceof ClientApplicationStatusChangedEvent)
-                        .flatMap(this::updateInfo);
+    protected Publisher<?> handle(Flux<ClientApplicationStatusChangedEvent> publisher) {
+        return publisher.subscribeOn(Schedulers.newSingle("endpoint-detector")).flatMap(this::detectEndpoints);
     }
 
-    protected Mono<Void> updateInfo(ClientApplicationEvent event) {
-        return infoUpdater.updateInfo(event.getApplication());
+    protected Mono<Void> detectEndpoints(ClientApplicationStatusChangedEvent event) {
+        return endpointDetector.detectEndpoints(event.getApplication());
     }
 }

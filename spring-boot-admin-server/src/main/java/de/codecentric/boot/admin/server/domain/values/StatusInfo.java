@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.util.Assert;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
@@ -32,6 +33,7 @@ public class StatusInfo implements Serializable {
     private final Map<String, Serializable> details;
 
     private StatusInfo(String status, Map<String, ? extends Serializable> details) {
+        Assert.hasText(status, "'status' must not be empty.");
         this.status = status.toUpperCase();
         this.details = details != null ? new HashMap<>(details) : Collections.emptyMap();
     }

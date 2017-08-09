@@ -1,0 +1,62 @@
+/*
+ * Copyright 2014-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package de.codecentric.boot.admin.server.services.endpoints;
+
+
+import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.values.Endpoints;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+public class ChainingStrategyTest {
+
+    @Test
+    public void invariants() {
+        assertThatThrownBy(() -> {
+            new ChainingStrategy((EndpointDetectionStrategy[]) null);
+        }).isInstanceOf(IllegalArgumentException.class).hasMessage("'delegates' must not be null.");
+        assertThatThrownBy(() -> {
+            new ChainingStrategy((EndpointDetectionStrategy) null);
+        }).isInstanceOf(IllegalArgumentException.class).hasMessage("'delegates' must not contain null.");
+    }
+
+    @Test
+    public void should_chain_on_empty() {
+        //given
+        Application application = Application.create(ApplicationId.of("id"));
+        ChainingStrategy strategy = new ChainingStrategy((a) -> Mono.empty(), (a) -> Mono.empty(),
+                (a) -> Mono.just(Endpoints.single("id", "path")));
+        //when/then
+        StepVerifier.create(strategy.detectEndpoints(application))
+                    .expectNext(Endpoints.single("id", "path"))
+                    .verifyComplete();
+    }
+
+    @Test
+    public void should_return_empty_endpoints_when_all_empty() {
+        //given
+        Application application = Application.create(ApplicationId.of("id"));
+        ChainingStrategy strategy = new ChainingStrategy((a) -> Mono.empty());
+        //when/then
+        StepVerifier.create(strategy.detectEndpoints(application)).expectNext(Endpoints.empty()).verifyComplete();
+    }
+}

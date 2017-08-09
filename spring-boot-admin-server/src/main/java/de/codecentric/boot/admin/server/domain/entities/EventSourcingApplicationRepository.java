@@ -18,13 +18,16 @@ package de.codecentric.boot.admin.server.domain.entities;
 import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.domain.values.ApplicationId;
 import de.codecentric.boot.admin.server.eventstore.ClientApplicationEventStore;
+import de.codecentric.boot.admin.server.eventstore.OptimisticLockingException;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.retry.Retry;
 
+import java.time.Duration;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +42,17 @@ public class EventSourcingApplicationRepository implements ApplicationRepository
     private final ConcurrentMap<ApplicationId, Application> snapshots = new ConcurrentHashMap<>();
     private final ClientApplicationEventStore eventStore;
     private Disposable subscription;
+    private final Retry<Object> retryOnAny = Retry.any()
+                                                  .retryMax(Integer.MAX_VALUE)
+                                                  .doOnRetry(ctx -> log.error("Resubscribing after uncaught error",
+                                                          ctx.exception()));
+    private final Retry<?> retryOnOptimisticLockException = Retry.anyOf(OptimisticLockingException.class)
+                                                                 .fixedBackoff(Duration.ofMillis(50L))
+                                                                 .retryMax(10)
+                                                                 .doOnRetry(ctx -> log.debug(
+                                                                         "Retrying after OptimisticLockingException",
+                                                                         ctx.exception()));
+    ;
 
     public EventSourcingApplicationRepository(ClientApplicationEventStore eventStore) {
         this.eventStore = eventStore;
@@ -65,13 +79,7 @@ public class EventSourcingApplicationRepository implements ApplicationRepository
     }
 
     public void start() {
-        this.subscription = Flux.from(eventStore)
-                                .doOnNext(this::updateSnapshot)
-                                .retryWhen(Retry.any()
-                                                .retryMax(Integer.MAX_VALUE)
-                                                .doOnRetry(ctx -> log.error("Resubscribing after uncaught error",
-                                                        ctx.exception())))
-                                .subscribe();
+        this.subscription = Flux.from(eventStore).doOnNext(this::updateSnapshot).retryWhen(retryOnAny).subscribe();
     }
 
     public void stop() {
@@ -85,5 +93,24 @@ public class EventSourcingApplicationRepository implements ApplicationRepository
             Application application = old != null ? old : Application.create(key);
             return application.apply(event, false);
         });
+    }
+
+    @Override
+    public Mono<Void> compute(ApplicationId id,
+                              BiFunction<ApplicationId, Application, Mono<Application>> remappingFunction) {
+        return this.find(id)
+                   .flatMap(application -> remappingFunction.apply(id, application))
+                   .switchIfEmpty(Mono.defer(() -> remappingFunction.apply(id, null)))
+                   .flatMap(this::save)
+                   .retryWhen(retryOnOptimisticLockException);
+    }
+
+    @Override
+    public Mono<Void> computeIfPresent(ApplicationId id,
+                                       BiFunction<ApplicationId, Application, Mono<Application>> remappingFunction) {
+        return this.find(id)
+                   .flatMap(application -> remappingFunction.apply(id, application))
+                   .flatMap(this::save)
+                   .retryWhen(retryOnOptimisticLockException);
     }
 }

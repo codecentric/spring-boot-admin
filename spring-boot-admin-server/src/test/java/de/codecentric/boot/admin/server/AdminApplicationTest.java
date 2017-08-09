@@ -17,13 +17,8 @@ package de.codecentric.boot.admin.server;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
-import java.net.URI;
-import java.time.Duration;
-import java.util.concurrent.atomic.AtomicReference;
-import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -35,7 +30,8 @@ public class AdminApplicationTest extends AbstractAdminApplicationTest {
     @Before
     public void setUp() throws Exception {
         instance = (ServletWebServerApplicationContext) SpringApplication.run(TestAdminApplication.class,
-                "--server.port=0", "--management.context-path=/mgmt", "--info.test=foobar");
+                "--server.port=0", "--management.context-path=/mgmt", "--management.security.enabled=false",
+                "--info.test=foobar");
 
         super.setUp(instance.getWebServer().getPort());
     }

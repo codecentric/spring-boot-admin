@@ -16,12 +16,14 @@
 package de.codecentric.boot.admin.server.domain.entities;
 
 import de.codecentric.boot.admin.server.domain.events.ClientApplicationDeregisteredEvent;
+import de.codecentric.boot.admin.server.domain.events.ClientApplicationEndpointsDetectedEvent;
 import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.domain.events.ClientApplicationInfoChangedEvent;
 import de.codecentric.boot.admin.server.domain.events.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.ClientApplicationRegistrationUpdatedEvent;
 import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.Info;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
@@ -47,16 +49,17 @@ public class Application implements Serializable {
     private final StatusInfo statusInfo;
     private final Info info;
     private final List<ClientApplicationEvent> unsavedEvents;
+    private final Endpoints endpoints;
 
     private Application(ApplicationId id) {
-        this(id, -1L, null, StatusInfo.ofUnknown(), Info.empty(), Collections.emptyList());
+        this(id, -1L, null, StatusInfo.ofUnknown(), Info.empty(), Endpoints.empty(), Collections.emptyList());
     }
 
     private Application(ApplicationId id,
                         long version,
                         Registration registration,
                         StatusInfo statusInfo,
-                        Info info,
+                        Info info, Endpoints endpoints,
                         List<ClientApplicationEvent> unsavedEvents) {
         Assert.notNull(id, "'id' must not be null");
         this.id = id;
@@ -64,6 +67,7 @@ public class Application implements Serializable {
         this.registration = registration;
         this.statusInfo = statusInfo;
         this.info = info;
+        this.endpoints = endpoints;
         this.unsavedEvents = unsavedEvents;
     }
 
@@ -108,6 +112,15 @@ public class Application implements Serializable {
         return this.apply(new ClientApplicationStatusChangedEvent(this.id, this.nextVersion(), statusInfo), true);
     }
 
+    public Application withEndpoints(Endpoints endpoints) {
+        Assert.notNull(endpoints, "'endpoints' must not be null");
+        if (Objects.equals(this.endpoints, endpoints)) {
+            return this;
+        }
+        return this.apply(new ClientApplicationEndpointsDetectedEvent(this.id, this.nextVersion(), endpoints), true);
+    }
+
+
     public boolean isRegistered() {
         return this.registration != null;
     }
@@ -131,22 +144,26 @@ public class Application implements Serializable {
 
         List<ClientApplicationEvent> unsavedEvents = appendToEvents(event, isNewEvent);
         if (event instanceof ClientApplicationRegisteredEvent) {
-            return new Application(this.id, event.getVersion(),
-                    ((ClientApplicationRegisteredEvent) event).getRegistration(), this.statusInfo, this.info,
-                    unsavedEvents);
+            Registration registration = ((ClientApplicationRegisteredEvent) event).getRegistration();
+            return new Application(this.id, event.getVersion(), registration, this.statusInfo, this.info,
+                    Endpoints.empty(), unsavedEvents);
         } else if (event instanceof ClientApplicationRegistrationUpdatedEvent) {
             return new Application(this.id, event.getVersion(),
                     ((ClientApplicationRegistrationUpdatedEvent) event).getRegistration(), this.statusInfo, this.info,
-                    unsavedEvents);
+                    this.endpoints, unsavedEvents);
         } else if (event instanceof ClientApplicationStatusChangedEvent) {
             return new Application(this.id, event.getVersion(), this.registration,
-                    ((ClientApplicationStatusChangedEvent) event).getStatusInfo(), this.info, unsavedEvents);
+                    ((ClientApplicationStatusChangedEvent) event).getStatusInfo(), this.info, this.endpoints,
+                    unsavedEvents);
+        } else if (event instanceof ClientApplicationEndpointsDetectedEvent) {
+            return new Application(this.id, event.getVersion(), this.registration, this.statusInfo, this.info,
+                    ((ClientApplicationEndpointsDetectedEvent) event).getEndpoints(), unsavedEvents);
         } else if (event instanceof ClientApplicationInfoChangedEvent) {
             return new Application(this.id, event.getVersion(), this.registration, this.statusInfo,
-                    ((ClientApplicationInfoChangedEvent) event).getInfo(), unsavedEvents);
+                    ((ClientApplicationInfoChangedEvent) event).getInfo(), this.endpoints, unsavedEvents);
         } else if (event instanceof ClientApplicationDeregisteredEvent) {
             return new Application(this.id, event.getVersion(), null, StatusInfo.ofUnknown(), Info.empty(),
-                    unsavedEvents);
+                    Endpoints.empty(), unsavedEvents);
         }
 
         return this;

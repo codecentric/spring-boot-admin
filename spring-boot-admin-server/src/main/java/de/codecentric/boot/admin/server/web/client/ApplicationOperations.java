@@ -16,6 +16,7 @@
 package de.codecentric.boot.admin.server.web.client;
 
 import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import reactor.core.publisher.Mono;
 
 import java.io.Serializable;
@@ -23,8 +24,11 @@ import java.net.URI;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.actuate.endpoint.mvc.ActuatorMediaTypes;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -45,26 +49,24 @@ public class ApplicationOperations {
         this.httpHeadersProvider = httpHeadersProvider;
     }
 
-    public Mono<ResponseEntity<Map<String, Serializable>>> getInfo(Application application) {
-        URI uri = UriComponentsBuilder.fromHttpUrl(application.getRegistration().getManagementUrl())
-                                      .pathSegment("info")
-                                      .build()
-                                      .toUri();
-        return doGet(application, uri);
-    }
-
     public Mono<ResponseEntity<Map<String, Serializable>>> getHealth(Application application) {
         URI uri = UriComponentsBuilder.fromHttpUrl(application.getRegistration().getHealthUrl()).build().toUri();
-        return doGet(application, uri);
+        return this.exchange(HttpMethod.GET, application, uri).flatMap(r -> r.toEntity(RESPONSE_TYPE_MAP));
     }
 
-    protected Mono<ResponseEntity<Map<String, Serializable>>> doGet(Application application, URI uri) {
-        return webClient.get()
-                        .uri(uri)
-                        .accept(MediaType.APPLICATION_JSON)
+    public Mono<ResponseEntity<Map<String, Serializable>>> getInfo(Application application) {
+        return getEndpoint(application, Endpoint.INFO);
+    }
+
+    public Mono<ResponseEntity<Map<String, Serializable>>> getEndpoint(Application application, String endpointId) {
+        URI uri = URI.create(application.getEndpoints().get(endpointId).getUrl());
+        return this.exchange(HttpMethod.GET, application, uri).flatMap(r -> r.toEntity(RESPONSE_TYPE_MAP));
+    }
+
+    public Mono<ClientResponse> exchange(HttpMethod method, Application application, URI uri) {
+        return webClient.method(method)
+                        .uri(uri).accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON, MediaType.APPLICATION_JSON)
                         .headers(headers -> headers.putAll(httpHeadersProvider.getHeaders(application)))
-                        .exchange()
-                        .flatMap(r -> r.toEntity(RESPONSE_TYPE_MAP))
-                        .doOnSubscribe((s) -> log.debug("Fetching '{}' for {}", uri, application));
+                        .exchange().doOnSubscribe((s) -> log.debug("Do {} on '{}' for {}", method, uri, application));
     }
 }

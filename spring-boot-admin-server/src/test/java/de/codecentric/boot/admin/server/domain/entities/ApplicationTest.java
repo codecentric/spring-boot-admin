@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.domain.entities;
 import de.codecentric.boot.admin.server.domain.events.ClientApplicationDeregisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
 import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.Info;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
@@ -44,6 +45,9 @@ public class ApplicationTest {
 
         assertThatThrownBy(() -> Application.create(ApplicationId.of("id")).withStatusInfo(null)).isInstanceOf(
                 IllegalArgumentException.class).hasMessage("'statusInfo' must not be null");
+
+        assertThatThrownBy(() -> Application.create(ApplicationId.of("id")).withEndpoints(null)).isInstanceOf(
+                IllegalArgumentException.class).hasMessage("'endpoints' must not be null");
     }
 
     @Test
@@ -94,7 +98,7 @@ public class ApplicationTest {
         Registration registration2 = Registration.create("foo2", "http://health").build();
         Application application = Application.create(ApplicationId.of("id"))
                                              .register(registration)
-                                             .register(registration2)
+                                             .register(registration2).withEndpoints(Endpoints.single("info", "info"))
                                              .withStatusInfo(StatusInfo.ofUp())
                                              .withInfo(Info.from(Collections.singletonMap("foo", "bar")));
 
@@ -104,7 +108,8 @@ public class ApplicationTest {
         assertThat(loaded.isRegistered()).isTrue();
         assertThat(loaded.getStatusInfo()).isEqualTo(StatusInfo.ofUp());
         assertThat(loaded.getInfo()).isEqualTo(Info.from(Collections.singletonMap("foo", "bar")));
-        assertThat(loaded.getVersion()).isEqualTo(3L);
+        assertThat(loaded.getEndpoints()).isEqualTo(Endpoints.single("info", "info"));
+        assertThat(loaded.getVersion()).isEqualTo(4L);
 
         loaded = Application.create(ApplicationId.of("id")).loadHistory(application.deregister().getUnsavedEvents());
         assertThat(loaded.getUnsavedEvents()).isEmpty();
@@ -112,7 +117,8 @@ public class ApplicationTest {
         assertThat(loaded.getRegistration()).isNull();
         assertThat(loaded.getInfo()).isEqualTo(Info.empty());
         assertThat(loaded.getStatusInfo()).isEqualTo(StatusInfo.ofUnknown());
-        assertThat(loaded.getVersion()).isEqualTo(4L);
+        assertThat(loaded.getEndpoints()).isEqualTo(Endpoints.empty());
+        assertThat(loaded.getVersion()).isEqualTo(5L);
     }
 
     @Test

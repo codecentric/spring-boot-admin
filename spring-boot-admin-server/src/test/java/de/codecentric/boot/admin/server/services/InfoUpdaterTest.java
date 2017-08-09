@@ -20,6 +20,7 @@ import de.codecentric.boot.admin.server.domain.entities.Application;
 import de.codecentric.boot.admin.server.domain.entities.EventSourcingApplicationRepository;
 import de.codecentric.boot.admin.server.domain.events.ClientApplicationInfoChangedEvent;
 import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.Info;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
@@ -57,12 +58,19 @@ public class InfoUpdaterTest {
     }
 
     @Test
-    public void should_update_info_for_online_only() {
+    public void should_update_info_for_online_with_endpoint_only() {
+        //given
         Registration registration = Registration.create("foo", "http://health").build();
         Application application = Application.create(ApplicationId.of("onl"))
-                                             .register(registration)
+                                             .register(registration).withEndpoints(Endpoints.single("info", "info"))
                                              .withStatusInfo(StatusInfo.ofUp());
         StepVerifier.create(repository.save(application)).verifyComplete();
+
+        Application noInfo = Application.create(ApplicationId.of("noinfo"))
+                                        .register(registration)
+                                        .withEndpoints(Endpoints.single("beans", "beans"))
+                                        .withStatusInfo(StatusInfo.ofUp());
+        StepVerifier.create(repository.save(noInfo)).verifyComplete();
 
         Application offline = Application.create(ApplicationId.of("off"))
                                          .register(registration)
@@ -77,12 +85,13 @@ public class InfoUpdaterTest {
         when(applicationOps.getInfo(any(Application.class))).thenReturn(
                 Mono.just(ResponseEntity.ok(singletonMap("foo", "bar"))));
 
+        //when/then
         StepVerifier.create(eventStore)
                     .expectSubscription()
                     .then(() -> StepVerifier.create(updater.updateInfo(offline.getId())).verifyComplete())
-                    .expectNoEvent(Duration.ofSeconds(1))
                     .then(() -> StepVerifier.create(updater.updateInfo(unknown.getId())).verifyComplete())
-                    .expectNoEvent(Duration.ofSeconds(1))
+                    .then(() -> StepVerifier.create(updater.updateInfo(noInfo.getId())).verifyComplete())
+                    .expectNoEvent(Duration.ofMillis(10L))
                     .then(() -> StepVerifier.create(updater.updateInfo(application.getId())).verifyComplete())
                     .assertNext(event -> assertThat(event).isInstanceOf(ClientApplicationInfoChangedEvent.class))
                     .thenCancel()
@@ -91,19 +100,21 @@ public class InfoUpdaterTest {
         StepVerifier.create(repository.find(application.getId()))
                     .assertNext(app -> assertThat(app.getInfo()).isEqualTo(Info.from(singletonMap("foo", "bar"))))
                     .verifyComplete();
-
     }
 
     @Test
     public void should_clear_info_on_http_error() {
+        //given
         Application application = Application.create(ApplicationId.of("onl"))
                                              .register(Registration.create("foo", "http://health").build())
+                                             .withEndpoints(Endpoints.single("info", "info"))
                                              .withStatusInfo(StatusInfo.ofUp())
                                              .withInfo(Info.from(singletonMap("foo", "bar")));
         StepVerifier.create(repository.save(application)).verifyComplete();
 
         when(applicationOps.getInfo(any(Application.class))).thenReturn(Mono.just(ResponseEntity.status(500).build()));
 
+        //when/then
         StepVerifier.create(eventStore)
                     .expectSubscription()
                     .then(() -> StepVerifier.create(updater.updateInfo(application.getId())).verifyComplete())
@@ -118,8 +129,10 @@ public class InfoUpdaterTest {
 
     @Test
     public void should_clear_info_on_exception() {
+        //given
         Application application = Application.create(ApplicationId.of("onl"))
                                              .register(Registration.create("foo", "http://health").build())
+                                             .withEndpoints(Endpoints.single("info", "info"))
                                              .withStatusInfo(StatusInfo.ofUp())
                                              .withInfo(Info.from(singletonMap("foo", "bar")));
         StepVerifier.create(repository.save(application)).verifyComplete();
@@ -127,6 +140,7 @@ public class InfoUpdaterTest {
         when(applicationOps.getInfo(any(Application.class))).thenReturn(
                 Mono.error(new ResourceAccessException("error")));
 
+        //when/then
         StepVerifier.create(eventStore)
                     .expectSubscription()
                     .then(() -> StepVerifier.create(updater.updateInfo(application.getId())).verifyComplete())

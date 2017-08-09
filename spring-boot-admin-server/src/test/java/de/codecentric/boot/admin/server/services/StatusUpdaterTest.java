@@ -83,7 +83,7 @@ public class StatusUpdaterTest {
         StepVerifier.create(eventStore)
                     .expectSubscription()
                     .then(() -> StepVerifier.create(updater.updateStatus(application.getId())).verifyComplete())
-                    .expectNoEvent(Duration.ofSeconds(1))
+                    .expectNoEvent(Duration.ofMillis(10L))
                     .thenCancel()
                     .verify(Duration.ofMillis(500L));
     }

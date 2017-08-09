@@ -18,14 +18,12 @@ package de.codecentric.boot.admin.server.services;
 import de.codecentric.boot.admin.server.domain.entities.Application;
 import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
 import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import de.codecentric.boot.admin.server.domain.values.Info;
-import de.codecentric.boot.admin.server.eventstore.OptimisticLockingException;
 import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
 import reactor.core.publisher.Mono;
-import reactor.retry.Retry;
 
 import java.io.Serializable;
-import java.time.Duration;
 import java.util.Map;
 import java.util.logging.Level;
 import org.slf4j.Logger;
@@ -49,18 +47,16 @@ public class InfoUpdater {
     }
 
     public Mono<Void> updateInfo(ApplicationId id) {
-        return repository.find(id)
-                         .flatMap(this::doUpdateInfo)
-                         .flatMap(repository::save)
-                         .retryWhen(Retry.anyOf(OptimisticLockingException.class)
-                                         .fixedBackoff(Duration.ofMillis(50L))
-                                         .retryMax(10)
-                                         .doOnRetry(ctx -> log.debug("Retrying after OptimisticLockingException",
-                                                 ctx.exception())));
+        return repository.computeIfPresent(id, (key, application) -> this.doUpdateInfo(application));
+
+
     }
 
     private Mono<Application> doUpdateInfo(Application application) {
         if (application.getStatusInfo().isOffline() || application.getStatusInfo().isUnknown()) {
+            return Mono.empty();
+        }
+        if (!application.getEndpoints().isPresent(Endpoint.INFO)) {
             return Mono.empty();
         }
 

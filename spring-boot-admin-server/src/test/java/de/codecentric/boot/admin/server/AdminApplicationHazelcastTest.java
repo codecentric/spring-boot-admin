@@ -46,10 +46,10 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
         System.setProperty("hazelcast.wait.seconds.before.join", "0");
         instance1 = (ServletWebServerApplicationContext) SpringApplication.run(TestAdminApplication.class,
                 "--server.port=0", "--spring.jmx.enabled=false", "--management.context-path=/mgmt",
-                "--info.test=foobar");
+                "--management.security.enabled=false", "--info.test=foobar");
         instance2 = (ServletWebServerApplicationContext) SpringApplication.run(TestAdminApplication.class,
                 "--server.port=0", "--spring.jmx.enabled=false", "--management.context-path=/mgmt",
-                "--info.test=foobar");
+                "--management.security.enabled=false", "--info.test=foobar");
 
         super.setUp(instance1.getWebServer().getPort());
     }

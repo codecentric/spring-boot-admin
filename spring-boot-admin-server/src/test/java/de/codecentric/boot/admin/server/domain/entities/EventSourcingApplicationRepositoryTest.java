@@ -17,11 +17,15 @@
 package de.codecentric.boot.admin.server.domain.entities;
 
 import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
+import junit.framework.AssertionFailedError;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import org.junit.After;
 import org.junit.Before;
@@ -45,11 +49,13 @@ public class EventSourcingApplicationRepositoryTest {
 
     @Test
     public void save() throws Exception {
+        //given
         Application application = Application.create(ApplicationId.of("foo"))
                                              .register(Registration.create("name", "http://health").build());
 
         StepVerifier.create(repository.save(application)).verifyComplete();
 
+        //when/then
         StepVerifier.create(repository.find(application.getId())).assertNext(loaded -> {
             assertThat(loaded.getId()).isEqualTo(application.getId());
             assertThat(loaded.getVersion()).isEqualTo(application.getVersion());
@@ -61,6 +67,7 @@ public class EventSourcingApplicationRepositoryTest {
 
     @Test
     public void find_methods() throws Exception {
+        //given
         Application application1 = Application.create(ApplicationId.of("foo.1"))
                                               .register(Registration.create("foo", "http://health").build());
         Application application2 = Application.create(ApplicationId.of("foo.2"))
@@ -72,8 +79,9 @@ public class EventSourcingApplicationRepositoryTest {
         StepVerifier.create(repository.save(application2)).verifyComplete();
         StepVerifier.create(repository.save(application3)).verifyComplete();
 
+        //when/then
         StepVerifier.create(repository.find(application2.getId()))
-                    .assertNext(loaded2 -> assertThat(loaded2.getId()).isEqualTo(loaded2.getId()))
+                    .assertNext(loaded2 -> assertThat(loaded2.getId()).isEqualTo(application2.getId()))
                     .verifyComplete();
 
         StepVerifier.create(repository.findByName("foo"))
@@ -96,6 +104,75 @@ public class EventSourcingApplicationRepositoryTest {
                                           .collect(Collectors.toList())).containsExactlyInAnyOrder(application1.getId(),
                                 application2.getId(), application3.getId());
                     })
+                    .verifyComplete();
+    }
+
+    @Test
+    public void should_retry_computeIfPresent() {
+        AtomicLong counter = new AtomicLong(3L);
+        //given
+        Application application1 = Application.create(ApplicationId.of("foo.1"))
+                                              .register(Registration.create("foo", "http://health").build());
+        StepVerifier.create(repository.save(application1)).verifyComplete();
+
+        //when
+        StepVerifier.create(repository.computeIfPresent(application1.getId(),
+                (key, application) -> counter.getAndDecrement() > 0L ?
+                        Mono.just(application1) :
+                        Mono.just(application.withEndpoints(Endpoints.single("info", "info"))))).verifyComplete();
+
+        //then
+        StepVerifier.create(repository.find(application1.getId()))
+                    .assertNext(loaded -> assertThat(loaded.getEndpoints()).isEqualTo(Endpoints.single("info", "info")))
+                    .verifyComplete();
+    }
+
+    @Test
+    public void computeIfPresent_should_not_save_if_not_present() {
+        //given
+        ApplicationId applicationId = ApplicationId.of("foo");
+
+        //when
+        StepVerifier.create(repository.computeIfPresent(applicationId,
+                (key, application) -> Mono.error(new AssertionFailedError("Should not call any computation"))))
+                    .verifyComplete();
+
+        //then
+        StepVerifier.create(repository.find(applicationId)).verifyComplete();
+    }
+
+    @Test
+    public void should_run_compute_with_null() throws InterruptedException {
+        //when
+        ApplicationId applicationId = ApplicationId.of("foo");
+        StepVerifier.create(repository.compute(applicationId, (key, application) -> {
+            assertThat(application).isNull();
+            return Mono.just(Application.create(key).register(Registration.create("foo", "http://health").build()));
+        })).verifyComplete();
+
+        //then
+        StepVerifier.create(repository.find(applicationId))
+                    .assertNext(loaded -> assertThat(loaded.getId()).isEqualTo(applicationId))
+                    .verifyComplete();
+    }
+
+    @Test
+    public void should_retry_compute() {
+        AtomicLong counter = new AtomicLong(3L);
+        //given
+        Application application1 = Application.create(ApplicationId.of("foo.1"))
+                                              .register(Registration.create("foo", "http://health").build());
+        StepVerifier.create(repository.save(application1)).verifyComplete();
+
+        //when
+        StepVerifier.create(repository.compute(application1.getId(),
+                (key, application) -> counter.getAndDecrement() > 0L ?
+                        Mono.just(application1) :
+                        Mono.just(application.withEndpoints(Endpoints.single("info", "info"))))).verifyComplete();
+
+        //then
+        StepVerifier.create(repository.find(application1.getId()))
+                    .assertNext(loaded -> assertThat(loaded.getEndpoints()).isEqualTo(Endpoints.single("info", "info")))
                     .verifyComplete();
     }
 }

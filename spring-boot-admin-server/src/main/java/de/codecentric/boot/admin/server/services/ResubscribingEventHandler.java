@@ -44,7 +44,6 @@ public abstract class ResubscribingEventHandler<T extends ClientApplicationEvent
                            .ofType(eventType)
                            .cast(eventType)
                            .compose(this::handle)
-                           .retry()
                            .retryWhen(Retry.any()
                                            .retryMax(Integer.MAX_VALUE)
                                            .doOnRetry(ctx -> log.error("Resubscribing after uncaught error",

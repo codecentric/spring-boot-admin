@@ -19,6 +19,8 @@ import de.codecentric.boot.admin.server.domain.values.ApplicationId;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.function.BiFunction;
+
 /**
  * Responsible for storing applications.
  *
@@ -49,4 +51,24 @@ public interface ApplicationRepository {
      * @return all Applications with the specified name;
      */
     Flux<Application> findByName(String name);
+
+
+    /**
+     * Updates the application associated with the id using the remapping function.
+     * If there is no associated application the function will be called with the id and null.
+     *
+     * @param id                Application to update
+     * @param remappingFunction function to apply
+     */
+    Mono<Void> compute(ApplicationId id, BiFunction<ApplicationId, Application, Mono<Application>> remappingFunction);
+
+    /**
+     * Updates the application associated with the id using the remapping function.
+     * If there is no associated application the function will not be called.
+     *
+     * @param id                Application to update
+     * @param remappingFunction function to apply
+     */
+    Mono<Void> computeIfPresent(ApplicationId id,
+                                BiFunction<ApplicationId, Application, Mono<Application>> remappingFunction);
 }

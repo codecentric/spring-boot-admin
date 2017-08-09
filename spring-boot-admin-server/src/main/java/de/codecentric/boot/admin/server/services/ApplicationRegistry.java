@@ -19,12 +19,9 @@ import de.codecentric.boot.admin.server.domain.entities.Application;
 import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
 import de.codecentric.boot.admin.server.domain.values.ApplicationId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
-import de.codecentric.boot.admin.server.eventstore.OptimisticLockingException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.retry.Retry;
 
-import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -54,17 +51,12 @@ public class ApplicationRegistry {
         Assert.notNull(registration, "'registration' must not be null");
         ApplicationId id = generator.generateId(registration);
         Assert.notNull(id, "'id' must not be null");
-
-        return getApplication(id).defaultIfEmpty(Application.create(id))
-                                 .map(application -> application.register(registration))
-                                 .flatMap(repository::save)
-                                 .retryWhen(Retry.anyOf(OptimisticLockingException.class)
-                                                 .fixedBackoff(Duration.ofMillis(50L))
-                                                 .retryMax(10)
-                                                 .doOnRetry(
-                                                         ctx -> log.debug("Retrying after OptimisticLockingException",
-                                                                 ctx.exception())))
-                                 .then(Mono.just(id));
+        return repository.compute(id, (key, application) -> {
+            if (application == null) {
+                application = Application.create(key);
+            }
+            return Mono.just(application.register(registration));
+        }).then(Mono.just(id));
     }
 
     /**
@@ -103,14 +95,7 @@ public class ApplicationRegistry {
      * @return the id of the unregistered application
      */
     public Mono<ApplicationId> deregister(ApplicationId id) {
-        return repository.find(id)
-                         .map(Application::deregister)
-                         .flatMap(repository::save)
-                         .retryWhen(Retry.anyOf(OptimisticLockingException.class)
-                                         .fixedBackoff(Duration.ofMillis(50L))
-                                         .retryMax(10)
-                                         .doOnRetry(ctx -> log.debug("Retrying after OptimisticLockingException",
-                                                 ctx.exception())))
+        return repository.computeIfPresent(id, (key, application) -> Mono.just(application.deregister()))
                          .then(Mono.just(id));
     }
 }

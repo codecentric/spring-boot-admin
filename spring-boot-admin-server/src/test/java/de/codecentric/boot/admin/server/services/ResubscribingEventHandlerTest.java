@@ -55,7 +55,7 @@ public class ResubscribingEventHandlerTest {
                     .then(() -> testPublisher.next(event))
                     .expectNext(event)
                     .then(() -> testPublisher.next(errorEvent))
-                    .expectNoEvent(Duration.ofSeconds(1))
+                    .expectNoEvent(Duration.ofMillis(10L))
                     .then(() -> testPublisher.next(event))
                     .expectNext(event)
                     .thenCancel()
@@ -75,7 +75,7 @@ public class ResubscribingEventHandlerTest {
                     .then(() -> testPublisher.next(event))
                     .expectNext(event)
                     .then(() -> testPublisher.next(ignoredEvent))
-                    .expectNoEvent(Duration.ofSeconds(1))
+                    .expectNoEvent(Duration.ofMillis(10L))
                     .thenCancel()
                     .verify(Duration.ofSeconds(5));
     }

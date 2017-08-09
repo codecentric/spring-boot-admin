@@ -22,11 +22,16 @@ import de.codecentric.boot.admin.server.eventstore.ClientApplicationEventStore;
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
 import de.codecentric.boot.admin.server.services.ApplicationIdGenerator;
 import de.codecentric.boot.admin.server.services.ApplicationRegistry;
+import de.codecentric.boot.admin.server.services.EndpointDetectionTrigger;
+import de.codecentric.boot.admin.server.services.EndpointDetector;
 import de.codecentric.boot.admin.server.services.HashingApplicationUrlIdGenerator;
 import de.codecentric.boot.admin.server.services.InfoUpdateTrigger;
 import de.codecentric.boot.admin.server.services.InfoUpdater;
 import de.codecentric.boot.admin.server.services.StatusUpdateTrigger;
 import de.codecentric.boot.admin.server.services.StatusUpdater;
+import de.codecentric.boot.admin.server.services.endpoints.ChainingStrategy;
+import de.codecentric.boot.admin.server.services.endpoints.ProbeEndpointsStrategy;
+import de.codecentric.boot.admin.server.services.endpoints.QueryIndexEndpointStrategy;
 import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
 import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider;
 import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
@@ -76,7 +81,7 @@ public class AdminServerCoreConfiguration {
         ReactorClientHttpConnector httpConnector = new ReactorClientHttpConnector(options -> {
             options.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,
                     adminServerProperties.getMonitor().getConnectTimeout());
-            options.option(ChannelOption.SO_TIMEOUT, adminServerProperties.getMonitor().getReadTimeout());
+            //options.option(ChannelOption.SO_TIMEOUT, adminServerProperties.getMonitor().getReadTimeout());
         });
 
         WebClient webClient = WebClient.builder()
@@ -101,6 +106,22 @@ public class AdminServerCoreConfiguration {
         trigger.setUpdateInterval(adminServerProperties.getMonitor().getPeriod());
         trigger.setStatusLifetime(adminServerProperties.getMonitor().getStatusLifetime());
         return trigger;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public EndpointDetector endpointDetector(ApplicationRepository applicationRepository,
+                                             ApplicationOperations applicationOperations) {
+        ChainingStrategy strategy = new ChainingStrategy(new QueryIndexEndpointStrategy(applicationOperations),
+                new ProbeEndpointsStrategy(applicationOperations, adminServerProperties.getProbedEndpoints()));
+        return new EndpointDetector(applicationRepository, strategy);
+    }
+
+    @Bean(initMethod = "start", destroyMethod = "stop")
+    @ConditionalOnMissingBean
+    public EndpointDetectionTrigger endpointDetectionTrigger(EndpointDetector endpointDetector,
+                                                             Publisher<ClientApplicationEvent> events) {
+        return new EndpointDetectionTrigger(endpointDetector, events);
     }
 
     @Bean
