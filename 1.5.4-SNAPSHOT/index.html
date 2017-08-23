@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 1.5.3">
+<meta name="generator" content="Asciidoctor 1.5.5">
 <meta name="author" content="Johannes Edmeier">
 <title>Spring Boot Admin Reference Guide</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
@@ -18,7 +18,6 @@ audio:not([controls]){display:none;height:0}
 [hidden],template{display:none}
 script{display:none!important}
 html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}
-body{margin:0}
 a{background:transparent}
 a:focus{outline:thin dotted}
 a:active,a:hover{outline:0}
@@ -53,7 +52,7 @@ textarea{overflow:auto;vertical-align:top}
 table{border-collapse:collapse;border-spacing:0}
 *,*:before,*:after{-moz-box-sizing:border-box;-webkit-box-sizing:border-box;box-sizing:border-box}
 html,body{font-size:100%}
-body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto;tab-size:4;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
 a:hover{cursor:pointer}
 img,object,embed{max-width:100%;height:auto}
 object,embed{height:100%}
@@ -65,7 +64,6 @@ img{-ms-interpolation-mode:bicubic}
 .text-center{text-align:center!important}
 .text-justify{text-align:justify!important}
 .hide{display:none}
-body{-webkit-font-smoothing:antialiased}
 img,object,svg{display:inline-block;vertical-align:middle}
 textarea{height:auto;min-height:50px}
 select{width:100%}
@@ -120,13 +118,16 @@ table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:
 table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
 table tr.even,table tr.alt,table tr:nth-of-type(even){background:#f8f8f7}
 table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{display:table-cell;line-height:1.6}
-body{tab-size:4}
 h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
 h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
 .clearfix:before,.clearfix:after,.float-group:before,.float-group:after{content:" ";display:table}
 .clearfix:after,.float-group:after{clear:both}
-*:not(pre)>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background-color:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
+*:not(pre)>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background-color:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed;word-wrap:break-word}
+*:not(pre)>code.nobreak{word-wrap:normal}
+*:not(pre)>code.nowrap{white-space:nowrap}
 pre,pre>code{line-height:1.45;color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;text-rendering:optimizeSpeed}
+em em{font-style:normal}
+strong strong{font-weight:400}
 .keyseq{color:rgba(51,51,51,.8)}
 kbd{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;display:inline-block;color:rgba(0,0,0,.8);font-size:.65em;line-height:1.45;background-color:#f7f7f7;border:1px solid #ccc;-webkit-border-radius:3px;border-radius:3px;-webkit-box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em white inset;box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em #fff inset;margin:0 .15em;padding:.2em .5em;vertical-align:middle;position:relative;top:-.1em;white-space:nowrap}
 .keyseq kbd:first-child{margin-left:0}
@@ -417,7 +418,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 .hide-for-print{display:none!important}
 .show-for-print{display:inherit!important}}
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
 <style>
 /* Stylesheet for CodeRay to match GitHub theme | MIT License | http://foundation.zurb.com */
 /*pre.CodeRay {background-color:#f7f7f8;}*/
@@ -517,7 +518,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 1.5.4-SNAPSHOT,</span>
-<span id="revdate">08.08.2017</span>
+<span id="revdate">23.08.2017</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -586,7 +587,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_what_is_spring_boot_admin"><a class="anchor" href="#_what_is_spring_boot_admin"></a>1. What is Spring Boot Admin?</h2>
+<h2 id="_what_is_spring_boot_admin"><a class="anchor" href="#_what_is_spring_boot_admin"></a><a class="link" href="#_what_is_spring_boot_admin">1. What is Spring Boot Admin?</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Spring Boot Admin is a application to manage and monitor your <a href="http://projects.spring.io/spring-boot/">Spring Boot Applications</a>.
@@ -596,10 +597,10 @@ The UI is just an AngularJs application on top of the Spring Boot Actuator endpo
 </div>
 </div>
 <div class="sect1">
-<h2 id="getting-started"><a class="anchor" href="#getting-started"></a>2. Getting started</h2>
+<h2 id="getting-started"><a class="anchor" href="#getting-started"></a><a class="link" href="#getting-started">2. Getting started</a></h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="set-up-admin-server"><a class="anchor" href="#set-up-admin-server"></a>2.1. Setting up Spring Boot Admin Server</h3>
+<h3 id="set-up-admin-server"><a class="anchor" href="#set-up-admin-server"></a><a class="link" href="#set-up-admin-server">2.1. Setting up Spring Boot Admin Server</a></h3>
 <div class="paragraph">
 <p>First you need to setup your server. To do this just setup a simple boot project (using <a href="http://start.spring.io" class="bare">start.spring.io</a> for example).</p>
 </div>
@@ -657,12 +658,12 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 </div>
 </div>
 <div class="sect2">
-<h3 id="register-client-applications"><a class="anchor" href="#register-client-applications"></a>2.2. Registering client applications</h3>
+<h3 id="register-client-applications"><a class="anchor" href="#register-client-applications"></a><a class="link" href="#register-client-applications">2.2. Registering client applications</a></h3>
 <div class="paragraph">
 <p>To register your application at the SBA Server you can either include the SBA Client or use <a href="http://projects.spring.io/spring-cloud/spring-cloud.html">Spring Cloud Discovery</a> (e.g. Eureka, Consul, &#8230;&#8203;). There is also a <a href="#spring-cloud-discovery-static-config">simple option using a static configuration on the SBA Server side</a>.</p>
 </div>
 <div class="sect3">
-<h4 id="register-clients-via-spring-boot-admin"><a class="anchor" href="#register-clients-via-spring-boot-admin"></a>2.2.1. spring-boot-admin-starter-client</h4>
+<h4 id="register-clients-via-spring-boot-admin"><a class="anchor" href="#register-clients-via-spring-boot-admin"></a><a class="link" href="#register-clients-via-spring-boot-admin">2.2.1. spring-boot-admin-starter-client</a></h4>
 <div class="paragraph">
 <p>Each application that wants to register has to include the Spring Boot Admin Client.</p>
 </div>
@@ -707,7 +708,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 </div>
 </div>
 <div class="sect3">
-<h4 id="discover-clients-via-spring-cloud-discovery"><a class="anchor" href="#discover-clients-via-spring-cloud-discovery"></a>2.2.2. Spring Cloud Discovery</h4>
+<h4 id="discover-clients-via-spring-cloud-discovery"><a class="anchor" href="#discover-clients-via-spring-cloud-discovery"></a><a class="link" href="#discover-clients-via-spring-cloud-discovery">2.2.2. Spring Cloud Discovery</a></h4>
 <div class="paragraph">
 <p>If you already use Spring Cloud Discovery for your applications you don&#8217;t need the SBA Client. Just make the Spring Boot Admin Server a DiscoveryClient, the rest is done by our AutoConfiguration.</p>
 </div>
@@ -798,10 +799,10 @@ You can include the Spring Boot Admin Server to your Eureka server. Setup everyt
 </div>
 </div>
 <div class="sect1">
-<h2 id="client-applications"><a class="anchor" href="#client-applications"></a>3. Client applications</h2>
+<h2 id="client-applications"><a class="anchor" href="#client-applications"></a><a class="link" href="#client-applications">3. Client applications</a></h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="show-version-in-application-list"><a class="anchor" href="#show-version-in-application-list"></a>3.1. Show version in application list</h3>
+<h3 id="show-version-in-application-list"><a class="anchor" href="#show-version-in-application-list"></a><a class="link" href="#show-version-in-application-list">3.1. Show version in application list</a></h3>
 <div class="paragraph">
 <p>To have the version show up in the application list you can use the <code>build-info</code> goal from the <code>spring-boot-maven-plugin</code>, which generates the <code>META-INF/build-info.properties</code>. See also the <a href="http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#howto-build-info">Spring Boot Reference Guide</a>.</p>
 </div>
@@ -827,7 +828,7 @@ You can include the Spring Boot Admin Server to your Eureka server. Setup everyt
 </div>
 </div>
 <div class="sect2">
-<h3 id="jmx-bean-management"><a class="anchor" href="#jmx-bean-management"></a>3.2. JMX-bean management</h3>
+<h3 id="jmx-bean-management"><a class="anchor" href="#jmx-bean-management"></a><a class="link" href="#jmx-bean-management">3.2. JMX-bean management</a></h3>
 <div class="paragraph">
 <p>To interact with JMX-beans in the admin UI you have to include <a href="https://jolokia.org/">Jolokia</a> in your application. In case you are using the <code>spring-boot-admin-starter-client</code> it will be pulled in for you, if not add Jolokia to your dependencies:</p>
 </div>
@@ -842,7 +843,7 @@ You can include the Spring Boot Admin Server to your Eureka server. Setup everyt
 </div>
 </div>
 <div class="sect2">
-<h3 id="loglevel-management"><a class="anchor" href="#loglevel-management"></a>3.3. Loglevel management</h3>
+<h3 id="loglevel-management"><a class="anchor" href="#loglevel-management"></a><a class="link" href="#loglevel-management">3.3. Loglevel management</a></h3>
 <div class="paragraph">
 <p>For applications using Spring Boot 1.5.x (or later) you can manage loglevels out-of-the-box.
 For applications using older versions of Spring Boot the loglevel management is only available for <a href="http://logback.qos.ch/">Logback</a>. It is accessed via JMX so <a href="#jmx-bean-management">include Jolokia</a> in your application. In addition you have configure Logback&#8217;s <code>JMXConfigurator</code>:</p>
@@ -867,7 +868,7 @@ In case you are deploying multiple applications to the same JVM and multiple Log
 </div>
 </div>
 <div class="sect2">
-<h3 id="spring-boot-admin-client"><a class="anchor" href="#spring-boot-admin-client"></a>3.4. Spring Boot Admin Client</h3>
+<h3 id="spring-boot-admin-client"><a class="anchor" href="#spring-boot-admin-client"></a><a class="link" href="#spring-boot-admin-client">3.4. Spring Boot Admin Client</a></h3>
 <div class="paragraph">
 <p>The Spring Boot Admin Client registers the application at the admin server. This is done by periodically doing a HTTP post request to the SBA Server providing information about the application. It also adds Jolokia to your application, so that JMX-beans are accessible via HTTP.</p>
 </div>
@@ -886,9 +887,9 @@ There are plenty of properties to influence the way how the SBA Client registers
 <table class="tableblock frame-all grid-all spread">
 <caption class="title">Table 1. Spring Boot Admin Client configuration options</caption>
 <colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
 </colgroup>
 <thead>
 <tr>
@@ -984,9 +985,9 @@ spring.boot.admin.password</p></td>
 <table class="tableblock frame-all grid-all spread">
 <caption class="title">Table 2. Instance metadata options</caption>
 <colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
 </colgroup>
 <thead>
 <tr>
@@ -1008,14 +1009,14 @@ user.password</p></td>
 </div>
 </div>
 <div class="sect1">
-<h2 id="spring-boot-admin-server"><a class="anchor" href="#spring-boot-admin-server"></a>4. Spring Boot Admin Server</h2>
+<h2 id="spring-boot-admin-server"><a class="anchor" href="#spring-boot-admin-server"></a><a class="link" href="#spring-boot-admin-server">4. Spring Boot Admin Server</a></h2>
 <div class="sectionbody">
 <table class="tableblock frame-all grid-all spread">
 <caption class="title">Table 3. Spring Boot Admin Server configuration options</caption>
 <colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
 </colgroup>
 <thead>
 <tr>
@@ -1058,12 +1059,12 @@ user.password</p></td>
 </tbody>
 </table>
 <div class="sect2">
-<h3 id="spring-cloud-discovery-support"><a class="anchor" href="#spring-cloud-discovery-support"></a>4.1. Spring Cloud Discovery</h3>
+<h3 id="spring-cloud-discovery-support"><a class="anchor" href="#spring-cloud-discovery-support"></a><a class="link" href="#spring-cloud-discovery-support">4.1. Spring Cloud Discovery</a></h3>
 <div class="paragraph">
 <p>The Spring Boot Admin Server can use Spring Clouds <code>DiscoveryClient</code> to discover applications. The advantage is that the clients don&#8217;t have to include the <code>spring-boot-admin-starter-client</code>. You just have to add a <code>DiscoveryClient</code> implementation to your admin server - everything else is done by AutoConfiguration.</p>
 </div>
 <div class="sect3">
-<h4 id="spring-cloud-discovery-static-config"><a class="anchor" href="#spring-cloud-discovery-static-config"></a>4.1.1. SimpleDiscoveryClient configuration</h4>
+<h4 id="spring-cloud-discovery-static-config"><a class="anchor" href="#spring-cloud-discovery-static-config"></a><a class="link" href="#spring-cloud-discovery-static-config">4.1.1. SimpleDiscoveryClient configuration</a></h4>
 <div class="paragraph">
 <p>Spring Boot Admin ships with the <code>SimpleDiscoveryClient</code> included. This allows you to specify client applications via configuration, without adding the SBA Client or a DiscoveryClient implementation to your monitored applications:</p>
 </div>
@@ -1087,14 +1088,14 @@ user.password</p></td>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_other_discoveryclient_implementations_eureka_zookeeper_consul"><a class="anchor" href="#_other_discoveryclient_implementations_eureka_zookeeper_consul"></a>4.1.2. Other DiscoveryClient implementations (Eureka, Zookeeper, Consul, &#8230;&#8203;)</h4>
+<h4 id="_other_discoveryclient_implementations_eureka_zookeeper_consul"><a class="anchor" href="#_other_discoveryclient_implementations_eureka_zookeeper_consul"></a><a class="link" href="#_other_discoveryclient_implementations_eureka_zookeeper_consul">4.1.2. Other DiscoveryClient implementations (Eureka, Zookeeper, Consul, &#8230;&#8203;)</a></h4>
 <div class="paragraph">
 <p>Spring Boot Admin supports all other implementation of Spring Cloud&#8217;s <code>DiscoveryClient</code>. You need to add it to the Spring Boot Admin Server and configure it properly.
 An <a href="#discover-clients-via-spring-cloud-discovery">example setup using Eureka</a> is shown above.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_converting_serviceinstances_into_monitored_applications"><a class="anchor" href="#_converting_serviceinstances_into_monitored_applications"></a>4.1.3. Converting ServiceInstances into monitored applications</h4>
+<h4 id="_converting_serviceinstances_into_monitored_applications"><a class="anchor" href="#_converting_serviceinstances_into_monitored_applications"></a><a class="link" href="#_converting_serviceinstances_into_monitored_applications">4.1.3. Converting ServiceInstances into monitored applications</a></h4>
 <div class="paragraph">
 <p>The information from the service registry are converted by the <code>ServiceInstanceConverter</code>. Spring Boot Admin ships with a default and Eureka converter implementation. The correct one is selected by AutoConfiguration.</p>
 </div>
@@ -1125,9 +1126,9 @@ When using Eureka, the <code>healthCheckUrl</code> known to Eureka is used for h
 <table class="tableblock frame-all grid-all spread">
 <caption class="title">Table 4. Instance metadata options</caption>
 <colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
 </colgroup>
 <thead>
 <tr>
@@ -1163,9 +1164,9 @@ user.password</p></td>
 <table class="tableblock frame-all grid-all spread">
 <caption class="title">Table 5. Discovery configuration options</caption>
 <colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
 </colgroup>
 <thead>
 <tr>
@@ -1205,7 +1206,7 @@ user.password</p></td>
 </div>
 </div>
 <div class="sect2">
-<h3 id="clustering-support"><a class="anchor" href="#clustering-support"></a>4.2. Clustering</h3>
+<h3 id="clustering-support"><a class="anchor" href="#clustering-support"></a><a class="link" href="#clustering-support">4.2. Clustering</a></h3>
 <div class="paragraph">
 <p>Spring Boot Admin Server supports cluster replication via Hazelcast. It is automatically enabled when a <code>HazelcastConfig</code>- or <code>HazelcastInstance</code>-Bean is present. You can also configure the Hazelcast instance to be persistent, to keep the status over restarts.
 Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-hazelcast/">Spring Boot support for Hazelcast</a>.</p>
@@ -1253,9 +1254,9 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <table class="tableblock frame-all grid-all spread">
 <caption class="title">Table 6. Hazelcast configuration options</caption>
 <colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
 </colgroup>
 <thead>
 <tr>
@@ -1284,9 +1285,9 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 </table>
 </div>
 <div class="sect2">
-<h3 id="_notifications"><a class="anchor" href="#_notifications"></a>4.3. Notifications</h3>
+<h3 id="_notifications"><a class="anchor" href="#_notifications"></a><a class="link" href="#_notifications">4.3. Notifications</a></h3>
 <div class="sect3">
-<h4 id="_reminder_notifications"><a class="anchor" href="#_reminder_notifications"></a>4.3.1. Reminder notifications</h4>
+<h4 id="_reminder_notifications"><a class="anchor" href="#_reminder_notifications"></a><a class="link" href="#_reminder_notifications">4.3.1. Reminder notifications</a></h4>
 <div class="paragraph">
 <p>The <code>RemindingNotifier</code> sends reminders for down/offline applications, it delegates the sending of notifications to another notifier.</p>
 </div>
@@ -1334,7 +1335,7 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 </div>
 </div>
 <div class="sect3">
-<h4 id="filtering-notifications"><a class="anchor" href="#filtering-notifications"></a>4.3.2. Filtering notifications</h4>
+<h4 id="filtering-notifications"><a class="anchor" href="#filtering-notifications"></a><a class="link" href="#filtering-notifications">4.3.2. Filtering notifications</a></h4>
 <div class="paragraph">
 <p>The <code>FilteringNotifier</code> allows you to filter certain notification based on rules you can add/remove at runtime. It delegates the sending of notifications to another notifier.</p>
 </div>
@@ -1399,7 +1400,7 @@ This examples combines the reminding and filtering notifiers. This allows you to
 </div>
 </div>
 <div class="sect3">
-<h4 id="mail-notifications"><a class="anchor" href="#mail-notifications"></a>4.3.3. Mail notifications</h4>
+<h4 id="mail-notifications"><a class="anchor" href="#mail-notifications"></a><a class="link" href="#mail-notifications">4.3.3. Mail notifications</a></h4>
 <div class="paragraph">
 <p>Configure a <code>JavaMailSender</code> using <code>spring-boot-starter-mail</code> and set a recipient.</p>
 </div>
@@ -1422,9 +1423,9 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 <table class="tableblock frame-all grid-all spread">
 <caption class="title">Table 7. Mail notifications configuration options</caption>
 <colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
 </colgroup>
 <thead>
 <tr>
@@ -1473,16 +1474,16 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="pagerduty-notifications"><a class="anchor" href="#pagerduty-notifications"></a>4.3.4. Pagerduty notifications</h4>
+<h4 id="pagerduty-notifications"><a class="anchor" href="#pagerduty-notifications"></a><a class="link" href="#pagerduty-notifications">4.3.4. Pagerduty notifications</a></h4>
 <div class="paragraph">
 <p>To enable pagerduty notifications you just have to add a generic service to your pagerduty-account and set <code>spring.boot.admin.notify.pagerduty.service-key</code> to the service-key you received.</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
 <caption class="title">Table 8. Pagerduty notifications configuration options</caption>
 <colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
 </colgroup>
 <thead>
 <tr>
@@ -1531,16 +1532,16 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="opsgenie-notifications"><a class="anchor" href="#opsgenie-notifications"></a>4.3.5. OpsGenie notifications</h4>
+<h4 id="opsgenie-notifications"><a class="anchor" href="#opsgenie-notifications"></a><a class="link" href="#opsgenie-notifications">4.3.5. OpsGenie notifications</a></h4>
 <div class="paragraph">
 <p>To enable OpsGenie notifications you just have to add a new JSON Rest API integration to your OpsGenie account and set <code>spring.boot.admin.notify.opsgenie.api-key</code> to the apiKey you received.</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
 <caption class="title">Table 9. OpsGenie notifications configuration options</caption>
 <colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
 </colgroup>
 <thead>
 <tr>
@@ -1609,16 +1610,16 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_hipchat_notifications"><a class="anchor" href="#_hipchat_notifications"></a>4.3.6. Hipchat notifications</h4>
+<h4 id="_hipchat_notifications"><a class="anchor" href="#_hipchat_notifications"></a><a class="link" href="#_hipchat_notifications">4.3.6. Hipchat notifications</a></h4>
 <div class="paragraph">
 <p>To enable Hipchat notifications you need to create an API token from you Hipchat account and set the appropriate configuration properties.</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
 <caption class="title">Table 10. Hipchat notifications configuration options</caption>
 <colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
 </colgroup>
 <thead>
 <tr>
@@ -1667,7 +1668,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_slack_notifications"><a class="anchor" href="#_slack_notifications"></a>4.3.7. Slack notifications</h4>
+<h4 id="_slack_notifications"><a class="anchor" href="#_slack_notifications"></a><a class="link" href="#_slack_notifications">4.3.7. Slack notifications</a></h4>
 <div class="paragraph">
 <p>To enable Slack notifications you need to add a incoming Webhook under custom integrations on your Slack
 account and configure it appropriately.</p>
@@ -1675,9 +1676,9 @@ account and configure it appropriately.</p>
 <table class="tableblock frame-all grid-all spread">
 <caption class="title">Table 11. Slack notifications configuration options</caption>
 <colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
 </colgroup>
 <thead>
 <tr>
@@ -1726,16 +1727,16 @@ account and configure it appropriately.</p>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_let_s_chat_notifications"><a class="anchor" href="#_let_s_chat_notifications"></a>4.3.8. Let&#8217;s Chat notifications</h4>
+<h4 id="_let_s_chat_notifications"><a class="anchor" href="#_let_s_chat_notifications"></a><a class="link" href="#_let_s_chat_notifications">4.3.8. Let&#8217;s Chat notifications</a></h4>
 <div class="paragraph">
 <p>To enable Let&#8217;s Chat notifications you need to add the host url and add the API token and username from Let&#8217;s Chat</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
 <caption class="title">Table 12. Let&#8217;s Chat notifications configuration options</caption>
 <colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
 </colgroup>
 <thead>
 <tr>
@@ -1785,7 +1786,7 @@ account and configure it appropriately.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_ui_modules"><a class="anchor" href="#_ui_modules"></a>4.4. UI Modules</h3>
+<h3 id="_ui_modules"><a class="anchor" href="#_ui_modules"></a><a class="link" href="#_ui_modules">4.4. UI Modules</a></h3>
 <div class="paragraph">
 <p>Additional to the core UI there are following modules which can be included by adding the jar-file to the classpath:</p>
 </div>
@@ -1803,7 +1804,7 @@ account and configure it appropriately.</p>
 </ul>
 </div>
 <div class="sect3">
-<h4 id="_hystrix_ui_module"><a class="anchor" href="#_hystrix_ui_module"></a>4.4.1. Hystrix UI Module</h4>
+<h4 id="_hystrix_ui_module"><a class="anchor" href="#_hystrix_ui_module"></a><a class="link" href="#_hystrix_ui_module">4.4.1. Hystrix UI Module</a></h4>
 <div class="paragraph">
 <p>The Hystrix module uses the hystrix-dashboard to display the metrics from Hystrix streams.</p>
 </div>
@@ -1835,9 +1836,9 @@ account and configure it appropriately.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_turbine_ui_module"><a class="anchor" href="#_turbine_ui_module"></a>4.4.2. Turbine UI Module</h4>
+<h4 id="_turbine_ui_module"><a class="anchor" href="#_turbine_ui_module"></a><a class="link" href="#_turbine_ui_module">4.4.2. Turbine UI Module</a></h4>
 <div class="paragraph">
-<p>The Turbine module uses the hystrix-dashboard to display the metrics from a Turbine stream. The UI module does not configure Turbine for you. Either you run Turbine as a separate application or integrate it into your Spring Boot Admin application. Please see <a href="http://cloud.spring.io/spring-cloud-static/Dalston.SR1/#_turbine">Spring Cloud Reference</a> on setting up Turbine.</p>
+<p>The Turbine module uses the hystrix-dashboard to display the metrics from a Turbine stream. The UI module does not configure Turbine for you. Either you run Turbine as a separate application or integrate it into your Spring Boot Admin application. Please see <a href="http://cloud.spring.io/spring-cloud-static/Dalston.SR3/#_turbine">Spring Cloud Reference</a> on setting up Turbine.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -1878,9 +1879,9 @@ account and configure it appropriately.</p>
 <table class="tableblock frame-all grid-all spread">
 <caption class="title">Table 13. Turbine UI Module configuration options</caption>
 <colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
 </colgroup>
 <thead>
 <tr>
@@ -1909,7 +1910,7 @@ account and configure it appropriately.</p>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_activiti_ui_module"><a class="anchor" href="#_activiti_ui_module"></a>4.4.3. Activiti UI Module</h4>
+<h4 id="_activiti_ui_module"><a class="anchor" href="#_activiti_ui_module"></a><a class="link" href="#_activiti_ui_module">4.4.3. Activiti UI Module</a></h4>
 <div class="paragraph">
 <p>The Activiti module shows information from the <code>/activiti</code> endpoint.</p>
 </div>
@@ -1941,7 +1942,7 @@ account and configure it appropriately.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_login_ui_module"><a class="anchor" href="#_login_ui_module"></a>4.4.4. Login UI Module</h4>
+<h4 id="_login_ui_module"><a class="anchor" href="#_login_ui_module"></a><a class="link" href="#_login_ui_module">4.4.4. Login UI Module</a></h4>
 <div class="paragraph">
 <p>The Login module just provides you a login page and a logout button.</p>
 </div>
@@ -1967,10 +1968,10 @@ account and configure it appropriately.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="securing-spring-boot-admin"><a class="anchor" href="#securing-spring-boot-admin"></a>5. Security</h2>
+<h2 id="securing-spring-boot-admin"><a class="anchor" href="#securing-spring-boot-admin"></a><a class="link" href="#securing-spring-boot-admin">5. Security</a></h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_securing_spring_boot_admin_server"><a class="anchor" href="#_securing_spring_boot_admin_server"></a>5.1. Securing Spring Boot Admin Server</h3>
+<h3 id="_securing_spring_boot_admin_server"><a class="anchor" href="#_securing_spring_boot_admin_server"></a><a class="link" href="#_securing_spring_boot_admin_server">5.1. Securing Spring Boot Admin Server</a></h3>
 <div class="paragraph">
 <p>Since there are several approaches on solving authentication and authorization in distributed web applications Spring Boot Admin doesn&#8217;t ship a default one.
 If you include the <code>spring-boot-admin-server-ui-login</code> in your dependencies it will provide a login page and a logout button.</p>
@@ -2033,7 +2034,7 @@ There are more samples (e.g. using OAuth2) in <a href="https://github.com/joshis
 </div>
 </div>
 <div class="sect2">
-<h3 id="_securing_client_actuator_endpoints"><a class="anchor" href="#_securing_client_actuator_endpoints"></a>5.2. Securing Client Actuator Endpoints</h3>
+<h3 id="_securing_client_actuator_endpoints"><a class="anchor" href="#_securing_client_actuator_endpoints"></a><a class="link" href="#_securing_client_actuator_endpoints">5.2. Securing Client Actuator Endpoints</a></h3>
 <div class="paragraph">
 <p>When the actuator endpoints are secured using HTTP Basic authentication the SBA Server needs credentials to access them. You can submit the credentials in the metadata when registering the application. The <code>BasicAuthHttpHeaderProvider</code> then uses this metadata to add the <code>Authorization</code> header to access your application&#8217;s actuator endpoints. You can provide your own <code>HttpHeadersProvider</code> to alter the behaviour (e.g. add some decryption) or add extra headers.</p>
 </div>
@@ -2116,7 +2117,7 @@ When using this approach the SBA Server decides whether or not the user can acce
 </div>
 </div>
 <div class="sect1">
-<h2 id="faqs"><a class="anchor" href="#faqs"></a>6. FAQs</h2>
+<h2 id="faqs"><a class="anchor" href="#faqs"></a><a class="link" href="#faqs">6. FAQs</a></h2>
 <div class="sectionbody">
 <div class="dlist q-and-a">
 <dl>
