@@ -21,7 +21,7 @@ import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.cloud.netflix.zuul.RoutesEndpoint;
-import org.springframework.cloud.netflix.zuul.ZuulConfiguration;
+import org.springframework.cloud.netflix.zuul.ZuulServerAutoConfiguration;
 import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
 import org.springframework.cloud.netflix.zuul.filters.RouteLocator;
 import org.springframework.cloud.netflix.zuul.filters.TraceProxyRequestHelper;
@@ -45,7 +45,7 @@ import de.codecentric.boot.admin.zuul.filters.pre.ApplicationHeadersFilter;
 
 @Configuration
 @AutoConfigureAfter({ AdminServerWebConfiguration.class })
-public class RevereseZuulProxyConfiguration extends ZuulConfiguration {
+public class RevereseZuulProxyConfiguration extends ZuulServerAutoConfiguration {
 
 	@Autowired(required = false)
 	private TraceRepository traces;
