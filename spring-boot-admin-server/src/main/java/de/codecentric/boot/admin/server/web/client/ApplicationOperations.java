@@ -65,8 +65,10 @@ public class ApplicationOperations {
 
     public Mono<ClientResponse> exchange(HttpMethod method, Application application, URI uri) {
         return webClient.method(method)
-                        .uri(uri).accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON, MediaType.APPLICATION_JSON)
+                        .uri(uri)
+                        .accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON, MediaType.APPLICATION_JSON)
                         .headers(headers -> headers.putAll(httpHeadersProvider.getHeaders(application)))
-                        .exchange().doOnSubscribe((s) -> log.debug("Do {} on '{}' for {}", method, uri, application));
+                        .exchange()
+                        .doOnSubscribe((s) -> log.debug("Do {} on '{}' for {}", method, uri, application));
     }
 }

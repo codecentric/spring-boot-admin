@@ -59,7 +59,8 @@ public class Application implements Serializable {
                         long version,
                         Registration registration,
                         StatusInfo statusInfo,
-                        Info info, Endpoints endpoints,
+                        Info info,
+                        Endpoints endpoints,
                         List<ClientApplicationEvent> unsavedEvents) {
         Assert.notNull(id, "'id' must not be null");
         this.id = id;

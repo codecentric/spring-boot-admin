@@ -62,7 +62,8 @@ public class InfoUpdaterTest {
         //given
         Registration registration = Registration.create("foo", "http://health").build();
         Application application = Application.create(ApplicationId.of("onl"))
-                                             .register(registration).withEndpoints(Endpoints.single("info", "info"))
+                                             .register(registration)
+                                             .withEndpoints(Endpoints.single("info", "info"))
                                              .withStatusInfo(StatusInfo.ofUp());
         StepVerifier.create(repository.save(application)).verifyComplete();
 

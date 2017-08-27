@@ -52,7 +52,8 @@ public class ApplicationOperationsTest {
     private ApplicationOperations ops = new ApplicationOperations(webClient, headersProvider);
     private final Application application = Application.create(ApplicationId.of("id"))
                                                        .register(Registration.create("test", "http://health")
-                                                                             .managementUrl("http://mgmt").build())
+                                                                             .managementUrl("http://mgmt")
+                                                                             .build())
                                                        .withEndpoints(Endpoints.single("info", "info"));
 
     @Test
