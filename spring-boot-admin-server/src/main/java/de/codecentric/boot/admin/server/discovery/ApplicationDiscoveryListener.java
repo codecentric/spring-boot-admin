@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.event.HeartbeatEvent;
@@ -70,6 +71,11 @@ public class ApplicationDiscoveryListener {
         this.discoveryClient = discoveryClient;
         this.registry = registry;
         this.repository = repository;
+    }
+
+    @EventListener
+    public void onApplicationReady(ApplicationReadyEvent event) {
+        discover();
     }
 
     @EventListener

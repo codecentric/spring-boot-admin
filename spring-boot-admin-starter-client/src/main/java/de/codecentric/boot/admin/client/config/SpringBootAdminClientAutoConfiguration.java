@@ -19,10 +19,9 @@ import de.codecentric.boot.admin.client.registration.ApplicationFactory;
 import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
 import de.codecentric.boot.admin.client.registration.DefaultApplicationFactory;
 import de.codecentric.boot.admin.client.registration.RegistrationApplicationListener;
-
-import javax.servlet.ServletContext;
 import de.codecentric.boot.admin.client.registration.ServletApplicationFactory;
 
+import javax.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
@@ -66,7 +65,9 @@ public class SpringBootAdminClientAutoConfiguration {
                                               ApplicationFactory applicationFactory,
                                               RestTemplateBuilder restTemplBuilder) {
         RestTemplateBuilder builder = restTemplBuilder.messageConverters(new MappingJackson2HttpMessageConverter())
-                                                      .requestFactory(SimpleClientHttpRequestFactory.class);
+                                                      .requestFactory(SimpleClientHttpRequestFactory.class)
+                                                      .setConnectTimeout(client.getConnectTimeout())
+                                                      .setReadTimeout(client.getReadTimeout());
         if (client.getUsername() != null) {
             builder = builder.basicAuthorization(client.getUsername(), client.getPassword());
         }

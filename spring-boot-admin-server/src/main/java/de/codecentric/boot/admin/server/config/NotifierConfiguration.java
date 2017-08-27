@@ -23,6 +23,7 @@ import de.codecentric.boot.admin.server.notify.LetsChatNotifier;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
 import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
+import de.codecentric.boot.admin.server.notify.OpsGenieNotifier;
 import de.codecentric.boot.admin.server.notify.SlackNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
 import de.codecentric.boot.admin.server.notify.filter.web.NotificationFilterController;
@@ -151,6 +152,18 @@ public class NotifierConfiguration {
         @ConfigurationProperties("spring.boot.admin.notify.letschat")
         public LetsChatNotifier letsChatNotifier(ApplicationRepository repository) {
             return new LetsChatNotifier(repository);
+        }
+    }
+
+    @Configuration
+    @ConditionalOnProperty(prefix = "spring.boot.admin.notify.opsgenie", name = "api-key")
+    @AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
+    public static class OpsGenieNotifierConfiguration {
+        @Bean
+        @ConditionalOnMissingBean
+        @ConfigurationProperties("spring.boot.admin.notify.opsgenie")
+        public OpsGenieNotifier opsgenieNotifier(ApplicationRepository repository) {
+            return new OpsGenieNotifier(repository);
         }
     }
 }

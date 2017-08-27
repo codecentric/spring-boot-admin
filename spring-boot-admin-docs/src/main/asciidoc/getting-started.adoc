@@ -44,7 +44,7 @@ See also the https://github.com/codecentric/spring-boot-admin/tree/master/spring
 [[register-client-applications]]
 === Registering client applications ===
 
-To register your application at the SBA Server you can either include the SBA Client or use http://projects.spring.io/spring-cloud/spring-cloud.html[Spring Cloud Discovery] (e.g. Eureka)
+To register your application at the SBA Server you can either include the SBA Client or use http://projects.spring.io/spring-cloud/spring-cloud.html[Spring Cloud Discovery] (e.g. Eureka, Consul, ...). There is also a <<spring-cloud-discovery-static-config,simple option using a static configuration on the SBA Server side>>.
 
 [[register-clients-via-spring-boot-admin]]
 ==== spring-boot-admin-starter-client ====

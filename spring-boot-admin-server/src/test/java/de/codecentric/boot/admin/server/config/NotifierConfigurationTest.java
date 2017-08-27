@@ -25,6 +25,7 @@ import de.codecentric.boot.admin.server.notify.HipchatNotifier;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
 import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
+import de.codecentric.boot.admin.server.notify.OpsGenieNotifier;
 import de.codecentric.boot.admin.server.notify.SlackNotifier;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
@@ -43,6 +45,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 
 public class NotifierConfigurationTest {
     private static final ClientApplicationEvent APP_DOWN = new ClientApplicationStatusChangedEvent(
@@ -93,6 +97,13 @@ public class NotifierConfigurationTest {
     public void test_slack() {
         load(null, "spring.boot.admin.notify.slack.webhook-url:http://example.com");
         assertThat(context.getBean(SlackNotifier.class)).isInstanceOf(SlackNotifier.class);
+    }
+
+
+    @Test
+    public void test_opsgenie() {
+        load(null, "spring.boot.admin.notify.opsgenie.api-key:foo");
+        Assert.assertThat(context.getBean(OpsGenieNotifier.class), is(instanceOf(OpsGenieNotifier.class)));
     }
 
     @Test

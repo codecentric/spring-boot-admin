@@ -85,7 +85,15 @@ spring.boot.admin.client.password
 | Interval for repeating the registration (in ms).
 | `10.000`
 
-| spring.boot.admin.client.auto-registration
+| spring.boot.admin.connectTimeout
+| Connect timeout for the registration (in ms).
+| `5.000`
+
+| spring.boot.admin.readTimeout
+| Read timeout for the registration (in ms).
+| `5.000`
+
+| spring.boot.admin.auto-registration
 | If set to true the periodic task to register the application is automatically scheduled after the application is ready.
 | `true`
 

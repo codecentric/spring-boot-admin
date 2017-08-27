@@ -37,6 +37,16 @@ public class ClientProperties {
     private long period = 10_000L;
 
     /**
+     * Connect timeout (in ms) for the registration.
+     */
+    private int connectTimeout = 5_000;
+
+    /**
+     * Read timeout (in ms) for the registration.
+     */
+    private int readTimeout = 5_000;
+
+    /**
      * Username for basic authentication on admin server
      */
     private String username;

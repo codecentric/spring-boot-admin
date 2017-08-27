@@ -23,6 +23,7 @@ import de.codecentric.boot.admin.server.services.HashingApplicationUrlIdGenerato
 import reactor.test.StepVerifier;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,6 +55,20 @@ public class ApplicationDiscoveryListenerTest {
         registry = new ApplicationRegistry(repository, new HashingApplicationUrlIdGenerator());
         listener = new ApplicationDiscoveryListener(discovery, registry, repository);
     }
+
+    @Test
+    public void test_application_ready() {
+        when(discovery.getServices()).thenReturn(Collections.singletonList("service"));
+        when(discovery.getInstances("service")).thenReturn(
+                Collections.singletonList(new DefaultServiceInstance("service", "localhost", 80, false)));
+
+        listener.onApplicationReady(null);
+
+        StepVerifier.create(registry.getApplications())
+                    .assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service"))
+                    .verifyComplete();
+    }
+
 
     @Test
     public void test_ignore() {
