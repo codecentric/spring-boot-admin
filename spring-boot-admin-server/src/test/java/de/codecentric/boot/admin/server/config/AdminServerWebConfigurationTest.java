@@ -117,11 +117,11 @@ public class AdminServerWebConfigurationTest {
         }
         applicationContext.register(RestTemplateAutoConfiguration.class);
         applicationContext.register(HazelcastAutoConfiguration.class);
-        applicationContext.register(HazelcastStoreConfiguration.class);
         applicationContext.register(UtilAutoConfiguration.class);
-        applicationContext.register(DiscoveryClientConfiguration.class);
-        applicationContext.register(AdminServerCoreConfiguration.class);
-        applicationContext.register(AdminServerWebConfiguration.class);
+        applicationContext.register(AdminServerMarkerConfiguration.class);
+        applicationContext.register(AdminServerHazelcastAutoConfiguration.class);
+        applicationContext.register(AdminServerAutoConfiguration.class);
+        applicationContext.register(AdminServerDiscoveryAutoConfiguration.class);
 
         TestPropertyValues.of(environment).applyTo(applicationContext);
         applicationContext.refresh();

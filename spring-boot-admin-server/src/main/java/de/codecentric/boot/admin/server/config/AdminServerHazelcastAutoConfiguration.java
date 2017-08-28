@@ -24,6 +24,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
@@ -34,20 +35,20 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
 
 @Configuration
+@ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
 @ConditionalOnSingleCandidate(HazelcastInstance.class)
 @ConditionalOnProperty(prefix = "spring.boot.admin.hazelcast", name = "enabled", matchIfMissing = true)
-@AutoConfigureBefore(AdminServerWebConfiguration.class)
+@AutoConfigureBefore({AdminServerAutoConfiguration.class})
 @AutoConfigureAfter(HazelcastAutoConfiguration.class)
-public class HazelcastStoreConfiguration {
+public class AdminServerHazelcastAutoConfiguration {
 
     @Value("${spring.boot.admin.hazelcast.event-store:spring-boot-admin-event-store}")
     private String mapName;
 
     @Bean
-    @ConditionalOnMissingBean
-    public ClientApplicationEventStore eventStore(HazelcastInstance hazelcastInstance) {
+    @ConditionalOnMissingBean(ClientApplicationEventStore.class)
+    public HazelcastEventStore eventStore(HazelcastInstance hazelcastInstance) {
         IMap<ApplicationId, List<ClientApplicationEvent>> map = hazelcastInstance.getMap(mapName);
-
         return new HazelcastEventStore(map);
     }
 }

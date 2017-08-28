@@ -38,21 +38,25 @@ import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
 import io.netty.channel.ChannelOption;
 
 import org.reactivestreams.Publisher;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
+@ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
 @EnableConfigurationProperties(AdminServerProperties.class)
-public class AdminServerCoreConfiguration {
+@Import({AdminServerWebConfiguration.class, AdminServerNotifierConfiguration.class})
+public class AdminServerAutoConfiguration {
     private final AdminServerProperties adminServerProperties;
 
-    public AdminServerCoreConfiguration(AdminServerProperties adminServerProperties) {
+    public AdminServerAutoConfiguration(AdminServerProperties adminServerProperties) {
         this.adminServerProperties = adminServerProperties;
     }
 
@@ -138,14 +142,14 @@ public class AdminServerCoreConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean
-    public ClientApplicationEventStore eventStore() {
+    @ConditionalOnMissingBean(ClientApplicationEventStore.class)
+    public InMemoryEventStore eventStore() {
         return new InMemoryEventStore();
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     @ConditionalOnMissingBean(ApplicationRepository.class)
-    public EventSourcingApplicationRepository applicationRepository() {
-        return new EventSourcingApplicationRepository(eventStore());
+    public EventSourcingApplicationRepository applicationRepository(ClientApplicationEventStore eventStore) {
+        return new EventSourcingApplicationRepository(eventStore);
     }
 }

@@ -36,9 +36,10 @@ import com.netflix.discovery.EurekaClient;
 
 @Configuration
 @ConditionalOnSingleCandidate(DiscoveryClient.class)
+@ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
 @ConditionalOnProperty(prefix = "spring.boot.admin.discovery", name = "enabled", matchIfMissing = true)
-@AutoConfigureAfter({SimpleDiscoveryClientAutoConfiguration.class})
-public class DiscoveryClientConfiguration {
+@AutoConfigureAfter({AdminServerAutoConfiguration.class, SimpleDiscoveryClientAutoConfiguration.class})
+public class AdminServerDiscoveryAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
@@ -53,10 +54,10 @@ public class DiscoveryClientConfiguration {
     }
 
     @Configuration
+    @ConditionalOnMissingBean({ServiceInstanceConverter.class})
     @ConditionalOnBean(EurekaClient.class)
     public static class EurekaConverterConfiguration {
         @Bean
-        @ConditionalOnMissingBean({ServiceInstanceConverter.class})
         @ConfigurationProperties(prefix = "spring.boot.admin.discovery.converter")
         public EurekaServiceInstanceConverter serviceInstanceConverter() {
             return new EurekaServiceInstanceConverter();

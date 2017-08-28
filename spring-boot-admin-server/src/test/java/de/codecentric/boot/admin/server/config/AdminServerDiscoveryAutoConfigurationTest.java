@@ -36,7 +36,7 @@ import com.netflix.discovery.EurekaClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DiscoveryClientConfigurationTest {
+public class AdminServerDiscoveryAutoConfigurationTest {
     private AnnotationConfigWebApplicationContext context;
 
     @After
@@ -99,10 +99,9 @@ public class DiscoveryClientConfigurationTest {
         }
         applicationContext.register(UtilAutoConfiguration.class);
         applicationContext.register(RestTemplateAutoConfiguration.class);
-        applicationContext.register(AdminServerCoreConfiguration.class);
-        applicationContext.register(AdminServerWebConfiguration.class);
-        applicationContext.register(UtilAutoConfiguration.class);
-        applicationContext.register(DiscoveryClientConfiguration.class);
+        applicationContext.register(AdminServerMarkerConfiguration.class);
+        applicationContext.register(AdminServerAutoConfiguration.class);
+        applicationContext.register(AdminServerDiscoveryAutoConfiguration.class);
 
         applicationContext.refresh();
         this.context = applicationContext;

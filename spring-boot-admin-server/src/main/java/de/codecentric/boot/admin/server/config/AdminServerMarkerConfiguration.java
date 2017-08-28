@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.config;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-/**
- * @author Dennis Schulte
- */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Import(AdminServerMarkerConfiguration.class)
-public @interface EnableAdminServer {
+@Configuration
+public class AdminServerMarkerConfiguration {
+    @Bean
+    public Marker adminServerMarker() {
+        return new Marker();
+    }
 
+    public static class Marker {
+    }
 }

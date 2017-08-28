@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  de.codecentric.boot.admin.server.config.AdminServerAutoConfiguration,\
+  de.codecentric.boot.admin.server.config.AdminServerDiscoveryAutoConfiguration,\
+  de.codecentric.boot.admin.server.config.AdminServerHazelcastAutoConfiguration

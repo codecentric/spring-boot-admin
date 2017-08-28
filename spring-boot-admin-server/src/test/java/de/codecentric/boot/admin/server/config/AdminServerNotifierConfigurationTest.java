@@ -48,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 
-public class NotifierConfigurationTest {
+public class AdminServerNotifierConfigurationTest {
     private static final ClientApplicationEvent APP_DOWN = new ClientApplicationStatusChangedEvent(
             ApplicationId.of("id-2"), 1L, StatusInfo.ofDown());
 
@@ -126,9 +126,9 @@ public class NotifierConfigurationTest {
             context.register(config);
         }
         context.register(RestTemplateAutoConfiguration.class);
-        context.register(AdminServerCoreConfiguration.class);
         context.register(MailSenderAutoConfiguration.class);
-        context.register(NotifierConfiguration.class);
+        context.register(AdminServerMarkerConfiguration.class);
+        context.register(AdminServerAutoConfiguration.class);
 
         TestPropertyValues.of(environment).applyTo(context);
         context.refresh();

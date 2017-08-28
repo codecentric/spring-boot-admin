@@ -47,7 +47,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.mail.MailSender;
 
 @Configuration
-public class NotifierConfiguration {
+public class AdminServerNotifierConfiguration {
 
     @Configuration
     @ConditionalOnBean(Notifier.class)
