@@ -26,7 +26,6 @@ import java.util.Map;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -37,13 +36,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 public class AdminServerWebConfiguration implements WebMvcConfigurer, ApplicationContextAware {
-    private final ApplicationEventPublisher publisher;
     private final AdminServerProperties adminServerProperties;
     private ApplicationContext applicationContext;
 
-    public AdminServerWebConfiguration(ApplicationEventPublisher publisher,
-                                       AdminServerProperties adminServerProperties) {
-        this.publisher = publisher;
+    public AdminServerWebConfiguration(AdminServerProperties adminServerProperties) {
         this.adminServerProperties = adminServerProperties;
     }
 

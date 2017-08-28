@@ -16,14 +16,20 @@
 package de.codecentric.boot.admin.server;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
+import java.util.stream.Collectors;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.WebTestClient;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.EvictionPolicy;
 import com.hazelcast.config.InMemoryFormat;
@@ -31,6 +37,7 @@ import com.hazelcast.config.MapConfig;
 import com.hazelcast.config.TcpIpConfig;
 
 import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration test to verify the correct functionality of the REST API with Hazelcast
@@ -40,6 +47,7 @@ import static java.util.Collections.singletonList;
 public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest {
     private ServletWebServerApplicationContext instance1;
     private ServletWebServerApplicationContext instance2;
+    private WebTestClient webClient2;
 
     @Before
     public void setUp() throws Exception {
@@ -52,6 +60,38 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
                 "--management.security.enabled=false", "--info.test=foobar");
 
         super.setUp(instance1.getWebServer().getPort());
+        this.webClient2 = createWebClient(instance2.getWebServer().getPort());
+    }
+
+
+    @Test
+    @Override
+    public void lifecycle() {
+        super.lifecycle();
+
+        Mono<String> events1 = getWebClient().get()
+                                             .uri("/api/applications/events")
+                                             .accept(MediaType.APPLICATION_JSON)
+                                             .exchange()
+                                             .expectStatus()
+                                             .isOk()
+                                             .returnResult(String.class)
+                                             .getResponseBody()
+                                             .collect(Collectors.joining());
+
+        Mono<String> events2 = webClient2.get()
+                                         .uri("/api/applications/events")
+                                         .accept(MediaType.APPLICATION_JSON)
+                                         .exchange()
+                                         .expectStatus()
+                                         .isOk()
+                                         .returnResult(String.class)
+                                         .getResponseBody()
+                                         .collect(Collectors.joining());
+
+        StepVerifier.create(events1.and(events2))
+                    .assertNext(t -> assertThat(t.getT1()).isEqualTo(t.getT2()))
+                    .verifyComplete();
     }
 
     @After
@@ -67,7 +107,6 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
         @Bean
         public Config hazelcastConfig() {
             Config config = new Config();
-
             config.addMapConfig(new MapConfig("spring-boot-admin-event-store").setInMemoryFormat(InMemoryFormat.OBJECT)
                                                                               .setBackupCount(1)
                                                                               .setEvictionPolicy(EvictionPolicy.NONE));

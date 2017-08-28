@@ -15,6 +15,7 @@
  */
 package de.codecentric.boot.admin.server.config;
 
+import de.codecentric.boot.admin.server.discovery.ApplicationDiscoveryListener;
 import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
 import de.codecentric.boot.admin.server.domain.entities.EventSourcingApplicationRepository;
 import de.codecentric.boot.admin.server.eventstore.ClientApplicationEventStore;
@@ -29,6 +30,7 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration;
 import org.springframework.cloud.commons.util.UtilAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,7 +54,7 @@ public class AdminServerWebConfigurationTest {
 
     @Test
     public void jacksonMapperPresentFromDefault() {
-        AdminServerWebConfiguration config = new AdminServerWebConfiguration(null, null);
+        AdminServerWebConfiguration config = new AdminServerWebConfiguration(null);
 
         List<HttpMessageConverter<?>> converters = new ArrayList<>();
         converters.add(new MappingJackson2HttpMessageConverter());
@@ -65,7 +67,7 @@ public class AdminServerWebConfigurationTest {
 
     @Test
     public void jacksonMapperPresentNeedExtend() {
-        AdminServerWebConfiguration config = new AdminServerWebConfiguration(null, null);
+        AdminServerWebConfiguration config = new AdminServerWebConfiguration(null);
         List<HttpMessageConverter<?>> converters = new ArrayList<>();
 
         config.extendMessageConverters(converters);
@@ -89,14 +91,12 @@ public class AdminServerWebConfigurationTest {
         assertThat(context.getBean(ClientApplicationEventStore.class)).isInstanceOf(HazelcastEventStore.class);
     }
 
-    //TODO
-    /*@Test
+    @Test
     public void discoveryConfig() {
-		load(NoopDiscoveryClientAutoConfiguration.class);
-		assertThat(context.getBean(ApplicationRepository.class))
-				.isInstanceOf(EventSourcingApplicationRepository.class);
-		context.getBean(ApplicationDiscoveryListener.class);
-	}*/
+        load(SimpleDiscoveryClientAutoConfiguration.class);
+        assertThat(context.getBean(ApplicationRepository.class)).isInstanceOf(EventSourcingApplicationRepository.class);
+        context.getBean(ApplicationDiscoveryListener.class);
+    }
 
     @Configuration
     static class TestHazelcastConfig {
