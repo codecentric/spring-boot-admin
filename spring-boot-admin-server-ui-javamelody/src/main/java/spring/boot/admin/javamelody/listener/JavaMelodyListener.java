@@ -1,5 +1,6 @@
-package net.bull.javamelody;
+package spring.boot.admin.javamelody.listener;
 
+import net.bull.javamelody.CollectorServlet;
 import de.codecentric.boot.admin.event.ClientApplicationDeregisteredEvent;
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.model.Application;
@@ -10,12 +11,11 @@ import org.springframework.context.event.EventListener;
 import java.io.IOException;
 
 /**
- * Service class in the javamelody package, so we can access the javamelody Parameters class in which we can
- * register and unregister applications. Using the {@link EventListener annotations} we receive notifications from service discovery.
+ * Listener class to register and unregister applications. Using the {@link EventListener annotations} we receive notifications from service discovery.
  */
-public class JavaMelodyService {
+public class JavaMelodyListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JavaMelodyService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JavaMelodyListener.class);
 
     @EventListener
     public void onClientApplicationRegistered(ClientApplicationRegisteredEvent event) {
@@ -23,10 +23,10 @@ public class JavaMelodyService {
         final String applicationName = application.getName() + "-" + application.getId();
 
         try {
-            Parameters.addCollectorApplication(applicationName, Parameters.parseUrl(application.getServiceUrl()));
-            LOGGER.info("Added application {} to java melody", applicationName);
+            CollectorServlet.addCollectorApplication(applicationName, application.getServiceUrl());
+            LOGGER.info("Added application {} to javamelody", applicationName);
         } catch (IOException e) {
-            LOGGER.warn("Failed to register application {} to java melody" + applicationName);
+            LOGGER.warn("Failed to register application {} to javamelody" + applicationName);
         }
     }
 
@@ -36,10 +36,10 @@ public class JavaMelodyService {
         final String applicationName = application.getName() + "-" + application.getId();
 
         try {
-            Parameters.removeCollectorApplication(applicationName);
-            LOGGER.info("Removed application {} from java melody", applicationName);
+            CollectorServlet.removeCollectorApplication(applicationName);
+            LOGGER.info("Removed application {} from javamelody", applicationName);
         } catch (IOException e) {
-            LOGGER.warn("Failed to unregister application {} from java melody" + applicationName);
+            LOGGER.warn("Failed to unregister application {} from javamelody" + applicationName);
         }
     }
 

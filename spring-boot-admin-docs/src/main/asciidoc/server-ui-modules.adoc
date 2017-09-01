@@ -114,7 +114,7 @@ The Login module just provides you a login page and a logout button.
 </dependency>
 ----
 
-==== Javamelody UI Module ====
+==== JavaMelody UI Module ====
 
 This module adds a view that displays the javamelody overview for each
 registered application
@@ -136,26 +136,10 @@ registered application
 [source,xml,subs="verbatim,attributes"]
 .pom.xml (javamelody client)
 ----
+<!-- https://github.com/javamelody/javamelody/wiki/SpringBootStarter -->
 <dependency>
     <groupId>net.bull.javamelody</groupId>
-    <artifactId>javamelody-core</artifactId>
+    <artifactId>javamelody-spring-boot-starter</artifactId>
     <version>${javamelody.version}</version>
 </dependency>
 ----
-+
-The following Javaconfig fragment could be used to configure a javamelody client
-[source,java]
-@Bean
-public FilterRegistrationBean javaMelody() {
-    final FilterRegistrationBean javaMelody = new FilterRegistrationBean();
-    final MonitoringFilter filter = monitoringFilter();
-    filter.setApplicationType("Spring Boot");
-    javaMelody.setFilter(filter);
-    javaMelody.setAsyncSupported(true);
-    javaMelody.setName("javamelody");
-    javaMelody.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
-    javaMelody.addInitParameter(Parameter.LOG.getCode(), Boolean.toString(true));
-    javaMelody.addUrlPatterns("/*");
-    javaMelody.setFilter(filter);
-    return javaMelody;
-}
