@@ -22,8 +22,8 @@ public class DefaultServiceInstanceConverterTest {
 
 		assertThat(application.getId(), nullValue());
 		assertThat(application.getName(), is("test"));
-		assertThat(application.getServiceUrl(), is("http://localhost:80"));
-		assertThat(application.getManagementUrl(), is("http://localhost:80"));
+		assertThat(application.getServiceUrl(), is("http://localhost:80/"));
+		assertThat(application.getManagementUrl(), is("http://localhost:80/"));
 		assertThat(application.getHealthUrl(), is("http://localhost:80/health"));
 	}
 
@@ -38,7 +38,7 @@ public class DefaultServiceInstanceConverterTest {
 
 		assertThat(application.getId(), nullValue());
 		assertThat(application.getName(), is("test"));
-		assertThat(application.getServiceUrl(), is("http://localhost:80"));
+		assertThat(application.getServiceUrl(), is("http://localhost:80/"));
 		assertThat(application.getManagementUrl(), is("http://localhost:80/mgmt"));
 		assertThat(application.getHealthUrl(), is("http://localhost:80/mgmt/ping"));
 	}
@@ -56,7 +56,7 @@ public class DefaultServiceInstanceConverterTest {
 
 		assertThat(application.getId(), nullValue());
 		assertThat(application.getName(), is("test"));
-		assertThat(application.getServiceUrl(), is("http://localhost:80"));
+		assertThat(application.getServiceUrl(), is("http://localhost:80/"));
 		assertThat(application.getManagementUrl(), is("http://localhost:1234/mgmt"));
 		assertThat(application.getHealthUrl(), is("http://localhost:1234/mgmt/ping"));
 		assertThat(application.getMetadata(), is(metadata));

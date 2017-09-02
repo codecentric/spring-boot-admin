@@ -33,7 +33,7 @@ public class EurekaServiceInstanceConverterTest {
 
 		assertThat(application.getId(), nullValue());
 		assertThat(application.getName(), is("test"));
-		assertThat(application.getServiceUrl(), is("http://localhost:80"));
+		assertThat(application.getServiceUrl(), is("http://localhost:80/"));
 		assertThat(application.getManagementUrl(), is("http://localhost:80/mgmt"));
 		assertThat(application.getHealthUrl(), is("http://localhost:80/mgmt/ping"));
 	}
@@ -49,7 +49,7 @@ public class EurekaServiceInstanceConverterTest {
 
 		Application application = new EurekaServiceInstanceConverter().convert(service);
 
-		assertThat(application.getManagementUrl(), is("http://localhost:80"));
+		assertThat(application.getManagementUrl(), is("http://localhost:80/"));
 	}
 
 	@Test

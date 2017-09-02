@@ -145,8 +145,8 @@ public class ApplicationDiscoveryListenerTest {
         Application application = registry.getApplications().iterator().next();
 
         assertEquals("http://localhost:80/health", application.getHealthUrl());
-        assertEquals("http://localhost:80", application.getManagementUrl());
-        assertEquals("http://localhost:80", application.getServiceUrl());
+        assertEquals("http://localhost:80/", application.getManagementUrl());
+        assertEquals("http://localhost:80/", application.getServiceUrl());
         assertEquals("service", application.getName());
     }
 
