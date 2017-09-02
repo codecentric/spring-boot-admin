@@ -34,7 +34,7 @@ module.run(function (ApplicationViews, $sce, $q) {
 
     ApplicationViews.register({
         order: 30,
-        title: $sce.trustAsHtml('<i class="fa fa-music fa-fw"></i>Javamelody'),
+        title: $sce.trustAsHtml('<i class="fa fa-music fa-fw"></i>JavaMelody'),
         state: 'applications.javamelody',
         show: function () {
             var deferred = $q.defer();
