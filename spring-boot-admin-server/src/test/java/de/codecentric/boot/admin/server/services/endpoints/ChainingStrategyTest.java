@@ -17,9 +17,9 @@
 package de.codecentric.boot.admin.server.services.endpoints;
 
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -42,11 +42,11 @@ public class ChainingStrategyTest {
     @Test
     public void should_chain_on_empty() {
         //given
-        Application application = Application.create(ApplicationId.of("id"));
+        Instance instance = Instance.create(InstanceId.of("id"));
         ChainingStrategy strategy = new ChainingStrategy((a) -> Mono.empty(), (a) -> Mono.empty(),
                 (a) -> Mono.just(Endpoints.single("id", "path")));
         //when/then
-        StepVerifier.create(strategy.detectEndpoints(application))
+        StepVerifier.create(strategy.detectEndpoints(instance))
                     .expectNext(Endpoints.single("id", "path"))
                     .verifyComplete();
     }
@@ -54,9 +54,9 @@ public class ChainingStrategyTest {
     @Test
     public void should_return_empty_endpoints_when_all_empty() {
         //given
-        Application application = Application.create(ApplicationId.of("id"));
+        Instance instance = Instance.create(InstanceId.of("id"));
         ChainingStrategy strategy = new ChainingStrategy((a) -> Mono.empty());
         //when/then
-        StepVerifier.create(strategy.detectEndpoints(application)).expectNext(Endpoints.empty()).verifyComplete();
+        StepVerifier.create(strategy.detectEndpoints(instance)).expectNext(Endpoints.empty()).verifyComplete();
     }
 }

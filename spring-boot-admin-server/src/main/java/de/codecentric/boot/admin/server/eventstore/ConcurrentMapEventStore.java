@@ -15,8 +15,8 @@
  */
 package de.codecentric.boot.admin.server.eventstore;
 
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -37,35 +37,35 @@ import static java.util.Comparator.comparingLong;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.reducing;
 
-public abstract class ConcurrentMapEventStore extends ClientApplicationEventPublisher implements ClientApplicationEventStore {
+public abstract class ConcurrentMapEventStore extends InstanceEventPublisher implements InstanceEventStore {
     private static final Logger log = LoggerFactory.getLogger(ConcurrentMapEventStore.class);
-    private static final Comparator<ClientApplicationEvent> byTimestampAndIdAndVersion = comparingLong(
-            ClientApplicationEvent::getTimestamp).thenComparing(ClientApplicationEvent::getApplication)
-                                                 .thenComparing(ClientApplicationEvent::getVersion);
+    private static final Comparator<InstanceEvent> byTimestampAndIdAndVersion = comparingLong(
+            InstanceEvent::getTimestamp).thenComparing(InstanceEvent::getInstance)
+                                        .thenComparing(InstanceEvent::getVersion);
     private final int maxLogSizePerAggregate;
 
-    private ConcurrentMap<ApplicationId, List<ClientApplicationEvent>> eventLog;
+    private ConcurrentMap<InstanceId, List<InstanceEvent>> eventLog;
 
     protected ConcurrentMapEventStore(int maxLogSizePerAggregate,
-                                      ConcurrentMap<ApplicationId, List<ClientApplicationEvent>> eventLog) {
+                                      ConcurrentMap<InstanceId, List<InstanceEvent>> eventLog) {
         this.eventLog = eventLog;
         this.maxLogSizePerAggregate = maxLogSizePerAggregate;
     }
 
     @Override
-    public Flux<ClientApplicationEvent> findAll() {
+    public Flux<InstanceEvent> findAll() {
         return Flux.defer(() -> Flux.fromIterable(eventLog.values())
                                     .flatMapIterable(Function.identity())
                                     .sort(byTimestampAndIdAndVersion));
     }
 
     @Override
-    public Flux<ClientApplicationEvent> find(ApplicationId id) {
+    public Flux<InstanceEvent> find(InstanceId id) {
         return Flux.defer(() -> Flux.fromIterable(eventLog.getOrDefault(id, Collections.emptyList())));
     }
 
     @Override
-    public Mono<Void> append(List<ClientApplicationEvent> events) {
+    public Mono<Void> append(List<InstanceEvent> events) {
         return Mono.fromRunnable(() -> {
             while (true) {
                 if (doAppend(events)) {
@@ -75,17 +75,17 @@ public abstract class ConcurrentMapEventStore extends ClientApplicationEventPubl
         });
     }
 
-    protected boolean doAppend(List<ClientApplicationEvent> events) {
+    protected boolean doAppend(List<InstanceEvent> events) {
         if (events.isEmpty()) {
             return true;
         }
 
-        ApplicationId id = events.get(0).getApplication();
-        if (!events.stream().allMatch(event -> event.getApplication().equals(id))) {
-            throw new IllegalArgumentException("'events' must only refer to the same application.");
+        InstanceId id = events.get(0).getInstance();
+        if (!events.stream().allMatch(event -> event.getInstance().equals(id))) {
+            throw new IllegalArgumentException("'events' must only refer to the same instance.");
         }
 
-        List<ClientApplicationEvent> oldEvents = eventLog.computeIfAbsent(id,
+        List<InstanceEvent> oldEvents = eventLog.computeIfAbsent(id,
                 (key) -> new ArrayList<>(maxLogSizePerAggregate + 1));
 
         long lastVersion = getLastVersion(oldEvents);
@@ -93,7 +93,7 @@ public abstract class ConcurrentMapEventStore extends ClientApplicationEventPubl
             throw createOptimisticLockException(events.get(0), lastVersion);
         }
 
-        List<ClientApplicationEvent> newEvents = new ArrayList<>(oldEvents);
+        List<InstanceEvent> newEvents = new ArrayList<>(oldEvents);
         newEvents.addAll(events);
 
         if (newEvents.size() > maxLogSizePerAggregate) {
@@ -108,25 +108,20 @@ public abstract class ConcurrentMapEventStore extends ClientApplicationEventPubl
         return false;
     }
 
-    private void compact(List<ClientApplicationEvent> events) {
-        BinaryOperator<ClientApplicationEvent> latestEvent = (e1, e2) -> e1.getVersion() > e2.getVersion() ? e1 : e2;
-        Map<Class<?>, Optional<ClientApplicationEvent>> latestPerType = events.stream()
-                                                                              .collect(groupingBy(
-                                                                                      ClientApplicationEvent::getClass,
-                                                                                      reducing(latestEvent)));
+    private void compact(List<InstanceEvent> events) {
+        BinaryOperator<InstanceEvent> latestEvent = (e1, e2) -> e1.getVersion() > e2.getVersion() ? e1 : e2;
+        Map<Class<?>, Optional<InstanceEvent>> latestPerType = events.stream()
+                                                                     .collect(groupingBy(InstanceEvent::getClass,
+                                                                             reducing(latestEvent)));
         events.removeIf((e) -> !Objects.equals(e, latestPerType.get(e.getClass()).orElse(null)));
     }
 
-    private OptimisticLockingException createOptimisticLockException(ClientApplicationEvent event, long lastVersion) {
-        return new OptimisticLockingException("Verison " +
-                                              event.getVersion() +
-                                              " was overtaken by " +
-                                              lastVersion +
-                                              " for " +
-                                              event.getApplication());
+    private OptimisticLockingException createOptimisticLockException(InstanceEvent event, long lastVersion) {
+        return new OptimisticLockingException(
+                "Verison " + event.getVersion() + " was overtaken by " + lastVersion + " for " + event.getInstance());
     }
 
-    protected static long getLastVersion(List<ClientApplicationEvent> events) {
+    protected static long getLastVersion(List<InstanceEvent> events) {
         return events.isEmpty() ? -1 : events.get(events.size() - 1).getVersion();
     }
 }

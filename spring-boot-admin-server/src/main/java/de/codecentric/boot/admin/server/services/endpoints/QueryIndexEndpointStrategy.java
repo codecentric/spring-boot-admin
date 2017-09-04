@@ -16,11 +16,11 @@
 
 package de.codecentric.boot.admin.server.services.endpoints;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.Registration;
-import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
+import de.codecentric.boot.admin.server.web.client.InstanceOperations;
 import lombok.Data;
 import reactor.core.publisher.Mono;
 
@@ -33,27 +33,27 @@ import org.springframework.boot.actuate.endpoint.mvc.ActuatorMediaTypes;
 import org.springframework.http.HttpMethod;
 
 public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
-    private final ApplicationOperations applicationOps;
+    private final InstanceOperations instanceOps;
 
-    public QueryIndexEndpointStrategy(ApplicationOperations applicationOps) {
-        this.applicationOps = applicationOps;
+    public QueryIndexEndpointStrategy(InstanceOperations instanceOps) {
+        this.instanceOps = instanceOps;
     }
 
     @Override
-    public Mono<Endpoints> detectEndpoints(Application application) {
-        Registration registration = application.getRegistration();
+    public Mono<Endpoints> detectEndpoints(Instance instance) {
+        Registration registration = instance.getRegistration();
         if (Objects.equals(registration.getServiceUrl(), registration.getManagementUrl())) {
             return Mono.empty();
         }
 
-        return applicationOps.exchange(HttpMethod.GET, application, URI.create(registration.getManagementUrl()))
-                             .filter(response -> response.statusCode().is2xxSuccessful() &&
-                                                 response.headers()
-                                                         .contentType()
-                                                         .map(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON::isCompatibleWith)
-                                                         .orElse(false))
-                             .flatMap(r -> r.bodyToMono(Response.class))
-                             .flatMap(this::convert);
+        return instanceOps.exchange(HttpMethod.GET, instance, URI.create(registration.getManagementUrl()))
+                          .filter(response -> response.statusCode().is2xxSuccessful() &&
+                                              response.headers()
+                                                      .contentType()
+                                                      .map(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON::isCompatibleWith)
+                                                      .orElse(false))
+                          .flatMap(r -> r.bodyToMono(Response.class))
+                          .flatMap(this::convert);
     }
 
     private Mono<Endpoints> convert(Response response) {

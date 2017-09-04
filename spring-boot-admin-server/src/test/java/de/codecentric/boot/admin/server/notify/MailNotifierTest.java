@@ -15,11 +15,11 @@
  */
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import reactor.core.publisher.Mono;
@@ -37,16 +37,16 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 public class MailNotifierTest {
-    private final Application application = Application.create(ApplicationId.of("-id-"))
-                                                       .register(Registration.create("App", "http://health").build());
+    private final Instance instance = Instance.create(InstanceId.of("-id-"))
+                                              .register(Registration.create("App", "http://health").build());
     private MailSender sender;
     private MailNotifier notifier;
-    private ApplicationRepository repository;
+    private InstanceRepository repository;
 
     @Before
     public void setup() {
-        repository = mock(ApplicationRepository.class);
-        when(repository.find(application.getId())).thenReturn(Mono.just(application));
+        repository = mock(InstanceRepository.class);
+        when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 
         sender = mock(MailSender.class);
 
@@ -54,17 +54,17 @@ public class MailNotifierTest {
         notifier.setTo(new String[]{"foo@bar.com"});
         notifier.setCc(new String[]{"bar@foo.com"});
         notifier.setFrom("SBA <no-reply@example.com>");
-        notifier.setSubject("#{application.id} is #{event.statusInfo.status}");
+        notifier.setSubject("#{instance.id} is #{event.statusInfo.status}");
     }
 
     @Test
     public void test_onApplicationEvent() {
         StepVerifier.create(notifier.notify(
-                new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(),
-                        StatusInfo.ofDown()))).verifyComplete();
+                new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
+                    .verifyComplete();
         StepVerifier.create(notifier.notify(
-                new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(),
-                        StatusInfo.ofUp()))).verifyComplete();
+                new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+                    .verifyComplete();
 
         SimpleMailMessage expected = new SimpleMailMessage();
         expected.setTo(new String[]{"foo@bar.com"});
@@ -81,16 +81,14 @@ public class MailNotifierTest {
     @Test
     public void test_onApplicationEvent_disbaled() {
         notifier.setEnabled(false);
-        notifier.notify(new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(),
-                StatusInfo.ofUp()));
+        notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp()));
 
         verifyNoMoreInteractions(sender);
     }
 
     @Test
     public void test_onApplicationEvent_noSend() {
-        notifier.notify(new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(),
-                StatusInfo.ofUp()));
+        notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp()));
 
         verifyNoMoreInteractions(sender);
     }
@@ -98,8 +96,7 @@ public class MailNotifierTest {
     @Test
     public void test_onApplicationEvent_noSend_wildcard() {
         notifier.setIgnoreChanges(new String[]{"*:UP"});
-        notifier.notify(new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(),
-                StatusInfo.ofUp()));
+        notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp()));
 
         verifyNoMoreInteractions(sender);
     }
@@ -108,11 +105,10 @@ public class MailNotifierTest {
     public void test_onApplicationEvent_throw_doesnt_propagate() {
         Notifier notifier = new AbstractStatusChangeNotifier(repository) {
             @Override
-            protected Mono<Void> doNotify(ClientApplicationEvent event, Application application) {
+            protected Mono<Void> doNotify(InstanceEvent event, Instance application) {
                 return Mono.error(new IllegalStateException("test"));
             }
         };
-        notifier.notify(new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(),
-                StatusInfo.ofUp()));
+        notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp()));
     }
 }

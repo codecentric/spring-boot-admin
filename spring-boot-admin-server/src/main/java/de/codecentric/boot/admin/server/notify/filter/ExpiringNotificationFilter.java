@@ -15,8 +15,8 @@
  */
 package de.codecentric.boot.admin.server.notify.filter;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
 public abstract class ExpiringNotificationFilter implements NotificationFilter {
     private final long expiry;
@@ -30,11 +30,11 @@ public abstract class ExpiringNotificationFilter implements NotificationFilter {
     }
 
     @Override
-    public boolean filter(ClientApplicationEvent event, Application application) {
-        return !isExpired() && doFilter(event, application);
+    public boolean filter(InstanceEvent event, Instance instance) {
+        return !isExpired() && doFilter(event, instance);
     }
 
-    protected abstract boolean doFilter(ClientApplicationEvent event, Application application);
+    protected abstract boolean doFilter(InstanceEvent event, Instance instance);
 
     public long getExpiry() {
         return expiry;

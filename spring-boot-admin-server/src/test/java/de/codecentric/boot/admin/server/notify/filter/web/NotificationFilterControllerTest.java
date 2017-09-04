@@ -16,8 +16,8 @@
 
 package de.codecentric.boot.admin.server.notify.filter.web;
 
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
-import de.codecentric.boot.admin.server.domain.entities.EventSourcingApplicationRepository;
+import de.codecentric.boot.admin.server.domain.entities.EventSourcingInstanceRepository;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
 import de.codecentric.boot.admin.server.notify.LoggingNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
@@ -40,24 +40,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class NotificationFilterControllerTest {
 
-    private final ApplicationRepository repository = new EventSourcingApplicationRepository(new InMemoryEventStore());
+    private final InstanceRepository repository = new EventSourcingInstanceRepository(new InMemoryEventStore());
     private MockMvc mvc = MockMvcBuilders.standaloneSetup(
             new NotificationFilterController(new FilteringNotifier(new LoggingNotifier(repository), repository)))
                                          .build();
 
     @Test
     public void test_missing_parameters() throws Exception {
-        mvc.perform(post("/api/notifications/filters")).andExpect(status().isBadRequest());
+        mvc.perform(post("/notifications/filters")).andExpect(status().isBadRequest());
     }
 
     @Test
     public void test_delete_notfound() throws Exception {
-        mvc.perform(delete("/api/notifications/filters/abcdef")).andExpect(status().isNotFound());
+        mvc.perform(delete("/notifications/filters/abcdef")).andExpect(status().isNotFound());
     }
 
     @Test
     public void test_post_delete() throws Exception {
-        String response = mvc.perform(post("/api/notifications/filters?id=1337&ttl=10000"))
+        String response = mvc.perform(post("/notifications/filters?id=1337&ttl=10000"))
                              .andExpect(status().isOk())
                              .andExpect(content().string(not(isEmptyString())))
                              .andReturn()
@@ -66,13 +66,13 @@ public class NotificationFilterControllerTest {
 
         String id = extractId(response);
 
-        mvc.perform(get("/api/notifications/filters"))
+        mvc.perform(get("/notifications/filters"))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$..id").value("1337"));
 
-        mvc.perform(delete("/api/notifications/filters/{id}", id)).andExpect(status().isOk());
+        mvc.perform(delete("/notifications/filters/{id}", id)).andExpect(status().isOk());
 
-        mvc.perform(get("/api/notifications/filters")).andExpect(status().isOk()).andExpect(jsonPath("$").isEmpty());
+        mvc.perform(get("/notifications/filters")).andExpect(status().isOk()).andExpect(jsonPath("$").isEmpty());
     }
 
     private String extractId(String response) throws IOException {

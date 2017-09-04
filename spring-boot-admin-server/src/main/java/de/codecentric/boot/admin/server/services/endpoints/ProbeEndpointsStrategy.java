@@ -16,10 +16,10 @@
 
 package de.codecentric.boot.admin.server.services.endpoints;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
-import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
+import de.codecentric.boot.admin.server.web.client.InstanceOperations;
 import lombok.Data;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -34,32 +34,32 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
     private final Collection<EndpointDefinition> endpoints;
-    private final ApplicationOperations applicationOps;
+    private final InstanceOperations instanceOps;
 
-    public ProbeEndpointsStrategy(ApplicationOperations applicationOps, String[] endpoints) {
+    public ProbeEndpointsStrategy(InstanceOperations instanceOps, String[] endpoints) {
         Assert.notNull(endpoints, "'endpoints' must not be null.");
         Assert.noNullElements(endpoints, "'endpoints' must not contain null.");
         this.endpoints = Arrays.stream(endpoints).map(EndpointDefinition::create).collect(Collectors.toList());
-        this.applicationOps = applicationOps;
+        this.instanceOps = instanceOps;
     }
 
     @Override
-    public Mono<Endpoints> detectEndpoints(Application application) {
+    public Mono<Endpoints> detectEndpoints(Instance instance) {
         return Flux.fromIterable(endpoints)
-                   .flatMap(endpoint -> detectEndpoint(application, endpoint))
+                   .flatMap(endpoint -> detectEndpoint(instance, endpoint))
                    .collectList()
                    .flatMap(list -> list.isEmpty() ? Mono.empty() : Mono.just(Endpoints.of(list)));
     }
 
-    private Mono<Endpoint> detectEndpoint(Application application, EndpointDefinition endpoint) {
-        URI uri = UriComponentsBuilder.fromUriString(application.getRegistration().getManagementUrl())
+    private Mono<Endpoint> detectEndpoint(Instance instance, EndpointDefinition endpoint) {
+        URI uri = UriComponentsBuilder.fromUriString(instance.getRegistration().getManagementUrl())
                                       .path("/")
                                       .path(endpoint.getPath())
                                       .build()
                                       .toUri();
-        return applicationOps.exchange(HttpMethod.OPTIONS, application, uri)
-                             .filter(response -> response.statusCode().is2xxSuccessful())
-                             .map(r -> Endpoint.of(endpoint.getId(), uri.toString()));
+        return instanceOps.exchange(HttpMethod.OPTIONS, instance, uri)
+                          .filter(response -> response.statusCode().is2xxSuccessful())
+                          .map(r -> Endpoint.of(endpoint.getId(), uri.toString()));
     }
 
     @Data

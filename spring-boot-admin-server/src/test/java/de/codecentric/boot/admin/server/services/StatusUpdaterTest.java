@@ -15,14 +15,14 @@
  */
 package de.codecentric.boot.admin.server.services;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.entities.EventSourcingApplicationRepository;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.entities.EventSourcingInstanceRepository;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.eventstore.ConcurrentMapEventStore;
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
-import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
+import de.codecentric.boot.admin.server.web.client.InstanceOperations;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -40,49 +40,49 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class StatusUpdaterTest {
-    private ApplicationOperations applicationOps;
+    private InstanceOperations applicationOps;
     private StatusUpdater updater;
-    private EventSourcingApplicationRepository repository;
-    private final Application application = Application.create(ApplicationId.of("id"))
-                                                       .register(Registration.create("foo", "http://health").build());
+    private EventSourcingInstanceRepository repository;
+    private final Instance instance = Instance.create(InstanceId.of("id"))
+                                              .register(Registration.create("foo", "http://health").build());
     private ConcurrentMapEventStore eventStore;
 
     @Before
     public void setup() {
         eventStore = new InMemoryEventStore();
-        repository = new EventSourcingApplicationRepository(eventStore);
+        repository = new EventSourcingInstanceRepository(eventStore);
         repository.start();
-        StepVerifier.create(repository.save(application)).verifyComplete();
+        StepVerifier.create(repository.save(instance)).verifyComplete();
 
-        applicationOps = mock(ApplicationOperations.class);
+        applicationOps = mock(InstanceOperations.class);
         updater = new StatusUpdater(repository, applicationOps);
     }
 
     @Test
     public void test_update_statusChanged() {
-        when(applicationOps.getHealth(isA(Application.class))).thenReturn(
+        when(applicationOps.getHealth(isA(Instance.class))).thenReturn(
                 Mono.just(ResponseEntity.ok().body(singletonMap("status", "UP"))));
 
         StepVerifier.create(eventStore)
                     .expectSubscription()
-                    .then(() -> StepVerifier.create(updater.updateStatus(application.getId())).verifyComplete())
-                    .assertNext(event -> assertThat(event).isInstanceOf(ClientApplicationStatusChangedEvent.class))
+                    .then(() -> StepVerifier.create(updater.updateStatus(instance.getId())).verifyComplete())
+                    .assertNext(event -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class))
                     .thenCancel()
                     .verify(Duration.ofMillis(500L));
 
-        StepVerifier.create(repository.find(application.getId()))
+        StepVerifier.create(repository.find(instance.getId()))
                     .assertNext(app -> assertThat(app.getStatusInfo().getStatus()).isEqualTo("UP"))
                     .verifyComplete();
     }
 
     @Test
     public void test_update_statusUnchanged() {
-        when(applicationOps.getHealth(any(Application.class))).thenReturn(
+        when(applicationOps.getHealth(any(Instance.class))).thenReturn(
                 Mono.just(ResponseEntity.ok(singletonMap("status", "UNKNOWN"))));
 
         StepVerifier.create(eventStore)
                     .expectSubscription()
-                    .then(() -> StepVerifier.create(updater.updateStatus(application.getId())).verifyComplete())
+                    .then(() -> StepVerifier.create(updater.updateStatus(instance.getId())).verifyComplete())
                     .expectNoEvent(Duration.ofMillis(10L))
                     .thenCancel()
                     .verify(Duration.ofMillis(500L));
@@ -90,33 +90,33 @@ public class StatusUpdaterTest {
 
     @Test
     public void test_update_up_noBody() {
-        when(applicationOps.getHealth(any(Application.class))).thenReturn(Mono.just(ResponseEntity.ok().build()));
+        when(applicationOps.getHealth(any(Instance.class))).thenReturn(Mono.just(ResponseEntity.ok().build()));
 
         StepVerifier.create(eventStore)
                     .expectSubscription()
-                    .then(() -> StepVerifier.create(updater.updateStatus(application.getId())).verifyComplete())
-                    .assertNext(event -> assertThat(event).isInstanceOf(ClientApplicationStatusChangedEvent.class))
+                    .then(() -> StepVerifier.create(updater.updateStatus(instance.getId())).verifyComplete())
+                    .assertNext(event -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class))
                     .thenCancel()
                     .verify(Duration.ofMillis(500L));
 
-        StepVerifier.create(repository.find(application.getId()))
+        StepVerifier.create(repository.find(instance.getId()))
                     .assertNext(app -> assertThat(app.getStatusInfo().getStatus()).isEqualTo("UP"))
                     .verifyComplete();
     }
 
     @Test
     public void test_update_down() {
-        when(applicationOps.getHealth(any(Application.class))).thenReturn(
+        when(applicationOps.getHealth(any(Instance.class))).thenReturn(
                 Mono.just(ResponseEntity.status(503).body(singletonMap("foo", "bar"))));
 
         StepVerifier.create(eventStore)
                     .expectSubscription()
-                    .then(() -> StepVerifier.create(updater.updateStatus(application.getId())).verifyComplete())
-                    .assertNext(event -> assertThat(event).isInstanceOf(ClientApplicationStatusChangedEvent.class))
+                    .then(() -> StepVerifier.create(updater.updateStatus(instance.getId())).verifyComplete())
+                    .assertNext(event -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class))
                     .thenCancel()
                     .verify(Duration.ofMillis(500L));
 
-        StepVerifier.create(repository.find(application.getId())).assertNext(app -> {
+        StepVerifier.create(repository.find(instance.getId())).assertNext(app -> {
             assertThat(app.getStatusInfo().getStatus()).isEqualTo("DOWN");
             assertThat(app.getStatusInfo().getDetails()).containsEntry("foo", "bar");
         }).verifyComplete();
@@ -124,18 +124,18 @@ public class StatusUpdaterTest {
 
     @Test
     public void test_update_down_noBody() {
-        when(applicationOps.getHealth(any(Application.class))).thenReturn(
+        when(applicationOps.getHealth(any(Instance.class))).thenReturn(
                 Mono.just(ResponseEntity.status(503).body(null)));
 
         StepVerifier.create(eventStore)
                     .expectSubscription()
-                    .then(() -> StepVerifier.create(updater.updateStatus(application.getId())).verifyComplete())
-                    .assertNext(event -> assertThat(event).isInstanceOf(ClientApplicationStatusChangedEvent.class))
+                    .then(() -> StepVerifier.create(updater.updateStatus(instance.getId())).verifyComplete())
+                    .assertNext(event -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class))
                     .thenCancel()
                     .verify(Duration.ofMillis(500L));
 
 
-        StepVerifier.create(repository.find(application.getId())).assertNext(app -> {
+        StepVerifier.create(repository.find(instance.getId())).assertNext(app -> {
             assertThat(app.getStatusInfo().getStatus()).isEqualTo("DOWN");
             assertThat(app.getStatusInfo().getDetails()).containsEntry("status", 503)
                                                         .containsEntry("error", "Service Unavailable");
@@ -144,17 +144,17 @@ public class StatusUpdaterTest {
 
     @Test
     public void test_update_offline() {
-        when(applicationOps.getHealth(any(Application.class))).thenReturn(
+        when(applicationOps.getHealth(any(Instance.class))).thenReturn(
                 Mono.error(new ResourceAccessException("error")));
 
         StepVerifier.create(eventStore)
                     .expectSubscription()
-                    .then(() -> StepVerifier.create(updater.updateStatus(application.getId())).verifyComplete())
-                    .assertNext(event -> assertThat(event).isInstanceOf(ClientApplicationStatusChangedEvent.class))
+                    .then(() -> StepVerifier.create(updater.updateStatus(instance.getId())).verifyComplete())
+                    .assertNext(event -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class))
                     .thenCancel()
                     .verify(Duration.ofMillis(500L));
 
-        StepVerifier.create(repository.find(application.getId())).assertNext(app -> {
+        StepVerifier.create(repository.find(instance.getId())).assertNext(app -> {
             assertThat(app.getStatusInfo().getStatus()).isEqualTo("OFFLINE");
             assertThat(app.getStatusInfo().getDetails()).containsEntry("message", "error")
                                                         .containsEntry("exception",

@@ -16,11 +16,11 @@
 
 package de.codecentric.boot.admin.server.services;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.entities.EventSourcingApplicationRepository;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEndpointsDetectedEvent;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.entities.EventSourcingInstanceRepository;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.events.InstanceEndpointsDetectedEvent;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.eventstore.ConcurrentMapEventStore;
@@ -40,14 +40,14 @@ import static org.mockito.Mockito.when;
 
 public class EndpointDetectorTest {
     private EndpointDetector detector;
-    private EventSourcingApplicationRepository repository;
+    private EventSourcingInstanceRepository repository;
     private ConcurrentMapEventStore eventStore;
     private EndpointDetectionStrategy strategy;
 
     @Before
     public void setup() {
         eventStore = new InMemoryEventStore();
-        repository = new EventSourcingApplicationRepository(eventStore);
+        repository = new EventSourcingInstanceRepository(eventStore);
         repository.start();
         strategy = mock(EndpointDetectionStrategy.class);
         detector = new EndpointDetector(repository, strategy);
@@ -57,27 +57,27 @@ public class EndpointDetectorTest {
     public void should_update_endpoints() {
         //given
         Registration registration = Registration.create("foo", "http://health").managementUrl("http://mgmt").build();
-        Application application = Application.create(ApplicationId.of("onl"))
-                                             .register(registration)
-                                             .withStatusInfo(StatusInfo.ofUp());
-        StepVerifier.create(repository.save(application)).verifyComplete();
+        Instance instance = Instance.create(InstanceId.of("onl"))
+                                    .register(registration)
+                                    .withStatusInfo(StatusInfo.ofUp());
+        StepVerifier.create(repository.save(instance)).verifyComplete();
 
-        Application noActuator = Application.create(ApplicationId.of("noActuator"))
-                                            .register(Registration.create("foo", "http://health").build())
-                                            .withStatusInfo(StatusInfo.ofUp());
+        Instance noActuator = Instance.create(InstanceId.of("noActuator"))
+                                      .register(Registration.create("foo", "http://health").build())
+                                      .withStatusInfo(StatusInfo.ofUp());
         StepVerifier.create(repository.save(noActuator)).verifyComplete();
 
-        Application offline = Application.create(ApplicationId.of("off"))
-                                         .register(registration)
-                                         .withStatusInfo(StatusInfo.ofOffline());
+        Instance offline = Instance.create(InstanceId.of("off"))
+                                   .register(registration)
+                                   .withStatusInfo(StatusInfo.ofOffline());
         StepVerifier.create(repository.save(offline)).verifyComplete();
 
-        Application unknown = Application.create(ApplicationId.of("unk"))
-                                         .register(registration)
-                                         .withStatusInfo(StatusInfo.ofUnknown());
+        Instance unknown = Instance.create(InstanceId.of("unk"))
+                                   .register(registration)
+                                   .withStatusInfo(StatusInfo.ofUnknown());
         StepVerifier.create(repository.save(unknown)).verifyComplete();
 
-        when(strategy.detectEndpoints(any(Application.class))).thenReturn(Mono.just(Endpoints.single("id", "url")));
+        when(strategy.detectEndpoints(any(Instance.class))).thenReturn(Mono.just(Endpoints.single("id", "url")));
 
         //when/then
         StepVerifier.create(eventStore)
@@ -86,12 +86,12 @@ public class EndpointDetectorTest {
                     .then(() -> StepVerifier.create(detector.detectEndpoints(unknown.getId())).verifyComplete())
                     .then(() -> StepVerifier.create(detector.detectEndpoints(noActuator.getId())).verifyComplete())
                     .expectNoEvent(Duration.ofMillis(10L))
-                    .then(() -> StepVerifier.create(detector.detectEndpoints(application.getId())).verifyComplete())
-                    .assertNext(event -> assertThat(event).isInstanceOf(ClientApplicationEndpointsDetectedEvent.class))
+                    .then(() -> StepVerifier.create(detector.detectEndpoints(instance.getId())).verifyComplete())
+                    .assertNext(event -> assertThat(event).isInstanceOf(InstanceEndpointsDetectedEvent.class))
                     .thenCancel()
                     .verify(Duration.ofMillis(500L));
 
-        StepVerifier.create(repository.find(application.getId()))
+        StepVerifier.create(repository.find(instance.getId()))
                     .assertNext(app -> assertThat(app.getEndpoints()).isEqualTo(Endpoints.single("id", "url")))
                     .verifyComplete();
     }

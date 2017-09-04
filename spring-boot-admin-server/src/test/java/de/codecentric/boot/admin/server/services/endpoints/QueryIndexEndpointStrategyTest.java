@@ -16,11 +16,11 @@
 
 package de.codecentric.boot.admin.server.services.endpoints;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
-import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
+import de.codecentric.boot.admin.server.web.client.InstanceOperations;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -49,20 +49,20 @@ public class QueryIndexEndpointStrategyTest {
     private Mono<ClientResponse> responseOkEmpty = mockResponse(HttpStatus.OK,
             ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON, createBody("self=http://app/mgmt"));
 
-    private Application application = Application.create(ApplicationId.of("id"))
-                                                 .register(Registration.create("test", "http://app/mgmt/health")
-                                                                       .managementUrl("http://app/mgmt")
-                                                                       .build());
+    private Instance instance = Instance.create(InstanceId.of("id"))
+                                        .register(Registration.create("test", "http://app/mgmt/health")
+                                                              .managementUrl("http://app/mgmt")
+                                                              .build());
 
     @Test
     public void should_return_endpoints() {
         //given
-        ApplicationOperations ops = mock(ApplicationOperations.class);
-        when(ops.exchange(HttpMethod.GET, application, URI.create("http://app/mgmt"))).thenReturn(responseOk);
+        InstanceOperations ops = mock(InstanceOperations.class);
+        when(ops.exchange(HttpMethod.GET, instance, URI.create("http://app/mgmt"))).thenReturn(responseOk);
         QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(ops);
 
         //when/then
-        StepVerifier.create(strategy.detectEndpoints(application))
+        StepVerifier.create(strategy.detectEndpoints(instance))
                     .expectNext(Endpoints.single("metrics", "http://app/mgmt/stats")
                                          .withEndpoint("info", "http://app/mgmt/info"))
                     .verifyComplete();
@@ -71,50 +71,50 @@ public class QueryIndexEndpointStrategyTest {
     @Test
     public void should_return_empty_on_empty_endpoints() {
         //given
-        ApplicationOperations ops = mock(ApplicationOperations.class);
-        when(ops.exchange(HttpMethod.GET, application, URI.create("http://app/mgmt"))).thenReturn(responseOkEmpty);
+        InstanceOperations ops = mock(InstanceOperations.class);
+        when(ops.exchange(HttpMethod.GET, instance, URI.create("http://app/mgmt"))).thenReturn(responseOkEmpty);
         QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(ops);
 
         //when/then
-        StepVerifier.create(strategy.detectEndpoints(application)).verifyComplete();
+        StepVerifier.create(strategy.detectEndpoints(instance)).verifyComplete();
     }
 
     @Test
     public void should_return_empty_on_not_found() {
         //given
-        ApplicationOperations ops = mock(ApplicationOperations.class);
-        when(ops.exchange(HttpMethod.GET, application, URI.create("http://app/mgmt"))).thenReturn(responseNotFound);
+        InstanceOperations ops = mock(InstanceOperations.class);
+        when(ops.exchange(HttpMethod.GET, instance, URI.create("http://app/mgmt"))).thenReturn(responseNotFound);
         QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(ops);
 
         //when/then
-        StepVerifier.create(strategy.detectEndpoints(application)).verifyComplete();
+        StepVerifier.create(strategy.detectEndpoints(instance)).verifyComplete();
     }
 
     @Test
     public void should_return_empty_on_wrong_content_type() {
         //given
-        ApplicationOperations ops = mock(ApplicationOperations.class);
-        when(ops.exchange(HttpMethod.GET, application, URI.create("http://app/mgmt"))).thenReturn(
+        InstanceOperations ops = mock(InstanceOperations.class);
+        when(ops.exchange(HttpMethod.GET, instance, URI.create("http://app/mgmt"))).thenReturn(
                 responseOkWrongContentType);
         QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(ops);
 
         //when/then
-        StepVerifier.create(strategy.detectEndpoints(application)).verifyComplete();
+        StepVerifier.create(strategy.detectEndpoints(instance)).verifyComplete();
     }
 
     @Test
     public void should_return_empty_when_mgmt_equals_service_url() {
         //given
-        Application application = Application.create(ApplicationId.of("id"))
-                                             .register(Registration.create("test", "http://app/mgmt/health")
-                                                                   .managementUrl("http://app")
-                                                                   .serviceUrl("http://app")
-                                                                   .build());
-        ApplicationOperations ops = mock(ApplicationOperations.class);
+        Instance instance = Instance.create(InstanceId.of("id"))
+                                    .register(Registration.create("test", "http://app/mgmt/health")
+                                                          .managementUrl("http://app")
+                                                          .serviceUrl("http://app")
+                                                          .build());
+        InstanceOperations ops = mock(InstanceOperations.class);
         QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(ops);
 
         //when/then
-        StepVerifier.create(strategy.detectEndpoints(application)).verifyComplete();
+        StepVerifier.create(strategy.detectEndpoints(instance)).verifyComplete();
         verifyZeroInteractions(ops);
     }
 

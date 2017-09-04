@@ -77,8 +77,8 @@ public class ApplicationRegistratorTest {
                                                 .managementUrl("http://localhost:8080/mgmt")
                                                 .serviceUrl("http://localhost:8080")
                                                 .build();
-        verify(restTemplate).postForEntity("http://sba:8080/api/applications",
-                new HttpEntity<>(applicationRef, headers), Map.class);
+        verify(restTemplate).postForEntity("http://sba:8080/instances", new HttpEntity<>(applicationRef, headers),
+                Map.class);
     }
 
     @Test
@@ -110,7 +110,7 @@ public class ApplicationRegistratorTest {
         registrator.deregister();
         assertThat(registrator.getRegisteredId()).isNull();
 
-        verify(restTemplate).delete("http://sba:8080/api/applications/-id-");
+        verify(restTemplate).delete("http://sba:8080/instances/-id-");
     }
 
     @SuppressWarnings("rawtypes")
@@ -128,10 +128,10 @@ public class ApplicationRegistratorTest {
                                                 .managementUrl("http://localhost:8080/mgmt")
                                                 .serviceUrl("http://localhost:8080")
                                                 .build();
-        verify(restTemplate).postForEntity("http://sba:8080/api/applications",
-                new HttpEntity<>(applicationRef, headers), Map.class);
-        verify(restTemplate).postForEntity("http://sba2:8080/api/applications",
-                new HttpEntity<>(applicationRef, headers), Map.class);
+        verify(restTemplate).postForEntity("http://sba:8080/instances", new HttpEntity<>(applicationRef, headers),
+                Map.class);
+        verify(restTemplate).postForEntity("http://sba2:8080/instances", new HttpEntity<>(applicationRef, headers),
+                Map.class);
     }
 
     @SuppressWarnings("rawtypes")
@@ -152,10 +152,10 @@ public class ApplicationRegistratorTest {
                                                 .managementUrl("http://localhost:8080/mgmt")
                                                 .serviceUrl("http://localhost:8080")
                                                 .build();
-        verify(restTemplate).postForEntity("http://sba:8080/api/applications",
-                new HttpEntity<>(applicationRef, headers), Map.class);
-        verify(restTemplate).postForEntity("http://sba2:8080/api/applications",
-                new HttpEntity<>(applicationRef, headers), Map.class);
+        verify(restTemplate).postForEntity("http://sba:8080/instances", new HttpEntity<>(applicationRef, headers),
+                Map.class);
+        verify(restTemplate).postForEntity("http://sba2:8080/instances", new HttpEntity<>(applicationRef, headers),
+                Map.class);
     }
 
     @Test

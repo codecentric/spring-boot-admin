@@ -15,11 +15,11 @@
  */
 package de.codecentric.boot.admin.server.config;
 
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
-import de.codecentric.boot.admin.server.eventstore.ClientApplicationEventStore;
+import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import de.codecentric.boot.admin.server.notify.CompositeNotifier;
 import de.codecentric.boot.admin.server.notify.HipchatNotifier;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
@@ -49,8 +49,8 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 
 public class AdminServerNotifierConfigurationTest {
-    private static final ClientApplicationEvent APP_DOWN = new ClientApplicationStatusChangedEvent(
-            ApplicationId.of("id-2"), 1L, StatusInfo.ofDown());
+    private static final InstanceEvent APP_DOWN = new InstanceStatusChangedEvent(InstanceId.of("id-2"), 1L,
+            StatusInfo.ofDown());
 
     private AnnotationConfigWebApplicationContext context;
 
@@ -64,7 +64,7 @@ public class AdminServerNotifierConfigurationTest {
     @Test
     public void test_notifierListener() {
         load(TestSingleNotifierConfig.class);
-        ClientApplicationEventStore store = context.getBean(ClientApplicationEventStore.class);
+        InstanceEventStore store = context.getBean(InstanceEventStore.class);
 
         StepVerifier.create(store)
                     .expectSubscription()
@@ -168,15 +168,15 @@ public class AdminServerNotifierConfigurationTest {
     }
 
     private static class TestNotifier implements Notifier {
-        private List<ClientApplicationEvent> events = new ArrayList<>();
+        private List<InstanceEvent> events = new ArrayList<>();
 
         @Override
-        public Mono<Void> notify(ClientApplicationEvent event) {
+        public Mono<Void> notify(InstanceEvent event) {
             this.events.add(event);
             return null;
         }
 
-        public List<ClientApplicationEvent> getEvents() {
+        public List<InstanceEvent> getEvents() {
             return events;
         }
     }

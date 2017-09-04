@@ -15,9 +15,9 @@
  */
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
@@ -42,7 +42,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Rico Pahlisch
  */
 public class LetsChatNotifier extends AbstractStatusChangeNotifier {
-    private static final String DEFAULT_MESSAGE = "*#{application.registration.name}* (#{application.id}) is *#{event.statusInfo.status}*";
+    private static final String DEFAULT_MESSAGE = "*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*";
 
     private final SpelExpressionParser parser = new SpelExpressionParser();
     private RestTemplate restTemplate = new RestTemplate();
@@ -72,20 +72,20 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
      */
     private Expression message;
 
-    public LetsChatNotifier(ApplicationRepository repository) {
+    public LetsChatNotifier(InstanceRepository repository) {
         super(repository);
         this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
     }
 
     @Override
-    protected Mono<Void> doNotify(ClientApplicationEvent event, Application application) {
+    protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         // Let's Chat requiers the token as basic username, the password can be an arbitrary string.
         String auth = Base64Utils.encodeToString(String.format("%s:%s", token, username).getBytes());
         headers.add(HttpHeaders.AUTHORIZATION, String.format("Basic %s", auth));
         return Mono.fromRunnable(() -> restTemplate.exchange(createUrl(), HttpMethod.POST,
-                new HttpEntity<>(createMessage(event, application), headers), Void.class));
+                new HttpEntity<>(createMessage(event, instance), headers), Void.class));
     }
 
     private URI createUrl() {
@@ -116,17 +116,17 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
         this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
     }
 
-    protected Object createMessage(ClientApplicationEvent event, Application application) {
+    protected Object createMessage(InstanceEvent event, Instance instance) {
         Map<String, String> messageJson = new HashMap<>();
-        messageJson.put("text", getText(event, application));
+        messageJson.put("text", getText(event, instance));
         return messageJson;
     }
 
-    protected String getText(ClientApplicationEvent event, Application application) {
+    protected String getText(InstanceEvent event, Instance instance) {
         Map<String, Object> root = new HashMap<>();
         root.put("event", event);
-        root.put("application", application);
-        root.put("lastStatus", getLastStatus(event.getApplication()));
+        root.put("instance", instance);
+        root.put("lastStatus", getLastStatus(event.getInstance()));
         StandardEvaluationContext context = new StandardEvaluationContext(root);
         context.addPropertyAccessor(new MapAccessor());
         return message.getValue(context, String.class);

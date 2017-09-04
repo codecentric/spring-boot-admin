@@ -16,7 +16,7 @@
 
 package de.codecentric.boot.admin.server.services.endpoints;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import reactor.core.publisher.Mono;
 
@@ -32,10 +32,10 @@ public class ChainingStrategy implements EndpointDetectionStrategy {
     }
 
     @Override
-    public Mono<Endpoints> detectEndpoints(Application application) {
+    public Mono<Endpoints> detectEndpoints(Instance instance) {
         Mono<Endpoints> result = Mono.empty();
         for (EndpointDetectionStrategy delegate : delegates) {
-            result = result.switchIfEmpty(delegate.detectEndpoints(application));
+            result = result.switchIfEmpty(delegate.detectEndpoints(instance));
         }
         return result.switchIfEmpty(Mono.just(Endpoints.empty()));
     }

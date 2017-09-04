@@ -15,11 +15,11 @@
  */
 package de.codecentric.boot.admin.server.eventstore;
 
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationDeregisteredEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationRegisteredEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import reactor.core.publisher.Flux;
@@ -42,21 +42,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractEventStoreTest {
     private static final Logger log = LoggerFactory.getLogger(AbstractEventStoreTest.class);
-    private final ApplicationId id = ApplicationId.of("id");
+    private final InstanceId id = InstanceId.of("id");
     private final Registration registration = Registration.create("foo", "http://health").build();
 
-    protected abstract ClientApplicationEventStore createStore(int maxLogSizePerAggregate);
+    protected abstract InstanceEventStore createStore(int maxLogSizePerAggregate);
 
     @Test
     public void should_store_events() throws InterruptedException {
-        ClientApplicationEventStore store = createStore(100);
+        InstanceEventStore store = createStore(100);
         StepVerifier.create(store.findAll()).verifyComplete();
 
-        ClientApplicationEvent event1 = new ClientApplicationRegisteredEvent(id, 0L, registration);
-        ClientApplicationEvent eventOther = new ClientApplicationRegisteredEvent(ApplicationId.of("other"), 0L,
-                registration);
-        Thread.sleep(5L); // get later timestamp
-        ClientApplicationEvent event2 = new ClientApplicationDeregisteredEvent(id, 1L);
+        InstanceEvent event1 = new InstanceRegisteredEvent(id, 0L, registration);
+        InstanceEvent eventOther = new InstanceRegisteredEvent(InstanceId.of("other"), 0L, registration);
+        Thread.sleep(5L); // instance later timestamp
+        InstanceEvent event2 = new InstanceDeregisteredEvent(id, 1L);
 
         StepVerifier.create(store).expectSubscription().then(() -> {
             StepVerifier.create(store.append(singletonList(event1))).verifyComplete();
@@ -66,16 +65,16 @@ public abstract class AbstractEventStoreTest {
 
         StepVerifier.create(store.findAll()).expectNext(event1, eventOther, event2).verifyComplete();
         StepVerifier.create(store.find(id)).expectNext(event1, event2).verifyComplete();
-        StepVerifier.create(store.find(ApplicationId.of("-"))).verifyComplete();
+        StepVerifier.create(store.find(InstanceId.of("-"))).verifyComplete();
     }
 
     @Test
     public void should_shorten_log_on_exceeded_capacity() {
-        ClientApplicationEventStore store = createStore(2);
+        InstanceEventStore store = createStore(2);
 
-        ClientApplicationEvent event1 = new ClientApplicationRegisteredEvent(id, 0L, registration);
-        ClientApplicationEvent event2 = new ClientApplicationStatusChangedEvent(id, 1L, StatusInfo.ofDown());
-        ClientApplicationEvent event3 = new ClientApplicationStatusChangedEvent(id, 2L, StatusInfo.ofUp());
+        InstanceEvent event1 = new InstanceRegisteredEvent(id, 0L, registration);
+        InstanceEvent event2 = new InstanceStatusChangedEvent(id, 1L, StatusInfo.ofDown());
+        InstanceEvent event3 = new InstanceStatusChangedEvent(id, 2L, StatusInfo.ofUp());
 
         StepVerifier.create(store.append(asList(event1, event2, event3))).verifyComplete();
 
@@ -84,11 +83,11 @@ public abstract class AbstractEventStoreTest {
 
     @Test
     public void should_throw_optimictic_locking_exception() {
-        ClientApplicationEvent event0 = new ClientApplicationRegisteredEvent(id, 0L, registration);
-        ClientApplicationEvent event1 = new ClientApplicationStatusChangedEvent(id, 1L, StatusInfo.ofDown());
-        ClientApplicationEvent event1b = new ClientApplicationDeregisteredEvent(id, 1L);
+        InstanceEvent event0 = new InstanceRegisteredEvent(id, 0L, registration);
+        InstanceEvent event1 = new InstanceStatusChangedEvent(id, 1L, StatusInfo.ofDown());
+        InstanceEvent event1b = new InstanceDeregisteredEvent(id, 1L);
 
-        ClientApplicationEventStore store = createStore(100);
+        InstanceEventStore store = createStore(100);
         StepVerifier.create(store.append(asList(event0, event1))).verifyComplete();
 
         StepVerifier.create(store.append(singletonList(event1b))).verifyError(OptimisticLockingException.class);
@@ -97,10 +96,10 @@ public abstract class AbstractEventStoreTest {
 
     @Test
     public void concurrent_read_writes() {
-        ApplicationId id = ApplicationId.of("a");
-        ClientApplicationEventStore store = createStore(1000);
+        InstanceId id = InstanceId.of("a");
+        InstanceEventStore store = createStore(1000);
 
-        Function<Integer, ClientApplicationEvent> eventFactory = i -> new ClientApplicationDeregisteredEvent(id, i);
+        Function<Integer, InstanceEvent> eventFactory = i -> new InstanceDeregisteredEvent(id, i);
         Flux<Void> eventgenerator = Flux.range(0, 1000)
                                         .map(eventFactory)
                                         .buffer(2)
@@ -118,7 +117,7 @@ public abstract class AbstractEventStoreTest {
                                           .mergeWith(eventgenerator.subscribeOn(Schedulers.newSingle("a")))
                                           .then()).verifyComplete();
 
-        List<Long> versions = store.find(id).map(ClientApplicationEvent::getVersion).collectList().block();
+        List<Long> versions = store.find(id).map(InstanceEvent::getVersion).collectList().block();
         List<Long> expected = LongStream.range(0, 1000).boxed().collect(toList());
         assertThat(versions).containsExactlyElementsOf(expected);
     }

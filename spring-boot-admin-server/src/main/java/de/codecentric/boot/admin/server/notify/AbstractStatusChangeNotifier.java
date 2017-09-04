@@ -15,12 +15,12 @@
  */
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationDeregisteredEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
@@ -33,27 +33,27 @@ import java.util.Map;
  * @author Johannes Edmeier
  */
 public abstract class AbstractStatusChangeNotifier extends AbstractEventNotifier {
-    private final Map<ApplicationId, String> lastStatuses = new HashMap<>();
+    private final Map<InstanceId, String> lastStatuses = new HashMap<>();
     /**
      * List of changes to ignore. Must be in Format OLD:NEW, for any status use * as wildcard, e.g.
      * *:UP or OFFLINE:*
      */
     private String[] ignoreChanges = {"UNKNOWN:UP"};
 
-    public AbstractStatusChangeNotifier(ApplicationRepository repositpry) {
+    public AbstractStatusChangeNotifier(InstanceRepository repositpry) {
         super(repositpry);
     }
 
     @Override
-    public Mono<Void> notify(ClientApplicationEvent event) {
+    public Mono<Void> notify(InstanceEvent event) {
         return super.notify(event).then(Mono.fromRunnable(() -> updateLastStatus(event)));
     }
 
     @Override
-    protected boolean shouldNotify(ClientApplicationEvent event, Application application) {
-        if (event instanceof ClientApplicationStatusChangedEvent) {
-            ClientApplicationStatusChangedEvent statusChange = (ClientApplicationStatusChangedEvent) event;
-            String from = getLastStatus(event.getApplication());
+    protected boolean shouldNotify(InstanceEvent event, Instance instance) {
+        if (event instanceof InstanceStatusChangedEvent) {
+            InstanceStatusChangedEvent statusChange = (InstanceStatusChangedEvent) event;
+            String from = getLastStatus(event.getInstance());
             String to = statusChange.getStatusInfo().getStatus();
             return Arrays.binarySearch(ignoreChanges, from + ":" + to) < 0 &&
                    Arrays.binarySearch(ignoreChanges, "*:" + to) < 0 &&
@@ -62,17 +62,16 @@ public abstract class AbstractStatusChangeNotifier extends AbstractEventNotifier
         return false;
     }
 
-    protected final String getLastStatus(ApplicationId applicationId) {
-        return lastStatuses.getOrDefault(applicationId, "UNKNOWN");
+    protected final String getLastStatus(InstanceId instanceId) {
+        return lastStatuses.getOrDefault(instanceId, "UNKNOWN");
     }
 
-    protected void updateLastStatus(ClientApplicationEvent event) {
-        if (event instanceof ClientApplicationDeregisteredEvent) {
-            lastStatuses.remove(event.getApplication());
+    protected void updateLastStatus(InstanceEvent event) {
+        if (event instanceof InstanceDeregisteredEvent) {
+            lastStatuses.remove(event.getInstance());
         }
-        if (event instanceof ClientApplicationStatusChangedEvent) {
-            lastStatuses.put(event.getApplication(),
-                    ((ClientApplicationStatusChangedEvent) event).getStatusInfo().getStatus());
+        if (event instanceof InstanceStatusChangedEvent) {
+            lastStatuses.put(event.getInstance(), ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus());
         }
     }
 

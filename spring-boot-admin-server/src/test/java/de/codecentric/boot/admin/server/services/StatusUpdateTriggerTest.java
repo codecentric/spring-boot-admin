@@ -16,12 +16,12 @@
 
 package de.codecentric.boot.admin.server.services;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationInfoChangedEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationRegisteredEvent;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceInfoChangedEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
 import de.codecentric.boot.admin.server.domain.values.Info;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import reactor.core.publisher.Mono;
 import reactor.test.publisher.TestPublisher;
@@ -38,16 +38,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class StatusUpdateTriggerTest {
-    private final Application application = Application.create(ApplicationId.of("id-1"))
-                                                       .register(Registration.create("foo", "http://health-1").build());
+    private final Instance instance = Instance.create(InstanceId.of("id-1"))
+                                              .register(Registration.create("foo", "http://health-1").build());
 
     @Test
     public void should_start_and_stop_monitor() throws Exception {
         //given
         StatusUpdater updater = mock(StatusUpdater.class);
-        when(updater.updateStatus(any(ApplicationId.class))).thenReturn(Mono.empty());
+        when(updater.updateStatus(any(InstanceId.class))).thenReturn(Mono.empty());
 
-        TestPublisher<ClientApplicationEvent> publisher = TestPublisher.create();
+        TestPublisher<InstanceEvent> publisher = TestPublisher.create();
         StatusUpdateTrigger trigger = new StatusUpdateTrigger(updater, publisher);
         trigger.setUpdateInterval(10L);
         trigger.setStatusLifetime(10L);
@@ -55,11 +55,11 @@ public class StatusUpdateTriggerTest {
         //when trigger is initialized and an appliation is registered
         trigger.start();
         Thread.sleep(50L); //wait for subscription
-        publisher.next(new ClientApplicationRegisteredEvent(application.getId(), 0L, application.getRegistration()));
+        publisher.next(new InstanceRegisteredEvent(instance.getId(), 0L, instance.getRegistration()));
 
         Thread.sleep(50L);
         //then it should start updating one time for registration and at least once for monitor
-        verify(updater, atLeast(2)).updateStatus(application.getId());
+        verify(updater, atLeast(2)).updateStatus(instance.getId());
 
         //given long lifetime
         trigger.setStatusLifetime(10_000L);
@@ -68,7 +68,7 @@ public class StatusUpdateTriggerTest {
         //when the lifetime is not expired
         Thread.sleep(50L);
         //should never update
-        verify(updater, never()).updateStatus(any(ApplicationId.class));
+        verify(updater, never()).updateStatus(any(InstanceId.class));
 
         //when trigger ist destroyed
         trigger.setStatusLifetime(10L);
@@ -77,38 +77,36 @@ public class StatusUpdateTriggerTest {
         Thread.sleep(15L);
 
         // it should stop updating
-        verify(updater, never()).updateStatus(any(ApplicationId.class));
+        verify(updater, never()).updateStatus(any(InstanceId.class));
     }
 
     @Test
     public void should_update_on_event() throws InterruptedException {
         //given
         StatusUpdater updater = mock(StatusUpdater.class);
-        when(updater.updateStatus(any(ApplicationId.class))).thenReturn(Mono.empty());
+        when(updater.updateStatus(any(InstanceId.class))).thenReturn(Mono.empty());
 
-        TestPublisher<ClientApplicationEvent> events = TestPublisher.create();
+        TestPublisher<InstanceEvent> events = TestPublisher.create();
         StatusUpdateTrigger trigger = new StatusUpdateTrigger(updater, events.flux());
         trigger.start();
         Thread.sleep(50L); //wait for subscription
 
         //when some non-registered event is emitted
-        events.next(new ClientApplicationInfoChangedEvent(application.getId(), application.getVersion(), Info.empty()));
+        events.next(new InstanceInfoChangedEvent(instance.getId(), instance.getVersion(), Info.empty()));
         //then should not update
-        verify(updater, never()).updateStatus(application.getId());
+        verify(updater, never()).updateStatus(instance.getId());
 
         //when registered event is emitted
-        events.next(new ClientApplicationRegisteredEvent(application.getId(), application.getVersion(),
-                application.getRegistration()));
+        events.next(new InstanceRegisteredEvent(instance.getId(), instance.getVersion(), instance.getRegistration()));
         //then should update
-        verify(updater, times(1)).updateStatus(application.getId());
+        verify(updater, times(1)).updateStatus(instance.getId());
 
         //when registered event is emitted but the trigger has been stopped
         trigger.stop();
         clearInvocations(updater);
-        events.next(new ClientApplicationRegisteredEvent(application.getId(), application.getVersion(),
-                application.getRegistration()));
+        events.next(new InstanceRegisteredEvent(instance.getId(), instance.getVersion(), instance.getRegistration()));
         //then should not update
-        verify(updater, never()).updateStatus(application.getId());
+        verify(updater, never()).updateStatus(instance.getId());
     }
 
 }

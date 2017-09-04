@@ -16,11 +16,11 @@
 
 package de.codecentric.boot.admin.server.services;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationRegisteredEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import reactor.core.publisher.Mono;
@@ -37,39 +37,36 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class EndpointDetectionTriggerTest {
-    private final Application application = Application.create(ApplicationId.of("id-1"))
-                                                       .register(Registration.create("foo", "http://health-1").build());
+    private final Instance instance = Instance.create(InstanceId.of("id-1"))
+                                              .register(Registration.create("foo", "http://health-1").build());
 
     @Test
     public void should_detect_on_event() throws InterruptedException {
         //given
         EndpointDetector detector = mock(EndpointDetector.class);
-        when(detector.detectEndpoints(any(ApplicationId.class))).thenReturn(Mono.empty());
+        when(detector.detectEndpoints(any(InstanceId.class))).thenReturn(Mono.empty());
 
-        TestPublisher<ClientApplicationEvent> events = TestPublisher.create();
+        TestPublisher<InstanceEvent> events = TestPublisher.create();
         EndpointDetectionTrigger trigger = new EndpointDetectionTrigger(detector, events.flux());
         trigger.start();
         Thread.sleep(50L); //wait for subscription
 
         //when some non-status-change event is emitted
-        events.next(new ClientApplicationRegisteredEvent(application.getId(), application.getVersion(),
-                application.getRegistration()));
+        events.next(new InstanceRegisteredEvent(instance.getId(), instance.getVersion(), instance.getRegistration()));
         //then should not update
-        verify(detector, never()).detectEndpoints(application.getId());
+        verify(detector, never()).detectEndpoints(instance.getId());
 
         //when status-change event is emitted
-        events.next(new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(),
-                StatusInfo.ofDown()));
+        events.next(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown()));
         //then should update
-        verify(detector, times(1)).detectEndpoints(application.getId());
+        verify(detector, times(1)).detectEndpoints(instance.getId());
 
         //when registered event is emitted but the trigger has been stopped
         trigger.stop();
         clearInvocations(detector);
-        events.next(new ClientApplicationRegisteredEvent(application.getId(), application.getVersion(),
-                application.getRegistration()));
+        events.next(new InstanceRegisteredEvent(instance.getId(), instance.getVersion(), instance.getRegistration()));
         //then should not update
-        verify(detector, never()).detectEndpoints(application.getId());
+        verify(detector, never()).detectEndpoints(instance.getId());
     }
 
 }

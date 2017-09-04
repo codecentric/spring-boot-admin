@@ -15,7 +15,7 @@
  */
 package de.codecentric.boot.admin.server.discovery;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 
 import java.net.URI;
@@ -29,8 +29,8 @@ import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang.StringUtils.stripStart;
 
 /**
- * Converts any {@link ServiceInstance}s to {@link Application}s. To customize the health- or
- * management-url for all applications you can set healthEndpointPath or managementContextPath
+ * Converts any {@link ServiceInstance}s to {@link Instance}s. To customize the health- or
+ * management-url for all instances you can set healthEndpointPath or managementContextPath
  * respectively. If you want to influence the url per service you can add
  * <code>management.context-path</code> or <code>management.port</code> or <code>health.path</code>
  * to the instances metadata.

@@ -15,12 +15,12 @@
  */
 package de.codecentric.boot.admin.server.config;
 
-import de.codecentric.boot.admin.server.discovery.ApplicationDiscoveryListener;
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
-import de.codecentric.boot.admin.server.domain.entities.EventSourcingApplicationRepository;
-import de.codecentric.boot.admin.server.eventstore.ClientApplicationEventStore;
+import de.codecentric.boot.admin.server.discovery.InstanceDiscoveryListener;
+import de.codecentric.boot.admin.server.domain.entities.EventSourcingInstanceRepository;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.eventstore.ConcurrentMapEventStore;
 import de.codecentric.boot.admin.server.eventstore.HazelcastEventStore;
+import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
 
 import java.util.ArrayList;
@@ -80,22 +80,22 @@ public class AdminServerWebConfigurationTest {
     public void simpleConfig() {
         load();
 
-        assertThat(context.getBean(ApplicationRepository.class)).isInstanceOf(EventSourcingApplicationRepository.class);
+        assertThat(context.getBean(InstanceRepository.class)).isInstanceOf(EventSourcingInstanceRepository.class);
         assertThat(context.getBeansOfType(MailNotifier.class)).isEmpty();
-        assertThat(context.getBean(ClientApplicationEventStore.class)).isInstanceOf(ConcurrentMapEventStore.class);
+        assertThat(context.getBean(InstanceEventStore.class)).isInstanceOf(ConcurrentMapEventStore.class);
     }
 
     @Test
     public void hazelcastConfig() {
         load(TestHazelcastConfig.class);
-        assertThat(context.getBean(ClientApplicationEventStore.class)).isInstanceOf(HazelcastEventStore.class);
+        assertThat(context.getBean(InstanceEventStore.class)).isInstanceOf(HazelcastEventStore.class);
     }
 
     @Test
     public void discoveryConfig() {
         load(SimpleDiscoveryClientAutoConfiguration.class);
-        assertThat(context.getBean(ApplicationRepository.class)).isInstanceOf(EventSourcingApplicationRepository.class);
-        context.getBean(ApplicationDiscoveryListener.class);
+        assertThat(context.getBean(InstanceRepository.class)).isInstanceOf(EventSourcingInstanceRepository.class);
+        context.getBean(InstanceDiscoveryListener.class);
     }
 
     @Configuration

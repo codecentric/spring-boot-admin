@@ -55,9 +55,9 @@ public class ClientServletApplicationTest {
                                                         .withHeader("Content-Type", "application/json")
                                                         .withHeader("Location", "http://localhost:" +
                                                                                 wiremock.port() +
-                                                                                "/api/applications/abcdef")
+                                                                                "/instances/abcdef")
                                                         .withBody("{ \"id\" : \"abcdef\" }");
-        stubFor(post(urlEqualTo("/api/applications")).willReturn(response));
+        stubFor(post(urlEqualTo("/instances")).willReturn(response));
 
         instance = SpringApplication.run(TestClientApplication.class, "--spring.main.web-application-type=servlet",
                 "--spring.application.name=Test-Client", "--server.port=0", "--management.port=0",
@@ -75,7 +75,7 @@ public class ClientServletApplicationTest {
                       " \"healthUrl\" : \"" + managementHost + "/mgmt/health/\"," + //
                       " \"serviceUrl\" : \"" + serviceHost + "/\", " + //
                       " \"metadata\" : {} }";
-        RequestPatternBuilder request = postRequestedFor(urlEqualTo("/api/applications")).withHeader("Content-Type",
+        RequestPatternBuilder request = postRequestedFor(urlEqualTo("/instances")).withHeader("Content-Type",
                 equalTo("application/json")).withRequestBody(equalToJson(body));
         verify(moreThanOrExactly(1), request);
     }

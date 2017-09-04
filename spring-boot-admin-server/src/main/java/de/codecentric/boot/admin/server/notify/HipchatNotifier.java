@@ -15,10 +15,11 @@
  */
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
@@ -34,13 +35,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
+
 /**
  * Notifier submitting events to HipChat.
  *
  * @author Jamie Brown
  */
 public class HipchatNotifier extends AbstractStatusChangeNotifier {
-    private static final String DEFAULT_DESCRIPTION = "<strong>#{application.registration.name}</strong>/#{application.id} is <strong>#{event.statusInfo.status}</strong>";
+    private static final String DEFAULT_DESCRIPTION = "<strong>#{instance.registration.name}</strong>/#{instance.id} is <strong>#{event.statusInfo.status}</strong>";
 
     private final SpelExpressionParser parser = new SpelExpressionParser();
     private RestTemplate restTemplate = new RestTemplate();
@@ -70,27 +72,25 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
      */
     private Expression description;
 
-    public HipchatNotifier(ApplicationRepository repository) {
+    public HipchatNotifier(InstanceRepository repository) {
         super(repository);
         this.description = parser.parseExpression(DEFAULT_DESCRIPTION, ParserContext.TEMPLATE_EXPRESSION);
     }
 
     @Override
-    protected Mono<Void> doNotify(ClientApplicationEvent event, Application application) {
+    protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
         return Mono.fromRunnable(
-                () -> restTemplate.postForEntity(buildUrl(), createHipChatNotification(event, application),
-                        Void.class));
+                () -> restTemplate.postForEntity(buildUrl(), createHipChatNotification(event, instance), Void.class));
     }
 
     protected String buildUrl() {
         return String.format("%s/room/%s/notification?auth_token=%s", url.toString(), roomId, authToken);
     }
 
-    protected HttpEntity<Map<String, Object>> createHipChatNotification(ClientApplicationEvent event,
-                                                                        Application application) {
+    protected HttpEntity<Map<String, Object>> createHipChatNotification(InstanceEvent event, Instance instance) {
         Map<String, Object> body = new HashMap<>();
         body.put("color", getColor(event));
-        body.put("message", getMessage(event, application));
+        body.put("message", getMessage(event, instance));
         body.put("notify", getNotify());
         body.put("message_format", "html");
 
@@ -103,19 +103,19 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
         return notify;
     }
 
-    protected String getMessage(ClientApplicationEvent event, Application application) {
+    protected String getMessage(InstanceEvent event, Instance instance) {
         Map<String, Object> root = new HashMap<>();
         root.put("event", event);
-        root.put("application", application);
-        root.put("lastStatus", getLastStatus(event.getApplication()));
+        root.put("instance", instance);
+        root.put("lastStatus", getLastStatus(event.getInstance()));
         StandardEvaluationContext context = new StandardEvaluationContext(root);
         context.addPropertyAccessor(new MapAccessor());
         return description.getValue(context, String.class);
     }
 
-    protected String getColor(ClientApplicationEvent event) {
-        if (event instanceof ClientApplicationStatusChangedEvent) {
-            return "UP".equals(((ClientApplicationStatusChangedEvent) event).getStatusInfo().getStatus()) ?
+    protected String getColor(InstanceEvent event) {
+        if (event instanceof InstanceStatusChangedEvent) {
+            return StatusInfo.STATUS_UP.equals(((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()) ?
                     "green" :
                     "red";
         } else {

@@ -16,32 +16,32 @@
 
 package de.codecentric.boot.admin.server.services;
 
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEndpointsDetectedEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceEndpointsDetectedEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import org.reactivestreams.Publisher;
 
-public class InfoUpdateTrigger extends ResubscribingEventHandler<ClientApplicationEvent> {
+public class InfoUpdateTrigger extends ResubscribingEventHandler<InstanceEvent> {
     private final InfoUpdater infoUpdater;
 
-    public InfoUpdateTrigger(InfoUpdater infoUpdater, Publisher<ClientApplicationEvent> publisher) {
-        super(publisher, ClientApplicationEvent.class);
+    public InfoUpdateTrigger(InfoUpdater infoUpdater, Publisher<InstanceEvent> publisher) {
+        super(publisher, InstanceEvent.class);
         this.infoUpdater = infoUpdater;
     }
 
     @Override
-    protected Publisher<?> handle(Flux<ClientApplicationEvent> publisher) {
+    protected Publisher<?> handle(Flux<InstanceEvent> publisher) {
         return publisher.subscribeOn(Schedulers.newSingle("info-updater"))
-                        .filter(event -> event instanceof ClientApplicationEndpointsDetectedEvent ||
-                                         event instanceof ClientApplicationStatusChangedEvent)
+                        .filter(event -> event instanceof InstanceEndpointsDetectedEvent ||
+                                         event instanceof InstanceStatusChangedEvent)
                         .flatMap(this::updateInfo);
     }
 
-    protected Mono<Void> updateInfo(ClientApplicationEvent event) {
-        return infoUpdater.updateInfo(event.getApplication());
+    protected Mono<Void> updateInfo(InstanceEvent event) {
+        return infoUpdater.updateInfo(event.getInstance());
     }
 }

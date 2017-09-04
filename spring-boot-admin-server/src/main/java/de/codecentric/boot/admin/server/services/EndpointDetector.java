@@ -15,9 +15,9 @@
  */
 package de.codecentric.boot.admin.server.services;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.services.endpoints.EndpointDetectionStrategy;
 import reactor.core.publisher.Mono;
 
@@ -30,25 +30,25 @@ import org.springframework.util.StringUtils;
  */
 public class EndpointDetector {
     private static final Logger log = LoggerFactory.getLogger(EndpointDetector.class);
-    private final ApplicationRepository repository;
+    private final InstanceRepository repository;
     private final EndpointDetectionStrategy strategy;
 
-    public EndpointDetector(ApplicationRepository repository, EndpointDetectionStrategy strategy) {
+    public EndpointDetector(InstanceRepository repository, EndpointDetectionStrategy strategy) {
         this.repository = repository;
         this.strategy = strategy;
     }
 
-    public Mono<Void> detectEndpoints(ApplicationId id) {
-        return repository.computeIfPresent(id, (key, application) -> this.doDetectEndpoints(application));
+    public Mono<Void> detectEndpoints(InstanceId id) {
+        return repository.computeIfPresent(id, (key, instance) -> this.doDetectEndpoints(instance));
     }
 
-    private Mono<Application> doDetectEndpoints(Application application) {
-        if (!StringUtils.hasText(application.getRegistration().getManagementUrl()) ||
-            application.getStatusInfo().isOffline() ||
-            application.getStatusInfo().isUnknown()) {
+    private Mono<Instance> doDetectEndpoints(Instance instance) {
+        if (!StringUtils.hasText(instance.getRegistration().getManagementUrl()) ||
+            instance.getStatusInfo().isOffline() ||
+            instance.getStatusInfo().isUnknown()) {
             return Mono.empty();
         }
-        log.debug("Detect endpoints for {}", application);
-        return strategy.detectEndpoints(application).map(application::withEndpoints);
+        log.debug("Detect endpoints for {}", instance);
+        return strategy.detectEndpoints(instance).map(instance::withEndpoints);
     }
 }

@@ -16,10 +16,10 @@
 
 package de.codecentric.boot.admin.server.services;
 
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationDeregisteredEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationRegisteredEvent;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
@@ -36,16 +36,16 @@ import org.slf4j.LoggerFactory;
 public class ResubscribingEventHandlerTest {
     private static final Logger log = LoggerFactory.getLogger(ResubscribingEventHandlerTest.class);
     private static final Registration registration = Registration.create("foo", "http://health").build();
-    private static final ClientApplicationRegisteredEvent event = new ClientApplicationRegisteredEvent(
-            ApplicationId.of("id"), 0L, registration);
-    private static final ClientApplicationRegisteredEvent errorEvent = new ClientApplicationRegisteredEvent(
-            ApplicationId.of("err"), 0L, registration);
-    private static final ClientApplicationDeregisteredEvent ignoredEvent = new ClientApplicationDeregisteredEvent(
-            ApplicationId.of("id"), 1L);
+    private static final InstanceRegisteredEvent event = new InstanceRegisteredEvent(InstanceId.of("id"), 0L,
+            registration);
+    private static final InstanceRegisteredEvent errorEvent = new InstanceRegisteredEvent(InstanceId.of("err"), 0L,
+            registration);
+    private static final InstanceDeregisteredEvent ignoredEvent = new InstanceDeregisteredEvent(InstanceId.of("id"),
+            1L);
 
     @Test
     public void should_resubscribe_after_error() {
-        TestPublisher<ClientApplicationEvent> testPublisher = TestPublisher.create();
+        TestPublisher<InstanceEvent> testPublisher = TestPublisher.create();
 
         TestEventHandler eventHandler = new TestEventHandler(testPublisher.flux());
         eventHandler.start();
@@ -65,7 +65,7 @@ public class ResubscribingEventHandlerTest {
 
     @Test
     public void should_filter() {
-        TestPublisher<ClientApplicationEvent> testPublisher = TestPublisher.create();
+        TestPublisher<InstanceEvent> testPublisher = TestPublisher.create();
 
         TestEventHandler eventHandler = new TestEventHandler(testPublisher.flux());
         eventHandler.start();
@@ -81,19 +81,19 @@ public class ResubscribingEventHandlerTest {
     }
 
 
-    private static class TestEventHandler extends ResubscribingEventHandler<ClientApplicationRegisteredEvent> {
-        private final FluxSink<ClientApplicationEvent> sink;
-        private final Flux<ClientApplicationEvent> flux;
+    private static class TestEventHandler extends ResubscribingEventHandler<InstanceRegisteredEvent> {
+        private final FluxSink<InstanceEvent> sink;
+        private final Flux<InstanceEvent> flux;
 
-        protected TestEventHandler(Publisher<ClientApplicationEvent> publisher) {
-            super(publisher, ClientApplicationRegisteredEvent.class);
-            UnicastProcessor<ClientApplicationEvent> processor = UnicastProcessor.create();
+        protected TestEventHandler(Publisher<InstanceEvent> publisher) {
+            super(publisher, InstanceRegisteredEvent.class);
+            UnicastProcessor<InstanceEvent> processor = UnicastProcessor.create();
             this.sink = processor.sink();
             this.flux = processor;
         }
 
         @Override
-        protected Publisher<?> handle(Flux<ClientApplicationRegisteredEvent> publisher) {
+        protected Publisher<?> handle(Flux<InstanceRegisteredEvent> publisher) {
             return publisher.doOnNext(event -> {
                 if (event.equals(errorEvent)) {
                     throw new IllegalStateException("Error");
@@ -104,7 +104,7 @@ public class ResubscribingEventHandlerTest {
             });
         }
 
-        public Flux<ClientApplicationEvent> getFlux() {
+        public Flux<InstanceEvent> getFlux() {
             return flux;
         }
     }

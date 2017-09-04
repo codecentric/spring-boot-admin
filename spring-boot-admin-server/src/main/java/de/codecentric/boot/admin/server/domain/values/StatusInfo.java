@@ -17,18 +17,31 @@ package de.codecentric.boot.admin.server.domain.values;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.util.Assert;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import static java.util.Arrays.asList;
+
 /**
- * Application status with details fetched from the info endpoint.
+ * Instance status with details fetched from the info endpoint.
  *
  * @author Johannes Edmeier
  */
 @lombok.Data
 public class StatusInfo implements Serializable {
+    public static final String STATUS_UNKNOWN = "UNKNOWN";
+    public static final String STATUS_OUT_OF_SERVICE = "OUT_OF_SERVICE";
+    public static final String STATUS_UP = "UP";
+    public static final String STATUS_DOWN = "DOWN";
+    public static final String STATUS_OFFLINE = "OFFLINE";
+    public static final String STATUS_RESTRICTED = "RESTRICTED";
+    private static final List<String> STATUS_ORDER = asList(STATUS_DOWN, STATUS_OUT_OF_SERVICE, STATUS_OFFLINE,
+            STATUS_UNKNOWN, STATUS_RESTRICTED, STATUS_UP);
+
     private final String status;
     private final Map<String, Serializable> details;
 
@@ -47,7 +60,7 @@ public class StatusInfo implements Serializable {
     }
 
     public static StatusInfo ofUnknown() {
-        return valueOf("UNKNOWN", null);
+        return valueOf(STATUS_UNKNOWN, null);
     }
 
     public static StatusInfo ofUp() {
@@ -63,15 +76,15 @@ public class StatusInfo implements Serializable {
     }
 
     public static StatusInfo ofUp(Map<String, ? extends Serializable> details) {
-        return valueOf("UP", details);
+        return valueOf(STATUS_UP, details);
     }
 
     public static StatusInfo ofDown(Map<String, ? extends Serializable> details) {
-        return valueOf("DOWN", details);
+        return valueOf(STATUS_DOWN, details);
     }
 
     public static StatusInfo ofOffline(Map<String, ? extends Serializable> details) {
-        return valueOf("OFFLINE", details);
+        return valueOf(STATUS_OFFLINE, details);
     }
 
     public Map<String, Serializable> getDetails() {
@@ -80,22 +93,25 @@ public class StatusInfo implements Serializable {
 
     @JsonIgnore
     public boolean isUp() {
-        return "UP".equals(status);
+        return STATUS_UP.equals(status);
     }
 
     @JsonIgnore
     public boolean isOffline() {
-        return "OFFLINE".equals(status);
+        return STATUS_OFFLINE.equals(status);
     }
 
     @JsonIgnore
     public boolean isDown() {
-        return "DOWN".equals(status);
+        return STATUS_DOWN.equals(status);
     }
 
     @JsonIgnore
     public boolean isUnknown() {
-        return "UNKNOWN".equals(status);
+        return STATUS_UNKNOWN.equals(status);
     }
 
+    public static Comparator<String> severity() {
+        return Comparator.comparingInt(STATUS_ORDER::indexOf);
+    }
 }

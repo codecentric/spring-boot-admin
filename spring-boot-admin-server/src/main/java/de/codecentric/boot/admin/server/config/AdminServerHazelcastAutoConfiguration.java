@@ -15,10 +15,10 @@
  */
 package de.codecentric.boot.admin.server.config;
 
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
-import de.codecentric.boot.admin.server.eventstore.ClientApplicationEventStore;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.eventstore.HazelcastEventStore;
+import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,9 +46,9 @@ public class AdminServerHazelcastAutoConfiguration {
     private String mapName;
 
     @Bean
-    @ConditionalOnMissingBean(ClientApplicationEventStore.class)
+    @ConditionalOnMissingBean(InstanceEventStore.class)
     public HazelcastEventStore eventStore(HazelcastInstance hazelcastInstance) {
-        IMap<ApplicationId, List<ClientApplicationEvent>> map = hazelcastInstance.getMap(mapName);
+        IMap<InstanceId, List<InstanceEvent>> map = hazelcastInstance.getMap(mapName);
         return new HazelcastEventStore(map);
     }
 }

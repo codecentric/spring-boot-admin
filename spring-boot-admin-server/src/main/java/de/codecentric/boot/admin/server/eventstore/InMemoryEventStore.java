@@ -15,7 +15,7 @@
  */
 package de.codecentric.boot.admin.server.eventstore;
 
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class InMemoryEventStore extends ConcurrentMapEventStore {
     }
 
     @Override
-    public Mono<Void> append(List<ClientApplicationEvent> events) {
+    public Mono<Void> append(List<InstanceEvent> events) {
         return super.append(events).then(Mono.fromRunnable(() -> this.publish(events)));
     }
 }

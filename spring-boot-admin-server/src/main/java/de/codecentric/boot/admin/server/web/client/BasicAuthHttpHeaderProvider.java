@@ -16,7 +16,7 @@
 
 package de.codecentric.boot.admin.server.web.client;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
 
 import java.nio.charset.StandardCharsets;
 import org.springframework.http.HttpHeaders;
@@ -24,7 +24,7 @@ import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
 
 /**
- * Provides Basic Auth headers for the {@link Application} using the metadata for "user.name" and
+ * Provides Basic Auth headers for the {@link Instance} using the metadata for "user.name" and
  * "user.password".
  *
  * @author Johannes Edmeier
@@ -32,9 +32,9 @@ import org.springframework.util.StringUtils;
 public class BasicAuthHttpHeaderProvider implements HttpHeadersProvider {
 
     @Override
-    public HttpHeaders getHeaders(Application application) {
-        String username = application.getRegistration().getMetadata().get("user.name");
-        String password = application.getRegistration().getMetadata().get("user.password");
+    public HttpHeaders getHeaders(Instance instance) {
+        String username = instance.getRegistration().getMetadata().get("user.name");
+        String password = instance.getRegistration().getMetadata().get("user.password");
 
         HttpHeaders headers = new HttpHeaders();
 

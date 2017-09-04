@@ -16,11 +16,11 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import reactor.core.publisher.Mono;
@@ -35,25 +35,24 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class RemindingNotifierTest {
-    private final Application application1 = Application.create(ApplicationId.of("id-1"))
-                                                        .register(Registration.create("App", "http://health").build())
-                                                        .withStatusInfo(StatusInfo.ofDown());
-    private final Application application2 = Application.create(ApplicationId.of("id-2"))
-                                                        .register(Registration.create("App", "http://health").build())
-                                                        .withStatusInfo(StatusInfo.ofDown());
-    private final ClientApplicationEvent appDown = new ClientApplicationStatusChangedEvent(application1.getId(),
-            application1.getVersion(), StatusInfo.ofDown());
-    private final ClientApplicationEvent appUp = new ClientApplicationStatusChangedEvent(application1.getId(),
-            application1.getVersion(), StatusInfo.ofUp());
-    private final ClientApplicationEvent otherAppUp = new ClientApplicationStatusChangedEvent(application2.getId(), 0L,
+    private final Instance instance1 = Instance.create(InstanceId.of("id-1"))
+                                               .register(Registration.create("App", "http://health").build())
+                                               .withStatusInfo(StatusInfo.ofDown());
+    private final Instance instance2 = Instance.create(InstanceId.of("id-2"))
+                                               .register(Registration.create("App", "http://health").build())
+                                               .withStatusInfo(StatusInfo.ofDown());
+    private final InstanceEvent appDown = new InstanceStatusChangedEvent(instance1.getId(), instance1.getVersion(),
+            StatusInfo.ofDown());
+    private final InstanceEvent appUp = new InstanceStatusChangedEvent(instance1.getId(), instance1.getVersion(),
             StatusInfo.ofUp());
-    private ApplicationRepository repository;
+    private final InstanceEvent otherAppUp = new InstanceStatusChangedEvent(instance2.getId(), 0L, StatusInfo.ofUp());
+    private InstanceRepository repository;
 
     @Before
     public void setUp() throws Exception {
-        repository = mock(ApplicationRepository.class);
-        when(repository.find(application1.getId())).thenReturn(Mono.just(application1));
-        when(repository.find(application2.getId())).thenReturn(Mono.just(application2));
+        repository = mock(InstanceRepository.class);
+        when(repository.find(instance1.getId())).thenReturn(Mono.just(instance1));
+        when(repository.find(instance2.getId())).thenReturn(Mono.just(instance2));
     }
 
     @Test

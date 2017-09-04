@@ -16,28 +16,28 @@
 
 package de.codecentric.boot.admin.server.services;
 
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import org.reactivestreams.Publisher;
 
-public class EndpointDetectionTrigger extends ResubscribingEventHandler<ClientApplicationStatusChangedEvent> {
+public class EndpointDetectionTrigger extends ResubscribingEventHandler<InstanceStatusChangedEvent> {
     private final EndpointDetector endpointDetector;
 
-    public EndpointDetectionTrigger(EndpointDetector endpointDetector, Publisher<ClientApplicationEvent> publisher) {
-        super(publisher, ClientApplicationStatusChangedEvent.class);
+    public EndpointDetectionTrigger(EndpointDetector endpointDetector, Publisher<InstanceEvent> publisher) {
+        super(publisher, InstanceStatusChangedEvent.class);
         this.endpointDetector = endpointDetector;
     }
 
     @Override
-    protected Publisher<?> handle(Flux<ClientApplicationStatusChangedEvent> publisher) {
+    protected Publisher<?> handle(Flux<InstanceStatusChangedEvent> publisher) {
         return publisher.subscribeOn(Schedulers.newSingle("endpoint-detector")).flatMap(this::detectEndpoints);
     }
 
-    protected Mono<Void> detectEndpoints(ClientApplicationStatusChangedEvent event) {
-        return endpointDetector.detectEndpoints(event.getApplication());
+    protected Mono<Void> detectEndpoints(InstanceStatusChangedEvent event) {
+        return endpointDetector.detectEndpoints(event.getInstance());
     }
 }

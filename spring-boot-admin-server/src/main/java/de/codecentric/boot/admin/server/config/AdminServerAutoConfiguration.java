@@ -15,26 +15,26 @@
  */
 package de.codecentric.boot.admin.server.config;
 
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
-import de.codecentric.boot.admin.server.domain.entities.EventSourcingApplicationRepository;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.eventstore.ClientApplicationEventStore;
+import de.codecentric.boot.admin.server.domain.entities.EventSourcingInstanceRepository;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
-import de.codecentric.boot.admin.server.services.ApplicationIdGenerator;
-import de.codecentric.boot.admin.server.services.ApplicationRegistry;
+import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import de.codecentric.boot.admin.server.services.EndpointDetectionTrigger;
 import de.codecentric.boot.admin.server.services.EndpointDetector;
-import de.codecentric.boot.admin.server.services.HashingApplicationUrlIdGenerator;
+import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
 import de.codecentric.boot.admin.server.services.InfoUpdateTrigger;
 import de.codecentric.boot.admin.server.services.InfoUpdater;
+import de.codecentric.boot.admin.server.services.InstanceIdGenerator;
+import de.codecentric.boot.admin.server.services.InstanceRegistry;
 import de.codecentric.boot.admin.server.services.StatusUpdateTrigger;
 import de.codecentric.boot.admin.server.services.StatusUpdater;
 import de.codecentric.boot.admin.server.services.endpoints.ChainingStrategy;
 import de.codecentric.boot.admin.server.services.endpoints.ProbeEndpointsStrategy;
 import de.codecentric.boot.admin.server.services.endpoints.QueryIndexEndpointStrategy;
-import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
 import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider;
 import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
+import de.codecentric.boot.admin.server.web.client.InstanceOperations;
 import io.netty.channel.ChannelOption;
 
 import org.reactivestreams.Publisher;
@@ -62,15 +62,15 @@ public class AdminServerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ApplicationRegistry applicationRegistry(ApplicationRepository applicationRepository,
-                                                   ApplicationIdGenerator applicationIdGenerator) {
-        return new ApplicationRegistry(applicationRepository, applicationIdGenerator);
+    public InstanceRegistry instanceRegistry(InstanceRepository instanceRepository,
+                                             InstanceIdGenerator instanceIdGenerator) {
+        return new InstanceRegistry(instanceRepository, instanceIdGenerator);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ApplicationIdGenerator applicationIdGenerator() {
-        return new HashingApplicationUrlIdGenerator();
+    public InstanceIdGenerator instanceIdGenerator() {
+        return new HashingInstanceUrlIdGenerator();
     }
 
     @Bean
@@ -81,7 +81,7 @@ public class AdminServerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ApplicationOperations applicationOperations(HttpHeadersProvider headersProvider) {
+    public InstanceOperations instanceOperations(HttpHeadersProvider headersProvider) {
         ReactorClientHttpConnector httpConnector = new ReactorClientHttpConnector(options -> {
             options.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,
                     adminServerProperties.getMonitor().getConnectTimeout());
@@ -92,20 +92,18 @@ public class AdminServerAutoConfiguration {
                                        .clientConnector(httpConnector)
                                        .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                                        .build();
-        return new ApplicationOperations(webClient, headersProvider);
+        return new InstanceOperations(webClient, headersProvider);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public StatusUpdater statusUpdater(ApplicationRepository applicationRepository,
-                                       ApplicationOperations applicationOperations) {
-        return new StatusUpdater(applicationRepository, applicationOperations);
+    public StatusUpdater statusUpdater(InstanceRepository instanceRepository, InstanceOperations instanceOperations) {
+        return new StatusUpdater(instanceRepository, instanceOperations);
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     @ConditionalOnMissingBean
-    public StatusUpdateTrigger statusUpdateTrigger(StatusUpdater statusUpdater,
-                                                   Publisher<ClientApplicationEvent> events) {
+    public StatusUpdateTrigger statusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> events) {
         StatusUpdateTrigger trigger = new StatusUpdateTrigger(statusUpdater, events);
         trigger.setUpdateInterval(adminServerProperties.getMonitor().getPeriod());
         trigger.setStatusLifetime(adminServerProperties.getMonitor().getStatusLifetime());
@@ -114,42 +112,41 @@ public class AdminServerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public EndpointDetector endpointDetector(ApplicationRepository applicationRepository,
-                                             ApplicationOperations applicationOperations) {
-        ChainingStrategy strategy = new ChainingStrategy(new QueryIndexEndpointStrategy(applicationOperations),
-                new ProbeEndpointsStrategy(applicationOperations, adminServerProperties.getProbedEndpoints()));
-        return new EndpointDetector(applicationRepository, strategy);
+    public EndpointDetector endpointDetector(InstanceRepository instanceRepository,
+                                             InstanceOperations instanceOperations) {
+        ChainingStrategy strategy = new ChainingStrategy(new QueryIndexEndpointStrategy(instanceOperations),
+                new ProbeEndpointsStrategy(instanceOperations, adminServerProperties.getProbedEndpoints()));
+        return new EndpointDetector(instanceRepository, strategy);
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     @ConditionalOnMissingBean
     public EndpointDetectionTrigger endpointDetectionTrigger(EndpointDetector endpointDetector,
-                                                             Publisher<ClientApplicationEvent> events) {
+                                                             Publisher<InstanceEvent> events) {
         return new EndpointDetectionTrigger(endpointDetector, events);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public InfoUpdater infoUpdater(ApplicationRepository applicationRepository,
-                                   ApplicationOperations applicationOperations) {
-        return new InfoUpdater(applicationRepository, applicationOperations);
+    public InfoUpdater infoUpdater(InstanceRepository instanceRepository, InstanceOperations instanceOperations) {
+        return new InfoUpdater(instanceRepository, instanceOperations);
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     @ConditionalOnMissingBean
-    public InfoUpdateTrigger infoUpdateTrigger(InfoUpdater infoUpdater, Publisher<ClientApplicationEvent> events) {
+    public InfoUpdateTrigger infoUpdateTrigger(InfoUpdater infoUpdater, Publisher<InstanceEvent> events) {
         return new InfoUpdateTrigger(infoUpdater, events);
     }
 
     @Bean
-    @ConditionalOnMissingBean(ClientApplicationEventStore.class)
+    @ConditionalOnMissingBean(InstanceEventStore.class)
     public InMemoryEventStore eventStore() {
         return new InMemoryEventStore();
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
-    @ConditionalOnMissingBean(ApplicationRepository.class)
-    public EventSourcingApplicationRepository applicationRepository(ClientApplicationEventStore eventStore) {
-        return new EventSourcingApplicationRepository(eventStore);
+    @ConditionalOnMissingBean(InstanceRepository.class)
+    public EventSourcingInstanceRepository instanceRepository(InstanceEventStore eventStore) {
+        return new EventSourcingInstanceRepository(eventStore);
     }
 }

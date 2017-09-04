@@ -70,7 +70,7 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
         super.lifecycle();
 
         Mono<String> events1 = getWebClient().get()
-                                             .uri("/api/applications/events")
+                                             .uri("/instances/events")
                                              .accept(MediaType.APPLICATION_JSON)
                                              .exchange()
                                              .expectStatus()
@@ -80,7 +80,7 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
                                              .collect(Collectors.joining());
 
         Mono<String> events2 = webClient2.get()
-                                         .uri("/api/applications/events")
+                                         .uri("/instances/events")
                                          .accept(MediaType.APPLICATION_JSON)
                                          .exchange()
                                          .expectStatus()

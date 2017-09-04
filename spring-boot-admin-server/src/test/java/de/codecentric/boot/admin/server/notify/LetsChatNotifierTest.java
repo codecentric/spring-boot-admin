@@ -16,10 +16,10 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import reactor.core.publisher.Mono;
@@ -48,16 +48,16 @@ public class LetsChatNotifierTest {
     private final String token = "text_token";
     private final String user = "api_user";
     private final String host = "http://localhost";
-    private final Application application = Application.create(ApplicationId.of("-id-"))
-                                                       .register(Registration.create("App", "http://health").build());
-    private ApplicationRepository repository;
+    private final Instance instance = Instance.create(InstanceId.of("-id-"))
+                                              .register(Registration.create("App", "http://health").build());
+    private InstanceRepository repository;
     private LetsChatNotifier notifier;
     private RestTemplate restTemplate;
 
     @Before
     public void setUp() {
-        repository = mock(ApplicationRepository.class);
-        when(repository.find(application.getId())).thenReturn(Mono.just(application));
+        repository = mock(InstanceRepository.class);
+        when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 
         restTemplate = mock(RestTemplate.class);
         notifier = new LetsChatNotifier(repository);
@@ -71,13 +71,13 @@ public class LetsChatNotifierTest {
     @Test
     public void test_onApplicationEvent_resolve() {
         StepVerifier.create(notifier.notify(
-                new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(),
-                        StatusInfo.ofDown()))).verifyComplete();
+                new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
+                    .verifyComplete();
         clearInvocations(restTemplate);
 
         StepVerifier.create(notifier.notify(
-                new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(),
-                        StatusInfo.ofUp()))).verifyComplete();
+                new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+                    .verifyComplete();
 
         HttpEntity<?> expected = expectedMessage(standardMessage("UP"));
         verify(restTemplate).exchange(eq(URI.create(String.format("%s/rooms/%s/messages", host, room))),
@@ -88,13 +88,13 @@ public class LetsChatNotifierTest {
     public void test_onApplicationEvent_resolve_with_custom_message() {
         notifier.setMessage("TEST");
         StepVerifier.create(notifier.notify(
-                new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(),
-                        StatusInfo.ofDown()))).verifyComplete();
+                new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
+                    .verifyComplete();
         clearInvocations(restTemplate);
 
         StepVerifier.create(notifier.notify(
-                new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(),
-                        StatusInfo.ofUp()))).verifyComplete();
+                new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+                    .verifyComplete();
 
         HttpEntity<?> expected = expectedMessage("TEST");
         verify(restTemplate).exchange(eq(URI.create(String.format("%s/rooms/%s/messages", host, room))),
@@ -112,7 +112,7 @@ public class LetsChatNotifierTest {
     }
 
     private String standardMessage(String status) {
-        return "*" + application.getRegistration().getName() + "* (" + application.getId() + ") is *" + status + "*";
+        return "*" + instance.getRegistration().getName() + "* (" + instance.getId() + ") is *" + status + "*";
     }
 
 }

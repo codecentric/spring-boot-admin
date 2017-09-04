@@ -38,7 +38,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 /**
- * Registration info the application registers with (inluding metadata)
+ * Registration info for the instance registers with (inluding metadata)
  *
  * @author Johannes Edmeier
  */

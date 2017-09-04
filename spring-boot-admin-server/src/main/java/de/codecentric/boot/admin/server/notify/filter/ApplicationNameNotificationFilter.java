@@ -15,8 +15,8 @@
  */
 package de.codecentric.boot.admin.server.notify.filter;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
 public class ApplicationNameNotificationFilter extends ExpiringNotificationFilter {
     private final String name;
@@ -27,8 +27,8 @@ public class ApplicationNameNotificationFilter extends ExpiringNotificationFilte
     }
 
     @Override
-    protected boolean doFilter(ClientApplicationEvent event, Application application) {
-        return name.equals(application.getRegistration().getName());
+    protected boolean doFilter(InstanceEvent event, Instance instance) {
+        return name.equals(instance.getRegistration().getName());
     }
 
     public String getName() {

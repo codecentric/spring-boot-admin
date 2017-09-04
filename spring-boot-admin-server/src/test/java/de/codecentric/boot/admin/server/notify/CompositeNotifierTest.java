@@ -16,9 +16,9 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import reactor.test.StepVerifier;
 
@@ -28,8 +28,8 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CompositeNotifierTest {
-    private static final ClientApplicationEvent APP_DOWN = new ClientApplicationStatusChangedEvent(
-            ApplicationId.of("-"), 0L, StatusInfo.ofDown());
+    private static final InstanceEvent APP_DOWN = new InstanceStatusChangedEvent(InstanceId.of("-"), 0L,
+            StatusInfo.ofDown());
 
     @Test(expected = IllegalArgumentException.class)
     public void test_ctor_assert() {

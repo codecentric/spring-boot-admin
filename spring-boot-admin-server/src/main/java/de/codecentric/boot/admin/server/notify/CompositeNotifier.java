@@ -15,7 +15,7 @@
  */
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -35,7 +35,7 @@ public class CompositeNotifier implements Notifier {
     }
 
     @Override
-    public Mono<Void> notify(ClientApplicationEvent event) {
+    public Mono<Void> notify(InstanceEvent event) {
         return Flux.fromIterable(delegates).flatMap(d -> d.notify(event)).then();
     }
 }

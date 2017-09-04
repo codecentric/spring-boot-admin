@@ -16,8 +16,8 @@
 
 package de.codecentric.boot.admin.server.web.client;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 
 import org.junit.Test;
@@ -34,15 +34,15 @@ public class BasicAuthHttpHeaderProviderTest {
                                                 .metadata("user.name", "test")
                                                 .metadata("user.password", "drowssap")
                                                 .build();
-        Application application = Application.create(ApplicationId.of("id")).register(registration);
-        assertThat(headersProvider.getHeaders(application).get(HttpHeaders.AUTHORIZATION)).containsOnly(
+        Instance instance = Instance.create(InstanceId.of("id")).register(registration);
+        assertThat(headersProvider.getHeaders(instance).get(HttpHeaders.AUTHORIZATION)).containsOnly(
                 "Basic dGVzdDpkcm93c3NhcA==");
     }
 
     @Test
     public void test_no_header() {
         Registration registration = Registration.create("foo", "http://health").build();
-        Application application = Application.create(ApplicationId.of("id")).register(registration);
-        assertThat(headersProvider.getHeaders(application)).isEmpty();
+        Instance instance = Instance.create(InstanceId.of("id")).register(registration);
+        assertThat(headersProvider.getHeaders(instance)).isEmpty();
     }
 }

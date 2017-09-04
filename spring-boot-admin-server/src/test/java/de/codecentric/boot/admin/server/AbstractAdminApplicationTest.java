@@ -53,27 +53,27 @@ public abstract class AbstractAdminApplicationTest {
         StepVerifier.create(events.log())
                     .expectSubscription()
                     .then(() -> {
-                        listEmptyApplications();
-                        location.set(registerApplication());
+                        listEmptyInstances();
+                        location.set(registerInstance());
                     })
                     .assertNext((event) -> assertThat(event.opt("type")).isEqualTo("REGISTERED"))
                     .assertNext((event) -> assertThat(event.opt("type")).isEqualTo("STATUS_CHANGED"))
                     .assertNext((event) -> assertThat(event.opt("type")).isEqualTo("ENDPOINTS_DETECTED"))
                     .assertNext((event) -> assertThat(event.opt("type")).isEqualTo("INFO_CHANGED"))
                     .then(() -> {
-                        getApplication(location.get());
-                        listApplications();
-                        deregisterApplication(location.get());
+                        getInstance(location.get());
+                        listInstances();
+                        deregisterInstance(location.get());
                     })
                     .assertNext((event) -> assertThat(event.opt("type")).isEqualTo("DEREGISTERED"))
-                    .then(this::listEmptyApplications)
+                    .then(this::listEmptyInstances)
                     .thenCancel()
                     .verify(Duration.ofSeconds(30));
     }
 
     protected Flux<JSONObject> getEventStream() {
         //@formatter:off
-        return webClient.get().uri("/api/applications/events").accept(MediaType.APPLICATION_STREAM_JSON)
+        return webClient.get().uri("/instances/events").accept(MediaType.APPLICATION_STREAM_JSON)
                         .exchange()
                         .expectStatus().isOk()
                         .expectHeader().contentType(MediaType.APPLICATION_STREAM_JSON)
@@ -81,57 +81,57 @@ public abstract class AbstractAdminApplicationTest {
         //@formatter:on
     }
 
-    protected URI registerApplication() {
+    protected URI registerInstance() {
         //@formatter:off
-       return webClient.post().uri("/api/applications").contentType(MediaType.APPLICATION_JSON).syncBody(createRegistration())
+       return webClient.post().uri("/instances").contentType(MediaType.APPLICATION_JSON).syncBody(createRegistration())
                        .exchange()
                        .expectStatus().isCreated()
-                       .expectHeader().valueMatches("location", "^http://localhost:" + port + "/api/applications/[a-f0-9]+$")
+                       .expectHeader().valueMatches("location", "^http://localhost:" + port + "/instances/[a-f0-9]+$")
                        .returnResult(Void.class).getResponseHeaders().getLocation();
         //@formatter:on
     }
 
-    protected void getApplication(URI uri) {
+    protected void getInstance(URI uri) {
         //@formatter:off
         webClient.get().uri(uri).accept(MediaType.APPLICATION_JSON_UTF8)
                  .exchange()
                  .expectStatus().isOk()
                  .expectBody()
-                     .jsonPath("$.registration.name").isEqualTo("Test-Application")
+                     .jsonPath("$.registration.name").isEqualTo("Test-Instance")
                      .jsonPath("$.statusInfo.status").isEqualTo("UP")
                      .jsonPath("$.info.test").isEqualTo("foobar");
        //@formatter:on
     }
 
-    protected void listApplications() {
+    protected void listInstances() {
         //@formatter:off
-        webClient.get().uri("/api/applications").accept(MediaType.APPLICATION_JSON_UTF8)
+        webClient.get().uri("/instances").accept(MediaType.APPLICATION_JSON_UTF8)
                  .exchange()
                  .expectStatus().isOk()
                  .expectBody()
-                     .jsonPath("$[0].registration.name").isEqualTo("Test-Application")
+                     .jsonPath("$[0].registration.name").isEqualTo("Test-Instance")
                      .jsonPath("$[0].statusInfo.status").isEqualTo("UP")
                      .jsonPath("$[0].info.test").isEqualTo("foobar");
        //@formatter:on
     }
 
-    protected void listEmptyApplications() {
+    protected void listEmptyInstances() {
         //@formatter:off
-        webClient.get().uri("/api/applications").accept(MediaType.APPLICATION_JSON_UTF8)
+        webClient.get().uri("/instances").accept(MediaType.APPLICATION_JSON_UTF8)
                  .exchange()
                  .expectStatus().isOk()
                  .expectBody().json("[]");
        //@formatter:on
     }
 
-    protected void deregisterApplication(URI uri) {
+    protected void deregisterInstance(URI uri) {
         webClient.delete().uri(uri).exchange().expectStatus().isNoContent();
     }
 
 
     private Registration createRegistration() {
         return Registration.builder()
-                           .name("Test-Application")
+                           .name("Test-Instance")
                            .healthUrl("http://localhost:" + port + "/mgmt/health")
                            .managementUrl("http://localhost:" + port + "/mgmt")
                            .serviceUrl("http://localhost:" + port)

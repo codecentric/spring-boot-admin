@@ -17,10 +17,11 @@
 package de.codecentric.boot.admin.server.notify;
 
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
@@ -44,7 +45,7 @@ import org.springframework.web.client.RestTemplate;
  */
 public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
     private static final URI DEFAULT_URI = URI.create("https://api.opsgenie.com/v1/json/alert");
-    private static final String DEFAULT_MESSAGE = "#{application.registration.name}/#{application.id} is #{application.statusInfo.status}";
+    private static final String DEFAULT_MESSAGE = "#{instance.registration.name}/#{instance.id} is #{instance.statusInfo.status}";
     private final SpelExpressionParser parser = new SpelExpressionParser();
     private RestTemplate restTemplate = new RestTemplate();
 
@@ -94,36 +95,36 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
      */
     private Expression description;
 
-    public OpsGenieNotifier(ApplicationRepository repositpry) {
+    public OpsGenieNotifier(InstanceRepository repositpry) {
         super(repositpry);
         this.description = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
     }
 
 
     @Override
-    protected Mono<Void> doNotify(ClientApplicationEvent event, Application application) {
+    protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
         return Mono.fromRunnable(
-                () -> restTemplate.exchange(buildUrl(event), HttpMethod.POST, createRequest(event, application),
+                () -> restTemplate.exchange(buildUrl(event), HttpMethod.POST, createRequest(event, instance),
                         Void.class));
     }
 
-    protected String buildUrl(ClientApplicationEvent event) {
-        if ((event instanceof ClientApplicationStatusChangedEvent) &&
-            ("UP".equals(((ClientApplicationStatusChangedEvent) event).getStatusInfo().getStatus()))) {
+    protected String buildUrl(InstanceEvent event) {
+        if ((event instanceof InstanceStatusChangedEvent) &&
+            (StatusInfo.STATUS_UP.equals(((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()))) {
             return String.format("%s/close", url.toString());
         }
         return url.toString();
     }
 
-    protected HttpEntity createRequest(ClientApplicationEvent event, Application application) {
+    protected HttpEntity createRequest(InstanceEvent event, Instance instance) {
         Map<String, Object> body = new HashMap<>();
         body.put("apiKey", apiKey);
-        body.put("message", getMessage(event, application));
-        body.put("alias", application.getRegistration().getName() + "/" + application.getId());
-        body.put("description", getDescription(event, application));
+        body.put("message", getMessage(event, instance));
+        body.put("alias", instance.getRegistration().getName() + "/" + instance.getId());
+        body.put("description", getDescription(event, instance));
 
-        if (event instanceof ClientApplicationStatusChangedEvent &&
-            !"UP".equals(((ClientApplicationStatusChangedEvent) event).getStatusInfo().getStatus())) {
+        if (event instanceof InstanceStatusChangedEvent &&
+            !StatusInfo.STATUS_UP.equals(((InstanceStatusChangedEvent) event).getStatusInfo().getStatus())) {
 
             if (recipients != null) {
                 body.put("recipients", recipients);
@@ -146,8 +147,8 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 
             Map<String, Object> details = new HashMap<>();
             details.put("type", "link");
-            details.put("href", application.getRegistration().getHealthUrl());
-            details.put("text", "Application health-endpoint");
+            details.put("href", instance.getRegistration().getHealthUrl());
+            details.put("text", "Instance health-endpoint");
             body.put("details", details);
         }
 
@@ -156,20 +157,20 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
         return new HttpEntity<>(body, headers);
     }
 
-    protected String getMessage(ClientApplicationEvent event, Application application) {
+    protected String getMessage(InstanceEvent event, Instance instance) {
         Map<String, Object> root = new HashMap<>();
         root.put("event", event);
-        root.put("application", application);
-        root.put("lastStatus", getLastStatus(event.getApplication()));
+        root.put("instance", instance);
+        root.put("lastStatus", getLastStatus(event.getInstance()));
         StandardEvaluationContext context = new StandardEvaluationContext(root);
         context.addPropertyAccessor(new MapAccessor());
         return description.getValue(context, String.class);
     }
 
-    protected String getDescription(ClientApplicationEvent event, Application application) {
-        return String.format("Application %s (%s) went from %s to %s", application.getRegistration().getName(),
-                application.getId(), getLastStatus(application.getId()),
-                ((ClientApplicationStatusChangedEvent) event).getStatusInfo().getStatus());
+    protected String getDescription(InstanceEvent event, Instance instance) {
+        return String.format("Instance %s (%s) went from %s to %s", instance.getRegistration().getName(),
+                instance.getId(), getLastStatus(instance.getId()),
+                ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus());
     }
 
     public void setApiKey(String apiKey) {

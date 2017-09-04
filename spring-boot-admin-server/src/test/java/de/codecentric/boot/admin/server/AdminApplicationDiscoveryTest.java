@@ -51,20 +51,20 @@ public class AdminApplicationDiscoveryTest extends AbstractAdminApplicationTest 
 
 
     @Override
-    protected URI registerApplication() {
-        //We register the application by setting static values for the SimpleDiscoveryClient and issuing a
-        //InstanceRegisteredEvent that makes sure the application gets registered.
+    protected URI registerInstance() {
+        //We register the instance by setting static values for the SimpleDiscoveryClient and issuing a
+        //InstanceRegisteredEvent that makes sure the instance gets registered.
         SimpleDiscoveryProperties.SimpleServiceInstance serviceInstance = new SimpleDiscoveryProperties.SimpleServiceInstance();
-        serviceInstance.setServiceId("Test-Application");
+        serviceInstance.setServiceId("Test-Instance");
         serviceInstance.setUri(URI.create("http://localhost:" + getPort()));
         serviceInstance.getMetadata().put("management.context-path", "/mgmt");
         simpleDiscovery.getInstances().put("Test-Application", singletonList(serviceInstance));
 
         instance.publishEvent(new InstanceRegisteredEvent<>(new Object(), null));
 
-        //To get the location of the registered applications we fetch the application with the name.
+        //To get the location of the registered instances we fetch the instance with the name.
         List<JSONObject> applications = getWebClient().get()
-                                                      .uri("/api/applications?name=Test-Application")
+                                                      .uri("/instances?name=Test-Instance")
                                                       .accept(MediaType.APPLICATION_JSON)
                                                       .exchange()
                                                       .expectStatus()
@@ -74,12 +74,12 @@ public class AdminApplicationDiscoveryTest extends AbstractAdminApplicationTest 
                                                       .collectList()
                                                       .block();
         assertThat(applications).hasSize(1);
-        return URI.create("http://localhost:" + getPort() + "/api/applications/" + applications.get(0).optString("id"));
+        return URI.create("http://localhost:" + getPort() + "/instances/" + applications.get(0).optString("id"));
     }
 
 
     @Override
-    protected void deregisterApplication(URI uri) {
+    protected void deregisterInstance(URI uri) {
         simpleDiscovery.getInstances().clear();
         instance.publishEvent(new InstanceRegisteredEvent<>(new Object(), null));
     }

@@ -17,10 +17,10 @@
 package de.codecentric.boot.admin.server.notify;
 
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import reactor.core.publisher.Mono;
@@ -45,16 +45,15 @@ import static org.mockito.Mockito.when;
 public class OpsGenieNotifierTest {
     private OpsGenieNotifier notifier;
     private RestTemplate restTemplate;
-    private ApplicationRepository repository;
+    private InstanceRepository repository;
     private static final String appName = "App";
-    private static final Application application = Application.create(ApplicationId.of("-id-"))
-                                                              .register(Registration.create(appName, "http://health")
-                                                                                    .build());
+    private static final Instance INSTANCE = Instance.create(InstanceId.of("-id-"))
+                                                     .register(Registration.create(appName, "http://health").build());
 
     @Before
     public void setUp() {
-        repository = mock(ApplicationRepository.class);
-        when(repository.find(application.getId())).thenReturn(Mono.just(application));
+        repository = mock(InstanceRepository.class);
+        when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE));
         restTemplate = mock(RestTemplate.class);
 
         notifier = new OpsGenieNotifier(repository);
@@ -66,14 +65,14 @@ public class OpsGenieNotifierTest {
     @Test
     public void test_onApplicationEvent_resolve() {
         StepVerifier.create(notifier.notify(
-                new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion() + 1,
-                        StatusInfo.ofDown()))).verifyComplete();
+                new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 1, StatusInfo.ofDown())))
+                    .verifyComplete();
         reset(restTemplate);
-        when(repository.find(application.getId())).thenReturn(Mono.just(application.withStatusInfo(StatusInfo.ofUp())));
+        when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE.withStatusInfo(StatusInfo.ofUp())));
 
         StepVerifier.create(notifier.notify(
-                new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion() + 2,
-                        StatusInfo.ofUp()))).verifyComplete();
+                new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, StatusInfo.ofUp())))
+                    .verifyComplete();
 
         verify(restTemplate).exchange(eq("https://api.opsgenie.com/v1/json/alert/close"), eq(HttpMethod.POST),
                 eq(expectedRequest("DOWN", "UP")), eq(Void.class));
@@ -82,15 +81,14 @@ public class OpsGenieNotifierTest {
     @Test
     public void test_onApplicationEvent_trigger() {
         StepVerifier.create(notifier.notify(
-                new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion() + 1,
-                        StatusInfo.ofUp()))).verifyComplete();
+                new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 1, StatusInfo.ofUp())))
+                    .verifyComplete();
         reset(restTemplate);
-        when(repository.find(application.getId())).thenReturn(
-                Mono.just(application.withStatusInfo(StatusInfo.ofDown())));
-        
+        when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE.withStatusInfo(StatusInfo.ofDown())));
+
         StepVerifier.create(notifier.notify(
-                new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion() + 2,
-                        StatusInfo.ofDown()))).verifyComplete();
+                new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, StatusInfo.ofDown())))
+                    .verifyComplete();
 
         verify(restTemplate).exchange(eq("https://api.opsgenie.com/v1/json/alert"), eq(HttpMethod.POST),
                 eq(expectedRequest("UP", "DOWN")), eq(Void.class));
@@ -102,7 +100,7 @@ public class OpsGenieNotifierTest {
     }
 
     private String getDescription(String expectedOldStatus, String expectedNewStatus) {
-        return String.format("Application App (-id-) went from %s to %s", expectedOldStatus, expectedNewStatus);
+        return String.format("Instance App (-id-) went from %s to %s", expectedOldStatus, expectedNewStatus);
     }
 
     private HttpEntity expectedRequest(String expectedOldStatus, String expectedNewStatus) {
@@ -118,7 +116,7 @@ public class OpsGenieNotifierTest {
             Map<String, Object> details = new HashMap<>();
             details.put("type", "link");
             details.put("href", "http://health");
-            details.put("text", "Application health-endpoint");
+            details.put("text", "Instance health-endpoint");
             expected.put("details", details);
         }
 

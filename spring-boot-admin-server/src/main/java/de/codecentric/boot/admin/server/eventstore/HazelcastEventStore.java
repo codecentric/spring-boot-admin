@@ -15,8 +15,8 @@
  */
 package de.codecentric.boot.admin.server.eventstore;
 
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,22 +36,22 @@ public class HazelcastEventStore extends ConcurrentMapEventStore {
 
     private static final Logger log = LoggerFactory.getLogger(HazelcastEventStore.class);
 
-    public HazelcastEventStore(IMap<ApplicationId, List<ClientApplicationEvent>> eventLogs) {
+    public HazelcastEventStore(IMap<InstanceId, List<InstanceEvent>> eventLogs) {
         this(100, eventLogs);
     }
 
-    public HazelcastEventStore(int maxLogSizePerAggregate, IMap<ApplicationId, List<ClientApplicationEvent>> eventLog) {
+    public HazelcastEventStore(int maxLogSizePerAggregate, IMap<InstanceId, List<InstanceEvent>> eventLog) {
         super(maxLogSizePerAggregate, eventLog);
 
-        eventLog.addEntryListener((MapListener) new EntryAdapter<ApplicationId, List<ClientApplicationEvent>>() {
+        eventLog.addEntryListener((MapListener) new EntryAdapter<InstanceId, List<InstanceEvent>>() {
             @Override
-            public void entryUpdated(EntryEvent<ApplicationId, List<ClientApplicationEvent>> event) {
+            public void entryUpdated(EntryEvent<InstanceId, List<InstanceEvent>> event) {
                 log.debug("Updated {}", event);
                 long lastKnownVersion = getLastVersion(event.getOldValue());
-                List<ClientApplicationEvent> newEvents = event.getValue()
-                                                              .stream()
-                                                              .filter(e -> e.getVersion() > lastKnownVersion)
-                                                              .collect(Collectors.toList());
+                List<InstanceEvent> newEvents = event.getValue()
+                                                     .stream()
+                                                     .filter(e -> e.getVersion() > lastKnownVersion)
+                                                     .collect(Collectors.toList());
                 HazelcastEventStore.this.publish(newEvents);
             }
         }, true);

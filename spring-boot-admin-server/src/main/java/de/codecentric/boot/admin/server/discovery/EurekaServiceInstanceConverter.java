@@ -15,7 +15,7 @@
  */
 package de.codecentric.boot.admin.server.discovery;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
 
 import java.net.URI;
 import org.springframework.cloud.client.ServiceInstance;
@@ -25,7 +25,7 @@ import org.springframework.util.StringUtils;
 import com.netflix.appinfo.InstanceInfo;
 
 /**
- * Converts {@link EurekaServiceInstance}s to {@link Application}s
+ * Converts {@link EurekaServiceInstance}s to {@link Instance}s
  *
  * @author Johannes Edmeier
  */

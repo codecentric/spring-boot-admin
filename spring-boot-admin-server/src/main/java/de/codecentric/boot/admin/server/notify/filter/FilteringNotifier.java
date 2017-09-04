@@ -15,9 +15,9 @@
  */
 package de.codecentric.boot.admin.server.notify.filter;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.notify.AbstractEventNotifier;
 import de.codecentric.boot.admin.server.notify.Notifier;
 import reactor.core.publisher.Mono;
@@ -46,30 +46,30 @@ public class FilteringNotifier extends AbstractEventNotifier {
     private long cleanupInterval = 10_000L;
     private AtomicLong counter = new AtomicLong();
 
-    public FilteringNotifier(Notifier delegate, ApplicationRepository repository) {
+    public FilteringNotifier(Notifier delegate, InstanceRepository repository) {
         super(repository);
         Assert.notNull(delegate, "'delegate' must not be null!");
         this.delegate = delegate;
     }
 
     @Override
-    protected boolean shouldNotify(ClientApplicationEvent event, Application application) {
-        return !filter(event, application);
+    protected boolean shouldNotify(InstanceEvent event, Instance instance) {
+        return !filter(event, instance);
     }
 
     @Override
-    public Mono<Void> doNotify(ClientApplicationEvent event, Application application) {
-        if (!filter(event, application)) {
+    public Mono<Void> doNotify(InstanceEvent event, Instance instance) {
+        if (!filter(event, instance)) {
             return delegate.notify(event);
         } else {
             return Mono.empty();
         }
     }
 
-    private boolean filter(ClientApplicationEvent event, Application application) {
+    private boolean filter(InstanceEvent event, Instance instance) {
         cleanUp();
         for (Entry<String, NotificationFilter> entry : getNotificationFilters().entrySet()) {
-            if (entry.getValue().filter(event, application)) {
+            if (entry.getValue().filter(event, instance)) {
                 LOGGER.debug("The event '{}' was suppressed by filter '{}'", event, entry);
                 return true;
             }

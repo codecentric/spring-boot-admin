@@ -15,12 +15,12 @@
  */
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationDeregisteredEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
@@ -35,24 +35,24 @@ import org.springframework.util.Assert;
  * @author Johannes Edmeier
  */
 public class RemindingNotifier extends AbstractEventNotifier {
-    private final ConcurrentHashMap<ApplicationId, Reminder> reminders = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<InstanceId, Reminder> reminders = new ConcurrentHashMap<>();
     private long reminderPeriod = TimeUnit.MINUTES.toMillis(10L);
     private String[] reminderStatuses = {"DOWN", "OFFLINE"};
     private final Notifier delegate;
 
-    public RemindingNotifier(Notifier delegate, ApplicationRepository repository) {
+    public RemindingNotifier(Notifier delegate, InstanceRepository repository) {
         super(repository);
         Assert.notNull(delegate, "'delegate' must not be null!");
         this.delegate = delegate;
     }
 
     @Override
-    public Mono<Void> doNotify(ClientApplicationEvent event, Application application) {
+    public Mono<Void> doNotify(InstanceEvent event, Instance instance) {
         return delegate.notify(event).then(Mono.fromRunnable(() -> {
             if (shouldEndReminder(event)) {
-                reminders.remove(event.getApplication());
+                reminders.remove(event.getInstance());
             } else if (shouldStartReminder(event)) {
-                reminders.putIfAbsent(event.getApplication(), new Reminder(event));
+                reminders.putIfAbsent(event.getInstance(), new Reminder(event));
             }
         }));
     }
@@ -67,21 +67,21 @@ public class RemindingNotifier extends AbstractEventNotifier {
         }
     }
 
-    protected boolean shouldStartReminder(ClientApplicationEvent event) {
-        if (event instanceof ClientApplicationStatusChangedEvent) {
+    protected boolean shouldStartReminder(InstanceEvent event) {
+        if (event instanceof InstanceStatusChangedEvent) {
             return Arrays.binarySearch(reminderStatuses,
-                    ((ClientApplicationStatusChangedEvent) event).getStatusInfo().getStatus()) >= 0;
+                    ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()) >= 0;
         }
         return false;
     }
 
-    protected boolean shouldEndReminder(ClientApplicationEvent event) {
-        if (event instanceof ClientApplicationDeregisteredEvent) {
+    protected boolean shouldEndReminder(InstanceEvent event) {
+        if (event instanceof InstanceDeregisteredEvent) {
             return true;
         }
-        if (event instanceof ClientApplicationStatusChangedEvent) {
+        if (event instanceof InstanceStatusChangedEvent) {
             return Arrays.binarySearch(reminderStatuses,
-                    ((ClientApplicationStatusChangedEvent) event).getStatusInfo().getStatus()) < 0;
+                    ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()) < 0;
         }
         return false;
     }
@@ -97,10 +97,10 @@ public class RemindingNotifier extends AbstractEventNotifier {
     }
 
     private static class Reminder {
-        private final ClientApplicationEvent event;
+        private final InstanceEvent event;
         private long lastNotification;
 
-        private Reminder(ClientApplicationEvent event) {
+        private Reminder(InstanceEvent event) {
             this.event = event;
             this.lastNotification = event.getTimestamp();
         }
@@ -113,7 +113,7 @@ public class RemindingNotifier extends AbstractEventNotifier {
             return lastNotification;
         }
 
-        public ClientApplicationEvent getEvent() {
+        public InstanceEvent getEvent() {
             return event;
         }
     }

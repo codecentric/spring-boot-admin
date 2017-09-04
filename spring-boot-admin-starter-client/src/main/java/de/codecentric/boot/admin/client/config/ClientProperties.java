@@ -29,7 +29,7 @@ public class ClientProperties {
     /**
      * The admin rest-apis path.
      */
-    private String apiPath = "api/applications";
+    private String apiPath = "instances";
 
     /**
      * Time interval (in ms) the registration is repeated

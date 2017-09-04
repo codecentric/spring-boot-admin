@@ -30,7 +30,7 @@ public class AdminServerProperties {
 
     /**
      * For Spring Boot 2.x applications the endpoints should be discovered automatically.
-     * For Spring Boot 1.x application SBA probes for the specified endpoints using an OPTIONS request.
+     * For Spring Boot 1.x applications SBA probes for the specified endpoints using an OPTIONS request.
      * If the path differs from the id you can specify this as id:path (e.g. health:ping).
      */
     private String[] probedEndpoints = {"health", "env", "metrics", "trace", "dump", "jolokia", "info", "logfile",
@@ -61,7 +61,7 @@ public class AdminServerProperties {
 
     public static class MonitorProperties {
         /**
-         * Time interval in ms to update the status of applications with expired statusInfo
+         * Time interval in ms to update the status of instances with expired statusInfo
          */
         private long period = 10_000L;
 
@@ -72,12 +72,12 @@ public class AdminServerProperties {
         private long statusLifetime = 10_000L;
 
         /**
-         * Connect timeout when querying the applications' status and info.
+         * Connect timeout when querying the instances' status and info.
          */
         private int connectTimeout = 2_000;
 
         /**
-         * read timeout when querying the applications' status and info.
+         * read timeout when querying the instances' status and info.
          */
         private int readTimeout = 5_000;
 

@@ -18,7 +18,7 @@ package de.codecentric.boot.admin.server.eventstore;
 public class InMemoryEventStoreTest extends AbstractEventStoreTest {
 
     @Override
-    protected ClientApplicationEventStore createStore(int maxLogSizePerAggregate) {
+    protected InstanceEventStore createStore(int maxLogSizePerAggregate) {
         return new InMemoryEventStore(maxLogSizePerAggregate);
     }
 

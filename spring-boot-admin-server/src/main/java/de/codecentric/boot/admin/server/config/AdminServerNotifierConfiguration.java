@@ -15,8 +15,8 @@
  */
 package de.codecentric.boot.admin.server.config;
 
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.notify.CompositeNotifier;
 import de.codecentric.boot.admin.server.notify.HipchatNotifier;
 import de.codecentric.boot.admin.server.notify.LetsChatNotifier;
@@ -54,7 +54,7 @@ public class AdminServerNotifierConfiguration {
     public static class NotifierTriggerConfiguration {
         @Bean(initMethod = "start", destroyMethod = "stop")
         @ConditionalOnMissingBean
-        public NotificationTrigger notificationTrigger(Notifier notifier, Publisher<ClientApplicationEvent> events) {
+        public NotificationTrigger notificationTrigger(Notifier notifier, Publisher<InstanceEvent> events) {
             return new NotificationTrigger(notifier, events);
         }
     }
@@ -114,7 +114,7 @@ public class AdminServerNotifierConfiguration {
         @Bean
         @ConditionalOnMissingBean
         @ConfigurationProperties("spring.boot.admin.notify.mail")
-        public MailNotifier mailNotifier(MailSender mailSender, ApplicationRepository repository) {
+        public MailNotifier mailNotifier(MailSender mailSender, InstanceRepository repository) {
             return new MailNotifier(mailSender, repository);
         }
     }
@@ -126,7 +126,7 @@ public class AdminServerNotifierConfiguration {
         @Bean
         @ConditionalOnMissingBean
         @ConfigurationProperties("spring.boot.admin.notify.hipchat")
-        public HipchatNotifier hipchatNotifier(ApplicationRepository repository) {
+        public HipchatNotifier hipchatNotifier(InstanceRepository repository) {
             return new HipchatNotifier(repository);
         }
     }
@@ -138,7 +138,7 @@ public class AdminServerNotifierConfiguration {
         @Bean
         @ConditionalOnMissingBean
         @ConfigurationProperties("spring.boot.admin.notify.slack")
-        public SlackNotifier slackNotifier(ApplicationRepository repository) {
+        public SlackNotifier slackNotifier(InstanceRepository repository) {
             return new SlackNotifier(repository);
         }
     }
@@ -150,7 +150,7 @@ public class AdminServerNotifierConfiguration {
         @Bean
         @ConditionalOnMissingBean
         @ConfigurationProperties("spring.boot.admin.notify.letschat")
-        public LetsChatNotifier letsChatNotifier(ApplicationRepository repository) {
+        public LetsChatNotifier letsChatNotifier(InstanceRepository repository) {
             return new LetsChatNotifier(repository);
         }
     }
@@ -162,7 +162,7 @@ public class AdminServerNotifierConfiguration {
         @Bean
         @ConditionalOnMissingBean
         @ConfigurationProperties("spring.boot.admin.notify.opsgenie")
-        public OpsGenieNotifier opsgenieNotifier(ApplicationRepository repository) {
+        public OpsGenieNotifier opsgenieNotifier(InstanceRepository repository) {
             return new OpsGenieNotifier(repository);
         }
     }

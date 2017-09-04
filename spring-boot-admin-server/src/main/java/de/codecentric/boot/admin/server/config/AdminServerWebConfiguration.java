@@ -15,11 +15,13 @@
  */
 package de.codecentric.boot.admin.server.config;
 
-import de.codecentric.boot.admin.server.eventstore.ClientApplicationEventStore;
-import de.codecentric.boot.admin.server.services.ApplicationRegistry;
+import de.codecentric.boot.admin.server.eventstore.InstanceEventPublisher;
+import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
+import de.codecentric.boot.admin.server.services.InstanceRegistry;
 import de.codecentric.boot.admin.server.web.AdminController;
+import de.codecentric.boot.admin.server.web.ApplicationsController;
+import de.codecentric.boot.admin.server.web.InstancesController;
 import de.codecentric.boot.admin.server.web.PrefixHandlerMapping;
-import de.codecentric.boot.admin.server.web.RegistryController;
 
 import java.util.List;
 import java.util.Map;
@@ -68,6 +70,7 @@ public class AdminServerWebConfiguration implements WebMvcConfigurer, Applicatio
         return false;
     }
 
+
     @Bean
     public PrefixHandlerMapping prefixHandlerMapping() {
         Map<String, Object> beans = applicationContext.getBeansWithAnnotation(AdminController.class);
@@ -77,11 +80,17 @@ public class AdminServerWebConfiguration implements WebMvcConfigurer, Applicatio
         return prefixHandlerMapping;
     }
 
+
     @Bean
     @ConditionalOnMissingBean
-    public RegistryController registryController(ApplicationRegistry applicationRegistry,
-                                                 ClientApplicationEventStore eventStore) {
-        return new RegistryController(applicationRegistry, eventStore);
+    public InstancesController instancesController(InstanceRegistry instanceRegistry, InstanceEventStore eventStore) {
+        return new InstancesController(instanceRegistry, eventStore);
     }
 
+    @Bean
+    @ConditionalOnMissingBean
+    public ApplicationsController applicationsController(InstanceRegistry instanceRegistry,
+                                                         InstanceEventPublisher eventPublisher) {
+        return new ApplicationsController(instanceRegistry, eventPublisher);
+    }
 }

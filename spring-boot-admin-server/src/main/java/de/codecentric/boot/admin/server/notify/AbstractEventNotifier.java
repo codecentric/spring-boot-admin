@@ -15,9 +15,9 @@
  */
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import reactor.core.publisher.Mono;
 
 import org.slf4j.Logger;
@@ -29,34 +29,34 @@ import org.slf4j.LoggerFactory;
  * @author Johannes Edmeier
  */
 public abstract class AbstractEventNotifier implements Notifier {
-    private final ApplicationRepository repository;
+    private final InstanceRepository repository;
     /**
      * Enables the notification.
      */
     private boolean enabled = true;
 
-    protected AbstractEventNotifier(ApplicationRepository repository) {
+    protected AbstractEventNotifier(InstanceRepository repository) {
         this.repository = repository;
     }
 
     @Override
-    public Mono<Void> notify(ClientApplicationEvent event) {
+    public Mono<Void> notify(InstanceEvent event) {
         if (!enabled) {
             return Mono.empty();
         }
 
-        return repository.find(event.getApplication())
-                         .filter(application -> shouldNotify(event, application))
-                         .flatMap(application -> doNotify(event, application))
+        return repository.find(event.getInstance())
+                         .filter(instance -> shouldNotify(event, instance))
+                         .flatMap(instance -> doNotify(event, instance))
                          .doOnError(ex -> getLogger().error("Couldn't notify for event {} ", event, ex))
                          .then();
     }
 
-    protected boolean shouldNotify(ClientApplicationEvent event, Application application) {
+    protected boolean shouldNotify(InstanceEvent event, Instance instance) {
         return true;
     }
 
-    protected abstract Mono<Void> doNotify(ClientApplicationEvent event, Application application);
+    protected abstract Mono<Void> doNotify(InstanceEvent event, Instance instance);
 
     private Logger getLogger() {
         return LoggerFactory.getLogger(this.getClass());

@@ -16,9 +16,9 @@
 
 package de.codecentric.boot.admin.server.services;
 
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationRegisteredEvent;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -33,17 +33,17 @@ import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StatusUpdateTrigger extends ResubscribingEventHandler<ClientApplicationRegisteredEvent> {
+public class StatusUpdateTrigger extends ResubscribingEventHandler<InstanceRegisteredEvent> {
     private static final Logger log = LoggerFactory.getLogger(StatusUpdateTrigger.class);
     private final StatusUpdater statusUpdater;
-    private Map<ApplicationId, Long> lastQueried = new HashMap<>();
+    private Map<InstanceId, Long> lastQueried = new HashMap<>();
     private long updateInterval = 10_000L;
     private long statusLifetime = 10_000L;
     private Disposable intervalSubscription;
 
 
-    public StatusUpdateTrigger(StatusUpdater statusUpdater, Publisher<ClientApplicationEvent> publisher) {
-        super(publisher, ClientApplicationRegisteredEvent.class);
+    public StatusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> publisher) {
+        super(publisher, InstanceRegisteredEvent.class);
         this.statusUpdater = statusUpdater;
     }
 
@@ -55,7 +55,7 @@ public class StatusUpdateTrigger extends ResubscribingEventHandler<ClientApplica
                                            updateInterval))
                                    .log(log.getName(), Level.FINEST)
                                    .subscribeOn(Schedulers.newSingle("status-monitor"))
-                                   .flatMap((i) -> this.updateStatusForAllApplications())
+                                   .flatMap((i) -> this.updateStatusForAllInstances())
                                    .retryWhen(Retry.any()
                                                    .retryMax(Integer.MAX_VALUE)
                                                    .doOnRetry(ctx -> log.error("Resubscribing after uncaught error",
@@ -64,9 +64,9 @@ public class StatusUpdateTrigger extends ResubscribingEventHandler<ClientApplica
     }
 
     @Override
-    protected Publisher<?> handle(Flux<ClientApplicationRegisteredEvent> publisher) {
+    protected Publisher<?> handle(Flux<InstanceRegisteredEvent> publisher) {
         return publisher.subscribeOn(Schedulers.newSingle("status-updater"))
-                        .flatMap(event -> updateStatus(event.getApplication()));
+                        .flatMap(event -> updateStatus(event.getInstance()));
     }
 
     @Override
@@ -77,8 +77,8 @@ public class StatusUpdateTrigger extends ResubscribingEventHandler<ClientApplica
         }
     }
 
-    protected Mono<Void> updateStatusForAllApplications() {
-        log.debug("Updating status for all applications");
+    protected Mono<Void> updateStatusForAllInstances() {
+        log.debug("Updating status for all instances");
         long expiryInstant = System.currentTimeMillis() - statusLifetime;
         return Flux.fromIterable(lastQueried.entrySet())
                    .filter(e -> e.getValue() < expiryInstant)
@@ -87,9 +87,9 @@ public class StatusUpdateTrigger extends ResubscribingEventHandler<ClientApplica
                    .then();
     }
 
-    protected Mono<Void> updateStatus(ApplicationId applicationId) {
-        return statusUpdater.updateStatus(applicationId)
-                            .doFinally((s) -> lastQueried.put(applicationId, System.currentTimeMillis()));
+    protected Mono<Void> updateStatus(InstanceId instanceId) {
+        return statusUpdater.updateStatus(instanceId)
+                            .doFinally((s) -> lastQueried.put(instanceId, System.currentTimeMillis()));
     }
 
     public void setUpdateInterval(long updateInterval) {

@@ -16,22 +16,22 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TestNotifier implements Notifier {
-    private List<ClientApplicationEvent> events = new ArrayList<>();
+    private List<InstanceEvent> events = new ArrayList<>();
 
     @Override
-    public Mono<Void> notify(ClientApplicationEvent event) {
+    public Mono<Void> notify(InstanceEvent event) {
         this.events.add(event);
         return Mono.empty();
     }
 
-    public List<ClientApplicationEvent> getEvents() {
+    public List<InstanceEvent> getEvents() {
         return events;
     }
 }

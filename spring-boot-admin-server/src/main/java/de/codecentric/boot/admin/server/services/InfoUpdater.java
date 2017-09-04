@@ -15,12 +15,12 @@
  */
 package de.codecentric.boot.admin.server.services;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import de.codecentric.boot.admin.server.domain.values.Info;
-import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.web.client.InstanceOperations;
 import reactor.core.publisher.Mono;
 
 import java.io.Serializable;
@@ -38,48 +38,47 @@ import org.springframework.http.ResponseEntity;
  */
 public class InfoUpdater {
     private static final Logger log = LoggerFactory.getLogger(InfoUpdater.class);
-    private final ApplicationRepository repository;
-    private final ApplicationOperations applicationOps;
+    private final InstanceRepository repository;
+    private final InstanceOperations instanceOps;
 
-    public InfoUpdater(ApplicationRepository repository, ApplicationOperations applicationOps) {
+    public InfoUpdater(InstanceRepository repository, InstanceOperations instanceOps) {
         this.repository = repository;
-        this.applicationOps = applicationOps;
+        this.instanceOps = instanceOps;
     }
 
-    public Mono<Void> updateInfo(ApplicationId id) {
-        return repository.computeIfPresent(id, (key, application) -> this.doUpdateInfo(application));
+    public Mono<Void> updateInfo(InstanceId id) {
+        return repository.computeIfPresent(id, (key, instance) -> this.doUpdateInfo(instance));
 
 
     }
 
-    private Mono<Application> doUpdateInfo(Application application) {
-        if (application.getStatusInfo().isOffline() || application.getStatusInfo().isUnknown()) {
+    private Mono<Instance> doUpdateInfo(Instance instance) {
+        if (instance.getStatusInfo().isOffline() || instance.getStatusInfo().isUnknown()) {
             return Mono.empty();
         }
-        if (!application.getEndpoints().isPresent(Endpoint.INFO)) {
+        if (!instance.getEndpoints().isPresent(Endpoint.INFO)) {
             return Mono.empty();
         }
 
-        log.debug("Update info for {}", application);
-        return applicationOps.getInfo(application)
-                             .log(log.getName(), Level.FINEST)
-                             .map(response -> convertInfo(application, response))
-                             .onErrorResume(ex -> Mono.just(convertInfo(application, ex)))
-                             .map(application::withInfo);
+        log.debug("Update info for {}", instance);
+        return instanceOps.getInfo(instance)
+                          .log(log.getName(), Level.FINEST)
+                          .map(response -> convertInfo(instance, response))
+                          .onErrorResume(ex -> Mono.just(convertInfo(instance, ex)))
+                          .map(instance::withInfo);
     }
 
-    protected Info convertInfo(Application application, ResponseEntity<Map<String, Serializable>> response) {
+    protected Info convertInfo(Instance instance, ResponseEntity<Map<String, Serializable>> response) {
         if (response.getStatusCode().is2xxSuccessful() && response.hasBody()) {
             return Info.from(response.getBody());
         } else {
-            log.info("Couldn't retrieve info for {}: {} - {}", application, response.getStatusCode(),
-                    response.getBody());
+            log.info("Couldn't retrieve info for {}: {} - {}", instance, response.getStatusCode(), response.getBody());
             return Info.empty();
         }
     }
 
-    protected Info convertInfo(Application application, Throwable ex) {
-        log.warn("Couldn't retrieve info for {}", application, ex);
+    protected Info convertInfo(Instance instance, Throwable ex) {
+        log.warn("Couldn't retrieve info for {}", instance, ex);
         return Info.empty();
     }
 }

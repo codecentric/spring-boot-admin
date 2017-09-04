@@ -15,12 +15,12 @@
  */
 package de.codecentric.boot.admin.server.config;
 
-import de.codecentric.boot.admin.server.discovery.ApplicationDiscoveryListener;
 import de.codecentric.boot.admin.server.discovery.DefaultServiceInstanceConverter;
 import de.codecentric.boot.admin.server.discovery.EurekaServiceInstanceConverter;
+import de.codecentric.boot.admin.server.discovery.InstanceDiscoveryListener;
 import de.codecentric.boot.admin.server.discovery.ServiceInstanceConverter;
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
-import de.codecentric.boot.admin.server.services.ApplicationRegistry;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.services.InstanceRegistry;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -44,11 +44,11 @@ public class AdminServerDiscoveryAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     @ConfigurationProperties(prefix = "spring.boot.admin.discovery")
-    public ApplicationDiscoveryListener applicationDiscoveryListener(ServiceInstanceConverter serviceInstanceConverter,
-                                                                     DiscoveryClient discoveryClient,
-                                                                     ApplicationRegistry registry,
-                                                                     ApplicationRepository repository) {
-        ApplicationDiscoveryListener listener = new ApplicationDiscoveryListener(discoveryClient, registry, repository);
+    public InstanceDiscoveryListener instanceDiscoveryListener(ServiceInstanceConverter serviceInstanceConverter,
+                                                               DiscoveryClient discoveryClient,
+                                                               InstanceRegistry registry,
+                                                               InstanceRepository repository) {
+        InstanceDiscoveryListener listener = new InstanceDiscoveryListener(discoveryClient, registry, repository);
         listener.setConverter(serviceInstanceConverter);
         return listener;
     }

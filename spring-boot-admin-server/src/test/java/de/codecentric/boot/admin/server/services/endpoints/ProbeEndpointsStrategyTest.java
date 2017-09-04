@@ -16,11 +16,11 @@
 
 package de.codecentric.boot.admin.server.services.endpoints;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
-import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
+import de.codecentric.boot.admin.server.web.client.InstanceOperations;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -40,7 +40,7 @@ public class ProbeEndpointsStrategyTest {
 
     @Test
     public void invariants() {
-        ApplicationOperations ops = mock(ApplicationOperations.class);
+        InstanceOperations ops = mock(InstanceOperations.class);
         assertThatThrownBy(() -> {
             new ProbeEndpointsStrategy(ops, null);
         }).isInstanceOf(IllegalArgumentException.class).hasMessage("'endpoints' must not be null.");
@@ -52,22 +52,22 @@ public class ProbeEndpointsStrategyTest {
     @Test
     public void should_return_detect_endpoints() {
         //given
-        Application application = Application.create(ApplicationId.of("id"))
-                                             .register(Registration.create("test", "http://app/mgmt/health")
-                                                                   .managementUrl("http://app/mgmt")
-                                                                   .build());
-        ApplicationOperations ops = mock(ApplicationOperations.class);
+        Instance instance = Instance.create(InstanceId.of("id"))
+                                    .register(Registration.create("test", "http://app/mgmt/health")
+                                                          .managementUrl("http://app/mgmt")
+                                                          .build());
+        InstanceOperations ops = mock(InstanceOperations.class);
 
-        when(ops.exchange(HttpMethod.OPTIONS, application, URI.create("http://app/mgmt/stats"))).thenReturn(responseOK);
-        when(ops.exchange(HttpMethod.OPTIONS, application, URI.create("http://app/mgmt/info"))).thenReturn(responseOK);
-        when(ops.exchange(HttpMethod.OPTIONS, application, URI.create("http://app/mgmt/non-exist"))).thenReturn(
+        when(ops.exchange(HttpMethod.OPTIONS, instance, URI.create("http://app/mgmt/stats"))).thenReturn(responseOK);
+        when(ops.exchange(HttpMethod.OPTIONS, instance, URI.create("http://app/mgmt/info"))).thenReturn(responseOK);
+        when(ops.exchange(HttpMethod.OPTIONS, instance, URI.create("http://app/mgmt/non-exist"))).thenReturn(
                 responseNotFound);
 
         ProbeEndpointsStrategy strategy = new ProbeEndpointsStrategy(ops,
                 new String[]{"metrics:stats", "info", "non-exist"});
 
         //when/then
-        StepVerifier.create(strategy.detectEndpoints(application))
+        StepVerifier.create(strategy.detectEndpoints(instance))
                     .expectNext(Endpoints.single("metrics", "http://app/mgmt/stats")
                                          .withEndpoint("info", "http://app/mgmt/info"))
                     .verifyComplete();
@@ -76,19 +76,19 @@ public class ProbeEndpointsStrategyTest {
     @Test
     public void should_return_empty() {
         //given
-        Application application = Application.create(ApplicationId.of("id"))
-                                             .register(Registration.create("test", "http://app/mgmt/health")
-                                                                   .managementUrl("http://app/mgmt")
-                                                                   .build());
-        ApplicationOperations ops = mock(ApplicationOperations.class);
+        Instance instance = Instance.create(InstanceId.of("id"))
+                                    .register(Registration.create("test", "http://app/mgmt/health")
+                                                          .managementUrl("http://app/mgmt")
+                                                          .build());
+        InstanceOperations ops = mock(InstanceOperations.class);
 
-        when(ops.exchange(HttpMethod.OPTIONS, application, URI.create("http://app/mgmt/stats"))).thenReturn(
+        when(ops.exchange(HttpMethod.OPTIONS, instance, URI.create("http://app/mgmt/stats"))).thenReturn(
                 responseNotFound);
 
         ProbeEndpointsStrategy strategy = new ProbeEndpointsStrategy(ops, new String[]{"metrics:stats"});
 
         //when/then
-        StepVerifier.create(strategy.detectEndpoints(application)).verifyComplete();
+        StepVerifier.create(strategy.detectEndpoints(instance)).verifyComplete();
     }
 
     private Mono<ClientResponse> mockResponse(HttpStatus statusCode) {

@@ -16,7 +16,7 @@
 package de.codecentric.boot.admin;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.notify.LoggingNotifier;
 import de.codecentric.boot.admin.server.notify.RemindingNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
@@ -66,9 +66,9 @@ public class SpringBootAdminApplication {
 
     @Configuration
     public static class NotifierConfig {
-        private final ApplicationRepository repository;
+        private final InstanceRepository repository;
 
-        public NotifierConfig(ApplicationRepository repository) {
+        public NotifierConfig(InstanceRepository repository) {
             this.repository = repository;
         }
 

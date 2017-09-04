@@ -15,11 +15,11 @@
  */
 package de.codecentric.boot.admin.server.services;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
-import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
+import de.codecentric.boot.admin.server.web.client.InstanceOperations;
 import reactor.core.publisher.Mono;
 
 import java.io.Serializable;
@@ -38,31 +38,31 @@ import org.springframework.http.ResponseEntity;
  */
 public class StatusUpdater {
     private static final Logger log = LoggerFactory.getLogger(StatusUpdater.class);
-    private final ApplicationRepository repository;
-    private final ApplicationOperations applicationOps;
+    private final InstanceRepository repository;
+    private final InstanceOperations instanceOps;
 
-    public StatusUpdater(ApplicationRepository repository, ApplicationOperations applicationOps) {
+    public StatusUpdater(InstanceRepository repository, InstanceOperations instanceOps) {
         this.repository = repository;
-        this.applicationOps = applicationOps;
+        this.instanceOps = instanceOps;
     }
 
-    public Mono<Void> updateStatus(ApplicationId id) {
-        return repository.computeIfPresent(id, (key, application) -> this.doUpdateStatus(application));
+    public Mono<Void> updateStatus(InstanceId id) {
+        return repository.computeIfPresent(id, (key, instance) -> this.doUpdateStatus(instance));
 
     }
 
-    protected Mono<Application> doUpdateStatus(Application application) {
-        if (!application.isRegistered()) {
+    protected Mono<Instance> doUpdateStatus(Instance instance) {
+        if (!instance.isRegistered()) {
             return Mono.empty();
         }
 
-        log.debug("Update status for {}", application);
-        return applicationOps.getHealth(application)
-                             .log(log.getName(), Level.FINEST)
-                             .map(this::convertStatusInfo)
-                             .doOnError(ex -> logError(application, ex))
-                             .onErrorResume(ex -> Mono.just(convertStatusInfo(ex)))
-                             .map(application::withStatusInfo);
+        log.debug("Update status for {}", instance);
+        return instanceOps.getHealth(instance)
+                          .log(log.getName(), Level.FINEST)
+                          .map(this::convertStatusInfo)
+                          .doOnError(ex -> logError(instance, ex))
+                          .onErrorResume(ex -> Mono.just(convertStatusInfo(ex)))
+                          .map(instance::withStatusInfo);
     }
 
     protected StatusInfo convertStatusInfo(ResponseEntity<Map<String, Serializable>> response) {
@@ -81,11 +81,11 @@ public class StatusUpdater {
         return StatusInfo.ofDown(details);
     }
 
-    protected void logError(Application application, Throwable ex) {
-        if ("OFFLINE".equals(application.getStatusInfo().getStatus())) {
-            log.debug("Couldn't retrieve status for {}", application, ex);
+    protected void logError(Instance instance, Throwable ex) {
+        if ("OFFLINE".equals(instance.getStatusInfo().getStatus())) {
+            log.debug("Couldn't retrieve status for {}", instance, ex);
         } else {
-            log.info("Couldn't retrieve status for {}", application, ex);
+            log.info("Couldn't retrieve status for {}", instance, ex);
         }
     }
 

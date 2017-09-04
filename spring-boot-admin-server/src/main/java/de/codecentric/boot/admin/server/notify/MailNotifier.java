@@ -15,9 +15,9 @@
  */
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
@@ -37,8 +37,8 @@ import org.springframework.mail.SimpleMailMessage;
  * @author Johannes Edmeier
  */
 public class MailNotifier extends AbstractStatusChangeNotifier {
-    private static final String DEFAULT_SUBJECT = "#{application.registration.name} (#{application.id}) is #{event.statusInfo.status}";
-    private static final String DEFAULT_TEXT = "#{application.registration.name} (#{application.id})\nstatus changed from #{lastStatus} to #{event.statusInfo.status}\n\n#{application.registration.healthUrl}";
+    private static final String DEFAULT_SUBJECT = "#{instance.registration.name} (#{instance.id}) is #{event.statusInfo.status}";
+    private static final String DEFAULT_TEXT = "#{instance.registration.name} (#{instance.id})\nstatus changed from #{lastStatus} to #{event.statusInfo.status}\n\n#{instance.registration.healthUrl}";
 
     private final SpelExpressionParser parser = new SpelExpressionParser();
     private final MailSender sender;
@@ -68,7 +68,7 @@ public class MailNotifier extends AbstractStatusChangeNotifier {
      */
     private Expression subject;
 
-    public MailNotifier(MailSender sender, ApplicationRepository repository) {
+    public MailNotifier(MailSender sender, InstanceRepository repository) {
         super(repository);
         this.sender = sender;
         this.subject = parser.parseExpression(DEFAULT_SUBJECT, ParserContext.TEMPLATE_EXPRESSION);
@@ -76,11 +76,11 @@ public class MailNotifier extends AbstractStatusChangeNotifier {
     }
 
     @Override
-    protected Mono<Void> doNotify(ClientApplicationEvent event, Application application) {
+    protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
         Map<String, Object> root = new HashMap<>();
         root.put("event", event);
-        root.put("application", application);
-        root.put("lastStatus", getLastStatus(event.getApplication()));
+        root.put("instance", instance);
+        root.put("lastStatus", getLastStatus(event.getInstance()));
         StandardEvaluationContext context = new StandardEvaluationContext(root);
         context.addPropertyAccessor(new MapAccessor());
 

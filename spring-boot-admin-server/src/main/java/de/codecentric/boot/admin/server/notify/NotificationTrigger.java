@@ -16,27 +16,27 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.services.ResubscribingEventHandler;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
 import org.reactivestreams.Publisher;
 
-public class NotificationTrigger extends ResubscribingEventHandler<ClientApplicationEvent> {
+public class NotificationTrigger extends ResubscribingEventHandler<InstanceEvent> {
     private final Notifier notifier;
 
-    public NotificationTrigger(Notifier notifier, Publisher<ClientApplicationEvent> publisher) {
-        super(publisher, ClientApplicationEvent.class);
+    public NotificationTrigger(Notifier notifier, Publisher<InstanceEvent> publisher) {
+        super(publisher, InstanceEvent.class);
         this.notifier = notifier;
     }
 
     @Override
-    protected Publisher<?> handle(Flux<ClientApplicationEvent> publisher) {
+    protected Publisher<?> handle(Flux<InstanceEvent> publisher) {
         return publisher.subscribeOn(Schedulers.newSingle("notifications")).doOnNext(this::sendNotifications);
     }
 
-    protected void sendNotifications(ClientApplicationEvent event) {
+    protected void sendNotifications(InstanceEvent event) {
         notifier.notify(event);
     }
 }

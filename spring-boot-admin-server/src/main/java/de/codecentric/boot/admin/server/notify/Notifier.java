@@ -15,7 +15,7 @@
  */
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import reactor.core.publisher.Mono;
 
 /**
@@ -25,6 +25,6 @@ import reactor.core.publisher.Mono;
  */
 public interface Notifier {
 
-    Mono<Void> notify(ClientApplicationEvent event);
+    Mono<Void> notify(InstanceEvent event);
 
 }

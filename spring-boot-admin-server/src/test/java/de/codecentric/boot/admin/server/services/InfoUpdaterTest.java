@@ -16,17 +16,17 @@
 
 package de.codecentric.boot.admin.server.services;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.entities.EventSourcingApplicationRepository;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationInfoChangedEvent;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.entities.EventSourcingInstanceRepository;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.events.InstanceInfoChangedEvent;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.Info;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.eventstore.ConcurrentMapEventStore;
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
-import de.codecentric.boot.admin.server.web.client.ApplicationOperations;
+import de.codecentric.boot.admin.server.web.client.InstanceOperations;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -43,17 +43,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class InfoUpdaterTest {
-    private ApplicationOperations applicationOps;
+    private InstanceOperations applicationOps;
     private InfoUpdater updater;
-    private EventSourcingApplicationRepository repository;
+    private EventSourcingInstanceRepository repository;
     private ConcurrentMapEventStore eventStore;
 
     @Before
     public void setup() {
         eventStore = new InMemoryEventStore();
-        repository = new EventSourcingApplicationRepository(eventStore);
+        repository = new EventSourcingInstanceRepository(eventStore);
         repository.start();
-        applicationOps = mock(ApplicationOperations.class);
+        applicationOps = mock(InstanceOperations.class);
         updater = new InfoUpdater(repository, applicationOps);
     }
 
@@ -61,29 +61,29 @@ public class InfoUpdaterTest {
     public void should_update_info_for_online_with_endpoint_only() {
         //given
         Registration registration = Registration.create("foo", "http://health").build();
-        Application application = Application.create(ApplicationId.of("onl"))
-                                             .register(registration)
-                                             .withEndpoints(Endpoints.single("info", "info"))
-                                             .withStatusInfo(StatusInfo.ofUp());
-        StepVerifier.create(repository.save(application)).verifyComplete();
+        Instance instance = Instance.create(InstanceId.of("onl"))
+                                    .register(registration)
+                                    .withEndpoints(Endpoints.single("info", "info"))
+                                    .withStatusInfo(StatusInfo.ofUp());
+        StepVerifier.create(repository.save(instance)).verifyComplete();
 
-        Application noInfo = Application.create(ApplicationId.of("noinfo"))
-                                        .register(registration)
-                                        .withEndpoints(Endpoints.single("beans", "beans"))
-                                        .withStatusInfo(StatusInfo.ofUp());
+        Instance noInfo = Instance.create(InstanceId.of("noinfo"))
+                                  .register(registration)
+                                  .withEndpoints(Endpoints.single("beans", "beans"))
+                                  .withStatusInfo(StatusInfo.ofUp());
         StepVerifier.create(repository.save(noInfo)).verifyComplete();
 
-        Application offline = Application.create(ApplicationId.of("off"))
-                                         .register(registration)
-                                         .withStatusInfo(StatusInfo.ofOffline());
+        Instance offline = Instance.create(InstanceId.of("off"))
+                                   .register(registration)
+                                   .withStatusInfo(StatusInfo.ofOffline());
         StepVerifier.create(repository.save(offline)).verifyComplete();
 
-        Application unknown = Application.create(ApplicationId.of("unk"))
-                                         .register(registration)
-                                         .withStatusInfo(StatusInfo.ofUnknown());
+        Instance unknown = Instance.create(InstanceId.of("unk"))
+                                   .register(registration)
+                                   .withStatusInfo(StatusInfo.ofUnknown());
         StepVerifier.create(repository.save(unknown)).verifyComplete();
 
-        when(applicationOps.getInfo(any(Application.class))).thenReturn(
+        when(applicationOps.getInfo(any(Instance.class))).thenReturn(
                 Mono.just(ResponseEntity.ok(singletonMap("foo", "bar"))));
 
         //when/then
@@ -93,12 +93,12 @@ public class InfoUpdaterTest {
                     .then(() -> StepVerifier.create(updater.updateInfo(unknown.getId())).verifyComplete())
                     .then(() -> StepVerifier.create(updater.updateInfo(noInfo.getId())).verifyComplete())
                     .expectNoEvent(Duration.ofMillis(10L))
-                    .then(() -> StepVerifier.create(updater.updateInfo(application.getId())).verifyComplete())
-                    .assertNext(event -> assertThat(event).isInstanceOf(ClientApplicationInfoChangedEvent.class))
+                    .then(() -> StepVerifier.create(updater.updateInfo(instance.getId())).verifyComplete())
+                    .assertNext(event -> assertThat(event).isInstanceOf(InstanceInfoChangedEvent.class))
                     .thenCancel()
                     .verify(Duration.ofMillis(500L));
 
-        StepVerifier.create(repository.find(application.getId()))
+        StepVerifier.create(repository.find(instance.getId()))
                     .assertNext(app -> assertThat(app.getInfo()).isEqualTo(Info.from(singletonMap("foo", "bar"))))
                     .verifyComplete();
     }
@@ -106,24 +106,24 @@ public class InfoUpdaterTest {
     @Test
     public void should_clear_info_on_http_error() {
         //given
-        Application application = Application.create(ApplicationId.of("onl"))
-                                             .register(Registration.create("foo", "http://health").build())
-                                             .withEndpoints(Endpoints.single("info", "info"))
-                                             .withStatusInfo(StatusInfo.ofUp())
-                                             .withInfo(Info.from(singletonMap("foo", "bar")));
-        StepVerifier.create(repository.save(application)).verifyComplete();
+        Instance instance = Instance.create(InstanceId.of("onl"))
+                                    .register(Registration.create("foo", "http://health").build())
+                                    .withEndpoints(Endpoints.single("info", "info"))
+                                    .withStatusInfo(StatusInfo.ofUp())
+                                    .withInfo(Info.from(singletonMap("foo", "bar")));
+        StepVerifier.create(repository.save(instance)).verifyComplete();
 
-        when(applicationOps.getInfo(any(Application.class))).thenReturn(Mono.just(ResponseEntity.status(500).build()));
+        when(applicationOps.getInfo(any(Instance.class))).thenReturn(Mono.just(ResponseEntity.status(500).build()));
 
         //when/then
         StepVerifier.create(eventStore)
                     .expectSubscription()
-                    .then(() -> StepVerifier.create(updater.updateInfo(application.getId())).verifyComplete())
-                    .assertNext(event -> assertThat(event).isInstanceOf(ClientApplicationInfoChangedEvent.class))
+                    .then(() -> StepVerifier.create(updater.updateInfo(instance.getId())).verifyComplete())
+                    .assertNext(event -> assertThat(event).isInstanceOf(InstanceInfoChangedEvent.class))
                     .thenCancel()
                     .verify(Duration.ofMillis(500L));
 
-        StepVerifier.create(repository.find(application.getId()))
+        StepVerifier.create(repository.find(instance.getId()))
                     .assertNext(app -> assertThat(app.getInfo()).isEqualTo(Info.empty()))
                     .verifyComplete();
     }
@@ -131,25 +131,24 @@ public class InfoUpdaterTest {
     @Test
     public void should_clear_info_on_exception() {
         //given
-        Application application = Application.create(ApplicationId.of("onl"))
-                                             .register(Registration.create("foo", "http://health").build())
-                                             .withEndpoints(Endpoints.single("info", "info"))
-                                             .withStatusInfo(StatusInfo.ofUp())
-                                             .withInfo(Info.from(singletonMap("foo", "bar")));
-        StepVerifier.create(repository.save(application)).verifyComplete();
+        Instance instance = Instance.create(InstanceId.of("onl"))
+                                    .register(Registration.create("foo", "http://health").build())
+                                    .withEndpoints(Endpoints.single("info", "info"))
+                                    .withStatusInfo(StatusInfo.ofUp())
+                                    .withInfo(Info.from(singletonMap("foo", "bar")));
+        StepVerifier.create(repository.save(instance)).verifyComplete();
 
-        when(applicationOps.getInfo(any(Application.class))).thenReturn(
-                Mono.error(new ResourceAccessException("error")));
+        when(applicationOps.getInfo(any(Instance.class))).thenReturn(Mono.error(new ResourceAccessException("error")));
 
         //when/then
         StepVerifier.create(eventStore)
                     .expectSubscription()
-                    .then(() -> StepVerifier.create(updater.updateInfo(application.getId())).verifyComplete())
-                    .assertNext(event -> assertThat(event).isInstanceOf(ClientApplicationInfoChangedEvent.class))
+                    .then(() -> StepVerifier.create(updater.updateInfo(instance.getId())).verifyComplete())
+                    .assertNext(event -> assertThat(event).isInstanceOf(InstanceInfoChangedEvent.class))
                     .thenCancel()
                     .verify(Duration.ofMillis(500L));
 
-        StepVerifier.create(repository.find(application.getId()))
+        StepVerifier.create(repository.find(instance.getId()))
                     .assertNext(app -> assertThat(app.getInfo()).isEqualTo(Info.empty()))
                     .verifyComplete();
 

@@ -16,10 +16,10 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import reactor.core.publisher.Mono;
@@ -45,16 +45,16 @@ import static org.mockito.Mockito.when;
  * @author Jamie Brown
  */
 public class HipchatNotifierTest {
-    public final Application application = Application.create(ApplicationId.of("-id-"))
-                                                      .register(Registration.create("App", "http://health").build());
+    public final Instance instance = Instance.create(InstanceId.of("-id-"))
+                                             .register(Registration.create("App", "http://health").build());
     private HipchatNotifier notifier;
     private RestTemplate restTemplate;
-    private ApplicationRepository repository;
+    private InstanceRepository repository;
 
     @Before
     public void setUp() {
-        repository = mock(ApplicationRepository.class);
-        when(repository.find(application.getId())).thenReturn(Mono.just(application));
+        repository = mock(InstanceRepository.class);
+        when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 
         restTemplate = mock(RestTemplate.class);
         notifier = new HipchatNotifier(repository);
@@ -74,11 +74,11 @@ public class HipchatNotifierTest {
                 ResponseEntity.ok().build());
 
         StepVerifier.create(notifier.notify(
-                new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(),
-                        StatusInfo.ofDown()))).verifyComplete();
+                new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
+                    .verifyComplete();
         StepVerifier.create(notifier.notify(
-                new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(),
-                        StatusInfo.ofUp()))).verifyComplete();
+                new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+                    .verifyComplete();
 
         assertThat(httpRequest.getValue().getHeaders()).containsEntry("Content-Type",
                 Collections.singletonList("application/json"));
@@ -102,10 +102,10 @@ public class HipchatNotifierTest {
                 ResponseEntity.ok().build());
 
         StepVerifier.create(notifier.notify(
-                new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(),
-                        StatusInfo.ofUp()))).verifyComplete();
-        StepVerifier.create(notifier.notify(
-                new ClientApplicationStatusChangedEvent(application.getId(), application.getVersion(), infoDown)))
+                new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+                    .verifyComplete();
+        StepVerifier.create(
+                notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), infoDown)))
                     .verifyComplete();
 
         assertThat(httpRequest.getValue().

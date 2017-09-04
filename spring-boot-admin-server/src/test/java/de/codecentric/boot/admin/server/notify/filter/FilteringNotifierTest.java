@@ -16,10 +16,10 @@
 
 package de.codecentric.boot.admin.server.notify.filter;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.domain.entities.ApplicationRepository;
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationRegisteredEvent;
-import de.codecentric.boot.admin.server.domain.values.ApplicationId;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.notify.TestNotifier;
 import reactor.core.publisher.Mono;
@@ -33,16 +33,16 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class FilteringNotifierTest {
-    private final Application application = Application.create(ApplicationId.of("-"))
-                                                       .register(Registration.create("foo", "http://health").build());
-    private final ClientApplicationRegisteredEvent event = new ClientApplicationRegisteredEvent(application.getId(),
-            application.getVersion(), application.getRegistration());
-    private ApplicationRepository repository;
+    private final Instance instance = Instance.create(InstanceId.of("-"))
+                                              .register(Registration.create("foo", "http://health").build());
+    private final InstanceRegisteredEvent event = new InstanceRegisteredEvent(instance.getId(), instance.getVersion(),
+            instance.getRegistration());
+    private InstanceRepository repository;
 
     @Before
     public void setUp() throws Exception {
-        repository = mock(ApplicationRepository.class);
-        when(repository.find(application.getId())).thenReturn(Mono.just(application));
+        repository = mock(InstanceRepository.class);
+        when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
     }
 
     @Test(expected = IllegalArgumentException.class)

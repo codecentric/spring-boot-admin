@@ -16,7 +16,7 @@
 
 package de.codecentric.boot.admin.server.services;
 
-import de.codecentric.boot.admin.server.domain.events.ClientApplicationEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.retry.Retry;
@@ -26,13 +26,13 @@ import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class ResubscribingEventHandler<T extends ClientApplicationEvent> {
+public abstract class ResubscribingEventHandler<T extends InstanceEvent> {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private final Publisher<ClientApplicationEvent> publisher;
+    private final Publisher<InstanceEvent> publisher;
     private Disposable subscription;
     private Class<T> eventType;
 
-    protected ResubscribingEventHandler(Publisher<ClientApplicationEvent> publisher, Class<T> eventType) {
+    protected ResubscribingEventHandler(Publisher<InstanceEvent> publisher, Class<T> eventType) {
         this.publisher = publisher;
         this.eventType = eventType;
     }

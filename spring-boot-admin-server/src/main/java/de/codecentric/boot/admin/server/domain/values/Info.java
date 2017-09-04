@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Represents the info fetched from the info actuator endpoint
@@ -45,8 +44,6 @@ public class Info implements Serializable {
         return EMPTY;
     }
 
-
-    @JsonIgnore
     public String getVersion() {
         Object build = this.values.get("build");
         if (build instanceof Map) {
