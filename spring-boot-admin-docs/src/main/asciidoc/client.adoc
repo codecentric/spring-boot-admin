@@ -115,7 +115,7 @@ spring.boot.admin.password
 
 | spring.boot.admin.client.management-url
 | Management-url to register with. Can be overridden in case the reachable url is different (e.g. Docker).
-| Guessed based on managment-base-url and `management.context-path`.
+| Guessed based on management-base-url and `management.context-path`.
 
 | spring.boot.admin.client.service-base-url
 | Base url for computing the service-url to register with. The path is inferred at runtime, and appended to the base url.
