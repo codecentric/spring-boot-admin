@@ -47,7 +47,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 
     /**
      * Default context-path to be appended to the url of the discovered service for the
-     * managment-url.
+     * management-url.
      */
     private String managementContextPath = "";
     /**
