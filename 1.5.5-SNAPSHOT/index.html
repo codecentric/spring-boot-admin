@@ -518,7 +518,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 1.5.5-SNAPSHOT,</span>
-<span id="revdate">02.09.2017</span>
+<span id="revdate">13.09.2017</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -923,17 +923,17 @@ spring.boot.admin.password</p></td>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.period</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Interval for repeating the registration (in ms).</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>10.000</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>10,000</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.connectTimeout</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.connect-timeout</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Connect timeout for the registration (in ms).</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>5.000</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>5,000</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.readTimeout</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.read-timeout</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Read timeout for the registration (in ms).</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>5.000</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>5,000</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.auto-registration</p></td>
@@ -963,7 +963,7 @@ spring.boot.admin.password</p></td>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.management-url</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Management-url to register with. Can be overridden in case the reachable url is different (e.g. Docker).</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Guessed based on managment-base-url and <code>management.context-path</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Guessed based on management-base-url and <code>management.context-path</code>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.service-base-url</p></td>
@@ -1403,7 +1403,7 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-This examples combines the reminding and filtering notifiers. This allows you to get notifications after the deployed applications hasn&#8217;t restarted in a certain amount of time (until the filter expires).
+This example combines the reminding and filtering notifiers. This allows you to get notifications after the deployed application hasn&#8217;t restarted in a certain amount of time (until the filter expires).
 </td>
 </tr>
 </table>
