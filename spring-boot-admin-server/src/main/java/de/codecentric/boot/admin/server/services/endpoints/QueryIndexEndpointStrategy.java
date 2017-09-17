@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import org.springframework.boot.actuate.endpoint.mvc.ActuatorMediaTypes;
+import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.http.HttpMethod;
 
 public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
@@ -50,7 +50,7 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
                           .filter(response -> response.statusCode().is2xxSuccessful() &&
                                               response.headers()
                                                       .contentType()
-                                                      .map(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON::isCompatibleWith)
+                                                      .map(ActuatorMediaType.V2_JSON::isCompatibleWith)
                                                       .orElse(false))
                           .flatMap(r -> r.bodyToMono(Response.class))
                           .flatMap(this::convert);

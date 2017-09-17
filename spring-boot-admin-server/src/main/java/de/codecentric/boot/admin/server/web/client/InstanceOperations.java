@@ -24,7 +24,7 @@ import java.net.URI;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.actuate.endpoint.mvc.ActuatorMediaTypes;
+import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -66,7 +66,7 @@ public class InstanceOperations {
     public Mono<ClientResponse> exchange(HttpMethod method, Instance instance, URI uri) {
         return webClient.method(method)
                         .uri(uri)
-                        .accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON, MediaType.APPLICATION_JSON)
+                        .accept(ActuatorMediaType.V2_JSON, MediaType.APPLICATION_JSON)
                         .headers(headers -> headers.putAll(httpHeadersProvider.getHeaders(instance)))
                         .exchange()
                         .doOnSubscribe((s) -> log.debug("Do {} on '{}' for {}", method, uri, instance));

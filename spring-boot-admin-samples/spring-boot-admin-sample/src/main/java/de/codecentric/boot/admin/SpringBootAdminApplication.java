@@ -31,6 +31,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @Configuration
 @EnableAutoConfiguration
@@ -61,8 +64,27 @@ public class SpringBootAdminApplication {
             // Enable so that the clients can authenticate via HTTP basic for registering
             http.httpBasic();
         }
+
+        @Bean
+        @Override
+        public UserDetailsService userDetailsService() {
+            InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+            manager.createUser(User.withUsername("user").password("pass").build());
+            return manager;
+        }
     }
     // end::configuration-spring-security[]
+
+
+    @Profile("insecure")
+    @Configuration
+    public static class DisableSecurityConfig extends WebSecurityConfigurerAdapter {
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.csrf().disable();
+            http.authorizeRequests().antMatchers("/**").permitAll();
+        }
+    }
 
     @Configuration
     public static class NotifierConfig {

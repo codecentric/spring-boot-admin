@@ -23,7 +23,8 @@ import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.mock.env.MockEnvironment;
@@ -39,8 +40,9 @@ public class ServletApplicationFactoryTest {
     private ServerProperties server = new ServerProperties();
     private ManagementServerProperties management = new ManagementServerProperties();
     private MockServletContext servletContext = new MockServletContext();
+    private EndpointPathProvider endpointPathProvider = mock(EndpointPathProvider.class);
     private ServletApplicationFactory factory = new ServletApplicationFactory(instance, management, server,
-            servletContext, "/health");
+            servletContext, endpointPathProvider);
 
     @Before
     public void setup() {
@@ -51,47 +53,51 @@ public class ServletApplicationFactoryTest {
     public void test_contextPath_mgmtPath() {
         servletContext.setContextPath("app");
         management.setContextPath("/admin");
+        when(endpointPathProvider.getPath("health")).thenReturn("/admin/health");
         publishApplicationReadyEvent(factory, 8080, null);
 
         Application app = factory.createApplication();
-        assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":8080/app/admin/");
-        assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":8080/app/admin/health/");
-        assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":8080/app/");
+        assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":8080/app/admin");
+        assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":8080/app/admin/health");
+        assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":8080/app");
     }
 
     @Test
     public void test_contextPath_mgmtPortPath() {
         servletContext.setContextPath("app");
         management.setContextPath("/admin");
+        when(endpointPathProvider.getPath("health")).thenReturn("/admin/health");
         publishApplicationReadyEvent(factory, 8080, 8081);
 
         Application app = factory.createApplication();
-        assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":8081/admin/");
-        assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":8081/admin/health/");
-        assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":8080/app/");
+        assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":8081/admin");
+        assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":8081/admin/health");
+        assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":8080/app");
     }
 
     @Test
     public void test_contextPath() {
         servletContext.setContextPath("app");
+        when(endpointPathProvider.getPath("health")).thenReturn("/application/health");
         publishApplicationReadyEvent(factory, 80, null);
 
         Application app = factory.createApplication();
-        assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":80/app/application/");
-        assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":80/app/application/health/");
-        assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":80/app/");
+        assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":80/app/application");
+        assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":80/app/application/health");
+        assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":80/app");
     }
 
     @Test
     public void test_servletPath() {
         server.getServlet().setPath("app");
         servletContext.setContextPath("srv");
+        when(endpointPathProvider.getPath("health")).thenReturn("/application/health");
         publishApplicationReadyEvent(factory, 80, null);
 
         Application app = factory.createApplication();
-        assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":80/srv/app/application/");
-        assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":80/srv/app/application/health/");
-        assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":80/srv/");
+        assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":80/srv/app/application");
+        assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":80/srv/app/application/health");
+        assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":80/srv");
     }
 
     private String getHostname() {

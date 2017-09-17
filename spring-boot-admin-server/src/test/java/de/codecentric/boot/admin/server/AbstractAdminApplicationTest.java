@@ -132,7 +132,7 @@ public abstract class AbstractAdminApplicationTest {
     private Registration createRegistration() {
         return Registration.builder()
                            .name("Test-Instance")
-                           .healthUrl("http://localhost:" + port + "/mgmt/health")
+                           .healthUrl("http://localhost:" + port + "/mgmt/status")
                            .managementUrl("http://localhost:" + port + "/mgmt")
                            .serviceUrl("http://localhost:" + port)
                            .build();

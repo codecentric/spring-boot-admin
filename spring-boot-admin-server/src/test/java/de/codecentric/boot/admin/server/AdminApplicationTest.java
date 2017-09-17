@@ -30,8 +30,7 @@ public class AdminApplicationTest extends AbstractAdminApplicationTest {
     @Before
     public void setUp() throws Exception {
         instance = (ServletWebServerApplicationContext) SpringApplication.run(TestAdminApplication.class,
-                "--server.port=0", "--management.context-path=/mgmt", "--management.security.enabled=false",
-                "--info.test=foobar");
+                "--server.port=0", "--management.context-path=/mgmt", "--info.test=foobar");
 
         super.setUp(instance.getWebServer().getPort());
     }

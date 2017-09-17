@@ -23,8 +23,10 @@ import de.codecentric.boot.admin.client.registration.ServletApplicationFactory;
 
 import javax.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -43,6 +45,7 @@ import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebA
 @Configuration
 @EnableConfigurationProperties({ClientProperties.class, InstanceProperties.class})
 @Conditional(SpringBootAdminClientEnabledCondition.class)
+@AutoConfigureAfter(WebMvcEndpointManagementContextConfiguration.class)
 public class SpringBootAdminClientAutoConfiguration {
 
     @Configuration
@@ -53,9 +56,9 @@ public class SpringBootAdminClientAutoConfiguration {
         public ApplicationFactory applicationFactory(InstanceProperties instance,
                                                      ManagementServerProperties management,
                                                      ServerProperties server,
-                                                     @Value("${endpoints.health.path:/${endpoints.health.id:health}}") String healthEndpointPath,
-                                                     ServletContext servletContext) {
-            return new ServletApplicationFactory(instance, management, server, servletContext, healthEndpointPath);
+                                                     ServletContext servletContext,
+                                                     EndpointPathProvider endpointPathProvider) {
+            return new ServletApplicationFactory(instance, management, server, servletContext, endpointPathProvider);
         }
     }
 
@@ -79,8 +82,8 @@ public class SpringBootAdminClientAutoConfiguration {
     public ApplicationFactory applicationFactory(InstanceProperties instance,
                                                  ManagementServerProperties management,
                                                  ServerProperties server,
-                                                 @Value("${endpoints.health.path:/${endpoints.health.id:health}}") String healthEndpointPath) {
-        return new DefaultApplicationFactory(instance, management, server, healthEndpointPath);
+                                                 EndpointPathProvider endpointPathProvider) {
+        return new DefaultApplicationFactory(instance, management, server, endpointPathProvider);
     }
 
     @Bean

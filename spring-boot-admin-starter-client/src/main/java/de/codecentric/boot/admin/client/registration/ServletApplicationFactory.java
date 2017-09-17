@@ -19,7 +19,8 @@ package de.codecentric.boot.admin.client.registration;
 import de.codecentric.boot.admin.client.config.InstanceProperties;
 
 import javax.servlet.ServletContext;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 
 public class ServletApplicationFactory extends DefaultApplicationFactory {
@@ -30,8 +31,8 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
                                      ManagementServerProperties management,
                                      ServerProperties server,
                                      ServletContext servletContext,
-                                     String healthEndpointPath) {
-        super(instance, management, server, healthEndpointPath);
+                                     EndpointPathProvider endpointPathProvider) {
+        super(instance, management, server, endpointPathProvider);
         this.servletContext = servletContext;
         this.servlet = server.getServlet();
     }

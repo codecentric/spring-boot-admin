@@ -42,7 +42,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
 public class ClientServletApplicationTest {
-
     private ConfigurableApplicationContext instance;
     private WireMockServer wiremock;
 
@@ -60,8 +59,8 @@ public class ClientServletApplicationTest {
         stubFor(post(urlEqualTo("/instances")).willReturn(response));
 
         instance = SpringApplication.run(TestClientApplication.class, "--spring.main.web-application-type=servlet",
-                "--spring.application.name=Test-Client", "--server.port=0", "--management.port=0",
-                "--management.context-path=/mgmt",
+                "--spring.application.name=Test-Client", "--server.port=0", "--management.context-path=/mgmt",
+                "--endpoints.health.enabled=true",
                 "--spring.boot.admin.client.url=http://localhost:" + wiremock.port());
     }
 
@@ -71,8 +70,8 @@ public class ClientServletApplicationTest {
         String serviceHost = "http://localhost:" + instance.getEnvironment().getProperty("local.server.port");
         String managementHost = "http://localhost:" + instance.getEnvironment().getProperty("local.management.port");
         String body = "{ \"name\" : \"Test-Client\"," + //
-                      " \"managementUrl\" : \"" + managementHost + "/mgmt/\"," + //
-                      " \"healthUrl\" : \"" + managementHost + "/mgmt/health/\"," + //
+                      " \"managementUrl\" : \"" + managementHost + "/mgmt\"," + //
+                      " \"healthUrl\" : \"" + managementHost + "/mgmt/health\"," + //
                       " \"serviceUrl\" : \"" + serviceHost + "/\", " + //
                       " \"metadata\" : {} }";
         RequestPatternBuilder request = postRequestedFor(urlEqualTo("/instances")).withHeader("Content-Type",

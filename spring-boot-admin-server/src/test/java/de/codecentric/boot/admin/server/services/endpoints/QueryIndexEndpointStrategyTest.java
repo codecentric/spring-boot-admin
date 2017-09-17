@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.Test;
-import org.springframework.boot.actuate.endpoint.mvc.ActuatorMediaTypes;
+import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -43,11 +43,10 @@ public class QueryIndexEndpointStrategyTest {
     private Mono<ClientResponse> responseNotFound = mockResponse(HttpStatus.NOT_FOUND, null, null);
     private Mono<ClientResponse> responseOkWrongContentType = mockResponse(HttpStatus.OK, MediaType.APPLICATION_JSON,
             null);
-    private Mono<ClientResponse> responseOk = mockResponse(HttpStatus.OK,
-            ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON,
+    private Mono<ClientResponse> responseOk = mockResponse(HttpStatus.OK, ActuatorMediaType.V2_JSON,
             createBody("metrics=http://app/mgmt/stats", "info=http://app/mgmt/info", "self=http://app/mgmt"));
-    private Mono<ClientResponse> responseOkEmpty = mockResponse(HttpStatus.OK,
-            ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON, createBody("self=http://app/mgmt"));
+    private Mono<ClientResponse> responseOkEmpty = mockResponse(HttpStatus.OK, ActuatorMediaType.V2_JSON,
+            createBody("self=http://app/mgmt"));
 
     private Instance instance = Instance.create(InstanceId.of("id"))
                                         .register(Registration.create("test", "http://app/mgmt/health")

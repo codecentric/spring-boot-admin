@@ -54,10 +54,10 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
         System.setProperty("hazelcast.wait.seconds.before.join", "0");
         instance1 = (ServletWebServerApplicationContext) SpringApplication.run(TestAdminApplication.class,
                 "--server.port=0", "--spring.jmx.enabled=false", "--management.context-path=/mgmt",
-                "--management.security.enabled=false", "--info.test=foobar");
+                "--info.test=foobar");
         instance2 = (ServletWebServerApplicationContext) SpringApplication.run(TestAdminApplication.class,
                 "--server.port=0", "--spring.jmx.enabled=false", "--management.context-path=/mgmt",
-                "--management.security.enabled=false", "--info.test=foobar");
+                "--info.test=foobar");
 
         super.setUp(instance1.getWebServer().getPort());
         this.webClient2 = createWebClient(instance2.getWebServer().getPort());
@@ -89,7 +89,7 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
                                          .getResponseBody()
                                          .collect(Collectors.joining());
 
-        StepVerifier.create(events1.and(events2))
+        StepVerifier.create(events1.zipWith(events2))
                     .assertNext(t -> assertThat(t.getT1()).isEqualTo(t.getT2()))
                     .verifyComplete();
     }

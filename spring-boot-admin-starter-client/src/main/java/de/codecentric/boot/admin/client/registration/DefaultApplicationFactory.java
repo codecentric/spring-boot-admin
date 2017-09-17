@@ -21,7 +21,8 @@ import de.codecentric.boot.admin.client.config.InstanceProperties;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.server.Ssl;
@@ -43,16 +44,16 @@ public class DefaultApplicationFactory implements ApplicationFactory {
     private ManagementServerProperties management;
     private Integer localServerPort;
     private Integer localManagementPort;
-    private String healthEndpointPath;
+    private EndpointPathProvider endpointPathProvider;
 
     public DefaultApplicationFactory(InstanceProperties instance,
                                      ManagementServerProperties management,
                                      ServerProperties server,
-                                     String healthEndpointPath) {
+                                     EndpointPathProvider endpointPathProvider) {
         this.instance = instance;
         this.management = management;
         this.server = server;
-        this.healthEndpointPath = healthEndpointPath;
+        this.endpointPathProvider = endpointPathProvider;
     }
 
     @Override
@@ -89,7 +90,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
                                           .port(getLocalServerPort());
         }
 
-        return builder.path("/").path(getServerContextPath()).path("/").toUriString();
+        return builder.path("/").path(getServerContextPath()).toUriString();
     }
 
     protected String getServerContextPath() {
@@ -101,22 +102,32 @@ public class DefaultApplicationFactory implements ApplicationFactory {
             return instance.getManagementUrl();
         }
 
+        return UriComponentsBuilder.fromUriString(getManagementBaseUrl())
+                                   .path("/")
+                                   .path(getManagementContextPath())
+                                   .toUriString();
+    }
+
+    protected String getManagementBaseUrl() {
         String baseUrl = instance.getManagementBaseUrl();
 
-        UriComponentsBuilder builder;
         if (!StringUtils.isEmpty(baseUrl)) {
-            builder = UriComponentsBuilder.fromUriString(baseUrl);
-        } else if (isManagementPortEqual()) {
-            builder = UriComponentsBuilder.fromHttpUrl(getServiceUrl()).path("/").path(getDispatcherServletPrefix());
-        } else {
-            Ssl ssl = management.getSsl() != null ? management.getSsl() : server.getSsl();
-            builder = UriComponentsBuilder.newInstance()
-                                          .scheme(getScheme(ssl))
-                                          .host(getManagementHost())
-                                          .port(getLocalManagementPort());
+            return baseUrl;
         }
 
-        return builder.path("/").path(getManagementContextPath()).path("/").toUriString();
+        if (isManagementPortEqual()) {
+            return UriComponentsBuilder.fromHttpUrl(getServiceUrl())
+                                       .path("/")
+                                       .path(getDispatcherServletPrefix())
+                                       .toUriString();
+        }
+
+        Ssl ssl = management.getSsl() != null ? management.getSsl() : server.getSsl();
+        return UriComponentsBuilder.newInstance()
+                                   .scheme(getScheme(ssl))
+                                   .host(getManagementHost())
+                                   .port(getLocalManagementPort())
+                                   .toUriString();
     }
 
     protected String getDispatcherServletPrefix() {
@@ -135,10 +146,9 @@ public class DefaultApplicationFactory implements ApplicationFactory {
         if (instance.getHealthUrl() != null) {
             return instance.getHealthUrl();
         }
-        return UriComponentsBuilder.fromHttpUrl(getManagementUrl())
+        return UriComponentsBuilder.fromHttpUrl(getManagementBaseUrl())
                                    .path("/")
                                    .path(getHealthEndpointPath())
-                                   .path("/")
                                    .toUriString();
     }
 
@@ -179,7 +189,15 @@ public class DefaultApplicationFactory implements ApplicationFactory {
     }
 
     protected String getHealthEndpointPath() {
-        return healthEndpointPath;
+        String health = endpointPathProvider.getPath("health");
+        if (StringUtils.hasText(health)) {
+            return health;
+        }
+        String status = endpointPathProvider.getPath("status");
+        if (StringUtils.hasText(status)) {
+            return status;
+        }
+        throw new IllegalStateException("Either health or status endpoint must be enabled!");
     }
 
     protected String getScheme(Ssl ssl) {

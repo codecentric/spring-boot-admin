@@ -42,7 +42,7 @@ public class AdminApplicationDiscoveryTest extends AbstractAdminApplicationTest 
     public void setUp() throws Exception {
         instance = (ServletWebServerApplicationContext) SpringApplication.run(TestAdminApplication.class,
                 "--server.port=0", "--management.context-path=/mgmt", "--info.test=foobar",
-                "--management.security.enabled=false");
+                "--endpoints.health.enabled=true");
 
         simpleDiscovery = instance.getBean(SimpleDiscoveryProperties.class);
 

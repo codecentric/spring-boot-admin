@@ -25,30 +25,17 @@ spring:
 spring:
   profiles: insecure
 
-management:
-  security:
-    enabled: false
-
-security:
-  basic:
-    enabled: false
-
 ---
 spring:
   profiles: secure
   boot:
     admin:
-    client:
-      username: "${security.user.name}"       #These two are needed so that the client
-      password: "${security.user.password}"   #can register at the protected server api
-      instance:
-        metadata:
-          user.name: "${security.user.name}"         #These two are needed so that the server
-          user.password: "${security.user.password}" #can access the proteceted client endpoints
-
-security:
-  user:
-    name: user
-    password: pass
+      client:
+        username: "user"       #These two are needed so that the client
+        password: "pass"       #can register at the protected server api
+        instance:
+          metadata:
+            user.name: "user"         #These two are needed so that the server
+            user.password: "pass"     #can access the proteceted client endpoints
 
 

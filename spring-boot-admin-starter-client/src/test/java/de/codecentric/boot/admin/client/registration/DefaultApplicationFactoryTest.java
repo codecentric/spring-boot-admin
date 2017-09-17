@@ -23,7 +23,8 @@ import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.server.Ssl;
@@ -39,8 +40,10 @@ public class DefaultApplicationFactoryTest {
     private InstanceProperties instanceProperties = new InstanceProperties();
     private ServerProperties server = new ServerProperties();
     private ManagementServerProperties management = new ManagementServerProperties();
+    private EndpointPathProvider endpointPathProvider = mock(EndpointPathProvider.class);
+
     private DefaultApplicationFactory factory = new DefaultApplicationFactory(instanceProperties, management, server,
-            "/health");
+            endpointPathProvider);
 
     @Before
     public void setup() {
@@ -50,24 +53,23 @@ public class DefaultApplicationFactoryTest {
     @Test
     public void test_mgmtPortPath() {
         management.setContextPath("/admin");
-        DefaultApplicationFactory factory = new DefaultApplicationFactory(instanceProperties, management, server,
-                "/alive");
-
+        when(endpointPathProvider.getPath("health")).thenReturn("/admin/alive");
         publishApplicationReadyEvent(factory, 8080, 8081);
 
         Application app = factory.createApplication();
-        assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":8081/admin/");
-        assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":8081/admin/alive/");
+        assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":8081/admin");
+        assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":8081/admin/alive");
         assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":8080/");
     }
 
     @Test
     public void test_default() {
+        when(endpointPathProvider.getPath("health")).thenReturn("/application/health");
         publishApplicationReadyEvent(factory, 8080, null);
 
         Application app = factory.createApplication();
-        assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":8080/application/");
-        assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":8080/application/health/");
+        assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":8080/application");
+        assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":8080/application/health");
         assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":8080/");
     }
 
@@ -75,11 +77,12 @@ public class DefaultApplicationFactoryTest {
     public void test_ssl() {
         server.setSsl(new Ssl());
         server.getSsl().setEnabled(true);
+        when(endpointPathProvider.getPath("health")).thenReturn("/application/health");
         publishApplicationReadyEvent(factory, 8080, null);
 
         Application app = factory.createApplication();
-        assertThat(app.getManagementUrl()).isEqualTo("https://" + getHostname() + ":8080/application/");
-        assertThat(app.getHealthUrl()).isEqualTo("https://" + getHostname() + ":8080/application/health/");
+        assertThat(app.getManagementUrl()).isEqualTo("https://" + getHostname() + ":8080/application");
+        assertThat(app.getHealthUrl()).isEqualTo("https://" + getHostname() + ":8080/application/health");
         assertThat(app.getServiceUrl()).isEqualTo("https://" + getHostname() + ":8080/");
     }
 
@@ -87,17 +90,19 @@ public class DefaultApplicationFactoryTest {
     public void test_ssl_management() {
         management.setSsl(new Ssl());
         management.getSsl().setEnabled(true);
+        when(endpointPathProvider.getPath("health")).thenReturn("/application/alive");
         publishApplicationReadyEvent(factory, 8080, 9090);
 
         Application app = factory.createApplication();
-        assertThat(app.getManagementUrl()).isEqualTo("https://" + getHostname() + ":9090/application/");
-        assertThat(app.getHealthUrl()).isEqualTo("https://" + getHostname() + ":9090/application/health/");
+        assertThat(app.getManagementUrl()).isEqualTo("https://" + getHostname() + ":9090/application");
+        assertThat(app.getHealthUrl()).isEqualTo("https://" + getHostname() + ":9090/application/alive");
         assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":8080/");
     }
 
     @Test
     public void test_preferIpAddress_serveraddress_missing() {
         instanceProperties.setPreferIp(true);
+        when(endpointPathProvider.getPath("health")).thenReturn("/application/alive");
         publishApplicationReadyEvent(factory, 8080, null);
 
         Application app = factory.createApplication();
@@ -107,11 +112,11 @@ public class DefaultApplicationFactoryTest {
     @Test
     public void test_preferIpAddress_managementaddress_missing() {
         instanceProperties.setPreferIp(true);
+        when(endpointPathProvider.getPath("health")).thenReturn("/application/alive");
         publishApplicationReadyEvent(factory, 8080, 8081);
 
         Application app = factory.createApplication();
-        assertThat(app.getManagementUrl()).matches(
-                "http://\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}:8081/application/");
+        assertThat(app.getManagementUrl()).matches("http://\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}:8081/application");
     }
 
     @Test
@@ -119,11 +124,12 @@ public class DefaultApplicationFactoryTest {
         instanceProperties.setPreferIp(true);
         server.setAddress(InetAddress.getByName("127.0.0.1"));
         management.setAddress(InetAddress.getByName("127.0.0.2"));
+        when(endpointPathProvider.getPath("health")).thenReturn("/application/health");
         publishApplicationReadyEvent(factory, 8080, 8081);
 
         Application app = factory.createApplication();
-        assertThat(app.getManagementUrl()).isEqualTo("http://127.0.0.2:8081/application/");
-        assertThat(app.getHealthUrl()).isEqualTo("http://127.0.0.2:8081/application/health/");
+        assertThat(app.getManagementUrl()).isEqualTo("http://127.0.0.2:8081/application");
+        assertThat(app.getHealthUrl()).isEqualTo("http://127.0.0.2:8081/application/health");
         assertThat(app.getServiceUrl()).isEqualTo("http://127.0.0.1:8080/");
     }
 
@@ -144,22 +150,24 @@ public class DefaultApplicationFactoryTest {
         instanceProperties.setManagementBaseUrl("http://management:8090");
         instanceProperties.setServiceBaseUrl("http://service:80");
         management.setContextPath("/admin");
+        when(endpointPathProvider.getPath("health")).thenReturn("/admin/health");
 
         Application app = factory.createApplication();
         assertThat(app.getServiceUrl()).isEqualTo("http://service:80/");
-        assertThat(app.getManagementUrl()).isEqualTo("http://management:8090/admin/");
-        assertThat(app.getHealthUrl()).isEqualTo("http://management:8090/admin/health/");
+        assertThat(app.getManagementUrl()).isEqualTo("http://management:8090/admin");
+        assertThat(app.getHealthUrl()).isEqualTo("http://management:8090/admin/health");
     }
 
     @Test
     public void test_service_baseUrl() {
         instanceProperties.setServiceBaseUrl("http://service:80");
         management.setContextPath("/admin");
+        when(endpointPathProvider.getPath("health")).thenReturn("/admin/health");
 
         Application app = factory.createApplication();
         assertThat(app.getServiceUrl()).isEqualTo("http://service:80/");
-        assertThat(app.getManagementUrl()).isEqualTo("http://service:80/admin/");
-        assertThat(app.getHealthUrl()).isEqualTo("http://service:80/admin/health/");
+        assertThat(app.getManagementUrl()).isEqualTo("http://service:80/admin");
+        assertThat(app.getHealthUrl()).isEqualTo("http://service:80/admin/health");
     }
 
     @Test
