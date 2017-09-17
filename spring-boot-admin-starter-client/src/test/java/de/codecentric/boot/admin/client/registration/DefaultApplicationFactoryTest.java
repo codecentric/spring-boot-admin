@@ -84,7 +84,7 @@ public class DefaultApplicationFactoryTest {
     }
 
     @Test
-    public void test_ssl_managment() {
+    public void test_ssl_management() {
         management.setSsl(new Ssl());
         management.getSsl().setEnabled(true);
         publishApplicationReadyEvent(factory, 8080, 9090);

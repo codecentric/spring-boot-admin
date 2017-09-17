@@ -34,8 +34,8 @@ public class DefaultServiceInstanceConverterTest {
         Registration registration = new DefaultServiceInstanceConverter().convert(service);
 
         assertThat(registration.getName()).isEqualTo("test");
-        assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80");
-        assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80");
+        assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80/");
+        assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80/");
         assertThat(registration.getHealthUrl()).isEqualTo("http://localhost:80/health");
     }
 
@@ -49,7 +49,7 @@ public class DefaultServiceInstanceConverterTest {
         Registration registration = converter.convert(service);
 
         assertThat(registration.getName()).isEqualTo("test");
-        assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80");
+        assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80/");
         assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80/mgmt");
         assertThat(registration.getHealthUrl()).isEqualTo("http://localhost:80/mgmt/ping");
     }
@@ -66,7 +66,7 @@ public class DefaultServiceInstanceConverterTest {
         Registration registration = new DefaultServiceInstanceConverter().convert(service);
 
         assertThat(registration.getName()).isEqualTo("test");
-        assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80");
+        assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80/");
         assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:1234/mgmt");
         assertThat(registration.getHealthUrl()).isEqualTo("http://localhost:1234/mgmt/ping");
         assertThat(registration.getMetadata()).isEqualTo(metadata);

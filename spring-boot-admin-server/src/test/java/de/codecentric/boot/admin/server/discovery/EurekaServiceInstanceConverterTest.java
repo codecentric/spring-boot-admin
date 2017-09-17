@@ -44,7 +44,7 @@ public class EurekaServiceInstanceConverterTest {
         Registration registration = new EurekaServiceInstanceConverter().convert(service);
 
         assertThat(registration.getName()).isEqualTo("test");
-        assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80");
+        assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80/");
         assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80/mgmt");
         assertThat(registration.getHealthUrl()).isEqualTo("http://localhost:80/mgmt/ping");
     }
@@ -60,7 +60,7 @@ public class EurekaServiceInstanceConverterTest {
 
         Registration registration = new EurekaServiceInstanceConverter().convert(service);
 
-        assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80");
+        assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80/");
     }
 
     @Test

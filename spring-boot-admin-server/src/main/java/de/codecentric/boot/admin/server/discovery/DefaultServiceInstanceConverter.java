@@ -25,8 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-import static org.apache.commons.lang.StringUtils.stripStart;
+import static org.springframework.util.StringUtils.isEmpty;
 
 /**
  * Converts any {@link ServiceInstance}s to {@link Instance}s. To customize the health- or
@@ -79,29 +78,36 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
     }
 
     protected URI getHealthUrl(ServiceInstance instance) {
-        String healthPath = defaultIfEmpty(instance.getMetadata().get(KEY_HEALTH_PATH), healthEndpointPath);
-        healthPath = stripStart(healthPath, "/");
+        String healthPath = instance.getMetadata().get(KEY_HEALTH_PATH);
+        if (isEmpty(healthPath)) {
+            healthPath = healthEndpointPath;
+        }
 
-        return UriComponentsBuilder.fromUri(getManagementUrl(instance)).pathSegment(healthPath).build().toUri();
+        return UriComponentsBuilder.fromUri(getManagementUrl(instance)).path("/").path(healthPath).build().toUri();
     }
 
     protected URI getManagementUrl(ServiceInstance instance) {
-        String managamentPath = defaultIfEmpty(instance.getMetadata().get(KEY_MANAGEMENT_PATH), managementContextPath);
-        managamentPath = stripStart(managamentPath, "/");
+        String managamentPath = instance.getMetadata().get(KEY_MANAGEMENT_PATH);
+        if (isEmpty(managamentPath)) {
+            managamentPath = managementContextPath;
+        }
 
         URI serviceUrl = getServiceUrl(instance);
-        String managamentPort = defaultIfEmpty(instance.getMetadata().get(KEY_MANAGEMENT_PORT),
-                String.valueOf(serviceUrl.getPort()));
+        String managamentPort = instance.getMetadata().get(KEY_MANAGEMENT_PORT);
+        if (isEmpty(managamentPort)) {
+            managamentPort = String.valueOf(serviceUrl.getPort());
+        }
 
         return UriComponentsBuilder.fromUri(serviceUrl)
                                    .port(managamentPort)
-                                   .pathSegment(managamentPath)
+                                   .path("/")
+                                   .path(managamentPath)
                                    .build()
                                    .toUri();
     }
 
     protected URI getServiceUrl(ServiceInstance instance) {
-        return instance.getUri();
+        return UriComponentsBuilder.fromUri(instance.getUri()).path("/").build().toUri();
     }
 
     protected Map<String, String> getMetadata(ServiceInstance instance) {

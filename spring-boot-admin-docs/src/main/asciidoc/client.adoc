@@ -83,15 +83,15 @@ spring.boot.admin.client.password
 
 | spring.boot.admin.client.period
 | Interval for repeating the registration (in ms).
-| `10.000`
+| `10,000`
 
-| spring.boot.admin.connectTimeout
+| spring.boot.admin.connect-timeout
 | Connect timeout for the registration (in ms).
-| `5.000`
+| `5,000`
 
-| spring.boot.admin.readTimeout
+| spring.boot.admin.read-timeout
 | Read timeout for the registration (in ms).
-| `5.000`
+| `5,000`
 
 | spring.boot.admin.auto-registration
 | If set to true the periodic task to register the application is automatically scheduled after the application is ready.
@@ -115,7 +115,7 @@ spring.boot.admin.client.password
 
 | spring.boot.admin.client.instance.management-url
 | Management-url to register with. Can be overridden in case the reachable url is different (e.g. Docker).
-| Guessed based on managment-base-url and `management.context-path`.
+| Guessed based on management-base-url and `management.context-path`.
 
 | spring.boot.admin.client.instance.service-base-url
 | Base url for computing the service-url to register with. The path is inferred at runtime, and appended to the base url.
