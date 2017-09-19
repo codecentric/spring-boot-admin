@@ -19,7 +19,6 @@ import de.codecentric.boot.admin.event.RoutesOutdatedEvent;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.web.client.HttpHeadersProvider;
 import de.codecentric.boot.admin.zuul.ApplicationRouteLocator;
-import de.codecentric.boot.admin.zuul.OptionsDispatchingZuulController;
 import de.codecentric.boot.admin.zuul.filters.pre.ApplicationHeadersFilter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,6 @@ import org.springframework.cloud.netflix.zuul.filters.RouteLocator;
 import org.springframework.cloud.netflix.zuul.filters.TraceProxyRequestHelper;
 import org.springframework.cloud.netflix.zuul.filters.pre.PreDecorationFilter;
 import org.springframework.cloud.netflix.zuul.filters.route.SimpleHostRoutingFilter;
-import org.springframework.cloud.netflix.zuul.web.ZuulController;
 import org.springframework.cloud.netflix.zuul.web.ZuulHandlerMapping;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -63,12 +61,6 @@ public class RevereseZuulProxyConfiguration extends ZuulServerAutoConfiguration 
                 adminServer.getContextPath() + "/api/applications/");
         routeLocator.setEndpoints(adminServer.getRoutes().getEndpoints());
         return routeLocator;
-    }
-
-    @Bean
-    @Override
-    public ZuulController zuulController() {
-        return new OptionsDispatchingZuulController();
     }
 
     @Bean
