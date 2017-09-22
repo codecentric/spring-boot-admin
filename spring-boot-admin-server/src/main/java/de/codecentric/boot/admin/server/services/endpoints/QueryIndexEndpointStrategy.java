@@ -60,7 +60,7 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
         List<Endpoint> endpoints = response.get_links()
                                            .entrySet()
                                            .stream()
-                                           .filter(e -> !e.getKey().equals("self"))
+                                           .filter(e -> !e.getKey().equals("self") && !e.getValue().isTemplated())
                                            .map(e -> Endpoint.of(e.getKey(), e.getValue().getHref()))
                                            .collect(Collectors.toList());
         if (endpoints.isEmpty()) {
@@ -77,6 +77,7 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
         @Data
         static class EndpointRef {
             private String href;
+            private boolean templated;
         }
     }
 }
