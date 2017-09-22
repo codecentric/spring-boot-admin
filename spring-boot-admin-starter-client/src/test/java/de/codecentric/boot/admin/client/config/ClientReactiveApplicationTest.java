@@ -21,9 +21,10 @@ import org.junit.Before;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 
-public class ClientServletApplicationTest extends AbstractClientApplicationTest {
+public class ClientReactiveApplicationTest extends AbstractClientApplicationTest {
     private ConfigurableApplicationContext instance;
 
     @Override
@@ -31,7 +32,7 @@ public class ClientServletApplicationTest extends AbstractClientApplicationTest 
     public void setUp() throws Exception {
         super.setUp();
 
-        instance = SpringApplication.run(TestClientApplication.class, "--spring.main.web-application-type=servlet",
+        instance = SpringApplication.run(TestClientApplication.class, "--spring.main.web-application-type=reactive",
                 "--spring.application.name=Test-Client", "--server.port=0", "--management.context-path=/mgmt",
                 "--endpoints.health.enabled=true",
                 "--spring.boot.admin.client.url=http://localhost:" + getWirmockPort());
@@ -56,7 +57,7 @@ public class ClientServletApplicationTest extends AbstractClientApplicationTest 
     }
 
     @SpringBootConfiguration
-    @EnableAutoConfiguration
+    @EnableAutoConfiguration(exclude = WebMvcAutoConfiguration.class)
     public static class TestClientApplication {
     }
 

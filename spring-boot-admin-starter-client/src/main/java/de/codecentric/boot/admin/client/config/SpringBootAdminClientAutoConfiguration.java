@@ -62,6 +62,19 @@ public class SpringBootAdminClientAutoConfiguration {
         }
     }
 
+    @Configuration
+    @ConditionalOnWebApplication(type = Type.REACTIVE)
+    public static class ReactiveConfiguration {
+        @Bean
+        @ConditionalOnMissingBean
+        public ApplicationFactory applicationFactory(InstanceProperties instance,
+                                                     ManagementServerProperties management,
+                                                     ServerProperties server,
+                                                     EndpointPathProvider endpointPathProvider) {
+            return new DefaultApplicationFactory(instance, management, server, endpointPathProvider);
+        }
+    }
+
     @Bean
     @ConditionalOnMissingBean
     public ApplicationRegistrator registrator(ClientProperties client,

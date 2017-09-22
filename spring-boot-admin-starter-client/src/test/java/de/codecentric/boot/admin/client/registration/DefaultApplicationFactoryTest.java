@@ -22,14 +22,13 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.boot.web.server.Ssl;
-import org.springframework.mock.env.MockEnvironment;
-import org.springframework.web.context.ConfigurableWebApplicationContext;
+import org.springframework.boot.web.server.WebServer;
+import org.springframework.context.ApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -187,16 +186,36 @@ public class DefaultApplicationFactoryTest {
     private void publishApplicationReadyEvent(DefaultApplicationFactory factory,
                                               Integer serverport,
                                               Integer managementport) {
-        MockEnvironment env = new MockEnvironment();
-        if (serverport != null) {
-            env.setProperty("local.server.port", serverport.toString());
-        }
-        if (managementport != null) {
-            env.setProperty("local.management.port", managementport.toString());
+        factory.onWebServerInitialized(new TestWebServerInitializedEvent("server", serverport));
+        factory.onWebServerInitialized(
+                new TestWebServerInitializedEvent("management", managementport != null ? managementport : serverport));
+    }
+
+    private static class TestWebServerInitializedEvent extends WebServerInitializedEvent {
+        private final String serverId;
+        private final WebServer server;
+
+        private TestWebServerInitializedEvent(String serverId, int port) {
+            super(mock(WebServer.class));
+            this.serverId = serverId;
+            this.server = mock(WebServer.class);
+            when(server.getPort()).thenReturn(port);
         }
 
-        ConfigurableWebApplicationContext context = mock(ConfigurableWebApplicationContext.class);
-        when(context.getEnvironment()).thenReturn(env);
-        factory.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), new String[]{}, context));
+        @Override
+        public ApplicationContext getApplicationContext() {
+            return null;
+        }
+
+        @Override
+        public String getServerId() {
+            return this.serverId;
+        }
+
+        @Override
+        public WebServer getWebServer() {
+            return this.server;
+        }
     }
+
 }

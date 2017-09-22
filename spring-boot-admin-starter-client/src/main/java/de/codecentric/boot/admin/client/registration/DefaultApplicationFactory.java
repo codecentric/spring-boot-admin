@@ -24,11 +24,10 @@ import java.util.Map;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.context.event.EventListener;
 import org.springframework.util.StringUtils;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
@@ -77,7 +76,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 
         String baseUrl = instance.getServiceBaseUrl();
         if (getLocalServerPort() == null && StringUtils.isEmpty(baseUrl)) {
-            throw new IllegalStateException("service-base-url must be set when deployed to servlet-container");
+            throw new IllegalStateException("couldn't determine local port. Please supply service-base-url.");
         }
 
         UriComponentsBuilder builder;
@@ -209,14 +208,12 @@ public class DefaultApplicationFactory implements ApplicationFactory {
     }
 
     @EventListener
-    public void onApplicationReady(ApplicationReadyEvent event) {
-        if (event.getApplicationContext() instanceof WebApplicationContext) {
-            localServerPort = event.getApplicationContext()
-                                   .getEnvironment()
-                                   .getProperty("local.server.port", Integer.class);
-            localManagementPort = event.getApplicationContext()
-                                       .getEnvironment()
-                                       .getProperty("local.management.port", Integer.class, localServerPort);
+    public void onWebServerInitialized(WebServerInitializedEvent event) {
+        if ("server".equals(event.getServerId())) {
+            localServerPort = event.getWebServer().getPort();
+        }
+        if ("management".equals(event.getServerId())) {
+            localManagementPort = event.getWebServer().getPort();
         }
     }
 }
