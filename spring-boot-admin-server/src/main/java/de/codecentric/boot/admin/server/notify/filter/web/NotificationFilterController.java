@@ -26,9 +26,10 @@ import java.util.Collections;
 import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MimeTypeUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -41,7 +42,6 @@ import static org.springframework.util.StringUtils.hasText;
  */
 @AdminController
 @ResponseBody
-@RequestMapping("/notifications/filters")
 public class NotificationFilterController {
     private FilteringNotifier filteringNotifier;
 
@@ -49,12 +49,12 @@ public class NotificationFilterController {
         this.filteringNotifier = filteringNotifier;
     }
 
-    @RequestMapping(method = {RequestMethod.GET}, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/notifications/filters", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     public Map<String, NotificationFilter> getFilters() {
         return filteringNotifier.getNotificationFilters();
     }
 
-    @RequestMapping(method = {RequestMethod.POST}, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/notifications/filters", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addFilter(@RequestParam(name = "id", required = false) String id,
                                        @RequestParam(name = "name", required = false) String name,
                                        @RequestParam(name = "ttl", required = false, defaultValue = "-1") long ttl) {
@@ -67,7 +67,7 @@ public class NotificationFilterController {
         }
     }
 
-    @RequestMapping(path = "/{id}", method = {RequestMethod.DELETE})
+    @DeleteMapping(path = "/notifications/filters/{id}")
     public ResponseEntity<?> deleteFilter(@PathVariable("id") String id) {
         NotificationFilter deleted = filteringNotifier.removeFilter(id);
         if (deleted != null) {

@@ -37,7 +37,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import static java.util.Comparator.comparing;
@@ -50,22 +49,21 @@ import static java.util.stream.Collectors.toMap;
  */
 @AdminController
 @ResponseBody
-@RequestMapping("/applications")
 public class ApplicationsController {
     private static final Logger log = LoggerFactory.getLogger(ApplicationsController.class);
     private final InstanceRegistry registry;
     private final InstanceEventPublisher eventPublisher;
     private static final ServerSentEvent<Application> PING = ServerSentEvent.<Application>builder().comment("ping")
                                                                                                    .build();
-    private static final Flux<ServerSentEvent<Application>> PING_FLUX = Flux.interval(Duration.ofSeconds(10L))
-                                                                            .map(tick -> PING);
+    private static final Flux<ServerSentEvent<Application>> PING_FLUX = Flux.interval(Duration.ZERO,
+            Duration.ofSeconds(10L)).map(tick -> PING);
 
     public ApplicationsController(InstanceRegistry registry, InstanceEventPublisher eventPublisher) {
         this.registry = registry;
         this.eventPublisher = eventPublisher;
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/applications", produces = MediaType.APPLICATION_JSON_VALUE)
     public Flux<Application> applications() {
         return registry.getInstances()
                        .filter(Instance::isRegistered)
@@ -73,7 +71,7 @@ public class ApplicationsController {
                        .flatMap(grouped -> toApplication(grouped.key(), grouped));
     }
 
-    @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(path = "/applications", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<Application>> applicationsStream() {
         return Flux.from(eventPublisher)
                    .flatMap(event -> registry.getInstance(event.getInstance()))
@@ -83,7 +81,7 @@ public class ApplicationsController {
                    .mergeWith(PING_FLUX);
     }
 
-    @DeleteMapping(path = "/{name}")
+    @DeleteMapping(path = "/applications/{name}")
     public Mono<ResponseEntity<Void>> unregister(@PathVariable("name") String name) {
         log.debug("Unregister application with name '{}'", name);
         return registry.getInstancesByApplication(name)

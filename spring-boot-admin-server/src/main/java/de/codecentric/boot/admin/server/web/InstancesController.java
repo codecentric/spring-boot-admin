@@ -25,18 +25,19 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -46,11 +47,14 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 @AdminController
 @ResponseBody
-@RequestMapping("/instances")
 public class InstancesController {
     private static final Logger LOGGER = LoggerFactory.getLogger(InstancesController.class);
     private final InstanceRegistry registry;
     private final InstanceEventStore eventStore;
+    private static final ServerSentEvent<InstanceEvent> PING = ServerSentEvent.<InstanceEvent>builder().comment("ping")
+                                                                                                       .build();
+    private static final Flux<ServerSentEvent<InstanceEvent>> PING_FLUX = Flux.interval(Duration.ZERO,
+            Duration.ofSeconds(10L)).map(tick -> PING);
 
     public InstancesController(InstanceRegistry registry, InstanceEventStore eventStore) {
         this.registry = registry;
@@ -63,7 +67,7 @@ public class InstancesController {
      * @param registration registration info
      * @return The registered instance id;
      */
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/instances", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Mono<ResponseEntity<Map<String, InstanceId>>> register(@RequestBody Registration registration,
                                                                   UriComponentsBuilder builder) {
         Registration withSource = Registration.copyOf(registration).source("http-api").build();
@@ -80,7 +84,7 @@ public class InstancesController {
      * @param name the name to search for
      * @return application list
      */
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/instances", produces = MediaType.APPLICATION_JSON_VALUE)
     public Flux<Instance> instances(@RequestParam(value = "name", required = false) String name) {
         LOGGER.debug("Deliver registered instances with name={}", name);
         if (name == null || name.isEmpty()) {
@@ -96,7 +100,7 @@ public class InstancesController {
      * @param id The application identifier.
      * @return The registered application.
      */
-    @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/instances/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<ResponseEntity<Instance>> instance(@PathVariable String id) {
         LOGGER.debug("Deliver registered instance with ID '{}'", id);
         return registry.getInstance(InstanceId.of(id))
@@ -110,7 +114,7 @@ public class InstancesController {
      *
      * @param id The instance id.
      */
-    @DeleteMapping(path = "/{id}")
+    @DeleteMapping(path = "/instances/{id}")
     public Mono<ResponseEntity<Void>> unregister(@PathVariable String id) {
         LOGGER.debug("Unregister instance with ID '{}'", id);
         return registry.deregister(InstanceId.of(id))
@@ -118,14 +122,14 @@ public class InstancesController {
                        .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    @GetMapping(path = "/events", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/instances/events", produces = MediaType.APPLICATION_JSON_VALUE)
     public Flux<InstanceEvent> events() {
         return eventStore.findAll();
     }
 
-    @GetMapping(path = "/events", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
-    public Flux<? extends InstanceEvent> eventStream() {
-        return Flux.from(eventStore);
+    @GetMapping(path = "/instances/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<InstanceEvent>> eventStream() {
+        return Flux.from(eventStore).map(event -> ServerSentEvent.builder(event).build()).mergeWith(PING_FLUX);
     }
 
 }
