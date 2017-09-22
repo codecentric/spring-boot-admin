@@ -19,7 +19,6 @@ import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import reactor.core.publisher.Mono;
 
-import java.io.Serializable;
 import java.net.URI;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -40,7 +39,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class InstanceOperations {
     private static final Logger log = LoggerFactory.getLogger(InstanceOperations.class);
     @SuppressWarnings("unchecked")
-    private static final Class<Map<String, Serializable>> RESPONSE_TYPE_MAP = (Class<Map<String, Serializable>>) (Class<?>) Map.class;
+    private static final Class<Map<String, Object>> RESPONSE_TYPE_MAP = (Class<Map<String, Object>>) (Class<?>) Map.class;
     private final WebClient webClient;
     private final HttpHeadersProvider httpHeadersProvider;
 
@@ -49,16 +48,16 @@ public class InstanceOperations {
         this.httpHeadersProvider = httpHeadersProvider;
     }
 
-    public Mono<ResponseEntity<Map<String, Serializable>>> getHealth(Instance instance) {
+    public Mono<ResponseEntity<Map<String, Object>>> getHealth(Instance instance) {
         URI uri = UriComponentsBuilder.fromHttpUrl(instance.getRegistration().getHealthUrl()).build().toUri();
         return this.exchange(HttpMethod.GET, instance, uri).flatMap(r -> r.toEntity(RESPONSE_TYPE_MAP));
     }
 
-    public Mono<ResponseEntity<Map<String, Serializable>>> getInfo(Instance instance) {
+    public Mono<ResponseEntity<Map<String, Object>>> getInfo(Instance instance) {
         return getEndpoint(instance, Endpoint.INFO);
     }
 
-    public Mono<ResponseEntity<Map<String, Serializable>>> getEndpoint(Instance instance, String endpointId) {
+    public Mono<ResponseEntity<Map<String, Object>>> getEndpoint(Instance instance, String endpointId) {
         URI uri = URI.create(instance.getEndpoints().get(endpointId).getUrl());
         return this.exchange(HttpMethod.GET, instance, uri).flatMap(r -> r.toEntity(RESPONSE_TYPE_MAP));
     }

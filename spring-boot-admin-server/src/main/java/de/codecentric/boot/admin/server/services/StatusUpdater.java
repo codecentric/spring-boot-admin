@@ -22,7 +22,6 @@ import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.web.client.InstanceOperations;
 import reactor.core.publisher.Mono;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -65,14 +64,23 @@ public class StatusUpdater {
                           .map(instance::withStatusInfo);
     }
 
-    protected StatusInfo convertStatusInfo(ResponseEntity<Map<String, Serializable>> response) {
+    @SuppressWarnings("unchecked")
+    protected StatusInfo convertStatusInfo(ResponseEntity<Map<String, Object>> response) {
         if (response.hasBody() && response.getBody().get("status") instanceof String) {
-            return StatusInfo.valueOf((String) response.getBody().get("status"), response.getBody());
+            Map<String, Object> body = response.getBody();
+            String status = (String) body.get("status");
+            Map<String, Object> details = body;
+            if (body.get("details") instanceof Map) {
+                details = (Map<String, Object>) body.get("details");
+            }
+            return StatusInfo.valueOf(status, details);
         }
+
         if (response.getStatusCode().is2xxSuccessful()) {
             return StatusInfo.ofUp();
         }
-        Map<String, Serializable> details = new HashMap<>();
+
+        Map<String, Object> details = new HashMap<>();
         details.put("status", response.getStatusCodeValue());
         details.put("error", response.getStatusCode().getReasonPhrase());
         if (response.hasBody()) {
@@ -90,7 +98,7 @@ public class StatusUpdater {
     }
 
     protected StatusInfo convertStatusInfo(Throwable ex) {
-        Map<String, Serializable> details = new HashMap<>();
+        Map<String, Object> details = new HashMap<>();
         details.put("message", ex.getMessage());
         details.put("exception", ex.getClass().getName());
         return StatusInfo.ofOffline(details);

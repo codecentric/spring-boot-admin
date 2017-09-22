@@ -23,7 +23,6 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.web.client.InstanceOperations;
 import reactor.core.publisher.Mono;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.logging.Level;
 import org.slf4j.Logger;
@@ -68,7 +67,7 @@ public class InfoUpdater {
                           .map(instance::withInfo);
     }
 
-    protected Info convertInfo(Instance instance, ResponseEntity<Map<String, Serializable>> response) {
+    protected Info convertInfo(Instance instance, ResponseEntity<Map<String, Object>> response) {
         if (response.getStatusCode().is2xxSuccessful() && response.hasBody()) {
             return Info.from(response.getBody());
         } else {

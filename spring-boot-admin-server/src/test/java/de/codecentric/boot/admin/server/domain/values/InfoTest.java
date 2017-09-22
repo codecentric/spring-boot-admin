@@ -16,7 +16,6 @@
 
 package de.codecentric.boot.admin.server.domain.values;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -38,16 +37,15 @@ public class InfoTest {
     public void should_return_version() {
         assertThat(Info.empty().getVersion()).isEqualTo("");
         assertThat(Info.from(singletonMap("version", "1.0.0")).getVersion()).isEqualTo("1.0.0");
-        assertThat(Info.from(singletonMap("build", (Serializable) singletonMap("version", "1.0.0")))
-                       .getVersion()).isEqualTo("1.0.0");
+        assertThat(Info.from(singletonMap("build", singletonMap("version", "1.0.0"))).getVersion()).isEqualTo("1.0.0");
 
     }
 
     @Test
     public void test_json_serialize() throws Exception {
-        Map<String, Serializable> values = new HashMap<>();
+        Map<String, Object> values = new HashMap<>();
         values.put("foo", "bar");
-        values.put("build", (Serializable) singletonMap("version", "1.0.0"));
+        values.put("build", singletonMap("version", "1.0.0"));
         Info info = Info.from(values);
         String json = objectMapper.writeValueAsString(info);
 
@@ -59,7 +57,7 @@ public class InfoTest {
 
     @Test
     public void test_retain_order() {
-        Map<String, String> map = new LinkedHashMap<>();
+        Map<String, Object> map = new LinkedHashMap<>();
         map.put("z", "1");
         map.put("x", "2");
 

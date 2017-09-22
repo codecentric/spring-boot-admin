@@ -43,15 +43,15 @@ public class StatusInfo implements Serializable {
             STATUS_UNKNOWN, STATUS_RESTRICTED, STATUS_UP);
 
     private final String status;
-    private final Map<String, Serializable> details;
+    private final Map<String, Object> details;
 
-    private StatusInfo(String status, Map<String, ? extends Serializable> details) {
+    private StatusInfo(String status, Map<String, ?> details) {
         Assert.hasText(status, "'status' must not be empty.");
         this.status = status.toUpperCase();
         this.details = details != null ? new HashMap<>(details) : Collections.emptyMap();
     }
 
-    public static StatusInfo valueOf(String statusCode, Map<String, ? extends Serializable> details) {
+    public static StatusInfo valueOf(String statusCode, Map<String, ?> details) {
         return new StatusInfo(statusCode, details);
     }
 
@@ -75,19 +75,19 @@ public class StatusInfo implements Serializable {
         return ofOffline(null);
     }
 
-    public static StatusInfo ofUp(Map<String, ? extends Serializable> details) {
+    public static StatusInfo ofUp(Map<String, Object> details) {
         return valueOf(STATUS_UP, details);
     }
 
-    public static StatusInfo ofDown(Map<String, ? extends Serializable> details) {
+    public static StatusInfo ofDown(Map<String, Object> details) {
         return valueOf(STATUS_DOWN, details);
     }
 
-    public static StatusInfo ofOffline(Map<String, ? extends Serializable> details) {
+    public static StatusInfo ofOffline(Map<String, Object> details) {
         return valueOf(STATUS_OFFLINE, details);
     }
 
-    public Map<String, Serializable> getDetails() {
+    public Map<String, Object> getDetails() {
         return Collections.unmodifiableMap(details);
     }
 

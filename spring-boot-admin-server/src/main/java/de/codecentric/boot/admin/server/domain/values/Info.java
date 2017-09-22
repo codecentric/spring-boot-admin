@@ -30,13 +30,13 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 public class Info implements Serializable {
     private static final Info EMPTY = new Info(null);
 
-    private final Map<String, Serializable> values;
+    private final Map<String, Object> values;
 
-    private Info(Map<String, ? extends Serializable> values) {
+    private Info(Map<String, Object> values) {
         this.values = values != null ? new LinkedHashMap<>(values) : Collections.emptyMap();
     }
 
-    public static Info from(Map<String, ? extends Serializable> values) {
+    public static Info from(Map<String, Object> values) {
         return new Info(values);
     }
 
@@ -61,7 +61,7 @@ public class Info implements Serializable {
     }
 
     @JsonAnyGetter
-    public Map<String, Serializable> getValues() {
+    public Map<String, Object> getValues() {
         return Collections.unmodifiableMap(values);
     }
 }
