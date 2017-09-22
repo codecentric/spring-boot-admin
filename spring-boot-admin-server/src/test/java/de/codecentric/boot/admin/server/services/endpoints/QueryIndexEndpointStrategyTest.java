@@ -43,10 +43,11 @@ public class QueryIndexEndpointStrategyTest {
     private Mono<ClientResponse> responseNotFound = mockResponse(HttpStatus.NOT_FOUND, null, null);
     private Mono<ClientResponse> responseOkWrongContentType = mockResponse(HttpStatus.OK, MediaType.APPLICATION_JSON,
             null);
-    private Mono<ClientResponse> responseOk = mockResponse(HttpStatus.OK, ActuatorMediaType.V2_JSON,
+    private Mono<ClientResponse> responseOk = mockResponse(HttpStatus.OK,
+            MediaType.parseMediaType(ActuatorMediaType.V2_JSON),
             createBody("metrics=http://app/mgmt/stats", "info=http://app/mgmt/info", "self=http://app/mgmt"));
-    private Mono<ClientResponse> responseOkEmpty = mockResponse(HttpStatus.OK, ActuatorMediaType.V2_JSON,
-            createBody("self=http://app/mgmt"));
+    private Mono<ClientResponse> responseOkEmpty = mockResponse(HttpStatus.OK,
+            MediaType.parseMediaType(ActuatorMediaType.V2_JSON), createBody("self=http://app/mgmt"));
 
     private Instance instance = Instance.create(InstanceId.of("id"))
                                         .register(Registration.create("test", "http://app/mgmt/health")

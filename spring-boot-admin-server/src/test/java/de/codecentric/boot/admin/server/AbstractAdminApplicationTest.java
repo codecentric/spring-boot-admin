@@ -73,10 +73,10 @@ public abstract class AbstractAdminApplicationTest {
 
     protected Flux<JSONObject> getEventStream() {
         //@formatter:off
-        return webClient.get().uri("/instances/events").accept(MediaType.APPLICATION_STREAM_JSON)
+        return webClient.get().uri("/instances/events").accept(MediaType.TEXT_EVENT_STREAM)
                         .exchange()
                         .expectStatus().isOk()
-                        .expectHeader().contentType(MediaType.APPLICATION_STREAM_JSON)
+                        .expectHeader().contentType(MediaType.TEXT_EVENT_STREAM)
                         .returnResult(JSONObject.class).getResponseBody();
         //@formatter:on
     }

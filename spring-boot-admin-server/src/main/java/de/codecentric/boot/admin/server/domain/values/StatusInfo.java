@@ -114,4 +114,9 @@ public class StatusInfo implements Serializable {
     public static Comparator<String> severity() {
         return Comparator.comparingInt(STATUS_ORDER::indexOf);
     }
+
+    @SuppressWarnings("unchecked")
+    public static StatusInfo from(Map<String, ?> body) {
+        return StatusInfo.valueOf((String) (body).get("status"), (Map<String, ?>) body.get("details"));
+    }
 }

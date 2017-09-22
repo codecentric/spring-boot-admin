@@ -27,7 +27,6 @@ import de.codecentric.boot.admin.server.notify.OpsGenieNotifier;
 import de.codecentric.boot.admin.server.notify.SlackNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
 import de.codecentric.boot.admin.server.notify.filter.web.NotificationFilterController;
-import de.codecentric.boot.admin.server.web.PrefixHandlerMapping;
 
 import java.util.List;
 import org.reactivestreams.Publisher;
@@ -85,24 +84,14 @@ public class AdminServerNotifierConfiguration {
     @ConditionalOnSingleCandidate(FilteringNotifier.class)
     public static class FilteringNotifierWebConfiguration {
         private final FilteringNotifier filteringNotifier;
-        private final AdminServerProperties adminServer;
 
-        public FilteringNotifierWebConfiguration(FilteringNotifier filteringNotifier,
-                                                 AdminServerProperties adminServer) {
+        public FilteringNotifierWebConfiguration(FilteringNotifier filteringNotifier) {
             this.filteringNotifier = filteringNotifier;
-            this.adminServer = adminServer;
         }
 
         @Bean
         public NotificationFilterController notificationFilterController() {
             return new NotificationFilterController(filteringNotifier);
-        }
-
-        @Bean
-        public PrefixHandlerMapping prefixHandlerMappingNotificationFilterController() {
-            PrefixHandlerMapping prefixHandlerMapping = new PrefixHandlerMapping(notificationFilterController());
-            prefixHandlerMapping.setPrefix(adminServer.getContextPath());
-            return prefixHandlerMapping;
         }
     }
 

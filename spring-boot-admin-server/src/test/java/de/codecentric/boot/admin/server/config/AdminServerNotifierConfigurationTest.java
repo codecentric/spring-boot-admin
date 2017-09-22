@@ -37,12 +37,12 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -52,7 +52,7 @@ public class AdminServerNotifierConfigurationTest {
     private static final InstanceEvent APP_DOWN = new InstanceStatusChangedEvent(InstanceId.of("id-2"), 1L,
             StatusInfo.ofDown());
 
-    private AnnotationConfigWebApplicationContext context;
+    private AnnotationConfigApplicationContext context;
 
     @After
     public void close() {
@@ -83,7 +83,7 @@ public class AdminServerNotifierConfigurationTest {
 
     @Test
     public void test_mail() {
-        load(null, "spring.mail.host:localhost");
+        load(MailSenderConfig.class);
         assertThat(context.getBean(MailNotifier.class)).isInstanceOf(MailNotifier.class);
     }
 
@@ -121,12 +121,11 @@ public class AdminServerNotifierConfigurationTest {
     }
 
     private void load(Class<?> config, String... environment) {
-        context = new AnnotationConfigWebApplicationContext();
+        context = new AnnotationConfigApplicationContext();
         if (config != null) {
             context.register(config);
         }
         context.register(RestTemplateAutoConfiguration.class);
-        context.register(MailSenderAutoConfiguration.class);
         context.register(AdminServerMarkerConfiguration.class);
         context.register(AdminServerAutoConfiguration.class);
 
@@ -140,6 +139,13 @@ public class AdminServerNotifierConfigurationTest {
             return new TestNotifier();
         }
 
+    }
+
+    private static class MailSenderConfig {
+        @Bean
+        public JavaMailSenderImpl mailSender() {
+            return new JavaMailSenderImpl();
+        }
     }
 
     private static class TestMultipleNotifierConfig {

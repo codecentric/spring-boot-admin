@@ -23,12 +23,16 @@ import java.util.stream.Collectors;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.EvictionPolicy;
@@ -45,22 +49,30 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dennis Schulte
  */
 public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest {
-    private ServletWebServerApplicationContext instance1;
-    private ServletWebServerApplicationContext instance2;
+    private ConfigurableApplicationContext instance1;
+    private ConfigurableApplicationContext instance2;
     private WebTestClient webClient2;
 
     @Before
     public void setUp() throws Exception {
         System.setProperty("hazelcast.wait.seconds.before.join", "0");
-        instance1 = (ServletWebServerApplicationContext) SpringApplication.run(TestAdminApplication.class,
-                "--server.port=0", "--spring.jmx.enabled=false", "--management.context-path=/mgmt",
-                "--info.test=foobar");
-        instance2 = (ServletWebServerApplicationContext) SpringApplication.run(TestAdminApplication.class,
-                "--server.port=0", "--spring.jmx.enabled=false", "--management.context-path=/mgmt",
-                "--info.test=foobar");
+        instance1 = new SpringApplicationBuilder().sources(TestAdminApplication.class)
+                                                  .web(WebApplicationType.REACTIVE)
+                                                  .run("--server.port=0", "--management.endpoints.web.base-path=/mgmt",
+                                                          "--endpoints.health.enabled=true", "--info.test=foobar",
+                                                          "--spring.jmx.enabled=false",
+                                                          "--eureka.client.enabled=false");
 
-        super.setUp(instance1.getWebServer().getPort());
-        this.webClient2 = createWebClient(instance2.getWebServer().getPort());
+        instance2 = new SpringApplicationBuilder().sources(TestAdminApplication.class)
+                                                  .web(WebApplicationType.REACTIVE)
+                                                  .run("--server.port=0", "--management.endpoints.web.base-path=/mgmt",
+                                                          "--endpoints.health.enabled=true", "--info.test=foobar",
+                                                          "--spring.jmx.enabled=false",
+                                                          "--eureka.client.enabled=false");
+
+        super.setUp(instance1.getEnvironment().getProperty("local.server.port", Integer.class, 0));
+        this.webClient2 = createWebClient(
+                instance2.getEnvironment().getProperty("local.server.port", Integer.class, 0));
     }
 
 
@@ -103,7 +115,15 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
     @SpringBootConfiguration
     @EnableAutoConfiguration
     @EnableAdminServer
+    @EnableWebFluxSecurity
     public static class TestAdminApplication {
+        @Bean
+        SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+            return http.authorizeExchange().anyExchange().permitAll()//
+                       .and().csrf().disable()//
+                       .build();
+        }
+
         @Bean
         public Config hazelcastConfig() {
             Config config = new Config();

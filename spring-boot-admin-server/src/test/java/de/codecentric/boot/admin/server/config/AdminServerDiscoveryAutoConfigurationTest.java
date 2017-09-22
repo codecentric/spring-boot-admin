@@ -29,15 +29,15 @@ import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration;
 import org.springframework.cloud.commons.util.UtilAutoConfiguration;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import com.netflix.discovery.EurekaClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AdminServerDiscoveryAutoConfigurationTest {
-    private AnnotationConfigWebApplicationContext context;
+    private AnnotationConfigApplicationContext context;
 
     @After
     public void close() {
@@ -93,7 +93,7 @@ public class AdminServerDiscoveryAutoConfigurationTest {
     }
 
     private void load(Class<?>... configs) {
-        AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
         for (Class<?> config : configs) {
             applicationContext.register(config);
         }

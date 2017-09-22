@@ -73,7 +73,7 @@ public class InstancesController {
         Registration withSource = Registration.copyOf(registration).source("http-api").build();
         LOGGER.debug("Register instance {}", withSource);
         return registry.register(withSource).map(id -> {
-            URI location = builder.path("/instances/{id}").buildAndExpand(id).toUri();
+            URI location = builder.path("/{id}").buildAndExpand(id).toUri();
             return ResponseEntity.created(location).body(Collections.singletonMap("id", id));
         });
     }
@@ -113,6 +113,7 @@ public class InstancesController {
      * Unregister an instance
      *
      * @param id The instance id.
+     * @return response indicating the success
      */
     @DeleteMapping(path = "/instances/{id}")
     public Mono<ResponseEntity<Void>> unregister(@PathVariable String id) {

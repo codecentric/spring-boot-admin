@@ -31,9 +31,11 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 
 public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
     private final InstanceOperations instanceOps;
+    private static final MediaType actuatorMediaType = MediaType.parseMediaType(ActuatorMediaType.V2_JSON);
 
     public QueryIndexEndpointStrategy(InstanceOperations instanceOps) {
         this.instanceOps = instanceOps;
@@ -48,9 +50,7 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
 
         return instanceOps.exchange(HttpMethod.GET, instance, URI.create(registration.getManagementUrl()))
                           .filter(response -> response.statusCode().is2xxSuccessful() &&
-                                              response.headers()
-                                                      .contentType()
-                                                      .map(ActuatorMediaType.V2_JSON::isCompatibleWith)
+                                              response.headers().contentType().map(actuatorMediaType::isCompatibleWith)
                                                       .orElse(false))
                           .flatMap(r -> r.bodyToMono(Response.class))
                           .flatMap(this::convert);

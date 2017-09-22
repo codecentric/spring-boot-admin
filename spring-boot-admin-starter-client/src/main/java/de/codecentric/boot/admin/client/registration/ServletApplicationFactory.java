@@ -20,6 +20,7 @@ import de.codecentric.boot.admin.client.config.InstanceProperties;
 
 import javax.servlet.ServletContext;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 
@@ -31,8 +32,9 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
                                      ManagementServerProperties management,
                                      ServerProperties server,
                                      ServletContext servletContext,
-                                     EndpointPathProvider endpointPathProvider) {
-        super(instance, management, server, endpointPathProvider);
+                                     EndpointPathProvider endpointPathProvider,
+                                     WebEndpointProperties webEndpoint) {
+        super(instance, management, server, endpointPathProvider, webEndpoint);
         this.servletContext = servletContext;
         this.servlet = server.getServlet();
     }

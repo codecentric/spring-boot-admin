@@ -32,8 +32,8 @@ public class ClientServletApplicationTest extends AbstractClientApplicationTest 
         super.setUp();
 
         instance = SpringApplication.run(TestClientApplication.class, "--spring.main.web-application-type=servlet",
-                "--spring.application.name=Test-Client", "--server.port=0", "--management.context-path=/mgmt",
-                "--endpoints.health.enabled=true",
+                "--spring.application.name=Test-Client", "--server.port=0",
+                "--management.endpoints.web.base-path=/mgmt", "--endpoints.health.enabled=true",
                 "--spring.boot.admin.client.url=http://localhost:" + getWirmockPort());
     }
 

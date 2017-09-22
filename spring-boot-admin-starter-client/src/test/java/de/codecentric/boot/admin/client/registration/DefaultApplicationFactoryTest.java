@@ -23,6 +23,7 @@ import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
@@ -40,9 +41,10 @@ public class DefaultApplicationFactoryTest {
     private ServerProperties server = new ServerProperties();
     private ManagementServerProperties management = new ManagementServerProperties();
     private EndpointPathProvider endpointPathProvider = mock(EndpointPathProvider.class);
+    private WebEndpointProperties webEndpoint = new WebEndpointProperties();
 
     private DefaultApplicationFactory factory = new DefaultApplicationFactory(instanceProperties, management, server,
-            endpointPathProvider);
+            endpointPathProvider, webEndpoint);
 
     @Before
     public void setup() {
@@ -51,7 +53,7 @@ public class DefaultApplicationFactoryTest {
 
     @Test
     public void test_mgmtPortPath() {
-        management.setContextPath("/admin");
+        webEndpoint.setBasePath("/admin");
         when(endpointPathProvider.getPath("health")).thenReturn("/admin/alive");
         publishApplicationReadyEvent(factory, 8080, 8081);
 
@@ -148,7 +150,7 @@ public class DefaultApplicationFactoryTest {
     public void test_all_baseUrls() {
         instanceProperties.setManagementBaseUrl("http://management:8090");
         instanceProperties.setServiceBaseUrl("http://service:80");
-        management.setContextPath("/admin");
+        webEndpoint.setBasePath("/admin");
         when(endpointPathProvider.getPath("health")).thenReturn("/admin/health");
 
         Application app = factory.createApplication();
@@ -160,7 +162,7 @@ public class DefaultApplicationFactoryTest {
     @Test
     public void test_service_baseUrl() {
         instanceProperties.setServiceBaseUrl("http://service:80");
-        management.setContextPath("/admin");
+        webEndpoint.setBasePath("/admin");
         when(endpointPathProvider.getPath("health")).thenReturn("/admin/health");
 
         Application app = factory.createApplication();

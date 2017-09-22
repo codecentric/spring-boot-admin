@@ -23,6 +23,7 @@ import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
@@ -40,8 +41,9 @@ public class ServletApplicationFactoryTest {
     private ManagementServerProperties management = new ManagementServerProperties();
     private MockServletContext servletContext = new MockServletContext();
     private EndpointPathProvider endpointPathProvider = mock(EndpointPathProvider.class);
+    private WebEndpointProperties webEndpoint = new WebEndpointProperties();
     private ServletApplicationFactory factory = new ServletApplicationFactory(instance, management, server,
-            servletContext, endpointPathProvider);
+            servletContext, endpointPathProvider, webEndpoint);
 
     @Before
     public void setup() {
@@ -51,7 +53,7 @@ public class ServletApplicationFactoryTest {
     @Test
     public void test_contextPath_mgmtPath() {
         servletContext.setContextPath("app");
-        management.setContextPath("/admin");
+        webEndpoint.setBasePath("/admin");
         when(endpointPathProvider.getPath("health")).thenReturn("/admin/health");
         publishApplicationReadyEvent(factory, 8080, null);
 
@@ -64,7 +66,7 @@ public class ServletApplicationFactoryTest {
     @Test
     public void test_contextPath_mgmtPortPath() {
         servletContext.setContextPath("app");
-        management.setContextPath("/admin");
+        webEndpoint.setBasePath("/admin");
         when(endpointPathProvider.getPath("health")).thenReturn("/admin/health");
         publishApplicationReadyEvent(factory, 8080, 8081);
 

@@ -22,6 +22,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
@@ -44,15 +45,18 @@ public class DefaultApplicationFactory implements ApplicationFactory {
     private Integer localServerPort;
     private Integer localManagementPort;
     private EndpointPathProvider endpointPathProvider;
+    private WebEndpointProperties webEndpoint;
 
     public DefaultApplicationFactory(InstanceProperties instance,
                                      ManagementServerProperties management,
                                      ServerProperties server,
-                                     EndpointPathProvider endpointPathProvider) {
+                                     EndpointPathProvider endpointPathProvider,
+                                     WebEndpointProperties webEndpoint) {
         this.instance = instance;
         this.management = management;
         this.server = server;
         this.endpointPathProvider = endpointPathProvider;
+        this.webEndpoint = webEndpoint;
     }
 
     @Override
@@ -104,6 +108,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
         return UriComponentsBuilder.fromUriString(getManagementBaseUrl())
                                    .path("/")
                                    .path(getManagementContextPath())
+                                   .path(getEndpointsWebPath())
                                    .toUriString();
     }
 
@@ -139,6 +144,10 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 
     protected String getManagementContextPath() {
         return management.getContextPath();
+    }
+
+    protected String getEndpointsWebPath() {
+        return webEndpoint.getBasePath();
     }
 
     protected String getHealthUrl() {

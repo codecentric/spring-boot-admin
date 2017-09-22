@@ -64,16 +64,9 @@ public class StatusUpdater {
                           .map(instance::withStatusInfo);
     }
 
-    @SuppressWarnings("unchecked")
     protected StatusInfo convertStatusInfo(ResponseEntity<Map<String, Object>> response) {
         if (response.hasBody() && response.getBody().get("status") instanceof String) {
-            Map<String, Object> body = response.getBody();
-            String status = (String) body.get("status");
-            Map<String, Object> details = body;
-            if (body.get("details") instanceof Map) {
-                details = (Map<String, Object>) body.get("details");
-            }
-            return StatusInfo.valueOf(status, details);
+            return StatusInfo.from(response.getBody());
         }
 
         if (response.getStatusCode().is2xxSuccessful()) {
@@ -88,6 +81,7 @@ public class StatusUpdater {
         }
         return StatusInfo.ofDown(details);
     }
+
 
     protected void logError(Instance instance, Throwable ex) {
         if ("OFFLINE".equals(instance.getStatusInfo().getStatus())) {

@@ -19,20 +19,27 @@ import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
 import org.junit.After;
 import org.junit.Before;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 
 public class AdminApplicationTest extends AbstractAdminApplicationTest {
-    private ServletWebServerApplicationContext instance;
+    private ConfigurableApplicationContext instance;
 
     @Before
     public void setUp() throws Exception {
-        instance = (ServletWebServerApplicationContext) SpringApplication.run(TestAdminApplication.class,
-                "--server.port=0", "--management.context-path=/mgmt", "--info.test=foobar");
+        instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
+                                                 .web(WebApplicationType.REACTIVE)
+                                                 .run("--server.port=0", "--management.endpoints.web.base-path=/mgmt",
+                                                         "--info.test=foobar", "--eureka.client.enabled=false");
 
-        super.setUp(instance.getWebServer().getPort());
+        super.setUp(instance.getEnvironment().getProperty("local.server.port", Integer.class, 0));
     }
 
     @After
@@ -43,6 +50,15 @@ public class AdminApplicationTest extends AbstractAdminApplicationTest {
     @EnableAdminServer
     @EnableAutoConfiguration
     @SpringBootConfiguration
+    @EnableWebFluxSecurity
     public static class TestAdminApplication {
+
+        @Bean
+        SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+            return http.authorizeExchange().anyExchange().permitAll()//
+                       .and().csrf().disable()//
+                       .build();
+        }
+
     }
 }

@@ -35,17 +35,16 @@
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-gateway</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
             <groupId>io.projectreactor.addons</groupId>
             <artifactId>reactor-extra</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -67,8 +66,14 @@
         <!-- Optional Eureka Discovery Client -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-eureka</artifactId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
             <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-web</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- Optional Hazelcast-Support -->
         <dependency>
@@ -90,7 +95,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-security</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -23,8 +23,6 @@ import de.codecentric.boot.admin.server.eventstore.HazelcastEventStore;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
@@ -32,48 +30,22 @@ import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfigu
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration;
 import org.springframework.cloud.commons.util.UtilAutoConfiguration;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import com.hazelcast.config.Config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AdminServerWebConfigurationTest {
 
-    private AnnotationConfigWebApplicationContext context;
+    private AnnotationConfigApplicationContext context;
 
     @After
     public void close() {
         if (this.context != null) {
             this.context.close();
         }
-    }
-
-    @Test
-    public void jacksonMapperPresentFromDefault() {
-        AdminServerWebConfiguration config = new AdminServerWebConfiguration(null);
-
-        List<HttpMessageConverter<?>> converters = new ArrayList<>();
-        converters.add(new MappingJackson2HttpMessageConverter());
-
-        config.extendMessageConverters(converters);
-
-        assertThat(converters).hasOnlyElementsOfType(MappingJackson2HttpMessageConverter.class);
-        assertThat(converters).hasSize(1);
-    }
-
-    @Test
-    public void jacksonMapperPresentNeedExtend() {
-        AdminServerWebConfiguration config = new AdminServerWebConfiguration(null);
-        List<HttpMessageConverter<?>> converters = new ArrayList<>();
-
-        config.extendMessageConverters(converters);
-
-        assertThat(converters).hasOnlyElementsOfType(MappingJackson2HttpMessageConverter.class);
-        assertThat(converters).hasSize(1);
     }
 
     @Test
@@ -111,7 +83,7 @@ public class AdminServerWebConfigurationTest {
     }
 
     private void load(Class<?> config, String... environment) {
-        AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
         if (config != null) {
             applicationContext.register(config);
         }
