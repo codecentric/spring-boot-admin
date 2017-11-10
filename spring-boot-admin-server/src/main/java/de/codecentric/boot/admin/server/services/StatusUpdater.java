@@ -54,7 +54,7 @@ public class StatusUpdater {
     }
 
     public Mono<Void> updateStatus(InstanceId id) {
-        return repository.computeIfPresent(id, (key, instance) -> this.doUpdateStatus(instance));
+        return repository.computeIfPresent(id, (key, instance) -> this.doUpdateStatus(instance)).then();
 
     }
 

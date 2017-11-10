@@ -102,7 +102,7 @@ public class InstanceTest {
                                     .withStatusInfo(StatusInfo.ofUp())
                                     .withInfo(Info.from(Collections.singletonMap("foo", "bar")));
 
-        Instance loaded = Instance.create(InstanceId.of("id")).loadHistory(instance.getUnsavedEvents());
+        Instance loaded = Instance.create(InstanceId.of("id")).apply(instance.getUnsavedEvents());
         assertThat(loaded.getUnsavedEvents()).isEmpty();
         assertThat(loaded.getRegistration()).isEqualTo(registration2);
         assertThat(loaded.isRegistered()).isTrue();
@@ -114,7 +114,7 @@ public class InstanceTest {
         assertThat(loaded.getVersion()).isEqualTo(4L);
 
         Instance deregisteredInstance = instance.deregister();
-        loaded = Instance.create(InstanceId.of("id")).loadHistory(deregisteredInstance.getUnsavedEvents());
+        loaded = Instance.create(InstanceId.of("id")).apply(deregisteredInstance.getUnsavedEvents());
         assertThat(loaded.getUnsavedEvents()).isEmpty();
         assertThat(loaded.isRegistered()).isFalse();
         assertThat(loaded.getInfo()).isEqualTo(Info.empty());
@@ -127,15 +127,14 @@ public class InstanceTest {
     @Test
     public void should_throw_when_applied_wrong_event() {
         Instance instance = Instance.create(InstanceId.of("id"));
-        assertThatThrownBy(() -> instance.apply(null, true)).isInstanceOf(IllegalArgumentException.class)
-                                                            .hasMessage("'event' must not be null");
+        assertThatThrownBy(() -> instance.apply((InstanceEvent) null)).isInstanceOf(IllegalArgumentException.class)
+                                                                      .hasMessage("'event' must not be null");
 
         assertThatThrownBy(
-                () -> instance.apply(new InstanceDeregisteredEvent(InstanceId.of("wrong"), 0L), true)).isInstanceOf(
+                () -> instance.apply(new InstanceDeregisteredEvent(InstanceId.of("wrong"), 0L))).isInstanceOf(
                 IllegalArgumentException.class).hasMessage("'event' must refer the same instance");
 
-        assertThatThrownBy(
-                () -> instance.apply(new InstanceDeregisteredEvent(InstanceId.of("id"), 1L), true)).isInstanceOf(
+        assertThatThrownBy(() -> instance.apply(new InstanceDeregisteredEvent(InstanceId.of("id"), 1L))).isInstanceOf(
                 IllegalArgumentException.class).hasMessage("expected event version doesn't match");
     }
 

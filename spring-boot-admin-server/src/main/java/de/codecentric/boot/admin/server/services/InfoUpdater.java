@@ -49,7 +49,7 @@ public class InfoUpdater {
     }
 
     public Mono<Void> updateInfo(InstanceId id) {
-        return repository.computeIfPresent(id, (key, instance) -> this.doUpdateInfo(instance));
+        return repository.computeIfPresent(id, (key, instance) -> this.doUpdateInfo(instance)).then();
     }
 
     protected Mono<Instance> doUpdateInfo(Instance instance) {

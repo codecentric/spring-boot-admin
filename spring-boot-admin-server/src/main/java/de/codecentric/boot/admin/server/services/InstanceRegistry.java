@@ -71,7 +71,7 @@ public class InstanceRegistry {
      * @param name the name to search for.
      * @return List of instances for the given application
      */
-    public Flux<Instance> getInstancesByApplication(String name) {
+    public Flux<Instance> getInstances(String name) {
         return repository.findByName(name);
     }
 
@@ -92,6 +92,7 @@ public class InstanceRegistry {
      * @return the id of the unregistered instance
      */
     public Mono<InstanceId> deregister(InstanceId id) {
-        return repository.computeIfPresent(id, (key, instance) -> Mono.just(instance.deregister())).then(Mono.just(id));
+        return repository.computeIfPresent(id, (key, instance) -> Mono.just(instance.deregister()))
+                         .map(Instance::getId);
     }
 }

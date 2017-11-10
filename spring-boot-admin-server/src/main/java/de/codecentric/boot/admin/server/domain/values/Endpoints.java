@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toMap;
@@ -85,16 +84,6 @@ public class Endpoints implements Iterable<Endpoint>, Serializable {
 
         private UnmodifiableIterator(Iterator<T> delegate) {
             this.delegate = delegate;
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void forEachRemaining(Consumer<? super T> action) {
-            delegate.forEachRemaining(action);
         }
 
         @Override

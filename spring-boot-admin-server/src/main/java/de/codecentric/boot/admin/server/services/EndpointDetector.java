@@ -39,7 +39,7 @@ public class EndpointDetector {
     }
 
     public Mono<Void> detectEndpoints(InstanceId id) {
-        return repository.computeIfPresent(id, (key, instance) -> this.doDetectEndpoints(instance));
+        return repository.computeIfPresent(id, (key, instance) -> this.doDetectEndpoints(instance)).then();
     }
 
     private Mono<Instance> doDetectEndpoints(Instance instance) {

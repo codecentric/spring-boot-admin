@@ -75,23 +75,23 @@ public class InfoUpdaterTest {
                                     .register(registration)
                                     .withEndpoints(Endpoints.single("info", wireMock.url("/info")))
                                     .withStatusInfo(StatusInfo.ofUp());
-        StepVerifier.create(repository.save(instance)).verifyComplete();
+        StepVerifier.create(repository.save(instance)).expectNextCount(1).verifyComplete();
 
         Instance noInfo = Instance.create(InstanceId.of("noinfo"))
                                   .register(registration)
                                   .withEndpoints(Endpoints.single("beans", wireMock.url("/info")))
                                   .withStatusInfo(StatusInfo.ofUp());
-        StepVerifier.create(repository.save(noInfo)).verifyComplete();
+        StepVerifier.create(repository.save(noInfo)).expectNextCount(1).verifyComplete();
 
         Instance offline = Instance.create(InstanceId.of("off"))
                                    .register(registration)
                                    .withStatusInfo(StatusInfo.ofOffline());
-        StepVerifier.create(repository.save(offline)).verifyComplete();
+        StepVerifier.create(repository.save(offline)).expectNextCount(1).verifyComplete();
 
         Instance unknown = Instance.create(InstanceId.of("unk"))
                                    .register(registration)
                                    .withStatusInfo(StatusInfo.ofUnknown());
-        StepVerifier.create(repository.save(unknown)).verifyComplete();
+        StepVerifier.create(repository.save(unknown)).expectNextCount(1).verifyComplete();
 
         wireMock.stubFor(get("/info").willReturn(okJson("{ \"foo\": \"bar\" }")));
 
@@ -121,7 +121,7 @@ public class InfoUpdaterTest {
                                     .withEndpoints(Endpoints.single("info", wireMock.url("/info")))
                                     .withStatusInfo(StatusInfo.ofUp())
                                     .withInfo(Info.from(singletonMap("foo", "bar")));
-        StepVerifier.create(repository.save(instance)).verifyComplete();
+        StepVerifier.create(repository.save(instance)).expectNextCount(1).verifyComplete();
 
         wireMock.stubFor(get("/info").willReturn(serverError()));
 
@@ -148,7 +148,7 @@ public class InfoUpdaterTest {
                                     .withEndpoints(Endpoints.single("info", wireMock.url("/info")))
                                     .withStatusInfo(StatusInfo.ofUp())
                                     .withInfo(Info.from(singletonMap("foo", "bar")));
-        StepVerifier.create(repository.save(instance)).verifyComplete();
+        StepVerifier.create(repository.save(instance)).expectNextCount(1).verifyComplete();
 
         wireMock.stubFor(get("/info").willReturn(okJson("{ \"foo\": \"bar\" }").withFixedDelay(1500)));
 

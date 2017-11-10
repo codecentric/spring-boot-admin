@@ -47,8 +47,7 @@ public class AdminServerWebConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public InstanceWebClient instanceWebClient(InstanceRegistry instanceRegistry,
-                                               HttpHeadersProvider httpHeadersProvider,
+    public InstanceWebClient instanceWebClient(HttpHeadersProvider httpHeadersProvider,
                                                AdminServerProperties adminServerProperties) {
         return new InstanceWebClient(httpHeadersProvider, adminServerProperties.getMonitor().getConnectTimeout(),
                 adminServerProperties.getMonitor().getReadTimeout());

@@ -60,22 +60,22 @@ public class EndpointDetectorTest {
         Instance instance = Instance.create(InstanceId.of("onl"))
                                     .register(registration)
                                     .withStatusInfo(StatusInfo.ofUp());
-        StepVerifier.create(repository.save(instance)).verifyComplete();
+        StepVerifier.create(repository.save(instance)).expectNextCount(1).verifyComplete();
 
         Instance noActuator = Instance.create(InstanceId.of("noActuator"))
                                       .register(Registration.create("foo", "http://health").build())
                                       .withStatusInfo(StatusInfo.ofUp());
-        StepVerifier.create(repository.save(noActuator)).verifyComplete();
+        StepVerifier.create(repository.save(noActuator)).expectNextCount(1).verifyComplete();
 
         Instance offline = Instance.create(InstanceId.of("off"))
                                    .register(registration)
                                    .withStatusInfo(StatusInfo.ofOffline());
-        StepVerifier.create(repository.save(offline)).verifyComplete();
+        StepVerifier.create(repository.save(offline)).expectNextCount(1).verifyComplete();
 
         Instance unknown = Instance.create(InstanceId.of("unk"))
                                    .register(registration)
                                    .withStatusInfo(StatusInfo.ofUnknown());
-        StepVerifier.create(repository.save(unknown)).verifyComplete();
+        StepVerifier.create(repository.save(unknown)).expectNextCount(1).verifyComplete();
 
         when(strategy.detectEndpoints(any(Instance.class))).thenReturn(Mono.just(Endpoints.single("id", "url")));
 

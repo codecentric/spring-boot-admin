@@ -83,7 +83,7 @@ public class ApplicationsController {
     @DeleteMapping(path = "/applications/{name}")
     public Mono<ResponseEntity<Void>> unregister(@PathVariable("name") String name) {
         log.debug("Unregister application with name '{}'", name);
-        return registry.getInstancesByApplication(name)
+        return registry.getInstances(name)
                        .flatMap(instance -> registry.deregister(instance.getId()))
                        .collectList()
                        .map(deregistered -> !deregistered.isEmpty() ?
@@ -93,7 +93,7 @@ public class ApplicationsController {
 
     protected Tuple2<String, Flux<Instance>> getApplicationForInstance(Instance instance) {
         String name = instance.getRegistration().getName();
-        return Tuples.of(name, registry.getInstancesByApplication(name).filter(Instance::isRegistered));
+        return Tuples.of(name, registry.getInstances(name).filter(Instance::isRegistered));
     }
 
     protected Mono<Application> toApplication(String name, Flux<Instance> instances) {

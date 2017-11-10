@@ -195,16 +195,16 @@ public class InstanceDiscoveryListenerTest {
 
         listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
 
-        StepVerifier.create(registry.getInstancesByApplication("service"))
+        StepVerifier.create(registry.getInstances("service"))
                     .assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service"))
                     .assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service"))
                     .verifyComplete();
 
-        StepVerifier.create(registry.getInstancesByApplication("ignored"))
+        StepVerifier.create(registry.getInstances("ignored"))
                     .assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("ignored"))
                     .verifyComplete();
 
-        StepVerifier.create(registry.getInstancesByApplication("different-source"))
+        StepVerifier.create(registry.getInstances("different-source"))
                     .assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("different-source"))
                     .verifyComplete();
 
@@ -212,15 +212,15 @@ public class InstanceDiscoveryListenerTest {
         instances.remove(0);
 
         listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
-        StepVerifier.create(registry.getInstancesByApplication("service"))
+        StepVerifier.create(registry.getInstances("service"))
                     .assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service"))
                     .verifyComplete();
 
-        StepVerifier.create(registry.getInstancesByApplication("ignored"))
+        StepVerifier.create(registry.getInstances("ignored"))
                     .assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("ignored"))
                     .verifyComplete();
 
-        StepVerifier.create(registry.getInstancesByApplication("different-source"))
+        StepVerifier.create(registry.getInstances("different-source"))
                     .assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("different-source"))
                     .verifyComplete();
     }

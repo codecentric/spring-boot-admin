@@ -32,8 +32,9 @@ public interface InstanceRepository {
      * Saves the Instance
      *
      * @param app Instance to save
+     * @return the saved instance
      */
-    Mono<Void> save(Instance app);
+    Mono<Instance> save(Instance app);
 
     /**
      * @return all instances in the repository;
@@ -59,9 +60,9 @@ public interface InstanceRepository {
      *
      * @param id                Instance to update
      * @param remappingFunction function to apply
-     * @return a mono that completes when the operation is finished
+     * @return the saved istance
      */
-    Mono<Void> compute(InstanceId id, BiFunction<InstanceId, Instance, Mono<Instance>> remappingFunction);
+    Mono<Instance> compute(InstanceId id, BiFunction<InstanceId, Instance, Mono<Instance>> remappingFunction);
 
     /**
      * Updates the instance associated with the id using the remapping function.
@@ -69,7 +70,7 @@ public interface InstanceRepository {
      *
      * @param id                Instance to update
      * @param remappingFunction function to apply
-     * @return a mono that completes when the operation is finished
+     * @return the saved istance
      */
-    Mono<Void> computeIfPresent(InstanceId id, BiFunction<InstanceId, Instance, Mono<Instance>> remappingFunction);
+    Mono<Instance> computeIfPresent(InstanceId id, BiFunction<InstanceId, Instance, Mono<Instance>> remappingFunction);
 }

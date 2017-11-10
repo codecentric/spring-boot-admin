@@ -111,7 +111,7 @@ public class InstancesController {
         if (name == null || name.isEmpty()) {
             return registry.getInstances().filter(Instance::isRegistered);
         } else {
-            return registry.getInstancesByApplication(name).filter(Instance::isRegistered);
+            return registry.getInstances(name).filter(Instance::isRegistered);
         }
     }
 

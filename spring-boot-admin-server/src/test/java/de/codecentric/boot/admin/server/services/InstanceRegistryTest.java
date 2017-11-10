@@ -83,7 +83,7 @@ public class InstanceRegistryTest {
         Registration registration = Registration.create("abc", "http://localhost:8080/health").build();
         InstanceId id = idGenerator.generateId(registration);
         Instance app = Instance.create(id).register(registration).withStatusInfo(status).withInfo(info);
-        StepVerifier.create(repository.save(app)).verifyComplete();
+        StepVerifier.create(repository.save(app)).expectNextCount(1).verifyComplete();
 
         // When instance registers second time
         InstanceId refreshId = registry.register(Registration.create("abc", "http://localhost:8080/health").build())
@@ -103,7 +103,7 @@ public class InstanceRegistryTest {
         InstanceId id2 = registry.register(Registration.create("abc", "http://localhost:8081/health").build()).block();
         InstanceId id3 = registry.register(Registration.create("zzz", "http://localhost:9999/health").build()).block();
 
-        StepVerifier.create(registry.getInstancesByApplication("abc"))
+        StepVerifier.create(registry.getInstances("abc"))
                     .recordWith(ArrayList::new)
                     .thenConsumeWhile(a -> true)
                     .consumeRecordedWith(

@@ -52,7 +52,7 @@ public class EventSourcingInstanceRepositoryTest {
         Instance instance = Instance.create(InstanceId.of("foo"))
                                     .register(Registration.create("name", "http://health").build());
 
-        StepVerifier.create(repository.save(instance)).verifyComplete();
+        StepVerifier.create(repository.save(instance)).expectNext(instance).verifyComplete();
 
         //when/then
         StepVerifier.create(repository.find(instance.getId())).assertNext(loaded -> {
@@ -74,9 +74,9 @@ public class EventSourcingInstanceRepositoryTest {
         Instance instance3 = Instance.create(InstanceId.of("bar"))
                                      .register(Registration.create("bar", "http://health").build());
 
-        StepVerifier.create(repository.save(instance1)).verifyComplete();
-        StepVerifier.create(repository.save(instance2)).verifyComplete();
-        StepVerifier.create(repository.save(instance3)).verifyComplete();
+        StepVerifier.create(repository.save(instance1)).expectNextCount(1).verifyComplete();
+        StepVerifier.create(repository.save(instance2)).expectNextCount(1).verifyComplete();
+        StepVerifier.create(repository.save(instance3)).expectNextCount(1).verifyComplete();
 
         //when/then
         StepVerifier.create(repository.find(instance2.getId()))
@@ -112,13 +112,15 @@ public class EventSourcingInstanceRepositoryTest {
         //given
         Instance instance1 = Instance.create(InstanceId.of("foo.1"))
                                      .register(Registration.create("foo", "http://health").build());
-        StepVerifier.create(repository.save(instance1)).verifyComplete();
+        StepVerifier.create(repository.save(instance1)).expectNextCount(1).verifyComplete();
 
         //when
         StepVerifier.create(repository.computeIfPresent(instance1.getId(),
                 (key, application) -> counter.getAndDecrement() > 0L ?
                         Mono.just(instance1) :
-                        Mono.just(application.withEndpoints(Endpoints.single("info", "info"))))).verifyComplete();
+                        Mono.just(application.withEndpoints(Endpoints.single("info", "info")))))
+                    .expectNext(instance1.withEndpoints(Endpoints.single("info", "info")))
+                    .verifyComplete();
 
         //then
         StepVerifier.create(repository.find(instance1.getId()))
@@ -148,7 +150,10 @@ public class EventSourcingInstanceRepositoryTest {
         StepVerifier.create(repository.compute(instanceId, (key, application) -> {
             assertThat(application).isNull();
             return Mono.just(Instance.create(key).register(Registration.create("foo", "http://health").build()));
-        })).verifyComplete();
+        }))
+                    .expectNext(
+                            Instance.create(instanceId).register(Registration.create("foo", "http://health").build()))
+                    .verifyComplete();
 
         //then
         StepVerifier.create(repository.find(instanceId))
@@ -160,17 +165,19 @@ public class EventSourcingInstanceRepositoryTest {
     public void should_retry_compute() {
         AtomicLong counter = new AtomicLong(3L);
         //given
-        Instance instance1 = Instance.create(InstanceId.of("foo.1"))
-                                     .register(Registration.create("foo", "http://health").build());
-        StepVerifier.create(repository.save(instance1)).verifyComplete();
+        Instance instance = Instance.create(InstanceId.of("foo.1"))
+                                    .register(Registration.create("foo", "http://health").build());
+        StepVerifier.create(repository.save(instance)).expectNextCount(1).verifyComplete();
 
         //when
-        StepVerifier.create(repository.compute(instance1.getId(), (key, application) -> counter.getAndDecrement() > 0L ?
-                Mono.just(instance1) :
-                Mono.just(application.withEndpoints(Endpoints.single("info", "info"))))).verifyComplete();
+        StepVerifier.create(repository.compute(instance.getId(), (key, application) -> counter.getAndDecrement() > 0L ?
+                Mono.just(instance) :
+                Mono.just(application.withEndpoints(Endpoints.single("info", "info")))))
+                    .expectNext(instance.withEndpoints(Endpoints.single("info", "info")))
+                    .verifyComplete();
 
         //then
-        StepVerifier.create(repository.find(instance1.getId()))
+        StepVerifier.create(repository.find(instance.getId()))
                     .assertNext(loaded -> assertThat(loaded.getEndpoints()).isEqualTo(
                             Endpoints.single("info", "info").withEndpoint("health", "http://health")))
                     .verifyComplete();

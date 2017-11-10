@@ -65,7 +65,7 @@ public class StatusUpdaterTest {
 
         instance = Instance.create(InstanceId.of("id"))
                            .register(Registration.create("foo", wireMock.url("/health")).build());
-        StepVerifier.create(repository.save(instance)).verifyComplete();
+        StepVerifier.create(repository.save(instance)).expectNextCount(1).verifyComplete();
 
         updater = new StatusUpdater(repository, instanceWebClient);
     }
@@ -157,7 +157,7 @@ public class StatusUpdaterTest {
         Instance offlineInstance = Instance.create(InstanceId.of("offline"))
                                            .register(Registration.create("foo", "http://0.0.0.0/health").build());
 
-        StepVerifier.create(repository.save(offlineInstance)).verifyComplete();
+        StepVerifier.create(repository.save(offlineInstance)).expectNextCount(1).verifyComplete();
 
         StepVerifier.create(eventStore)
                     .expectSubscription()

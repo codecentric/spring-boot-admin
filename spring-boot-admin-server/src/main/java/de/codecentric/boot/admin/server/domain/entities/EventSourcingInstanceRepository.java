@@ -59,8 +59,8 @@ public class EventSourcingInstanceRepository implements InstanceRepository {
     }
 
     @Override
-    public Mono<Void> save(Instance instance) {
-        return eventStore.append(instance.getUnsavedEvents()).then();
+    public Mono<Instance> save(Instance instance) {
+        return eventStore.append(instance.getUnsavedEvents()).then(Mono.just(instance.clearUnsavedEvents()));
     }
 
     @Override
@@ -91,12 +91,12 @@ public class EventSourcingInstanceRepository implements InstanceRepository {
     protected void updateSnapshot(InstanceEvent event) {
         snapshots.compute(event.getInstance(), (key, old) -> {
             Instance instance = old != null ? old : Instance.create(key);
-            return instance.apply(event, false);
+            return instance.apply(event);
         });
     }
 
     @Override
-    public Mono<Void> compute(InstanceId id, BiFunction<InstanceId, Instance, Mono<Instance>> remappingFunction) {
+    public Mono<Instance> compute(InstanceId id, BiFunction<InstanceId, Instance, Mono<Instance>> remappingFunction) {
         return this.find(id)
                    .flatMap(application -> remappingFunction.apply(id, application))
                    .switchIfEmpty(Mono.defer(() -> remappingFunction.apply(id, null)))
@@ -105,8 +105,8 @@ public class EventSourcingInstanceRepository implements InstanceRepository {
     }
 
     @Override
-    public Mono<Void> computeIfPresent(InstanceId id,
-                                       BiFunction<InstanceId, Instance, Mono<Instance>> remappingFunction) {
+    public Mono<Instance> computeIfPresent(InstanceId id,
+                                           BiFunction<InstanceId, Instance, Mono<Instance>> remappingFunction) {
         return this.find(id)
                    .flatMap(application -> remappingFunction.apply(id, application))
                    .flatMap(this::save)

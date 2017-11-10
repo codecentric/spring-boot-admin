@@ -32,17 +32,21 @@ import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.util.Assert;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.unmodifiableList;
+
 /**
- * The aggregate representing a registered application at the spring boot admin.
+ * The aggregate representing a registered application instance.
  *
  * @author Johannes Edmeier
  */
 @lombok.Data
+@lombok.EqualsAndHashCode(exclude = {"unsavedEvents", "statusTimestamp"})
+@lombok.ToString(exclude = "unsavedEvents")
 public class Instance implements Serializable {
     private final InstanceId id;
     private final long version;
@@ -55,8 +59,7 @@ public class Instance implements Serializable {
     private final Endpoints endpoints;
 
     private Instance(InstanceId id) {
-        this(id, -1L, null, false, StatusInfo.ofUnknown(), -1L, Info.empty(), Endpoints.empty(),
-                Collections.emptyList());
+        this(id, -1L, null, false, StatusInfo.ofUnknown(), -1L, Info.empty(), Endpoints.empty(), emptyList());
     }
 
     private Instance(InstanceId id,
@@ -140,18 +143,28 @@ public class Instance implements Serializable {
     }
 
     List<InstanceEvent> getUnsavedEvents() {
-        return Collections.unmodifiableList(this.unsavedEvents);
+        return unmodifiableList(this.unsavedEvents);
     }
 
-    Instance loadHistory(Collection<InstanceEvent> events) {
+    Instance clearUnsavedEvents() {
+        return new Instance(this.id, this.version, this.registration, this.registered, this.statusInfo,
+                this.statusTimestamp, info, this.endpoints, emptyList());
+    }
+
+    Instance apply(Collection<InstanceEvent> events) {
+        Assert.notNull(events, "'events' must not be null");
         Instance instance = this;
         for (InstanceEvent event : events) {
-            instance = instance.apply(event, false);
+            instance = instance.apply(event);
         }
         return instance;
     }
 
-    Instance apply(InstanceEvent event, boolean isNewEvent) {
+    Instance apply(InstanceEvent event) {
+        return this.apply(event, false);
+    }
+
+    private Instance apply(InstanceEvent event, boolean isNewEvent) {
         Assert.notNull(event, "'event' must not be null");
         Assert.isTrue(this.id.equals(event.getInstance()), "'event' must refer the same instance");
         Assert.isTrue(this.nextVersion() == event.getVersion(), "expected event version doesn't match");
