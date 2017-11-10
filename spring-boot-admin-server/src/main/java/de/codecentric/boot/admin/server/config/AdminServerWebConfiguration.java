@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import de.codecentric.boot.admin.server.services.InstanceRegistry;
 import de.codecentric.boot.admin.server.web.AdminController;
 import de.codecentric.boot.admin.server.web.ApplicationsController;
 import de.codecentric.boot.admin.server.web.InstancesController;
+import de.codecentric.boot.admin.server.web.InstancesReactiveProxyController;
+import de.codecentric.boot.admin.server.web.InstancesServletProxyController;
 import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
@@ -29,21 +31,16 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
-import org.springframework.web.reactive.config.WebFluxConfigurer;
-import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
 
 @Configuration
 public class AdminServerWebConfiguration {
     @Bean
     @ConditionalOnMissingBean
-    public InstancesController instancesController(InstanceRegistry instanceRegistry,
-                                                   InstanceEventStore eventStore,
-                                                   InstanceWebClient instanceWebClient) {
-
-        return new InstancesController(instanceRegistry, eventStore, instanceWebClient);
+    public InstancesController instancesController(InstanceRegistry instanceRegistry, InstanceEventStore eventStore) {
+        return new InstancesController(instanceRegistry, eventStore);
     }
-
 
     @Bean
     @ConditionalOnMissingBean
@@ -61,13 +58,20 @@ public class AdminServerWebConfiguration {
         return new ApplicationsController(instanceRegistry, eventPublisher);
     }
 
-
     @Configuration
     @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-    public static class ReactiveConfiguration implements WebFluxConfigurer {
+    public static class ReactiveRestApiConfiguration {
         @Bean
-        public RequestMappingHandlerMapping adminHandlerMapping(RequestedContentTypeResolver webFluxContentTypeResolver) {
-            RequestMappingHandlerMapping mapping = new RequestMappingHandlerMapping() {
+        @ConditionalOnMissingBean
+        public InstancesReactiveProxyController instancesProxyController(InstanceRegistry instanceRegistry,
+                                                                         InstanceWebClient instanceWebClient) {
+            return new InstancesReactiveProxyController(instanceRegistry, instanceWebClient);
+        }
+
+        @Bean
+        public org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping adminHandlerMapping(
+                RequestedContentTypeResolver webFluxContentTypeResolver) {
+            org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping mapping = new org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping() {
                 @Override
                 protected boolean isHandler(Class<?> beanType) {
                     return AnnotatedElementUtils.hasAnnotation(beanType, AdminController.class);
@@ -77,6 +81,31 @@ public class AdminServerWebConfiguration {
             mapping.setContentTypeResolver(webFluxContentTypeResolver);
             return mapping;
         }
-
     }
+
+    @Configuration
+    @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+    public static class ServletRestApiConfirguation {
+        @Bean
+        @ConditionalOnMissingBean
+        public InstancesServletProxyController instancesProxyController(InstanceRegistry instanceRegistry,
+                                                                        InstanceWebClient instanceWebClient) {
+            return new InstancesServletProxyController(instanceRegistry, instanceWebClient);
+        }
+
+        @Bean
+        public org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping adminHandlerMapping(
+                ContentNegotiationManager contentNegotiationManager) {
+            org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping mapping = new org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping() {
+                @Override
+                protected boolean isHandler(Class<?> beanType) {
+                    return AnnotatedElementUtils.hasAnnotation(beanType, AdminController.class);
+                }
+            };
+            mapping.setOrder(0);
+            mapping.setContentNegotiationManager(contentNegotiationManager);
+            return mapping;
+        }
+    }
+
 }

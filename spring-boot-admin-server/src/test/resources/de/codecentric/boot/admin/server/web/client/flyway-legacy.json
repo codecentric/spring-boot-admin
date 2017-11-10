@@ -1,0 +1,32 @@
+[
+  {
+    "name": "flyway",
+    "migrations": [
+      {
+        "type": "SQL",
+        "checksum": 710039845,
+        "version": "1",
+        "description": "init",
+        "script": "V1__init.sql",
+        "state": "SUCCESS",
+        "installedOn": 1514632338544,
+        "executionTime": 10
+      }
+    ]
+  },
+  {
+    "name": "secondary",
+    "migrations": [
+      {
+        "type": "SQL",
+        "checksum": 710039845,
+        "version": "1",
+        "description": "init",
+        "script": "V1__init.sql",
+        "state": "SUCCESS",
+        "installedOn": 1514632338544,
+        "executionTime": 10
+      }
+    ]
+  }
+]

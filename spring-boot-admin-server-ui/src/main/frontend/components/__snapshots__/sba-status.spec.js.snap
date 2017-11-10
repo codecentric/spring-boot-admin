@@ -1,0 +1,73 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`application-status should match the snapshot with custom status 1`] = `
+<div
+  class="application-status"
+>
+  <!---->
+   
+  <!---->
+</div>
+`;
+
+exports[`application-status should match the snapshot with status DOWN 1`] = `
+<div
+  class="application-status"
+>
+  node_modules/material-design-icons/content/svg/production/ic_clear_24px.svg
+   
+  <!---->
+</div>
+`;
+
+exports[`application-status should match the snapshot with status OFFLINE 1`] = `
+<div
+  class="application-status"
+>
+  node_modules/material-design-icons/content/svg/production/ic_remove_24px.svg
+   
+  <!---->
+</div>
+`;
+
+exports[`application-status should match the snapshot with status OUT_OF_SERVICE 1`] = `
+<div
+  class="application-status"
+>
+  node_modules/material-design-icons/content/svg/production/ic_block_24px.svg
+   
+  <!---->
+</div>
+`;
+
+exports[`application-status should match the snapshot with status RESTRICTED 1`] = `
+<div
+  class="application-status"
+>
+  node_modules/material-design-icons/content/svg/production/ic_report_24px.svg
+   
+  <!---->
+</div>
+`;
+
+exports[`application-status should match the snapshot with status UNKNOWN 1`] = `
+<div
+  class="application-status"
+>
+  node_modules/material-design-icons/action/svg/production/ic_help_outline_24px.svg
+   
+  <!---->
+</div>
+`;
+
+exports[`application-status should match the snapshot with status UP with Timestamp 1`] = `
+<div
+  class="application-status"
+>
+  node_modules/material-design-icons/action/svg/production/ic_done_24px.svg
+   
+  <small>
+    14m
+  </small>
+</div>
+`;

@@ -1,0 +1,60 @@
+[
+  {
+    "name": "liquibase",
+    "changeLogs": [
+      {
+        "ID": "1",
+        "AUTHOR": "marceloverdijk",
+        "FILENAME": "classpath:/db/changelog/db.changelog-master.yaml",
+        "DATEEXECUTED": 1514588735890,
+        "ORDEREXECUTED": 1,
+        "EXECTYPE": "EXECUTED",
+        "MD5SUM": "7:b8f2ae9c88deabd32666dff9bc5d7f5d",
+        "DESCRIPTION": "createTable tableName=person",
+        "COMMENTS": "",
+        "TAG": null,
+        "LIQUIBASE": "3.5.3",
+        "CONTEXTS": null,
+        "LABELS": null,
+        "DEPLOYMENT_ID": "4588735849"
+      },
+      {
+        "ID": "2",
+        "AUTHOR": "marceloverdijk",
+        "FILENAME": "classpath:/db/changelog/db.changelog-master.yaml",
+        "DATEEXECUTED": 1514588735899,
+        "ORDEREXECUTED": 2,
+        "EXECTYPE": "EXECUTED",
+        "MD5SUM": "7:a8006415097ebb8b3334a23347847322",
+        "DESCRIPTION": "insert tableName=person",
+        "COMMENTS": "",
+        "TAG": null,
+        "LIQUIBASE": "3.5.3",
+        "CONTEXTS": "dev,db2",
+        "LABELS": "hard,core",
+        "DEPLOYMENT_ID": "4588735849"
+      }
+    ]
+  },
+  {
+    "name": "secondary",
+    "changeLogs": [
+      {
+        "ID": "1",
+        "AUTHOR": "marceloverdijk",
+        "FILENAME": "classpath:/db/changelog/db.changelog-master.yaml",
+        "DATEEXECUTED": 1514588735890,
+        "ORDEREXECUTED": 1,
+        "EXECTYPE": "EXECUTED",
+        "MD5SUM": "7:b8f2ae9c88deabd32666dff9bc5d7f5d",
+        "DESCRIPTION": "createTable tableName=person",
+        "COMMENTS": "",
+        "TAG": null,
+        "LIQUIBASE": "3.5.3",
+        "CONTEXTS": null,
+        "LABELS": null,
+        "DEPLOYMENT_ID": "4588735849"
+      }
+    ]
+  }
+]

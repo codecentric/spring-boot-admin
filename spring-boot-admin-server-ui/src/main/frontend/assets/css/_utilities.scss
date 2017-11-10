@@ -1,0 +1,41 @@
+/*!
+ * Copyright 2014-2018 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+//  Import the initial variables
+@import "~bulma/sass/utilities/initial-variables";
+@import "~bulma/sass/utilities/functions";
+
+$turquoise: rgb(66, 211, 165);
+$primary: $turquoise;
+$primary-invert: $white;
+
+$navbar-background-color: $black;
+$navbar-item-color: $grey;
+$navbar-item-hover-color: $white;
+$navbar-item-hover-background-color: $navbar-background-color;
+$navbar-item-active-color: $white;
+$navbar-item-active-background-color: $navbar-background-color;
+
+// for calculations / originally rem
+$navbar-height-px: 52px;
+$tabs-height-px: 41px;
+
+//  Add new color variables to the color map.
+@import "~bulma/sass/utilities/derived-variables.sass";
+
+$addColors: ();
+$colors: map-merge($colors, $addColors);
+
+@import "~bulma/sass/utilities/mixins.sass";

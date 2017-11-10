@@ -43,9 +43,7 @@ public class LegacyEndpointConvertersTest {
         assertThat(converter.canConvert("health")).isTrue();
         assertThat(converter.canConvert("foo")).isFalse();
 
-
         Flux<DataBuffer> legacyInput = this.read("health-legacy.json");
-
 
         Flux<Object> converted = converter.convert(legacyInput).transform(this::unmarshal);
         Flux<Object> expected = this.read("health-expected.json").transform(this::unmarshal);
@@ -86,6 +84,57 @@ public class LegacyEndpointConvertersTest {
                     .assertNext(t -> assertThat(t.getT1()).isEqualTo(t.getT2()))
                     .verifyComplete();
     }
+
+    @Test
+    public void should_convert_threaddump() {
+        LegacyEndpointConverter converter = LegacyEndpointConverters.threaddump();
+        assertThat(converter.canConvert("threaddump")).isTrue();
+        assertThat(converter.canConvert("foo")).isFalse();
+
+        Flux<DataBuffer> legacyInput = this.read("threaddump-legacy.json");
+
+        Flux<Object> converted = converter.convert(legacyInput).transform(this::unmarshal);
+        Flux<Object> expected = this.read("threaddump-expected.json").transform(this::unmarshal);
+
+        StepVerifier.create(Flux.zip(converted, expected))
+                    .assertNext(t -> assertThat(t.getT1()).isEqualTo(t.getT2()))
+                    .verifyComplete();
+    }
+
+
+    @Test
+    public void should_convert_liquibase() {
+        LegacyEndpointConverter converter = LegacyEndpointConverters.liquibase();
+        assertThat(converter.canConvert("liquibase")).isTrue();
+        assertThat(converter.canConvert("foo")).isFalse();
+
+        Flux<DataBuffer> legacyInput = this.read("liquibase-legacy.json");
+
+        Flux<Object> converted = converter.convert(legacyInput).transform(this::unmarshal);
+        Flux<Object> expected = this.read("liquibase-expected.json").transform(this::unmarshal);
+
+        StepVerifier.create(Flux.zip(converted, expected))
+                    .assertNext(t -> assertThat(t.getT1()).isEqualTo(t.getT2()))
+                    .verifyComplete();
+    }
+
+
+    @Test
+    public void should_convert_flyway() {
+        LegacyEndpointConverter converter = LegacyEndpointConverters.flyway();
+        assertThat(converter.canConvert("flyway")).isTrue();
+        assertThat(converter.canConvert("foo")).isFalse();
+
+        Flux<DataBuffer> legacyInput = this.read("flyway-legacy.json");
+
+        Flux<Object> converted = converter.convert(legacyInput).transform(this::unmarshal);
+        Flux<Object> expected = this.read("flyway-expected.json").transform(this::unmarshal);
+
+        StepVerifier.create(Flux.zip(converted, expected))
+                    .assertNext(t -> assertThat(t.getT1()).isEqualTo(t.getT2()))
+                    .verifyComplete();
+    }
+
 
     @SuppressWarnings("unchecked")
     private Flux<Object> unmarshal(Flux<DataBuffer> buffer) {

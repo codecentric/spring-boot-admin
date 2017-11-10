@@ -47,6 +47,9 @@ public class InstanceWebClient {
             filters.add(InstanceFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.health()));
             filters.add(InstanceFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.env()));
             filters.add(InstanceFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.trace()));
+            filters.add(InstanceFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.threaddump()));
+            filters.add(InstanceFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.liquibase()));
+            filters.add(InstanceFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.flyway()));
         }).build();
     }
 

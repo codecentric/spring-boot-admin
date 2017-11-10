@@ -39,13 +39,13 @@
         <build-plugin.jacoco.version>0.7.9</build-plugin.jacoco.version>
         <build-plugin.coveralls.version>4.3.0</build-plugin.coveralls.version>
         <build-plugin.gpg.version>1.6</build-plugin.gpg.version>
-        <build-plugin.asciidoctor.version>1.5.5</build-plugin.asciidoctor.version>
+        <build-plugin.asciidoctor.version>1.5.6</build-plugin.asciidoctor.version>
         <build-plugin.exec.version>1.6.0</build-plugin.exec.version>
-        <build-plugin.git-commit-id.version>2.2.2</build-plugin.git-commit-id.version>
+        <build-plugin.git-commit-id.version>2.2.3</build-plugin.git-commit-id.version>
     </properties>
     <modules>
         <module>spring-boot-admin-server</module>
-        <!-- module>spring-boot-admin-server-ui</module -->
+        <module>spring-boot-admin-server-ui</module>
         <module>spring-boot-admin-samples</module>
         <module>spring-boot-admin-starter-client</module>
         <module>spring-boot-admin-docs</module>

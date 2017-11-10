@@ -1,0 +1,94 @@
+{
+  "name": "spring-boot-admin-server-ui",
+  "description": "Spring Boot Admin UI",
+  "author": "Johannes Edmeier <johannes.edmeier@codecentric.de>",
+  "private": true,
+  "scripts": {
+    "watch": "cross-env NODE_ENV=development webpack --watch",
+    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules --bail",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "dependencies": {
+    "axios": "^0.17.1",
+    "bulma": "^0.6.1",
+    "d3": "^4.12.2",
+    "event-source-polyfill": "0.0.12",
+    "linkifyjs": "^2.1.5",
+    "lodash": "^4.17.4",
+    "material-design-icons": "^3.0.1",
+    "moment": "^2.20.1",
+    "moment-shortformat": "^2.1.0",
+    "pretty-bytes": "^4.0.2",
+    "rxjs": "^5.5.6",
+    "vue": "^2.5.13",
+    "vue-clickaway": "^2.1.0",
+    "vue-router": "^3.0.1",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^7.2.3",
+    "babel-core": "^6.25.0",
+    "babel-eslint": "^8.1.2",
+    "babel-jest": "^22.0.4",
+    "babel-loader": "^7.1.1",
+    "babel-plugin-lodash": "^3.3.2",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "clean-webpack-plugin": "^0.1.17",
+    "cross-env": "^5.1.3",
+    "css-hot-loader": "^1.3.5",
+    "css-loader": "^0.28.4",
+    "css-mqpacker": "^6.0.1",
+    "eslint": "^4.14.0",
+    "eslint-plugin-html": "^4.0.1",
+    "eslint-plugin-vue-libs": "^2.1.0",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "file-loader": "^1.1.6",
+    "glob": "^7.1.2",
+    "html-loader": "^0.5.0",
+    "html-webpack-plugin": "^2.30.0",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^22.0.4",
+    "jest-vue": "^0.8.2",
+    "lodash-webpack-plugin": "^0.11.4",
+    "node-sass": "^4.7.2",
+    "optimize-css-assets-webpack-plugin": "^3.2.0",
+    "postcss-loader": "^2.0.9",
+    "sass-loader": "^6.0.6",
+    "style-loader": "^0.19.1",
+    "url-loader": "^0.6.2",
+    "vue-loader": "^13.6.2",
+    "vue-svg-loader": "^0.4.0",
+    "vue-template-compiler": "^2.5.13",
+    "vue-test-utils": "^1.0.0-beta.9",
+    "webpack": "^3.10.0",
+    "webpack-bundle-analyzer": "^2.9.1",
+    "webpack-dev-server": "^2.9.7"
+  },
+  "browserslist": [
+    "> 2%",
+    "last 2 versions",
+    "not ie < 11"
+  ],
+  "jest": {
+    "testRegex": "spec.js$",
+    "moduleFileExtensions": [
+      "js",
+      "vue"
+    ],
+    "moduleNameMapper": {
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/src/test/frontend/__mocks__/file-mock.js",
+      "\\.(css|scss)$": "<rootDir>/__mocks__/file-mocks.js"
+    },
+    "transform": {
+      "\\.js$": "babel-jest",
+      "\\.vue$": "jest-vue",
+      "\\.svg$": "<rootDir>/src/test/frontend/__mocks__/vue-mock-component.js"
+    },
+    "transformIgnorePatterns": [
+      "node_modules.*([^\\.][^s][^v][^g])$"
+    ]
+  }
+}
