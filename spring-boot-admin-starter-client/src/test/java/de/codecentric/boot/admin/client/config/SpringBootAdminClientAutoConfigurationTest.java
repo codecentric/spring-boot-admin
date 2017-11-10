@@ -40,6 +40,13 @@ public class SpringBootAdminClientAutoConfigurationTest {
         assertThat(context.getBeansOfType(ApplicationRegistrator.class)).isEmpty();
     }
 
+    @Test
+    public void nonWebEnvironment() {
+        load("spring.main.admin.url:http://localhost:8081", "spring.boot.admin.client.enabled:true",
+                "spring.main.web-environment:false");
+        assertThat(context.getBeansOfType(ApplicationRegistrator.class).isEmpty());
+    }
+
     private void load(final String... environment) {
         SpringApplication springApplication = new SpringApplication(TestClientApplication.class);
         springApplication.addInitializers(

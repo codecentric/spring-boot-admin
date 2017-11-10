@@ -45,6 +45,7 @@ import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebA
 
 @Configuration
 @EnableConfigurationProperties({ClientProperties.class, InstanceProperties.class})
+@ConditionalOnWebApplication
 @Conditional(SpringBootAdminClientEnabledCondition.class)
 @AutoConfigureAfter(WebMvcEndpointManagementContextConfiguration.class)
 public class SpringBootAdminClientAutoConfiguration {
