@@ -15,38 +15,45 @@
  */
 package de.codecentric.boot.admin.server.config;
 
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventPublisher;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
 import de.codecentric.boot.admin.server.web.AdminController;
 import de.codecentric.boot.admin.server.web.ApplicationsController;
-import de.codecentric.boot.admin.server.web.FixedJackson2Decoder;
-import de.codecentric.boot.admin.server.web.InstanceRouteDefinitionLocator;
 import de.codecentric.boot.admin.server.web.InstancesController;
+import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
+import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
-import org.reactivestreams.Publisher;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.http.codec.CodecConfigurer;
-import org.springframework.http.codec.json.Jackson2JsonEncoder;
-import org.springframework.util.MimeType;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 public class AdminServerWebConfiguration {
     @Bean
     @ConditionalOnMissingBean
-    public InstancesController instancesController(InstanceRegistry instanceRegistry, InstanceEventStore eventStore) {
-        return new InstancesController(instanceRegistry, eventStore);
+    public InstancesController instancesController(InstanceRegistry instanceRegistry,
+                                                   InstanceEventStore eventStore,
+                                                   InstanceWebClient instanceWebClient) {
+
+        return new InstancesController(instanceRegistry, eventStore, instanceWebClient);
     }
+
+
+    @Bean
+    @ConditionalOnMissingBean
+    public InstanceWebClient instanceWebClient(InstanceRegistry instanceRegistry,
+                                               HttpHeadersProvider httpHeadersProvider,
+                                               AdminServerProperties adminServerProperties) {
+        return new InstanceWebClient(httpHeadersProvider, adminServerProperties.getMonitor().getConnectTimeout(),
+                adminServerProperties.getMonitor().getReadTimeout());
+    }
+
 
     @Bean
     @ConditionalOnMissingBean
@@ -55,11 +62,6 @@ public class AdminServerWebConfiguration {
         return new ApplicationsController(instanceRegistry, eventPublisher);
     }
 
-    @Bean(initMethod = "start", destroyMethod = "stop")
-    @ConditionalOnMissingBean
-    public InstanceRouteDefinitionLocator instanceRouteDefinitionLocator(Publisher<InstanceEvent> publisher) {
-        return new InstanceRouteDefinitionLocator(publisher);
-    }
 
     @Configuration
     @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
@@ -77,17 +79,5 @@ public class AdminServerWebConfiguration {
             return mapping;
         }
 
-        //FIXME remove after resolution of SPR-15975
-        private static final MimeType[] EMPTY_MIME_TYPES = {};
-
-        //FIXME remove after resolution of SPR-15975
-        @Bean
-        public CodecCustomizer codecCustomizer(ObjectMapper objectMapper) {
-            return (configurer) -> {
-                CodecConfigurer.DefaultCodecs defaults = configurer.defaultCodecs();
-                defaults.jackson2JsonDecoder(new FixedJackson2Decoder(objectMapper, EMPTY_MIME_TYPES));
-                defaults.jackson2JsonEncoder(new Jackson2JsonEncoder(objectMapper, EMPTY_MIME_TYPES));
-            };
-        }
     }
 }

@@ -20,129 +20,145 @@ import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
-import de.codecentric.boot.admin.server.web.client.InstanceOperations;
-import reactor.core.publisher.Mono;
+import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
+import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
+import net.minidev.json.JSONObject;
 import reactor.test.StepVerifier;
 
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.web.reactive.function.client.ClientResponse;
+import com.github.tomakehurst.wiremock.core.Options;
+import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.anyRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.notFound;
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
 
 public class QueryIndexEndpointStrategyTest {
-    private Mono<ClientResponse> responseNotFound = mockResponse(HttpStatus.NOT_FOUND, null, null);
-    private Mono<ClientResponse> responseOkWrongContentType = mockResponse(HttpStatus.OK, MediaType.APPLICATION_JSON,
-            null);
-    private Mono<ClientResponse> responseOk = mockResponse(HttpStatus.OK,
-            MediaType.parseMediaType(ActuatorMediaType.V2_JSON),
-            createBody("metrics=http://app/mgmt/stats", "info=http://app/mgmt/info", "self=http://app/mgmt"));
-    private Mono<ClientResponse> responseOkEmpty = mockResponse(HttpStatus.OK,
-            MediaType.parseMediaType(ActuatorMediaType.V2_JSON), createBody("self=http://app/mgmt"));
+    @ClassRule
+    public static WireMockClassRule wireMockClassRule = new WireMockClassRule(Options.DYNAMIC_PORT);
 
-    private Instance instance = Instance.create(InstanceId.of("id"))
-                                        .register(Registration.create("test", "http://app/mgmt/health")
-                                                              .managementUrl("http://app/mgmt")
-                                                              .build());
+    @Rule
+    public WireMockClassRule wireMock = wireMockClassRule;
+
+    private InstanceWebClient instanceWebClient = new InstanceWebClient(
+            mock(HttpHeadersProvider.class, invocation -> HttpHeaders.EMPTY));
 
     @Test
     public void should_return_endpoints() {
         //given
-        InstanceOperations ops = mock(InstanceOperations.class);
-        when(ops.exchange(HttpMethod.GET, instance, URI.create("http://app/mgmt"))).thenReturn(responseOk);
-        QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(ops);
+        Instance instance = Instance.create(InstanceId.of("id"))
+                                    .register(Registration.create("test", wireMock.url("/mgmt/health"))
+                                                          .managementUrl(wireMock.url("/mgmt"))
+                                                          .build());
 
-        //when/then
+        JSONObject links = new JSONObject();
+        links.appendField("self", new JSONObject()//
+                                                  .appendField("href", wireMock.url("/mgmt"))//
+                                                  .appendField("templated", false));
+        links.appendField("info", new JSONObject()//
+                                                  .appendField("href", wireMock.url("/mgmt/info"))//
+                                                  .appendField("templated", false));
+        links.appendField("metrics", new JSONObject()//
+                                                     .appendField("href", wireMock.url("/mgmt/stats"))//
+                                                     .appendField("templated", false));
+        links.appendField("metrics-requiredMetricName", new JSONObject()//
+                                                                        .appendField("href",
+                                                                                wireMock.url("/mgmt/metrics") +
+                                                                                "/{requiredMetricName}")//
+                                                                        .appendField("templated", true));
+
+        JSONObject body = new JSONObject().appendField("_links", links);
+
+        wireMock.stubFor(
+                get("/mgmt").willReturn(ok(body.toJSONString()).withHeader("Content-Type", ActuatorMediaType.V2_JSON)));
+
+        QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(instanceWebClient);
+
+        //when
         StepVerifier.create(strategy.detectEndpoints(instance))
-                    .expectNext(Endpoints.single("metrics", "http://app/mgmt/stats")
-                                         .withEndpoint("info", "http://app/mgmt/info"))
+                    //then
+                    .expectNext(Endpoints.single("metrics", wireMock.url("/mgmt/stats"))
+                                         .withEndpoint("info", wireMock.url("/mgmt/info")))//
                     .verifyComplete();
     }
 
     @Test
     public void should_return_empty_on_empty_endpoints() {
         //given
-        InstanceOperations ops = mock(InstanceOperations.class);
-        when(ops.exchange(HttpMethod.GET, instance, URI.create("http://app/mgmt"))).thenReturn(responseOkEmpty);
-        QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(ops);
+        Instance instance = Instance.create(InstanceId.of("id"))
+                                    .register(Registration.create("test", wireMock.url("/mgmt/health"))
+                                                          .managementUrl(wireMock.url("/mgmt"))
+                                                          .build());
 
-        //when/then
-        StepVerifier.create(strategy.detectEndpoints(instance)).verifyComplete();
+        wireMock.stubFor(get("/mgmt").willReturn(ok().withHeader("Content-Type", ActuatorMediaType.V2_JSON)));
+
+        QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(instanceWebClient);
+
+        //when
+        StepVerifier.create(strategy.detectEndpoints(instance))
+                    //then
+                    .verifyComplete();
     }
 
     @Test
     public void should_return_empty_on_not_found() {
         //given
-        InstanceOperations ops = mock(InstanceOperations.class);
-        when(ops.exchange(HttpMethod.GET, instance, URI.create("http://app/mgmt"))).thenReturn(responseNotFound);
-        QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(ops);
+        Instance instance = Instance.create(InstanceId.of("id"))
+                                    .register(Registration.create("test", wireMock.url("/mgmt/health"))
+                                                          .managementUrl(wireMock.url("/mgmt"))
+                                                          .build());
 
-        //when/then
-        StepVerifier.create(strategy.detectEndpoints(instance)).verifyComplete();
+        wireMock.stubFor(get("/mgmt").willReturn(notFound()));
+
+        QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(instanceWebClient);
+
+        //when
+        StepVerifier.create(strategy.detectEndpoints(instance))
+                    //then
+                    .verifyComplete();
     }
 
     @Test
     public void should_return_empty_on_wrong_content_type() {
         //given
-        InstanceOperations ops = mock(InstanceOperations.class);
-        when(ops.exchange(HttpMethod.GET, instance, URI.create("http://app/mgmt"))).thenReturn(
-                responseOkWrongContentType);
-        QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(ops);
+        Instance instance = Instance.create(InstanceId.of("id"))
+                                    .register(Registration.create("test", wireMock.url("/mgmt/health"))
+                                                          .managementUrl(wireMock.url("/mgmt"))
+                                                          .build());
 
-        //when/then
-        StepVerifier.create(strategy.detectEndpoints(instance)).verifyComplete();
+        wireMock.stubFor(
+                get("/mgmt").willReturn(ok("HELLOW WORLD").withHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE)));
+
+        QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(instanceWebClient);
+
+        //when
+        StepVerifier.create(strategy.detectEndpoints(instance))
+                    //then
+                    .verifyComplete();
     }
 
     @Test
     public void should_return_empty_when_mgmt_equals_service_url() {
         //given
         Instance instance = Instance.create(InstanceId.of("id"))
-                                    .register(Registration.create("test", "http://app/mgmt/health")
-                                                          .managementUrl("http://app")
-                                                          .serviceUrl("http://app")
+                                    .register(Registration.create("test", wireMock.url("/app/health"))
+                                                          .managementUrl(wireMock.url("/app"))
+                                                          .serviceUrl(wireMock.url("/app"))
                                                           .build());
-        InstanceOperations ops = mock(InstanceOperations.class);
-        QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(ops);
+
+        QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(instanceWebClient);
 
         //when/then
         StepVerifier.create(strategy.detectEndpoints(instance)).verifyComplete();
-        verifyZeroInteractions(ops);
-    }
-
-    @SuppressWarnings("unchecked")
-    private Mono<ClientResponse> mockResponse(HttpStatus statusCode,
-                                              MediaType mediaType,
-                                              QueryIndexEndpointStrategy.Response body) {
-        ClientResponse mock = mock(org.springframework.web.reactive.function.client.ClientResponse.class);
-        when(mock.statusCode()).thenReturn(statusCode);
-        ClientResponse.Headers headersMock = mock(ClientResponse.Headers.class);
-        when(headersMock.contentType()).thenReturn(Optional.ofNullable(mediaType));
-        when(mock.headers()).thenReturn(headersMock);
-        when(mock.bodyToMono(QueryIndexEndpointStrategy.Response.class)).thenReturn(Mono.justOrEmpty(body));
-        return Mono.just(mock);
-    }
-
-
-    private QueryIndexEndpointStrategy.Response createBody(String... endpoints) {
-        QueryIndexEndpointStrategy.Response body = new QueryIndexEndpointStrategy.Response();
-        Map<String, QueryIndexEndpointStrategy.Response.EndpointRef> links = new HashMap<>();
-        for (String endpoint : endpoints) {
-            String[] tokens = endpoint.split("=");
-            QueryIndexEndpointStrategy.Response.EndpointRef ref = new QueryIndexEndpointStrategy.Response.EndpointRef();
-            ref.setHref(tokens[1]);
-            links.put(tokens[0], ref);
-        }
-        body.set_links(links);
-        return body;
+        wireMock.verify(0, anyRequestedFor(urlPathEqualTo("/app")));
     }
 
 }

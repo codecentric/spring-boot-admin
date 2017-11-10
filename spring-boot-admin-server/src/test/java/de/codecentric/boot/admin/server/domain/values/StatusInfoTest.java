@@ -16,8 +16,20 @@
 
 package de.codecentric.boot.admin.server.domain.values;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.junit.Test;
 
+import static de.codecentric.boot.admin.server.domain.values.StatusInfo.STATUS_DOWN;
+import static de.codecentric.boot.admin.server.domain.values.StatusInfo.STATUS_OFFLINE;
+import static de.codecentric.boot.admin.server.domain.values.StatusInfo.STATUS_OUT_OF_SERVICE;
+import static de.codecentric.boot.admin.server.domain.values.StatusInfo.STATUS_RESTRICTED;
+import static de.codecentric.boot.admin.server.domain.values.StatusInfo.STATUS_UNKNOWN;
+import static de.codecentric.boot.admin.server.domain.values.StatusInfo.STATUS_UP;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -57,4 +69,22 @@ public class StatusInfoTest {
         assertThat(StatusInfo.ofOffline().isOffline()).isTrue();
     }
 
+    @Test
+    public void from_map_should_return_same_result() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("status", "UP");
+        map.put("details", singletonMap("foo", "bar"));
+
+        assertThat(StatusInfo.from(map)).isEqualTo(StatusInfo.ofUp(singletonMap("foo", "bar")));
+    }
+
+    @Test
+    public void should_sort_by_status_order() {
+        List<String> unordered = asList(STATUS_OUT_OF_SERVICE, STATUS_UNKNOWN, STATUS_OFFLINE, STATUS_DOWN, STATUS_UP,
+                STATUS_RESTRICTED);
+
+        List<String> ordered = unordered.stream().sorted(StatusInfo.severity()).collect(Collectors.toList());
+        assertThat(ordered).containsExactly(STATUS_DOWN, STATUS_OUT_OF_SERVICE, STATUS_OFFLINE, STATUS_UNKNOWN,
+                STATUS_RESTRICTED, STATUS_UP);
+    }
 }

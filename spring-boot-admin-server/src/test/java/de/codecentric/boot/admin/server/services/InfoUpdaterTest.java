@@ -24,52 +24,62 @@ import de.codecentric.boot.admin.server.domain.values.Info;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
-import de.codecentric.boot.admin.server.eventstore.ConcurrentMapEventStore;
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
-import de.codecentric.boot.admin.server.web.client.InstanceOperations;
-import reactor.core.publisher.Mono;
+import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
+import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
 import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.ResourceAccessException;
+import org.springframework.http.HttpHeaders;
+import com.github.tomakehurst.wiremock.core.Options;
+import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.serverError;
 import static java.util.Collections.singletonMap;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class InfoUpdaterTest {
-    private InstanceOperations applicationOps;
+    @ClassRule
+    public static WireMockClassRule wireMockClassRule = new WireMockClassRule(Options.DYNAMIC_PORT);
+
+    @Rule
+    public WireMockClassRule wireMock = wireMockClassRule;
+
     private InfoUpdater updater;
+    private InMemoryEventStore eventStore;
     private EventSourcingInstanceRepository repository;
-    private ConcurrentMapEventStore eventStore;
 
     @Before
     public void setup() {
         eventStore = new InMemoryEventStore();
         repository = new EventSourcingInstanceRepository(eventStore);
         repository.start();
-        applicationOps = mock(InstanceOperations.class);
-        updater = new InfoUpdater(repository, applicationOps);
+        InstanceWebClient instanceWebClient = new InstanceWebClient(
+                mock(HttpHeadersProvider.class, invocation -> HttpHeaders.EMPTY), 1000, 1000);
+        updater = new InfoUpdater(repository, instanceWebClient);
     }
 
+
     @Test
-    public void should_update_info_for_online_with_endpoint_only() {
+    public void should_update_info_for_online_with_info_endpoint_only() {
         //given
-        Registration registration = Registration.create("foo", "http://health").build();
+        Registration registration = Registration.create("foo", wireMock.url("/health")).build();
         Instance instance = Instance.create(InstanceId.of("onl"))
                                     .register(registration)
-                                    .withEndpoints(Endpoints.single("info", "info"))
+                                    .withEndpoints(Endpoints.single("info", wireMock.url("/info")))
                                     .withStatusInfo(StatusInfo.ofUp());
         StepVerifier.create(repository.save(instance)).verifyComplete();
 
         Instance noInfo = Instance.create(InstanceId.of("noinfo"))
                                   .register(registration)
-                                  .withEndpoints(Endpoints.single("beans", "beans"))
+                                  .withEndpoints(Endpoints.single("beans", wireMock.url("/info")))
                                   .withStatusInfo(StatusInfo.ofUp());
         StepVerifier.create(repository.save(noInfo)).verifyComplete();
 
@@ -83,10 +93,9 @@ public class InfoUpdaterTest {
                                    .withStatusInfo(StatusInfo.ofUnknown());
         StepVerifier.create(repository.save(unknown)).verifyComplete();
 
-        when(applicationOps.getInfo(any(Instance.class))).thenReturn(
-                Mono.just(ResponseEntity.ok(singletonMap("foo", "bar"))));
+        wireMock.stubFor(get("/info").willReturn(okJson("{ \"foo\": \"bar\" }")));
 
-        //when/then
+        //when
         StepVerifier.create(eventStore)
                     .expectSubscription()
                     .then(() -> StepVerifier.create(updater.updateInfo(offline.getId())).verifyComplete())
@@ -94,6 +103,7 @@ public class InfoUpdaterTest {
                     .then(() -> StepVerifier.create(updater.updateInfo(noInfo.getId())).verifyComplete())
                     .expectNoEvent(Duration.ofMillis(10L))
                     .then(() -> StepVerifier.create(updater.updateInfo(instance.getId())).verifyComplete())
+                    //then
                     .assertNext(event -> assertThat(event).isInstanceOf(InstanceInfoChangedEvent.class))
                     .thenCancel()
                     .verify(Duration.ofMillis(500L));
@@ -107,18 +117,19 @@ public class InfoUpdaterTest {
     public void should_clear_info_on_http_error() {
         //given
         Instance instance = Instance.create(InstanceId.of("onl"))
-                                    .register(Registration.create("foo", "http://health").build())
-                                    .withEndpoints(Endpoints.single("info", "info"))
+                                    .register(Registration.create("foo", wireMock.url("/health")).build())
+                                    .withEndpoints(Endpoints.single("info", wireMock.url("/info")))
                                     .withStatusInfo(StatusInfo.ofUp())
                                     .withInfo(Info.from(singletonMap("foo", "bar")));
         StepVerifier.create(repository.save(instance)).verifyComplete();
 
-        when(applicationOps.getInfo(any(Instance.class))).thenReturn(Mono.just(ResponseEntity.status(500).build()));
+        wireMock.stubFor(get("/info").willReturn(serverError()));
 
-        //when/then
+        //when
         StepVerifier.create(eventStore)
                     .expectSubscription()
                     .then(() -> StepVerifier.create(updater.updateInfo(instance.getId())).verifyComplete())
+                    //then
                     .assertNext(event -> assertThat(event).isInstanceOf(InstanceInfoChangedEvent.class))
                     .thenCancel()
                     .verify(Duration.ofMillis(500L));
@@ -127,23 +138,25 @@ public class InfoUpdaterTest {
                     .assertNext(app -> assertThat(app.getInfo()).isEqualTo(Info.empty()))
                     .verifyComplete();
     }
+
 
     @Test
     public void should_clear_info_on_exception() {
         //given
         Instance instance = Instance.create(InstanceId.of("onl"))
-                                    .register(Registration.create("foo", "http://health").build())
-                                    .withEndpoints(Endpoints.single("info", "info"))
+                                    .register(Registration.create("foo", wireMock.url("/health")).build())
+                                    .withEndpoints(Endpoints.single("info", wireMock.url("/info")))
                                     .withStatusInfo(StatusInfo.ofUp())
                                     .withInfo(Info.from(singletonMap("foo", "bar")));
         StepVerifier.create(repository.save(instance)).verifyComplete();
 
-        when(applicationOps.getInfo(any(Instance.class))).thenReturn(Mono.error(new ResourceAccessException("error")));
+        wireMock.stubFor(get("/info").willReturn(okJson("{ \"foo\": \"bar\" }").withFixedDelay(1500)));
 
-        //when/then
+        //when
         StepVerifier.create(eventStore)
                     .expectSubscription()
                     .then(() -> StepVerifier.create(updater.updateInfo(instance.getId())).verifyComplete())
+                    //then
                     .assertNext(event -> assertThat(event).isInstanceOf(InstanceInfoChangedEvent.class))
                     .thenCancel()
                     .verify(Duration.ofMillis(500L));
@@ -151,6 +164,6 @@ public class InfoUpdaterTest {
         StepVerifier.create(repository.find(instance.getId()))
                     .assertNext(app -> assertThat(app.getInfo()).isEqualTo(Info.empty()))
                     .verifyComplete();
-
     }
+
 }

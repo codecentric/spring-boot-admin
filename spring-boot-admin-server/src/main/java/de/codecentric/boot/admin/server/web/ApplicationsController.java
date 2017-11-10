@@ -39,7 +39,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -148,7 +147,7 @@ public class ApplicationsController {
 
         return statusWithTime.entrySet()
                              .stream()
-                             .min(comparing(Map.Entry::getKey, StatusInfo.severity()))
+                             .min(Map.Entry.comparingByKey(StatusInfo.severity()))
                              .map(e -> Tuples.of(e.getKey(), e.getValue()))
                              .orElse(Tuples.of(StatusInfo.STATUS_UNKNOWN, -1L));
     }

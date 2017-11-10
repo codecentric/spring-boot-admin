@@ -22,6 +22,7 @@ import de.codecentric.boot.admin.server.domain.events.InstanceInfoChangedEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdatedEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.Info;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
@@ -68,6 +69,9 @@ public class Instance implements Serializable {
                      Endpoints endpoints,
                      List<InstanceEvent> unsavedEvents) {
         Assert.notNull(id, "'id' must not be null");
+        Assert.notNull(endpoints, "'endpoints' must not be null");
+        Assert.notNull(info, "'info' must not be null");
+        Assert.notNull(statusInfo, "'statusInfo' must not be null");
         this.id = id;
         this.version = version;
         this.registration = registration;
@@ -75,7 +79,7 @@ public class Instance implements Serializable {
         this.statusInfo = statusInfo;
         this.statusTimestamp = statusTimestamp;
         this.info = info;
-        this.endpoints = endpoints;
+        this.endpoints = registered ? endpoints.withEndpoint(Endpoint.HEALTH, registration.getHealthUrl()) : endpoints;
         this.unsavedEvents = unsavedEvents;
     }
 
@@ -122,7 +126,9 @@ public class Instance implements Serializable {
 
     public Instance withEndpoints(Endpoints endpoints) {
         Assert.notNull(endpoints, "'endpoints' must not be null");
-        if (Objects.equals(this.endpoints, endpoints)) {
+        if (Objects.equals(this.endpoints, this.registered ?
+                endpoints.withEndpoint(Endpoint.HEALTH, this.registration.getHealthUrl()) :
+                endpoints)) {
             return this;
         }
         return this.apply(new InstanceEndpointsDetectedEvent(this.id, this.nextVersion(), endpoints), true);
@@ -130,11 +136,11 @@ public class Instance implements Serializable {
 
 
     public boolean isRegistered() {
-        return registered;
+        return this.registered;
     }
 
     List<InstanceEvent> getUnsavedEvents() {
-        return Collections.unmodifiableList(unsavedEvents);
+        return Collections.unmodifiableList(this.unsavedEvents);
     }
 
     Instance loadHistory(Collection<InstanceEvent> events) {
@@ -156,21 +162,27 @@ public class Instance implements Serializable {
             Registration registration = ((InstanceRegisteredEvent) event).getRegistration();
             return new Instance(this.id, event.getVersion(), registration, true, StatusInfo.ofUnknown(),
                     event.getTimestamp(), Info.empty(), Endpoints.empty(), unsavedEvents);
+
         } else if (event instanceof InstanceRegistrationUpdatedEvent) {
-            return new Instance(this.id, event.getVersion(),
-                    ((InstanceRegistrationUpdatedEvent) event).getRegistration(), this.registered, this.statusInfo,
+            Registration registration = ((InstanceRegistrationUpdatedEvent) event).getRegistration();
+            return new Instance(this.id, event.getVersion(), registration, this.registered, this.statusInfo,
                     this.statusTimestamp, this.info, this.endpoints, unsavedEvents);
+
         } else if (event instanceof InstanceStatusChangedEvent) {
-            return new Instance(this.id, event.getVersion(), this.registration, this.registered,
-                    ((InstanceStatusChangedEvent) event).getStatusInfo(), event.getTimestamp(), this.info,
-                    this.endpoints, unsavedEvents);
+            StatusInfo statusInfo = ((InstanceStatusChangedEvent) event).getStatusInfo();
+            return new Instance(this.id, event.getVersion(), this.registration, this.registered, statusInfo,
+                    event.getTimestamp(), this.info, this.endpoints, unsavedEvents);
+
         } else if (event instanceof InstanceEndpointsDetectedEvent) {
+            Endpoints endpoints = ((InstanceEndpointsDetectedEvent) event).getEndpoints();
             return new Instance(this.id, event.getVersion(), this.registration, this.registered, this.statusInfo,
-                    this.statusTimestamp, this.info, ((InstanceEndpointsDetectedEvent) event).getEndpoints(),
-                    unsavedEvents);
+                    this.statusTimestamp, this.info, endpoints, unsavedEvents);
+
         } else if (event instanceof InstanceInfoChangedEvent) {
+            Info info = ((InstanceInfoChangedEvent) event).getInfo();
             return new Instance(this.id, event.getVersion(), this.registration, this.registered, this.statusInfo,
-                    this.statusTimestamp, ((InstanceInfoChangedEvent) event).getInfo(), this.endpoints, unsavedEvents);
+                    this.statusTimestamp, info, this.endpoints, unsavedEvents);
+
         } else if (event instanceof InstanceDeregisteredEvent) {
             return new Instance(this.id, event.getVersion(), this.registration, false, StatusInfo.ofUnknown(),
                     event.getTimestamp(), Info.empty(), Endpoints.empty(), unsavedEvents);

@@ -21,7 +21,9 @@ import org.springframework.util.Assert;
 
 @lombok.Data
 public class Endpoint implements Serializable {
-    public final static String INFO = "info";
+    public static final String INFO = "info";
+    public static final String HEALTH = "health";
+    public static final String ENV = "env";
     private final String id;
     private final String url;
 

@@ -19,7 +19,7 @@ package de.codecentric.boot.admin.server.services.endpoints;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
-import de.codecentric.boot.admin.server.web.client.InstanceOperations;
+import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 import lombok.Data;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -28,19 +28,18 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
-import org.springframework.http.HttpMethod;
 import org.springframework.util.Assert;
 import org.springframework.web.util.UriComponentsBuilder;
 
 public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
     private final Collection<EndpointDefinition> endpoints;
-    private final InstanceOperations instanceOps;
+    private final InstanceWebClient instanceWebClient;
 
-    public ProbeEndpointsStrategy(InstanceOperations instanceOps, String[] endpoints) {
+    public ProbeEndpointsStrategy(InstanceWebClient instanceWebClient, String[] endpoints) {
         Assert.notNull(endpoints, "'endpoints' must not be null.");
         Assert.noNullElements(endpoints, "'endpoints' must not contain null.");
         this.endpoints = Arrays.stream(endpoints).map(EndpointDefinition::create).collect(Collectors.toList());
-        this.instanceOps = instanceOps;
+        this.instanceWebClient = instanceWebClient;
     }
 
     @Override
@@ -57,9 +56,12 @@ public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
                                       .path(endpoint.getPath())
                                       .build()
                                       .toUri();
-        return instanceOps.exchange(HttpMethod.OPTIONS, instance, uri)
-                          .filter(response -> response.statusCode().is2xxSuccessful())
-                          .map(r -> Endpoint.of(endpoint.getId(), uri.toString()));
+        return instanceWebClient.instance(instance)
+                                .options()
+                                .uri(uri)
+                                .exchange()
+                                .filter(response -> response.statusCode().is2xxSuccessful())
+                                .map(r -> Endpoint.of(endpoint.getId(), uri.toString()));
     }
 
     @Data

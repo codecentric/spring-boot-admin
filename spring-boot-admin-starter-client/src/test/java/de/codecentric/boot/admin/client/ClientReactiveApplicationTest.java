@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin.client.config;
+package de.codecentric.boot.admin.client;
 
 import org.junit.After;
 import org.junit.Before;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 
 public class ClientReactiveApplicationTest extends AbstractClientApplicationTest {
@@ -33,17 +32,16 @@ public class ClientReactiveApplicationTest extends AbstractClientApplicationTest
     public void setUp() throws Exception {
         super.setUp();
 
-        instance = SpringApplication.run(TestClientApplication.class, "--spring.main.web-application-type=reactive",
-                "--spring.application.name=Test-Client", "--server.port=0",
+        SpringApplication application = new SpringApplication(TestClientApplication.class);
+        application.setWebApplicationType(WebApplicationType.REACTIVE);
+        instance = application.run("--spring.application.name=Test-Client", "--server.port=0",
                 "--management.endpoints.web.base-path=/mgmt", "--endpoints.health.enabled=true",
-                "--spring.boot.admin.client.url=http://localhost:" + getWirmockPort());
+                "--spring.boot.admin.client.url=" + wireMock.url("/"));
     }
 
-    @Override
     @After
     public void shutdown() {
         instance.close();
-        super.shutdown();
     }
 
     @Override
@@ -58,9 +56,8 @@ public class ClientReactiveApplicationTest extends AbstractClientApplicationTest
     }
 
     @SpringBootConfiguration
-    @EnableAutoConfiguration(exclude = {WebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class})
+    @EnableAutoConfiguration
     public static class TestClientApplication {
-
     }
 
 }

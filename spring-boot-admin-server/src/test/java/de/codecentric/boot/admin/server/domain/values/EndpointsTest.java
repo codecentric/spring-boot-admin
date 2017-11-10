@@ -18,7 +18,6 @@ package de.codecentric.boot.admin.server.domain.values;
 
 
 import java.util.Collections;
-import java.util.NoSuchElementException;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,11 +25,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class EndpointsTest {
     @Test
-    public void should_return_endpoint_or_throw() {
+    public void should_return_endpoint_or_empty() {
         Endpoints endpoints = Endpoints.single("id", "path");
         assertThat(endpoints.isPresent("id")).isTrue();
-        assertThat(endpoints.get("id")).isEqualTo(Endpoint.of("id", "path"));
-        assertThatThrownBy(() -> endpoints.get("throw!")).isInstanceOf(NoSuchElementException.class);
+        assertThat(endpoints.get("id")).contains(Endpoint.of("id", "path"));
+        assertThat(endpoints.get("none!")).isEmpty();
     }
 
     @Test

@@ -20,6 +20,7 @@ import de.codecentric.boot.admin.server.eventstore.ConcurrentMapEventStore;
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
 import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
+import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 import java.io.UnsupportedEncodingException;
 import org.json.JSONException;
@@ -33,6 +34,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.hamcrest.core.StringStartsWith.startsWith;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -68,7 +70,8 @@ public class InstancesControllerTest {
         EventSourcingInstanceRepository repository = new EventSourcingInstanceRepository(eventStore);
         repository.start();
         InstanceRegistry registry = new InstanceRegistry(repository, new HashingInstanceUrlIdGenerator());
-        mvc = MockMvcBuilders.standaloneSetup(new InstancesController(registry, eventStore)).build();
+        mvc = MockMvcBuilders.standaloneSetup(
+                new InstancesController(registry, eventStore, mock(InstanceWebClient.class))).build();
     }
 
     @Test

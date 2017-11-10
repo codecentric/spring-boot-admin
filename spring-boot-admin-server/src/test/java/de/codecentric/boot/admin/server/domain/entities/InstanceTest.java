@@ -109,7 +109,8 @@ public class InstanceTest {
         assertThat(loaded.getStatusInfo()).isEqualTo(StatusInfo.ofUp());
         assertThat(loaded.getStatusTimestamp()).isEqualTo(instance.getStatusTimestamp());
         assertThat(loaded.getInfo()).isEqualTo(Info.from(Collections.singletonMap("foo", "bar")));
-        assertThat(loaded.getEndpoints()).isEqualTo(Endpoints.single("info", "info"));
+        assertThat(loaded.getEndpoints()).isEqualTo(
+                Endpoints.single("info", "info").withEndpoint("health", "http://health"));
         assertThat(loaded.getVersion()).isEqualTo(4L);
 
         Instance deregisteredInstance = instance.deregister();

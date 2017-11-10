@@ -22,6 +22,7 @@ import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import de.codecentric.boot.admin.server.notify.CompositeNotifier;
 import de.codecentric.boot.admin.server.notify.HipchatNotifier;
+import de.codecentric.boot.admin.server.notify.LetsChatNotifier;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
 import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
@@ -91,6 +92,12 @@ public class AdminServerNotifierConfigurationTest {
     public void test_hipchat() {
         load(null, "spring.boot.admin.notify.hipchat.url:http://example.com");
         assertThat(context.getBean(HipchatNotifier.class)).isInstanceOf(HipchatNotifier.class);
+    }
+
+    @Test
+    public void test_letschat() {
+        load(null, "spring.boot.admin.notify.letschat.url:http://example.com");
+        assertThat(context.getBean(LetsChatNotifier.class)).isInstanceOf(LetsChatNotifier.class);
     }
 
     @Test

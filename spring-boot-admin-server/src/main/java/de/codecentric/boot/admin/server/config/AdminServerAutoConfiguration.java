@@ -34,8 +34,7 @@ import de.codecentric.boot.admin.server.services.endpoints.ProbeEndpointsStrateg
 import de.codecentric.boot.admin.server.services.endpoints.QueryIndexEndpointStrategy;
 import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider;
 import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
-import de.codecentric.boot.admin.server.web.client.InstanceOperations;
-import io.netty.channel.ChannelOption;
+import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 import org.reactivestreams.Publisher;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -44,10 +43,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
@@ -81,24 +76,8 @@ public class AdminServerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public InstanceOperations instanceOperations(HttpHeadersProvider headersProvider) {
-        ReactorClientHttpConnector httpConnector = new ReactorClientHttpConnector(options -> {
-            options.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,
-                    adminServerProperties.getMonitor().getConnectTimeout());
-            //options.option(ChannelOption.SO_TIMEOUT, adminServerProperties.getMonitor().getReadTimeout());
-        });
-
-        WebClient webClient = WebClient.builder()
-                                       .clientConnector(httpConnector)
-                                       .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                                       .build();
-        return new InstanceOperations(webClient, headersProvider);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public StatusUpdater statusUpdater(InstanceRepository instanceRepository, InstanceOperations instanceOperations) {
-        return new StatusUpdater(instanceRepository, instanceOperations);
+    public StatusUpdater statusUpdater(InstanceRepository instanceRepository, InstanceWebClient instanceWebClient) {
+        return new StatusUpdater(instanceRepository, instanceWebClient);
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
@@ -113,9 +92,9 @@ public class AdminServerAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public EndpointDetector endpointDetector(InstanceRepository instanceRepository,
-                                             InstanceOperations instanceOperations) {
-        ChainingStrategy strategy = new ChainingStrategy(new QueryIndexEndpointStrategy(instanceOperations),
-                new ProbeEndpointsStrategy(instanceOperations, adminServerProperties.getProbedEndpoints()));
+                                             InstanceWebClient instanceWebClient) {
+        ChainingStrategy strategy = new ChainingStrategy(new QueryIndexEndpointStrategy(instanceWebClient),
+                new ProbeEndpointsStrategy(instanceWebClient, adminServerProperties.getProbedEndpoints()));
         return new EndpointDetector(instanceRepository, strategy);
     }
 
@@ -128,8 +107,8 @@ public class AdminServerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public InfoUpdater infoUpdater(InstanceRepository instanceRepository, InstanceOperations instanceOperations) {
-        return new InfoUpdater(instanceRepository, instanceOperations);
+    public InfoUpdater infoUpdater(InstanceRepository instanceRepository, InstanceWebClient instanceWebClient) {
+        return new InfoUpdater(instanceRepository, instanceWebClient);
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")

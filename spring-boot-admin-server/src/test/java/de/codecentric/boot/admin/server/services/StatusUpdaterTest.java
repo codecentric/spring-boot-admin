@@ -22,46 +22,57 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.eventstore.ConcurrentMapEventStore;
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
-import de.codecentric.boot.admin.server.web.client.InstanceOperations;
-import reactor.core.publisher.Mono;
+import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
+import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
 import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.ResourceAccessException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import com.github.tomakehurst.wiremock.core.Options;
+import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 
-import static java.util.Collections.singletonMap;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
+import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class StatusUpdaterTest {
-    private InstanceOperations applicationOps;
+    @ClassRule
+    public static WireMockClassRule wireMockClassRule = new WireMockClassRule(Options.DYNAMIC_PORT);
+
+    @Rule
+    public WireMockClassRule wireMock = wireMockClassRule;
+
     private StatusUpdater updater;
-    private EventSourcingInstanceRepository repository;
-    private final Instance instance = Instance.create(InstanceId.of("id"))
-                                              .register(Registration.create("foo", "http://health").build());
     private ConcurrentMapEventStore eventStore;
+    private EventSourcingInstanceRepository repository;
+    private InstanceWebClient instanceWebClient = new InstanceWebClient(
+            mock(HttpHeadersProvider.class, invocation -> HttpHeaders.EMPTY));
+    private Instance instance;
 
     @Before
     public void setup() {
         eventStore = new InMemoryEventStore();
         repository = new EventSourcingInstanceRepository(eventStore);
         repository.start();
+
+        instance = Instance.create(InstanceId.of("id"))
+                           .register(Registration.create("foo", wireMock.url("/health")).build());
         StepVerifier.create(repository.save(instance)).verifyComplete();
 
-        applicationOps = mock(InstanceOperations.class);
-        updater = new StatusUpdater(repository, applicationOps);
+        updater = new StatusUpdater(repository, instanceWebClient);
     }
 
     @Test
     public void test_update_statusChanged() {
-        when(applicationOps.getHealth(isA(Instance.class))).thenReturn(
-                Mono.just(ResponseEntity.ok().body(singletonMap("status", "UP"))));
+        wireMock.stubFor(get("/health").willReturn(okJson("{ \"status\" : \"UP\" } ")));
 
         StepVerifier.create(eventStore)
                     .expectSubscription()
@@ -77,8 +88,7 @@ public class StatusUpdaterTest {
 
     @Test
     public void test_update_statusUnchanged() {
-        when(applicationOps.getHealth(any(Instance.class))).thenReturn(
-                Mono.just(ResponseEntity.ok(singletonMap("status", "UNKNOWN"))));
+        wireMock.stubFor(get("/health").willReturn(okJson("{ \"status\" : \"UNKNOWN\" } ")));
 
         StepVerifier.create(eventStore)
                     .expectSubscription()
@@ -90,7 +100,7 @@ public class StatusUpdaterTest {
 
     @Test
     public void test_update_up_noBody() {
-        when(applicationOps.getHealth(any(Instance.class))).thenReturn(Mono.just(ResponseEntity.ok().build()));
+        wireMock.stubFor(get("/health").willReturn(ok()));
 
         StepVerifier.create(eventStore)
                     .expectSubscription()
@@ -106,8 +116,9 @@ public class StatusUpdaterTest {
 
     @Test
     public void test_update_down() {
-        when(applicationOps.getHealth(any(Instance.class))).thenReturn(
-                Mono.just(ResponseEntity.status(503).body(singletonMap("foo", "bar"))));
+        wireMock.stubFor(get("/health").willReturn(
+                status(503).withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                           .withBody("{ \"foo\" : \"bar\" } ")));
 
         StepVerifier.create(eventStore)
                     .expectSubscription()
@@ -124,8 +135,7 @@ public class StatusUpdaterTest {
 
     @Test
     public void test_update_down_noBody() {
-        when(applicationOps.getHealth(any(Instance.class))).thenReturn(
-                Mono.just(ResponseEntity.status(503).body(null)));
+        wireMock.stubFor(get("/health").willReturn(status(503)));
 
         StepVerifier.create(eventStore)
                     .expectSubscription()
@@ -144,22 +154,21 @@ public class StatusUpdaterTest {
 
     @Test
     public void test_update_offline() {
-        when(applicationOps.getHealth(any(Instance.class))).thenReturn(
-                Mono.error(new ResourceAccessException("error")));
+        Instance offlineInstance = Instance.create(InstanceId.of("offline"))
+                                           .register(Registration.create("foo", "http://0.0.0.0/health").build());
+
+        StepVerifier.create(repository.save(offlineInstance)).verifyComplete();
 
         StepVerifier.create(eventStore)
                     .expectSubscription()
-                    .then(() -> StepVerifier.create(updater.updateStatus(instance.getId())).verifyComplete())
+                    .then(() -> StepVerifier.create(updater.updateStatus(offlineInstance.getId())).verifyComplete())
                     .assertNext(event -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class))
                     .thenCancel()
                     .verify(Duration.ofMillis(500L));
 
-        StepVerifier.create(repository.find(instance.getId())).assertNext(app -> {
+        StepVerifier.create(repository.find(offlineInstance.getId())).assertNext(app -> {
             assertThat(app.getStatusInfo().getStatus()).isEqualTo("OFFLINE");
-            assertThat(app.getStatusInfo().getDetails()).containsEntry("message", "error")
-                                                        .containsEntry("exception",
-                                                                "org.springframework.web.client.ResourceAccessException");
+            assertThat(app.getStatusInfo().getDetails()).containsKeys("message", "exception");
         }).verifyComplete();
     }
-
 }

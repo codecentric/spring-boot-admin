@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -48,12 +48,8 @@ public class Endpoints implements Iterable<Endpoint>, Serializable {
         }
     }
 
-    public Endpoint get(String id) {
-        Endpoint endpoint = endpoints.get(id);
-        if (endpoint == null) {
-            throw new NoSuchElementException("There is no Endpoint '" + id + "'");
-        }
-        return endpoint;
+    public Optional<Endpoint> get(String id) {
+        return Optional.ofNullable(endpoints.get(id));
     }
 
     public boolean isPresent(String id) {

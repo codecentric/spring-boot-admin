@@ -122,7 +122,8 @@ public class EventSourcingInstanceRepositoryTest {
 
         //then
         StepVerifier.create(repository.find(instance1.getId()))
-                    .assertNext(loaded -> assertThat(loaded.getEndpoints()).isEqualTo(Endpoints.single("info", "info")))
+                    .assertNext(loaded -> assertThat(loaded.getEndpoints()).isEqualTo(
+                            Endpoints.single("info", "info").withEndpoint("health", "http://health")))
                     .verifyComplete();
     }
 
@@ -170,7 +171,8 @@ public class EventSourcingInstanceRepositoryTest {
 
         //then
         StepVerifier.create(repository.find(instance1.getId()))
-                    .assertNext(loaded -> assertThat(loaded.getEndpoints()).isEqualTo(Endpoints.single("info", "info")))
+                    .assertNext(loaded -> assertThat(loaded.getEndpoints()).isEqualTo(
+                            Endpoints.single("info", "info").withEndpoint("health", "http://health")))
                     .verifyComplete();
     }
 }

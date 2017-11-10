@@ -21,26 +21,43 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
+import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
+import de.codecentric.boot.admin.server.web.client.InstanceWebClientException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.net.ConnectException;
 import java.net.URI;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.ServerSentEvent;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.reactive.function.BodyExtractors;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import static org.springframework.web.reactive.function.client.WebClient.RequestBodySpec;
+import static org.springframework.web.reactive.function.client.WebClient.RequestHeadersSpec;
 
 /**
  * REST controller for controlling registration of managed instances.
@@ -49,16 +66,20 @@ import org.springframework.web.util.UriComponentsBuilder;
 @ResponseBody
 public class InstancesController {
     private static final Logger LOGGER = LoggerFactory.getLogger(InstancesController.class);
-    private final InstanceRegistry registry;
-    private final InstanceEventStore eventStore;
     private static final ServerSentEvent<InstanceEvent> PING = ServerSentEvent.<InstanceEvent>builder().comment("ping")
                                                                                                        .build();
+    private final InstanceRegistry registry;
+    private final InstanceEventStore eventStore;
+    private final InstanceWebClient instanceWebClient;
     private static final Flux<ServerSentEvent<InstanceEvent>> PING_FLUX = Flux.interval(Duration.ZERO,
             Duration.ofSeconds(10L)).map(tick -> PING);
 
-    public InstancesController(InstanceRegistry registry, InstanceEventStore eventStore) {
+    public InstancesController(InstanceRegistry registry,
+                               InstanceEventStore eventStore,
+                               InstanceWebClient instanceWebClient) {
         this.registry = registry;
         this.eventStore = eventStore;
+        this.instanceWebClient = instanceWebClient;
     }
 
     /**
@@ -133,4 +154,54 @@ public class InstancesController {
         return Flux.from(eventStore).map(event -> ServerSentEvent.builder(event).build()).mergeWith(PING_FLUX);
     }
 
+    private static final String[] HOP_BY_HOP_HEADERS = new String[]{"Connection", "Keep-Alive", "Proxy-Authenticate",
+            "Proxy-Authorization", "TE", "Trailer", "Transfer-Encoding", "Upgrade"};
+
+    @RequestMapping(path = "/instances/{instanceId}/**")
+    public Mono<Void> endpointProxy(@PathVariable("instanceId") String instanceId, ServerWebExchange exchange) {
+        ServerHttpRequest request = exchange.getRequest();
+        String endpointLocalPath = request.getPath().pathWithinApplication().subPath(4).value();
+
+        URI uri = UriComponentsBuilder.fromPath(endpointLocalPath)
+                                      .queryParams(request.getQueryParams())
+                                      .build()
+                                      .toUri();
+
+        RequestBodySpec bodySpec = instanceWebClient.instance(registry.getInstance(InstanceId.of(instanceId)))
+                                                    .method(request.getMethod())
+                                                    .uri(uri)
+                                                    .headers(headers -> {
+                                                        headers.addAll(request.getHeaders());
+                                                        headers.remove(HttpHeaders.HOST);
+                                                        Arrays.stream(HOP_BY_HOP_HEADERS).forEach(headers::remove);
+                                                    });
+
+        RequestHeadersSpec<?> headersSpec = bodySpec;
+        if (requiresBody(request.getMethod())) {
+            headersSpec = bodySpec.body(BodyInserters.fromDataBuffers(request.getBody()));
+        }
+
+        return headersSpec.exchange()
+                          .flatMap(clientResponse -> {
+                              ServerHttpResponse response = exchange.getResponse();
+                              response.getHeaders().putAll(clientResponse.headers().asHttpHeaders());
+                              response.setStatusCode(clientResponse.statusCode());
+                              return response.writeWith(clientResponse.body(BodyExtractors.toDataBuffers()));
+                          })
+                          .onErrorMap(InstanceWebClientException.class,
+                                  error -> new ResponseStatusException(HttpStatus.BAD_REQUEST, null, error))
+                          .onErrorMap(ConnectException.class,
+                                  error -> new ResponseStatusException(HttpStatus.BAD_GATEWAY, null, error));
+    }
+
+    private boolean requiresBody(HttpMethod method) {
+        switch (method) {
+            case PUT:
+            case POST:
+            case PATCH:
+                return true;
+            default:
+                return false;
+        }
+    }
 }

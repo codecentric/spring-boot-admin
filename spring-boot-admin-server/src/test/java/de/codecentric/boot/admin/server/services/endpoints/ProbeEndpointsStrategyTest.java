@@ -20,56 +20,64 @@ import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
-import de.codecentric.boot.admin.server.web.client.InstanceOperations;
-import reactor.core.publisher.Mono;
+import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
+import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 import reactor.test.StepVerifier;
+import wiremock.org.eclipse.jetty.http.HttpStatus;
 
-import java.net.URI;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.http.HttpHeaders;
+import com.github.tomakehurst.wiremock.core.Options;
+import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.notFound;
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
+import static com.github.tomakehurst.wiremock.client.WireMock.options;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class ProbeEndpointsStrategyTest {
-    private Mono<ClientResponse> responseOK = mockResponse(HttpStatus.OK);
-    private Mono<ClientResponse> responseNotFound = mockResponse(HttpStatus.NOT_FOUND);
+    @ClassRule
+    public static WireMockClassRule wireMockClassRule = new WireMockClassRule(Options.DYNAMIC_PORT);
+
+    @Rule
+    public WireMockClassRule wireMock = wireMockClassRule;
+
+    private InstanceWebClient instanceWebClient = new InstanceWebClient(
+            mock(HttpHeadersProvider.class, invocation -> HttpHeaders.EMPTY));
 
     @Test
     public void invariants() {
-        InstanceOperations ops = mock(InstanceOperations.class);
-        assertThatThrownBy(() -> {
-            new ProbeEndpointsStrategy(ops, null);
-        }).isInstanceOf(IllegalArgumentException.class).hasMessage("'endpoints' must not be null.");
-        assertThatThrownBy(() -> {
-            new ProbeEndpointsStrategy(ops, new String[]{null});
-        }).isInstanceOf(IllegalArgumentException.class).hasMessage("'endpoints' must not contain null.");
+        assertThatThrownBy(() -> new ProbeEndpointsStrategy(instanceWebClient, null)).isInstanceOf(
+                IllegalArgumentException.class).hasMessage("'endpoints' must not be null.");
+        assertThatThrownBy(() -> new ProbeEndpointsStrategy(instanceWebClient, new String[]{null})).isInstanceOf(
+                IllegalArgumentException.class).hasMessage("'endpoints' must not contain null.");
     }
 
     @Test
     public void should_return_detect_endpoints() {
         //given
         Instance instance = Instance.create(InstanceId.of("id"))
-                                    .register(Registration.create("test", "http://app/mgmt/health")
-                                                          .managementUrl("http://app/mgmt")
+                                    .register(Registration.create("test", wireMock.url("/mgmt/health"))
+                                                          .managementUrl(wireMock.url("/mgmt"))
                                                           .build());
-        InstanceOperations ops = mock(InstanceOperations.class);
 
-        when(ops.exchange(HttpMethod.OPTIONS, instance, URI.create("http://app/mgmt/stats"))).thenReturn(responseOK);
-        when(ops.exchange(HttpMethod.OPTIONS, instance, URI.create("http://app/mgmt/info"))).thenReturn(responseOK);
-        when(ops.exchange(HttpMethod.OPTIONS, instance, URI.create("http://app/mgmt/non-exist"))).thenReturn(
-                responseNotFound);
+        wireMock.stubFor(options(urlEqualTo("/mgmt/stats")).willReturn(ok()));
+        wireMock.stubFor(options(urlEqualTo("/mgmt/info")).willReturn(ok()));
+        wireMock.stubFor(options(urlEqualTo("/mgmt/non-exist")).willReturn(notFound()));
 
-        ProbeEndpointsStrategy strategy = new ProbeEndpointsStrategy(ops,
+        ProbeEndpointsStrategy strategy = new ProbeEndpointsStrategy(instanceWebClient,
                 new String[]{"metrics:stats", "info", "non-exist"});
 
-        //when/then
+        //when
         StepVerifier.create(strategy.detectEndpoints(instance))
-                    .expectNext(Endpoints.single("metrics", "http://app/mgmt/stats")
-                                         .withEndpoint("info", "http://app/mgmt/info"))
+                    //then
+                    .expectNext(Endpoints.single("metrics", wireMock.url("/mgmt/stats"))
+                                         .withEndpoint("info", wireMock.url("/mgmt/info")))//
                     .verifyComplete();
     }
 
@@ -77,23 +85,18 @@ public class ProbeEndpointsStrategyTest {
     public void should_return_empty() {
         //given
         Instance instance = Instance.create(InstanceId.of("id"))
-                                    .register(Registration.create("test", "http://app/mgmt/health")
-                                                          .managementUrl("http://app/mgmt")
+                                    .register(Registration.create("test", wireMock.url("/mgmt/health"))
+                                                          .managementUrl(wireMock.url("/mgmt"))
                                                           .build());
-        InstanceOperations ops = mock(InstanceOperations.class);
 
-        when(ops.exchange(HttpMethod.OPTIONS, instance, URI.create("http://app/mgmt/stats"))).thenReturn(
-                responseNotFound);
+        wireMock.stubFor(
+                options(urlEqualTo("/mgmt/stats")).willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND_404)));
 
-        ProbeEndpointsStrategy strategy = new ProbeEndpointsStrategy(ops, new String[]{"metrics:stats"});
+        ProbeEndpointsStrategy strategy = new ProbeEndpointsStrategy(instanceWebClient, new String[]{"metrics:stats"});
 
-        //when/then
-        StepVerifier.create(strategy.detectEndpoints(instance)).verifyComplete();
-    }
-
-    private Mono<ClientResponse> mockResponse(HttpStatus statusCode) {
-        ClientResponse mock = mock(ClientResponse.class);
-        when(mock.statusCode()).thenReturn(statusCode);
-        return Mono.just(mock);
+        //when
+        StepVerifier.create(strategy.detectEndpoints(instance))
+                    //then
+                    .verifyComplete();
     }
 }
