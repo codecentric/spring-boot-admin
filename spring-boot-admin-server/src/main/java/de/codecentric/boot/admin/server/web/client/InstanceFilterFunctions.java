@@ -63,10 +63,10 @@ public final class InstanceFilterFunctions {
 
     public static ExchangeFilterFunction setInstance(Mono<Instance> instance) {
         return (request, next) -> instance.map(
-                i -> ClientRequest.from(request).attribute(ATTRIBUTE_INSTANCE, i).build())
+            i -> ClientRequest.from(request).attribute(ATTRIBUTE_INSTANCE, i).build())
                                           .switchIfEmpty(request.url().isAbsolute() ?
-                                                  Mono.just(request) :
-                                                  Mono.error(new InstanceWebClientException("Instance not found")))
+                                              Mono.just(request) :
+                                              Mono.error(new InstanceWebClientException("Instance not found")))
                                           .flatMap(next::exchange);
     }
 
@@ -74,7 +74,7 @@ public final class InstanceFilterFunctions {
         return withInstance((instance, request, next) -> {
             ClientRequest newRequest = ClientRequest.from(request)
                                                     .headers(headers -> headers.addAll(
-                                                            httpHeadersProvider.getHeaders(instance)))
+                                                        httpHeadersProvider.getHeaders(instance)))
                                                     .build();
             return next.exchange(newRequest);
         });
@@ -127,7 +127,9 @@ public final class InstanceFilterFunctions {
                                          .subList(1, oldUrl.getPathSegments().size())
                                          .toArray(new String[]{});
         return UriComponentsBuilder.fromUriString(targetUrl)
-                                   .pathSegment(newPathSegments).query(oldUrl.getQuery()).build(true)
+                                   .pathSegment(newPathSegments)
+                                   .query(oldUrl.getQuery())
+                                   .build(true)
                                    .toUri();
     }
 

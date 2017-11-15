@@ -95,7 +95,7 @@ public class EndpointDetectorTest {
 
         StepVerifier.create(repository.find(instance.getId()))
                     .assertNext(app -> assertThat(app.getEndpoints()).isEqualTo(
-                            Endpoints.single("id", "url").withEndpoint("health", "http://health")))
+                        Endpoints.single("id", "url").withEndpoint("health", "http://health")))
                     .verifyComplete();
     }
 

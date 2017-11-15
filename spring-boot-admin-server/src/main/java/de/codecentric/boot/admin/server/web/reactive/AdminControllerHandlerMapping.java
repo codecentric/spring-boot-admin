@@ -54,16 +54,16 @@ public class AdminControllerHandlerMapping extends RequestMappingHandlerMapping 
             return mapping;
         }
         PatternsRequestCondition patternsCondition = new PatternsRequestCondition(
-                withNewPatterns(mapping.getPatternsCondition().getPatterns()));
+            withNewPatterns(mapping.getPatternsCondition().getPatterns()));
         return new RequestMappingInfo(patternsCondition, mapping.getMethodsCondition(), mapping.getParamsCondition(),
-                mapping.getHeadersCondition(), mapping.getConsumesCondition(), mapping.getProducesCondition(),
-                mapping.getCustomCondition());
+            mapping.getHeadersCondition(), mapping.getConsumesCondition(), mapping.getProducesCondition(),
+            mapping.getCustomCondition());
     }
 
     private List<PathPattern> withNewPatterns(Set<PathPattern> patterns) {
         return patterns.stream()
-                       .map(pattern -> getPathPatternParser().parse(
-                               PathUtils.normalizePath(adminContextPath + pattern)))
+                       .map(
+                           pattern -> getPathPatternParser().parse(PathUtils.normalizePath(adminContextPath + pattern)))
                        .collect(toList());
     }
 }

@@ -50,9 +50,9 @@ public class ProbeEndpointsStrategyTest {
     @Test
     public void invariants() {
         assertThatThrownBy(() -> new ProbeEndpointsStrategy(instanceWebClient, null)).isInstanceOf(
-                IllegalArgumentException.class).hasMessage("'endpoints' must not be null.");
+            IllegalArgumentException.class).hasMessage("'endpoints' must not be null.");
         assertThatThrownBy(() -> new ProbeEndpointsStrategy(instanceWebClient, new String[]{null})).isInstanceOf(
-                IllegalArgumentException.class).hasMessage("'endpoints' must not contain null.");
+            IllegalArgumentException.class).hasMessage("'endpoints' must not contain null.");
     }
 
     @Test
@@ -68,7 +68,7 @@ public class ProbeEndpointsStrategyTest {
         wireMock.stubFor(options(urlEqualTo("/mgmt/non-exist")).willReturn(notFound()));
 
         ProbeEndpointsStrategy strategy = new ProbeEndpointsStrategy(instanceWebClient,
-                new String[]{"metrics:stats", "info", "non-exist"});
+            new String[]{"metrics:stats", "info", "non-exist"});
 
         //when
         StepVerifier.create(strategy.detectEndpoints(instance))
@@ -87,7 +87,7 @@ public class ProbeEndpointsStrategyTest {
                                                           .build());
 
         wireMock.stubFor(
-                options(urlEqualTo("/mgmt/stats")).willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND_404)));
+            options(urlEqualTo("/mgmt/stats")).willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND_404)));
 
         ProbeEndpointsStrategy strategy = new ProbeEndpointsStrategy(instanceWebClient, new String[]{"metrics:stats"});
 

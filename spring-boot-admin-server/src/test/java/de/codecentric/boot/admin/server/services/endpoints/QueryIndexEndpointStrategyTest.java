@@ -45,7 +45,7 @@ public class QueryIndexEndpointStrategyTest {
     public WireMockRule wireMock = new WireMockRule(Options.DYNAMIC_PORT);
 
     private InstanceWebClient instanceWebClient = new InstanceWebClient(instance -> HttpHeaders.EMPTY,
-            Duration.ofSeconds(5), Duration.ofSeconds(20));
+        Duration.ofSeconds(5), Duration.ofSeconds(20));
 
     @Test
     public void should_return_endpoints() {
@@ -59,7 +59,7 @@ public class QueryIndexEndpointStrategyTest {
 
         wireMock.stubFor(get("/mgmt").willReturn(ok(body).withHeader("Content-Type", ActuatorMediaType.V2_JSON)
                                                          .withHeader("Content-Length",
-                                                                 Integer.toString(body.length()))));
+                                                             Integer.toString(body.length()))));
 
         QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(instanceWebClient);
 
@@ -81,7 +81,7 @@ public class QueryIndexEndpointStrategyTest {
         String body = "{\"_links\":{}}";
         wireMock.stubFor(get("/mgmt").willReturn(okJson(body).withHeader("Content-Type", ActuatorMediaType.V2_JSON)
                                                              .withHeader("Content-Length",
-                                                                     Integer.toString(body.length()))));
+                                                                 Integer.toString(body.length()))));
 
         QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(instanceWebClient);
 
@@ -120,7 +120,7 @@ public class QueryIndexEndpointStrategyTest {
         String body = "HELLOW WORLD";
         wireMock.stubFor(get("/mgmt").willReturn(ok(body).withHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE)
                                                          .withHeader("Content-Length",
-                                                                 Integer.toString(body.length()))));
+                                                             Integer.toString(body.length()))));
 
         QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(instanceWebClient);
 

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.config;
 
 import de.codecentric.boot.admin.server.domain.values.Registration;
@@ -49,7 +50,7 @@ public class AdminServerWebConfiguration {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(Registration.class, new RegistrationDeserializer());
         module.setSerializerModifier(new RegistrationBeanSerializerModifier(
-                new SanitizingMapSerializer(adminServerProperties.getMetadataKeysToSanitize())));
+            new SanitizingMapSerializer(adminServerProperties.getMetadataKeysToSanitize())));
         return module;
     }
 
@@ -63,7 +64,7 @@ public class AdminServerWebConfiguration {
     @ConditionalOnMissingBean
     public InstanceWebClient instanceWebClient(HttpHeadersProvider httpHeadersProvider) {
         return new InstanceWebClient(httpHeadersProvider, adminServerProperties.getMonitor().getConnectTimeout(),
-                adminServerProperties.getMonitor().getReadTimeout());
+            adminServerProperties.getMonitor().getReadTimeout());
     }
 
 
@@ -87,17 +88,17 @@ public class AdminServerWebConfiguration {
         @ConditionalOnMissingBean
         public de.codecentric.boot.admin.server.web.reactive.InstancesProxyController instancesProxyController(
 
-                InstanceRegistry instanceRegistry, InstanceWebClient instanceWebClient) {
+            InstanceRegistry instanceRegistry, InstanceWebClient instanceWebClient) {
             return new de.codecentric.boot.admin.server.web.reactive.InstancesProxyController(
-                    adminServerProperties.getContextPath(),
-                    adminServerProperties.getInstanceProxy().getIgnoredHeaders(), instanceRegistry, instanceWebClient);
+                adminServerProperties.getContextPath(), adminServerProperties.getInstanceProxy().getIgnoredHeaders(),
+                instanceRegistry, instanceWebClient);
         }
 
         @Bean
         public org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping adminHandlerMapping(
-                RequestedContentTypeResolver webFluxContentTypeResolver) {
+            RequestedContentTypeResolver webFluxContentTypeResolver) {
             org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping mapping = new de.codecentric.boot.admin.server.web.reactive.AdminControllerHandlerMapping(
-                    adminServerProperties.getContextPath());
+                adminServerProperties.getContextPath());
             mapping.setOrder(0);
             mapping.setContentTypeResolver(webFluxContentTypeResolver);
             return mapping;
@@ -118,15 +119,15 @@ public class AdminServerWebConfiguration {
         public InstancesProxyController instancesProxyController(InstanceRegistry instanceRegistry,
                                                                  InstanceWebClient instanceWebClient) {
             return new InstancesProxyController(adminServerProperties.getContextPath(),
-                    adminServerProperties.getInstanceProxy().getIgnoredHeaders(), instanceRegistry, instanceWebClient,
-                    adminServerProperties.getMonitor().getReadTimeout());
+                adminServerProperties.getInstanceProxy().getIgnoredHeaders(), instanceRegistry, instanceWebClient,
+                adminServerProperties.getMonitor().getReadTimeout());
         }
 
         @Bean
         public org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping adminHandlerMapping(
-                ContentNegotiationManager contentNegotiationManager) {
+            ContentNegotiationManager contentNegotiationManager) {
             org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping mapping = new de.codecentric.boot.admin.server.web.servlet.AdminControllerHandlerMapping(
-                    adminServerProperties.getContextPath());
+                adminServerProperties.getContextPath());
             mapping.setOrder(0);
             mapping.setContentNegotiationManager(contentNegotiationManager);
             return mapping;

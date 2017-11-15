@@ -37,11 +37,11 @@ public class ResubscribingEventHandlerTest {
     private static final Logger log = LoggerFactory.getLogger(ResubscribingEventHandlerTest.class);
     private static final Registration registration = Registration.create("foo", "http://health").build();
     private static final InstanceRegisteredEvent event = new InstanceRegisteredEvent(InstanceId.of("id"), 0L,
-            registration);
+        registration);
     private static final InstanceRegisteredEvent errorEvent = new InstanceRegisteredEvent(InstanceId.of("err"), 0L,
-            registration);
+        registration);
     private static final InstanceDeregisteredEvent ignoredEvent = new InstanceDeregisteredEvent(InstanceId.of("id"),
-            1L);
+        1L);
 
     @Test
     public void should_resubscribe_after_error() {
@@ -53,7 +53,9 @@ public class ResubscribingEventHandlerTest {
         StepVerifier.create(eventHandler.getFlux())
                     .expectSubscription()
                     .then(() -> testPublisher.next(event))
-                    .expectNext(event).then(() -> testPublisher.next(errorEvent)).expectNoEvent(Duration.ofMillis(100L))
+                    .expectNext(event)
+                    .then(() -> testPublisher.next(errorEvent))
+                    .expectNoEvent(Duration.ofMillis(100L))
                     .then(() -> testPublisher.next(event))
                     .expectNext(event)
                     .thenCancel()

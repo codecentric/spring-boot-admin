@@ -46,8 +46,8 @@ public abstract class ResubscribingEventHandler<T extends InstanceEvent> {
                            .compose(this::handle)
                            .retryWhen(Retry.any()
                                            .retryMax(Integer.MAX_VALUE)
-                                           .doOnRetry(ctx -> log.error("Resubscribing after uncaught error",
-                                                   ctx.exception())))
+                                           .doOnRetry(
+                                               ctx -> log.error("Resubscribing after uncaught error", ctx.exception())))
                            .subscribe();
     }
 

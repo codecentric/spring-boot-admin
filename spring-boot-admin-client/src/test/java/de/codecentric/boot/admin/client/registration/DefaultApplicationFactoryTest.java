@@ -44,7 +44,7 @@ public class DefaultApplicationFactoryTest {
     private WebEndpointProperties webEndpoint = new WebEndpointProperties();
 
     private DefaultApplicationFactory factory = new DefaultApplicationFactory(instanceProperties, management, server,
-            pathMappedEndpoints, webEndpoint);
+        pathMappedEndpoints, webEndpoint);
 
     @Before
     public void setup() {
@@ -190,7 +190,7 @@ public class DefaultApplicationFactoryTest {
                                               Integer managementport) {
         factory.onWebServerInitialized(new TestWebServerInitializedEvent("server", serverport));
         factory.onWebServerInitialized(
-                new TestWebServerInitializedEvent("management", managementport != null ? managementport : serverport));
+            new TestWebServerInitializedEvent("management", managementport != null ? managementport : serverport));
     }
 
     private static class TestWebServerInitializedEvent extends WebServerInitializedEvent {

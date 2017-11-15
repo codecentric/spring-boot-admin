@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.notify;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
@@ -71,7 +72,7 @@ public class RemindingNotifier extends AbstractEventNotifier {
     protected boolean shouldStartReminder(InstanceEvent event) {
         if (event instanceof InstanceStatusChangedEvent) {
             return Arrays.binarySearch(reminderStatuses,
-                    ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()) >= 0;
+                ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()) >= 0;
         }
         return false;
     }
@@ -82,7 +83,7 @@ public class RemindingNotifier extends AbstractEventNotifier {
         }
         if (event instanceof InstanceStatusChangedEvent) {
             return Arrays.binarySearch(reminderStatuses,
-                    ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()) < 0;
+                ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()) < 0;
         }
         return false;
     }

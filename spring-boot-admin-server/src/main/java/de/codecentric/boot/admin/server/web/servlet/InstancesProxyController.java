@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.web.servlet;
 
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
@@ -65,7 +66,7 @@ public class InstancesProxyController extends AbstractInstancesProxyController {
 
     @ResponseBody
     @RequestMapping(path = REQUEST_MAPPING_PATH, method = {RequestMethod.GET, RequestMethod.HEAD, RequestMethod.POST,
-            RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS})
+        RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS})
     public Mono<Void> endpointProxy(@PathVariable("instanceId") String instanceId,
                                     HttpServletRequest servletRequest,
                                     HttpServletResponse servletResponse) {
@@ -84,9 +85,8 @@ public class InstancesProxyController extends AbstractInstancesProxyController {
         //We need to explicitly block until the headers are recieved.
         // otherwise the FrameworkServlet will add wrong Allow header for OPTIONS request
         ClientResponse clientResponse = super.forward(instanceId, uri, request.getMethod(), request.getHeaders(),
-                () -> BodyInserters.fromDataBuffers(
-                        DataBufferUtils.readInputStream(request::getBody, this.bufferFactory, 16384)))
-                                             .block(this.readTimeout);
+            () -> BodyInserters.fromDataBuffers(
+                DataBufferUtils.readInputStream(request::getBody, this.bufferFactory, 16384))).block(this.readTimeout);
 
         response.setStatusCode(clientResponse.statusCode());
         response.getHeaders().addAll(filterHeaders(clientResponse.headers().asHttpHeaders()));

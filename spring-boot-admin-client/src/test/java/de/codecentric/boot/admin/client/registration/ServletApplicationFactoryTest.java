@@ -43,7 +43,7 @@ public class ServletApplicationFactoryTest {
     private PathMappedEndpoints pathMappedEndpoints = mock(PathMappedEndpoints.class);
     private WebEndpointProperties webEndpoint = new WebEndpointProperties();
     private ServletApplicationFactory factory = new ServletApplicationFactory(instance, management, server,
-            servletContext, pathMappedEndpoints, webEndpoint);
+        servletContext, pathMappedEndpoints, webEndpoint);
 
     @Before
     public void setup() {
@@ -114,7 +114,7 @@ public class ServletApplicationFactoryTest {
                                               Integer managementport) {
         factory.onWebServerInitialized(new TestWebServerInitializedEvent("server", serverport));
         factory.onWebServerInitialized(
-                new TestWebServerInitializedEvent("management", managementport != null ? managementport : serverport));
+            new TestWebServerInitializedEvent("management", managementport != null ? managementport : serverport));
     }
 
     private static class TestWebServerInitializedEvent extends WebServerInitializedEvent {

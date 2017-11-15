@@ -77,7 +77,7 @@ public class MicrosoftTeamsNotifierTest {
         StepVerifier.create(notifier.doNotify(event, instance)).verifyComplete();
 
         verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")), any(Message.class),
-                eq(Void.class));
+            eq(Void.class));
     }
 
     @Test
@@ -87,7 +87,7 @@ public class MicrosoftTeamsNotifierTest {
         StepVerifier.create(notifier.doNotify(event, instance)).verifyComplete();
 
         verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")), any(Message.class),
-                eq(Void.class));
+            eq(Void.class));
     }
 
     @Test
@@ -97,7 +97,7 @@ public class MicrosoftTeamsNotifierTest {
         StepVerifier.create(notifier.doNotify(event, instance)).verifyComplete();
 
         verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")), any(Message.class),
-                eq(Void.class));
+            eq(Void.class));
     }
 
     @Test
@@ -117,8 +117,8 @@ public class MicrosoftTeamsNotifierTest {
         Message message = notifier.getDeregisteredMessage(instance);
 
         assertMessage(message, notifier.getDeRegisteredTitle(), notifier.getMessageSummary(),
-                String.format(notifier.getDeregisterActivitySubtitlePattern(), instance.getRegistration().getName(),
-                        instance.getId()));
+            String.format(notifier.getDeregisterActivitySubtitlePattern(), instance.getRegistration().getName(),
+                instance.getId()));
     }
 
     @Test
@@ -126,8 +126,8 @@ public class MicrosoftTeamsNotifierTest {
         Message message = notifier.getRegisteredMessage(instance);
 
         assertMessage(message, notifier.getRegisteredTitle(), notifier.getMessageSummary(),
-                String.format(notifier.getRegisterActivitySubtitlePattern(), instance.getRegistration().getName(),
-                        instance.getId()));
+            String.format(notifier.getRegisterActivitySubtitlePattern(), instance.getRegistration().getName(),
+                instance.getId()));
     }
 
     @Test
@@ -135,8 +135,8 @@ public class MicrosoftTeamsNotifierTest {
         Message message = notifier.getStatusChangedMessage(instance, "UP", "DOWN");
 
         assertMessage(message, notifier.getStatusChangedTitle(), notifier.getMessageSummary(),
-                String.format(notifier.getStatusActivitySubtitlePattern(), instance.getRegistration().getName(),
-                        instance.getId(), StatusInfo.ofUp().getStatus(), StatusInfo.ofDown().getStatus()));
+            String.format(notifier.getStatusActivitySubtitlePattern(), instance.getRegistration().getName(),
+                instance.getId(), StatusInfo.ofUp().getStatus(), StatusInfo.ofDown().getStatus()));
     }
 
     @Test
@@ -171,7 +171,7 @@ public class MicrosoftTeamsNotifierTest {
         Message message = notifier.getRegisteredMessage(instance);
 
         assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo(
-                "REGISTER_ACTIVITY_PATTERN_" + appName);
+            "REGISTER_ACTIVITY_PATTERN_" + appName);
     }
 
     @Test
@@ -189,7 +189,7 @@ public class MicrosoftTeamsNotifierTest {
         Message message = notifier.getDeregisteredMessage(instance);
 
         assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo(
-                "DEREGISTER_ACTIVITY_PATTERN_" + appName);
+            "DEREGISTER_ACTIVITY_PATTERN_" + appName);
     }
 
     private void assertMessage(Message message, String expectedTitle, String expectedSummary, String expectedSubTitle) {

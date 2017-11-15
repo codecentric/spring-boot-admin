@@ -81,7 +81,7 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
     @Override
     protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
         return Mono.fromRunnable(
-                () -> restTemplate.postForEntity(webhookUrl, createMessage(event, instance), Void.class));
+            () -> restTemplate.postForEntity(webhookUrl, createMessage(event, instance), Void.class));
     }
 
     public void setRestTemplate(RestTemplate restTemplate) {
@@ -122,8 +122,8 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
     protected String getColor(InstanceEvent event) {
         if (event instanceof InstanceStatusChangedEvent) {
             return StatusInfo.STATUS_UP.equals(((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()) ?
-                    "good" :
-                    "danger";
+                "good" :
+                "danger";
         } else {
             return "#439FE0";
         }

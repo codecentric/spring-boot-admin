@@ -1,0 +1,46 @@
+---
+logging:
+  file: "target/boot-admin-sample-hazelcast.log"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+spring:
+  application:
+    name: spring-boot-admin-sample-hazelcast
+  boot:
+    admin:
+      client:
+        url: http://localhost:8080
+  profiles:
+    active:
+      - secure
+
+---
+spring:
+  profiles: insecure
+
+---
+spring:
+  profiles: secure
+  security:
+    user:
+      name: "user"
+      password: "password"
+  boot:
+    admin:
+      client:
+        username: "user"       #These two are needed so that the client
+        password: "password"   #can register at the protected server api
+        instance:
+          metadata:
+            user.name: "user"         #These two are needed so that the server
+            user.password: "password" #can access the protected client endpoints
+
+

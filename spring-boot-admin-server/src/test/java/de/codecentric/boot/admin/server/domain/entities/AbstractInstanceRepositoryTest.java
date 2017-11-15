@@ -81,7 +81,7 @@ public abstract class AbstractInstanceRepositoryTest {
                         assertThat(appsByName.stream()
                                              .map(Instance::getId)
                                              .collect(Collectors.toList())).containsExactlyInAnyOrder(instance1.getId(),
-                                instance2.getId());
+                            instance2.getId());
                     })
                     .verifyComplete();
 
@@ -92,7 +92,7 @@ public abstract class AbstractInstanceRepositoryTest {
                         assertThat(allApps.stream()
                                           .map(Instance::getId)
                                           .collect(Collectors.toList())).containsExactlyInAnyOrder(instance1.getId(),
-                                instance2.getId(), instance3.getId());
+                            instance2.getId(), instance3.getId());
                     })
                     .verifyComplete();
     }
@@ -107,16 +107,16 @@ public abstract class AbstractInstanceRepositoryTest {
 
         //when
         StepVerifier.create(repository.computeIfPresent(instance1.getId(),
-                (key, application) -> counter.getAndDecrement() > 0L ?
-                        Mono.just(instance1) :
-                        Mono.just(application.withEndpoints(Endpoints.single("info", "info")))))
+            (key, application) -> counter.getAndDecrement() > 0L ?
+                Mono.just(instance1) :
+                Mono.just(application.withEndpoints(Endpoints.single("info", "info")))))
                     .expectNext(instance1.withEndpoints(Endpoints.single("info", "info")))
                     .verifyComplete();
 
         //then
         StepVerifier.create(repository.find(instance1.getId()))
                     .assertNext(loaded -> assertThat(loaded.getEndpoints()).isEqualTo(
-                            Endpoints.single("info", "info").withEndpoint("health", "http://health")))
+                        Endpoints.single("info", "info").withEndpoint("health", "http://health")))
                     .verifyComplete();
     }
 
@@ -127,7 +127,7 @@ public abstract class AbstractInstanceRepositoryTest {
 
         //when
         StepVerifier.create(repository.computeIfPresent(instanceId,
-                (key, application) -> Mono.error(new AssertionFailedError("Should not call any computation"))))
+            (key, application) -> Mono.error(new AssertionFailedError("Should not call any computation"))))
                     .verifyComplete();
 
         //then
@@ -143,7 +143,7 @@ public abstract class AbstractInstanceRepositoryTest {
             return Mono.just(Instance.create(key).register(Registration.create("foo", "http://health").build()));
         }))
                     .expectNext(
-                            Instance.create(instanceId).register(Registration.create("foo", "http://health").build()))
+                        Instance.create(instanceId).register(Registration.create("foo", "http://health").build()))
                     .verifyComplete();
 
         //then
@@ -162,15 +162,15 @@ public abstract class AbstractInstanceRepositoryTest {
 
         //when
         StepVerifier.create(repository.compute(instance.getId(), (key, application) -> counter.getAndDecrement() > 0L ?
-                Mono.just(instance) :
-                Mono.just(application.withEndpoints(Endpoints.single("info", "info")))))
+            Mono.just(instance) :
+            Mono.just(application.withEndpoints(Endpoints.single("info", "info")))))
                     .expectNext(instance.withEndpoints(Endpoints.single("info", "info")))
                     .verifyComplete();
 
         //then
         StepVerifier.create(repository.find(instance.getId()))
                     .assertNext(loaded -> assertThat(loaded.getEndpoints()).isEqualTo(
-                            Endpoints.single("info", "info").withEndpoint("health", "http://health")))
+                        Endpoints.single("info", "info").withEndpoint("health", "http://health")))
                     .verifyComplete();
     }
 }

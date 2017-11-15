@@ -67,16 +67,16 @@ public class InstanceWebClient {
 
     private static WebClient createDefaultWebClient(Duration connectTimeout, Duration readTimeout) {
         ReactorClientHttpConnector connector = new ReactorClientHttpConnector(
-                options -> options.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) connectTimeout.toMillis())//
-                                  .compression(true)//
-                                  .afterNettyContextInit(ctx -> {
-                                      ctx.addHandlerLast(
-                                              new ReadTimeoutHandler(readTimeout.toMillis(), TimeUnit.MILLISECONDS));
-                                  }));
+            options -> options.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) connectTimeout.toMillis())//
+                              .compression(true)//
+                              .afterNettyContextInit(ctx -> {
+                                  ctx.addHandlerLast(
+                                      new ReadTimeoutHandler(readTimeout.toMillis(), TimeUnit.MILLISECONDS));
+                              }));
         return WebClient.builder()
                         .clientConnector(connector)
                         .defaultHeader(HttpHeaders.ACCEPT, ActuatorMediaType.V2_JSON, ActuatorMediaType.V1_JSON,
-                                MediaType.APPLICATION_JSON_VALUE)
+                            MediaType.APPLICATION_JSON_VALUE)
                         .build();
     }
 }

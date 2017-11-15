@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.domain.entities;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
@@ -42,8 +43,8 @@ public class EventsourcingInstanceRepository implements InstanceRepository {
                                                                  .fixedBackoff(Duration.ofMillis(50L))
                                                                  .retryMax(10)
                                                                  .doOnRetry(ctx -> log.debug(
-                                                                         "Retrying after OptimisticLockingException",
-                                                                         ctx.exception()));
+                                                                     "Retrying after OptimisticLockingException",
+                                                                     ctx.exception()));
 
     public EventsourcingInstanceRepository(InstanceEventStore eventStore) {
         this.eventStore = eventStore;

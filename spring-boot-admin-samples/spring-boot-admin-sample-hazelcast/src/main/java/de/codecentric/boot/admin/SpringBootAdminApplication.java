@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
@@ -36,9 +37,9 @@ public class SpringBootAdminApplication {
         return new Config().setProperty("hazelcast.jmx", "true")
                            .addMapConfig(new MapConfig("spring-boot-admin-application-eventstore").setBackupCount(1)
                                                                                                   .setEvictionPolicy(
-                                                                                                          EvictionPolicy.NONE))
-                           .addListConfig(new ListConfig("spring-boot-admin-event-eventstore").setBackupCount(1)
-                                                                                              .setMaxSize(1000));
+                                                                                                      EvictionPolicy.NONE))
+                           .addListConfig(
+                               new ListConfig("spring-boot-admin-event-eventstore").setBackupCount(1).setMaxSize(1000));
     }
 
     public static void main(String[] args) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class RegistrationApplicationListenerTest {
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
 
         listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
-                mock(ConfigurableWebApplicationContext.class)));
+            mock(ConfigurableWebApplicationContext.class)));
 
         verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)));
     }
@@ -55,7 +55,7 @@ public class RegistrationApplicationListenerTest {
         listener.setAutoRegister(false);
 
         listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
-                mock(ConfigurableWebApplicationContext.class)));
+            mock(ConfigurableWebApplicationContext.class)));
 
         verify(scheduler, never()).scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)));
     }
@@ -71,7 +71,7 @@ public class RegistrationApplicationListenerTest {
         when(scheduler.scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)))).thenReturn(task);
 
         listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
-                mock(ConfigurableWebApplicationContext.class)));
+            mock(ConfigurableWebApplicationContext.class)));
 
         verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)));
 

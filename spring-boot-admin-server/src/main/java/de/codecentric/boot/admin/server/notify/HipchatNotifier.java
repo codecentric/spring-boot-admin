@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.notify;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
@@ -80,7 +81,7 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
     @Override
     protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
         return Mono.fromRunnable(
-                () -> restTemplate.postForEntity(buildUrl(), createHipChatNotification(event, instance), Void.class));
+            () -> restTemplate.postForEntity(buildUrl(), createHipChatNotification(event, instance), Void.class));
     }
 
     protected String buildUrl() {
@@ -116,8 +117,8 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
     protected String getColor(InstanceEvent event) {
         if (event instanceof InstanceStatusChangedEvent) {
             return StatusInfo.STATUS_UP.equals(((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()) ?
-                    "green" :
-                    "red";
+                "green" :
+                "red";
         } else {
             return "gray";
         }

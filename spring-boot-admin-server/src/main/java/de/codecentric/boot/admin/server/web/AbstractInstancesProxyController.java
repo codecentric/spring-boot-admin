@@ -47,8 +47,8 @@ import static java.util.stream.Collectors.toMap;
 public class AbstractInstancesProxyController {
     protected static final String REQUEST_MAPPING_PATH = "/instances/{instanceId}/actuator/**";
     protected static final String[] HOP_BY_HOP_HEADERS = new String[]{"Host", "Connection", "Keep-Alive",
-            "Proxy-Authenticate", "Proxy-Authorization", "TE", "Trailer", "Transfer-Encoding", "Upgrade",
-            "X-Application-Context"};
+        "Proxy-Authenticate", "Proxy-Authorization", "TE", "Trailer", "Transfer-Encoding", "Upgrade",
+        "X-Application-Context"};
     private static final Logger log = LoggerFactory.getLogger(AbstractInstancesProxyController.class);
     private final String realRequestMappingPath;
     private final InstanceRegistry registry;
@@ -78,7 +78,7 @@ public class AbstractInstancesProxyController {
                                                               .method(method)
                                                               .uri(uri)
                                                               .headers(instanceHeaders -> instanceHeaders.addAll(
-                                                                      filterHeaders(headers)));
+                                                                  filterHeaders(headers)));
 
         WebClient.RequestHeadersSpec<?> headersSpec = bodySpec;
         if (requiresBody(method)) {
@@ -91,9 +91,9 @@ public class AbstractInstancesProxyController {
 
         return headersSpec.exchange()
                           .onErrorMap(InstanceWebClientException.class,
-                                  error -> new ResponseStatusException(HttpStatus.BAD_REQUEST, null, error))
+                              error -> new ResponseStatusException(HttpStatus.BAD_REQUEST, null, error))
                           .onErrorMap(ConnectException.class,
-                                  error -> new ResponseStatusException(HttpStatus.BAD_GATEWAY, null, error));
+                              error -> new ResponseStatusException(HttpStatus.BAD_GATEWAY, null, error));
     }
 
     protected String getEndpointLocalPath(String pathWithinApplication) {

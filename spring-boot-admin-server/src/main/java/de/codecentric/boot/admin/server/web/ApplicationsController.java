@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.web;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
@@ -87,8 +88,8 @@ public class ApplicationsController {
                        .flatMap(instance -> registry.deregister(instance.getId()))
                        .collectList()
                        .map(deregistered -> !deregistered.isEmpty() ?
-                               ResponseEntity.noContent().build() :
-                               ResponseEntity.notFound().build());
+                           ResponseEntity.noContent().build() :
+                           ResponseEntity.notFound().build());
     }
 
     protected Tuple2<String, Flux<Instance>> getApplicationForInstance(Instance instance) {
@@ -128,7 +129,7 @@ public class ApplicationsController {
         //TODO: Correct is just a second readmodel for groups
         Map<String, Instant> statusWithTime = instances.stream()
                                                        .collect(toMap(instance -> instance.getStatusInfo().getStatus(),
-                                                               Instance::getStatusTimestamp, this::getMax));
+                                                           Instance::getStatusTimestamp, this::getMax));
         if (statusWithTime.size() == 1) {
             Map.Entry<String, Instant> e = statusWithTime.entrySet().iterator().next();
             return Tuples.of(e.getKey(), e.getValue());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.client.config;
 
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -44,11 +45,12 @@ public class SpringBootAdminClientEnabledCondition extends SpringBootCondition {
 
         if (!clientProperties.isEnabled()) {
             return ConditionOutcome.noMatch(
-                    "Spring Boot Client is disabled, because 'spring.boot.admin.client.enabled' is false.");
+                "Spring Boot Client is disabled, because 'spring.boot.admin.client.enabled' is false.");
         }
 
         if (clientProperties.getUrl().length == 0) {
-            return ConditionOutcome.noMatch("Spring Boot Client is disabled, because 'spring.boot.admin.url' is empty.");
+            return ConditionOutcome.noMatch(
+                "Spring Boot Client is disabled, because 'spring.boot.admin.url' is empty.");
         }
 
         return ConditionOutcome.match();

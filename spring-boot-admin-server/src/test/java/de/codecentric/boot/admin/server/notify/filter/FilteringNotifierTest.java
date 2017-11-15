@@ -38,7 +38,7 @@ public class FilteringNotifierTest {
     private final Instance instance = Instance.create(InstanceId.of("-"))
                                               .register(Registration.create("foo", "http://health").build());
     private final InstanceRegisteredEvent event = new InstanceRegisteredEvent(instance.getId(), instance.getVersion(),
-            instance.getRegistration());
+        instance.getRegistration());
     private InstanceRepository repository;
 
     @Before
@@ -58,7 +58,7 @@ public class FilteringNotifierTest {
         notifier.setCleanupInterval(Duration.ZERO);
 
         String id1 = notifier.addFilter(
-                new ApplicationNameNotificationFilter("foo", Instant.now().minus(Duration.ofSeconds(1))));
+            new ApplicationNameNotificationFilter("foo", Instant.now().minus(Duration.ofSeconds(1))));
         String id2 = notifier.addFilter(new ApplicationNameNotificationFilter("bar", null));
 
         assertThat(notifier.getNotificationFilters()).containsKey(id1).containsKey(id2);

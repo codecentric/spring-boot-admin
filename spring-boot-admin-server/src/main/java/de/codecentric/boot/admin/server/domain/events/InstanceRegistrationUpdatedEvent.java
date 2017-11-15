@@ -36,4 +36,3 @@ public class InstanceRegistrationUpdatedEvent extends InstanceEvent {
         this.registration = registration;
     }
 }
-

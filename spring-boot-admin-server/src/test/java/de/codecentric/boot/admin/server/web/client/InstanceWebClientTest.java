@@ -70,9 +70,9 @@ public class InstanceWebClientTest {
 
         StepVerifier.create(exchange).expectNextCount(1).verifyComplete();
         wireMock.verify(1,
-                getRequestedFor(urlEqualTo("/status")).withHeader(ACCEPT, equalTo(MediaType.APPLICATION_JSON_VALUE))
-                                                      .withHeader(ACCEPT, equalTo(ActuatorMediaType.V1_JSON))
-                                                      .withHeader(ACCEPT, equalTo(ActuatorMediaType.V2_JSON)));
+            getRequestedFor(urlEqualTo("/status")).withHeader(ACCEPT, equalTo(MediaType.APPLICATION_JSON_VALUE))
+                                                  .withHeader(ACCEPT, equalTo(ActuatorMediaType.V1_JSON))
+                                                  .withHeader(ACCEPT, equalTo(ActuatorMediaType.V2_JSON)));
     }
 
     @Test
@@ -122,8 +122,8 @@ public class InstanceWebClientTest {
 
         String responseBody = "{ \"status\" : \"UP\", \"foo\" : \"bar\" }";
         wireMock.stubFor(get("/status").willReturn(
-                okForContentType(ActuatorMediaType.V1_JSON, responseBody).withHeader(CONTENT_LENGTH,
-                        Integer.toString(responseBody.length())).withHeader("X-Custom", "1234")));
+            okForContentType(ActuatorMediaType.V1_JSON, responseBody).withHeader(CONTENT_LENGTH,
+                Integer.toString(responseBody.length())).withHeader("X-Custom", "1234")));
 
         Mono<ClientResponse> exchange = instanceWebClient.instance(instance).get().uri("health").exchange();
 
@@ -181,7 +181,7 @@ public class InstanceWebClientTest {
     @Test
     public void should_error_on_timeout() {
         InstanceWebClient fastTimeoutClient = new InstanceWebClient(headersProvider, Duration.ofMillis(10),
-                Duration.ofMillis(10));
+            Duration.ofMillis(10));
 
         wireMock.stubFor(get("/foo").willReturn(ok().withFixedDelay(100)));
 

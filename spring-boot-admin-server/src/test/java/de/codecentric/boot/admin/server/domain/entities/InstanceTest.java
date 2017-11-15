@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,16 +38,16 @@ public class InstanceTest {
                                                        .hasMessage("'id' must not be null");
 
         assertThatThrownBy(() -> Instance.create(InstanceId.of("id")).register(null)).isInstanceOf(
-                IllegalArgumentException.class).hasMessage("'registration' must not be null");
+            IllegalArgumentException.class).hasMessage("'registration' must not be null");
 
         assertThatThrownBy(() -> Instance.create(InstanceId.of("id")).withInfo(null)).isInstanceOf(
-                IllegalArgumentException.class).hasMessage("'info' must not be null");
+            IllegalArgumentException.class).hasMessage("'info' must not be null");
 
         assertThatThrownBy(() -> Instance.create(InstanceId.of("id")).withStatusInfo(null)).isInstanceOf(
-                IllegalArgumentException.class).hasMessage("'statusInfo' must not be null");
+            IllegalArgumentException.class).hasMessage("'statusInfo' must not be null");
 
         assertThatThrownBy(() -> Instance.create(InstanceId.of("id")).withEndpoints(null)).isInstanceOf(
-                IllegalArgumentException.class).hasMessage("'endpoints' must not be null");
+            IllegalArgumentException.class).hasMessage("'endpoints' must not be null");
     }
 
     @Test
@@ -88,7 +88,7 @@ public class InstanceTest {
         assertThat(instance.getVersion()).isEqualTo(4L);
 
         assertThat(instance.getUnsavedEvents().stream().map(InstanceEvent::getType)).containsExactly("REGISTERED",
-                "REGISTRATION_UPDATED", "STATUS_CHANGED", "INFO_CHANGED", "DEREGISTERED");
+            "REGISTRATION_UPDATED", "STATUS_CHANGED", "INFO_CHANGED", "DEREGISTERED");
     }
 
     @Test
@@ -110,7 +110,7 @@ public class InstanceTest {
         assertThat(loaded.getStatusTimestamp()).isEqualTo(instance.getStatusTimestamp());
         assertThat(loaded.getInfo()).isEqualTo(Info.from(Collections.singletonMap("foo", "bar")));
         assertThat(loaded.getEndpoints()).isEqualTo(
-                Endpoints.single("info", "info").withEndpoint("health", "http://health"));
+            Endpoints.single("info", "info").withEndpoint("health", "http://health"));
         assertThat(loaded.getVersion()).isEqualTo(4L);
 
         Instance deregisteredInstance = instance.deregister();
@@ -131,11 +131,11 @@ public class InstanceTest {
                                                                       .hasMessage("'event' must not be null");
 
         assertThatThrownBy(
-                () -> instance.apply(new InstanceDeregisteredEvent(InstanceId.of("wrong"), 0L))).isInstanceOf(
-                IllegalArgumentException.class).hasMessage("'event' must refer the same instance");
+            () -> instance.apply(new InstanceDeregisteredEvent(InstanceId.of("wrong"), 0L))).isInstanceOf(
+            IllegalArgumentException.class).hasMessage("'event' must refer the same instance");
 
         assertThatThrownBy(() -> instance.apply(new InstanceDeregisteredEvent(InstanceId.of("id"), 1L))).isInstanceOf(
-                IllegalArgumentException.class).hasMessage("expected event version doesn't match");
+            IllegalArgumentException.class).hasMessage("expected event version doesn't match");
     }
 
 }

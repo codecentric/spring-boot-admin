@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,10 +81,10 @@ public class StatusInfoTest {
     @Test
     public void should_sort_by_status_order() {
         List<String> unordered = asList(STATUS_OUT_OF_SERVICE, STATUS_UNKNOWN, STATUS_OFFLINE, STATUS_DOWN, STATUS_UP,
-                STATUS_RESTRICTED);
+            STATUS_RESTRICTED);
 
         List<String> ordered = unordered.stream().sorted(StatusInfo.severity()).collect(Collectors.toList());
         assertThat(ordered).containsExactly(STATUS_DOWN, STATUS_OUT_OF_SERVICE, STATUS_OFFLINE, STATUS_UNKNOWN,
-                STATUS_RESTRICTED, STATUS_UP);
+            STATUS_RESTRICTED, STATUS_UP);
     }
 }

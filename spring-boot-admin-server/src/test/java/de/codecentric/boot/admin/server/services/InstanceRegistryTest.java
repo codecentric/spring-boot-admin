@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.services;
 
 import de.codecentric.boot.admin.server.domain.entities.EventsourcingInstanceRepository;
@@ -107,9 +108,9 @@ public class InstanceRegistryTest {
                     .recordWith(ArrayList::new)
                     .thenConsumeWhile(a -> true)
                     .consumeRecordedWith(
-                            applications -> assertThat(applications.stream().map(Instance::getId)).doesNotContain(id3)
-                                                                                                  .containsExactlyInAnyOrder(
-                                                                                                          id1, id2))
+                        applications -> assertThat(applications.stream().map(Instance::getId)).doesNotContain(id3)
+                                                                                              .containsExactlyInAnyOrder(
+                                                                                                  id1, id2))
                     .verifyComplete();
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.services;
 
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
@@ -27,7 +28,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public class HashingInstanceUrlIdGenerator implements InstanceIdGenerator {
     private static final char[] HEX_CHARS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e',
-            'f'};
+        'f'};
 
     @Override
     public InstanceId generateId(Registration registration) {
@@ -41,7 +42,7 @@ public class HashingInstanceUrlIdGenerator implements InstanceIdGenerator {
     }
 
     private char[] encodeHex(byte[] bytes, int offset, int length) {
-        char chars[] = new char[length];
+        char[] chars = new char[length];
         for (int i = 0; i < length; i = i + 2) {
             byte b = bytes[offset + (i / 2)];
             chars[i] = HEX_CHARS[(b >>> 0x4) & 0xf];

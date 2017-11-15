@@ -72,8 +72,8 @@ public class InfoUpdateTriggerTest {
 
         //when registration updated event is emitted
         clearInvocations(updater);
-        events.next(new InstanceRegistrationUpdatedEvent(instance.getId(), instance.getVersion(),
-                instance.getRegistration()));
+        events.next(
+            new InstanceRegistrationUpdatedEvent(instance.getId(), instance.getVersion(), instance.getRegistration()));
         //then should update
         verify(updater, times(1)).updateInfo(instance.getId());
 

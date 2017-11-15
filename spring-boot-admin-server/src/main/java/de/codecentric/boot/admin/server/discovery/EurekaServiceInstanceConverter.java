@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.discovery;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
@@ -34,7 +35,7 @@ public class EurekaServiceInstanceConverter extends DefaultServiceInstanceConver
     @Override
     protected URI getHealthUrl(ServiceInstance instance) {
         Assert.isInstanceOf(EurekaServiceInstance.class, instance,
-                "serviceInstance must be of type EurekaServiceInstance");
+            "serviceInstance must be of type EurekaServiceInstance");
 
         InstanceInfo instanceInfo = ((EurekaServiceInstance) instance).getInstanceInfo();
         String healthUrl = instanceInfo.getSecureHealthCheckUrl();

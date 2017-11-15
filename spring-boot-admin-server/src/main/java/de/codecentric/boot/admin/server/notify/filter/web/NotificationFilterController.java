@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.notify.filter.web;
 
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
@@ -83,7 +84,7 @@ public class NotificationFilterController {
         Instant expiry = ttl != null ? Instant.now().plus(ttl) : null;
 
         return id != null ?
-                new InstanceIdNotificationFilter(id, expiry) :
-                new ApplicationNameNotificationFilter(name, expiry);
+            new InstanceIdNotificationFilter(id, expiry) :
+            new ApplicationNameNotificationFilter(name, expiry);
     }
 }

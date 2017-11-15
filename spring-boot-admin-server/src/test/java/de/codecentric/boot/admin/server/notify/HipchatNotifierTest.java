@@ -67,21 +67,22 @@ public class HipchatNotifierTest {
 
     @Test
     public void test_onApplicationEvent_resolve() {
-        @SuppressWarnings("unchecked") ArgumentCaptor<HttpEntity<Map<String, Object>>> httpRequest = ArgumentCaptor.forClass(
-                (Class<HttpEntity<Map<String, Object>>>) (Class<?>) HttpEntity.class);
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<HttpEntity<Map<String, Object>>> httpRequest = ArgumentCaptor.forClass(
+            (Class<HttpEntity<Map<String, Object>>>) (Class<?>) HttpEntity.class);
 
         when(restTemplate.postForEntity(isA(String.class), httpRequest.capture(), eq(Void.class))).thenReturn(
-                ResponseEntity.ok().build());
+            ResponseEntity.ok().build());
 
         StepVerifier.create(notifier.notify(
-                new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
+            new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
                     .verifyComplete();
-        StepVerifier.create(notifier.notify(
-                new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+        StepVerifier.create(
+            notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
                     .verifyComplete();
 
         assertThat(httpRequest.getValue().getHeaders()).containsEntry("Content-Type",
-                Collections.singletonList("application/json"));
+            Collections.singletonList("application/json"));
 
         Map<String, Object> body = httpRequest.getValue().getBody();
         assertThat(body).containsEntry("color", "green");
@@ -95,22 +96,22 @@ public class HipchatNotifierTest {
     public void test_onApplicationEvent_trigger() {
         StatusInfo infoDown = StatusInfo.ofDown();
 
-        @SuppressWarnings("unchecked") ArgumentCaptor<HttpEntity<Map<String, Object>>> httpRequest = ArgumentCaptor.forClass(
-                (Class<HttpEntity<Map<String, Object>>>) (Class<?>) HttpEntity.class);
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<HttpEntity<Map<String, Object>>> httpRequest = ArgumentCaptor.forClass(
+            (Class<HttpEntity<Map<String, Object>>>) (Class<?>) HttpEntity.class);
 
         when(restTemplate.postForEntity(isA(String.class), httpRequest.capture(), eq(Void.class))).thenReturn(
-                ResponseEntity.ok().build());
+            ResponseEntity.ok().build());
 
-        StepVerifier.create(notifier.notify(
-                new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+        StepVerifier.create(
+            notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
                     .verifyComplete();
         StepVerifier.create(
-                notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), infoDown)))
+            notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), infoDown)))
                     .verifyComplete();
 
         assertThat(httpRequest.getValue().
-                getHeaders()).
-                                     containsEntry("Content-Type", Collections.singletonList("application/json"));
+            getHeaders()).containsEntry("Content-Type", Collections.singletonList("application/json"));
         Map<String, Object> body = httpRequest.getValue().getBody();
         assertThat(body).containsEntry("color", "red");
         assertThat(body).containsEntry("message", "<strong>App</strong>/-id- is <strong>DOWN</strong>");

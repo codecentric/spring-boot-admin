@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.config;
 
 import de.codecentric.boot.admin.server.discovery.DefaultServiceInstanceConverter;
@@ -38,8 +39,8 @@ import com.netflix.discovery.EurekaClient;
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
 @ConditionalOnProperty(prefix = "spring.boot.admin.discovery", name = "enabled", matchIfMissing = true)
 @AutoConfigureAfter(value = AdminServerAutoConfiguration.class, name = {
-        "org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration",
-        "org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration"})
+    "org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration",
+    "org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration"})
 public class AdminServerDiscoveryAutoConfiguration {
 
     @Bean

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.client.config;
 
 import de.codecentric.boot.admin.client.registration.ApplicationFactory;
@@ -62,7 +63,7 @@ public class SpringBootAdminClientAutoConfiguration {
                                                      PathMappedEndpoints pathMappedEndpoints,
                                                      WebEndpointProperties webEndpoint) {
             return new ServletApplicationFactory(instance, management, server, servletContext, pathMappedEndpoints,
-                    webEndpoint);
+                webEndpoint);
         }
     }
 
@@ -120,7 +121,7 @@ public class SpringBootAdminClientAutoConfiguration {
     public RegistrationApplicationListener registrationListener(ClientProperties client,
                                                                 ApplicationRegistrator registrator) {
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator,
-                registrationTaskScheduler());
+            registrationTaskScheduler());
         listener.setAutoRegister(client.isAutoRegistration());
         listener.setAutoDeregister(client.isAutoDeregistration());
         listener.setRegisterPeriod(client.getPeriod());
