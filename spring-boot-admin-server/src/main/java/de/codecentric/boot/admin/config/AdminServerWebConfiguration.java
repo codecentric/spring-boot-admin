@@ -36,12 +36,17 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import de.codecentric.boot.admin.event.ClientApplicationDeregisteredEvent;
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.event.RoutesOutdatedEvent;
+import de.codecentric.boot.admin.jackson.ApplicationBeanSerializerModifier;
+import de.codecentric.boot.admin.jackson.ApplicationDeserializer;
+import de.codecentric.boot.admin.jackson.SanitizingMapSerializer;
 import de.codecentric.boot.admin.journal.ApplicationEventJournal;
 import de.codecentric.boot.admin.journal.web.JournalController;
+import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.registry.web.RegistryController;
 import de.codecentric.boot.admin.web.AdminController;
@@ -51,107 +56,112 @@ import de.codecentric.boot.admin.web.servlet.resource.PreferMinifiedFilteringRes
 import de.codecentric.boot.admin.web.servlet.resource.ResourcePatternResolvingResourceResolver;
 
 @Configuration
-public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter
-		implements ApplicationContextAware {
-	private final ApplicationEventPublisher publisher;
-	private final ServerProperties server;
-	private final ResourcePatternResolver resourcePatternResolver;
-	private final AdminServerProperties adminServerProperties;
-	private ApplicationContext applicationContext;
+public class AdminServerWebConfiguration extends WebMvcConfigurerAdapter implements ApplicationContextAware {
+    private final ApplicationEventPublisher publisher;
+    private final ServerProperties server;
+    private final ResourcePatternResolver resourcePatternResolver;
+    private final AdminServerProperties adminServerProperties;
+    private ApplicationContext applicationContext;
 
-	public AdminServerWebConfiguration(ApplicationEventPublisher publisher, ServerProperties server,
-			ResourcePatternResolver resourcePatternResolver,
-			AdminServerProperties adminServerProperties) {
-		this.publisher = publisher;
-		this.server = server;
-		this.resourcePatternResolver = resourcePatternResolver;
-		this.adminServerProperties = adminServerProperties;
-	}
+    public AdminServerWebConfiguration(ApplicationEventPublisher publisher, ServerProperties server, ResourcePatternResolver resourcePatternResolver, AdminServerProperties adminServerProperties) {
+        this.publisher = publisher;
+        this.server = server;
+        this.resourcePatternResolver = resourcePatternResolver;
+        this.adminServerProperties = adminServerProperties;
+    }
 
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) {
-		this.applicationContext = applicationContext;
-	}
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
 
-	@Override
-	public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-		if (!hasConverter(converters, MappingJackson2HttpMessageConverter.class)) {
-			ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json()
-					.applicationContext(this.applicationContext).build();
-			converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
-		}
-	}
+    @Override
+    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+        if (!hasConverter(converters, MappingJackson2HttpMessageConverter.class)) {
+            ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json()
+                                                                   .applicationContext(this.applicationContext)
+                                                                   .build();
+            converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
+        }
+    }
 
-	private boolean hasConverter(List<HttpMessageConverter<?>> converters,
-			Class<? extends HttpMessageConverter<?>> clazz) {
-		for (HttpMessageConverter<?> converter : converters) {
-			if (clazz.isInstance(converter)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    private boolean hasConverter(List<HttpMessageConverter<?>> converters, Class<? extends HttpMessageConverter<?>> clazz) {
+        for (HttpMessageConverter<?> converter : converters) {
+            if (clazz.isInstance(converter)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler(adminServerProperties.getContextPath() + "/**")
-				.addResourceLocations("classpath:/META-INF/spring-boot-admin-server-ui/")
-				.resourceChain(true)
-				.addResolver(new PreferMinifiedFilteringResourceResolver(".min"));
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler(adminServerProperties.getContextPath() + "/**")
+                .addResourceLocations("classpath:/META-INF/spring-boot-admin-server-ui/")
+                .resourceChain(true)
+                .addResolver(new PreferMinifiedFilteringResourceResolver(".min"));
 
-		registry.addResourceHandler(adminServerProperties.getContextPath() + "/all-modules.css")
-				.resourceChain(true)
-				.addResolver(new ResourcePatternResolvingResourceResolver(resourcePatternResolver,
-						"classpath*:/META-INF/spring-boot-admin-server-ui/*/module.css"))
-				.addResolver(new ConcatenatingResourceResolver("\n".getBytes()));
+        registry.addResourceHandler(adminServerProperties.getContextPath() + "/all-modules.css")
+                .resourceChain(true)
+                .addResolver(new ResourcePatternResolvingResourceResolver(resourcePatternResolver,
+                        "classpath*:/META-INF/spring-boot-admin-server-ui/*/module.css"))
+                .addResolver(new ConcatenatingResourceResolver("\n".getBytes()));
 
-		registry.addResourceHandler(adminServerProperties.getContextPath() + "/all-modules.js")
-				.resourceChain(true)
-				.addResolver(new ResourcePatternResolvingResourceResolver(resourcePatternResolver,
-						"classpath*:/META-INF/spring-boot-admin-server-ui/*/module.js"))
-				.addResolver(new PreferMinifiedFilteringResourceResolver(".min"))
-				.addResolver(new ConcatenatingResourceResolver(";\n".getBytes()));
-	}
+        registry.addResourceHandler(adminServerProperties.getContextPath() + "/all-modules.js")
+                .resourceChain(true)
+                .addResolver(new ResourcePatternResolvingResourceResolver(resourcePatternResolver,
+                        "classpath*:/META-INF/spring-boot-admin-server-ui/*/module.js"))
+                .addResolver(new PreferMinifiedFilteringResourceResolver(".min"))
+                .addResolver(new ConcatenatingResourceResolver(";\n".getBytes()));
+    }
 
-	@Override
-	public void addViewControllers(ViewControllerRegistry registry) {
-		String contextPath = adminServerProperties.getContextPath();
-		if (StringUtils.hasText(contextPath)) {
-			registry.addRedirectViewController(contextPath, server.getPath(contextPath) + "/");
-		}
-		registry.addViewController(contextPath + "/").setViewName("forward:index.html");
-	}
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        String contextPath = adminServerProperties.getContextPath();
+        if (StringUtils.hasText(contextPath)) {
+            registry.addRedirectViewController(contextPath, server.getPath(contextPath) + "/");
+        }
+        registry.addViewController(contextPath + "/").setViewName("forward:index.html");
+    }
 
-	@Bean
-	public PrefixHandlerMapping prefixHandlerMapping() {
-		Map<String, Object> beans = applicationContext
-				.getBeansWithAnnotation(AdminController.class);
-		PrefixHandlerMapping prefixHandlerMapping = new PrefixHandlerMapping(
-				beans.values().toArray(new Object[beans.size()]));
-		prefixHandlerMapping.setPrefix(adminServerProperties.getContextPath());
-		return prefixHandlerMapping;
-	}
+    @Bean
+    public SimpleModule adminJacksonModule() {
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(Application.class, new ApplicationDeserializer());
+        module.setSerializerModifier(new ApplicationBeanSerializerModifier(
+                new SanitizingMapSerializer(adminServerProperties.getMetadataKeysToSanitize()))) ;
+        return module;
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	public RegistryController registryController(ApplicationRegistry applicationRegistry) {
-		return new RegistryController(applicationRegistry);
-	}
+    @Bean
+    public PrefixHandlerMapping prefixHandlerMapping() {
+        Map<String, Object> beans = applicationContext.getBeansWithAnnotation(AdminController.class);
+        PrefixHandlerMapping prefixHandlerMapping = new PrefixHandlerMapping(
+                beans.values().toArray(new Object[beans.size()]));
+        prefixHandlerMapping.setPrefix(adminServerProperties.getContextPath());
+        return prefixHandlerMapping;
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	public JournalController journalController(ApplicationEventJournal applicationEventJournal) {
-		return new JournalController(applicationEventJournal);
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public RegistryController registryController(ApplicationRegistry applicationRegistry) {
+        return new RegistryController(applicationRegistry);
+    }
 
-	@EventListener
-	public void onClientApplicationRegistered(ClientApplicationRegisteredEvent event) {
-		publisher.publishEvent(new RoutesOutdatedEvent());
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public JournalController journalController(ApplicationEventJournal applicationEventJournal) {
+        return new JournalController(applicationEventJournal);
+    }
 
-	@EventListener
-	public void onClientApplicationDeregistered(ClientApplicationDeregisteredEvent event) {
-		publisher.publishEvent(new RoutesOutdatedEvent());
-	}
+    @EventListener
+    public void onClientApplicationRegistered(ClientApplicationRegisteredEvent event) {
+        publisher.publishEvent(new RoutesOutdatedEvent());
+    }
+
+    @EventListener
+    public void onClientApplicationDeregistered(ClientApplicationDeregisteredEvent event) {
+        publisher.publishEvent(new RoutesOutdatedEvent());
+    }
 
 }

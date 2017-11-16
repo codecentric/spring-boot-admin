@@ -35,12 +35,18 @@ import org.mockito.internal.matchers.Matches;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.jayway.jsonpath.JsonPath;
 
+import de.codecentric.boot.admin.jackson.ApplicationDeserializer;
+import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
 import de.codecentric.boot.admin.registry.HashingApplicationUrlIdGenerator;
 import de.codecentric.boot.admin.registry.store.SimpleApplicationStore;
@@ -70,7 +76,11 @@ public class RegistryControllerTest {
         ApplicationRegistry registry = new ApplicationRegistry(new SimpleApplicationStore(),
                 new HashingApplicationUrlIdGenerator());
         registry.setApplicationEventPublisher(Mockito.mock(ApplicationEventPublisher.class));
-        mvc = MockMvcBuilders.standaloneSetup(new RegistryController(registry)).build();
+        SimpleModule module = new SimpleModule().addDeserializer(Application.class, new ApplicationDeserializer());
+        ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().modules(module).build();
+        mvc = MockMvcBuilders.standaloneSetup(new RegistryController(registry))
+                             .setMessageConverters(new MappingJackson2HttpMessageConverter(objectMapper))
+                             .build();
     }
 
     @Test
@@ -78,7 +88,8 @@ public class RegistryControllerTest {
         MvcResult result = mvc.perform(
                 post("/api/applications").contentType(MediaType.APPLICATION_JSON).content(APPLICATION_TEST_JSON))
                               .andExpect(status().isCreated())
-                              .andExpect(header().string(HttpHeaders.LOCATION, new Matches("http://localhost/[0-9a-f]+")))
+                              .andExpect(
+                                      header().string(HttpHeaders.LOCATION, new Matches("http://localhost/[0-9a-f]+")))
                               .andExpect(jsonPath("$.id").isNotEmpty())
                               .andReturn();
 
