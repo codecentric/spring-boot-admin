@@ -7,7 +7,6 @@ import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.model.StatusInfo;
 import de.codecentric.boot.admin.notify.AbstractEventNotifier;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.web.client.RestTemplate;
 
@@ -101,7 +100,6 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
                 to));
     }
 
-    @NotNull
     private static Message getMessage(Application app, String registeredTitle, String activitySubtitle) {
         Message message = new Message();
 

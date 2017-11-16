@@ -1,14 +1,10 @@
 package de.codecentric.boot.admin.notify.microsoft.teams;
 
 import de.codecentric.boot.admin.event.ClientApplicationDeregisteredEvent;
-import de.codecentric.boot.admin.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.model.StatusInfo;
-import de.codecentric.boot.admin.notify.microsoft.teams.Message;
-import de.codecentric.boot.admin.notify.microsoft.teams.MicrosoftTeamsNotifier;
-import de.codecentric.boot.admin.notify.microsoft.teams.Section;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.web.client.RestTemplate;
