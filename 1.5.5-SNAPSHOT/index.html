@@ -518,7 +518,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 1.5.5-SNAPSHOT,</span>
-<span id="revdate">04.11.2017</span>
+<span id="revdate">16.11.2017</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -1064,7 +1064,12 @@ user.password</p></td>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.routes.endpoints</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The enpoints which will be available via spring boot admin zuul proxy. If you write ui modules using other endpoints you need to add them.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"env, metrics, trace, dump, jolokia, info, configprops, activiti, logfile, refresh, flyway, liquibase, loggers"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"env", "metrics", "trace", "dump", "jolokia", "info", "configprops", "activiti", "logfile", "refresh", "flyway", "liquibase", "loggers"</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.metadata-keys-to-sanitize</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Metadata values for the keys matching these regex patterns will be sanitized in all json output.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>".<strong>password$", ".*secret$", ".*key$", ".</strong>$token$", ".<strong>credentials.</strong>", ".*vcap_services$"</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -1848,7 +1853,7 @@ account and configure it appropriately.</p>
 <div class="sect3">
 <h4 id="_turbine_ui_module"><a class="anchor" href="#_turbine_ui_module"></a><a class="link" href="#_turbine_ui_module">4.4.2. Turbine UI Module</a></h4>
 <div class="paragraph">
-<p>The Turbine module uses the hystrix-dashboard to display the metrics from a Turbine stream. The UI module does not configure Turbine for you. Either you run Turbine as a separate application or integrate it into your Spring Boot Admin application. Please see <a href="http://cloud.spring.io/spring-cloud-static/Dalston.SR3/#_turbine">Spring Cloud Reference</a> on setting up Turbine.</p>
+<p>The Turbine module uses the hystrix-dashboard to display the metrics from a Turbine stream. The UI module does not configure Turbine for you. Either you run Turbine as a separate application or integrate it into your Spring Boot Admin application. Please see <a href="http://cloud.spring.io/spring-cloud-static/Dalston.SR4/#_turbine">Spring Cloud Reference</a> on setting up Turbine.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
