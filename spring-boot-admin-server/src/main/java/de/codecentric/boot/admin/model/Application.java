@@ -318,7 +318,7 @@ public class Application implements Serializable {
 		private static Pattern[] createPatterns(String... keys) {
 			Pattern[] patterns = new Pattern[keys.length];
 			for (int i = 0; i < keys.length; i++) {
-				patterns[i] = Pattern.compile(keys[i]);
+				patterns[i] = Pattern.compile(keys[i], Pattern.CASE_INSENSITIVE);
 			}
 			return patterns;
 		}
