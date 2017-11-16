@@ -333,3 +333,24 @@ To enable Let's Chat notifications you need to add the host url and add the API 
 | `+++"*#{application.name}* (#{application.id}) is *#{to.status}*"+++`
 |
 |===
+
+[ms-teams-notifications]
+==== Microsoft Teams notifications ====
+To enable Microsoft Teams notifications you need to setup a connector webhook url and set the appropriate configuration property.
+
+.Microsoft Teams notifications configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.ms-teams.enabled
+| Enable Microsoft Teams notifications
+| `true`
+
+| spring.boot.admin.notify.ms-teams.webhook-url
+| The Microsoft Teams webhook url to send the notifications to.
+|
+
+| spring.boot.admin.notify.ms-teams.*
+| There are several options to customize the message title and color
+|
+|===

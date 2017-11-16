@@ -25,14 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import de.codecentric.boot.admin.notify.CompositeNotifier;
-import de.codecentric.boot.admin.notify.HipchatNotifier;
-import de.codecentric.boot.admin.notify.MailNotifier;
-import de.codecentric.boot.admin.notify.Notifier;
-import de.codecentric.boot.admin.notify.NotifierListener;
-import de.codecentric.boot.admin.notify.OpsGenieNotifier;
-import de.codecentric.boot.admin.notify.PagerdutyNotifier;
-import de.codecentric.boot.admin.notify.SlackNotifier;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
@@ -45,6 +37,15 @@ import de.codecentric.boot.admin.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.model.StatusInfo;
+import de.codecentric.boot.admin.notify.CompositeNotifier;
+import de.codecentric.boot.admin.notify.HipchatNotifier;
+import de.codecentric.boot.admin.notify.MailNotifier;
+import de.codecentric.boot.admin.notify.MicrosoftTeamsNotifier;
+import de.codecentric.boot.admin.notify.Notifier;
+import de.codecentric.boot.admin.notify.NotifierListener;
+import de.codecentric.boot.admin.notify.OpsGenieNotifier;
+import de.codecentric.boot.admin.notify.PagerdutyNotifier;
+import de.codecentric.boot.admin.notify.SlackNotifier;
 
 public class NotifierConfigurationTest {
 	private static final ClientApplicationEvent APP_DOWN = new ClientApplicationStatusChangedEvent(
@@ -104,6 +105,12 @@ public class NotifierConfigurationTest {
 	public void test_slack() {
 		load(null, "spring.boot.admin.notify.slack.webhook-url:http://example.com");
 		assertThat(context.getBean(SlackNotifier.class), is(instanceOf(SlackNotifier.class)));
+	}
+
+	@Test
+	public void test_ms_teams() {
+		load(null,"spring.boot.admin.notify.ms-teams.webhook-url:http://example.com");
+		assertThat(context.getBean(MicrosoftTeamsNotifier.class), is(instanceOf(MicrosoftTeamsNotifier.class)));
 	}
 
 	@Test
