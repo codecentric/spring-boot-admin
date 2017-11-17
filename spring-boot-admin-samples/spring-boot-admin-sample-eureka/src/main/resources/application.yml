@@ -4,7 +4,6 @@ spring:
   cloud:
     config:
       enabled: false
-
 # tag::configuration-eureka[]
 eureka:  #<1>
   instance:
