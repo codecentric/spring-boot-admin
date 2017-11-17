@@ -21,7 +21,6 @@ import de.codecentric.boot.admin.web.client.HttpHeadersProvider;
 import de.codecentric.boot.admin.zuul.ApplicationRouteLocator;
 import de.codecentric.boot.admin.zuul.filters.pre.ApplicationHeadersFilter;
 
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
