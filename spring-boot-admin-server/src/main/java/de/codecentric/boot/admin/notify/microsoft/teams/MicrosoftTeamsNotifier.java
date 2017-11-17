@@ -14,20 +14,20 @@ import java.net.URI;
 
 public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
 
-    static final String DE_REGISTERED_TITLE = "De-Registered";
-    static final String REGISTERED_TITLE = "Registered";
-    static final String STATUS_CHANGED_TITLE = "Status Changed";
-    static final String MESSAGE_SUMMARY = "Spring Boot Admin Notification";
-    static final String DEREGISTER_ACTIVITY_SUBTITLE_PATTERN = "%s with id %s has de-registered" +
+    public static final String DE_REGISTERED_TITLE = "De-Registered";
+    public static final String REGISTERED_TITLE = "Registered";
+    public static final String STATUS_CHANGED_TITLE = "Status Changed";
+    public static final String MESSAGE_SUMMARY = "Spring Boot Admin Notification";
+    public static final String DEREGISTER_ACTIVITY_SUBTITLE_PATTERN = "%s with id %s has de-registered" +
             " from Spring Boot Admin";
-    static final String REGISTER_ACTIVITY_SUBTITLE_PATTERN = "%s with id %s has registered" +
+    public static final String REGISTER_ACTIVITY_SUBTITLE_PATTERN = "%s with id %s has registered" +
             " from Spring Boot Admin";
-    static final String STATUS_ACTIVITY_SUBTITLE_PATTERN = "%s with id %s changed status from %s to %s";
-    static final String STATUS_KEY = "Status";
-    static final String SERVICE_URL_KEY = "Service URL";
-    static final String HEALTH_URL_KEY = "Health URL";
-    static final String MANAGEMENT_URL_KEY = "Management URL";
-    static final String SOURCE_KEY = "Source";
+    public static final String STATUS_ACTIVITY_SUBTITLE_PATTERN = "%s with id %s changed status from %s to %s";
+    public static final String STATUS_KEY = "Status";
+    public static final String SERVICE_URL_KEY = "Service URL";
+    public static final String HEALTH_URL_KEY = "Health URL";
+    public static final String MANAGEMENT_URL_KEY = "Management URL";
+    public static final String SOURCE_KEY = "Source";
 
 
     /**
@@ -57,20 +57,21 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    Message getDeregisteredMessage(Application app) {
-
-        return getMessage(app, DE_REGISTERED_TITLE, String.format(DEREGISTER_ACTIVITY_SUBTITLE_PATTERN,
+    public Message getDeregisteredMessage(Application app) {
+        Message message = getMessage(app, DE_REGISTERED_TITLE, String.format(DEREGISTER_ACTIVITY_SUBTITLE_PATTERN,
                 app.getName(),
                 app.getId()));
+
+        return message;
     }
 
-    Message getRegisteredMessage(Application app) {
+    public  Message getRegisteredMessage(Application app) {
         return getMessage(app, REGISTERED_TITLE, String.format(REGISTER_ACTIVITY_SUBTITLE_PATTERN,
                 app.getName(),
                 app.getId()));
     }
 
-    Message getStatusChangedMessage(Application app, StatusInfo from, StatusInfo to) {
+    public Message getStatusChangedMessage(Application app, StatusInfo from, StatusInfo to) {
         return getMessage(app, STATUS_CHANGED_TITLE, String.format(STATUS_ACTIVITY_SUBTITLE_PATTERN,
                 app.getName(),
                 app.getId(),
@@ -78,7 +79,7 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
                 to.getStatus()));
     }
 
-    private Message getMessage(Application app, String registeredTitle, String activitySubtitle) {
+    public Message getMessage(Application app, String registeredTitle, String activitySubtitle) {
         Message message = new Message();
 
         message.setTitle(registeredTitle);
@@ -118,9 +119,9 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
 
         } else {
             ClientApplicationStatusChangedEvent statusChangedEvent = (ClientApplicationStatusChangedEvent)event;
-            Message statusChangeMessage = getStatusChangedMessage(statusChangedEvent.getApplication(),
-                    statusChangedEvent.getFrom(),
-                    statusChangedEvent.getTo());
+            Message statusChangeMessage = getStatusChangedMessage(event.getApplication(),
+                    ((ClientApplicationStatusChangedEvent) event).getFrom(),
+                    ((ClientApplicationStatusChangedEvent) event).getTo());
 
             this.restTemplate.postForObject(webhookUrl, statusChangeMessage, Object.class);
         }

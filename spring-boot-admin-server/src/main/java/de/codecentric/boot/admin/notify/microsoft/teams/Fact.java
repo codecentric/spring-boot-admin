@@ -5,12 +5,17 @@ public class Fact {
     private String name;
     private String value;
 
-    Fact(String name, String value) {
+    public Fact() {
+    }
+
+    public Fact(String name, String value) {
+
         this.name = name;
         this.value = value;
     }
 
     public String getName() {
+
         return name;
     }
 
@@ -34,16 +39,11 @@ public class Fact {
 
         Fact fact = (Fact)obj;
 
-        return ((this.getName() == null && fact.getName() == null) || (
+        return (this.getName() == fact.getName() || (
                 this.getName() != null && this.getName().equals(fact.getName())
                 )) &&
-               ((this.getValue() == null && fact.getValue() == null) || (
+               (this.getValue() == fact.getValue() || (
                         this.getValue() != null && this.getValue().equals(fact.getValue())
                 ));
-    }
-
-    @Override
-    public int hashCode() {
-        return getName().hashCode() + getValue().hashCode();
     }
 }

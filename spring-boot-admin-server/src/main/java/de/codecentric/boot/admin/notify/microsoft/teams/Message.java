@@ -11,32 +11,48 @@ public class Message {
     private String title;
     private List<Section> sections = new ArrayList<>();
 
-    String getSummary() {
+    public Message(String summary, String themeColor, String title, List<Section> sections) {
+
+        this.summary = summary;
+        this.themeColor = themeColor;
+        this.title = title;
+        this.sections = sections;
+    }
+
+    public Message() {
+
+    }
+
+    public String getSummary() {
         return summary;
     }
 
-    void setSummary(String summary) {
+    public void setSummary(String summary) {
         this.summary = summary;
     }
 
-    private String getThemeColor() {
+    public String getThemeColor() {
         return themeColor;
     }
 
-    void setThemeColor(String themeColor) {
+    public void setThemeColor(String themeColor) {
         this.themeColor = themeColor;
     }
 
-    String getTitle() {
+    public String getTitle() {
         return title;
     }
 
-    void setTitle(String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
-    List<Section> getSections() {
+    public List<Section> getSections() {
         return sections;
+    }
+
+    public void setSections(List<Section> sections) {
+        this.sections = sections;
     }
 
     @Override
@@ -47,20 +63,15 @@ public class Message {
 
         Message message = (Message)obj;
 
-        return  ((this.getSummary() == null &&  message.getSummary() == null) || (
+        return  (this.getSummary() == message.getSummary() || (
                     this.getSummary() != null && this.getSummary().equals(message.getSummary())
                 )) &&
-                ((this.getThemeColor() == null &&  message.getThemeColor() == null) || (
+                (this.getThemeColor() == message.getThemeColor() || (
                     this.getThemeColor() != null && this.getThemeColor().equals(message.getThemeColor())
                 )) &&
-                ((this.getTitle() == null &&  message.getTitle() == null) || (
+                (this.getTitle() == message.getTitle() || (
                     this.getTitle() != null && this.getTitle().equals(message.getTitle())
                 )) &&
                 this.getSections().equals(message.getSections());
-    }
-
-    @Override
-    public int hashCode() {
-        return (getSummary() + getThemeColor() + getTitle()).hashCode() + getSections().hashCode();
     }
 }
