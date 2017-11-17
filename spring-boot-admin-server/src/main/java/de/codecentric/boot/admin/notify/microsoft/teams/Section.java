@@ -9,45 +9,36 @@ public class Section {
     private String activityTitle;
     private String activitySubtitle;
     private String activityImage;
-    private List<Fact> facts = new ArrayList<Fact>();
+    private List<Fact> facts = new ArrayList<>();
     private String text;
 
-
-    public Section() {
-
-    }
-
-    public String getActivityTitle() {
+    private String getActivityTitle() {
 
         return activityTitle;
     }
 
-    public void setActivityTitle(String activityTitle) {
+    void setActivityTitle(String activityTitle) {
         this.activityTitle = activityTitle;
     }
 
-    public String getActivitySubtitle() {
+    private String getActivitySubtitle() {
         return activitySubtitle;
     }
 
-    public void setActivitySubtitle(String activitySubtitle) {
+    void setActivitySubtitle(String activitySubtitle) {
         this.activitySubtitle = activitySubtitle;
     }
 
-    public String getActivityImage() {
+    private String getActivityImage() {
         return activityImage;
     }
 
-    public void setActivityImage(String activityImage) {
+    void setActivityImage(String activityImage) {
         this.activityImage = activityImage;
     }
 
-    public List<Fact> getFacts() {
+    List<Fact> getFacts() {
         return facts;
-    }
-
-    public void setFacts(List<Fact> facts) {
-        this.facts = facts;
     }
 
     public String getText() {
@@ -65,18 +56,22 @@ public class Section {
         }
         Section section = (Section) obj;
 
-        return (this.getActivitySubtitle() == section.getActivitySubtitle() || (
+        return ((this.getActivitySubtitle() == null && section.getActivitySubtitle() == null) || (
                         this.getActivitySubtitle() != null && this.getActivitySubtitle().equals(section.getActivitySubtitle())
                 )) &&
-                (this.getActivityImage() == section.getActivityImage() || (
+                ((this.getActivityImage() == null && section.getActivityImage() == null) || (
                         this.getActivityImage() != null
                                 && this.getActivityImage().equals(section.getActivityImage())
                 )) &&
-                (this.getActivityTitle() == section.getActivityTitle() || (
+                ((this.getActivityTitle() == null &&  section.getActivityTitle() == null) || (
                         this.getActivityTitle() != null
                                 && this.getActivityTitle().equals(section.getActivityTitle())
                 ))
                 && this.getFacts().equals(section.getFacts());
     }
 
+    @Override
+    public int hashCode() {
+        return (getActivitySubtitle() + getActivityImage() + getActivityTitle()).hashCode() + getFacts().hashCode();
+    }
 }
