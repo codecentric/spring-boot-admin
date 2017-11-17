@@ -24,6 +24,7 @@ require('googlefonts.css');
 require('./css/core.css');
 
 require('./img/favicon.png');
+require('./img/platform-spring-boot.jpg');
 
 require('eventsource-polyfill');
 require('es6-shim');

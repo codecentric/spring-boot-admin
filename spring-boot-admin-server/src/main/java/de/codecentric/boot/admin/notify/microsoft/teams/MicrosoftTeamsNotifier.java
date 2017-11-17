@@ -36,6 +36,14 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
      *  (i.e. https://outlook.office.com/webhook/{webhook-id})
      */
     private URI webhookUrl;
+
+    /**
+     * Image url for image displayed in activity section
+     *  (i.e. https://raw.githubusercontent.com/tomd8451/spring-boot-admin
+     *          /master/spring-boot-admin-server-ui/core/img/platform-spring-boot.jpg)
+     */
+    public static URI imageUrl;
+
     private RestTemplate restTemplate;
 
     public MicrosoftTeamsNotifier() {
@@ -74,13 +82,13 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
 
         Section section = new Section();
         section.setActivityTitle(app.getName());
+        section.setActivityImage(imageUrl.toString());
         section.setActivitySubtitle(activitySubtitle);
-        section.setFacts(new HashMap<String, String>());
-        section.getFacts().put(STATUS_KEY, app.getStatusInfo().getStatus());
-        section.getFacts().put(SERVICE_URL_KEY, app.getServiceUrl());
-        section.getFacts().put(HEALTH_URL_KEY, app.getHealthUrl());
-        section.getFacts().put(MANAGEMENT_URL_KEY, app.getManagementUrl());
-        section.getFacts().put(SOURCE_KEY, app.getSource());
+        section.getFacts().add(new Fact(STATUS_KEY, app.getStatusInfo().getStatus()));
+        section.getFacts().add(new Fact(SERVICE_URL_KEY, app.getServiceUrl()));
+        section.getFacts().add(new Fact(HEALTH_URL_KEY, app.getHealthUrl()));
+        section.getFacts().add(new Fact(MANAGEMENT_URL_KEY, app.getManagementUrl()));
+        section.getFacts().add(new Fact(SOURCE_KEY, app.getSource()));
 
         message.getSections().add(section);
 

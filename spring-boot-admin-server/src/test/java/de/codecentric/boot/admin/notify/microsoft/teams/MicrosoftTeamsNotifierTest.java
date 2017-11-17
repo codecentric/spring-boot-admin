@@ -127,14 +127,15 @@ public class MicrosoftTeamsNotifierTest {
 
         Section expectedSection = new Section();
         expectedSection.setActivityTitle(stubApp.getName());
+        expectedSection.setActivityImage(imageUrl.toString());
         expectedSection.setActivitySubtitle(String.format(DEREGISTER_ACTIVITY_SUBTITLE_PATTERN,
                 stubApp.getName(),
                 stubApp.getId()));
-        expectedSection.getFacts().put(STATUS_KEY, stubApp.getStatusInfo().getStatus());
-        expectedSection.getFacts().put(SERVICE_URL_KEY, stubApp.getServiceUrl());
-        expectedSection.getFacts().put(HEALTH_URL_KEY, stubApp.getHealthUrl());
-        expectedSection.getFacts().put(MANAGEMENT_URL_KEY, stubApp.getManagementUrl());
-        expectedSection.getFacts().put(SOURCE_KEY, stubApp.getSource());
+        expectedSection.getFacts().add(new Fact(STATUS_KEY, stubApp.getStatusInfo().getStatus()));
+        expectedSection.getFacts().add(new Fact(SERVICE_URL_KEY, stubApp.getServiceUrl()));
+        expectedSection.getFacts().add(new Fact(HEALTH_URL_KEY, stubApp.getHealthUrl()));
+        expectedSection.getFacts().add(new Fact(MANAGEMENT_URL_KEY, stubApp.getManagementUrl()));
+        expectedSection.getFacts().add(new Fact(MANAGEMENT_URL_KEY, stubApp.getManagementUrl()));
 
         assertEquals("Incorrect number of sections", 1, testMessage.getSections().size());
         assertEquals("Sections don't match", expectedSection, testMessage.getSections().get(0));
@@ -149,14 +150,15 @@ public class MicrosoftTeamsNotifierTest {
 
         Section expectedSection = new Section();
         expectedSection.setActivityTitle(stubApp.getName());
+        expectedSection.setActivityImage(imageUrl.toString());
         expectedSection.setActivitySubtitle(String.format(REGISTER_ACTIVITY_SUBTITLE_PATTERN,
                 stubApp.getName(),
                 stubApp.getId()));
-        expectedSection.getFacts().put(STATUS_KEY, stubApp.getStatusInfo().getStatus());
-        expectedSection.getFacts().put(SERVICE_URL_KEY, stubApp.getServiceUrl());
-        expectedSection.getFacts().put(HEALTH_URL_KEY, stubApp.getHealthUrl());
-        expectedSection.getFacts().put(MANAGEMENT_URL_KEY, stubApp.getManagementUrl());
-        expectedSection.getFacts().put(SOURCE_KEY, stubApp.getSource());
+        expectedSection.getFacts().add(new Fact(STATUS_KEY, stubApp.getStatusInfo().getStatus()));
+        expectedSection.getFacts().add(new Fact(SERVICE_URL_KEY, stubApp.getServiceUrl()));
+        expectedSection.getFacts().add(new Fact(HEALTH_URL_KEY, stubApp.getHealthUrl()));
+        expectedSection.getFacts().add(new Fact(MANAGEMENT_URL_KEY, stubApp.getManagementUrl()));
+        expectedSection.getFacts().add(new Fact(MANAGEMENT_URL_KEY, stubApp.getManagementUrl()));
 
         assertEquals("Incorrect number of sections", 1, testMessage.getSections().size());
         assertEquals("Sections don't match", expectedSection, testMessage.getSections().get(0));
@@ -171,16 +173,17 @@ public class MicrosoftTeamsNotifierTest {
 
         Section expectedSection = new Section();
         expectedSection.setActivityTitle(stubApp.getName());
+        expectedSection.setActivityImage(imageUrl.toString());
         expectedSection.setActivitySubtitle(String.format(STATUS_ACTIVITY_SUBTITLE_PATTERN,
                 stubApp.getName(),
                 stubApp.getId(),
                 StatusInfo.ofUp(),
                 StatusInfo.ofDown()));
-        expectedSection.getFacts().put(STATUS_KEY, stubApp.getStatusInfo().getStatus());
-        expectedSection.getFacts().put(SERVICE_URL_KEY, stubApp.getServiceUrl());
-        expectedSection.getFacts().put(HEALTH_URL_KEY, stubApp.getHealthUrl());
-        expectedSection.getFacts().put(MANAGEMENT_URL_KEY, stubApp.getManagementUrl());
-        expectedSection.getFacts().put(SOURCE_KEY, stubApp.getSource());
+        expectedSection.getFacts().add(new Fact(STATUS_KEY, stubApp.getStatusInfo().getStatus()));
+        expectedSection.getFacts().add(new Fact(SERVICE_URL_KEY, stubApp.getServiceUrl()));
+        expectedSection.getFacts().add(new Fact(HEALTH_URL_KEY, stubApp.getHealthUrl()));
+        expectedSection.getFacts().add(new Fact(MANAGEMENT_URL_KEY, stubApp.getManagementUrl()));
+        expectedSection.getFacts().add(new Fact(MANAGEMENT_URL_KEY, stubApp.getManagementUrl()));
 
         assertEquals("Incorrect number of sections", 1, testMessage.getSections().size());
         assertEquals("Sections don't match", expectedSection, testMessage.getSections().get(0));

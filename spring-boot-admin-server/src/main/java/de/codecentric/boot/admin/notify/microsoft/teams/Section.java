@@ -1,6 +1,8 @@
 package de.codecentric.boot.admin.notify.microsoft.teams;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -9,16 +11,9 @@ public class Section {
     private String activityTitle;
     private String activitySubtitle;
     private String activityImage;
-    private Map<String, String> facts = new HashMap<>();
+    private List<Fact> facts = new ArrayList<Fact>();
     private String text;
 
-    public Section(String activityTitle, String activitySubtitle, String activityImage, Map<String, String> facts, String text) {
-        this.activityTitle = activityTitle;
-        this.activitySubtitle = activitySubtitle;
-        this.activityImage = activityImage;
-        this.facts = facts;
-        this.text = text;
-    }
 
     public Section() {
 
@@ -49,11 +44,11 @@ public class Section {
         this.activityImage = activityImage;
     }
 
-    public Map<String, String> getFacts() {
+    public List<Fact> getFacts() {
         return facts;
     }
 
-    public void setFacts(Map<String, String> facts) {
+    public void setFacts(List<Fact> facts) {
         this.facts = facts;
     }
 
