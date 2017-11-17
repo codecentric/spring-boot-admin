@@ -30,4 +30,20 @@ public class Fact {
     public void setValue(String value) {
         this.value = value;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof  Fact)) {
+            return false;
+        }
+
+        Fact fact = (Fact)obj;
+
+        return (this.getName() == fact.getName() || (
+                this.getName() != null && this.getName().equals(fact.getName())
+                )) &&
+               (this.getValue() == fact.getValue() || (
+                        this.getValue() != null && this.getValue().equals(fact.getValue())
+                ));
+    }
 }

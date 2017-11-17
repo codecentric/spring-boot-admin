@@ -1,9 +1,7 @@
 package de.codecentric.boot.admin.notify.microsoft.teams;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class Section {

@@ -52,7 +52,7 @@ public class MicrosoftTeamsNotifierTest {
     public void test_onClientApplicationDeRegisteredEvent_resolve() throws Exception{
         ClientApplicationDeregisteredEvent deregisteredEvent = new ClientApplicationDeregisteredEvent(stubApp);
 
-        Object expected = getDeregisteredMessage(stubApp);
+        Object expected = testMTNotifier.getDeregisteredMessage(stubApp);
 
         testMTNotifier.doNotify(deregisteredEvent);
 
@@ -63,7 +63,7 @@ public class MicrosoftTeamsNotifierTest {
     public void test_onApplicationRegisteredEvent_resolve() throws Exception {
         ClientApplicationRegisteredEvent registeredEvent = new ClientApplicationRegisteredEvent(stubApp);
 
-        Object expected = getRegisteredMessage(stubApp);
+        Object expected = testMTNotifier.getRegisteredMessage(stubApp);
 
         testMTNotifier.doNotify(registeredEvent);
 
@@ -75,7 +75,7 @@ public class MicrosoftTeamsNotifierTest {
         ClientApplicationStatusChangedEvent statusChangedEvent = new ClientApplicationStatusChangedEvent(stubApp,
                 StatusInfo.ofDown(), StatusInfo.ofUp());
 
-        Object expected = getStatusChangedMessage(stubApp, StatusInfo.ofDown(), StatusInfo.ofUp());
+        Object expected = testMTNotifier.getStatusChangedMessage(stubApp, StatusInfo.ofDown(), StatusInfo.ofUp());
 
         testMTNotifier.doNotify(statusChangedEvent);
 
@@ -87,7 +87,7 @@ public class MicrosoftTeamsNotifierTest {
         ClientApplicationStatusChangedEvent statusChangedEvent = new ClientApplicationStatusChangedEvent(stubApp,
                 StatusInfo.ofUp(), StatusInfo.ofDown());
 
-        Object expected = getStatusChangedMessage(stubApp, StatusInfo.ofUp(), StatusInfo.ofDown());
+        Object expected = testMTNotifier.getStatusChangedMessage(stubApp, StatusInfo.ofUp(), StatusInfo.ofDown());
 
         testMTNotifier.doNotify(statusChangedEvent);
 
@@ -99,7 +99,7 @@ public class MicrosoftTeamsNotifierTest {
         ClientApplicationStatusChangedEvent statusChangedEvent = new ClientApplicationStatusChangedEvent(stubApp,
                 StatusInfo.ofUp(), StatusInfo.ofOffline());
 
-        Object expected = getStatusChangedMessage(stubApp, StatusInfo.ofUp(), StatusInfo.ofOffline());
+        Object expected = testMTNotifier.getStatusChangedMessage(stubApp, StatusInfo.ofUp(), StatusInfo.ofOffline());
 
         testMTNotifier.doNotify(statusChangedEvent);
 
@@ -111,7 +111,7 @@ public class MicrosoftTeamsNotifierTest {
         ClientApplicationStatusChangedEvent statusChangedEvent = new ClientApplicationStatusChangedEvent(stubApp,
                 StatusInfo.ofDown(), StatusInfo.ofOffline());
 
-        Object expected = getStatusChangedMessage(stubApp, StatusInfo.ofDown(), StatusInfo.ofOffline());
+        Object expected = testMTNotifier.getStatusChangedMessage(stubApp, StatusInfo.ofDown(), StatusInfo.ofOffline());
 
         testMTNotifier.doNotify(statusChangedEvent);
 
@@ -120,14 +120,14 @@ public class MicrosoftTeamsNotifierTest {
 
     @Test
     public void test_getDeregisteredMessageForAppReturns_correctContent() {
-        Message testMessage = getDeregisteredMessage(stubApp);
+        Message testMessage = testMTNotifier.getDeregisteredMessage(stubApp);
 
         assertEquals("Title doesn't match", DE_REGISTERED_TITLE, testMessage.getTitle());
         assertEquals("Summary doesn't match", MESSAGE_SUMMARY, testMessage.getSummary());
 
         Section expectedSection = new Section();
         expectedSection.setActivityTitle(stubApp.getName());
-        expectedSection.setActivityImage(imageUrl.toString());
+        expectedSection.setActivityImage(testMTNotifier.getImageUrl().toString());
         expectedSection.setActivitySubtitle(String.format(DEREGISTER_ACTIVITY_SUBTITLE_PATTERN,
                 stubApp.getName(),
                 stubApp.getId()));
@@ -135,7 +135,8 @@ public class MicrosoftTeamsNotifierTest {
         expectedSection.getFacts().add(new Fact(SERVICE_URL_KEY, stubApp.getServiceUrl()));
         expectedSection.getFacts().add(new Fact(HEALTH_URL_KEY, stubApp.getHealthUrl()));
         expectedSection.getFacts().add(new Fact(MANAGEMENT_URL_KEY, stubApp.getManagementUrl()));
-        expectedSection.getFacts().add(new Fact(MANAGEMENT_URL_KEY, stubApp.getManagementUrl()));
+        expectedSection.getFacts().add(new Fact(SOURCE_KEY, stubApp.getSource()));
+
 
         assertEquals("Incorrect number of sections", 1, testMessage.getSections().size());
         assertEquals("Sections don't match", expectedSection, testMessage.getSections().get(0));
@@ -143,14 +144,14 @@ public class MicrosoftTeamsNotifierTest {
 
     @Test
     public void test_getRegisteredMessageForAppReturns_correctContent() {
-        Message testMessage = getRegisteredMessage(stubApp);
+        Message testMessage = testMTNotifier.getRegisteredMessage(stubApp);
 
         assertEquals("Title doesn't match", REGISTERED_TITLE, testMessage.getTitle());
         assertEquals("Summary doesn't match", MESSAGE_SUMMARY, testMessage.getSummary());
 
         Section expectedSection = new Section();
         expectedSection.setActivityTitle(stubApp.getName());
-        expectedSection.setActivityImage(imageUrl.toString());
+        expectedSection.setActivityImage(testMTNotifier.getImageUrl().toString());
         expectedSection.setActivitySubtitle(String.format(REGISTER_ACTIVITY_SUBTITLE_PATTERN,
                 stubApp.getName(),
                 stubApp.getId()));
@@ -158,7 +159,7 @@ public class MicrosoftTeamsNotifierTest {
         expectedSection.getFacts().add(new Fact(SERVICE_URL_KEY, stubApp.getServiceUrl()));
         expectedSection.getFacts().add(new Fact(HEALTH_URL_KEY, stubApp.getHealthUrl()));
         expectedSection.getFacts().add(new Fact(MANAGEMENT_URL_KEY, stubApp.getManagementUrl()));
-        expectedSection.getFacts().add(new Fact(MANAGEMENT_URL_KEY, stubApp.getManagementUrl()));
+        expectedSection.getFacts().add(new Fact(SOURCE_KEY, stubApp.getSource()));
 
         assertEquals("Incorrect number of sections", 1, testMessage.getSections().size());
         assertEquals("Sections don't match", expectedSection, testMessage.getSections().get(0));
@@ -166,24 +167,24 @@ public class MicrosoftTeamsNotifierTest {
 
     @Test
     public void test_getStatusChangedMessageForAppReturns_correctContent() {
-        Message testMessage = getStatusChangedMessage(stubApp, StatusInfo.ofUp(), StatusInfo.ofDown());
+        Message testMessage = testMTNotifier.getStatusChangedMessage(stubApp, StatusInfo.ofUp(), StatusInfo.ofDown());
 
         assertEquals("Title doesn't match", STATUS_CHANGED_TITLE, testMessage.getTitle());
         assertEquals("Summary doesn't match", MESSAGE_SUMMARY, testMessage.getSummary());
 
         Section expectedSection = new Section();
         expectedSection.setActivityTitle(stubApp.getName());
-        expectedSection.setActivityImage(imageUrl.toString());
+        expectedSection.setActivityImage(testMTNotifier.getImageUrl().toString());
         expectedSection.setActivitySubtitle(String.format(STATUS_ACTIVITY_SUBTITLE_PATTERN,
                 stubApp.getName(),
                 stubApp.getId(),
-                StatusInfo.ofUp(),
-                StatusInfo.ofDown()));
+                StatusInfo.ofUp().getStatus(),
+                StatusInfo.ofDown().getStatus()));
         expectedSection.getFacts().add(new Fact(STATUS_KEY, stubApp.getStatusInfo().getStatus()));
         expectedSection.getFacts().add(new Fact(SERVICE_URL_KEY, stubApp.getServiceUrl()));
         expectedSection.getFacts().add(new Fact(HEALTH_URL_KEY, stubApp.getHealthUrl()));
         expectedSection.getFacts().add(new Fact(MANAGEMENT_URL_KEY, stubApp.getManagementUrl()));
-        expectedSection.getFacts().add(new Fact(MANAGEMENT_URL_KEY, stubApp.getManagementUrl()));
+        expectedSection.getFacts().add(new Fact(SOURCE_KEY, stubApp.getSource()));
 
         assertEquals("Incorrect number of sections", 1, testMessage.getSections().size());
         assertEquals("Sections don't match", expectedSection, testMessage.getSections().get(0));

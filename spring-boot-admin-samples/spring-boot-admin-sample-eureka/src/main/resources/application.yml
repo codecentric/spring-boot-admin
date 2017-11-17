@@ -4,13 +4,7 @@ spring:
   cloud:
     config:
       enabled: false
-  boot:
-    admin:
-      notify:
-        teams:
-          enabled: true
-          image-url: https://raw.githubusercontent.com/tomd8451/spring-boot-admin/master/spring-boot-admin-server-ui/core/img/platform-spring-boot.jpg
-          webhook-url: https://outlook.office.com/webhook/0b8a64d8-4f67-4c8a-8322-9fa247ab3358@5f9dc6bd-f38a-454a-864c-c803691193c5/IncomingWebhook/9b2db77e154b453eae10120bc30be808/c85a8b99-210b-49da-8fd2-20184b6b5d0b
+
 # tag::configuration-eureka[]
 eureka:  #<1>
   instance:

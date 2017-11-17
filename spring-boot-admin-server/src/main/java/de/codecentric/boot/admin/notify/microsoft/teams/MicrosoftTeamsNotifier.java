@@ -11,7 +11,6 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
-import java.util.HashMap;
 
 public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
 
@@ -42,7 +41,13 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
      *  (i.e. https://raw.githubusercontent.com/tomd8451/spring-boot-admin
      *          /master/spring-boot-admin-server-ui/core/img/platform-spring-boot.jpg)
      */
-    public static URI imageUrl;
+    private URI imageUrl = URI.create("https://raw.githubusercontent.com/tomd8451/spring-boot-admin" +
+            "/master/spring-boot-admin-server-ui/core/img/platform-spring-boot.jpg");
+
+    /**
+     * Theme Color is the color of the accent on the message that appears in Microsoft Teams. Default is Spring Green
+     */
+    private String themeColor = "6db33f";
 
     private RestTemplate restTemplate;
 
@@ -52,7 +57,7 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    public static Message getDeregisteredMessage(Application app) {
+    public Message getDeregisteredMessage(Application app) {
         Message message = getMessage(app, DE_REGISTERED_TITLE, String.format(DEREGISTER_ACTIVITY_SUBTITLE_PATTERN,
                 app.getName(),
                 app.getId()));
@@ -60,29 +65,32 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
         return message;
     }
 
-    public static Message getRegisteredMessage(Application app) {
+    public  Message getRegisteredMessage(Application app) {
         return getMessage(app, REGISTERED_TITLE, String.format(REGISTER_ACTIVITY_SUBTITLE_PATTERN,
                 app.getName(),
                 app.getId()));
     }
 
-    public static Message getStatusChangedMessage(Application app, StatusInfo from, StatusInfo to) {
+    public Message getStatusChangedMessage(Application app, StatusInfo from, StatusInfo to) {
         return getMessage(app, STATUS_CHANGED_TITLE, String.format(STATUS_ACTIVITY_SUBTITLE_PATTERN,
                 app.getName(),
                 app.getId(),
-                from,
-                to));
+                from.getStatus(),
+                to.getStatus()));
     }
 
-    private static Message getMessage(Application app, String registeredTitle, String activitySubtitle) {
+    public Message getMessage(Application app, String registeredTitle, String activitySubtitle) {
         Message message = new Message();
 
         message.setTitle(registeredTitle);
         message.setSummary(MESSAGE_SUMMARY);
+        message.setThemeColor(themeColor);
 
         Section section = new Section();
         section.setActivityTitle(app.getName());
-        section.setActivityImage(imageUrl.toString());
+        if(imageUrl != null) {
+            section.setActivityImage(imageUrl.toString());
+        }
         section.setActivitySubtitle(activitySubtitle);
         section.getFacts().add(new Fact(STATUS_KEY, app.getStatusInfo().getStatus()));
         section.getFacts().add(new Fact(SERVICE_URL_KEY, app.getServiceUrl()));
@@ -141,5 +149,13 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
     public void setWebhookUrl(URI webhookUrl) {
         this.webhookUrl = webhookUrl;
     }
+
+    public URI getImageUrl() { return imageUrl; }
+
+    public void setImageUrl(URI imageUrl) { this.imageUrl = imageUrl; }
+
+    public String getThemeColor() { return themeColor; }
+
+    public void setThemeColor(String themeColor) { this.themeColor = themeColor; }
 
 }
