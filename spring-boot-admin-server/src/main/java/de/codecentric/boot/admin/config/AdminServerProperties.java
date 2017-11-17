@@ -16,6 +16,11 @@ public class AdminServerProperties {
 
     private RoutesProperties routes = new RoutesProperties();
 
+    /**
+     * The metadata keys which should be sanitized when serializing to json
+     */
+    private String[] metadataKeysToSanitize = new String[]{".*password$", ".*secret$", ".*key$", ".*$token$", ".*credentials.*", ".*vcap_services$"};
+
     public void setContextPath(String pathPrefix) {
         if (!pathPrefix.startsWith("/") || pathPrefix.endsWith("/")) {
             throw new IllegalArgumentException("ContextPath must start with '/' and not end with '/'");
@@ -25,6 +30,14 @@ public class AdminServerProperties {
 
     public String getContextPath() {
         return contextPath;
+    }
+
+    public String[] getMetadataKeysToSanitize() {
+        return metadataKeysToSanitize;
+    }
+
+    public void setMetadataKeysToSanitize(String[] metadataKeysToSanitize) {
+        this.metadataKeysToSanitize = metadataKeysToSanitize;
     }
 
     public MonitorProperties getMonitor() {

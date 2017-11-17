@@ -70,9 +70,9 @@ public class ApplicationRegistrator {
 
                 if (response.getStatusCode().equals(HttpStatus.CREATED)) {
                     if (registeredId.compareAndSet(null, response.getBody().get("id").toString())) {
-                        LOGGER.info("Application registered itself as {}", response.getBody());
+                        LOGGER.info("Application registered itself as {}", response.getBody().get("id").toString());
                     } else {
-                        LOGGER.debug("Application refreshed itself as {}", response.getBody());
+                        LOGGER.debug("Application refreshed itself as {}", response.getBody().get("id").toString());
                     }
 
                     isRegistrationSuccessful = true;

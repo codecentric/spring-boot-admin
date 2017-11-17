@@ -27,7 +27,12 @@
 
 | spring.boot.admin.routes.endpoints
 | The enpoints which will be available via spring boot admin zuul proxy. If you write ui modules using other endpoints you need to add them.
-| `"env, metrics, trace, dump, jolokia, info, configprops, activiti, logfile, refresh, flyway, liquibase, loggers"`
+| `"env", "metrics", "trace", "dump", "jolokia", "info", "configprops", "activiti", "logfile", "refresh", "flyway", "liquibase", "loggers"`
+
+| spring.boot.admin.metadata-keys-to-sanitize
+| Metadata values for the keys matching these regex patterns will be sanitized in all json output.
+| `".*password$", ".*secret$", ".*key$", ".*$token$", ".*credentials.*", ".*vcap_services$"`
+
 |===
 
 include::server-discovery.adoc[]

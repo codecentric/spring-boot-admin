@@ -1,6 +1,6 @@
 {
   "name": "spring-boot-admin-server-ui-turbine",
-  "version": "1.5.5",
+  "version": "1.5.6",
   "scripts": {
     "build": "npm run build:js",
     "build:js": "webpack -p",
