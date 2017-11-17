@@ -5,17 +5,12 @@ public class Fact {
     private String name;
     private String value;
 
-    public Fact() {
-    }
-
     public Fact(String name, String value) {
-
         this.name = name;
         this.value = value;
     }
 
     public String getName() {
-
         return name;
     }
 
@@ -45,5 +40,10 @@ public class Fact {
                (this.getValue() == fact.getValue() || (
                         this.getValue() != null && this.getValue().equals(fact.getValue())
                 ));
+    }
+
+    @Override
+    public int hashCode() {
+        return getValue().hashCode() + getName().hashCode();
     }
 }

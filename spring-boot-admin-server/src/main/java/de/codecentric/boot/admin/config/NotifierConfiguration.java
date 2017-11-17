@@ -15,7 +15,15 @@
  */
 package de.codecentric.boot.admin.config;
 
-import de.codecentric.boot.admin.notify.*;
+import de.codecentric.boot.admin.notify.CompositeNotifier;
+import de.codecentric.boot.admin.notify.HipchatNotifier;
+import de.codecentric.boot.admin.notify.LetsChatNotifier;
+import de.codecentric.boot.admin.notify.MailNotifier;
+import de.codecentric.boot.admin.notify.Notifier;
+import de.codecentric.boot.admin.notify.NotifierListener;
+import de.codecentric.boot.admin.notify.OpsGenieNotifier;
+import de.codecentric.boot.admin.notify.PagerdutyNotifier;
+import de.codecentric.boot.admin.notify.SlackNotifier;
 import de.codecentric.boot.admin.notify.filter.FilteringNotifier;
 import de.codecentric.boot.admin.notify.filter.web.NotificationFilterController;
 import de.codecentric.boot.admin.notify.microsoft.teams.MicrosoftTeamsNotifier;
@@ -23,7 +31,11 @@ import de.codecentric.boot.admin.web.PrefixHandlerMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.condition.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;

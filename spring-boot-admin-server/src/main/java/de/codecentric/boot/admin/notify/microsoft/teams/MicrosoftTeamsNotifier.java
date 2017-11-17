@@ -119,9 +119,9 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
 
         } else {
             ClientApplicationStatusChangedEvent statusChangedEvent = (ClientApplicationStatusChangedEvent)event;
-            Message statusChangeMessage = getStatusChangedMessage(event.getApplication(),
-                    ((ClientApplicationStatusChangedEvent) event).getFrom(),
-                    ((ClientApplicationStatusChangedEvent) event).getTo());
+            Message statusChangeMessage = getStatusChangedMessage(statusChangedEvent.getApplication(),
+                    statusChangedEvent.getFrom(),
+                    statusChangedEvent.getTo());
 
             this.restTemplate.postForObject(webhookUrl, statusChangeMessage, Object.class);
         }

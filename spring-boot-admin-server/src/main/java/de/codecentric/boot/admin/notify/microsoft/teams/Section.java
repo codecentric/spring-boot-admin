@@ -12,13 +12,7 @@ public class Section {
     private List<Fact> facts = new ArrayList<Fact>();
     private String text;
 
-
-    public Section() {
-
-    }
-
     public String getActivityTitle() {
-
         return activityTitle;
     }
 
@@ -77,6 +71,11 @@ public class Section {
                                 && this.getActivityTitle().equals(section.getActivityTitle())
                 ))
                 && this.getFacts().equals(section.getFacts());
+    }
+
+    @Override
+    public int hashCode() {
+        return (getActivitySubtitle() + getActivityImage() + getActivityTitle()).hashCode() + getFacts().hashCode();
     }
 
 }

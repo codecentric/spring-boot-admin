@@ -11,18 +11,6 @@ public class Message {
     private String title;
     private List<Section> sections = new ArrayList<>();
 
-    public Message(String summary, String themeColor, String title, List<Section> sections) {
-
-        this.summary = summary;
-        this.themeColor = themeColor;
-        this.title = title;
-        this.sections = sections;
-    }
-
-    public Message() {
-
-    }
-
     public String getSummary() {
         return summary;
     }
@@ -73,5 +61,10 @@ public class Message {
                     this.getTitle() != null && this.getTitle().equals(message.getTitle())
                 )) &&
                 this.getSections().equals(message.getSections());
+    }
+
+    @Override
+    public int hashCode() {
+        return (getSummary() + getThemeColor() + getTitle()).hashCode() + getSections().hashCode();
     }
 }
