@@ -4,6 +4,10 @@ server:
 spring:
   application:
     name: spring-boot-admin-server-test
+  # FIXME: Remove when Spring Boot team fixes RefreshAutoConfiguration; updating Endpoint reference
+  autoconfigure:
+    exclude:
+    - org.springframework.cloud.autoconfigure.LifecycleMvcEndpointAutoConfiguration
     
 info:
   version: 1.0.0

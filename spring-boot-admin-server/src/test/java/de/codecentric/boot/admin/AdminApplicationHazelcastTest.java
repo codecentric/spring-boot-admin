@@ -29,7 +29,6 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -53,7 +52,6 @@ import de.codecentric.boot.admin.config.EnableAdminServer;
  *
  * @author Dennis Schulte
  */
-@Ignore
 public class AdminApplicationHazelcastTest {
 	private TestRestTemplate template = new TestRestTemplate();
 	private ServletWebServerApplicationContext instance1;
