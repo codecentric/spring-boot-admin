@@ -29,11 +29,9 @@ public class MicrosoftTeamsNotifierTest {
     private static final String managementUrl = "http://management";
     private static final String serviceUrl = "http://service";
 
-
     private MicrosoftTeamsNotifier testMTNotifier;
-
     private RestTemplate mockRestTemplate;
-    private static Application stubApp;
+    private Application stubApp;
 
     @Before
     public void setUp() throws Exception {
@@ -60,8 +58,6 @@ public class MicrosoftTeamsNotifierTest {
 
         verify(mockRestTemplate).postForObject(any(URI.class), eq(expected), eq(Object.class));
     }
-
-
 
     @Test
     public void test_onApplicationRegisteredEvent_resolve() throws Exception {

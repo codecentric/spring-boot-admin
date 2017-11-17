@@ -18,15 +18,12 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
     public static final String DE_REGISTERED_TITLE = "De-Registered";
     public static final String REGISTERED_TITLE = "Registered";
     public static final String STATUS_CHANGED_TITLE = "Status Changed";
-
     public static final String MESSAGE_SUMMARY = "Spring Boot Admin Notification";
-
     public static final String DEREGISTER_ACTIVITY_SUBTITLE_PATTERN = "%s with id %s has de-registered" +
             " from Spring Boot Admin";
     public static final String REGISTER_ACTIVITY_SUBTITLE_PATTERN = "%s with id %s has registered" +
             " from Spring Boot Admin";
     public static final String STATUS_ACTIVITY_SUBTITLE_PATTERN = "%s with id %s changed status from %s to %s";
-
     public static final String STATUS_KEY = "Status";
     public static final String SERVICE_URL_KEY = "Service URL";
     public static final String HEALTH_URL_KEY = "Health URL";
@@ -45,37 +42,6 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
         // Initialize the restTemplate using builder to allow for customization
         RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder();
         this.restTemplate = restTemplateBuilder.build();
-    }
-
-    @Override
-    protected void doNotify(ClientApplicationEvent event) throws Exception {
-        if(event instanceof ClientApplicationRegisteredEvent) {
-            ClientApplicationRegisteredEvent registeredEvent = (ClientApplicationRegisteredEvent)event;
-            Message registeredMessage = getRegisteredMessage(registeredEvent.getApplication());
-
-            this.restTemplate.postForObject(webhookUrl, registeredMessage, Object.class);
-
-        } else if (event instanceof ClientApplicationDeregisteredEvent) {
-            ClientApplicationDeregisteredEvent deregisteredEvent = (ClientApplicationDeregisteredEvent)event;
-            Message deRegisteredMessage = getDeregisteredMessage(deregisteredEvent.getApplication());
-
-            this.restTemplate.postForObject(webhookUrl, deRegisteredMessage, Object.class);
-
-        } else {
-            ClientApplicationStatusChangedEvent statusChangedEvent = (ClientApplicationStatusChangedEvent)event;
-            Message statusChangeMessage = getStatusChangedMessage(event.getApplication(),
-                    ((ClientApplicationStatusChangedEvent) event).getFrom(),
-                    ((ClientApplicationStatusChangedEvent) event).getTo());
-
-            this.restTemplate.postForObject(webhookUrl, statusChangeMessage, Object.class);
-        }
-    }
-
-    @Override
-    protected boolean shouldNotify(ClientApplicationEvent event) {
-        return event instanceof ClientApplicationRegisteredEvent ||
-                event instanceof  ClientApplicationDeregisteredEvent ||
-                event instanceof  ClientApplicationStatusChangedEvent;
     }
 
     public static Message getDeregisteredMessage(Application app) {
@@ -121,6 +87,37 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
         return message;
     }
 
+    @Override
+    protected void doNotify(ClientApplicationEvent event) throws Exception {
+        if(event instanceof ClientApplicationRegisteredEvent) {
+            ClientApplicationRegisteredEvent registeredEvent = (ClientApplicationRegisteredEvent)event;
+            Message registeredMessage = getRegisteredMessage(registeredEvent.getApplication());
+
+            this.restTemplate.postForObject(webhookUrl, registeredMessage, Object.class);
+
+        } else if (event instanceof ClientApplicationDeregisteredEvent) {
+            ClientApplicationDeregisteredEvent deregisteredEvent = (ClientApplicationDeregisteredEvent)event;
+            Message deRegisteredMessage = getDeregisteredMessage(deregisteredEvent.getApplication());
+
+            this.restTemplate.postForObject(webhookUrl, deRegisteredMessage, Object.class);
+
+        } else {
+            ClientApplicationStatusChangedEvent statusChangedEvent = (ClientApplicationStatusChangedEvent)event;
+            Message statusChangeMessage = getStatusChangedMessage(event.getApplication(),
+                    ((ClientApplicationStatusChangedEvent) event).getFrom(),
+                    ((ClientApplicationStatusChangedEvent) event).getTo());
+
+            this.restTemplate.postForObject(webhookUrl, statusChangeMessage, Object.class);
+        }
+    }
+
+    @Override
+    protected boolean shouldNotify(ClientApplicationEvent event) {
+        return event instanceof ClientApplicationRegisteredEvent ||
+                event instanceof  ClientApplicationDeregisteredEvent ||
+                event instanceof  ClientApplicationStatusChangedEvent;
+    }
+
     public RestTemplate getRestTemplate() {
         return restTemplate;
     }
@@ -136,7 +133,5 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
     public void setWebhookUrl(URI webhookUrl) {
         this.webhookUrl = webhookUrl;
     }
-
-
 
 }
