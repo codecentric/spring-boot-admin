@@ -23,7 +23,7 @@ public class AdminProperties {
 	/**
 	 * The admin server urls to register at
 	 */
-	private String[] url;
+	private String[] url = {};
 
 	/**
 	 * The admin rest-apis path.

@@ -9,8 +9,8 @@ import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration.RestTemplateConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration;
@@ -91,8 +91,8 @@ public class DiscoveryClientConfigurationTest {
         }
 
         applicationContext.register(PropertyPlaceholderAutoConfiguration.class);
-        applicationContext.register(RestTemplateConfiguration.class);
-        applicationContext.register(ServerPropertiesAutoConfiguration.class);
+        applicationContext.register(DispatcherServletAutoConfiguration.class);
+        applicationContext.register(RestTemplateAutoConfiguration.class);
         applicationContext.register(AdminServerCoreConfiguration.class);
         applicationContext.register(AdminServerWebConfiguration.class);
         applicationContext.register(UtilAutoConfiguration.class);

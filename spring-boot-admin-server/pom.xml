@@ -4,7 +4,7 @@
     <parent>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin</artifactId>
-        <version>1.5.5-SNAPSHOT</version>
+        <version>2.0.0-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
     <artifactId>spring-boot-admin-server</artifactId>
@@ -32,7 +32,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-netflix-core</artifactId>
+            <artifactId>spring-cloud-netflix-zuul</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -61,7 +61,7 @@
         <!-- Optional Eureka Discovery Client -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-eureka</artifactId>
+            <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
             <optional>true</optional>
         </dependency>
         <!-- Optional Hazelcast-Support -->

@@ -9,9 +9,9 @@ import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.embedded.Ssl;
+import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.web.MockServletContext;
@@ -90,7 +90,7 @@ public class DefaultApplicationFactoryTest {
 
     @Test
     public void test_servletPath() {
-        server.setServletPath("app");
+        server.getServlet().setPath("app");
         servletContext.setContextPath("srv");
         publishApplicationReadyEvent(factory, 80, null);
 
@@ -194,7 +194,7 @@ public class DefaultApplicationFactoryTest {
     public void test_service_baseUrl() {
         client.setServiceBaseUrl("http://service:80");
         servletContext.setContextPath("/srv");
-        server.setServletPath("/app");
+        server.getServlet().setPath("app");
         management.setContextPath("/admin");
 
         Application app = factory.createApplication();

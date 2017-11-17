@@ -21,11 +21,13 @@ import de.codecentric.boot.admin.web.client.HttpHeadersProvider;
 import de.codecentric.boot.admin.zuul.ApplicationRouteLocator;
 import de.codecentric.boot.admin.zuul.filters.pre.ApplicationHeadersFilter;
 
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.cloud.commons.httpclient.DefaultApacheHttpClientConnectionManagerFactory;
+import org.springframework.cloud.commons.httpclient.DefaultApacheHttpClientFactory;
 import org.springframework.cloud.netflix.zuul.RoutesEndpoint;
 import org.springframework.cloud.netflix.zuul.ZuulServerAutoConfiguration;
 import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
@@ -43,7 +45,7 @@ import org.springframework.core.annotation.Order;
 
 @Configuration
 @AutoConfigureAfter({AdminServerWebConfiguration.class})
-public class RevereseZuulProxyConfiguration extends ZuulServerAutoConfiguration {
+public class ReverseZuulProxyConfiguration extends ZuulServerAutoConfiguration {
 
     @Autowired(required = false)
     private TraceRepository traces;
@@ -57,7 +59,7 @@ public class RevereseZuulProxyConfiguration extends ZuulServerAutoConfiguration 
     @Bean
     @Order(0)
     public ApplicationRouteLocator applicationRouteLocator() {
-        ApplicationRouteLocator routeLocator = new ApplicationRouteLocator(this.server.getServletPrefix(), registry,
+        ApplicationRouteLocator routeLocator = new ApplicationRouteLocator(this.server.getServlet().getServletPrefix(), registry,
                 adminServer.getContextPath() + "/api/applications/");
         routeLocator.setEndpoints(adminServer.getRoutes().getEndpoints());
         return routeLocator;
@@ -77,7 +79,7 @@ public class RevereseZuulProxyConfiguration extends ZuulServerAutoConfiguration 
     // pre filters
     @Bean
     public PreDecorationFilter preDecorationFilter(RouteLocator routeLocator) {
-        return new PreDecorationFilter(routeLocator, this.server.getServletPrefix(), zuulProperties,
+        return new PreDecorationFilter(routeLocator, this.server.getServlet().getServletPrefix(), zuulProperties,
                 proxyRequestHelper());
     }
 
@@ -89,7 +91,9 @@ public class RevereseZuulProxyConfiguration extends ZuulServerAutoConfiguration 
 
     @Bean
     public SimpleHostRoutingFilter simpleHostRoutingFilter() {
-        return new SimpleHostRoutingFilter(proxyRequestHelper(), zuulProperties);
+        DefaultApacheHttpClientConnectionManagerFactory connectionFactory = new DefaultApacheHttpClientConnectionManagerFactory();
+        DefaultApacheHttpClientFactory clientFactory = new DefaultApacheHttpClientFactory();
+        return new SimpleHostRoutingFilter(proxyRequestHelper(), zuulProperties, connectionFactory, clientFactory);
     }
 
     @Bean
@@ -99,7 +103,7 @@ public class RevereseZuulProxyConfiguration extends ZuulServerAutoConfiguration 
     }
 
     @Configuration
-    @ConditionalOnClass(Endpoint.class)
+    @ConditionalOnClass(RoutesEndpoint.class)
     protected static class RoutesEndpointConfiguration {
         @Bean
         public RoutesEndpoint zuulEndpoint(RouteLocator routeLocator) {

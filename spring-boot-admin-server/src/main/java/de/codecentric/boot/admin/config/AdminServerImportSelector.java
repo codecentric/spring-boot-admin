@@ -33,7 +33,7 @@ public class AdminServerImportSelector implements DeferredImportSelector {
 				AdminServerCoreConfiguration.class.getCanonicalName(),
 				AdminServerWebConfiguration.class.getCanonicalName(),
 				DiscoveryClientConfiguration.class.getCanonicalName(),
-				RevereseZuulProxyConfiguration.class.getCanonicalName() };
+				ReverseZuulProxyConfiguration.class.getCanonicalName() };
 	}
 
 }

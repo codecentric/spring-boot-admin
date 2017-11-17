@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,6 +42,7 @@ import de.codecentric.boot.admin.config.EnableAdminServer;
  *
  * @author Dennis Schulte
  */
+@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestAdminApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
 		"spring.cloud.config.enabled=false" })

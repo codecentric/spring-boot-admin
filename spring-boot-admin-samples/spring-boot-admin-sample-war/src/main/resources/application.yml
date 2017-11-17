@@ -2,6 +2,10 @@ info:
   stage: test
 
 spring:
+  # FIXME: Remove when Spring Boot team fixes RefreshAutoConfiguration; updating Endpoint reference
+  autoconfigure:
+    exclude:
+    - org.springframework.cloud.autoconfigure.LifecycleMvcEndpointAutoConfiguration
   application:
     name: spring-boot-admin-sample-war
   boot:
@@ -12,5 +16,6 @@ spring:
       enabled: false
 
 endpoints:
-  health:
-    sensitive: false
+  default:
+    web:
+      enabled: true

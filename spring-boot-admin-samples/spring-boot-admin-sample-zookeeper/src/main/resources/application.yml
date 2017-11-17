@@ -8,9 +8,7 @@ spring:
       connect-string: localhost:2181
       discovery:
         metadata:
-          management.context-path: /foo
-          health.path: /ping
+          management.context-path: /zk-admin
+          health.path: /health
 
-management.context-path: /foo
-endpoints.health.path: /ping
-
+management.context-path: /zk-admin

@@ -6,9 +6,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
 import javax.servlet.ServletContext;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.embedded.Ssl;
+import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.util.StringUtils;
@@ -92,7 +92,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
         if (!StringUtils.isEmpty(baseUrl)) {
             builder = UriComponentsBuilder.fromUriString(baseUrl);
         } else if (isManagementPortEqual()) {
-            builder = UriComponentsBuilder.fromHttpUrl(getServiceUrl()).path("/").path(server.getServletPrefix());
+            builder = UriComponentsBuilder.fromHttpUrl(getServiceUrl()).path("/").path(server.getServlet().getServletPrefix());
         } else {
             Ssl ssl = management.getSsl() != null ? management.getSsl() : server.getSsl();
             builder = UriComponentsBuilder.newInstance()

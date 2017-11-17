@@ -2,14 +2,14 @@ package spring.boot.admin.turbine.config;
 
 import de.codecentric.boot.admin.config.AdminServerCoreConfiguration;
 import de.codecentric.boot.admin.config.AdminServerWebConfiguration;
-import de.codecentric.boot.admin.config.RevereseZuulProxyConfiguration;
+import de.codecentric.boot.admin.config.ReverseZuulProxyConfiguration;
 import spring.boot.admin.turbine.web.TurbineController;
 
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration.RestTemplateConfiguration;
+import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration;
 import org.springframework.cloud.commons.util.UtilAutoConfiguration;
@@ -46,13 +46,13 @@ public class TurbineAutoConfigurationTest {
     private void load(String... environment) {
         AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
         applicationContext.register(PropertyPlaceholderAutoConfiguration.class);
-        applicationContext.register(RestTemplateConfiguration.class);
-        applicationContext.register(ServerPropertiesAutoConfiguration.class);
+        applicationContext.register(DispatcherServletAutoConfiguration.class);
+        applicationContext.register(RestTemplateAutoConfiguration.class);
         applicationContext.register(UtilAutoConfiguration.class);
         applicationContext.register(SimpleDiscoveryClientAutoConfiguration.class);
         applicationContext.register(AdminServerCoreConfiguration.class);
         applicationContext.register(AdminServerWebConfiguration.class);
-        applicationContext.register(RevereseZuulProxyConfiguration.class);
+        applicationContext.register(ReverseZuulProxyConfiguration.class);
         applicationContext.register(TurbineAutoConfiguration.class);
 
         EnvironmentTestUtils.addEnvironment(applicationContext, environment);

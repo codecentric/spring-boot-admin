@@ -17,7 +17,6 @@ package de.codecentric.boot.admin.client.config;
 
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -56,13 +55,10 @@ public class SpringBootAdminClientEnabledCondition extends SpringBootCondition {
 	}
 
 	private boolean isEnabled(Environment env) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(env,
-				"spring.boot.admin.client.");
-		return resolver.getProperty("enabled", Boolean.class, Boolean.TRUE);
+		return env.getProperty("spring.boot.admin.client.enabled", Boolean.class, Boolean.TRUE);
 	}
 
 	private boolean isUrlEmpty(Environment env) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(env, "spring.boot.admin.");
-		return StringUtils.isEmpty(resolver.getProperty("url", ""));
+		return StringUtils.isEmpty(env.getProperty("spring.boot.admin.url", ""));
 	}
 }

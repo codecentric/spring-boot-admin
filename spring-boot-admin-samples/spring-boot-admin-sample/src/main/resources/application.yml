@@ -20,6 +20,10 @@ spring:
     active:
       - secure
 
+  # FIXME: Remove when Spring Boot team fixes RefreshAutoConfiguration; updating Endpoint reference
+  autoconfigure:
+    exclude:
+    - org.springframework.cloud.autoconfigure.LifecycleMvcEndpointAutoConfiguration
 ---
 spring:
   profiles: insecure
@@ -28,9 +32,10 @@ management:
   security:
     enabled: false
 
-security:
-  basic:
-    enabled: false
+endpoints:
+  default:
+    web:
+      enabled: true
 
 ---
 spring:

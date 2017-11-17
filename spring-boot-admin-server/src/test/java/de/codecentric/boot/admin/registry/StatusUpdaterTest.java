@@ -17,10 +17,9 @@ package de.codecentric.boot.admin.registry;
 
 import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -75,7 +74,7 @@ public class StatusUpdaterTest {
 		assertThat((Map<String, ? extends Serializable>) app.getInfo().getValues(),
 				hasEntry("foo", (Serializable) "bar"));
 		verify(publisher)
-				.publishEvent(argThat(CoreMatchers.isA(ClientApplicationStatusChangedEvent.class)));
+				.publishEvent(isA(ClientApplicationStatusChangedEvent.class));
 	}
 
 	@Test
@@ -87,7 +86,7 @@ public class StatusUpdaterTest {
 				Application.create("foo").withId("id").withHealthUrl("health").build());
 
 		verify(publisher, never())
-				.publishEvent(argThat(CoreMatchers.isA(ClientApplicationStatusChangedEvent.class)));
+				.publishEvent(isA(ClientApplicationStatusChangedEvent.class));
 		verify(applicationOps, never()).getInfo(isA(Application.class));
 	}
 

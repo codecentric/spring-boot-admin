@@ -11,7 +11,6 @@ import java.util.concurrent.ScheduledFuture;
 
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.scheduling.TaskScheduler;
@@ -68,7 +67,7 @@ public class RegistrationApplicationListenerTest {
 
 		verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(10_000L));
 
-		listener.onClosedContext(new ContextClosedEvent(mock(EmbeddedWebApplicationContext.class)));
+		listener.onClosedContext(new ContextClosedEvent(mock(ConfigurableWebApplicationContext.class)));
 		verify(task).cancel(true);
 	}
 
@@ -97,7 +96,7 @@ public class RegistrationApplicationListenerTest {
 		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator,
 				scheduler);
 
-		listener.onClosedContext(new ContextClosedEvent(mock(EmbeddedWebApplicationContext.class)));
+		listener.onClosedContext(new ContextClosedEvent(mock(ConfigurableWebApplicationContext.class)));
 
 		verify(registrator, never()).deregister();
 	}
@@ -110,7 +109,7 @@ public class RegistrationApplicationListenerTest {
 				scheduler);
 		listener.setAutoDeregister(true);
 
-		listener.onClosedContext(new ContextClosedEvent(mock(EmbeddedWebApplicationContext.class)));
+		listener.onClosedContext(new ContextClosedEvent(mock(ConfigurableWebApplicationContext.class)));
 
 		verify(registrator).deregister();
 	}

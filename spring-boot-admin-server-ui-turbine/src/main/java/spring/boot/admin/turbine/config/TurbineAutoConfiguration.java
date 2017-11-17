@@ -29,7 +29,7 @@ import org.springframework.core.annotation.Order;
 
 import de.codecentric.boot.admin.config.AdminServerProperties;
 import de.codecentric.boot.admin.config.AdminServerWebConfiguration;
-import de.codecentric.boot.admin.config.RevereseZuulProxyConfiguration;
+import de.codecentric.boot.admin.config.ReverseZuulProxyConfiguration;
 import spring.boot.admin.turbine.web.TurbineController;
 import spring.boot.admin.turbine.zuul.filters.TurbineRouteLocator;
 
@@ -40,7 +40,7 @@ import spring.boot.admin.turbine.zuul.filters.TurbineRouteLocator;
  */
 @Configuration
 @EnableConfigurationProperties(TurbineProperties.class)
-@AutoConfigureBefore({ AdminServerWebConfiguration.class, RevereseZuulProxyConfiguration.class })
+@AutoConfigureBefore({ AdminServerWebConfiguration.class, ReverseZuulProxyConfiguration.class })
 @ConditionalOnProperty(value = "spring.boot.admin.turbine.enabled", matchIfMissing = true)
 public class TurbineAutoConfiguration {
 
@@ -64,7 +64,7 @@ public class TurbineAutoConfiguration {
 			DiscoveryClient discovery) {
 		ZuulRoute turbineRoute = new ZuulRoute(admin.getContextPath() + "/api/turbine/stream/**",
 				properties.getLocation());
-		return new TurbineRouteLocator(turbineRoute, server.getServletPrefix(), zuulProperties,
+		return new TurbineRouteLocator(turbineRoute, server.getServlet().getServletPrefix(), zuulProperties,
 				discovery);
 	}
 
