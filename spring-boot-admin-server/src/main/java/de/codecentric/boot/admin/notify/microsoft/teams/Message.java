@@ -39,10 +39,6 @@ public class Message {
         return sections;
     }
 
-    public void setSections(List<Section> sections) {
-        this.sections = sections;
-    }
-
     @Override
     public boolean equals(Object obj) {
         if(!(obj instanceof Message)){

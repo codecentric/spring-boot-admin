@@ -15,24 +15,12 @@
  */
 package de.codecentric.boot.admin.config;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import de.codecentric.boot.admin.notify.CompositeNotifier;
-import de.codecentric.boot.admin.notify.HipchatNotifier;
-import de.codecentric.boot.admin.notify.MailNotifier;
-import de.codecentric.boot.admin.notify.Notifier;
-import de.codecentric.boot.admin.notify.NotifierListener;
-import de.codecentric.boot.admin.notify.OpsGenieNotifier;
-import de.codecentric.boot.admin.notify.PagerdutyNotifier;
-import de.codecentric.boot.admin.notify.SlackNotifier;
+import de.codecentric.boot.admin.event.ClientApplicationEvent;
+import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
+import de.codecentric.boot.admin.model.Application;
+import de.codecentric.boot.admin.model.StatusInfo;
+import de.codecentric.boot.admin.notify.*;
+import de.codecentric.boot.admin.notify.microsoft.teams.MicrosoftTeamsNotifier;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
@@ -41,10 +29,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import de.codecentric.boot.admin.event.ClientApplicationEvent;
-import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
-import de.codecentric.boot.admin.model.Application;
-import de.codecentric.boot.admin.model.StatusInfo;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThat;
 
 public class NotifierConfigurationTest {
 	private static final ClientApplicationEvent APP_DOWN = new ClientApplicationStatusChangedEvent(
@@ -104,6 +97,12 @@ public class NotifierConfigurationTest {
 	public void test_slack() {
 		load(null, "spring.boot.admin.notify.slack.webhook-url:http://example.com");
 		assertThat(context.getBean(SlackNotifier.class), is(instanceOf(SlackNotifier.class)));
+	}
+
+	@Test
+	public void test_teams() {
+		load(null,"spring.boot.admin.notify.teams.webhook-url:http://example.com");
+		assertThat(context.getBean(MicrosoftTeamsNotifier.class), is(instanceOf(MicrosoftTeamsNotifier.class)));
 	}
 
 	@Test
