@@ -94,8 +94,9 @@ public class AdminServerProperties {
         /**
          * Endpoints to be proxified by spring boot admin.
          */
-        private String[] endpoints = {"env", "metrics", "trace", "dump", "jolokia", "info", "logfile", "refresh", "flyway", "liquibase", "heapdump", "loggers", "auditevents"};
-
+        //@see https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.0.0-M1-Release-Notes#actuator-default-mapping
+        private String[] endpoints = {"application/env", "application/metrics", "application/trace", "application/dump", "application/jolokia", "application/info", "application/logfile", "application/refresh", "application/flyway", "application/liquibase", "application/heapdump", "application/loggers", "application/auditevents"};
+        
         public String[] getEndpoints() {
             return endpoints;
         }

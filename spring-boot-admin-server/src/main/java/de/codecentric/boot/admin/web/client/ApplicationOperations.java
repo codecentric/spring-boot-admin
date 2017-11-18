@@ -42,6 +42,7 @@ public class ApplicationOperations {
     private static final Class<Map<String, Serializable>> RESPONSE_TYPE_MAP = (Class<Map<String, Serializable>>) (Class<?>) Map.class;
     private final RestTemplate restTemplate;
     private final HttpHeadersProvider httpHeadersProvider;
+    private String infoEndpointPath = "application/info";
 
     public ApplicationOperations(RestTemplate restTemplate, HttpHeadersProvider httpHeadersProvider) {
         this.restTemplate = restTemplate;
@@ -49,7 +50,7 @@ public class ApplicationOperations {
     }
 
     public ResponseEntity<Map<String, Serializable>> getInfo(Application application) {
-        URI uri = UriComponentsBuilder.fromHttpUrl(application.getManagementUrl()).pathSegment("info").build().toUri();
+        URI uri = UriComponentsBuilder.fromHttpUrl(application.getManagementUrl()).pathSegment(infoEndpointPath).build().toUri();
         return doGet(application, uri, RESPONSE_TYPE_MAP);
     }
 

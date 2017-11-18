@@ -63,7 +63,7 @@ public class SpringBootAdminClientAutoConfiguration {
     public ApplicationFactory applicationFactory(AdminClientProperties client,
                                                  ManagementServerProperties management,
                                                  ServerProperties server,
-                                                 @Value("${endpoints.health.path:/${endpoints.health.id:health}}") String healthEndpointPath,
+                                                 @Value("${endpoints.health.path:/${endpoints.health.id:application/health}}") String healthEndpointPath,
                                                  ServletContext servletContext) {
         return new DefaultApplicationFactory(client, management, server, servletContext, healthEndpointPath);
     }

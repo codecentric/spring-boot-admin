@@ -51,7 +51,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
     /**
      * Default path of the health-endpoint to be used for the health-url of the discovered service.
      */
-    private String healthEndpointPath = "health";
+    private String healthEndpointPath = "application/health";
 
     @Override
     public Application convert(ServiceInstance instance) {

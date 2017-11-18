@@ -1,4 +1,3 @@
----
 info:
   scm-url: "@scm.url@"
   build-url: "http://travis-ci.org/@env.TRAVIS_REPO_SLUG@/builds/@env.TRAVIS_BUILD_ID@"
@@ -24,34 +23,27 @@ spring:
   autoconfigure:
     exclude:
     - org.springframework.cloud.autoconfigure.LifecycleMvcEndpointAutoConfiguration
----
-spring:
-  profiles: insecure
-
-management:
-  security:
-    enabled: false
 
 endpoints:
   default:
     web:
       enabled: true
-
+         
 ---
 spring:
   profiles: secure
   boot:
     admin:
-      username: "${security.user.name}"       #These two are needed so that the client
-      password: "${security.user.password}"   #can register at the protected server api
+      username: "${user.default.name}"       #These two are needed so that the client
+      password: "${user.default.password}"   #can register at the protected server api
       client:
         metadata:
-          user.name: "${security.user.name}"          #These two are needed so that the server
-          user.password:  "${security.user.password}" #can access the proteceted client endpoints
+          user.name: "${user.default.name}"          #These two are needed so that the server
+          user.password:  "${user.default.password}" #can access the protected client endpoints
 
-security:
-  user:
-    name: user
-    password: pass
-
-
+# @see https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-Security-2.0#changing-the-username-and-password
+#
+user:
+  default:
+    name: admin
+    password: admin
