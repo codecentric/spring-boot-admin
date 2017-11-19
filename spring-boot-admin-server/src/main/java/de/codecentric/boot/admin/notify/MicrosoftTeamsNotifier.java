@@ -1,5 +1,6 @@
 package de.codecentric.boot.admin.notify;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.codecentric.boot.admin.event.ClientApplicationDeregisteredEvent;
 import de.codecentric.boot.admin.event.ClientApplicationEvent;
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
@@ -176,10 +177,6 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
         this.restTemplate = restTemplate;
     }
 
-    public URI getWebhookUrl() {
-        return webhookUrl;
-    }
-
     public void setWebhookUrl(URI webhookUrl) {
         this.webhookUrl = webhookUrl;
     }
@@ -190,10 +187,6 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
 
     public void setImageUrl(URI imageUrl) {
         this.imageUrl = imageUrl;
-    }
-
-    public String getThemeColor() {
-        return themeColor;
     }
 
     public void setThemeColor(String themeColor) {
@@ -257,6 +250,7 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
     }
 
 
+    @JsonSerialize
     class Message {
 
         private String summary;
@@ -276,6 +270,14 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
             return title;
         }
 
+        public String getThemeColor() {
+            return themeColor;
+        }
+
+        public void setSections(List<Section> sections) {
+            this.sections = sections;
+        }
+
         public void setTitle(String title) {
             this.title = title;
         }
@@ -290,6 +292,7 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
 
     }
 
+    @JsonSerialize
     class Section {
 
         private String activityTitle;
@@ -314,6 +317,18 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
             this.activitySubtitle = activitySubtitle;
         }
 
+        public void setFacts(List<Fact> facts) {
+            this.facts = facts;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public void setText(String text) {
+            this.text = text;
+        }
+
         public String getActivityImage() {
             return activityImage;
         }
@@ -327,10 +342,27 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
         }
     }
 
+    @JsonSerialize
     class Fact {
 
         private String name;
         private String value;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
 
         public Fact(String name, String value) {
             this.name = name;
