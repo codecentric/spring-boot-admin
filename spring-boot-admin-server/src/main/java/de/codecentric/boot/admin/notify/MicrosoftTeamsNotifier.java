@@ -364,7 +364,7 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
             this.value = value;
         }
 
-        public Fact(String name, String value) {
+        Fact(String name, String value) {
             this.name = name;
             this.value = value;
         }
