@@ -164,7 +164,8 @@ public class MicrosoftTeamsNotifierTest {
 
     @Test
     public void test_getStatusChangedMessageForAppReturns_correctContent() {
-        MicrosoftTeamsNotifier.Message testMessage = testMTNotifier.getStatusChangedMessage(stubApp, StatusInfo.ofUp(), StatusInfo.ofDown());
+        MicrosoftTeamsNotifier.Message testMessage
+                = testMTNotifier.getStatusChangedMessage(stubApp, StatusInfo.ofUp(), StatusInfo.ofDown());
 
         assertEquals("Title doesn't match", testMTNotifier.getStatusChangedTitle(),
                 testMessage.getTitle());
@@ -191,5 +192,74 @@ public class MicrosoftTeamsNotifierTest {
 
         assertEquals("Wrong number of facts", 5,
                 testMessage.getSections().get(0).getFacts().size());
+    }
+
+    @Test
+    public void test_getStatusChangedMessageWithMissingFormatArgumentReturns_activitySubtitlePattern() {
+        String expectedPattern = "STATUS_%s_ACTIVITY%s_PATTERN%s%s%s%s";
+        testMTNotifier.setStatusActivitySubtitlePattern(expectedPattern);
+        MicrosoftTeamsNotifier.Message testMessage
+                = testMTNotifier.getStatusChangedMessage(stubApp, StatusInfo.ofUp(), StatusInfo.ofDown());
+
+        assertEquals("Activity Subtitle doesn't match", expectedPattern,
+                testMessage.getSections().get(0).getActivitySubtitle());
+
+    }
+
+    @Test
+    public void test_getStatusChangedMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
+        testMTNotifier.setStatusActivitySubtitlePattern("STATUS_ACTIVITY_PATTERN_%s");
+        MicrosoftTeamsNotifier.Message testMessage
+                = testMTNotifier.getStatusChangedMessage(stubApp, StatusInfo.ofUp(), StatusInfo.ofDown());
+
+        assertEquals("Activity Subtitle doesn't match", "STATUS_ACTIVITY_PATTERN_" + appName,
+                testMessage.getSections().get(0).getActivitySubtitle());
+
+    }
+
+    @Test
+    public void test_getRegisterMessageWithMissingFormatArgumentReturns_activitySubtitlePattern() {
+        String expectedPattern = "REGISTER_%s_ACTIVITY%s_PATTERN%s%s%s%s";
+        testMTNotifier.setRegisterActivitySubtitlePattern(expectedPattern);
+        MicrosoftTeamsNotifier.Message testMessage
+                = testMTNotifier.getRegisteredMessage(stubApp);
+
+        assertEquals("Activity Subtitle doesn't match", expectedPattern,
+                testMessage.getSections().get(0).getActivitySubtitle());
+
+    }
+
+    @Test
+    public void test_getRegisterMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
+        testMTNotifier.setRegisterActivitySubtitlePattern("REGISTER_ACTIVITY_PATTERN_%s");
+        MicrosoftTeamsNotifier.Message testMessage
+                = testMTNotifier.getRegisteredMessage(stubApp);
+
+        assertEquals("Activity Subtitle doesn't match", "REGISTER_ACTIVITY_PATTERN_" + appName,
+                testMessage.getSections().get(0).getActivitySubtitle());
+
+    }
+
+    @Test
+    public void test_getDeRegisterMessageWithMissingFormatArgumentReturns_activitySubtitlePattern() {
+        String expectedPattern = "DEREGISTER_%s_ACTIVITY%s_PATTERN%s%s%s%s";
+        testMTNotifier.setDeregisterActivitySubtitlePattern(expectedPattern);
+        MicrosoftTeamsNotifier.Message testMessage
+                = testMTNotifier.getDeregisteredMessage(stubApp);
+
+        assertEquals("Activity Subtitle doesn't match", expectedPattern,
+                testMessage.getSections().get(0).getActivitySubtitle());
+
+    }
+
+    @Test
+    public void test_getDeRegisterMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
+        testMTNotifier.setDeregisterActivitySubtitlePattern("DEREGISTER_ACTIVITY_PATTERN_%s");
+        MicrosoftTeamsNotifier.Message testMessage
+                = testMTNotifier.getDeregisteredMessage(stubApp);
+
+        assertEquals("Activity Subtitle doesn't match", "DEREGISTER_ACTIVITY_PATTERN_" + appName,
+                testMessage.getSections().get(0).getActivitySubtitle());
+
     }
 }
