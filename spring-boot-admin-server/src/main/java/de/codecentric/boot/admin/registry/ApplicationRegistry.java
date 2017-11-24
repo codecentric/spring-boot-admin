@@ -58,13 +58,13 @@ public class ApplicationRegistry implements ApplicationEventPublisherAware {
 		Assert.notNull(application, "Application must not be null");
 		Assert.hasText(application.getName(), "Name must not be null");
 		Assert.hasText(application.getHealthUrl(), "Health-URL must not be null");
-		Assert.isTrue(checkUrl(application.getHealthUrl()), "Health-URL is not valid");
+		Assert.isTrue(checkUrl(application.getHealthUrl()), "Health-URL is not valid: " + application.getHealthUrl());
 		Assert.isTrue(
 				StringUtils.isEmpty(application.getManagementUrl())
-						|| checkUrl(application.getManagementUrl()), "URL is not valid");
+						|| checkUrl(application.getManagementUrl()), "URL is not valid: " + application.getManagementUrl());
 		Assert.isTrue(
 				StringUtils.isEmpty(application.getServiceUrl())
-						|| checkUrl(application.getServiceUrl()), "URL is not valid");
+						|| checkUrl(application.getServiceUrl()), "URL is not valid: " + application.getServiceUrl());
 
 		String applicationId = generator.generateId(application);
 		Assert.notNull(applicationId, "ID must not be null");
