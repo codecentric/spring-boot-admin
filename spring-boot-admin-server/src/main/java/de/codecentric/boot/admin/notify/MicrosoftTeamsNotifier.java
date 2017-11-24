@@ -28,13 +28,6 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
      *  (i.e. https://outlook.office.com/webhook/{webhook-id})
      */
     private URI webhookUrl;
-    /**
-     * Image url for image displayed in activity section
-     *  (i.e. https://raw.githubusercontent.com/tomd8451/spring-boot-admin
-     *          /master/spring-boot-admin-server-ui/core/img/platform-spring-boot.jpg)
-     */
-    private URI imageUrl = URI.create("https://raw.githubusercontent.com/tomd8451/spring-boot-admin" +
-            "/master/spring-boot-admin-server-ui/core/img/platform-spring-boot.jpg");
 
     /**
      * Theme Color is the color of the accent on the message that appears in Microsoft Teams. Default is Spring Green
@@ -154,9 +147,6 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
 
         Section section = new Section();
         section.setActivityTitle(app.getName());
-        if(imageUrl != null) {
-            section.setActivityImage(imageUrl.toString());
-        }
         section.setActivitySubtitle(activitySubtitle);
         section.getFacts().add(new Fact(STATUS_KEY, app.getStatusInfo().getStatus()));
         section.getFacts().add(new Fact(SERVICE_URL_KEY, app.getServiceUrl()));
@@ -179,14 +169,6 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
 
     public void setWebhookUrl(URI webhookUrl) {
         this.webhookUrl = webhookUrl;
-    }
-
-    public URI getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(URI imageUrl) {
-        this.imageUrl = imageUrl;
     }
 
     public void setThemeColor(String themeColor) {
@@ -251,7 +233,7 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
 
 
     @JsonSerialize
-    class Message {
+    static class Message {
 
         private String summary;
         private String themeColor;
@@ -293,7 +275,7 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
     }
 
     @JsonSerialize
-    class Section {
+    static class Section {
 
         private String activityTitle;
         private String activitySubtitle;
@@ -343,7 +325,7 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
     }
 
     @JsonSerialize
-    class Fact {
+    static class Fact {
 
         private String name;
         private String value;

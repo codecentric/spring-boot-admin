@@ -119,10 +119,6 @@ public class MicrosoftTeamsNotifierTest {
                 stubApp.getName(),
                 testMessage.getSections().get(0).getActivityTitle());
 
-        assertEquals("Activity Image doesn't match",
-                testMTNotifier.getImageUrl().toString(),
-                testMessage.getSections().get(0).getActivityImage());
-
         assertEquals("Activity Subtitle doesn't match",
                 String.format(testMTNotifier.getDeregisterActivitySubtitlePattern(),
                     stubApp.getName(),
@@ -148,9 +144,6 @@ public class MicrosoftTeamsNotifierTest {
                 stubApp.getName(),
                 testMessage.getSections().get(0).getActivityTitle());
 
-        assertEquals("Activity Image doesn't match",
-                testMTNotifier.getImageUrl().toString(),
-                testMessage.getSections().get(0).getActivityImage());
 
         assertEquals("Activity Subtitle doesn't match",
                 String.format(testMTNotifier.getRegisterActivitySubtitlePattern(),
@@ -177,10 +170,6 @@ public class MicrosoftTeamsNotifierTest {
         assertEquals("Activity Title doesn't match",
                 stubApp.getName(),
                 testMessage.getSections().get(0).getActivityTitle());
-
-        assertEquals("Activity Image doesn't match",
-                testMTNotifier.getImageUrl().toString(),
-                testMessage.getSections().get(0).getActivityImage());
 
         assertEquals("Activity Subtitle doesn't match",
                 String.format(testMTNotifier.getStatusActivitySubtitlePattern(),
