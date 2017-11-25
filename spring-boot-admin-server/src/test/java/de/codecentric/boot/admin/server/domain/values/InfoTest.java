@@ -35,7 +35,7 @@ public class InfoTest {
 
     @Test
     public void should_return_version() {
-        assertThat(Info.empty().getVersion()).isEqualTo("");
+        assertThat(Info.empty().getVersion()).isNull();
         assertThat(Info.from(singletonMap("version", "1.0.0")).getVersion()).isEqualTo("1.0.0");
         assertThat(Info.from(singletonMap("build", singletonMap("version", "1.0.0"))).getVersion()).isEqualTo("1.0.0");
 

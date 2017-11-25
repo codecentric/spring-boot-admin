@@ -57,7 +57,7 @@ public class Info implements Serializable {
         if (version instanceof String) {
             return (String) version;
         }
-        return "";
+        return null;
     }
 
     @JsonAnyGetter

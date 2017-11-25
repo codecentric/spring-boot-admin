@@ -16,6 +16,8 @@
 
 package de.codecentric.boot.admin.server.domain.values;
 
+import lombok.ToString;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
@@ -44,6 +46,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
  */
 @lombok.Data
 @JsonDeserialize(using = Registration.Deserializer.class)
+@ToString(exclude = "metadata")
 public class Registration implements Serializable {
     private final String name;
     private final String managementUrl;

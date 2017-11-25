@@ -50,12 +50,11 @@ import static java.util.stream.Collectors.toMap;
 @ResponseBody
 public class ApplicationsController {
     private static final Logger log = LoggerFactory.getLogger(ApplicationsController.class);
+    private static final ServerSentEvent<?> PING = ServerSentEvent.builder().comment("ping").build();
+    private static final Flux<ServerSentEvent<?>> PING_FLUX = Flux.interval(Duration.ZERO, Duration.ofSeconds(10L))
+                                                                  .map(tick -> PING);
     private final InstanceRegistry registry;
     private final InstanceEventPublisher eventPublisher;
-    private static final ServerSentEvent<Application> PING = ServerSentEvent.<Application>builder().comment("ping")
-                                                                                                   .build();
-    private static final Flux<ServerSentEvent<Application>> PING_FLUX = Flux.interval(Duration.ZERO,
-            Duration.ofSeconds(10L)).map(tick -> PING);
 
     public ApplicationsController(InstanceRegistry registry, InstanceEventPublisher eventPublisher) {
         this.registry = registry;
@@ -77,7 +76,7 @@ public class ApplicationsController {
                    .map(this::getApplicationForInstance)
                    .flatMap(group -> toApplication(group.getT1(), group.getT2()))
                    .map(application -> ServerSentEvent.builder(application).build())
-                   .mergeWith(PING_FLUX);
+                   .mergeWith(ping());
     }
 
     @DeleteMapping(path = "/applications/{name}")
@@ -150,6 +149,11 @@ public class ApplicationsController {
                              .min(Map.Entry.comparingByKey(StatusInfo.severity()))
                              .map(e -> Tuples.of(e.getKey(), e.getValue()))
                              .orElse(Tuples.of(StatusInfo.STATUS_UNKNOWN, -1L));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> Flux<ServerSentEvent<T>> ping() {
+        return (Flux<ServerSentEvent<T>>) (Flux) PING_FLUX;
     }
 
     @lombok.Data

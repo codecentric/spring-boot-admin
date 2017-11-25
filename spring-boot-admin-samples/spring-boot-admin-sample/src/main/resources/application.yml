@@ -11,9 +11,9 @@ management:
   endpoints:
     web:
       base-path: "/actuator"
+      expose: "*"
   jolokia:
     enabled: true
-
 
 spring:
   application:
@@ -25,26 +25,6 @@ spring:
   profiles:
     active:
       - insecure
-
-endpoints:
-  health:
-    enabled: true
-  metrics:
-    enabled: true
-  logfile:
-    enabled: true
-  loggers:
-    enabled: true
-  trace:
-    enabled: true
-  auditevents:
-    enabled: true
-  heapdump:
-    enabled: true
-  threaddump:
-    enabled: true
-  env:
-    enabled: true
 
 ---
 spring:

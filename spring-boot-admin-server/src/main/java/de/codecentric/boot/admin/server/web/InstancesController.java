@@ -66,13 +66,12 @@ import static org.springframework.web.reactive.function.client.WebClient.Request
 @ResponseBody
 public class InstancesController {
     private static final Logger LOGGER = LoggerFactory.getLogger(InstancesController.class);
-    private static final ServerSentEvent<InstanceEvent> PING = ServerSentEvent.<InstanceEvent>builder().comment("ping")
-                                                                                                       .build();
+    private static final ServerSentEvent<?> PING = ServerSentEvent.builder().comment("ping").build();
+    private static final Flux<ServerSentEvent<?>> PING_FLUX = Flux.interval(Duration.ZERO, Duration.ofSeconds(10L))
+                                                                  .map(tick -> (ServerSentEvent<?>) PING);
     private final InstanceRegistry registry;
     private final InstanceEventStore eventStore;
     private final InstanceWebClient instanceWebClient;
-    private static final Flux<ServerSentEvent<InstanceEvent>> PING_FLUX = Flux.interval(Duration.ZERO,
-            Duration.ofSeconds(10L)).map(tick -> PING);
 
     public InstancesController(InstanceRegistry registry,
                                InstanceEventStore eventStore,
@@ -151,7 +150,16 @@ public class InstancesController {
 
     @GetMapping(path = "/instances/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<InstanceEvent>> eventStream() {
-        return Flux.from(eventStore).map(event -> ServerSentEvent.builder(event).build()).mergeWith(PING_FLUX);
+        return Flux.from(eventStore).map(event -> ServerSentEvent.builder(event).build()).mergeWith(ping());
+    }
+
+    @GetMapping(path = "/instances/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<Instance>> instanceStream(@PathVariable String id) {
+        return Flux.from(eventStore)
+                   .filter(event -> event.getInstance().equals(InstanceId.of(id)))
+                   .flatMap(event -> registry.getInstance(event.getInstance()))
+                   .map(event -> ServerSentEvent.builder(event).build())
+                   .mergeWith(ping());
     }
 
     private static final String[] HOP_BY_HOP_HEADERS = new String[]{"Connection", "Keep-Alive", "Proxy-Authenticate",
@@ -204,4 +212,10 @@ public class InstancesController {
                 return false;
         }
     }
+
+    @SuppressWarnings("unchecked")
+    private static <T> Flux<ServerSentEvent<T>> ping() {
+        return (Flux<ServerSentEvent<T>>) (Flux) PING_FLUX;
+    }
+
 }

@@ -53,7 +53,7 @@ public class InstanceRegistry {
                 instance = Instance.create(key);
             }
             return Mono.just(instance.register(registration));
-        }).then(Mono.just(id));
+        }).map(Instance::getId);
     }
 
     /**
