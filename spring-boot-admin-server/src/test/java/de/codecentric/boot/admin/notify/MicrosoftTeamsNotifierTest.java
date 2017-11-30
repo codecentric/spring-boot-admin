@@ -1,5 +1,15 @@
 package de.codecentric.boot.admin.notify;
 
+import com.openpojo.reflection.PojoClass;
+import com.openpojo.reflection.PojoClassFilter;
+import com.openpojo.reflection.impl.PojoClassFactory;
+import com.openpojo.validation.Validator;
+import com.openpojo.validation.ValidatorBuilder;
+import com.openpojo.validation.rule.impl.GetterMustExistRule;
+import com.openpojo.validation.rule.impl.NoPublicFieldsExceptStaticFinalRule;
+import com.openpojo.validation.rule.impl.SetterMustExistRule;
+import com.openpojo.validation.test.impl.GetterTester;
+import com.openpojo.validation.test.impl.SetterTester;
 import de.codecentric.boot.admin.event.ClientApplicationDeregisteredEvent;
 import de.codecentric.boot.admin.event.ClientApplicationRegisteredEvent;
 import de.codecentric.boot.admin.event.ClientApplicationStatusChangedEvent;
@@ -10,6 +20,7 @@ import org.junit.Test;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -251,4 +262,81 @@ public class MicrosoftTeamsNotifierTest {
                 testMessage.getSections().get(0).getActivitySubtitle());
 
     }
+
+    @Test
+    public void test_microsoftTeamsNotifierNestedClassesAre_pojos() {
+        String packageName = "de.codecentric.boot.admin.notify";
+
+        // Exclude the MicrosoftTeamsNotifier because we don't want to expose the restTemplate with a getter
+        List<PojoClass> pojoClasses = PojoClassFactory.getPojoClassesRecursively(packageName, new PojoClassFilter() {
+            @Override
+            public boolean include(PojoClass pojoClass) {
+                return pojoClass.getName().contains("Microsoft")
+                        && !pojoClass.getSourcePath().contains("test-classes")
+                        && !pojoClass.getName().endsWith("MicrosoftTeamsNotifier");
+            }
+        });
+
+        Validator pojoValidator = ValidatorBuilder.create()
+                .with(new SetterMustExistRule())
+                .with(new SetterTester())
+                .with(new GetterMustExistRule())
+                .with(new GetterTester())
+                .with(new NoPublicFieldsExceptStaticFinalRule())
+                .build();
+        pojoValidator.validate(pojoClasses);
+    }
+
+    @Test
+    public void test_microsoftTeamsNotifierAccessorsAndMutatorsReturn_correctMember() {
+        String packageName = "de.codecentric.boot.admin.notify";
+        // Grab the MicrosoftTeamsNotifier
+        List<PojoClass> notifierClass = PojoClassFactory.getPojoClassesRecursively(packageName, new PojoClassFilter() {
+            @Override
+            public boolean include(PojoClass pojoClass) {
+                return !pojoClass.getSourcePath().contains("test-classes")
+                        && pojoClass.getClazz().getName().endsWith("MicrosoftTeamsNotifier");
+            }
+        });
+
+        // Remove the rule that a GetterMustExist
+        Validator notifierValidator = ValidatorBuilder.create()
+                .with(new SetterMustExistRule())
+                .with(new SetterTester())
+                .with(new GetterTester())
+                .with(new NoPublicFieldsExceptStaticFinalRule())
+                .build();
+        notifierValidator.validate(notifierClass);
+    }
+
+    @Test
+    public void test_microsoftTeamsNotifierAccessorForRestTemplateDoes_notExist() {
+        String packageName = "de.codecentric.boot.admin.notify";
+
+        // Grab the MicrosoftTeamsNotifier
+        List<PojoClass> notifierClass = PojoClassFactory.getPojoClassesRecursively(packageName, new PojoClassFilter() {
+            @Override
+            public boolean include(PojoClass pojoClass) {
+                return !pojoClass.getSourcePath().contains("test-classes")
+                        && pojoClass.getClazz().getName().endsWith("MicrosoftTeamsNotifier");
+            }
+        });
+
+        final String EXPECTED_EXCEPTION = "[PojoFieldImpl [field=private final" +
+                " org.springframework.web.client.RestTemplate" +
+                " de.codecentric.boot.admin.notify.MicrosoftTeamsNotifier.restTemplate, fieldGetter=null," +
+                " fieldSetter=null]] is missing a getter";
+
+        try {
+            // Verify restTemplate has no accessor
+            Validator notifierValidator = ValidatorBuilder.create()
+                    .with(new GetterMustExistRule())
+                    .build();
+            notifierValidator.validate(notifierClass);
+        } catch(AssertionError ae) {
+            assertEquals("MicrosoftTeamsNotifier.restTemplate has an accessor", EXPECTED_EXCEPTION,
+                    ae.getMessage());
+        }
+    }
+
 }
