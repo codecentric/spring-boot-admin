@@ -32,6 +32,7 @@ import org.springframework.cloud.netflix.zuul.filters.Route;
 
 import de.codecentric.boot.admin.model.Application;
 import de.codecentric.boot.admin.registry.ApplicationRegistry;
+import de.codecentric.boot.admin.zuul.ApplicationRouteLocator.ApplicationRoute;
 
 public class ApplicationRouteLocatorTest {
 
@@ -47,42 +48,46 @@ public class ApplicationRouteLocatorTest {
 
 	@Test
 	public void getRoutes_healthOnly() {
-		when(registry.getApplications()).thenReturn(singletonList(Application.create("app1")
-				.withHealthUrl("http://localhost/health").withId("1234").build()));
+		Application application = Application.create("app1")
+											 .withHealthUrl("http://localhost/health")
+											 .withId("1234")
+											 .build();
+		when(registry.getApplications()).thenReturn(singletonList(application));
 
 		assertEquals(1, locator.getRoutes().size());
-		assertEquals(asList(new Route("1234-health", "/**", "http://localhost/health",
-				"/api/applications/1234/health", false, null)), locator.getRoutes());
+		assertEquals(singletonList(new ApplicationRoute(application, "1234-health", "/**", "http://localhost/health",
+				"/api/applications/1234/health")), locator.getRoutes());
 
 		Route matchingRoute = locator.getMatchingRoute("/api/applications/1234/health");
-		assertEquals(new Route("1234-health", "", "http://localhost/health",
-				"/api/applications/1234/health", false, null), matchingRoute);
+		assertEquals(new ApplicationRoute(application, "1234-health", "", "http://localhost/health",
+				"/api/applications/1234/health"), matchingRoute);
 
 		assertNull(locator.getMatchingRoute("/api/applications/1234/danger"));
 	}
 
 	@Test
 	public void getRoutes() {
-		when(registry.getApplications()).thenReturn(
-				singletonList(Application.create("app1").withHealthUrl("http://localhost/health")
-						.withManagementUrl("http://localhost").withId("1234").build()));
+		Application application = Application.create("app1")
+											 .withHealthUrl("http://localhost/health")
+											 .withManagementUrl("http://localhost")
+											 .withId("1234")
+											 .build();
+		when(registry.getApplications()).thenReturn(singletonList(application));
 
 		assertEquals(2, locator.getRoutes().size());
 
-		assertEquals(asList(
-				new Route("1234-health", "/**", "http://localhost/health",
-						"/api/applications/1234/health", false, null),
-				new Route("1234-env", "/**", "http://localhost/env", "/api/applications/1234/env",
-						false, null)),
-				locator.getRoutes());
+		assertEquals(asList(new ApplicationRoute(application, "1234-health", "/**", "http://localhost/health",
+						"/api/applications/1234/health"),
+				new ApplicationRoute(application, "1234-env", "/**", "http://localhost/env",
+						"/api/applications/1234/env")), locator.getRoutes());
 
 		Route matchingHealth = locator.getMatchingRoute("/api/applications/1234/health");
-		assertEquals(new Route("1234-health", "", "http://localhost/health",
-				"/api/applications/1234/health", false, null), matchingHealth);
+		assertEquals(new ApplicationRoute(application, "1234-health", "", "http://localhost/health",
+				"/api/applications/1234/health"), matchingHealth);
 
 		Route matchingEnv = locator.getMatchingRoute("/api/applications/1234/env/reset");
-		assertEquals(new Route("1234-env", "/reset", "http://localhost/env",
-				"/api/applications/1234/env", false, null), matchingEnv);
+		assertEquals(new ApplicationRoute(application, "1234-env", "/reset", "http://localhost/env",
+				"/api/applications/1234/env"), matchingEnv);
 
 		assertNull(locator.getMatchingRoute("/api/applications/1234/danger"));
 	}

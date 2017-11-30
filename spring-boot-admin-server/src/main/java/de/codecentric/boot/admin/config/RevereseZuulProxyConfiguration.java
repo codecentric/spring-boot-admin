@@ -21,16 +21,22 @@ import de.codecentric.boot.admin.web.client.HttpHeadersProvider;
 import de.codecentric.boot.admin.zuul.ApplicationRouteLocator;
 import de.codecentric.boot.admin.zuul.filters.pre.ApplicationHeadersFilter;
 
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.cloud.commons.httpclient.ApacheHttpClientConnectionManagerFactory;
+import org.springframework.cloud.commons.httpclient.ApacheHttpClientFactory;
+import org.springframework.cloud.commons.httpclient.HttpClientConfiguration;
 import org.springframework.cloud.netflix.zuul.RoutesEndpoint;
 import org.springframework.cloud.netflix.zuul.ZuulServerAutoConfiguration;
 import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
 import org.springframework.cloud.netflix.zuul.filters.RouteLocator;
 import org.springframework.cloud.netflix.zuul.filters.TraceProxyRequestHelper;
+import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.cloud.netflix.zuul.filters.pre.PreDecorationFilter;
 import org.springframework.cloud.netflix.zuul.filters.route.SimpleHostRoutingFilter;
 import org.springframework.cloud.netflix.zuul.web.ZuulHandlerMapping;
@@ -39,10 +45,12 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.PayloadApplicationEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 
 @Configuration
 @AutoConfigureAfter({AdminServerWebConfiguration.class})
+@Import(HttpClientConfiguration.class)
 public class RevereseZuulProxyConfiguration extends ZuulServerAutoConfiguration {
 
     @Autowired(required = false)
@@ -88,8 +96,22 @@ public class RevereseZuulProxyConfiguration extends ZuulServerAutoConfiguration 
     }
 
     @Bean
-    public SimpleHostRoutingFilter simpleHostRoutingFilter() {
-        return new SimpleHostRoutingFilter(proxyRequestHelper(), zuulProperties);
+    @ConditionalOnMissingBean({SimpleHostRoutingFilter.class, CloseableHttpClient.class})
+    public SimpleHostRoutingFilter simpleHostRoutingFilter(ProxyRequestHelper helper,
+                                                           ZuulProperties zuulProperties,
+                                                           ApacheHttpClientConnectionManagerFactory connectionManagerFactory,
+                                                           ApacheHttpClientFactory httpClientFactory) {
+        return new SimpleHostRoutingFilter(helper, zuulProperties,
+                connectionManagerFactory, httpClientFactory);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean({SimpleHostRoutingFilter.class})
+    public SimpleHostRoutingFilter simpleHostRoutingFilter2(ProxyRequestHelper helper,
+                                                            ZuulProperties zuulProperties,
+                                                            CloseableHttpClient httpClient) {
+        return new SimpleHostRoutingFilter(helper, zuulProperties,
+                httpClient);
     }
 
     @Bean
