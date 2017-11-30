@@ -51,7 +51,7 @@ public class MicrosoftTeamsNotifierTest {
 
 		notifier.doNotify(event);
 
-		verify(mockRestTemplate).postForObject(eq(URI.create("http://example.com")),
+		verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")),
 				any(Message.class), eq(Void.class));
 	}
 
@@ -61,7 +61,7 @@ public class MicrosoftTeamsNotifierTest {
 
 		notifier.doNotify(event);
 
-		verify(mockRestTemplate).postForObject(eq(URI.create("http://example.com")),
+		verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")),
 				any(Message.class), eq(Void.class));
 	}
 
@@ -72,7 +72,7 @@ public class MicrosoftTeamsNotifierTest {
 
 		notifier.doNotify(event);
 
-		verify(mockRestTemplate).postForObject(eq(URI.create("http://example.com")),
+		verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")),
 				any(Message.class), eq(Void.class));
 	}
 

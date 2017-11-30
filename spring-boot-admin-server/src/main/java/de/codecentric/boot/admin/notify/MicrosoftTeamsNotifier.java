@@ -92,7 +92,7 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
 			return;
 		}
 
-		this.restTemplate.postForObject(webhookUrl, message, Void.class);
+		this.restTemplate.postForEntity(webhookUrl, message, Void.class);
 	}
 
 	@Override
