@@ -15,17 +15,19 @@
  */
 package de.codecentric.boot.admin.config;
 
-import java.util.List;
-
 import de.codecentric.boot.admin.notify.CompositeNotifier;
+import de.codecentric.boot.admin.notify.HipchatNotifier;
+import de.codecentric.boot.admin.notify.LetsChatNotifier;
 import de.codecentric.boot.admin.notify.MailNotifier;
+import de.codecentric.boot.admin.notify.MicrosoftTeamsNotifier;
 import de.codecentric.boot.admin.notify.Notifier;
 import de.codecentric.boot.admin.notify.NotifierListener;
-import de.codecentric.boot.admin.notify.PagerdutyNotifier;
 import de.codecentric.boot.admin.notify.OpsGenieNotifier;
-import de.codecentric.boot.admin.notify.HipchatNotifier;
+import de.codecentric.boot.admin.notify.PagerdutyNotifier;
 import de.codecentric.boot.admin.notify.SlackNotifier;
-import de.codecentric.boot.admin.notify.LetsChatNotifier;
+import de.codecentric.boot.admin.notify.filter.FilteringNotifier;
+import de.codecentric.boot.admin.notify.filter.web.NotificationFilterController;
+import de.codecentric.boot.admin.web.PrefixHandlerMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -42,9 +44,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.mail.MailSender;
 
-import de.codecentric.boot.admin.notify.filter.FilteringNotifier;
-import de.codecentric.boot.admin.notify.filter.web.NotificationFilterController;
-import de.codecentric.boot.admin.web.PrefixHandlerMapping;
+import java.util.List;
 
 @Configuration
 public class NotifierConfiguration {
@@ -190,5 +190,16 @@ public class NotifierConfiguration {
 		public LetsChatNotifier letsChatNotifier() {
 			return new LetsChatNotifier();
 		}
+	}
+
+	@Configuration
+	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.teams", name = "webhook-url")
+	@AutoConfigureBefore({ NotifierListenerConfiguration.class,
+		CompositeNotifierConfiguration.class})
+	public static class MicrosoftTeamsNotifierConfiguration {
+		@Bean
+		@ConditionalOnMissingBean
+		@ConfigurationProperties("spring.boot.admin.notify.teams")
+		public MicrosoftTeamsNotifier microsoftTeamsNotifier() { return new MicrosoftTeamsNotifier(); }
 	}
 }
