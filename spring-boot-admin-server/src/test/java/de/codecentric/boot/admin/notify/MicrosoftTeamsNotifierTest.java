@@ -61,7 +61,7 @@ public class MicrosoftTeamsNotifierTest {
 
         testMTNotifier.doNotify(deregisteredEvent);
 
-        verify(mockRestTemplate).postForObject(any(URI.class), any(MicrosoftTeamsNotifier.Message.class),
+        verify(mockRestTemplate).postForEntity(any(URI.class), any(MicrosoftTeamsNotifier.Message.class),
                 eq(Void.class));
     }
 
@@ -72,7 +72,7 @@ public class MicrosoftTeamsNotifierTest {
 
         testMTNotifier.doNotify(registeredEvent);
 
-        verify(mockRestTemplate).postForObject(any(URI.class), any(MicrosoftTeamsNotifier.Message.class),
+        verify(mockRestTemplate).postForEntity(any(URI.class), any(MicrosoftTeamsNotifier.Message.class),
                 eq(Void.class));
     }
 
@@ -83,7 +83,7 @@ public class MicrosoftTeamsNotifierTest {
 
         testMTNotifier.doNotify(statusChangedEvent);
 
-        verify(mockRestTemplate).postForObject(any(URI.class), any(MicrosoftTeamsNotifier.Message.class),
+        verify(mockRestTemplate).postForEntity(any(URI.class), any(MicrosoftTeamsNotifier.Message.class),
                 eq(Void.class));
     }
 
