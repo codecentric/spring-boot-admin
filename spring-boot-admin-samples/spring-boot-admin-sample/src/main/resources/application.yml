@@ -10,8 +10,6 @@ management:
   endpoints:
     web:
       expose: "*"
-  jolokia:
-    enabled: true
 
 spring:
   application:
