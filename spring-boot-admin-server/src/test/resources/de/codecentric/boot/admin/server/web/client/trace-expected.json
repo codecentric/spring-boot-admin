@@ -1,0 +1,16 @@
+{
+  "traces": [
+    {
+      "timestamp": "15610000",
+      "info": {
+        "status": 200
+      }
+    },
+    {
+      "timestamp": "15610001",
+      "info": {
+        "status": 200
+      }
+    }
+  ]
+}

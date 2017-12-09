@@ -97,9 +97,9 @@ public abstract class AbstractAdminApplicationTest {
                  .exchange()
                  .expectStatus().isOk()
                  .expectBody()
-                     .jsonPath("$.registration.name").isEqualTo("Test-Instance")
-                     .jsonPath("$.statusInfo.status").isEqualTo("UP")
-                     .jsonPath("$.info.test").isEqualTo("foobar");
+                 .jsonPath("$.registration.name").isEqualTo("Test-Instance")
+                 .jsonPath("$.statusInfo.status").isEqualTo("UP")
+                 .jsonPath("$.info.test").isEqualTo("foobar");
        //@formatter:on
     }
 
@@ -132,7 +132,7 @@ public abstract class AbstractAdminApplicationTest {
     private Registration createRegistration() {
         return Registration.builder()
                            .name("Test-Instance")
-                           .healthUrl("http://localhost:" + port + "/mgmt/status")
+                           .healthUrl("http://localhost:" + port + "/mgmt/health")
                            .managementUrl("http://localhost:" + port + "/mgmt")
                            .serviceUrl("http://localhost:" + port)
                            .build();

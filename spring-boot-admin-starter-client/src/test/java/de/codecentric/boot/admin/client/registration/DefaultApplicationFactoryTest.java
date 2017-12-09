@@ -65,12 +65,12 @@ public class DefaultApplicationFactoryTest {
 
     @Test
     public void test_default() {
-        when(endpointPathProvider.getPath("health")).thenReturn("/application/health");
+        when(endpointPathProvider.getPath("health")).thenReturn("/actuator/health");
         publishApplicationReadyEvent(factory, 8080, null);
 
         Application app = factory.createApplication();
-        assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":8080/application");
-        assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":8080/application/health");
+        assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":8080/actuator");
+        assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":8080/actuator/health");
         assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":8080/");
     }
 
@@ -78,12 +78,12 @@ public class DefaultApplicationFactoryTest {
     public void test_ssl() {
         server.setSsl(new Ssl());
         server.getSsl().setEnabled(true);
-        when(endpointPathProvider.getPath("health")).thenReturn("/application/health");
+        when(endpointPathProvider.getPath("health")).thenReturn("/actuator/health");
         publishApplicationReadyEvent(factory, 8080, null);
 
         Application app = factory.createApplication();
-        assertThat(app.getManagementUrl()).isEqualTo("https://" + getHostname() + ":8080/application");
-        assertThat(app.getHealthUrl()).isEqualTo("https://" + getHostname() + ":8080/application/health");
+        assertThat(app.getManagementUrl()).isEqualTo("https://" + getHostname() + ":8080/actuator");
+        assertThat(app.getHealthUrl()).isEqualTo("https://" + getHostname() + ":8080/actuator/health");
         assertThat(app.getServiceUrl()).isEqualTo("https://" + getHostname() + ":8080/");
     }
 
@@ -91,12 +91,12 @@ public class DefaultApplicationFactoryTest {
     public void test_ssl_management() {
         management.setSsl(new Ssl());
         management.getSsl().setEnabled(true);
-        when(endpointPathProvider.getPath("health")).thenReturn("/application/alive");
+        when(endpointPathProvider.getPath("health")).thenReturn("/actuator/alive");
         publishApplicationReadyEvent(factory, 8080, 9090);
 
         Application app = factory.createApplication();
-        assertThat(app.getManagementUrl()).isEqualTo("https://" + getHostname() + ":9090/application");
-        assertThat(app.getHealthUrl()).isEqualTo("https://" + getHostname() + ":9090/application/alive");
+        assertThat(app.getManagementUrl()).isEqualTo("https://" + getHostname() + ":9090/actuator");
+        assertThat(app.getHealthUrl()).isEqualTo("https://" + getHostname() + ":9090/actuator/alive");
         assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":8080/");
     }
 
@@ -117,7 +117,7 @@ public class DefaultApplicationFactoryTest {
         publishApplicationReadyEvent(factory, 8080, 8081);
 
         Application app = factory.createApplication();
-        assertThat(app.getManagementUrl()).matches("http://\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}:8081/application");
+        assertThat(app.getManagementUrl()).matches("http://\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}:8081/actuator");
     }
 
     @Test
@@ -125,12 +125,12 @@ public class DefaultApplicationFactoryTest {
         instanceProperties.setPreferIp(true);
         server.setAddress(InetAddress.getByName("127.0.0.1"));
         management.setAddress(InetAddress.getByName("127.0.0.2"));
-        when(endpointPathProvider.getPath("health")).thenReturn("/application/health");
+        when(endpointPathProvider.getPath("health")).thenReturn("/actuator/health");
         publishApplicationReadyEvent(factory, 8080, 8081);
 
         Application app = factory.createApplication();
-        assertThat(app.getManagementUrl()).isEqualTo("http://127.0.0.2:8081/application");
-        assertThat(app.getHealthUrl()).isEqualTo("http://127.0.0.2:8081/application/health");
+        assertThat(app.getManagementUrl()).isEqualTo("http://127.0.0.2:8081/actuator");
+        assertThat(app.getHealthUrl()).isEqualTo("http://127.0.0.2:8081/actuator/health");
         assertThat(app.getServiceUrl()).isEqualTo("http://127.0.0.1:8080/");
     }
 

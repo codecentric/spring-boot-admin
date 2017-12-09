@@ -29,12 +29,12 @@ public class AdminServerProperties {
     private MonitorProperties monitor = new MonitorProperties();
 
     /**
-     * For Spring Boot 2.x applications the endpoints should be discovered automatically.
+     * For Spring Boot 2.x applications the endpoints should be discovered automatically using the actuator links.
      * For Spring Boot 1.x applications SBA probes for the specified endpoints using an OPTIONS request.
      * If the path differs from the id you can specify this as id:path (e.g. health:ping).
      */
-    private String[] probedEndpoints = {"health", "env", "metrics", "trace", "dump", "jolokia", "info", "logfile",
-            "refresh", "flyway", "liquibase", "heapdump", "loggers", "auditevents"};
+    private String[] probedEndpoints = {"health", "env", "metrics", "trace", "threaddump:dump", "jolokia", "info",
+            "logfile", "refresh", "flyway", "liquibase", "heapdump", "loggers", "auditevents"};
 
     public void setContextPath(String pathPrefix) {
         if (!pathPrefix.startsWith("/") || pathPrefix.endsWith("/")) {

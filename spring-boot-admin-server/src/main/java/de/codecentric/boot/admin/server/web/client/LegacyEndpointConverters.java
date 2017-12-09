@@ -35,25 +35,36 @@ import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import static java.util.Collections.singletonMap;
 
 public class LegacyEndpointConverters {
-    private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
+    private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE_MAP = new ParameterizedTypeReference<Map<String, Object>>() {
+    };
+    private static final ParameterizedTypeReference<List<Object>> RESPONSE_TYPE_LIST = new ParameterizedTypeReference<List<Object>>() {
     };
     private static final Jackson2JsonDecoder DECODER = new Jackson2JsonDecoder();
     private static final Jackson2JsonEncoder ENCODER = new Jackson2JsonEncoder();
 
     public static LegacyEndpointConverter health() {
-        return new LegacyEndpointConverter(Endpoint.HEALTH, convertMapUsing(LegacyEndpointConverters::convertHealth));
+        return new LegacyEndpointConverter(Endpoint.HEALTH,
+                convertUsing(RESPONSE_TYPE_MAP, RESPONSE_TYPE_MAP, LegacyEndpointConverters::convertHealth));
     }
 
     public static LegacyEndpointConverter env() {
-        return new LegacyEndpointConverter(Endpoint.ENV, convertMapUsing(LegacyEndpointConverters::convertEnv));
+        return new LegacyEndpointConverter(Endpoint.ENV,
+                convertUsing(RESPONSE_TYPE_MAP, RESPONSE_TYPE_MAP, LegacyEndpointConverters::convertEnv));
+    }
+
+    public static LegacyEndpointConverter trace() {
+        return new LegacyEndpointConverter(Endpoint.TRACE,
+                convertUsing(RESPONSE_TYPE_LIST, RESPONSE_TYPE_MAP, LegacyEndpointConverters::convertTrace));
     }
 
     @SuppressWarnings("unchecked")
-    private static Function<Flux<DataBuffer>, Flux<DataBuffer>> convertMapUsing(Function<Map<String, Object>, Map<String, Object>> converterFn) {
-        return input -> DECODER.decodeToMono(input, ResolvableType.forType(RESPONSE_TYPE), null, null)
-                               .map(body -> converterFn.apply((Map<String, Object>) body))
+    private static <S, T> Function<Flux<DataBuffer>, Flux<DataBuffer>> convertUsing(ParameterizedTypeReference<S> sourceType,
+                                                                                    ParameterizedTypeReference<T> targetType,
+                                                                                    Function<S, T> converterFn) {
+        return input -> DECODER.decodeToMono(input, ResolvableType.forType(sourceType), null, null)
+                               .map(body -> converterFn.apply((S) body))
                                .flatMapMany(output -> ENCODER.encode(Mono.just(output), new DefaultDataBufferFactory(),
-                                       ResolvableType.forType(RESPONSE_TYPE), null, null));
+                                       ResolvableType.forType(targetType), null, null));
     }
 
     @SuppressWarnings("unchecked")
@@ -104,4 +115,7 @@ public class LegacyEndpointConverters {
         return converted;
     }
 
+    private static Map<String, Object> convertTrace(List<Object> traces) {
+        return singletonMap("traces", traces);
+    }
 }

@@ -71,6 +71,22 @@ public class LegacyEndpointConvertersTest {
                     .verifyComplete();
     }
 
+    @Test
+    public void should_convert_trace() {
+        LegacyEndpointConverter converter = LegacyEndpointConverters.trace();
+        assertThat(converter.canConvert("trace")).isTrue();
+        assertThat(converter.canConvert("foo")).isFalse();
+
+        Flux<DataBuffer> legacyInput = this.read("trace-legacy.json");
+
+        Flux<Object> converted = converter.convert(legacyInput).transform(this::unmarshal);
+        Flux<Object> expected = this.read("trace-expected.json").transform(this::unmarshal);
+
+        StepVerifier.create(Flux.zip(converted, expected))
+                    .assertNext(t -> assertThat(t.getT1()).isEqualTo(t.getT2()))
+                    .verifyComplete();
+    }
+
     @SuppressWarnings("unchecked")
     private Flux<Object> unmarshal(Flux<DataBuffer> buffer) {
         return decoder.decode(buffer, type, null, null);

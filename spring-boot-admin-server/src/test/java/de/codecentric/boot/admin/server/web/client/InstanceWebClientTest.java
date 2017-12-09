@@ -70,7 +70,9 @@ public class InstanceWebClientTest {
 
         StepVerifier.create(exchange).expectNextCount(1).verifyComplete();
         wireMock.verify(1,
-                getRequestedFor(urlEqualTo("/status")).withHeader(ACCEPT, equalTo(MediaType.APPLICATION_JSON_VALUE)));
+                getRequestedFor(urlEqualTo("/status")).withHeader(ACCEPT, equalTo(MediaType.APPLICATION_JSON_VALUE))
+                                                      .withHeader(ACCEPT, equalTo(ActuatorMediaType.V1_JSON))
+                                                      .withHeader(ACCEPT, equalTo(ActuatorMediaType.V2_JSON)));
     }
 
     @Test

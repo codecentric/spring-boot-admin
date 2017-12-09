@@ -79,12 +79,12 @@ public class ServletApplicationFactoryTest {
     @Test
     public void test_contextPath() {
         servletContext.setContextPath("app");
-        when(endpointPathProvider.getPath("health")).thenReturn("/application/health");
+        when(endpointPathProvider.getPath("health")).thenReturn("/actuator/health");
         publishApplicationReadyEvent(factory, 80, null);
 
         Application app = factory.createApplication();
-        assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":80/app/application");
-        assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":80/app/application/health");
+        assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":80/app/actuator");
+        assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":80/app/actuator/health");
         assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":80/app");
     }
 
@@ -92,12 +92,12 @@ public class ServletApplicationFactoryTest {
     public void test_servletPath() {
         server.getServlet().setPath("app");
         servletContext.setContextPath("srv");
-        when(endpointPathProvider.getPath("health")).thenReturn("/application/health");
+        when(endpointPathProvider.getPath("health")).thenReturn("/actuator/health");
         publishApplicationReadyEvent(factory, 80, null);
 
         Application app = factory.createApplication();
-        assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":80/srv/app/application");
-        assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":80/srv/app/application/health");
+        assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":80/srv/app/actuator");
+        assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":80/srv/app/actuator/health");
         assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":80/srv");
     }
 

@@ -2,7 +2,6 @@
 info:
   scm-url: "@scm.url@"
   build-url: "http://travis-ci.org/@env.TRAVIS_REPO_SLUG@/builds/@env.TRAVIS_BUILD_ID@"
-  stage: test
 
 logging:
   file: "target/boot-admin-sample.log"
@@ -10,14 +9,11 @@ logging:
 management:
   endpoints:
     web:
-      base-path: "/actuator"
       expose: "*"
-  jolokia:
-    enabled: true
 
 spring:
   application:
-    name: "@pom.artifactId@"
+    name: spring-boot-admin-sample
   boot:
     admin:
       client:

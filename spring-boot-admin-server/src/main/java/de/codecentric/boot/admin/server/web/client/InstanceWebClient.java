@@ -22,6 +22,7 @@ import io.netty.handler.timeout.ReadTimeoutHandler;
 import reactor.core.publisher.Mono;
 
 import java.util.concurrent.TimeUnit;
+import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -44,6 +45,7 @@ public class InstanceWebClient {
             filters.add(InstanceFilterFunctions.rewriteEndpointUrl());
             filters.add(InstanceFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.health()));
             filters.add(InstanceFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.env()));
+            filters.add(InstanceFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.trace()));
         }).build();
     }
 
@@ -68,7 +70,8 @@ public class InstanceWebClient {
                                   }));
         return WebClient.builder()
                         .clientConnector(connector)
-                        .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                        .defaultHeader(HttpHeaders.ACCEPT, ActuatorMediaType.V2_JSON, ActuatorMediaType.V1_JSON,
+                                MediaType.APPLICATION_JSON_VALUE)
                         .build();
     }
 }
