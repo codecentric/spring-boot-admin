@@ -43,6 +43,7 @@ import de.codecentric.boot.admin.notify.NotifierListener;
 import de.codecentric.boot.admin.notify.OpsGenieNotifier;
 import de.codecentric.boot.admin.notify.PagerdutyNotifier;
 import de.codecentric.boot.admin.notify.SlackNotifier;
+import de.codecentric.boot.admin.notify.TelegramNotifier;
 import de.codecentric.boot.admin.notify.filter.FilteringNotifier;
 import de.codecentric.boot.admin.notify.filter.web.NotificationFilterController;
 import de.codecentric.boot.admin.web.PrefixHandlerMapping;
@@ -202,5 +203,16 @@ public class NotifierConfiguration {
 		@ConditionalOnMissingBean
 		@ConfigurationProperties("spring.boot.admin.notify.ms-teams")
 		public MicrosoftTeamsNotifier microsoftTeamsNotifier() { return new MicrosoftTeamsNotifier(); }
+	}
+
+	@Configuration
+	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.telegram", name = "api-url")
+	@AutoConfigureBefore({ NotifierListenerConfiguration.class,
+			CompositeNotifierConfiguration.class})
+	public static class TelegramNotifierConfiguration {
+		@Bean
+		@ConditionalOnMissingBean
+		@ConfigurationProperties("spring.boot.admin.notify.telegram")
+		public TelegramNotifier telegramNotifier() { return new TelegramNotifier(); }
 	}
 }
