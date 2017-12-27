@@ -46,6 +46,7 @@ import de.codecentric.boot.admin.notify.NotifierListener;
 import de.codecentric.boot.admin.notify.OpsGenieNotifier;
 import de.codecentric.boot.admin.notify.PagerdutyNotifier;
 import de.codecentric.boot.admin.notify.SlackNotifier;
+import de.codecentric.boot.admin.notify.TelegramNotifier;
 
 public class NotifierConfigurationTest {
 	private static final ClientApplicationEvent APP_DOWN = new ClientApplicationStatusChangedEvent(
@@ -111,6 +112,12 @@ public class NotifierConfigurationTest {
 	public void test_ms_teams() {
 		load(null,"spring.boot.admin.notify.ms-teams.webhook-url:http://example.com");
 		assertThat(context.getBean(MicrosoftTeamsNotifier.class), is(instanceOf(MicrosoftTeamsNotifier.class)));
+	}
+
+	@Test
+	public void test_telegram() {
+		load(null, "spring.boot.admin.notify.telegram.auth-token:123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11");
+		assertThat(context.getBean(Notifier.class), is(instanceOf(TelegramNotifier.class)));
 	}
 
 	@Test

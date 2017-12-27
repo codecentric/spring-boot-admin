@@ -43,6 +43,7 @@ import de.codecentric.boot.admin.notify.NotifierListener;
 import de.codecentric.boot.admin.notify.OpsGenieNotifier;
 import de.codecentric.boot.admin.notify.PagerdutyNotifier;
 import de.codecentric.boot.admin.notify.SlackNotifier;
+import de.codecentric.boot.admin.notify.TelegramNotifier;
 import de.codecentric.boot.admin.notify.filter.FilteringNotifier;
 import de.codecentric.boot.admin.notify.filter.web.NotificationFilterController;
 import de.codecentric.boot.admin.web.PrefixHandlerMapping;
@@ -102,7 +103,8 @@ public class NotifierConfiguration {
 
 		@Bean
 		public PrefixHandlerMapping prefixHandlerMappingNotificationFilterController() {
-			PrefixHandlerMapping prefixHandlerMapping = new PrefixHandlerMapping(notificationFilterController());
+			PrefixHandlerMapping prefixHandlerMapping = new PrefixHandlerMapping(
+					notificationFilterController());
 			prefixHandlerMapping.setPrefix(adminServerProperties.getContextPath());
 			return prefixHandlerMapping;
 		}
@@ -112,7 +114,7 @@ public class NotifierConfiguration {
 	@ConditionalOnBean(MailSender.class)
 	@AutoConfigureAfter({ MailSenderAutoConfiguration.class })
 	@AutoConfigureBefore({ NotifierListenerConfiguration.class,
-		CompositeNotifierConfiguration.class })
+			CompositeNotifierConfiguration.class })
 	public static class MailNotifierConfiguration {
 		@Autowired
 		private MailSender mailSender;
@@ -128,7 +130,7 @@ public class NotifierConfiguration {
 	@Configuration
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.pagerduty", name = "service-key")
 	@AutoConfigureBefore({ NotifierListenerConfiguration.class,
-		CompositeNotifierConfiguration.class })
+			CompositeNotifierConfiguration.class })
 	public static class PagerdutyNotifierConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
@@ -137,7 +139,6 @@ public class NotifierConfiguration {
 			return new PagerdutyNotifier();
 		}
 	}
-
 
 	@Configuration
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.opsgenie", name = "api-key")
@@ -152,12 +153,10 @@ public class NotifierConfiguration {
 		}
 	}
 
-
-
 	@Configuration
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.hipchat", name = "url")
 	@AutoConfigureBefore({ NotifierListenerConfiguration.class,
-		CompositeNotifierConfiguration.class })
+			CompositeNotifierConfiguration.class })
 	public static class HipchatNotifierConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
@@ -170,7 +169,7 @@ public class NotifierConfiguration {
 	@Configuration
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.slack", name = "webhook-url")
 	@AutoConfigureBefore({ NotifierListenerConfiguration.class,
-		CompositeNotifierConfiguration.class })
+			CompositeNotifierConfiguration.class })
 	public static class SlackNotifierConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
@@ -196,11 +195,26 @@ public class NotifierConfiguration {
 	@Configuration
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.ms-teams", name = "webhook-url")
 	@AutoConfigureBefore({ NotifierListenerConfiguration.class,
-		CompositeNotifierConfiguration.class})
+			CompositeNotifierConfiguration.class })
 	public static class MicrosoftTeamsNotifierConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConfigurationProperties("spring.boot.admin.notify.ms-teams")
-		public MicrosoftTeamsNotifier microsoftTeamsNotifier() { return new MicrosoftTeamsNotifier(); }
+		public MicrosoftTeamsNotifier microsoftTeamsNotifier() {
+			return new MicrosoftTeamsNotifier();
+		}
+	}
+
+	@Configuration
+	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.telegram", name = "auth-token")
+	@AutoConfigureBefore({ NotifierListenerConfiguration.class,
+			CompositeNotifierConfiguration.class })
+	public static class TelegramNotifierConfiguration {
+		@Bean
+		@ConditionalOnMissingBean
+		@ConfigurationProperties("spring.boot.admin.notify.telegram")
+		public TelegramNotifier telegramNotifier() {
+			return new TelegramNotifier();
+		}
 	}
 }
