@@ -21,6 +21,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.http.HttpHeaders;
@@ -32,10 +33,10 @@ public class InstanceWebClient {
     private final WebClient webClient;
 
     public InstanceWebClient(HttpHeadersProvider httpHeadersProvider) {
-        this(httpHeadersProvider, 2000, 5000);
+        this(httpHeadersProvider, Duration.ofSeconds(2), Duration.ofSeconds(5));
     }
 
-    public InstanceWebClient(HttpHeadersProvider httpHeadersProvider, int connectTimeout, int readTimeout) {
+    public InstanceWebClient(HttpHeadersProvider httpHeadersProvider, Duration connectTimeout, Duration readTimeout) {
         this(createDefaultWebClient(connectTimeout, readTimeout), httpHeadersProvider);
     }
 
@@ -61,12 +62,13 @@ public class InstanceWebClient {
                         .build();
     }
 
-    private static WebClient createDefaultWebClient(int connectTimeout, int readTimeout) {
+    private static WebClient createDefaultWebClient(Duration connectTimeout, Duration readTimeout) {
         ReactorClientHttpConnector connector = new ReactorClientHttpConnector(
-                options -> options.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeout)//
+                options -> options.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) connectTimeout.toMillis())//
                                   .compression(true)//
                                   .afterNettyContextInit(ctx -> {
-                                      ctx.addHandlerLast(new ReadTimeoutHandler(readTimeout, TimeUnit.MILLISECONDS));
+                                      ctx.addHandlerLast(
+                                              new ReadTimeoutHandler(readTimeout.toMillis(), TimeUnit.MILLISECONDS));
                                   }));
         return WebClient.builder()
                         .clientConnector(connector)

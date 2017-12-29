@@ -15,6 +15,7 @@
  */
 package de.codecentric.boot.admin.client.config;
 
+import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @lombok.Data
@@ -32,19 +33,19 @@ public class ClientProperties {
     private String apiPath = "instances";
 
     /**
-     * Time interval (in ms) the registration is repeated
+     * Time interval the registration is repeated
      */
-    private long period = 10_000L;
+    private Duration period = Duration.ofSeconds(10);
 
     /**
-     * Connect timeout (in ms) for the registration.
+     * Connect timeout for the registration.
      */
-    private int connectTimeout = 5_000;
+    private Duration connectTimeout = Duration.ofSeconds(5);
 
     /**
      * Read timeout (in ms) for the registration.
      */
-    private int readTimeout = 5_000;
+    private Duration readTimeout = Duration.ofSeconds(5);
 
     /**
      * Username for basic authentication on admin server

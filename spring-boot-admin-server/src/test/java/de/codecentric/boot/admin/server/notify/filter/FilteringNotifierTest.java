@@ -25,6 +25,7 @@ import de.codecentric.boot.admin.server.notify.TestNotifier;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.time.Duration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -40,7 +41,7 @@ public class FilteringNotifierTest {
     private InstanceRepository repository;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         repository = mock(InstanceRepository.class);
         when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
     }
@@ -53,7 +54,7 @@ public class FilteringNotifierTest {
     @Test
     public void test_expired_removal() {
         FilteringNotifier notifier = new FilteringNotifier(new TestNotifier(), repository);
-        notifier.setCleanupInterval(0L);
+        notifier.setCleanupInterval(Duration.ZERO);
 
         String id1 = notifier.addFilter(new ApplicationNameNotificationFilter("foo", 0L));
         String id2 = notifier.addFilter(new ApplicationNameNotificationFilter("bar", -1L));

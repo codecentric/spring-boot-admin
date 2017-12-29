@@ -26,6 +26,7 @@ import de.codecentric.boot.admin.server.domain.values.Registration;
 import reactor.core.publisher.Mono;
 import reactor.test.publisher.TestPublisher;
 
+import java.time.Duration;
 import org.junit.Test;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -49,8 +50,8 @@ public class StatusUpdateTriggerTest {
 
         TestPublisher<InstanceEvent> publisher = TestPublisher.create();
         StatusUpdateTrigger trigger = new StatusUpdateTrigger(updater, publisher);
-        trigger.setUpdateInterval(10L);
-        trigger.setStatusLifetime(10L);
+        trigger.setUpdateInterval(Duration.ofMillis(10));
+        trigger.setStatusLifetime(Duration.ofMillis(10));
 
         //when trigger is initialized and an appliation is registered
         trigger.start();
@@ -62,7 +63,7 @@ public class StatusUpdateTriggerTest {
         verify(updater, atLeast(2)).updateStatus(instance.getId());
 
         //given long lifetime
-        trigger.setStatusLifetime(10_000L);
+        trigger.setStatusLifetime(Duration.ofSeconds(10));
         Thread.sleep(50L);
         clearInvocations(updater);
         //when the lifetime is not expired
@@ -71,7 +72,7 @@ public class StatusUpdateTriggerTest {
         verify(updater, never()).updateStatus(any(InstanceId.class));
 
         //when trigger ist destroyed
-        trigger.setStatusLifetime(10L);
+        trigger.setStatusLifetime(Duration.ofMillis(10));
         trigger.stop();
         clearInvocations(updater);
         Thread.sleep(15L);

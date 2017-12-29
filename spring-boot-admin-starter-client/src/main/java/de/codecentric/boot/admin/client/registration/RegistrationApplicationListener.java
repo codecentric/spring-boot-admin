@@ -15,6 +15,7 @@
  */
 package de.codecentric.boot.admin.client.registration;
 
+import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,7 @@ public class RegistrationApplicationListener {
     private final TaskScheduler taskScheduler;
     private boolean autoDeregister = false;
     private boolean autoRegister = true;
-    private long registerPeriod = 10_000L;
+    private Duration registerPeriod = Duration.ofSeconds(10);
     private volatile ScheduledFuture<?> scheduledTask;
 
     public RegistrationApplicationListener(ApplicationRegistrator registrator, TaskScheduler taskScheduler) {
@@ -89,7 +90,7 @@ public class RegistrationApplicationListener {
         this.autoRegister = autoRegister;
     }
 
-    public void setRegisterPeriod(long registerPeriod) {
+    public void setRegisterPeriod(Duration registerPeriod) {
         this.registerPeriod = registerPeriod;
     }
 }

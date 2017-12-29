@@ -23,10 +23,12 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathP
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.web.util.UriComponentsBuilder;
 
 public class ServletApplicationFactory extends DefaultApplicationFactory {
     private final ServletContext servletContext;
     private final ServerProperties.Servlet servlet;
+    private final ManagementServerProperties.Servlet managementServlet;
 
     public ServletApplicationFactory(InstanceProperties instance,
                                      ManagementServerProperties management,
@@ -37,6 +39,19 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
         super(instance, management, server, endpointPathProvider, webEndpoint);
         this.servletContext = servletContext;
         this.servlet = server.getServlet();
+        this.managementServlet = management.getServlet();
+    }
+
+    @Override
+    protected String getManagementBaseUrl() {
+        return UriComponentsBuilder.fromHttpUrl(super.getManagementBaseUrl())
+                                   .path("/")
+                                   .path(getManagementContextPath())
+                                   .toUriString();
+    }
+
+    protected String getManagementContextPath() {
+        return managementServlet.getContextPath();
     }
 
     @Override

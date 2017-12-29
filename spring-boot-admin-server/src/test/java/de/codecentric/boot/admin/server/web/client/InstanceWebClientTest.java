@@ -23,6 +23,7 @@ import io.netty.handler.timeout.ReadTimeoutException;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.time.Duration;
 import java.util.OptionalLong;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -58,7 +59,8 @@ public class InstanceWebClientTest {
     public WireMockClassRule wireMock = wireMockClassRule;
 
     private final HttpHeadersProvider headersProvider = mock(HttpHeadersProvider.class, invocation -> EMPTY);
-    private InstanceWebClient instanceWebClient = new InstanceWebClient(headersProvider, 1000, 1000);
+    private InstanceWebClient instanceWebClient = new InstanceWebClient(headersProvider, Duration.ofSeconds(1),
+            Duration.ofSeconds(1));
 
     @Test
     public void should_rewirte_url() {

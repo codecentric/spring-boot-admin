@@ -62,7 +62,8 @@ public class InfoUpdaterTest {
         repository = new EventSourcingInstanceRepository(eventStore);
         repository.start();
         InstanceWebClient instanceWebClient = new InstanceWebClient(
-                mock(HttpHeadersProvider.class, invocation -> HttpHeaders.EMPTY), 1000, 1000);
+                mock(HttpHeadersProvider.class, invocation -> HttpHeaders.EMPTY), Duration.ofSeconds(1),
+                Duration.ofSeconds(1));
         updater = new InfoUpdater(repository, instanceWebClient);
     }
 

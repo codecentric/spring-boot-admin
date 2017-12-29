@@ -16,6 +16,7 @@
 
 package de.codecentric.boot.admin.client.registration;
 
+import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
@@ -35,7 +36,7 @@ import static org.mockito.Mockito.when;
 public class RegistrationApplicationListenerTest {
 
     @Test
-    public void test_register() throws Exception {
+    public void test_register() {
         ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
         TaskScheduler scheduler = mock(TaskScheduler.class);
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
@@ -43,11 +44,11 @@ public class RegistrationApplicationListenerTest {
         listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
                 mock(ConfigurableWebApplicationContext.class)));
 
-        verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(10_000L));
+        verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)));
     }
 
     @Test
-    public void test_no_register() throws Exception {
+    public void test_no_register() {
         ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
         TaskScheduler scheduler = mock(TaskScheduler.class);
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
@@ -56,23 +57,23 @@ public class RegistrationApplicationListenerTest {
         listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
                 mock(ConfigurableWebApplicationContext.class)));
 
-        verify(scheduler, never()).scheduleAtFixedRate(isA(Runnable.class), eq(10_000L));
+        verify(scheduler, never()).scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)));
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
-    public void test_no_register_after_close() throws Exception {
+    public void test_no_register_after_close() {
         ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
         TaskScheduler scheduler = mock(TaskScheduler.class);
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
 
         ScheduledFuture task = mock(ScheduledFuture.class);
-        when(scheduler.scheduleAtFixedRate(isA(Runnable.class), eq(10_000L))).thenReturn(task);
+        when(scheduler.scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)))).thenReturn(task);
 
         listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
                 mock(ConfigurableWebApplicationContext.class)));
 
-        verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(10_000L));
+        verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)));
 
         listener.onClosedContext(new ContextClosedEvent(mock(WebApplicationContext.class)));
         verify(task).cancel(true);
@@ -80,23 +81,23 @@ public class RegistrationApplicationListenerTest {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
-    public void test_start_stop() throws Exception {
+    public void test_start_stop() {
         ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
         TaskScheduler scheduler = mock(TaskScheduler.class);
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
 
         ScheduledFuture task = mock(ScheduledFuture.class);
-        when(scheduler.scheduleAtFixedRate(isA(Runnable.class), eq(10_000L))).thenReturn(task);
+        when(scheduler.scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)))).thenReturn(task);
 
         listener.startRegisterTask();
-        verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(10_000L));
+        verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)));
 
         listener.stopRegisterTask();
         verify(task).cancel(true);
     }
 
     @Test
-    public void test_no_deregister() throws Exception {
+    public void test_no_deregister() {
         ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
         TaskScheduler scheduler = mock(TaskScheduler.class);
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
@@ -107,7 +108,7 @@ public class RegistrationApplicationListenerTest {
     }
 
     @Test
-    public void test_deregister() throws Exception {
+    public void test_deregister() {
         ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
         TaskScheduler scheduler = mock(TaskScheduler.class);
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);

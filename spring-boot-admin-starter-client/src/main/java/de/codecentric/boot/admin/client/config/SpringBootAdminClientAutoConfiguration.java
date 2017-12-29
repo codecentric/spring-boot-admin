@@ -87,8 +87,8 @@ public class SpringBootAdminClientAutoConfiguration {
                                               RestTemplateBuilder restTemplBuilder) {
         RestTemplateBuilder builder = restTemplBuilder.messageConverters(new MappingJackson2HttpMessageConverter())
                                                       .requestFactory(SimpleClientHttpRequestFactory.class)
-                                                      .setConnectTimeout(client.getConnectTimeout())
-                                                      .setReadTimeout(client.getReadTimeout());
+                                                      .setConnectTimeout((int) client.getConnectTimeout().toMillis())
+                                                      .setReadTimeout((int) client.getReadTimeout().toMillis());
         if (client.getUsername() != null) {
             builder = builder.basicAuthorization(client.getUsername(), client.getPassword());
         }

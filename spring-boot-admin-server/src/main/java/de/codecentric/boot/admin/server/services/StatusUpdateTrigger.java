@@ -37,8 +37,8 @@ public class StatusUpdateTrigger extends ResubscribingEventHandler<InstanceRegis
     private static final Logger log = LoggerFactory.getLogger(StatusUpdateTrigger.class);
     private final StatusUpdater statusUpdater;
     private Map<InstanceId, Long> lastQueried = new HashMap<>();
-    private long updateInterval = 10_000L;
-    private long statusLifetime = 10_000L;
+    private Duration updateInterval = Duration.ofSeconds(10);
+    private Duration statusLifetime = Duration.ofSeconds(10);
     private Disposable intervalSubscription;
 
 
@@ -50,8 +50,8 @@ public class StatusUpdateTrigger extends ResubscribingEventHandler<InstanceRegis
     @Override
     public void start() {
         super.start();
-        intervalSubscription = Flux.interval(Duration.ofMillis(updateInterval))
-                                   .doOnSubscribe(subscription -> log.debug("Scheduled status update every {}ms",
+        intervalSubscription = Flux.interval(updateInterval)
+                                   .doOnSubscribe(subscription -> log.debug("Scheduled status update every {}",
                                            updateInterval))
                                    .log(log.getName(), Level.FINEST)
                                    .subscribeOn(Schedulers.newSingle("status-monitor"))
@@ -79,7 +79,7 @@ public class StatusUpdateTrigger extends ResubscribingEventHandler<InstanceRegis
 
     protected Mono<Void> updateStatusForAllInstances() {
         log.debug("Updating status for all instances");
-        long expiryInstant = System.currentTimeMillis() - statusLifetime;
+        long expiryInstant = System.currentTimeMillis() - statusLifetime.toMillis();
         return Flux.fromIterable(lastQueried.entrySet())
                    .filter(e -> e.getValue() < expiryInstant)
                    .map(Map.Entry::getKey)
@@ -92,11 +92,11 @@ public class StatusUpdateTrigger extends ResubscribingEventHandler<InstanceRegis
                             .doFinally((s) -> lastQueried.put(instanceId, System.currentTimeMillis()));
     }
 
-    public void setUpdateInterval(long updateInterval) {
+    public void setUpdateInterval(Duration updateInterval) {
         this.updateInterval = updateInterval;
     }
 
-    public void setStatusLifetime(long statusLifetime) {
+    public void setStatusLifetime(Duration statusLifetime) {
         this.statusLifetime = statusLifetime;
     }
 }

@@ -16,8 +16,10 @@
 
 package de.codecentric.boot.admin.server.config;
 
+import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+@lombok.Data
 @ConfigurationProperties("spring.boot.admin")
 public class AdminServerProperties {
     /**
@@ -59,58 +61,28 @@ public class AdminServerProperties {
         this.probedEndpoints = probedEndpoints;
     }
 
+    @lombok.Data
     public static class MonitorProperties {
         /**
-         * Time interval in ms to update the status of instances with expired statusInfo
+         * Time interval to update the status of instances with expired statusInfo
          */
-        private long period = 10_000L;
+        private Duration period = Duration.ofSeconds(10);
 
         /**
-         * Lifetime of status in ms. The status won't be updated as long the last status isn't
+         * Lifetime of status. The status won't be updated as long the last status isn't
          * expired.
          */
-        private long statusLifetime = 10_000L;
+        private Duration statusLifetime = Duration.ofSeconds(10);
 
         /**
          * Connect timeout when querying the instances' status and info.
          */
-        private int connectTimeout = 2_000;
+        private Duration connectTimeout = Duration.ofSeconds(2);
 
         /**
          * read timeout when querying the instances' status and info.
          */
-        private int readTimeout = 5_000;
+        private Duration readTimeout = Duration.ofSeconds(5);
 
-        public void setPeriod(long period) {
-            this.period = period;
-        }
-
-        public long getPeriod() {
-            return period;
-        }
-
-        public void setStatusLifetime(long statusLifetime) {
-            this.statusLifetime = statusLifetime;
-        }
-
-        public long getStatusLifetime() {
-            return statusLifetime;
-        }
-
-        public int getConnectTimeout() {
-            return connectTimeout;
-        }
-
-        public void setConnectTimeout(int connectTimeout) {
-            this.connectTimeout = connectTimeout;
-        }
-
-        public int getReadTimeout() {
-            return readTimeout;
-        }
-
-        public void setReadTimeout(int readTimeout) {
-            this.readTimeout = readTimeout;
-        }
     }
 }

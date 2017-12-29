@@ -22,6 +22,7 @@ import de.codecentric.boot.admin.server.notify.AbstractEventNotifier;
 import de.codecentric.boot.admin.server.notify.Notifier;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class FilteringNotifier extends AbstractEventNotifier {
     private final ConcurrentMap<String, NotificationFilter> filters = new ConcurrentHashMap<>();
     private final Notifier delegate;
     private long lastCleanup;
-    private long cleanupInterval = 10_000L;
+    private Duration cleanupInterval = Duration.ofSeconds(10);
     private AtomicLong counter = new AtomicLong();
 
     public FilteringNotifier(Notifier delegate, InstanceRepository repository) {
@@ -79,7 +80,7 @@ public class FilteringNotifier extends AbstractEventNotifier {
 
     private void cleanUp() {
         long now = System.currentTimeMillis();
-        if (lastCleanup + cleanupInterval > now) {
+        if (lastCleanup + cleanupInterval.toMillis() > now) {
             return;
         }
         lastCleanup = now;
@@ -110,7 +111,7 @@ public class FilteringNotifier extends AbstractEventNotifier {
         }
     }
 
-    public void setCleanupInterval(long cleanupInterval) {
+    public void setCleanupInterval(Duration cleanupInterval) {
         this.cleanupInterval = cleanupInterval;
     }
 }

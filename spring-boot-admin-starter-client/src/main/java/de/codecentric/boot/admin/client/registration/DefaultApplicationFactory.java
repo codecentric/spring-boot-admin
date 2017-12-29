@@ -107,7 +107,6 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 
         return UriComponentsBuilder.fromUriString(getManagementBaseUrl())
                                    .path("/")
-                                   .path(getManagementContextPath())
                                    .path(getEndpointsWebPath())
                                    .toUriString();
     }
@@ -140,10 +139,6 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 
     protected boolean isManagementPortEqual() {
         return getLocalManagementPort() == null || getLocalManagementPort().equals(getLocalServerPort());
-    }
-
-    protected String getManagementContextPath() {
-        return management.getContextPath();
     }
 
     protected String getEndpointsWebPath() {
