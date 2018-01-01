@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,12 @@ public class AdminServerProperties {
     private MonitorProperties monitor = new MonitorProperties();
 
     /**
+     * The metadata keys which should be sanitized when serializing to json
+     */
+    private String[] metadataKeysToSanitize = new String[]{".*password$", ".*secret$", ".*key$", ".*$token$",
+            ".*credentials.*", ".*vcap_services$"};
+
+    /**
      * For Spring Boot 2.x applications the endpoints should be discovered automatically using the actuator links.
      * For Spring Boot 1.x applications SBA probes for the specified endpoints using an OPTIONS request.
      * If the path differs from the id you can specify this as id:path (e.g. health:ping).
@@ -51,6 +57,14 @@ public class AdminServerProperties {
 
     public MonitorProperties getMonitor() {
         return monitor;
+    }
+
+    public String[] getMetadataKeysToSanitize() {
+        return metadataKeysToSanitize;
+    }
+
+    public void setMetadataKeysToSanitize(String[] metadataKeysToSanitize) {
+        this.metadataKeysToSanitize = metadataKeysToSanitize;
     }
 
     public String[] getProbedEndpoints() {

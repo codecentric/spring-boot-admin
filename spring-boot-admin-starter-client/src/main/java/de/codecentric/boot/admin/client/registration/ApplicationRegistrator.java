@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,9 +71,9 @@ public class ApplicationRegistrator {
 
                 if (response.getStatusCode().is2xxSuccessful()) {
                     if (registeredId.compareAndSet(null, response.getBody().get("id").toString())) {
-                        LOGGER.info("Application registered itself as {}", response.getBody());
+                        LOGGER.info("Application registered itself as {}", response.getBody().get("id").toString());
                     } else {
-                        LOGGER.debug("Application refreshed itself as {}", response.getBody());
+                        LOGGER.debug("Application refreshed itself as {}", response.getBody().get("id").toString());
                     }
 
                     isRegistrationSuccessful = true;

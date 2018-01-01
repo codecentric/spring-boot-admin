@@ -15,9 +15,13 @@
  */
 package de.codecentric.boot.admin.server.config;
 
+import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventPublisher;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
+import de.codecentric.boot.admin.server.utils.jackson.RegistrationBeanSerializerModifier;
+import de.codecentric.boot.admin.server.utils.jackson.RegistrationDeserializer;
+import de.codecentric.boot.admin.server.utils.jackson.SanitizingMapSerializer;
 import de.codecentric.boot.admin.server.web.AdminController;
 import de.codecentric.boot.admin.server.web.ApplicationsController;
 import de.codecentric.boot.admin.server.web.InstancesController;
@@ -33,9 +37,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 @Configuration
 public class AdminServerWebConfiguration {
+    @Bean
+    public SimpleModule adminJacksonModule(AdminServerProperties adminServerProperties) {
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(Registration.class, new RegistrationDeserializer());
+        module.setSerializerModifier(new RegistrationBeanSerializerModifier(
+                new SanitizingMapSerializer(adminServerProperties.getMetadataKeysToSanitize())));
+        return module;
+    }
+
     @Bean
     @ConditionalOnMissingBean
     public InstancesController instancesController(InstanceRegistry instanceRegistry, InstanceEventStore eventStore) {

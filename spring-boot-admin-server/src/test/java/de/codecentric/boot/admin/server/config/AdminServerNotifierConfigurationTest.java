@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,12 @@ import de.codecentric.boot.admin.server.notify.CompositeNotifier;
 import de.codecentric.boot.admin.server.notify.HipchatNotifier;
 import de.codecentric.boot.admin.server.notify.LetsChatNotifier;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
+import de.codecentric.boot.admin.server.notify.MicrosoftTeamsNotifier;
 import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
 import de.codecentric.boot.admin.server.notify.OpsGenieNotifier;
 import de.codecentric.boot.admin.server.notify.SlackNotifier;
+import de.codecentric.boot.admin.server.notify.TelegramNotifier;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -36,7 +38,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -46,8 +47,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 
 public class AdminServerNotifierConfigurationTest {
     private static final InstanceEvent APP_DOWN = new InstanceStatusChangedEvent(InstanceId.of("id-2"), 1L,
@@ -110,7 +109,19 @@ public class AdminServerNotifierConfigurationTest {
     @Test
     public void test_opsgenie() {
         load(null, "spring.boot.admin.notify.opsgenie.api-key:foo");
-        Assert.assertThat(context.getBean(OpsGenieNotifier.class), is(instanceOf(OpsGenieNotifier.class)));
+        assertThat(context.getBean(OpsGenieNotifier.class)).isInstanceOf(OpsGenieNotifier.class);
+    }
+
+    @Test
+    public void test_ms_teams() {
+        load(null, "spring.boot.admin.notify.ms-teams.webhook-url:http://example.com");
+        assertThat(context.getBean(MicrosoftTeamsNotifier.class)).isInstanceOf(MicrosoftTeamsNotifier.class);
+    }
+
+    @Test
+    public void test_telegram() {
+        load(null, "spring.boot.admin.notify.telegram.auth-token:123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11");
+        assertThat(context.getBean(Notifier.class)).isInstanceOf(TelegramNotifier.class);
     }
 
     @Test

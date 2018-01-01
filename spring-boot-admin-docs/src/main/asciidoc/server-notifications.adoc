@@ -129,10 +129,10 @@ spring.boot.admin.notify.mail.to=admin@example.com
 |===
 
 [[pagerduty-notifications]]
-==== Pagerduty notifications ====
-To enable pagerduty notifications you just have to add a generic service to your pagerduty-account and set `spring.boot.admin.notify.pagerduty.service-key` to the service-key you received.
+==== PagerDuty notifications ====
+To enable https://www.pagerduty.com/[PagerDuty] notifications you just have to add a generic service to your PagerDuty-account and set `spring.boot.admin.notify.pagerduty.service-key` to the service-key you received.
 
-.Pagerduty notifications configuration options
+.PagerDuty notifications configuration options
 |===
 | Property name |Description |Default value
 
@@ -145,7 +145,7 @@ To enable pagerduty notifications you just have to add a generic service to your
 | `"UNKNOWN:UP"`
 
 | spring.boot.admin.notify.pagerduty.service-key
-| Service-key to use for Pagerduty
+| Service-key to use for PagerDuty
 |
 
 | spring.boot.admin.notify.pagerduty.url
@@ -168,7 +168,7 @@ To enable pagerduty notifications you just have to add a generic service to your
 
 [[opsgenie-notifications]]
 ==== OpsGenie notifications ====
-To enable OpsGenie notifications you just have to add a new JSON Rest API integration to your OpsGenie account and set `spring.boot.admin.notify.opsgenie.api-key` to the apiKey you received.
+To enable https://www.opsgenie.com/[OpsGenie] notifications you just have to add a new JSON Rest API integration to your OpsGenie account and set `spring.boot.admin.notify.opsgenie.api-key` to the apiKey you received.
 
 .OpsGenie notifications configuration options
 |===
@@ -221,7 +221,7 @@ To enable OpsGenie notifications you just have to add a new JSON Rest API integr
 
 [hipchat-notifications]
 ==== Hipchat notifications ====
-To enable Hipchat notifications you need to create an API token from you Hipchat account and set the appropriate configuration properties.
+To enable https://www.hipchat.com/[Hipchat] notifications you need to create an API token from you Hipchat account and set the appropriate configuration properties.
 
 .Hipchat notifications configuration options
 |===
@@ -259,7 +259,7 @@ To enable Hipchat notifications you need to create an API token from you Hipchat
 
 [slack-notifications]
 ==== Slack notifications ====
-To enable Slack notifications you need to add a incoming Webhook under custom integrations on your Slack
+To enable https://slack.com/[Slack] notifications you need to add a incoming Webhook under custom integrations on your Slack
 account and configure it appropriately.
 
 .Slack notifications configuration options
@@ -298,7 +298,7 @@ account and configure it appropriately.
 
 [letschat-notifications]
 ==== Let's Chat notifications ====
-To enable Let's Chat notifications you need to add the host url and add the API token and username from Let's Chat
+To enable https://sdelements.github.io/lets-chat/[Let's Chat] notifications you need to add the host url and add the API token and username from Let's Chat
 
 .Let's Chat notifications configuration options
 |===
@@ -332,4 +332,58 @@ To enable Let's Chat notifications you need to add the host url and add the API 
 | Message to use in the event. SpEL-expressions are supported
 | `+++"*#{application.name}* (#{application.id}) is *#{to.status}*"+++`
 |
+|===
+
+[ms-teams-notifications]
+==== Microsoft Teams notifications ====
+To enable Microsoft Teams notifications you need to setup a connector webhook url and set the appropriate configuration property.
+
+.Microsoft Teams notifications configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.ms-teams.enabled
+| Enable Microsoft Teams notifications
+| `true`
+
+| spring.boot.admin.notify.ms-teams.webhook-url
+| The Microsoft Teams webhook url to send the notifications to.
+|
+
+| spring.boot.admin.notify.ms-teams.*
+| There are several options to customize the message title and color
+|
+|===
+
+[telegram-notifications]
+==== Telegram notifications ====
+To enable https://telegram.org/[Telegram] notifications you need to create and authorize a telegram bot and set the appropriate configuration properties for auth-token and chat-id.
+
+.Microsoft Teams notifications configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.telegram.enabled
+| Enable Microsoft Teams notifications
+| `true`
+
+| spring.boot.admin.notify.telegram.auth-token
+| The token identifiying und authorizing your Telegram bot (e.g. `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`).
+|
+
+| spring.boot.admin.notify.telegram.chat-id
+| Unique identifier for the target chat or username of the target channel
+|
+
+| spring.boot.admin.notify.telegram.disable-notify
+| If true users will receive a notification with no sound.
+| `false`
+
+| spring.boot.admin.notify.telegram.parse_mode
+| The parsing mode for the sent message. Currently ``HTML'` and `'Markdown'` are supported.
+| `'HTML'`
+
+| spring.boot.admin.notify.telegram.message
+| Text to send. SpEL-expressions are supported.
+| `+++"<strong>#{application.name}</strong>/#{application.id} is <strong>#{to.status}</strong>"+++`
 |===

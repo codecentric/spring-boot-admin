@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,12 @@ import de.codecentric.boot.admin.server.notify.CompositeNotifier;
 import de.codecentric.boot.admin.server.notify.HipchatNotifier;
 import de.codecentric.boot.admin.server.notify.LetsChatNotifier;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
+import de.codecentric.boot.admin.server.notify.MicrosoftTeamsNotifier;
 import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
 import de.codecentric.boot.admin.server.notify.OpsGenieNotifier;
 import de.codecentric.boot.admin.server.notify.SlackNotifier;
+import de.codecentric.boot.admin.server.notify.TelegramNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
 import de.codecentric.boot.admin.server.notify.filter.web.NotificationFilterController;
 
@@ -153,6 +155,30 @@ public class AdminServerNotifierConfiguration {
         @ConfigurationProperties("spring.boot.admin.notify.opsgenie")
         public OpsGenieNotifier opsgenieNotifier(InstanceRepository repository) {
             return new OpsGenieNotifier(repository);
+        }
+    }
+
+    @Configuration
+    @ConditionalOnProperty(prefix = "spring.boot.admin.notify.ms-teams", name = "webhook-url")
+    @AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
+    public static class MicrosoftTeamsNotifierConfiguration {
+        @Bean
+        @ConditionalOnMissingBean
+        @ConfigurationProperties("spring.boot.admin.notify.ms-teams")
+        public MicrosoftTeamsNotifier microsoftTeamsNotifier(InstanceRepository repository) {
+            return new MicrosoftTeamsNotifier(repository);
+        }
+    }
+
+    @Configuration
+    @ConditionalOnProperty(prefix = "spring.boot.admin.notify.telegram", name = "auth-token")
+    @AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
+    public static class TelegramNotifierConfiguration {
+        @Bean
+        @ConditionalOnMissingBean
+        @ConfigurationProperties("spring.boot.admin.notify.telegram")
+        public TelegramNotifier telegramNotifier(InstanceRepository repository) {
+            return new TelegramNotifier(repository);
         }
     }
 }
