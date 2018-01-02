@@ -26,7 +26,6 @@ import org.springframework.http.CacheControl;
 @lombok.Data
 @ConfigurationProperties("spring.boot.admin.ui")
 public class AdminServerUiProperties {
-
     private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {"classpath:/META-INF/spring-boot-admin-server-ui/"};
 
     /**
@@ -38,6 +37,8 @@ public class AdminServerUiProperties {
      * Locations of SBA ui template.
      */
     private String templateLocation = CLASSPATH_RESOURCE_LOCATIONS[0];
+
+    private boolean cacheTemplates = true;
 
     private final Cache cache = new Cache();
 

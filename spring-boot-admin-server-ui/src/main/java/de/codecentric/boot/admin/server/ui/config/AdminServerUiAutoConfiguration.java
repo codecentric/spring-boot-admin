@@ -59,8 +59,7 @@ public class AdminServerUiAutoConfiguration {
         resolver.setSuffix(".html");
         resolver.setTemplateMode("HTML");
         resolver.setCharacterEncoding("UTF-8");
-        //FIXME make property of it
-        resolver.setCacheable(false);
+        resolver.setCacheable(uiProperties.isCacheTemplates());
         resolver.setOrder(10);
         resolver.setCheckExistence(true);
         return resolver;

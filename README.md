@@ -99,7 +99,7 @@ You can access snapshot builds from the sonatype repository:
 ```
 
 ## Build
-In order to build spring-boot-admin you need to have node.js and npm on your `PATH`.
+In order to build spring-boot-admin you need to have node.js and npm on your `$PATH`.
 
 ```shell
 mvn clean package
