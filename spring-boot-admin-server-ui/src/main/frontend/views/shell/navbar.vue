@@ -18,8 +18,9 @@
     <nav id="navigation" class="navbar is-fixed-top">
         <div class="container">
             <div class="navbar-brand">
-                <a class="navbar-item" href="/">
-                    <img src="~@/assets/img/logo.png" width="200" height="200">
+                <a class="navbar-item logo" href="/">
+                    <boot-logo></boot-logo>
+                    Admin
                 </a>
                 <div class="navbar-burger burger" @click.stop="showMenu = !showMenu">
                     <span></span>
@@ -41,7 +42,12 @@
 </template>
 
 <script>
+  import bootLogo from '@/assets/img/boot-logo.svg';
+
   export default {
+    components: {
+      bootLogo
+    },
     data: () => ({
       showMenu: false
     }),
@@ -54,3 +60,18 @@
     }
   }
 </script>
+
+<style lang="scss">
+    @import "~@/assets/css/utilities";
+
+    .logo {
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: $white;
+
+        & svg {
+            fill: currentColor;
+            padding-right: 0.5rem;
+        }
+    }
+</style>

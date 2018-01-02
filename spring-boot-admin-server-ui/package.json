@@ -27,7 +27,7 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "autoprefixer": "^7.2.3",
+    "autoprefixer": "^7.2.4",
     "babel-core": "^6.25.0",
     "babel-eslint": "^8.1.2",
     "babel-jest": "^22.0.4",

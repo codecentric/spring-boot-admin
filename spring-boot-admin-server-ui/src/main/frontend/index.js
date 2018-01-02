@@ -18,6 +18,7 @@ import moment from 'moment';
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import './assets/css/base.scss'
+import './assets/img/favicon.png'
 import sbaComponents from './components'
 import sbaApplications from './views/applications';
 import sbaInstancesDetails from './views/instances/details';

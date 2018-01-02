@@ -122,7 +122,6 @@ const config = {
       },
       {
         test: /\.(png|jpg|jpeg|gif|eot|ttf|woff|woff2|svgz)(\?.+)?$/,
-        exclude: /favicon\.png$/,
         use: [{
           loader: 'url-loader',
           options: {
