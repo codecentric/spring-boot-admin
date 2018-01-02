@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 package de.codecentric.boot.admin.client.config;
 
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
 
 @lombok.Data
 @ConfigurationProperties(prefix = "spring.boot.admin.client")
@@ -35,17 +37,20 @@ public class ClientProperties {
     /**
      * Time interval the registration is repeated
      */
-    private Duration period = Duration.ofSeconds(10);
+    @DefaultDurationUnit(ChronoUnit.MILLIS)
+    private Duration period = Duration.ofMillis(10_000L);
 
     /**
      * Connect timeout for the registration.
      */
-    private Duration connectTimeout = Duration.ofSeconds(5);
+    @DefaultDurationUnit(ChronoUnit.MILLIS)
+    private Duration connectTimeout = Duration.ofMillis(5_000L);
 
     /**
      * Read timeout (in ms) for the registration.
      */
-    private Duration readTimeout = Duration.ofSeconds(5);
+    @DefaultDurationUnit(ChronoUnit.MILLIS)
+    private Duration readTimeout = Duration.ofMillis(5_000L);
 
     /**
      * Username for basic authentication on admin server

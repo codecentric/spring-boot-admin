@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package de.codecentric.boot.admin.client.config;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -65,6 +65,6 @@ public class InstanceProperties {
     /**
      * Metadata that should be associated with this application
      */
-    private Map<String, String> metadata = new HashMap<>();
+    private Map<String, String> metadata = new LinkedHashMap<>();
 
 }

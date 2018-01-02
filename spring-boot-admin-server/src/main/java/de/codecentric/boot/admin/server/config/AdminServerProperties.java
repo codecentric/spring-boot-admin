@@ -17,7 +17,9 @@
 package de.codecentric.boot.admin.server.config;
 
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
 
 @lombok.Data
 @ConfigurationProperties("spring.boot.admin")
@@ -80,23 +82,27 @@ public class AdminServerProperties {
         /**
          * Time interval to update the status of instances with expired statusInfo
          */
-        private Duration period = Duration.ofSeconds(10);
+        @DefaultDurationUnit(ChronoUnit.MILLIS)
+        private Duration period = Duration.ofMillis(10_000L);
 
         /**
          * Lifetime of status. The status won't be updated as long the last status isn't
          * expired.
          */
-        private Duration statusLifetime = Duration.ofSeconds(10);
+        @DefaultDurationUnit(ChronoUnit.MILLIS)
+        private Duration statusLifetime = Duration.ofMillis(10_000L);
 
         /**
          * Connect timeout when querying the instances' status and info.
          */
-        private Duration connectTimeout = Duration.ofSeconds(2);
+        @DefaultDurationUnit(ChronoUnit.MILLIS)
+        private Duration connectTimeout = Duration.ofMillis(2_000);
 
         /**
          * read timeout when querying the instances' status and info.
          */
-        private Duration readTimeout = Duration.ofSeconds(5);
+        @DefaultDurationUnit(ChronoUnit.MILLIS)
+        private Duration readTimeout = Duration.ofMillis(5_000);
 
     }
 }

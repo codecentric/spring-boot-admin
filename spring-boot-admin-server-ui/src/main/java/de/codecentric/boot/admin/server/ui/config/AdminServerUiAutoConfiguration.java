@@ -24,10 +24,10 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.CacheControl;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
@@ -35,65 +35,68 @@ import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 @Configuration
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
 @AutoConfigureAfter(AdminServerWebConfiguration.class)
+@EnableConfigurationProperties(AdminServerUiProperties.class)
 public class AdminServerUiAutoConfiguration {
+    private final AdminServerUiProperties uiProperties;
+    private final ApplicationContext applicationContext;
 
-    //FIXME make property of it
-    public static final String SBA_RESOURCE_LOC = "file:/Users/jedmeier/projects/spring-boot-admin/spring-boot-admin-server-ui/target/dist/";
-    //public static final String SBA_RESOURCE_LOC = "classpath:/META-INF/spring-boot-admin-server-ui/";
+    public AdminServerUiAutoConfiguration(AdminServerUiProperties uiProperties, ApplicationContext applicationContext) {
+        this.uiProperties = uiProperties;
+        this.applicationContext = applicationContext;
+    }
 
-    @Configuration
-    public static class UiConfiguration {
-        private final ApplicationContext applicationContext;
+    @Bean
+    @ConditionalOnMissingBean
+    public UiController homeUiController() {
+        return new UiController();
+    }
 
-        public UiConfiguration(ApplicationContext applicationContext) {
-            this.applicationContext = applicationContext;
-        }
-
-        @Bean
-        @ConditionalOnMissingBean
-        public UiController homeUiController() {
-            return new UiController();
-        }
-
-        @Bean
-        public SpringResourceTemplateResolver adminTemplateResolver() {
-            SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
-            resolver.setApplicationContext(this.applicationContext);
-            resolver.setPrefix(SBA_RESOURCE_LOC);
-            resolver.setSuffix(".html");
-            resolver.setTemplateMode("HTML");
-            resolver.setCharacterEncoding("UTF-8");
-            //FIXME make property of it
-            resolver.setCacheable(false);
-            resolver.setOrder(10);
-            resolver.setCheckExistence(true);
-            return resolver;
-        }
-
+    @Bean
+    public SpringResourceTemplateResolver adminTemplateResolver() {
+        SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
+        resolver.setApplicationContext(this.applicationContext);
+        resolver.setPrefix(uiProperties.getTemplateLocation());
+        resolver.setSuffix(".html");
+        resolver.setTemplateMode("HTML");
+        resolver.setCharacterEncoding("UTF-8");
+        //FIXME make property of it
+        resolver.setCacheable(false);
+        resolver.setOrder(10);
+        resolver.setCheckExistence(true);
+        return resolver;
     }
 
     @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
     @Configuration
     public static class ReactiveUiConfiguration implements WebFluxConfigurer {
+        private final AdminServerUiProperties uiProperties;
+
+        public ReactiveUiConfiguration(AdminServerUiProperties uiProperties) {
+            this.uiProperties = uiProperties;
+        }
 
         @Override
         public void addResourceHandlers(org.springframework.web.reactive.config.ResourceHandlerRegistry registry) {
-            registry.addResourceHandler("/**").addResourceLocations(SBA_RESOURCE_LOC)
-                    //FIXME make property of it
-                    .setCacheControl(CacheControl.noStore());
+            registry.addResourceHandler("/**")
+                    .addResourceLocations(uiProperties.getResourceLocations())
+                    .setCacheControl(uiProperties.getCache().toCacheControl());
         }
     }
 
-    //FIXME move to ui project
     @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
     @Configuration
     public static class ServletUiConfiguration implements WebMvcConfigurer {
+        private final AdminServerUiProperties uiProperties;
+
+        public ServletUiConfiguration(AdminServerUiProperties uiProperties) {
+            this.uiProperties = uiProperties;
+        }
 
         @Override
         public void addResourceHandlers(org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
-            registry.addResourceHandler("/**").addResourceLocations(SBA_RESOURCE_LOC)
-                    //FIXME make property of it
-                    .setCacheControl(CacheControl.noStore());
+            registry.addResourceHandler("/**")
+                    .addResourceLocations(uiProperties.getResourceLocations())
+                    .setCacheControl(uiProperties.getCache().toCacheControl());
         }
     }
 }
