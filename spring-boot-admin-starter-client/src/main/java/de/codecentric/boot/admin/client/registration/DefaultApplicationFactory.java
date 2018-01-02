@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@ import de.codecentric.boot.admin.client.config.InstanceProperties;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -39,13 +42,15 @@ import org.springframework.web.util.UriComponentsBuilder;
  * @author Rene Felgenträger
  */
 public class DefaultApplicationFactory implements ApplicationFactory {
-    private InstanceProperties instance;
-    private ServerProperties server;
-    private ManagementServerProperties management;
+    private final InstanceProperties instance;
+    private final ServerProperties server;
+    private final ManagementServerProperties management;
+    private final EndpointPathProvider endpointPathProvider;
+    private final WebEndpointProperties webEndpoint;
+    private final OffsetDateTime timestamp;
     private Integer localServerPort;
     private Integer localManagementPort;
-    private EndpointPathProvider endpointPathProvider;
-    private WebEndpointProperties webEndpoint;
+
 
     public DefaultApplicationFactory(InstanceProperties instance,
                                      ManagementServerProperties management,
@@ -57,6 +62,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
         this.server = server;
         this.endpointPathProvider = endpointPathProvider;
         this.webEndpoint = webEndpoint;
+        this.timestamp = OffsetDateTime.now();
     }
 
     @Override
@@ -156,7 +162,13 @@ public class DefaultApplicationFactory implements ApplicationFactory {
     }
 
     protected Map<String, String> getMetadata() {
-        return instance.getMetadata();
+        if (instance.getMetadata().containsKey("startup")) {
+            return instance.getMetadata();
+        } else {
+            Map<String, String> metadata = new LinkedHashMap<>();
+            metadata.put("startup", this.timestamp.format(DateTimeFormatter.ISO_DATE_TIME));
+            return metadata;
+        }
     }
 
     protected String getServiceHost() {

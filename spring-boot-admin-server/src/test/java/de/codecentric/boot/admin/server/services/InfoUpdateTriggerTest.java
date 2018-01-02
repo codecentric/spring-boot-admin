@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.events.InstanceEndpointsDetectedEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdatedEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
@@ -66,6 +67,13 @@ public class InfoUpdateTriggerTest {
         //when endpoints-detected event is emitted
         clearInvocations(updater);
         events.next(new InstanceEndpointsDetectedEvent(instance.getId(), instance.getVersion(), Endpoints.empty()));
+        //then should update
+        verify(updater, times(1)).updateInfo(instance.getId());
+
+        //when registration updated event is emitted
+        clearInvocations(updater);
+        events.next(new InstanceRegistrationUpdatedEvent(instance.getId(), instance.getVersion(),
+                instance.getRegistration()));
         //then should update
         verify(updater, times(1)).updateInfo(instance.getId());
 

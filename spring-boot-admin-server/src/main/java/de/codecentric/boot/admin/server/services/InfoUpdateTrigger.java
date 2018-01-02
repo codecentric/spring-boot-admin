@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.services;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceEndpointsDetectedEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdatedEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -37,7 +38,8 @@ public class InfoUpdateTrigger extends ResubscribingEventHandler<InstanceEvent> 
     protected Publisher<?> handle(Flux<InstanceEvent> publisher) {
         return publisher.subscribeOn(Schedulers.newSingle("info-updater"))
                         .filter(event -> event instanceof InstanceEndpointsDetectedEvent ||
-                                         event instanceof InstanceStatusChangedEvent)
+                                         event instanceof InstanceStatusChangedEvent ||
+                                         event instanceof InstanceRegistrationUpdatedEvent)
                         .flatMap(this::updateInfo);
     }
 

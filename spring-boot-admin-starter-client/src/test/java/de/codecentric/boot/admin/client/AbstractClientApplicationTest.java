@@ -26,7 +26,8 @@ import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.created;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.matching;
+import static com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath;
 import static com.github.tomakehurst.wiremock.client.WireMock.moreThanOrExactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
@@ -53,13 +54,13 @@ public abstract class AbstractClientApplicationTest {
         Thread.sleep(1000L);
         String serviceHost = "http://localhost:" + getServerPort();
         String managementHost = "http://localhost:" + getManagementPort();
-        String body = "{ \"name\" : \"Test-Client\"," + //
-                      " \"managementUrl\" : \"" + managementHost + "/mgmt\"," + //
-                      " \"healthUrl\" : \"" + managementHost + "/mgmt/health\"," + //
-                      " \"serviceUrl\" : \"" + serviceHost + "/\", " + //
-                      " \"metadata\" : {} }";
-        RequestPatternBuilder request = postRequestedFor(urlEqualTo("/instances")).withHeader("Content-Type",
-                equalTo("application/json")).withRequestBody(equalToJson(body));
+        RequestPatternBuilder request = postRequestedFor(urlEqualTo("/instances"));
+        request.withHeader("Content-Type", equalTo("application/json"))
+               .withRequestBody(matchingJsonPath("$.name", equalTo("Test-Client")))
+               .withRequestBody(matchingJsonPath("$.healthUrl", equalTo(managementHost + "/mgmt/health")))
+               .withRequestBody(matchingJsonPath("$.managementUrl", equalTo(managementHost + "/mgmt")))
+               .withRequestBody(matchingJsonPath("$.serviceUrl", equalTo(serviceHost + "/")))
+               .withRequestBody(matchingJsonPath("$.metadata.startup", matching(".+")));
         verify(moreThanOrExactly(1), request);
     }
 
