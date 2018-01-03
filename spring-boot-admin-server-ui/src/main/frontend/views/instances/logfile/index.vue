@@ -19,15 +19,14 @@
         <div class="logfile-view-actions">
             <div class="logfile-view-actions__navigation">
                 <sba-icon-button :disabled="atTop" @click.native="scrollToTop">
-                    <first-page-icon class="rotated"></first-page-icon>
+                    <font-awesome-icon icon="step-backward" size="lg" class="rotated"></font-awesome-icon>
                 </sba-icon-button>
                 <sba-icon-button :disabled="atBottom" @click.native="scrollToBottom">
-                    <last-page-icon class="rotated"></last-page-icon>
+                    <font-awesome-icon icon="step-forward" size="lg" class="rotated"></font-awesome-icon>
                 </sba-icon-button>
             </div>
             <a class="button" v-if="instance" :href="`instances/${instance.id}/logfile`" target="_blank">
-                <download-icon></download-icon>
-                Download
+                <font-awesome-icon icon="download"></font-awesome-icon>&nbsp;Download
             </a>
         </div>
         <p v-if="skippedBytes > 0" v-text="skippedHumanBytes"></p>
@@ -38,15 +37,9 @@
 <script>
   import {animationFrame, Observable} from '@/utils/rxjs';
   import _ from 'lodash';
-  import downloadIcon from 'material-design-icons/file/svg/production/ic_file_download_24px.svg';
-  import firstPageIcon from 'material-design-icons/navigation/svg/production/ic_first_page_24px.svg';
-  import lastPageIcon from 'material-design-icons/navigation/svg/production/ic_last_page_24px.svg';
   import prettyBytes from 'pretty-bytes';
 
   export default {
-    components: {
-      downloadIcon, firstPageIcon, lastPageIcon
-    },
     props: ['instance'],
     data: () => ({
       subscription: null,

@@ -73,7 +73,6 @@
 </template>
 
 <script>
-  import sbaPageloader from '@/components/sba-pageloader';
   import sbaLoggerControl from './logger-control.vue'
 
   const isPackageName = (name) => {
@@ -88,7 +87,6 @@
 
   export default {
     components: {
-      sbaPageloader,
       sbaLoggerControl
     },
     props: ['instance'],

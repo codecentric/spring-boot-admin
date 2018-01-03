@@ -133,10 +133,13 @@ const config = {
     ]
   },
   plugins: [
-    new CleanWebpackPlugin(['dist'], {
+    new CleanWebpackPlugin(['target/dist'], {
       root: __dirname,
       verbose: true,
       dry: false,
+    }),
+    new webpack.DefinePlugin({
+      '__PROJECT_VERSION__': `'${process.env.PROJECT_VERSION || ''}'`
     }),
     new webpack.NamedModulesPlugin(),
     new LodashModuleReplacementPlugin(),

@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
+import fontawesome from '@fortawesome/fontawesome'
+import {faGithub, faGitter, faStackOverflow} from '@fortawesome/fontawesome-free-brands'
+import {
+  faBan, faBook, faCheck, faDownload, faExclamation, faMinusCircle, faQuestionCircle, faStepBackward,
+  faStepForward, faTimesCircle, faTrash
+} from '@fortawesome/fontawesome-free-solid'
+import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 import moment from 'moment';
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import './assets/css/base.scss'
 import './assets/img/favicon.png'
 import sbaComponents from './components'
+import sbaAbout from './views/about';
 import sbaApplications from './views/applications';
 import sbaInstancesDetails from './views/instances/details';
 import sbaInstancesEnv from './views/instances/env';
@@ -32,10 +40,14 @@ import sbaInstancesThreaddump from './views/instances/threaddump';
 import sbaInstancesTrace from './views/instances/trace';
 import sbaShell from './views/shell'
 
+fontawesome.library.add(faGithub, faStackOverflow, faGitter, faTrash, faDownload, faStepForward, faStepBackward, faCheck, faQuestionCircle, faBan, faTimesCircle, faMinusCircle, faExclamation,
+  faBook);
+
 moment.locale(window.navigator.language);
 
 Vue.use(VueRouter);
 Vue.use(sbaComponents);
+Vue.component('font-awesome-icon', FontAwesomeIcon);
 
 const router = new VueRouter({
   linkActiveClass: 'is-active'
@@ -69,7 +81,7 @@ views.register({
   component: sbaApplications
 });
 views.register({path: '/journal', name: 'journal', template: 'Journal', order: 100, component: sbaApplications});
-views.register({path: '/about', name: 'about', template: 'About', order: 200, component: sbaApplications});
+views.register({path: '/about', name: 'about', template: 'About', order: 200, component: sbaAbout});
 views.register({
   path: '/instances/:instanceId', component: sbaInstancesShell, props: true,
   children: [{

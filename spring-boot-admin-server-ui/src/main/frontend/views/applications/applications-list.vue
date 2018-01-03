@@ -39,7 +39,7 @@
                     <sba-icon-button
                             v-if="application.isUnregisterable"
                             @click.native.stop="unregister(application)">
-                        <delete-icon></delete-icon>
+                        <font-awesome-icon icon="trash"></font-awesome-icon>
                     </sba-icon-button>
                 </div>
             </div>
@@ -53,7 +53,7 @@
                         <sba-icon-button
                                 v-if="application.isUnregisterable"
                                 @click.native.stop="unregister(application)">
-                            <delete-icon></delete-icon>
+                            <font-awesome-icon icon="trash"></font-awesome-icon>
                         </sba-icon-button>
                     </div>
                 </div>
@@ -76,7 +76,7 @@
                         <div class="applications-list-item__actions">
                             <sba-icon-button v-if="instance.isUnregisterable"
                                              @click.native.stop="unregister(instance)">
-                                <delete-icon></delete-icon>
+                                <font-awesome-icon icon="trash"></font-awesome-icon>
                             </sba-icon-button>
                         </div>
                     </li>
@@ -87,13 +87,9 @@
 </template>
 
 <script>
-  import deleteIcon from 'material-design-icons/action/svg/production/ic_delete_24px.svg';
   import {directive as onClickaway} from 'vue-clickaway';
 
   export default {
-    components: {
-      deleteIcon
-    },
     directives: {
       onClickaway
     },

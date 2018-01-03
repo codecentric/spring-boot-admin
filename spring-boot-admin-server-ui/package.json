@@ -10,13 +10,16 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "@fortawesome/fontawesome": "^1.1.0",
+    "@fortawesome/fontawesome-free-brands": "^5.0.2",
+    "@fortawesome/fontawesome-free-solid": "^5.0.2",
+    "@fortawesome/vue-fontawesome": "0.0.22",
     "axios": "^0.17.1",
     "bulma": "^0.6.1",
     "d3": "^4.12.2",
     "event-source-polyfill": "0.0.12",
     "linkifyjs": "^2.1.5",
     "lodash": "^4.17.4",
-    "material-design-icons": "^3.0.1",
     "moment": "^2.20.1",
     "moment-shortformat": "^2.1.0",
     "pretty-bytes": "^4.0.2",

@@ -77,6 +77,9 @@
                                 <argument>run</argument>
                                 <argument>build</argument>
                             </arguments>
+                            <environmentVariables>
+                                <PROJECT_VERSION>${project.version}</PROJECT_VERSION>
+                            </environmentVariables>
                         </configuration>
                     </execution>
                     <execution>

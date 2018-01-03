@@ -20,7 +20,7 @@
             <div class="navbar-brand">
                 <a class="navbar-item logo" href="/">
                     <boot-logo></boot-logo>
-                    Admin
+                    Spring Boot Admin
                 </a>
                 <div class="navbar-burger burger" @click.stop="showMenu = !showMenu">
                     <span></span>
@@ -66,7 +66,7 @@
 
     .logo {
         font-size: 1.5rem;
-        font-weight: 500;
+        font-weight: 600;
         color: $white;
 
         & svg {

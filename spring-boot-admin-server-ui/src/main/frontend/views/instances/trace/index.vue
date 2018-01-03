@@ -70,7 +70,7 @@
                 <sba-traces-list :traces="selectedTraces"></sba-traces-list>
             </div>
             <div class="content" v-else>
-                <p>No traces recorded.</p>
+                <p class="is-muted">No traces recorded.</p>
             </div>
         </div>
     </section>

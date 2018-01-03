@@ -16,8 +16,8 @@
 
 <template>
     <div class="application-status">
-        <component :is="icon"
-                   class="application-status__icon" :class="`application-status__icon--${status}`"></component>
+        <font-awesome-icon :icon="icon" class="application-status__icon"
+                           :class="`application-status__icon--${status}`"></font-awesome-icon>
         <small v-if="date">
             <sba-time-ago :date="date"></sba-time-ago>
         </small>
@@ -25,32 +25,20 @@
 </template>
 
 <script>
-  import upIcon from 'material-design-icons/action/svg/production/ic_done_24px.svg';
-  import unknownIcon from 'material-design-icons/action/svg/production/ic_help_outline_24px.svg';
-  import outOfServiceIcon from 'material-design-icons/content/svg/production/ic_block_24px.svg';
-  import downIcon from 'material-design-icons/content/svg/production/ic_clear_24px.svg';
-  import offlineIcon from 'material-design-icons/content/svg/production/ic_remove_24px.svg';
-  import restrictedIcon from 'material-design-icons/content/svg/production/ic_report_24px.svg';
   import sbaTimeAgo from './sba-time-ago';
 
   const icons = {
-    'UP': upIcon,
-    'RESTRICTED': restrictedIcon,
-    'OUT_OF_SERVICE': outOfServiceIcon,
-    'DOWN': downIcon,
-    'OFFLINE': offlineIcon,
-    'UNKNOWN': unknownIcon
+    'UP': 'check',
+    'RESTRICTED': 'exclamation',
+    'OUT_OF_SERVICE': 'ban',
+    'DOWN': 'times-circle',
+    'OFFLINE': 'minus-circle',
+    'UNKNOWN': 'querstion-circle'
   };
 
   export default {
     components: {
       sbaTimeAgo,
-      upIcon,
-      restrictedIcon,
-      outOfServiceIcon,
-      downIcon,
-      offlineIcon,
-      unknownIcon
     },
     props: {
       status: String,
@@ -65,6 +53,8 @@
 </script>
 
 <style lang="scss">
+    @import "~@/assets/css/utilities";
+
     .application-status {
         text-align: center;
         line-height: 1rem;
@@ -72,25 +62,25 @@
         flex-direction: column;
 
         &__icon {
-            fill: gray;
+            color: gray;
             margin: 0 auto;
 
             &--UP {
-                fill: green;
+                color: $success;
             }
 
             &--RESTRICTED {
-                fill: orange;
+                color: $warning;
             }
 
             &--OUT_OF_SERVICE,
             &--DOWN {
-                fill: red;
+                color: $danger;
             }
 
             &--UNKNOWN,
             &--OFFLINE {
-                fill: grey;
+                color: $grey;
             }
         }
     }
