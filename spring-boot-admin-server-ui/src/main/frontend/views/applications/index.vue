@@ -47,7 +47,7 @@
             </div>
             <div v-if="statusGroups.length === 0"
                  class="content">
-                <p>No applications registered.</p>
+                <p class="is-muted">No applications registered.</p>
             </div>
         </div>
     </section>
@@ -62,17 +62,17 @@
     components: {
       applicationsList,
     },
-
     data: () => ({
-      applications: [],
+      _applications: [],
       errors: [],
       subscription: null
     }),
-
     computed: {
+      applications() {
+        return this.$data._applications.filter(application => application.instances.length > 0);
+      },
       statusGroups() {
-        const nonEmpty = this.applications.filter(application => application.instances.length > 0);
-        const byStatus = _.groupBy(nonEmpty, application => application.status);
+        const byStatus = _.groupBy(this.applications, application => application.status);
         const list = _.transform(byStatus, (result, value, key) => {
           result.push({status: key, applications: value})
         }, []);
@@ -90,27 +90,25 @@
         }, 0);
       }
     },
-
     async created() {
       try {
-        this.applications = (await Application.list()).data;
+        this.$data._applications = (await Application.list()).data;
       } catch (e) {
         this.errors.push(e);
       }
 
       this.subscription = (await Application.getStream()).subscribe({
         next: message => {
-          const idx = this.applications.findIndex(application => application.name === message.data.name);
+          const idx = this.$data._applications.findIndex(application => application.name === message.data.name);
           if (idx >= 0) {
-            this.applications.splice(idx, 1, message.data);
+            this.$data._applications.splice(idx, 1, message.data);
           } else {
-            this.applications.push(message.data);
+            this.$data._applications.push(message.data);
           }
         },
         error: err => this.errors.push(err)
       });
     },
-
     destroyed() {
       if (this.subscription !== null) {
         this.subscription.unsubscribe();

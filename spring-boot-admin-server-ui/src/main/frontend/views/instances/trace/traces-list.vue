@@ -28,7 +28,8 @@
         </tr>
         </thead>
         <template v-for="trace in traces">
-            <tr :class="{ 'trace--is-detailed' : showDetails[trace.key], 'has-text-warning' : trace.isClientError(), 'has-text-danger' : trace.isServerError() }"
+            <tr class="is-selectable"
+                :class="{ 'trace--is-detailed' : showDetails[trace.key], 'has-text-warning' : trace.isClientError(), 'has-text-danger' : trace.isServerError() }"
                 @click="showDetails[trace.key]  ?  $delete(showDetails, trace.key) : $set(showDetails, trace.key, true)"
                 :key="trace.key">
                 <td v-text="trace.timestamp.format('L HH:mm:ss.SSS')"></td>

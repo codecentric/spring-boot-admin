@@ -149,6 +149,7 @@
                 display: inline-flex;
                 flex-direction: column;
                 justify-content: space-between;
+                margin-right: 0.5rem;
             }
         }
     }

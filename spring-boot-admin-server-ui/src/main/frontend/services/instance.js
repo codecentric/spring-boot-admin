@@ -19,7 +19,7 @@ import logtail from '@/utils/logtail';
 import {Observable} from '@/utils/rxjs'
 import axios from 'axios';
 import _ from 'lodash';
-import moment from 'moment/moment';
+import moment from 'moment';
 
 const actuatorMimeTypes = ['application/vnd.spring-boot.actuator.v2+json',
   'application/vnd.spring-boot.actuator.v1+json',
@@ -36,12 +36,6 @@ class Instance {
 
   get isUnregisterable() {
     return this.registration.source === 'http-api';
-  }
-
-  static async get(id) {
-    return await axios.get(`instances/${id}`, {
-      transformResponse: Instance._toInstance
-    });
   }
 
   async unregister() {
@@ -125,19 +119,29 @@ class Instance {
       .concatMap(response => Observable.of(response.data.threads));
   }
 
-  async getStream() {
+  static async fetchEvents() {
+    return await axios.get(`instances/events`);
+  }
+
+  static async getEventStream() {
     await waitForPolyfill();
 
     return Observable.create(observer => {
-      const eventSource = new EventSource(`instances/${this.id}`);
+      const eventSource = new EventSource('instances/events');
       eventSource.onmessage = message => observer.next({
         ...message,
-        data: Instance._toInstance(message.data)
+        data: JSON.parse(message.data)
       });
       eventSource.onerror = err => observer.error(err);
       return () => {
         eventSource.close();
       };
+    });
+  }
+
+  static async get(id) {
+    return await axios.get(`instances/${id}`, {
+      transformResponse: Instance._toInstance
     });
   }
 

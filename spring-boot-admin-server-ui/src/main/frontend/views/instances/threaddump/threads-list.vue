@@ -29,7 +29,7 @@
             </thead>
             <tbody>
             <template v-for="thread in threadTimelines">
-                <tr :key="thread.threadId"
+                <tr class="is-selectable" :key="thread.threadId"
                     @click="showDetails[thread.threadId] ? $delete(showDetails, thread.threadId) : $set(showDetails, thread.threadId, true)">
                     <td class="threads__thread-name">
                         <thread-tag :thread-state="thread.threadState"></thread-tag>

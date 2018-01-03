@@ -70,7 +70,7 @@ exports[`application-status should match the snapshot with status UNKNOWN 1`] = 
 >
   <font-awesome-icon
     class="application-status__icon application-status__icon--UNKNOWN"
-    icon="querstion-circle"
+    icon="question-circle"
   />
    
   <!---->

@@ -25,6 +25,10 @@
   color: $grey-light;
 }
 
+.is-selectable {
+  cursor: pointer;
+}
+
 .card .table tr:last-of-type > td,
 .card .table tr:last-of-type > th {
   border-bottom: none;

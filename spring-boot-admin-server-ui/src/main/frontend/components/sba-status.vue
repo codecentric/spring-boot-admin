@@ -33,7 +33,7 @@
     'OUT_OF_SERVICE': 'ban',
     'DOWN': 'times-circle',
     'OFFLINE': 'minus-circle',
-    'UNKNOWN': 'querstion-circle'
+    'UNKNOWN': 'question-circle'
   };
 
   export default {

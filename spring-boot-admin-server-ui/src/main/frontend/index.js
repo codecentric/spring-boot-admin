@@ -38,6 +38,7 @@ import sbaInstancesLoggers from './views/instances/loggers';
 import sbaInstancesShell from './views/instances/shell';
 import sbaInstancesThreaddump from './views/instances/threaddump';
 import sbaInstancesTrace from './views/instances/trace';
+import sbaJournal from './views/journal';
 import sbaShell from './views/shell'
 
 fontawesome.library.add(faGithub, faStackOverflow, faGitter, faTrash, faDownload, faStepForward, faStepBackward, faCheck, faQuestionCircle, faBan, faTimesCircle, faMinusCircle, faExclamation,
@@ -80,7 +81,7 @@ views.register({
   order: 0,
   component: sbaApplications
 });
-views.register({path: '/journal', name: 'journal', template: 'Journal', order: 100, component: sbaApplications});
+views.register({path: '/journal', name: 'journal', template: 'Journal', order: 100, component: sbaJournal});
 views.register({path: '/about', name: 'about', template: 'About', order: 200, component: sbaAbout});
 views.register({
   path: '/instances/:instanceId', component: sbaInstancesShell, props: true,
