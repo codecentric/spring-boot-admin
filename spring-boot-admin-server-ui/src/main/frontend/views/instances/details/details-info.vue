@@ -15,14 +15,18 @@
   -->
 
 <template>
-    <table class="table">
-        <tr v-for="(value, key) in info" :key="key">
-            <td class="info__key" v-text="key"></td>
-            <td>
-                <sba-formatted-obj :value="value"></sba-formatted-obj>
-            </td>
-        </tr>
-    </table>
+    <sba-panel title="Info" v-if="info">
+        <div class="content" slot="text">
+            <table class="table">
+                <tr v-for="(value, key) in info" :key="key">
+                    <td class="info__key" v-text="key"></td>
+                    <td>
+                        <sba-formatted-obj :value="value"></sba-formatted-obj>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </sba-panel>
 </template>
 
 <script>
@@ -46,7 +50,9 @@
       async fetchInfo() {
         if (this.instance) {
           const res = await this.instance.fetchInfo();
-          this.info = res.data;
+          if (Object.keys(res.data).length > 0) {
+            this.info = res.data;
+          }
         }
       }
     }

@@ -15,7 +15,7 @@
   -->
 
 <template>
-    <table class="table is-fullwidth">
+    <table class="table">
         <tr>
             <td>
                 <sba-status v-if="health.status" :status="health.status"></sba-status>
@@ -24,7 +24,7 @@
         </tr>
         <tr v-if="details && details.length > 0">
             <td>
-                <table class="table is-fullwidth">
+                <table class="table ">
                     <tr v-for="detail in details" :key="detail.name">
                         <td v-text="detail.name"></td>
                         <td v-text="detail.value"></td>

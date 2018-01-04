@@ -15,7 +15,11 @@
   -->
 
 <template>
-    <health-default name="Instance" :health="health"></health-default>
+    <sba-panel title="Health">
+        <div class="content" slot="text">
+            <health-default name="Instance" :health="health"></health-default>
+        </div>
+    </sba-panel>
 </template>
 
 <script>

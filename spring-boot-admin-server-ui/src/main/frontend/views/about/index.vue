@@ -26,10 +26,10 @@
                 <p>
                     To monitor applications, they must be registered at this server. This is either done by including
                     the <a
-                        href="http://codecentric.github.io/spring-boot-admin/@project.version@/#register-clients-via-spring-boot-admin">Spring
+                        href="https://codecentric.github.io/spring-boot-admin/@project.version@/#register-clients-via-spring-boot-admin">Spring
                     Boot Admin Client</a>
                     or using a <a
-                        href="http://codecentric.github.io/spring-boot-admin/@project.version@/#discover-clients-via-spring-cloud-discovery">Spring
+                        href="https://codecentric.github.io/spring-boot-admin/@project.version@/#discover-clients-via-spring-cloud-discovery">Spring
                     Cloud Discovery Client</a> implementation.
                 </p>
                 <p>

@@ -29,11 +29,6 @@
   cursor: pointer;
 }
 
-.card .table tr:last-of-type > td,
-.card .table tr:last-of-type > th {
-  border-bottom: none;
-}
-
 .section.is-loading {
   &::after {
     @include loader;
@@ -42,5 +37,16 @@
     left: calc(50% - 2.5em);
     top: calc(50% - 2.5em);
     border-width: 0.5rem;
+  }
+}
+
+.data-table {
+  & td:last-child {
+    width: 100%;
+    text-align: right;
+  }
+
+  & td:not(:last-child) {
+    white-space: nowrap;
   }
 }

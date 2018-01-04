@@ -19,14 +19,12 @@
         <div class="container">
             <div class="columns">
                 <div class="column">
-                    <sba-panel title="Info">
-                        <details-info slot="text" :instance="instance"></details-info>
-                    </sba-panel>
+                    <details-info :instance="instance"></details-info>
+                    <details-jvm :instance="instance"></details-jvm>
                 </div>
                 <div class="column">
-                    <sba-panel title="Health">
-                        <details-health slot="text" :instance="instance"></details-health>
-                    </sba-panel>
+                    <details-health :instance="instance"></details-health>
+                    <details-datasource :instance="instance"></details-datasource>
                 </div>
             </div>
         </div>
@@ -34,12 +32,14 @@
 </template>
 
 <script>
-  import detailsHealth from './details-health.vue'
-  import detailsInfo from './details-info.vue'
+  import detailsDatasource from './details-datasource';
+  import detailsHealth from './details-health.vue';
+  import detailsInfo from './details-info.vue';
+  import detailsJvm from './details-jvm.vue';
 
   export default {
     components: {
-      detailsHealth, detailsInfo
+      detailsHealth, detailsInfo, detailsJvm, detailsDatasource
     },
     props: ['instance']
   }
