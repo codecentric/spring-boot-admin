@@ -37,10 +37,8 @@
       this.fetchHealth();
     },
     watch: {
-      instance(newVal, oldVal) {
-        if (newVal !== oldVal) {
-          this.fetchHealth();
-        }
+      instance() {
+        this.fetchHealth();
       }
     },
     methods: {

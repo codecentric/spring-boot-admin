@@ -77,6 +77,7 @@
 </template>
 
 <script>
+  import subscribing from '@/mixins/subscribing';
   import moment from 'moment';
   import sbaTracesChart from './traces-chart';
   import sbaTracesList from './traces-list';
@@ -144,13 +145,13 @@
   }
 
   export default {
+    props: ['instance'],
+    mixins: [subscribing],
     components: {
       sbaTracesList, sbaTracesChart
     },
-    props: ['instance'],
     data: () => ({
       traces: null,
-      subscription: null,
       filter: null,
       excludeActuator: true,
       showSuccess: true,
@@ -180,43 +181,25 @@
         return this.filteredTraces.filter(trace => !trace.timestamp.isBefore(start) && !trace.timestamp.isAfter(end));
       }
     },
-    created() {
-      this.start();
-    },
-    beforeDestroy() {
-      this.stop();
-    },
     watch: {
-      instance(newVal, oldVal) {
-        if (newVal !== oldVal) {
-          this.stop();
-          this.start();
-        }
+      instance() {
+        this.subscribe();
       },
     },
     methods: {
-      start() {
+      createSubscription() {
         const vm = this;
         if (this.instance) {
-          this.subscription = this.instance.streamTrace(5 * 1000)
+          return this.instance.streamTrace(5 * 1000)
             .subscribe({
               next: rawTraces => {
                 const traces = rawTraces.map(trace => new Trace(trace.timestamp, trace.info));
                 vm.traces = vm.traces ? traces.concat(vm.traces) : traces;
               },
               errors: err => {
-                vm.stop();
+                vm.unsubscribe();
               }
             });
-        }
-      },
-      stop() {
-        if (this.subscription) {
-          try {
-            this.subscription.unsubscribe();
-          } finally {
-            this.subscription = null;
-          }
         }
       },
       getFilterFn() {
@@ -238,11 +221,7 @@
           filterFn = addToFilter(filterFn, (trace) => !trace.isServerError());
         }
         return filterFn;
-      },
+      }
     }
   }
 </script>
-
-<style lang="scss">
-    @import "~@/assets/css/utilities";
-</style>

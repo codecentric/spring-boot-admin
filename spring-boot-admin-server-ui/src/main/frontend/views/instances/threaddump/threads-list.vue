@@ -100,7 +100,7 @@
     </div>
 </template>
 <script>
-  import * as d3 from 'd3';
+  import d3 from '@/utils/d3'
   import _ from 'lodash';
   import threadTag from './thread-tag';
 

@@ -40,10 +40,8 @@
       this.fetchInfo();
     },
     watch: {
-      instance(newVal, oldVal) {
-        if (newVal !== oldVal) {
-          this.fetchInfo();
-        }
+      instance() {
+        this.fetchInfo();
       }
     },
     methods: {

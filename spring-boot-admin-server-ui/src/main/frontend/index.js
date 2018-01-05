@@ -14,18 +14,27 @@
  * limitations under the License.
  */
 
-import fontawesome from '@fortawesome/fontawesome'
-import {faGithub, faGitter, faStackOverflow} from '@fortawesome/fontawesome-free-brands'
-import {
-  faBan, faBook, faCheck, faDownload, faExclamation, faMinusCircle, faQuestionCircle, faStepBackward,
-  faStepForward, faTimesCircle, faTrash
-} from '@fortawesome/fontawesome-free-solid'
-import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
+import fontawesome from '@fortawesome/fontawesome';
+import faGithub from '@fortawesome/fontawesome-free-brands/faGithub';
+import faGitter from '@fortawesome/fontawesome-free-brands/faGitter';
+import faStackOverflow from '@fortawesome/fontawesome-free-brands/faStackOverflow';
+import faBan from '@fortawesome/fontawesome-free-solid/faBan';
+import faBook from '@fortawesome/fontawesome-free-solid/faBook';
+import faCheck from '@fortawesome/fontawesome-free-solid/faCheck';
+import faDownload from '@fortawesome/fontawesome-free-solid/faDownload';
+import faExclamation from '@fortawesome/fontawesome-free-solid/faExclamation';
+import faMinusCircle from '@fortawesome/fontawesome-free-solid/faMinusCircle';
+import faQuestionCircle from '@fortawesome/fontawesome-free-solid/faQuestionCircle';
+import faStepBackward from '@fortawesome/fontawesome-free-solid/faStepBackward';
+import faStepForward from '@fortawesome/fontawesome-free-solid/faStepForward';
+import faTimesCircle from '@fortawesome/fontawesome-free-solid/faTimesCircle';
+import faTrash from '@fortawesome/fontawesome-free-solid/faTrash';
+import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 import moment from 'moment';
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import './assets/css/base.scss'
-import './assets/img/favicon.png'
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import './assets/css/base.scss';
+import './assets/img/favicon.png';
 import sbaComponents from './components'
 import sbaAbout from './views/about';
 import sbaApplications from './views/applications';

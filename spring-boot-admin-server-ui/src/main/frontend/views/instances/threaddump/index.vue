@@ -25,32 +25,24 @@
 </template>
 
 <script>
+  import subscribing from '@/mixins/subscribing';
   import _ from 'lodash';
   import moment from 'moment-shortformat';
   import threadsList from './threads-list';
 
   export default {
     props: ['instance'],
+    mixins: [subscribing],
     components: {
       threadsList
     },
     data: () => ({
-      threads: null,
-      subscription: null
+      threads: null
     }),
     computed: {},
-    created() {
-      this.start();
-    },
-    beforeDestroy() {
-      this.stop();
-    },
     watch: {
-      instance(newVal, oldVal) {
-        if (newVal !== oldVal) {
-          this.stop();
-          this.start()
-        }
+      instance() {
+        this.subscribe()
       },
     },
     methods: {
@@ -100,33 +92,20 @@
           entry.timeline[entry.timeline.length - 1].end = now;
         });
       },
-      start() {
+      createSubscription() {
         const vm = this;
         if (this.instance) {
-          this.subscription = this.instance.streamThreaddump(1000)
+          return this.instance.streamThreaddump(1000)
             .subscribe({
               next: threads => {
                 vm.updateTimelines(threads);
               },
               errors: err => {
-                vm.stop();
+                vm.unsubscribe();
               }
             });
-        }
-      },
-      stop() {
-        if (this.subscription) {
-          try {
-            this.subscription.unsubscribe();
-          } finally {
-            this.subscription = null;
-          }
         }
       }
     }
   }
 </script>
-
-<style lang="scss">
-
-</style>

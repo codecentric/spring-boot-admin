@@ -54,18 +54,19 @@
 </template>
 
 <script>
+  import subscribing from '@/mixins/subscribing';
   import Application from '@/services/application'
   import * as _ from 'lodash';
   import applicationsList from './applications-list.vue'
 
   export default {
+    mixins: [subscribing],
     components: {
       applicationsList,
     },
     data: () => ({
       _applications: [],
-      errors: [],
-      subscription: null
+      errors: []
     }),
     computed: {
       applications() {
@@ -90,28 +91,25 @@
         }, 0);
       }
     },
-    async created() {
-      try {
-        this.$data._applications = (await Application.list()).data;
-      } catch (e) {
-        this.errors.push(e);
-      }
+    methods: {
+      async createSubscription() {
+        try {
+          this.$data._applications = (await Application.list()).data;
+        } catch (e) {
+          this.errors.push(e);
+        }
 
-      this.subscription = (await Application.getStream()).subscribe({
-        next: message => {
-          const idx = this.$data._applications.findIndex(application => application.name === message.data.name);
-          if (idx >= 0) {
-            this.$data._applications.splice(idx, 1, message.data);
-          } else {
-            this.$data._applications.push(message.data);
-          }
-        },
-        error: err => this.errors.push(err)
-      });
-    },
-    destroyed() {
-      if (this.subscription !== null) {
-        this.subscription.unsubscribe();
+        return (await Application.getStream()).subscribe({
+          next: message => {
+            const idx = this.$data._applications.findIndex(application => application.name === message.data.name);
+            if (idx >= 0) {
+              this.$data._applications.splice(idx, 1, message.data);
+            } else {
+              this.$data._applications.push(message.data);
+            }
+          },
+          error: err => this.errors.push(err)
+        });
       }
     }
   }

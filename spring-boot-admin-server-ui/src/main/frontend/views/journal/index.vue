@@ -54,6 +54,7 @@
 </template>
 
 <script>
+  import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
   import _ from 'lodash';
   import moment from 'moment';
@@ -73,48 +74,44 @@
   }
 
   export default {
+    mixins: [subscribing],
     data: () => ({
-      _events: [],
+      events: [],
       showPayload: {},
       instanceNames: {},
       errors: []
     }),
-    computed: {
-      events() {
-        return this.$data._events.reverse();
-      }
-    },
     methods: {
       toJson(obj) {
         return JSON.stringify(obj, null, 4);
       },
       addEvents(data) {
         const converted = data.map(event => new Event(event));
-        this.$data._events = this.$data._events.concat(converted);
+        converted.reverse();
+        this.events = converted.concat(this.events);
 
         const newInstanceNames = converted.filter(event => event.type === 'REGISTERED').reduce((names, event) => ({
           ...names,
           [event.instance]: event.payload.registration.name
         }), {});
         _.assign(this.instanceNames, newInstanceNames);
+      },
+      async createSubscription() {
+        return (await Instance.getEventStream()).subscribe({
+          next: message => {
+            this.addEvents([message.data])
+          },
+          error: err => this.errors.push(err)
+        });
       }
     },
     async created() {
       try {
         this.addEvents((await Instance.fetchEvents()).data);
+        this.events.sort((a, b) => b.timestamp - a.timestamp)
       } catch (e) {
         this.errors.push(e);
       }
-
-      this.subscription = (await Instance.getEventStream()).subscribe({
-        next: message => {
-          this.addEvents([message.data])
-        },
-        error: err => this.errors.push(err)
-      });
-    },
+    }
   }
 </script>
-
-<style lang="scss">
-</style>

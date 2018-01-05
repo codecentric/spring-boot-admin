@@ -160,6 +160,7 @@ const config = {
     new BundleAnalyzerPlugin({
       analyzerMode: 'static',
       openAnalyzer: false,
+      reportFilename: '../report.html'
     })
   ],
   devtool: '#eval-source-map'

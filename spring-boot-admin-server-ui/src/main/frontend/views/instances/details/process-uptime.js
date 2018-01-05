@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import {Observable} from '@/utils/rxjs'
+import subscribing from '@/mixins/subscribing';
+import {Observable} from '@/utils/rxjs';
 import moment from 'moment';
 
 export default {
   props: ['value'],
+  mixins: [subscribing],
   data: () => ({
     startTs: null,
     offset: null
@@ -36,41 +38,21 @@ export default {
     }
   },
   watch: {
-    value(newVal) {
-      this.stop();
-      if (newVal) {
-        this.start();
-      }
+    value() {
+      this.subscribe();
     }
-  },
-  mounted() {
-    if (this.value && this.subscription == null) {
-      this.start();
-    }
-  },
-  beforeDestroy() {
-    this.stop();
   },
   methods: {
-    start() {
-      const vm = this;
-      this.startTs = moment.now();
-      this.offset = 0;
-      this.subscription = Observable.timer(0, 1000).subscribe({
-        next: () => {
-          vm.offset = moment.now().valueOf() - this.startTs.valueOf();
-        }
-      })
-    },
-    stop() {
-      this.startTs = null;
-      this.offset = null;
-      if (this.subscription) {
-        try {
-          this.subscription.unsubscribe();
-        } finally {
-          this.subscription = null;
-        }
+    createSubscription() {
+      if (this.value) {
+        const vm = this;
+        this.startTs = moment.now();
+        this.offset = 0;
+        return Observable.timer(0, 1000).subscribe({
+          next: () => {
+            vm.offset = moment.now().valueOf() - this.startTs.valueOf();
+          }
+        })
       }
     }
   }

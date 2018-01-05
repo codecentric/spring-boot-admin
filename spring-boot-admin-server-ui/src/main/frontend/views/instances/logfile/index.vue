@@ -35,17 +35,18 @@
 </template>
 
 <script>
+  import subscribing from '@/mixins/subscribing';
   import {animationFrame, Observable} from '@/utils/rxjs';
   import _ from 'lodash';
   import prettyBytes from 'pretty-bytes';
 
   export default {
     props: ['instance'],
+    mixins: [subscribing],
     data: () => ({
-      subscription: null,
       atBottom: true,
       atTop: false,
-      skippedBytes: null,
+      skippedBytes: null
     }),
     computed: {
       skippedHumanBytes() {
@@ -53,16 +54,12 @@
       }
     },
     watch: {
-      async instance(newVal, oldVal) {
-        if (newVal !== oldVal) {
-          this.stop();
-          this.start();
-        }
+      async instance() {
+        this.subscribe();
       }
     },
     created() {
       this.scrollParent = null;
-      this.start();
     },
     mounted() {
       this.scrollParent = document.documentElement;
@@ -73,10 +70,10 @@
       window.removeEventListener('scroll', this.onScroll);
     },
     methods: {
-      start() {
+      createSubscription() {
         const vm = this;
         if (this.instance) {
-          this.subscription = this.instance.streamLogfile(1000)
+          return this.instance.streamLogfile(1000)
             .do(chunk => vm.skippedBytes = vm.skippedBytes || chunk.skipped)
             .concatMap(chunk => _.chunk(chunk.addendum.split(/\r?\n/), 250))
             .map(lines => Observable.of(lines, animationFrame))
@@ -94,18 +91,9 @@
                 }
               },
               errors: err => {
-                vm.stop();
+                vm.unsubscribe();
               }
             });
-        }
-      },
-      stop() {
-        if (this.subscription) {
-          try {
-            this.subscription.unsubscribe();
-          } finally {
-            this.subscription = null;
-          }
         }
       },
       onScroll() {

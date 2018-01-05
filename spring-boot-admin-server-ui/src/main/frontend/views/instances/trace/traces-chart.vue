@@ -51,7 +51,8 @@
 </template>
 
 <script>
-  import * as d3 from 'd3';
+  import d3 from '@/utils/d3';
+  import {event as d3Event} from 'd3-selection'; //see https://github.com/d3/d3/issues/2733#issuecomment-190743489
   import moment from 'moment-shortformat';
 
   const interval = 1000;
@@ -144,18 +145,18 @@
         ///setup x and y scale
         const x = d3.scaleTime()
           .range([0, vm.width])
-          .domain(d3.extent(data, (d) => d.timeStart));
+          .domain(d3.extent(data, d => d.timeStart));
         this.x = x;
 
         const y = d3.scaleLinear()
           .range([vm.height, 0])
-          .domain([0, d3.max(data, (d) => d.totalCount)]);
+          .domain([0, d3.max(data, d => d.totalCount)]);
 
-        //setup areas
+        //draw areas
         const area = d3.area()
-          .x((d) => x(d.data.timeStart))
-          .y0((d) => y(d[0]))
-          .y1((d) => y(d[1]));
+          .x(d => x(d.data.timeStart))
+          .y0(d => y(d[0]))
+          .y1(d => y(d[1]));
 
         const stack = d3.stack()
           .keys(['totalSuccess', 'totalClientErrors', 'totalServerErrors']);
@@ -165,19 +166,19 @@
 
         d.enter().append('path')
           .merge(d)
-          .attr('class', (d) => `trace-chart__area trace-chart__area--${d.key}`)
+          .attr('class', d => `trace-chart__area trace-chart__area--${d.key}`)
           .attr('d', area);
 
         d.exit().remove();
 
-        //setup axis
+        //draw axis
         vm.xAxis.call(d3.axisBottom(x)
           .ticks(10)
           .tickFormat(d => `-${moment(d).short(true)}`)
         );
 
         vm.yAxis.call(d3.axisRight(y)
-          .ticks(Math.min(5, d3.max(data, (d) => d.totalCount)))
+          .ticks(Math.min(5, d3.max(data, d => d.totalCount)))
           .tickSize(this.width)
         ).call(
           axis => axis.selectAll('.tick text')
@@ -186,30 +187,30 @@
             .attr('text-anchor', 'end')
         );
 
-        //setup brush selection
+        //draw brush selection
         const brush = d3.brushX()
           .extent([[0, 0], [vm.width, vm.height]])
           .on('start', () => {
-            if (d3.event.selection) {
+            if (d3Event.selection) {
               vm.isBrushing = true;
               vm.hovered = null;
             }
           })
           .on('brush', function () {
-            if (d3.event.sourceEvent === null || d3.event.sourceEvent.type === 'brush') {
+            if (d3Event.sourceEvent === null || d3Event.sourceEvent.type === 'brush') {
               return;
             }
 
-            if (d3.event.selection) {
-              const floor = Math.floor(x.invert(d3.event.selection[0]) / interval) * interval;
-              const ceil = Math.ceil(x.invert(d3.event.selection[1]) / interval) * interval;
-              d3.select(this).call(d3.event.target.move, [floor, ceil].map(x));
+            if (d3Event.selection) {
+              const floor = Math.floor(x.invert(d3Event.selection[0]) / interval) * interval;
+              const ceil = Math.ceil(x.invert(d3Event.selection[1]) / interval) * interval;
+              d3.select(this).call(d3Event.target.move, [floor, ceil].map(x));
               vm.brushSelection = [floor, ceil];
             }
           })
           .on('end', () => {
             vm.isBrushing = false;
-            if (!d3.event.selection) {
+            if (!d3Event.selection) {
               vm.brushSelection = null;
             }
           });
@@ -243,6 +244,14 @@
         .append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
 
+      this.xAxis = this.chartLayer.append('g')
+        .attr('class', 'trace-chart__axis-x')
+        .attr('transform', `translate(0,${this.height})`);
+
+      this.yAxis = this.chartLayer.append('g')
+        .attr('class', 'trace-chart__axis-y')
+        .attr('stroke', null);
+
       this.areas = this.chartLayer.append('g');
 
       this.hover = this.chartLayer.append('path')
@@ -251,14 +260,6 @@
 
       this.brushGroup = this.chartLayer.append('g')
         .attr('class', 'trace-chart__brush');
-
-      this.xAxis = this.chartLayer.append('g')
-        .attr('class', 'trace-chart__axis-x')
-        .attr('transform', `translate(0,${this.height})`);
-
-      this.yAxis = this.chartLayer.append('g')
-        .attr('class', 'trace-chart__axis-y')
-        .attr('stroke', null);
 
       this.drawChart(this.chartData);
     },
@@ -283,8 +284,6 @@
 
 <style lang="scss">
     @import "~@/assets/css/utilities";
-
-    $axis-color: $grey-darker;
 
     .trace-chart {
         &__svg {
@@ -331,32 +330,9 @@
             fill-opacity: 1;
         }
 
-        &__axis-x {
-            & .domain {
-                stroke: $axis-color;
-            }
-            & .tick {
-                & text {
-                    fill: $axis-color;
-                    font-size: $size-7;
-                }
-                & line {
-                    stroke: $axis-color;
-                }
-            }
-        }
         &__axis-y {
             & .domain {
                 stroke: none;
-            }
-            & .tick {
-                & text {
-                    fill: $axis-color;
-                    font-size: $size-7;
-                }
-                & line {
-                    stroke: $axis-color;
-                }
             }
 
             .tick:not(:first-of-type) {
@@ -370,14 +346,17 @@
         &__area {
             &--totalSuccess {
                 fill: $success;
+                opacity: 0.8;
             }
 
             &--totalClientErrors {
                 fill: $warning;
+                opacity: 0.8;
             }
 
             &--totalServerErrors {
                 fill: $danger;
+                opacity: 0.8;
             }
         }
     }

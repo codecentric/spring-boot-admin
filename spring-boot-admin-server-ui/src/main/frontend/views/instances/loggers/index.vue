@@ -165,10 +165,8 @@
       window.removeEventListener('scroll', this.onScroll);
     },
     watch: {
-      instance(newVal, oldVal) {
-        if (newVal !== oldVal) {
-          this.fetchLoggers();
-        }
+      instance() {
+        this.fetchLoggers();
       }
     }
   }

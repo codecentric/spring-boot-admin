@@ -20,11 +20,26 @@
             <div class="columns">
                 <div class="column">
                     <details-info :instance="instance"></details-info>
-                    <details-jvm :instance="instance"></details-jvm>
                 </div>
                 <div class="column">
                     <details-health :instance="instance"></details-health>
-                    <details-datasource :instance="instance"></details-datasource>
+                </div>
+            </div>
+            <div class="columns">
+                <div class="column">
+                    <details-process :instance="instance"></details-process>
+                    <details-memory :instance="instance" type="heap"></details-memory>
+                </div>
+                <div class="column">
+                    <details-threads :instance="instance"></details-threads>
+                    <details-memory :instance="instance" type="nonheap"></details-memory>
+                </div>
+            </div>
+            <div class="columns">
+                <div class="column">
+                    <details-datasources :instance="instance"></details-datasources>
+                </div>
+                <div class="column">
                 </div>
             </div>
         </div>
@@ -32,14 +47,16 @@
 </template>
 
 <script>
-  import detailsDatasource from './details-datasource';
-  import detailsHealth from './details-health.vue';
-  import detailsInfo from './details-info.vue';
-  import detailsJvm from './details-jvm.vue';
+  import detailsDatasources from './details-datasources';
+  import detailsHealth from './details-health';
+  import detailsInfo from './details-info';
+  import detailsMemory from './details-memory';
+  import detailsProcess from './details-process';
+  import detailsThreads from './details-threads';
 
   export default {
     components: {
-      detailsHealth, detailsInfo, detailsJvm, detailsDatasource
+      detailsHealth, detailsInfo, detailsProcess, detailsThreads, detailsDatasources, detailsMemory
     },
     props: ['instance']
   }

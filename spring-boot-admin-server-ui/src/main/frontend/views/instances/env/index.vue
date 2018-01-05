@@ -93,10 +93,8 @@
       this.fetchEnv();
     },
     watch: {
-      instance(newVal, oldVal) {
-        if (newVal !== oldVal) {
-          this.fetchEnv();
-        }
+      instance() {
+        this.fetchEnv();
       }
     },
     methods: {

@@ -29,13 +29,14 @@
         </thead>
         <template v-for="trace in traces">
             <tr class="is-selectable"
-                :class="{ 'trace--is-detailed' : showDetails[trace.key], 'has-text-warning' : trace.isClientError(), 'has-text-danger' : trace.isServerError() }"
+                :class="{ 'trace--is-detailed' : showDetails[trace.key] }"
                 @click="showDetails[trace.key]  ?  $delete(showDetails, trace.key) : $set(showDetails, trace.key, true)"
                 :key="trace.key">
                 <td v-text="trace.timestamp.format('L HH:mm:ss.SSS')"></td>
                 <td v-text="trace.method"></td>
                 <td v-text="trace.path"></td>
-                <td v-text="trace.status"></td>
+                <td v-text="trace.status"
+                    :class="{ 'has-text-warning' : trace.isClientError(), 'has-text-danger' : trace.isServerError() }"></td>
                 <td v-text="trace.contentType"></td>
                 <td v-text="trace.contentLength ? prettyBytes(trace.contentLength) : ''"></td>
                 <td v-text="trace.timeTaken !== null && typeof trace.timeTaken !== 'undefined' ? `${trace.timeTaken} ms` : ''"></td>

@@ -46,10 +46,8 @@
       this.fetchLiquibase();
     },
     watch: {
-      instance(newVal, oldVal) {
-        if (newVal !== oldVal) {
-          this.fetchLiquibase();
-        }
+      instance() {
+        this.fetchLiquibase();
       }
     },
     methods: {

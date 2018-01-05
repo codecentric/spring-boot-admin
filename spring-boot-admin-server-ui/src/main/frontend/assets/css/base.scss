@@ -50,3 +50,34 @@
     white-space: nowrap;
   }
 }
+
+//D3 Charts
+.tick {
+  & line {
+    stroke: currentColor;
+  }
+  & text {
+    fill: currentColor;
+    font-size: $size-7;
+  }
+}
+
+path.domain {
+  stroke: currentColor;
+}
+
+.has-bullet::before {
+  background: currentColor;
+  content: '';
+  width: 0.75em;
+  height: 0.75em;
+  display: inline-block;
+  margin-right: 0.25em;
+}
+
+@each $name, $pair in $colors {
+  .has-bullet.has-bullet-#{$name}::before {
+    $color: nth($pair, 1);
+    background-color: $color;
+  }
+}

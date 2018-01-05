@@ -67,10 +67,8 @@
       this.fetchFlyway();
     },
     watch: {
-      instance(newVal, oldVal) {
-        if (newVal !== oldVal) {
-          this.fetchFlyway();
-        }
+      instance() {
+        this.fetchFlyway();
       }
     },
     methods: {

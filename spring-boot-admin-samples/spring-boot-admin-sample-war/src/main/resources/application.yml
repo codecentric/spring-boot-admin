@@ -10,3 +10,6 @@ management:
   endpoints:
     web:
       expose: "*"
+  endpoint:
+    health:
+      show-details: true
