@@ -39,7 +39,7 @@
 
         const y = d3.scaleLinear()
           .range([vm.height, 0])
-          .domain([0, d3.max(data, d => d.live) * 1.1]);
+          .domain([0, d3.max(data, d => d.live) * 1.05]);
 
         //draw max
         const live = vm.areas.selectAll('.threads-chart__area--live')
@@ -81,7 +81,7 @@
         top: 5,
         right: 5,
         bottom: 30,
-        left: 25,
+        left: 50,
       };
 
       this.width = this.$el.getBoundingClientRect().width - margin.left - margin.right;

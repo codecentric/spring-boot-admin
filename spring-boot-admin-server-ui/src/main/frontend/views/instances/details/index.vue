@@ -47,6 +47,7 @@
                     <details-datasources :instance="instance"></details-datasources>
                 </div>
                 <div class="column">
+                    <details-caches :instance="instance"></details-caches>
                 </div>
             </div>
         </div>
@@ -54,6 +55,7 @@
 </template>
 
 <script>
+  import detailsCaches from './details-caches';
   import detailsDatasources from './details-datasources';
   import detailsGc from './details-gc';
   import detailsHealth from './details-health';
@@ -70,11 +72,9 @@
       detailsThreads,
       detailsDatasources,
       detailsMemory,
-      detailsGc
+      detailsGc,
+      detailsCaches
     },
     props: ['instance']
   }
 </script>
-
-<style lang="scss">
-</style>

@@ -15,30 +15,29 @@
   -->
 
 <template>
-    <sba-panel :title="`Datasource: ${dataSource}`" v-if="current">
+    <sba-panel :title="`Cache: ${cacheName}`" v-if="current">
         <div slot="text">
-            <div class="level datasource-current">
+            <div class="level cache-current">
                 <div class="level-item has-text-centered">
                     <div>
-                        <p class="heading has-bullet has-bullet-info">Active connections</p>
-                        <p v-text="current.active"></p>
+                        <p class="heading has-bullet has-bullet-info">Hits</p>
+                        <p v-text="current.hit"></p>
                     </div>
                 </div>
                 <div class="level-item has-text-centered">
                     <div>
-                        <p class="heading">Min connections</p>
-                        <p v-text="current.min"></p>
+                        <p class="heading has-bullet has-bullet-warning">Total</p>
+                        <p v-text="current.total"></p>
                     </div>
                 </div>
                 <div class="level-item has-text-centered">
                     <div>
-                        <p class="heading">Max connections</p>
-                        <p v-if="current.max >= 0" v-text="current.max"></p>
-                        <p v-else>unlimited</p>
+                        <p class="heading">Hit ratio</p>
+                        <p v-text="ratio"></p>
                     </div>
                 </div>
             </div>
-            <datasource-chart :data="chartData"></datasource-chart>
+            <cache-chart :data="chartData"></cache-chart>
         </div>
     </sba-panel>
 </template>
@@ -47,16 +46,24 @@
   import subscribing from '@/mixins/subscribing';
   import {Observable} from '@/utils/rxjs';
   import moment from 'moment';
-  import datasourceChart from './datasource-chart';
+  import cacheChart from './cache-chart';
 
   export default {
-    props: ['instance', 'dataSource'],
+    props: ['instance', 'cacheName'],
     mixins: [subscribing],
-    components: {datasourceChart},
+    components: {cacheChart},
     data: () => ({
       current: null,
       chartData: [],
     }),
+    computed: {
+      ratio() {
+        if (this.current.total > 0) {
+          return (this.current.hit / this.current.total * 100).toFixed(2) + '%';
+        }
+        return '-';
+      }
+    },
     watch: {
       instance() {
         this.subscribe()
@@ -68,14 +75,14 @@
     },
     methods: {
       async fetchMetrics() {
-        const responseActive = this.instance.fetchMetric('data.source.active.connections', {name: this.dataSource});
-        const responseMin = this.instance.fetchMetric('data.source.min.connections', {name: this.dataSource});
-        const responseMax = this.instance.fetchMetric('data.source.max.connections', {name: this.dataSource});
-
+        const responseHit = this.instance.fetchMetric('cache.requests', {name: this.cacheName, result: 'hit'});
+        const responseMiss = this.instance.fetchMetric('cache.requests', {name: this.cacheName, result: 'miss'});
+        const hit = (await responseHit).data.measurements[0].value;
+        const miss = (await responseMiss).data.measurements[0].value;
         return {
-          active: (await responseActive).data.measurements[0].value,
-          min: (await responseMin).data.measurements[0].value,
-          max: (await responseMax).data.measurements[0].value
+          hit,
+          miss,
+          total: hit + miss
         };
       },
       createSubscription() {
