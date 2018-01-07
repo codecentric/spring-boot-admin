@@ -16,7 +16,7 @@
 
 import moment from 'moment';
 import {mount} from 'vue-test-utils';
-import sbaStatus from './sba-status.vue';
+import sbaStatus from './sba-status';
 
 moment.now = () => +new Date(1318781879406);
 

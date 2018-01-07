@@ -23,12 +23,10 @@
 </template>
 
 <script>
-  import healthDefault from './health/health-default.vue';
+  import healthDefault from './health/health-default';
 
   export default {
-    components: {
-      healthDefault,
-    },
+    components: {healthDefault},
     props: ['instance'],
     data: () => ({
       health: {status: 'UNKNOWN', details: []},

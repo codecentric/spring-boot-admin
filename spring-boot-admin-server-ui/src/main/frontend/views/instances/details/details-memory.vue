@@ -58,9 +58,7 @@
   export default {
     props: ['instance', 'type'],
     mixins: [subscribing],
-    components: {
-      memChart
-    },
+    components: {memChart},
     data: () => ({
       current: null,
       chartData: [],

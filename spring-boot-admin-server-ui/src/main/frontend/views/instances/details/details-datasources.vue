@@ -29,9 +29,7 @@
   export default {
     props: ['instance', 'type'],
     mixins: [subscribing],
-    components: {
-      detailsDatasource
-    },
+    components: {detailsDatasource},
     data: () => ({
       dataSources: [],
     }),
@@ -69,6 +67,3 @@
     }
   }
 </script>
-
-<style lang="scss">
-</style>

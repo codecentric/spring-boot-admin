@@ -15,30 +15,22 @@
   -->
 
 <template>
-    <sba-panel :title="`Datasource: ${upperFirst(dataSource)}`" v-if="current">
+    <sba-panel title="Garbage Collection Pauses" v-if="current">
         <div slot="text">
-            <div class="level datasource-current">
+            <div class="level">
                 <div class="level-item has-text-centered">
                     <div>
-                        <p class="heading has-bullet has-bullet-info">Active connections</p>
-                        <p v-text="current.active"></p>
+                        <p class="heading">Count</p>
+                        <p v-text="current.count"></p>
                     </div>
                 </div>
                 <div class="level-item has-text-centered">
                     <div>
-                        <p class="heading">Min connections</p>
-                        <p v-text="current.min"></p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Max connections</p>
-                        <p v-if="current.max >= 0" v-text="current.max"></p>
-                        <p v-else>unlimited</p>
+                        <p class="heading">Total time spent</p>
+                        <p v-text="`${current.totalTime.asSeconds()}s`"></p>
                     </div>
                 </div>
             </div>
-            <datasource-chart :data="chartData"></datasource-chart>
         </div>
     </sba-panel>
 </template>
@@ -48,15 +40,12 @@
   import {Observable} from '@/utils/rxjs';
   import _ from 'lodash';
   import moment from 'moment';
-  import datasourceChart from './datasource-chart';
 
   export default {
-    props: ['instance', 'dataSource'],
+    props: ['instance'],
     mixins: [subscribing],
-    components: {datasourceChart},
     data: () => ({
       current: null,
-      chartData: [],
     }),
     watch: {
       instance() {
@@ -64,21 +53,18 @@
       },
       dataSource() {
         this.current = null;
-        this.chartData = [];
       }
     },
     methods: {
-      upperFirst: _.upperFirst,
       async fetchMetrics() {
-        const responseActive = this.instance.fetchMetric('data.source.active.connections', {name: this.dataSource});
-        const responseMin = this.instance.fetchMetric('data.source.min.connections', {name: this.dataSource});
-        const responseMax = this.instance.fetchMetric('data.source.max.connections', {name: this.dataSource});
-
-        return {
-          active: (await responseActive).data.measurements[0].value,
-          min: (await responseMin).data.measurements[0].value,
-          max: (await responseMax).data.measurements[0].value
-        };
+        const response = await this.instance.fetchMetric('jvm.gc.pause');
+        const measurements = response.data.measurements.reduce(
+          (current, measurement) => ({
+            ...current,
+            [_.lowerFirst(measurement.statistic)]: measurement.value
+          }), {}
+        );
+        return {...measurements, totalTime: moment.duration(Math.round(measurements.totalTime / 1000))};
       },
       createSubscription() {
         const vm = this;
@@ -88,7 +74,6 @@
             .subscribe({
               next: data => {
                 vm.current = data;
-                vm.chartData.push({...data, timestamp: moment.now().valueOf()});
               },
               errors: err => {
                 vm.unsubscribe();
@@ -99,9 +84,3 @@
     }
   }
 </script>
-
-<style lang="scss">
-    .datasource-current {
-        margin-bottom: 0 !important;
-    }
-</style>

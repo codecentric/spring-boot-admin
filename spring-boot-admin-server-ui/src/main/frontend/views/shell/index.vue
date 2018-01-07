@@ -22,7 +22,7 @@
 </template>
 
 <script>
-  import sbaNavbar from './navbar.vue'
+  import sbaNavbar from './navbar';
 
   export default {
     components: {sbaNavbar},

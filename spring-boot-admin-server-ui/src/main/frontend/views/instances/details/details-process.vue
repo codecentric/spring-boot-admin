@@ -53,9 +53,7 @@
 
   export default {
     props: ['instance'],
-    components: {
-      processUptime
-    },
+    components: {processUptime},
     data: () => ({
       pid: null,
       metrics: {

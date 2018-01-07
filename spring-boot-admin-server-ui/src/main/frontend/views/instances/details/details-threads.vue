@@ -15,61 +15,90 @@
   -->
 
 <template>
-    <sba-panel title="Threads" v-if="metrics['jvm.threads.live']">
-        <div class="level" slot="text">
-            <div class="level-item has-text-centered">
-                <div>
-                    <p class="heading">Live</p>
-                    <p v-text="metrics['jvm.threads.live']"></p>
+    <sba-panel title="Threads" v-if="current">
+        <div slot="text">
+            <div class="level threads-current">
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading has-bullet has-bullet-warning">Live</p>
+                        <p v-text="current.live"></p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading  has-bullet has-bullet-info">Daemon</p>
+                        <p v-text="current.daemon"></p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Peak Live</p>
+                        <p v-text="current.peak"></p>
+                    </div>
                 </div>
             </div>
-            <div class="level-item has-text-centered">
-                <div>
-                    <p class="heading">Live Peak</p>
-                    <p v-text="metrics['jvm.threads.peak']"></p>
-                </div>
-            </div>
-            <div class="level-item has-text-centered">
-                <div>
-                    <p class="heading">Daemon</p>
-                    <p v-text="metrics['jvm.threads.daemon']"></p>
-                </div>
-            </div>
+            <threads-chart :data="chartData"></threads-chart>
         </div>
     </sba-panel>
 </template>
 
 <script>
-  import _ from 'lodash';
+  import subscribing from '@/mixins/subscribing';
+  import {Observable} from '@/utils/rxjs';
+  import moment from 'moment';
+  import threadsChart from './threads-chart';
 
   export default {
     props: ['instance'],
+    mixins: [subscribing],
+    components: {threadsChart},
     data: () => ({
-      metrics: {
-        'jvm.threads.live': null,
-        'jvm.threads.peak': null,
-        'jvm.threads.daemon': null
-      }
+      current: null,
+      chartData: [],
     }),
-    created() {
-      this.fetchMetrics();
-    },
     watch: {
       instance() {
-        this.fetchMetrics();
+        this.subscribe()
+      },
+      dataSource() {
+        this.current = null;
+        this.chartData = [];
       }
     },
     methods: {
       async fetchMetrics() {
+        const responseLive = this.instance.fetchMetric('jvm.threads.live');
+        const responsePeak = this.instance.fetchMetric('jvm.threads.peak');
+        const responseDaemon = this.instance.fetchMetric('jvm.threads.daemon');
+
+        return {
+          live: (await responseLive).data.measurements[0].value,
+          peak: (await responsePeak).data.measurements[0].value,
+          daemon: (await responseDaemon).data.measurements[0].value
+        };
+      },
+      createSubscription() {
+        const vm = this;
         if (this.instance) {
-          const vm = this;
-          _.entries(vm.metrics).forEach(async ([name]) => {
-              const response = await vm.instance.fetchMetric(name);
-              vm.metrics[name] = response.data.measurements[0].value;
-            }
-          )
+          return Observable.timer(0, 2500)
+            .concatMap(this.fetchMetrics)
+            .subscribe({
+              next: data => {
+                vm.current = data;
+                vm.chartData.push({...data, timestamp: moment.now().valueOf()});
+              },
+              errors: err => {
+                vm.unsubscribe();
+              }
+            });
         }
       }
     }
   }
 </script>
+
+<style lang="scss">
+    .threads-current {
+        margin-bottom: 0 !important;
+    }
+</style>

@@ -28,10 +28,17 @@
             <div class="columns">
                 <div class="column">
                     <details-process :instance="instance"></details-process>
-                    <details-memory :instance="instance" type="heap"></details-memory>
+                    <details-gc :instance="instance"></details-gc>
                 </div>
                 <div class="column">
                     <details-threads :instance="instance"></details-threads>
+                </div>
+            </div>
+            <div class="columns">
+                <div class="column">
+                    <details-memory :instance="instance" type="heap"></details-memory>
+                </div>
+                <div class="column">
                     <details-memory :instance="instance" type="nonheap"></details-memory>
                 </div>
             </div>
@@ -48,6 +55,7 @@
 
 <script>
   import detailsDatasources from './details-datasources';
+  import detailsGc from './details-gc';
   import detailsHealth from './details-health';
   import detailsInfo from './details-info';
   import detailsMemory from './details-memory';
@@ -56,7 +64,13 @@
 
   export default {
     components: {
-      detailsHealth, detailsInfo, detailsProcess, detailsThreads, detailsDatasources, detailsMemory
+      detailsHealth,
+      detailsInfo,
+      detailsProcess,
+      detailsThreads,
+      detailsDatasources,
+      detailsMemory,
+      detailsGc
     },
     props: ['instance']
   }

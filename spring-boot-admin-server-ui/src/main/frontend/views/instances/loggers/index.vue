@@ -73,7 +73,7 @@
 </template>
 
 <script>
-  import sbaLoggerControl from './logger-control.vue'
+  import sbaLoggerControl from './logger-control';
 
   const isPackageName = (name) => {
     const i = name.lastIndexOf('.') + 1;

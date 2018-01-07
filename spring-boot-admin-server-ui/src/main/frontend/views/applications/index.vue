@@ -57,7 +57,7 @@
   import subscribing from '@/mixins/subscribing';
   import Application from '@/services/application'
   import * as _ from 'lodash';
-  import applicationsList from './applications-list.vue'
+  import applicationsList from './applications-list';
 
   export default {
     mixins: [subscribing],

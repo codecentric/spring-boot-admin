@@ -24,8 +24,8 @@
 
 <script>
   import instance from '@/services/instance'
-  import sbaInstanceHeader from './header.vue'
-  import sbaInstanceTabs from './tabs.vue'
+  import sbaInstanceHeader from './header';
+  import sbaInstanceTabs from './tabs';
 
   export default {
     components: {sbaInstanceHeader, sbaInstanceTabs},

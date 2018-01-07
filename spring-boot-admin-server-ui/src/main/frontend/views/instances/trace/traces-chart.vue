@@ -52,7 +52,8 @@
 
 <script>
   import d3 from '@/utils/d3';
-  import {event as d3Event} from 'd3-selection'; //see https://github.com/d3/d3/issues/2733#issuecomment-190743489
+  //see https://github.com/d3/d3/issues/2733#issuecomment-190743489
+  import {event as d3Event} from 'd3-selection';
   import moment from 'moment-shortformat';
 
   const interval = 1000;

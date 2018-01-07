@@ -53,11 +53,11 @@
         max.exit().remove();
 
         //draw areas
-        const active = vm.areas.selectAll('.mem-chart__area--active')
+        const active = vm.areas.selectAll('.datasource-chart__area--active')
           .data([data]);
         active.enter().append('path')
           .merge(active)
-          .attr('class', 'mem-chart__area--active')
+          .attr('class', 'datasource-chart__area--active')
           .attr('d', d3.area()
             .x(d => x(d.timestamp))
             .y0(y(0))
@@ -80,7 +80,7 @@
         top: 5,
         right: 5,
         bottom: 30,
-        left: 20,
+        left: 25,
       };
 
       this.width = this.$el.getBoundingClientRect().width - margin.left - margin.right;
@@ -115,7 +115,7 @@
 
     .datasource-chart {
         &__svg {
-            height: 125px;
+            height: 159px;
             width: 100%;
         }
 

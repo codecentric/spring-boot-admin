@@ -21,7 +21,6 @@ import * as scale from 'd3-scale';
 import * as selection from 'd3-selection';
 import * as shape from 'd3-shape';
 import * as time from 'd3-time';
-import * as timeFormat from 'd3-time-format';
 
 export default {
   ...shape,
@@ -30,6 +29,5 @@ export default {
   ...array,
   ...brush,
   ...time,
-  ...timeFormat,
   ...selection
 }

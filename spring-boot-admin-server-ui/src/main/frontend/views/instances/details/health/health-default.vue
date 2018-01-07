@@ -44,7 +44,7 @@
 
 <script>
   import _ from 'lodash';
-  import healthDiskspace from './health-diskspace.vue';
+  import healthDiskspace from './health-diskspace';
 
   const isChildHealth = (value) => {
     return value !== null && typeof value === 'object';
@@ -52,9 +52,7 @@
 
   export default {
     name: "health-default",
-    components: {
-      healthDiskspace
-    },
+    components: {healthDiskspace},
 
     props: {
       name: String,
