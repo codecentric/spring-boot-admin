@@ -19,12 +19,15 @@ import de.codecentric.boot.admin.client.config.ClientProperties;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.LongAdder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -34,8 +37,10 @@ import org.springframework.web.client.RestTemplate;
  */
 public class ApplicationRegistrator {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationRegistrator.class);
+    private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
+    };
     private static final HttpHeaders HTTP_HEADERS = createHttpHeaders();
-    private final AtomicInteger unsuccessfulAttempts = new AtomicInteger(0);
+    private final ConcurrentHashMap<String, LongAdder> attempts = new ConcurrentHashMap<>();
     private final AtomicReference<String> registeredId = new AtomicReference<>();
     private final ClientProperties client;
     private final RestTemplate template;
@@ -62,51 +67,60 @@ public class ApplicationRegistrator {
      * @return true if successful registration on at least one admin server
      */
     public boolean register() {
-        boolean isRegistrationSuccessful = false;
         Application self = createApplication();
+        boolean isRegistrationSuccessful = false;
         for (String adminUrl : client.getAdminUrl()) {
-            try {
-                @SuppressWarnings("rawtypes") ResponseEntity<Map> response = template.postForEntity(adminUrl,
-                        new HttpEntity<>(self, HTTP_HEADERS), Map.class);
+            LongAdder attempt = this.attempts.computeIfAbsent(adminUrl, k -> new LongAdder());
+            boolean successful = register(self, adminUrl, attempt.intValue() == 0);
 
-                if (response.getStatusCode().is2xxSuccessful()) {
-                    if (registeredId.compareAndSet(null, response.getBody().get("id").toString())) {
-                        LOGGER.info("Application registered itself as {}", response.getBody().get("id").toString());
-                    } else {
-                        LOGGER.debug("Application refreshed itself as {}", response.getBody().get("id").toString());
-                    }
-
-                    isRegistrationSuccessful = true;
-                    if (client.isRegisterOnce()) {
-                        break;
-                    }
-                } else {
-                    if (unsuccessfulAttempts.get() == 0) {
-                        LOGGER.warn(
-                                "Application failed to registered itself as {}. Response: {}. Further attempts are logged on DEBUG level",
-                                self, response.toString());
-                    } else {
-                        LOGGER.debug("Application failed to registered itself as {}. Response: {}", self,
-                                response.toString());
-                    }
-                }
-            } catch (Exception ex) {
-                if (unsuccessfulAttempts.get() == 0) {
-                    LOGGER.warn(
-                            "Failed to register application as {} at spring-boot-admin ({}): {}. Further attempts are logged on DEBUG level",
-                            self, client.getAdminUrl(), ex.getMessage());
-                } else {
-                    LOGGER.debug("Failed to register application as {} at spring-boot-admin ({}): {}", self,
-                            client.getAdminUrl(), ex.getMessage());
+            if (!successful) {
+                attempt.increment();
+            } else {
+                attempt.reset();
+                isRegistrationSuccessful = true;
+                if (client.isRegisterOnce()) {
+                    break;
                 }
             }
         }
-        if (!isRegistrationSuccessful) {
-            unsuccessfulAttempts.incrementAndGet();
-        } else {
-            unsuccessfulAttempts.set(0);
-        }
+
         return isRegistrationSuccessful;
+    }
+
+    protected boolean register(Application self, String adminUrl, boolean firstAttempt) {
+        try {
+            ResponseEntity<Map<String, Object>> response = template.exchange(adminUrl, HttpMethod.POST,
+                    new HttpEntity<>(self, HTTP_HEADERS), RESPONSE_TYPE);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                if (registeredId.compareAndSet(null, response.getBody().get("id").toString())) {
+                    LOGGER.info("Application registered itself as {}", response.getBody().get("id").toString());
+                } else {
+                    LOGGER.debug("Application refreshed itself as {}", response.getBody().get("id").toString());
+                }
+                return true;
+            } else {
+                if (firstAttempt) {
+                    LOGGER.warn(
+                            "Application failed to registered itself as {}. Response: {}. Further attempts are logged on DEBUG level",
+                            self, response.toString());
+                } else {
+                    LOGGER.debug("Application failed to registered itself as {}. Response: {}", self,
+                            response.toString());
+                }
+            }
+        } catch (Exception ex) {
+            if (firstAttempt) {
+                LOGGER.warn(
+                        "Failed to register application as {} at spring-boot-admin ({}): {}. Further attempts are logged on DEBUG level",
+                        self, client.getAdminUrl(), ex.getMessage());
+            } else {
+                LOGGER.debug("Failed to register application as {} at spring-boot-admin ({}): {}", self,
+                        client.getAdminUrl(), ex.getMessage());
+            }
+
+        }
+        return false;
     }
 
     public void deregister() {

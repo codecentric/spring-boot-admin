@@ -167,6 +167,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
         } else {
             Map<String, String> metadata = new LinkedHashMap<>();
             metadata.put("startup", this.timestamp.format(DateTimeFormatter.ISO_DATE_TIME));
+            metadata.putAll(instance.getMetadata());
             return metadata;
         }
     }

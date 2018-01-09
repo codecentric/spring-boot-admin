@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,17 @@ import java.util.Collections;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
@@ -37,7 +40,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class ApplicationRegistratorTest {
-
+    private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
+    };
     private ClientProperties client;
     private ApplicationRegistrator registrator;
     private RestTemplate restTemplate;
@@ -64,11 +68,10 @@ public class ApplicationRegistratorTest {
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
     }
 
-    @SuppressWarnings("rawtypes")
     @Test
     public void register_successful() {
-        when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class))).thenReturn(
-                new ResponseEntity<>(Collections.singletonMap("id", "-id-"), HttpStatus.CREATED));
+        when(restTemplate.exchange(isA(String.class), eq(HttpMethod.POST), isA(HttpEntity.class),
+                eq(RESPONSE_TYPE))).thenReturn(new ResponseEntity<>(singletonMap("id", "-id-"), HttpStatus.CREATED));
 
         assertThat(registrator.register()).isTrue();
 
@@ -77,34 +80,33 @@ public class ApplicationRegistratorTest {
                                                 .managementUrl("http://localhost:8080/mgmt")
                                                 .serviceUrl("http://localhost:8080")
                                                 .build();
-        verify(restTemplate).postForEntity("http://sba:8080/instances", new HttpEntity<>(applicationRef, headers),
-                Map.class);
+        verify(restTemplate).exchange(eq("http://sba:8080/instances"), eq(HttpMethod.POST),
+                eq(new HttpEntity<>(applicationRef, headers)), eq(RESPONSE_TYPE));
     }
+
 
     @Test
     public void register_failed() {
-        when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Application.class))).thenThrow(
-                new RestClientException("Error"));
+        when(restTemplate.exchange(isA(String.class), eq(HttpMethod.POST), isA(HttpEntity.class),
+                eq(RESPONSE_TYPE))).thenThrow(new RestClientException("Error"));
 
         assertThat(registrator.register()).isFalse();
     }
 
-    @SuppressWarnings("rawtypes")
     @Test
     public void register_retry() {
-        when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Application.class))).thenThrow(
-                new RestClientException("Error"));
-        when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class))).thenReturn(
-                new ResponseEntity<>(Collections.singletonMap("id", "-id-"), HttpStatus.CREATED));
+        when(restTemplate.exchange(isA(String.class), eq(HttpMethod.POST), isA(HttpEntity.class),
+                eq(RESPONSE_TYPE))).thenThrow(new RestClientException("Error"));
+        when(restTemplate.exchange(isA(String.class), eq(HttpMethod.POST), isA(HttpEntity.class),
+                eq(RESPONSE_TYPE))).thenReturn(new ResponseEntity<>(singletonMap("id", "-id-"), HttpStatus.CREATED));
 
         assertThat(registrator.register()).isTrue();
     }
 
-    @SuppressWarnings("rawtypes")
     @Test
     public void deregister() {
-        when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class))).thenReturn(
-                new ResponseEntity<>(Collections.singletonMap("id", "-id-"), HttpStatus.CREATED));
+        when(restTemplate.exchange(isA(String.class), eq(HttpMethod.POST), isA(HttpEntity.class),
+                eq(RESPONSE_TYPE))).thenReturn(new ResponseEntity<>(singletonMap("id", "-id-"), HttpStatus.CREATED));
         registrator.register();
         assertThat(registrator.getRegisteredId()).isEqualTo("-id-");
         registrator.deregister();
@@ -113,13 +115,12 @@ public class ApplicationRegistratorTest {
         verify(restTemplate).delete("http://sba:8080/instances/-id-");
     }
 
-    @SuppressWarnings("rawtypes")
     @Test
     public void register_multiple() {
         client.setRegisterOnce(false);
 
-        when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class))).thenReturn(
-                new ResponseEntity<>(Collections.singletonMap("id", "-id-"), HttpStatus.CREATED));
+        when(restTemplate.exchange(isA(String.class), eq(HttpMethod.POST), isA(HttpEntity.class),
+                eq(RESPONSE_TYPE))).thenReturn(new ResponseEntity<>(singletonMap("id", "-id-"), HttpStatus.CREATED));
 
         assertThat(registrator.register()).isTrue();
 
@@ -128,22 +129,19 @@ public class ApplicationRegistratorTest {
                                                 .managementUrl("http://localhost:8080/mgmt")
                                                 .serviceUrl("http://localhost:8080")
                                                 .build();
-        verify(restTemplate).postForEntity("http://sba:8080/instances", new HttpEntity<>(applicationRef, headers),
-                Map.class);
-        verify(restTemplate).postForEntity("http://sba2:8080/instances", new HttpEntity<>(applicationRef, headers),
-                Map.class);
+        verify(restTemplate).exchange(eq("http://sba:8080/instances"), eq(HttpMethod.POST),
+                eq(new HttpEntity<>(applicationRef, headers)), eq(RESPONSE_TYPE));
+        verify(restTemplate).exchange(eq("http://sba2:8080/instances"), eq(HttpMethod.POST),
+                eq(new HttpEntity<>(applicationRef, headers)), eq(RESPONSE_TYPE));
     }
 
-    @SuppressWarnings("rawtypes")
     @Test
     public void register_multiple_one_failure() {
         client.setRegisterOnce(false);
 
-        when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class))).thenReturn(
-                new ResponseEntity<>(Collections.singletonMap("id", "-id-"), HttpStatus.CREATED))
-                                                                                                 .thenThrow(
-                                                                                                         new RestClientException(
-                                                                                                                 "Error"));
+        when(restTemplate.exchange(isA(String.class), eq(HttpMethod.POST), isA(HttpEntity.class),
+                eq(RESPONSE_TYPE))).thenReturn(new ResponseEntity<>(singletonMap("id", "-id-"), HttpStatus.CREATED))
+                                   .thenThrow(new RestClientException("Error"));
 
         assertThat(registrator.register()).isTrue();
 
@@ -152,18 +150,18 @@ public class ApplicationRegistratorTest {
                                                 .managementUrl("http://localhost:8080/mgmt")
                                                 .serviceUrl("http://localhost:8080")
                                                 .build();
-        verify(restTemplate).postForEntity("http://sba:8080/instances", new HttpEntity<>(applicationRef, headers),
-                Map.class);
-        verify(restTemplate).postForEntity("http://sba2:8080/instances", new HttpEntity<>(applicationRef, headers),
-                Map.class);
+        verify(restTemplate).exchange(eq("http://sba:8080/instances"), eq(HttpMethod.POST),
+                eq(new HttpEntity<>(applicationRef, headers)), eq(RESPONSE_TYPE));
+        verify(restTemplate).exchange(eq("http://sba2:8080/instances"), eq(HttpMethod.POST),
+                eq(new HttpEntity<>(applicationRef, headers)), eq(RESPONSE_TYPE));
     }
 
     @Test
     public void register_multiple_all_failures() {
         client.setRegisterOnce(false);
 
-        when(restTemplate.postForEntity(isA(String.class), isA(HttpEntity.class), eq(Map.class))).thenThrow(
-                new RestClientException("Error"));
+        when(restTemplate.exchange(isA(String.class), eq(HttpMethod.POST), isA(HttpEntity.class),
+                eq(RESPONSE_TYPE))).thenThrow(new RestClientException("Error"));
 
         assertThat(registrator.register()).isFalse();
     }
