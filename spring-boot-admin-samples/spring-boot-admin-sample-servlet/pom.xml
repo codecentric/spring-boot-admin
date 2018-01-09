@@ -24,7 +24,7 @@
         <version>2.0.0-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
-    <artifactId>spring-boot-admin-sample</artifactId>
+    <artifactId>spring-boot-admin-sample-servlet</artifactId>
     <dependencies>
         <dependency>
             <groupId>de.codecentric</groupId>
@@ -40,7 +40,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
             <groupId>de.codecentric</groupId>

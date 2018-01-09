@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin.server.ui.web;
+package de.codecentric.boot.admin;
 
-import de.codecentric.boot.admin.server.web.AdminController;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-
-@AdminController
-public class UiController {
-
-    @GetMapping(path = "/", produces = MediaType.TEXT_HTML_VALUE)
-    public String index() {
-        return "index";
-    }
-
-    @GetMapping(path = "/login", produces = MediaType.TEXT_HTML_VALUE)
-    public String login() {
-        return "login";
-    }
-    
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = { SpringBootAdminApplication.class })
+public class SpringBootAdminApplicationTest {
+	@Test
+	public void contextLoads() {
+	}
 }

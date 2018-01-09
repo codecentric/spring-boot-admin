@@ -4,7 +4,7 @@ info:
   build-url: "http://travis-ci.org/@env.TRAVIS_REPO_SLUG@/builds/@env.TRAVIS_BUILD_ID@"
 
 logging:
-  file: "target/boot-admin-sample.log"
+  file: "target/boot-admin-sample-reactive.log"
 
 management:
   endpoints:
@@ -16,7 +16,7 @@ management:
 
 spring:
   application:
-    name: spring-boot-admin-sample
+    name: spring-boot-admin-sample-reactive
   boot:
     admin:
       client:
@@ -44,14 +44,18 @@ spring:
 ---
 spring:
   profiles: secure
+  security:
+    user:
+      name: "user"
+      password: "password"
   boot:
     admin:
       client:
         username: "user"       #These two are needed so that the client
-        password: "pass"       #can register at the protected server api
+        password: "password"   #can register at the protected server api
         instance:
           metadata:
             user.name: "user"         #These two are needed so that the server
-            user.password: "pass"     #can access the proteceted client endpoints
+            user.password: "password" #can access the protected client endpoints
 
 

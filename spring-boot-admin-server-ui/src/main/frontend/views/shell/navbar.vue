@@ -35,6 +35,14 @@
                     <router-link class="navbar-item" v-for="view in views" :to="{name: view.name}" :key="view.name"
                                  v-html="view.template">
                     </router-link>
+
+                    <div class="navbar-item">
+                        <form action="logout" method="post">
+                            <button class="button is-icon" type="submit" value="logout">
+                                Logout&nbsp;<font-awesome-icon icon="sign-out-alt" size="lg"></font-awesome-icon>
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

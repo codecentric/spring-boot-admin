@@ -29,6 +29,18 @@
   cursor: pointer;
 }
 
+.button.is-icon {
+  background: transparent;
+  border-color: transparent;
+}
+
+.navbar-item .button.is-icon {
+  color: $navbar-item-color;
+  &:hover {
+    color: $navbar-item-hover-color;
+  }
+}
+
 .section.is-loading {
   &::after {
     @include loader;
@@ -37,17 +49,6 @@
     left: calc(50% - 2.5em);
     top: calc(50% - 2.5em);
     border-width: 0.5rem;
-  }
-}
-
-.data-table {
-  & td:last-child {
-    width: 100%;
-    text-align: right;
-  }
-
-  & td:not(:last-child) {
-    white-space: nowrap;
   }
 }
 

@@ -35,8 +35,10 @@
                 <td v-text="trace.timestamp.format('L HH:mm:ss.SSS')"></td>
                 <td v-text="trace.method"></td>
                 <td v-text="trace.path"></td>
-                <td v-text="trace.status"
-                    :class="{ 'has-text-warning' : trace.isClientError(), 'has-text-danger' : trace.isServerError() }"></td>
+                <td>
+                    <span v-text="trace.status" class="tag"
+                          :class="{ 'is-success' : trace.isSuccess(), 'is-warning' : trace.isClientError(), 'is-danger' : trace.isServerError() }"></span>
+                </td>
                 <td v-text="trace.contentType"></td>
                 <td v-text="trace.contentLength ? prettyBytes(trace.contentLength) : ''"></td>
                 <td v-text="trace.timeTaken !== null && typeof trace.timeTaken !== 'undefined' ? `${trace.timeTaken} ms` : ''"></td>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2014-2017 the original author or authors.
+  ~ Copyright 2014-2018 the original author or authors.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -30,7 +30,8 @@
     <description>Spring Boot Admin Samples</description>
     <url>https://github.com/codecentric/spring-boot-admin/</url>
     <modules>
-        <module>spring-boot-admin-sample</module>
+        <module>spring-boot-admin-sample-servlet</module>
+        <module>spring-boot-admin-sample-reactive</module>
         <module>spring-boot-admin-sample-war</module>
         <module>spring-boot-admin-sample-eureka</module>
         <module>spring-boot-admin-sample-consul</module>

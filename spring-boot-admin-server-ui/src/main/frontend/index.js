@@ -14,28 +14,13 @@
  * limitations under the License.
  */
 
-import fontawesome from '@fortawesome/fontawesome';
-import faGithub from '@fortawesome/fontawesome-free-brands/faGithub';
-import faGitter from '@fortawesome/fontawesome-free-brands/faGitter';
-import faStackOverflow from '@fortawesome/fontawesome-free-brands/faStackOverflow';
-import faBan from '@fortawesome/fontawesome-free-solid/faBan';
-import faBook from '@fortawesome/fontawesome-free-solid/faBook';
-import faCheck from '@fortawesome/fontawesome-free-solid/faCheck';
-import faDownload from '@fortawesome/fontawesome-free-solid/faDownload';
-import faExclamation from '@fortawesome/fontawesome-free-solid/faExclamation';
-import faMinusCircle from '@fortawesome/fontawesome-free-solid/faMinusCircle';
-import faQuestionCircle from '@fortawesome/fontawesome-free-solid/faQuestionCircle';
-import faStepBackward from '@fortawesome/fontawesome-free-solid/faStepBackward';
-import faStepForward from '@fortawesome/fontawesome-free-solid/faStepForward';
-import faTimesCircle from '@fortawesome/fontawesome-free-solid/faTimesCircle';
-import faTrash from '@fortawesome/fontawesome-free-solid/faTrash';
-import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 import moment from 'moment';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import './assets/css/base.scss';
 import './assets/img/favicon.png';
 import sbaComponents from './components'
+import FontAwesomeIcon from './utils/fontawesome';
 import sbaAbout from './views/about';
 import sbaApplications from './views/applications';
 import sbaInstancesDetails from './views/instances/details';
@@ -48,10 +33,7 @@ import sbaInstancesShell from './views/instances/shell';
 import sbaInstancesThreaddump from './views/instances/threaddump';
 import sbaInstancesTrace from './views/instances/trace';
 import sbaJournal from './views/journal';
-import sbaShell from './views/shell'
-
-fontawesome.library.add(faGithub, faStackOverflow, faGitter, faTrash, faDownload, faStepForward, faStepBackward, faCheck, faQuestionCircle, faBan, faTimesCircle, faMinusCircle, faExclamation,
-  faBook);
+import sbaShell from './views/shell';
 
 moment.locale(window.navigator.language);
 
@@ -64,7 +46,7 @@ const router = new VueRouter({
 });
 
 const views = [];
-views.register = (view) => {
+views.register = view => {
   if (view.template) {
     views.push(view);
   }
@@ -80,8 +62,6 @@ views.register = (view) => {
     )
   }
 };
-
-router.addRoutes([{path: '/', redirect: {name: 'applications'}}]);
 
 views.register({
   path: '/applications',
@@ -148,7 +128,7 @@ views.register({
 });
 views.register({
   name: 'instance/heapdump',
-  href: (params) => `instances/${params.instanceId}/actuator/heapdump`,
+  href: params => `instances/${params.instanceId}/actuator/heapdump`,
   template: 'Heapdump',
   order: 600,
   isActive: ({instance}) => instance.hasEndpoint('heapdump')
@@ -165,6 +145,8 @@ views.register({
   order: 700,
   isActive: ({instance}) => instance.hasEndpoint('flyway')
 });
+
+router.addRoutes([{path: '/', redirect: {name: 'applications'}}]);
 
 //Fire root Vue up
 new Vue({

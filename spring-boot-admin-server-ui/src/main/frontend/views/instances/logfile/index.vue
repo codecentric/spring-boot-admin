@@ -66,7 +66,6 @@
       window.addEventListener('scroll', this.onScroll);
     },
     beforeDestroy() {
-      this.stop();
       window.removeEventListener('scroll', this.onScroll);
     },
     methods: {
