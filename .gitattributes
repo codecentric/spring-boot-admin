@@ -1,5 +1,7 @@
 # All text files should have the "lf" (Unix) line endings
 * text eol=lf
+# windows cmd shoud have the "crlf" (Win32) line endings
+*.cmd eol=crlf
 
 # Explicitly declare text files you want to always be normalized and converted
 # to native line endings on checkout.
