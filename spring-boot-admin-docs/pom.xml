@@ -2,17 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <artifactId>spring-boot-admin-docs</artifactId>
+    <packaging>pom</packaging>
     <parent>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-build</artifactId>
-        <version>1.5.7-SNAPSHOT</version>
+        <version>${revision}</version>
         <relativePath>../spring-boot-admin-build</relativePath>
     </parent>
-    <artifactId>spring-boot-admin-docs</artifactId>
-    <packaging>pom</packaging>
-    <name>Spring Boot Admin Docs</name>
-    <description>Spring Boot Admin Documentation</description>
-    <url>https://github.com/codecentric/spring-boot-admin/</url>
     <build>
         <plugins>
             <plugin>
@@ -51,7 +48,7 @@
                                 <commit-time>${git.commit.time}</commit-time>
                                 <project-version>${project.version}</project-version>
                                 <spring-cloud-version>${spring-cloud.version}</spring-cloud-version>
-                                <samples-dir>${project.parent.basedir}/spring-boot-admin-samples/</samples-dir>
+                                <samples-dir>${basedir}/../spring-boot-admin-samples/</samples-dir>
                             </attributes>
                         </configuration>
                     </execution>

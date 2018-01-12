@@ -2,18 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <artifactId>spring-boot-admin-build</artifactId>
+    <packaging>pom</packaging>
     <parent>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-dependencies</artifactId>
-        <version>1.5.7-SNAPSHOT</version>
+        <version>${revision}</version>
         <relativePath>../spring-boot-admin-dependencies</relativePath>
     </parent>
-    <artifactId>spring-boot-admin-build</artifactId>
-    <version>1.5.7-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <name>Spring Boot Admin</name>
-    <description>Spring Boot Admin</description>
-    <url>https://github.com/codecentric/spring-boot-admin/</url>
 
     <dependencyManagement>
         <dependencies>
@@ -38,4 +34,32 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <inherited>true</inherited>
+                <executions>
+                    <execution>
+                        <!-- Tidy up all POMs before they are published -->
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                        <configuration>
+                            <updatePomFile>true</updatePomFile>
+                            <flattenMode>oss</flattenMode>
+                            <pomElements>
+                                <parent>expand</parent>
+                                <distributionManagement>remove</distributionManagement>
+                                <repositories>remove</repositories>
+                            </pomElements>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

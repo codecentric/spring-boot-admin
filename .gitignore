@@ -21,3 +21,6 @@ target/
 
 #nodejs
 node_modules/
+
+#flattened POMs
+.flattened-pom.xml

@@ -105,7 +105,3 @@ In order to build spring-boot-admin you need to have node.js and npm on your `PA
 mvn clean package
 ```
 
-## Set version for next release
-```shell
-mvn versions:set versions:commit -DnewVersion=1.0.0-SNAPSHOT
-```
