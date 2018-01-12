@@ -4,9 +4,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>de.codecentric</groupId>
-        <artifactId>spring-boot-admin</artifactId>
+        <artifactId>spring-boot-admin-build</artifactId>
         <version>1.5.7-SNAPSHOT</version>
-        <relativePath>..</relativePath>
+        <relativePath>../spring-boot-admin-build</relativePath>
     </parent>
     <artifactId>spring-boot-admin-samples</artifactId>
     <packaging>pom</packaging>
