@@ -48,7 +48,11 @@ For applications using older versions of Spring Boot the loglevel management is 
 [source,xml]
 .logback-spring.xml
 ----
-include::{samples-dir}/spring-boot-admin-sample/src/main/resources/logback-spring.xml[]
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/base.xml"/>
+	<jmxConfigurator/>
+</configuration>
 ----
 
 NOTE: In case you are deploying multiple applications to the same JVM and multiple Logback-JMX-beans are present, the UI will select the JMXConfigurator with the context-name equals to your applications name. In this case you need to set the `contextName` in your logback-configuration.

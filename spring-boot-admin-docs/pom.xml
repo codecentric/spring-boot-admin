@@ -66,9 +66,6 @@
                         </goals>
                         <configuration>
                             <executable>./deploy-gh-pages.sh</executable>
-                            <arguments>
-                                <argument>${project.version}</argument>
-                            </arguments>
                         </configuration>
                     </execution>
                 </executions>
