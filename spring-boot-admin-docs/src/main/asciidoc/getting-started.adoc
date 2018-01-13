@@ -4,23 +4,20 @@
 [[set-up-admin-server]]
 === Setting up Spring Boot Admin Server ===
 
-First you need to setup your server. To do this just setup a simple boot project (using http://start.spring.io for example).
+First you need to setup your server. To do this just setup a simple boot project (using http://start.spring.io).
 
-. Add Spring Boot Admin Server and the UI to your dependencies:
+. Add Spring Boot Admin Server starter to your dependencies:
 +
 [source,xml,subs="verbatim,attributes"]
 .pom.xml
 ----
-<dependency>
-    <groupId>de.codecentric</groupId>
-    <artifactId>spring-boot-admin-server</artifactId>
-    <version>{project-version}</version>
-</dependency>
-<dependency>
-    <groupId>de.codecentric</groupId>
-    <artifactId>spring-boot-admin-server-ui</artifactId>
-    <version>{project-version}</version>
-</dependency>
+<dependencies>
+    <dependency>
+        <groupId>de.codecentric</groupId>
+        <artifactId>codecentric-spring-boot-admin-starter-server</artifactId>
+        <version>{project-version}</version>
+    </dependency>
+</dependencies>
 ----
 
 . Pull in the Spring Boot Admin Server configuration via adding `@EnableAdminServer` to your configuration:
@@ -47,7 +44,7 @@ See also the https://github.com/codecentric/spring-boot-admin/tree/master/spring
 To register your application at the SBA Server you can either include the SBA Client or use http://projects.spring.io/spring-cloud/spring-cloud.html[Spring Cloud Discovery] (e.g. Eureka, Consul, ...). There is also a <<spring-cloud-discovery-static-config,simple option using a static configuration on the SBA Server side>>.
 
 [[register-clients-via-spring-boot-admin]]
-==== spring-boot-admin-starter-client ====
+==== Spring Boot Admin Client ====
 
 Each application that wants to register has to include the Spring Boot Admin Client.
 
@@ -58,7 +55,7 @@ Each application that wants to register has to include the Spring Boot Admin Cli
 ----
 <dependency>
     <groupId>de.codecentric</groupId>
-    <artifactId>spring-boot-admin-starter-client</artifactId>
+    <artifactId>codecentric-spring-boot-admin-starter-client</artifactId>
     <version>{project-version}</version>
 </dependency>
 ----

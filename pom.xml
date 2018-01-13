@@ -54,8 +54,9 @@
         <module>spring-boot-admin-dependencies</module>
         <module>spring-boot-admin-docs</module>
         <module>spring-boot-admin-build</module>
-        <module>spring-boot-admin-starter-server</module>
         <module>spring-boot-admin-starter-client</module>
+        <module>codecentric-spring-boot-admin-starter-server</module>
+        <module>codecentric-spring-boot-admin-starter-client</module>
         <module>spring-boot-admin-samples</module>
     </modules>
     <organization>

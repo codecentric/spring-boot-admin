@@ -11,15 +11,11 @@
     <dependencies>
         <dependency>
             <groupId>de.codecentric</groupId>
-            <artifactId>spring-boot-admin-server</artifactId>
+            <artifactId>codecentric-spring-boot-admin-starter-server</artifactId>
         </dependency>
         <dependency>
             <groupId>de.codecentric</groupId>
-            <artifactId>spring-boot-admin-server-ui</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.codecentric</groupId>
-            <artifactId>spring-boot-admin-starter-client</artifactId>
+            <artifactId>codecentric-spring-boot-admin-starter-client</artifactId>
         </dependency>
         <!-- tag::dependency-hazelcast[] -->
         <dependency>

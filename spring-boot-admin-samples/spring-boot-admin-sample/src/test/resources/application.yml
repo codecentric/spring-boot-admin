@@ -1,0 +1,5 @@
+spring:
+  boot:
+    admin:
+      client:
+        enabled: false
