@@ -14,9 +14,9 @@ before_install:
   - 'nvm install ${NODE_VERSION} && nvm use ${NODE_VERSION}'
   - 'npm install -g yarn'
 
-script: ./mvnw clean verify ${TRAVIS_TAG+-Drevision=${TRAVIS_TAG}}
+script: ./mvnw clean verify ${TRAVIS_TAG:+-Drevision=${TRAVIS_TAG}}
 
 after_success:
   - ./mvnw jacoco:report coveralls:report
   - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} == '' ]] && ./mvnw deploy -DreposityId=sonatype-nexus-snapshots -DskipTests --settings deploy-settings.xml"
-  - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} != '' ]] && ./mvnw deploy -DreposityId=sonatype-nexus-staging -DskipTests --settings deploy-settings.xml"
+  - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} != '' ]] && ./mvnw deploy -DreposityId=sonatype-nexus-staging -DskipTests -Drevision=${TRAVIS_TAG} --settings deploy-settings.xml"
