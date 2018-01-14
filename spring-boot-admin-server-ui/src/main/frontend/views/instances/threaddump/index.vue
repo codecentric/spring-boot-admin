@@ -26,6 +26,7 @@
 
 <script>
   import subscribing from '@/mixins/subscribing';
+  import {Observable} from '@/utils/rxjs';
   import _ from 'lodash';
   import moment from 'moment-shortformat';
   import threadsList from './threads-list';
@@ -92,10 +93,15 @@
           entry.timeline[entry.timeline.length - 1].end = now;
         });
       },
+      async fetchThreaddump() {
+        const response = await this.instance.fetchThreaddump();
+        return response.data.threads;
+      },
       createSubscription() {
         const vm = this;
         if (this.instance) {
-          return this.instance.streamThreaddump(1000)
+          return Observable.timer(0, 1000)
+            .concatMap(vm.fetchThreaddump)
             .subscribe({
               next: threads => {
                 vm.updateTimelines(threads);

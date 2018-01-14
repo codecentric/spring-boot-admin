@@ -43,9 +43,7 @@ public class InstancesReactiveProxyController extends AbstractInstancesProxyCont
                                     ServerHttpRequest request,
                                     ServerHttpResponse response) {
         String endpointLocalPath = getEndpointLocalPath(request.getPath().pathWithinApplication().value());
-        URI uri = UriComponentsBuilder.fromPath(endpointLocalPath)
-                                      .queryParams(request.getQueryParams())
-                                      .build()
+        URI uri = UriComponentsBuilder.fromPath(endpointLocalPath).query(request.getURI().getRawQuery()).build(true)
                                       .toUri();
 
         return super.forward(instanceId, uri, request.getMethod(), request.getHeaders(),

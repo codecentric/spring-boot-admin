@@ -32,10 +32,8 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpResponse;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -57,7 +55,6 @@ public class InstancesServletProxyController extends AbstractInstancesProxyContr
     @RequestMapping(path = REQUEST_MAPPING_PATH)
     @ResponseBody
     public Mono<Void> endpointProxy(@PathVariable("instanceId") String instanceId,
-                                    @RequestParam MultiValueMap<String, String> queryParams,
                                     HttpServletRequest servletRequest,
                                     HttpServletResponse servletResponse) {
         ServerHttpRequest request = new ServletServerHttpRequest(servletRequest);
@@ -66,7 +63,11 @@ public class InstancesServletProxyController extends AbstractInstancesProxyContr
         String pathWithinApplication = servletRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE)
                                                      .toString();
         String endpointLocalPath = getEndpointLocalPath(pathWithinApplication);
-        URI uri = UriComponentsBuilder.fromPath(endpointLocalPath).queryParams(queryParams).build().toUri();
+
+        URI uri = UriComponentsBuilder.fromPath(endpointLocalPath)
+                                      .query(request.getURI().getRawQuery())
+                                      .build(true)
+                                      .toUri();
 
         return super.forward(instanceId, uri, request.getMethod(), request.getHeaders(), () -> {
             try {

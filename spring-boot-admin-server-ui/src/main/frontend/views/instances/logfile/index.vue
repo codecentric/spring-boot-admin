@@ -15,7 +15,7 @@
   -->
 
 <template>
-    <div class="section logfile-view" :class="{ 'is-loading' : !subscription }">
+    <div class="section logfile-view" :class="{ 'is-loading' : skippedBytes === null }">
         <div class="logfile-view-actions">
             <div class="logfile-view-actions__navigation">
                 <sba-icon-button :disabled="atTop" @click.native="scrollToTop">

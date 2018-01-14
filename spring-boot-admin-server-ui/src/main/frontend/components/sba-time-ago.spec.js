@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import {shallow} from '@vue/test-utils';
 import moment from 'moment';
-import {shallow} from 'vue-test-utils';
 import sbaTimeAgo from './sba-time-ago.js';
 
 moment.now = () => +new Date(1318781879406);

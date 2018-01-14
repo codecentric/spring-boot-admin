@@ -17,7 +17,7 @@
 <template>
     <section class="section">
         <div class="container">
-            <div class="columns">
+            <div class="columns is-desktop">
                 <div class="column">
                     <details-info :instance="instance"></details-info>
                 </div>
@@ -25,7 +25,7 @@
                     <details-health :instance="instance"></details-health>
                 </div>
             </div>
-            <div class="columns">
+            <div class="columns is-desktop">
                 <div class="column">
                     <details-process :instance="instance"></details-process>
                     <details-gc :instance="instance"></details-gc>
@@ -34,7 +34,7 @@
                     <details-threads :instance="instance"></details-threads>
                 </div>
             </div>
-            <div class="columns">
+            <div class="columns is-desktop">
                 <div class="column">
                     <details-memory :instance="instance" type="heap"></details-memory>
                 </div>
@@ -42,7 +42,7 @@
                     <details-memory :instance="instance" type="nonheap"></details-memory>
                 </div>
             </div>
-            <div class="columns">
+            <div class="columns is-desktop">
                 <div class="column">
                     <details-datasources :instance="instance"></details-datasources>
                 </div>

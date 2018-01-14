@@ -23,6 +23,7 @@ import sbaComponents from './components'
 import FontAwesomeIcon from './utils/fontawesome';
 import sbaAbout from './views/about';
 import sbaApplications from './views/applications';
+import sbaInstancesAuditevents from './views/instances/auditevents';
 import sbaInstancesDetails from './views/instances/details';
 import sbaInstancesEnv from './views/instances/env';
 import sbaInstancesFlyway from './views/instances/flyway';
@@ -85,6 +86,8 @@ views.register({
   }, {
     path: 'trace', component: sbaInstancesTrace, props: true, name: 'instance/trace',
   }, {
+    path: 'auditevents', component: sbaInstancesAuditevents, props: true, name: 'instance/auditevents',
+  }, {
     path: 'liquibase', component: sbaInstancesLiquibase, props: true, name: 'instance/liquibase',
   }, {
     path: 'flyway', component: sbaInstancesFlyway, props: true, name: 'instance/flyway',
@@ -127,22 +130,27 @@ views.register({
   order: 500,
 });
 views.register({
+  name: 'instance/auditevents',
+  template: 'Audit Log',
+  order: 600,
+});
+views.register({
   name: 'instance/heapdump',
   href: params => `instances/${params.instanceId}/actuator/heapdump`,
   template: 'Heapdump',
-  order: 600,
+  order: 700,
   isActive: ({instance}) => instance.hasEndpoint('heapdump')
 });
 views.register({
   name: 'instance/liquibase',
   template: 'Liquibase',
-  order: 700,
+  order: 800,
   isActive: ({instance}) => instance.hasEndpoint('liquibase')
 });
 views.register({
   name: 'instance/flyway',
   template: 'Flyway',
-  order: 700,
+  order: 800,
   isActive: ({instance}) => instance.hasEndpoint('flyway')
 });
 

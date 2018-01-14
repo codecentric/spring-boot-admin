@@ -33,5 +33,5 @@ public class UiController {
     public String login() {
         return "login";
     }
-    
+
 }

@@ -19,7 +19,6 @@ import logtail from '@/utils/logtail';
 import {Observable} from '@/utils/rxjs'
 import axios from 'axios';
 import _ from 'lodash';
-import moment from 'moment';
 
 const actuatorMimeTypes = ['application/vnd.spring-boot.actuator.v2+json',
   'application/vnd.spring-boot.actuator.v1+json',
@@ -97,34 +96,29 @@ class Instance {
     });
   }
 
+  async fetchTrace() {
+    return await axios.get(`instances/${this.id}/actuator/trace`, {
+      headers: {'Accept': actuatorMimeTypes}
+    });
+  }
+
+  async fetchThreaddump() {
+    return await axios.get(`instances/${this.id}/actuator/threaddump`, {
+      headers: {'Accept': actuatorMimeTypes}
+    });
+  }
+
+  async fetchAuditevents(after) {
+    return await axios.get(`instances/${this.id}/actuator/auditevents`, {
+      headers: {'Accept': actuatorMimeTypes},
+      params: {
+        after: after.toISOString()
+      }
+    });
+  }
+
   streamLogfile(interval) {
     return logtail(`instances/${this.id}/actuator/logfile`, interval);
-  }
-
-  streamTrace(interval) {
-    let lastTimestamp = moment(0);
-
-    return Observable.timer(0, interval)
-      .concatMap(() => axios.get(`instances/${this.id}/actuator/trace`, {
-        headers: {'Accept': actuatorMimeTypes}
-      }))
-      .concatMap(response => {
-        const traces = response.data.traces.filter(
-          trace => moment(trace.timestamp).isAfter(lastTimestamp)
-        );
-        if (traces.length > 0) {
-          lastTimestamp = traces[0].timestamp;
-        }
-        return Observable.of(traces);
-      });
-  }
-
-  streamThreaddump(interval) {
-    return Observable.timer(0, interval)
-      .concatMap(() => axios.get(`instances/${this.id}/actuator/threaddump`, {
-        headers: {'Accept': actuatorMimeTypes}
-      }))
-      .concatMap(response => Observable.of(response.data.threads));
   }
 
   static async fetchEvents() {

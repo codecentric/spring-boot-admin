@@ -78,6 +78,7 @@
 
 <script>
   import subscribing from '@/mixins/subscribing';
+  import {Observable} from '@/utils/rxjs';
   import moment from 'moment';
   import sbaTracesChart from './traces-chart';
   import sbaTracesList from './traces-list';
@@ -88,7 +89,7 @@
       : (val, key) => oldFilter(val, key) && addedFilter(val, key);
 
   class Trace {
-    constructor(timestamp, info) {
+    constructor({timestamp, info}) {
       this.info = info;
       this.timestamp = moment(timestamp);
     }
@@ -187,13 +188,25 @@
       },
     },
     methods: {
+      async fetchTrace() {
+        const response = await this.instance.fetchTrace();
+        const traces = response.data.traces.filter(
+          trace => moment(trace.timestamp).isAfter(this.lastTimestamp)
+        );
+        if (traces.length > 0) {
+          this.lastTimestamp = traces[0].timestamp;
+        }
+        return traces;
+      },
       createSubscription() {
         const vm = this;
+        vm.lastTimestamp = moment(0);
         if (this.instance) {
-          return this.instance.streamTrace(5 * 1000)
+          return Observable.timer(0, 5000)
+            .concatMap(vm.fetchTrace)
             .subscribe({
               next: rawTraces => {
-                const traces = rawTraces.map(trace => new Trace(trace.timestamp, trace.info));
+                const traces = rawTraces.map(trace => new Trace(trace));
                 vm.traces = vm.traces ? traces.concat(vm.traces) : traces;
               },
               errors: err => {
