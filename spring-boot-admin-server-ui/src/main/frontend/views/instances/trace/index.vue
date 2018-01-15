@@ -17,7 +17,7 @@
 <template>
     <section class="section" :class="{ 'is-loading' : !traces}">
         <div class="container" v-if="traces">
-            <div class="content" v-if="traces.length > 0">
+            <div class="content">
                 <div class="field-body">
                     <div class="field has-addons">
                         <p class="control is-expanded">
@@ -68,9 +68,6 @@
                 </div>
                 <sba-traces-chart :traces="filteredTraces" @selected="(d) => selection = d"></sba-traces-chart>
                 <sba-traces-list :traces="selectedTraces"></sba-traces-list>
-            </div>
-            <div class="content" v-else>
-                <p class="is-muted">No traces recorded.</p>
             </div>
         </div>
     </section>

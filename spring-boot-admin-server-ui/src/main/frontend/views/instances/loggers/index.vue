@@ -51,23 +51,29 @@
                     </div>
                 </div>
             </div>
-            <table class="table is-hoverable is-fullwidth">
-                <tbody>
-                <tr v-for="logger in limitedLoggers" :key="logger.name">
-                    <td>
-                        <span class="is-breakable" v-text="logger.name"></span>
-                        <sba-logger-control class="is-pulled-right"
-                                            :level-options="levels"
-                                            :effective-level="logger.effectiveLevel"
-                                            :configured-level="logger.configuredLevel"
-                                            :is-loading="loading[logger.name]"
-                                            :allow-reset="logger.name !== 'ROOT'"
-                                            @input="level => configureLogger(logger, level)">
-                        </sba-logger-control>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="content">
+                <table class="table is-hoverable">
+                    <tbody>
+                    <tr v-for="logger in limitedLoggers" :key="logger.name">
+                        <td>
+                            <span class="is-breakable" v-text="logger.name"></span>
+                            <sba-logger-control class="is-pulled-right"
+                                                :level-options="levels"
+                                                :effective-level="logger.effectiveLevel"
+                                                :configured-level="logger.configuredLevel"
+                                                :is-loading="loading[logger.name]"
+                                                :allow-reset="logger.name !== 'ROOT'"
+                                                @input="level => configureLogger(logger, level)">
+                            </sba-logger-control>
+                        </td>
+                    </tr>
+                    <tr v-if="limitedLoggers.length === 0">
+                        <td class="is-muted" colspan="5">No loggers found.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </section>
 </template>

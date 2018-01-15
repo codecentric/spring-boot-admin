@@ -117,6 +117,27 @@ class Instance {
     });
   }
 
+  async fetchSessions(username) {
+    return await axios.get(`instances/${this.id}/actuator/sessions`, {
+      headers: {'Accept': actuatorMimeTypes},
+      params: {
+        username
+      }
+    });
+  }
+
+  async fetchSession(sessionId) {
+    return await axios.get(`instances/${this.id}/actuator/sessions/${sessionId}`, {
+      headers: {'Accept': actuatorMimeTypes}
+    });
+  }
+
+  async deleteSession(sessionId) {
+    return await axios.delete(`instances/${this.id}/actuator/sessions/${sessionId}`, {
+      headers: {'Accept': actuatorMimeTypes}
+    });
+  }
+
   streamLogfile(interval) {
     return logtail(`instances/${this.id}/actuator/logfile`, interval);
   }

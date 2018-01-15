@@ -17,11 +17,8 @@
 <template>
     <section class="section" :class="{ 'is-loading' : !events}">
         <div class="container" v-if="events">
-            <div class="content" v-if="events.length > 0">
+            <div class="content">
                 <auditevents-list :events="events"></auditevents-list>
-            </div>
-            <div class="content" v-else>
-                <p class="is-muted">No audit events recorded.</p>
             </div>
         </div>
     </section>

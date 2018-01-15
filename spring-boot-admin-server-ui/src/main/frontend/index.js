@@ -30,6 +30,7 @@ import sbaInstancesFlyway from './views/instances/flyway';
 import sbaInstancesLiquibase from './views/instances/liquibase';
 import sbaInstancesLogfile from './views/instances/logfile';
 import sbaInstancesLoggers from './views/instances/loggers';
+import sbaInstancesSessions from './views/instances/sessions';
 import sbaInstancesShell from './views/instances/shell';
 import sbaInstancesThreaddump from './views/instances/threaddump';
 import sbaInstancesTrace from './views/instances/trace';
@@ -88,6 +89,8 @@ views.register({
   }, {
     path: 'auditevents', component: sbaInstancesAuditevents, props: true, name: 'instance/auditevents',
   }, {
+    path: 'sessions', component: sbaInstancesSessions, props: true, name: 'instance/sessions',
+  }, {
     path: 'liquibase', component: sbaInstancesLiquibase, props: true, name: 'instance/liquibase',
   }, {
     path: 'flyway', component: sbaInstancesFlyway, props: true, name: 'instance/flyway',
@@ -128,29 +131,37 @@ views.register({
   name: 'instance/trace',
   template: 'Traces',
   order: 500,
+  isActive: ({instance}) => instance.hasEndpoint('traces')
 });
 views.register({
   name: 'instance/auditevents',
   template: 'Audit Log',
   order: 600,
+  isActive: ({instance}) => instance.hasEndpoint('auditevents')
+});
+views.register({
+  name: 'instance/sessions',
+  template: 'Sessions',
+  order: 700,
+  isActive: ({instance}) => instance.hasEndpoint('sessions')
 });
 views.register({
   name: 'instance/heapdump',
   href: params => `instances/${params.instanceId}/actuator/heapdump`,
   template: 'Heapdump',
-  order: 700,
+  order: 800,
   isActive: ({instance}) => instance.hasEndpoint('heapdump')
 });
 views.register({
   name: 'instance/liquibase',
   template: 'Liquibase',
-  order: 800,
+  order: 900,
   isActive: ({instance}) => instance.hasEndpoint('liquibase')
 });
 views.register({
   name: 'instance/flyway',
   template: 'Flyway',
-  order: 800,
+  order: 900,
   isActive: ({instance}) => instance.hasEndpoint('flyway')
 });
 

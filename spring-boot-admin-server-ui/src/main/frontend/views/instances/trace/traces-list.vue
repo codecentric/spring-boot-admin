@@ -15,7 +15,7 @@
   -->
 
 <template>
-    <table class="table is-fullwidth is-hoverable">
+    <table class="table is-hoverable">
         <thead>
         <tr>
             <th>Timestamp</th>
@@ -49,6 +49,9 @@
                 </td>
             </tr>
         </template>
+        <tr v-if="traces.length === 0">
+            <td class="is-muted" colspan="5">No traces found.</td>
+        </tr>
     </table>
 </template>
 
