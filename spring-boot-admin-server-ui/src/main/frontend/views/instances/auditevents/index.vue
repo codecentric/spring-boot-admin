@@ -18,7 +18,7 @@
     <section class="section" :class="{ 'is-loading' : !events}">
         <div class="container" v-if="events">
             <div class="content">
-                <auditevents-list :events="events"></auditevents-list>
+                <auditevents-list :instance="instance" :events="events"></auditevents-list>
             </div>
         </div>
     </section>
@@ -66,7 +66,6 @@
     data: () => ({
       events: null,
     }),
-    computed: {},
     watch: {
       instance() {
         this.subscribe();

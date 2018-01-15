@@ -22,7 +22,7 @@
             <th>Session Id</th>
             <th>Created at</th>
             <th>Last accessed at</th>
-            <th>Max. inactive interval
+            <th>Max. inactive<br>interval
             </th>
             <th>Attributes</th>
             <th>

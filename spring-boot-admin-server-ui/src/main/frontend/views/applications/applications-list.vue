@@ -18,7 +18,7 @@
     <div class="applications-list">
         <template v-for="application in applications">
             <div v-if="selected !== application.name" :key="application.name"
-                 @click.stop="selected = application.name"
+                 @click.stop="select(application.name)"
                  class="applications-list-item applications-list-item--collapsed">
                 <sba-status :status="application.status"
                             :date="application.statusTimestamp"
@@ -44,10 +44,10 @@
                 </div>
             </div>
             <div v-else :key="application.name"
-                 v-on-clickaway="() => selected = null"
+                 v-on-clickaway="deselect"
                  class="applications-list-item applications-list-item--detailed">
                 <div class="applications-list-item__header"
-                     @click.stop="selected = null">
+                     @click.stop="deselect()">
                     <div class="applications-list-item__header-text" v-text="application.name"></div>
                     <div class="applications-list-item__header-actions">
                         <sba-icon-button
@@ -100,6 +100,12 @@
     }),
 
     methods: {
+      select(name) {
+        this.selected = name;
+      },
+      deselect() {
+        this.selected = null;
+      },
       showDetails(instance) {
         this.$router.push(`/instances/${instance.id}`)
       },

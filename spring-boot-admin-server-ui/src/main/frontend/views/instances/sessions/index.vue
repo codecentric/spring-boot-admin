@@ -45,6 +45,8 @@
   import moment from 'moment';
   import sbaSessionsList from './sessions-list';
 
+  const regexUuid = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/;
+
   class Session {
     constructor({id, attributeNames, creationTime, lastAccessedTime, maxInactiveInterval, expired}) {
       this.id = id;
@@ -57,7 +59,7 @@
   }
 
   export default {
-    props: ['instance'],
+    props: ['instance', 'sessionId'],
     components: {sbaSessionsList},
     data: () => ({
       filter: '',
@@ -65,30 +67,52 @@
       sessions: [],
       isLoading: false
     }),
-    computed: {},
     methods: {
       fetchSessions: _.debounce(async function () {
         if (!this.filter) {
           this.sessions = [];
           return;
         }
+
         this.isLoading = true;
-        if (this.filtertype === 'username') {
-          const response = await this.instance.fetchSessions(this.filter);
-          this.sessions = response.data.sessions.map(session => new Session(session));
-        } else {
-          const response = await this.instance.fetchSession(this.filter);
-          this.sessions = [new Session(response.data)];
+        try {
+          if (this.filtertype === 'username') {
+            const response = await this.instance.fetchSessions(this.filter);
+            this.sessions = response.data.sessions.map(session => new Session(session));
+          } else {
+            try {
+              const response = await this.instance.fetchSession(this.filter);
+              this.sessions = [new Session(response.data)];
+
+            } catch (error) {
+              if (error.response.status === 404) {
+                this.sessions = [];
+              } else {
+                throw error;
+              }
+            }
+          }
+        } finally {
+          this.isLoading = false;
         }
-        this.isLoading = false;
       }, 250)
+    },
+    mounted() {
+      if (this.sessionId) {
+        this.filtertype = 'sessionId';
+        this.filter = this.sessionId;
+      }
     },
     watch: {
       filtertype() {
         this.fetchSessions();
       },
       filter() {
-        this.fetchSessions();
+        if (this.filter.match(regexUuid) && this.filtertype !== 'sessionId') {
+          this.filtertype = 'sessionId';
+        } else {
+          this.fetchSessions();
+        }
       }
     }
   }

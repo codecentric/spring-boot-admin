@@ -89,7 +89,7 @@ views.register({
   }, {
     path: 'auditevents', component: sbaInstancesAuditevents, props: true, name: 'instance/auditevents',
   }, {
-    path: 'sessions', component: sbaInstancesSessions, props: true, name: 'instance/sessions',
+    path: 'sessions/:sessionId?', component: sbaInstancesSessions, props: true, name: 'instance/sessions',
   }, {
     path: 'liquibase', component: sbaInstancesLiquibase, props: true, name: 'instance/liquibase',
   }, {

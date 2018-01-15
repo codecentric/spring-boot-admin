@@ -37,7 +37,12 @@
                 </td>
                 <td v-text="event.principal"></td>
                 <td v-text="event.remoteAddress"></td>
-                <td v-text="event.sessionId"></td>
+                <td v-if="hasSessionEndpoint && event.sessionId">
+                    <router-link v-text="event.sessionId"
+                                 :to="{ name: 'instance/sessions', params: { 'instanceId' : instance.id, sessionId : event.sessionId } }">
+                    </router-link>
+                </td>
+                <td v-else v-text="event.sessionId"></td>
             </tr>
             <tr class="event__detail" :key="`${event.key}-detail`" v-if="showDetails[event.key]">
                 <td colspan="5">
@@ -55,10 +60,15 @@
   import prettyBytes from 'pretty-bytes';
 
   export default {
-    props: ['events'],
+    props: ['events', 'instance'],
     data: () => ({
       showDetails: {}
     }),
+    computed: {
+      hasSessionEndpoint() {
+        return this.instance && this.instance.hasEndpoint('sessions');
+      }
+    },
     methods: {
       prettyBytes,
       toJson(obj) {
