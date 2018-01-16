@@ -27,7 +27,7 @@
             <th>Attributes</th>
             <th>
                 <sba-confirm-button class="button" :class="{ 'is-loading' : deletingAll }"
-                                    :disabled="sessions.length <= 0" @click="deleteAllSessions()">
+                                    v-if="sessions.length > 1" @click="deleteAllSessions()">
                     <font-awesome-icon icon="trash"></font-awesome-icon>&nbsp;Delete
                 </sba-confirm-button>
             </th>
@@ -37,7 +37,11 @@
             <td>
                 <span v-if="session.expired" class="tag is-info">Expired</span>
             </td>
-            <td v-text="session.id"></td>
+            <td>
+                <router-link v-text="session.id"
+                             :to="{ name: 'instance/sessions', params: { 'instanceId' : instance.id, sessionId : session.id } }">
+                </router-link>
+            </td>
             <td v-text="session.creationTime.format('L HH:mm:ss.SSS')"></td>
             <td v-text="session.lastAccessedTime.format('L HH:mm:ss.SSS')"></td>
             <td>

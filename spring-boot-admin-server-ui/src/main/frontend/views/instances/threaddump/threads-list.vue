@@ -49,44 +49,50 @@
                             <td v-text="thread.threadName"></td>
                         </tr>
                         <tr>
-                            <td>Blocked count</td>
-                            <td v-text="thread.details.blockedCount"></td>
+                            <td>Thread state</td>
+                            <td v-text="thread.threadState"></td>
                         </tr>
-                        <tr>
-                            <td>Blocked time</td>
-                            <td v-text="thread.details.blockedTime"></td>
-                        </tr>
-                        <tr>
-                            <td>Waited count</td>
-                            <td v-text="thread.details.waitedCount"></td>
-                        </tr>
-                        <tr>
-                            <td>Waited time</td>
-                            <td v-text="thread.details.waitedTime"></td>
-                        </tr>
-                        <tr>
-                            <td>Lock name</td>
-                            <td v-text="thread.details.lockName"></td>
-                        </tr>
-                        <tr>
-                            <td>Lock owner id</td>
-                            <td v-text="thread.details.lockOwnerId"></td>
-                        </tr>
-                        <tr>
-                            <td>Lock owner name</td>
-                            <td v-text="thread.details.lockOwnerName"></td>
-                        </tr>
-                        <tr v-if="thread.details.stackTrace.length > 0">
-                            <td colspan="2">Stacktrace
-                                <pre><template
-                                        v-for="(frame, idx) in thread.details.stackTrace"><span
-                                        :key="`frame-${thread.threadId}-${idx}`"
-                                        v-text="`${frame.className}.${frame.methodName}(${frame.fileName}:${frame.lineNumber})`"></span> <span
-                                        :key="`frame-${thread.threadId}-${idx}-native`"
-                                        class="tag is-dark" v-if="frame.nativeMethod">native</span>
+                        <template v-if="thread.details !== null">
+                            <tr>
+                                <td>Blocked count</td>
+                                <td v-text="thread.details.blockedCount"></td>
+                            </tr>
+                            <tr>
+                                <td>Blocked time</td>
+                                <td v-text="thread.details.blockedTime"></td>
+                            </tr>
+                            <tr>
+                                <td>Waited count</td>
+                                <td v-text="thread.details.waitedCount"></td>
+                            </tr>
+                            <tr>
+                                <td>Waited time</td>
+                                <td v-text="thread.details.waitedTime"></td>
+                            </tr>
+                            <tr>
+                                <td>Lock name</td>
+                                <td v-text="thread.details.lockName"></td>
+                            </tr>
+                            <tr>
+                                <td>Lock owner id</td>
+                                <td v-text="thread.details.lockOwnerId"></td>
+                            </tr>
+                            <tr>
+                                <td>Lock owner name</td>
+                                <td v-text="thread.details.lockOwnerName"></td>
+                            </tr>
+                            <tr v-if="thread.details.stackTrace.length > 0">
+                                <td colspan="2">Stacktrace
+                                    <pre><template
+                                            v-for="(frame, idx) in thread.details.stackTrace"><span
+                                            :key="`frame-${thread.threadId}-${idx}`"
+                                            v-text="`${frame.className}.${frame.methodName}(${frame.fileName}:${frame.lineNumber})`"></span> <span
+                                            :key="`frame-${thread.threadId}-${idx}-native`"
+                                            class="tag is-dark" v-if="frame.nativeMethod">native</span>
 </template></pre>
-                            </td>
-                        </tr>
+                                </td>
+                            </tr>
+                        </template>
                     </table>
 
                 </td>

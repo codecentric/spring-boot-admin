@@ -21,7 +21,7 @@
                 <div class="field has-addons">
                     <div class="control">
                         <span class="select">
-                          <select v-model="filtertype">
+                          <select v-model="filterType">
                             <option value="username">Username</option>
                             <option value="sessionId">SessionId</option>
                           </select>
@@ -63,7 +63,7 @@
     components: {sbaSessionsList},
     data: () => ({
       filter: '',
-      filtertype: 'username',
+      filterType: 'username',
       sessions: [],
       isLoading: false
     }),
@@ -76,14 +76,13 @@
 
         this.isLoading = true;
         try {
-          if (this.filtertype === 'username') {
+          if (this.filterType === 'username') {
             const response = await this.instance.fetchSessions(this.filter);
             this.sessions = response.data.sessions.map(session => new Session(session));
           } else {
             try {
               const response = await this.instance.fetchSession(this.filter);
               this.sessions = [new Session(response.data)];
-
             } catch (error) {
               if (error.response.status === 404) {
                 this.sessions = [];
@@ -95,24 +94,51 @@
         } finally {
           this.isLoading = false;
         }
-      }, 250)
-    },
-    mounted() {
-      if (this.sessionId) {
-        this.filtertype = 'sessionId';
-        this.filter = this.sessionId;
+      }, 250),
+      updateFilterfilter() {
+        if (this.sessionId) {
+          this.filterType = 'sessionId';
+          this.filter = this.sessionId;
+        }
+      },
+      updateRoute() {
+        if (this.filterType === 'username') {
+          if (this.sessionId) {
+            this.$router.replace({
+              name: 'instance/sessions',
+              params: {'instanceId': this.instance.id}
+            });
+          }
+        } else {
+          if (this.sessionId !== this.filter) {
+            this.$router.replace({
+              name: 'instance/sessions',
+              params: {'instanceId': this.instance.id, sessionId: this.filter}
+            });
+          }
+        }
       }
     },
+    mounted() {
+      this.updateFilterfilter()
+    },
     watch: {
-      filtertype() {
+      sessionId() {
+        this.updateFilterfilter();
+      },
+      filterType() {
+        this.updateRoute();
         this.fetchSessions();
       },
       filter() {
-        if (this.filter.match(regexUuid) && this.filtertype !== 'sessionId') {
-          this.filtertype = 'sessionId';
-        } else {
-          this.fetchSessions();
+        const looksLikeSessionId = this.filter.match(regexUuid);
+        if (looksLikeSessionId && this.filterType !== 'sessionId') {
+          this.filterType = 'sessionId';
+        } else if (!looksLikeSessionId && this.filterType !== 'username') {
+          this.filterType = 'username';
         }
+        this.updateRoute();
+        this.fetchSessions();
       }
     }
   }
