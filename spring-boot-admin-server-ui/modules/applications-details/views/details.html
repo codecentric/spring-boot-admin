@@ -24,16 +24,6 @@
                 </tr>
             </table>
         </sba-info-panel>
-        <sba-info-panel class="span6" style="margin-left:0px" panel-title="Mappings"
-                        raw="api/applications/{{ application.id }}/mappings">
-            <table class="table">
-                <tr ng-repeat="(key, value) in mappings">
-                    <td ng-bind="key"></td>
-                    <td style="white-space: pre; padding: 8px 0 8px 8px; max-width: 400px; overflow-x: auto;"
-                        ng-bind-html="value | yaml | linkify:50"></td>
-                </tr>
-            </table>
-        </sba-info-panel>
         <sba-info-panel class="span6" style="margin-left:0px" panel-title="Health"
                         raw="api/applications/{{ application.id }}/health">
             <sba-health-status health="health"></sba-health-status>
@@ -65,6 +55,16 @@
                         raw="api/applications/{{ application.id }}/metrics/cache.*"
                         ng-show="hasCaches">
             <sba-cache-stats metrics="metrics"></sba-cache-stats>
+        </sba-info-panel>
+        <sba-info-panel class="span12" style="margin-left:0px" panel-title="Mappings"
+                        raw="api/applications/{{ application.id }}/mappings">
+            <table class="table">
+                <tr ng-repeat="(key, value) in mappings">
+                    <td ng-bind="key"></td>
+                    <td style="white-space: pre; padding: 8px 0 8px 8px; max-width: 400px; overflow-x: auto;"
+                        ng-bind-html="value | yaml | linkify:50"></td>
+                </tr>
+            </table>
         </sba-info-panel>
     </div>
 </div>
