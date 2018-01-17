@@ -107,7 +107,7 @@ public class AdminServerProperties {
         /**
          * Endpoints to be proxified by spring boot admin.
          */
-        private String[] endpoints = {"env", "metrics", "trace", "dump", "jolokia", "info", "logfile", "refresh", "flyway", "liquibase", "heapdump", "loggers", "auditevents"};
+        private String[] endpoints = {"env", "metrics", "trace", "dump", "jolokia", "info", "mappings", "logfile", "refresh", "flyway", "liquibase", "heapdump", "loggers", "auditevents"};
 
         public String[] getEndpoints() {
             return endpoints;

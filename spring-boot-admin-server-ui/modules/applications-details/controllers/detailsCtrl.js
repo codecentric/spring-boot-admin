@@ -32,6 +32,12 @@ module.exports = function ($scope, application, $interval) {
       $scope.error = response.data;
     });
 
+    application.getMappings().then(function (response) {
+      $scope.mappings = response.data;
+    }).catch(function (response) {
+      $scope.error = response.data;
+    });
+
     application.getHealth().then(function (response) {
       $scope.health = response.data;
     }).catch(function (response) {
