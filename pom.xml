@@ -12,7 +12,7 @@
     <properties>
         <revision>1.5.7-SNAPSHOT</revision>
         <spring-boot.version>1.5.9.RELEASE</spring-boot.version>
-        <spring-cloud.version>Edgware.RELEASE</spring-cloud.version>
+        <spring-cloud.version>Edgware.SR1</spring-cloud.version>
         <hystrix-dashboard.version>1.5.5</hystrix-dashboard.version>
 
         <java.version>1.7</java.version>
