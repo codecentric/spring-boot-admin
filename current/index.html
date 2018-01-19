@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 1.5.5">
+<meta name="generator" content="Asciidoctor 1.5.6.1">
 <meta name="author" content="Johannes Edmeier">
 <title>Spring Boot Admin Reference Guide</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
@@ -90,13 +90,12 @@ strong,b{font-weight:bold;line-height:inherit}
 small{font-size:60%;line-height:inherit}
 code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;color:rgba(0,0,0,.9)}
 ul,ol,dl{font-size:1em;line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
-ul,ol,ul.no-bullet,ol.no-bullet{margin-left:1.5em}
+ul,ol{margin-left:1.5em}
 ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0;font-size:1em}
 ul.square li ul,ul.circle li ul,ul.disc li ul{list-style:inherit}
 ul.square{list-style-type:square}
 ul.circle{list-style-type:circle}
 ul.disc{list-style-type:disc}
-ul.no-bullet{list-style:none}
 ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
 dl dt{margin-bottom:.3125em;font-weight:bold}
 dl dd{margin-bottom:1.25em}
@@ -132,7 +131,11 @@ strong strong{font-weight:400}
 kbd{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;display:inline-block;color:rgba(0,0,0,.8);font-size:.65em;line-height:1.45;background-color:#f7f7f7;border:1px solid #ccc;-webkit-border-radius:3px;border-radius:3px;-webkit-box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em white inset;box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em #fff inset;margin:0 .15em;padding:.2em .5em;vertical-align:middle;position:relative;top:-.1em;white-space:nowrap}
 .keyseq kbd:first-child{margin-left:0}
 .keyseq kbd:last-child{margin-right:0}
-.menuseq,.menu{color:rgba(0,0,0,.8)}
+.menuseq,.menuref{color:#000}
+.menuseq b:not(.caret),.menuref{font-weight:inherit}
+.menuseq{word-spacing:-.02em}
+.menuseq b.caret{font-size:1.25em;line-height:.8}
+.menuseq i.caret{font-weight:bold;text-align:center;width:.45em}
 b.button:before,b.button:after{position:relative;top:-1px;font-weight:400}
 b.button:before{content:"[";padding:0 3px 0 2px}
 b.button:after{content:"]";padding:0 2px 0 3px}
@@ -199,7 +202,7 @@ table.tableblock>caption.title{white-space:nowrap;overflow:visible;max-width:0}
 table.tableblock #preamble>.sectionbody>.paragraph:first-of-type p{font-size:inherit}
 .admonitionblock>table{border-collapse:separate;border:0;background:none;width:100%}
 .admonitionblock>table td.icon{text-align:center;width:80px}
-.admonitionblock>table td.icon img{max-width:none}
+.admonitionblock>table td.icon img{max-width:initial}
 .admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
 .admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #ddddd8;color:rgba(0,0,0,.6)}
 .admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
@@ -255,13 +258,13 @@ table.pyhltable .linenodiv{background:none!important;padding-right:0!important}
 table.tableblock{max-width:100%;border-collapse:separate}
 table.tableblock td>.paragraph:last-child p>p:last-child,table.tableblock th>p:last-child,table.tableblock td>p:last-child{margin-bottom:0}
 table.tableblock,th.tableblock,td.tableblock{border:0 solid #dedede}
-table.grid-all th.tableblock,table.grid-all td.tableblock{border-width:0 1px 1px 0}
-table.grid-all tfoot>tr>th.tableblock,table.grid-all tfoot>tr>td.tableblock{border-width:1px 1px 0 0}
-table.grid-cols th.tableblock,table.grid-cols td.tableblock{border-width:0 1px 0 0}
-table.grid-all *>tr>.tableblock:last-child,table.grid-cols *>tr>.tableblock:last-child{border-right-width:0}
-table.grid-rows th.tableblock,table.grid-rows td.tableblock{border-width:0 0 1px 0}
-table.grid-all tbody>tr:last-child>th.tableblock,table.grid-all tbody>tr:last-child>td.tableblock,table.grid-all thead:last-child>tr>th.tableblock,table.grid-rows tbody>tr:last-child>th.tableblock,table.grid-rows tbody>tr:last-child>td.tableblock,table.grid-rows thead:last-child>tr>th.tableblock{border-bottom-width:0}
-table.grid-rows tfoot>tr>th.tableblock,table.grid-rows tfoot>tr>td.tableblock{border-width:1px 0 0 0}
+table.grid-all>thead>tr>.tableblock,table.grid-all>tbody>tr>.tableblock{border-width:0 1px 1px 0}
+table.grid-all>tfoot>tr>.tableblock{border-width:1px 1px 0 0}
+table.grid-cols>*>tr>.tableblock{border-width:0 1px 0 0}
+table.grid-rows>thead>tr>.tableblock,table.grid-rows>tbody>tr>.tableblock{border-width:0 0 1px 0}
+table.grid-rows>tfoot>tr>.tableblock{border-width:1px 0 0 0}
+table.grid-all>*>tr>.tableblock:last-child,table.grid-cols>*>tr>.tableblock:last-child{border-right-width:0}
+table.grid-all>tbody>tr:last-child>.tableblock,table.grid-all>thead:last-child>tr>.tableblock,table.grid-rows>tbody>tr:last-child>.tableblock,table.grid-rows>thead:last-child>tr>.tableblock{border-bottom-width:0}
 table.frame-all{border-width:1px}
 table.frame-sides{border-width:0 1px}
 table.frame-topbot{border-width:1px 0}
@@ -282,10 +285,12 @@ ul li ol{margin-left:1.5em}
 dl dd{margin-left:1.125em}
 dl dd:last-child,dl dd:last-child>:last-child{margin-bottom:0}
 ol>li p,ul>li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
-ul.unstyled,ol.unnumbered,ul.checklist,ul.none{list-style-type:none}
-ul.unstyled,ol.unnumbered,ul.checklist{margin-left:.625em}
-ul.checklist li>p:first-child>.fa-square-o:first-child,ul.checklist li>p:first-child>.fa-check-square-o:first-child{width:1em;font-size:.85em}
-ul.checklist li>p:first-child>input[type="checkbox"]:first-child{width:1em;position:relative;top:1px}
+ul.checklist,ul.none,ol.none,ul.no-bullet,ol.no-bullet,ol.unnumbered,ul.unstyled,ol.unstyled{list-style-type:none}
+ul.no-bullet,ol.no-bullet,ol.unnumbered{margin-left:.625em}
+ul.unstyled,ol.unstyled{margin-left:0}
+ul.checklist{margin-left:.625em}
+ul.checklist li>p:first-child>.fa-square-o:first-child,ul.checklist li>p:first-child>.fa-check-square-o:first-child{width:1.25em;font-size:.8em;position:relative;bottom:.125em}
+ul.checklist li>p:first-child>input[type="checkbox"]:first-child{margin-right:.25em}
 ul.inline{margin:0 auto .625em auto;margin-left:-1.375em;margin-right:0;padding:0;list-style:none;overflow:hidden}
 ul.inline>li{list-style:none;float:left;margin-left:1.375em;display:block}
 ul.inline>li>*{display:block}
@@ -302,7 +307,8 @@ ol.lowergreek{list-style-type:lower-greek}
 td.hdlist1,td.hdlist2{vertical-align:top;padding:0 .625em}
 td.hdlist1{font-weight:bold;padding-bottom:1.25em}
 .literalblock+.colist,.listingblock+.colist{margin-top:-.5em}
-.colist>table tr>td:first-of-type{padding:0 .75em;line-height:1}
+.colist>table tr>td:first-of-type{padding:.4em .75em 0 .75em;line-height:1;vertical-align:top}
+.colist>table tr>td:first-of-type img{max-width:initial}
 .colist>table tr>td:last-of-type{padding:.25em 0}
 .thumb,.th{line-height:0;display:inline-block;border:solid 4px #fff;-webkit-box-shadow:0 0 0 1px #ddd;box-shadow:0 0 0 1px #ddd}
 .imageblock.left,.imageblock[style*="float: left"]{margin:.25em .625em 1.25em 0}
@@ -365,6 +371,7 @@ div.unbreakable{page-break-inside:avoid}
 .yellow{color:#bfbf00}
 .yellow-background{background-color:#fafa00}
 span.icon>.fa{cursor:default}
+a span.icon>.fa{cursor:inherit}
 .admonitionblock td.icon [class^="fa icon-"]{font-size:2.5em;text-shadow:1px 1px 2px rgba(0,0,0,.5);cursor:default}
 .admonitionblock td.icon .icon-note:before{content:"\f05a";color:#19407c}
 .admonitionblock td.icon .icon-tip:before{content:"\f0eb";text-shadow:1px 1px 2px rgba(155,155,0,.8);color:#111}
@@ -518,7 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 1.5.7-SNAPSHOT,</span>
-<span id="revdate">17.01.2018</span>
+<span id="revdate">19.01.2018</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -555,16 +562,16 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#clustering-support">4.2. Clustering</a></li>
 <li><a href="#_notifications">4.3. Notifications</a>
 <ul class="sectlevel3">
-<li><a href="#_reminder_notifications">4.3.1. Reminder notifications</a></li>
-<li><a href="#filtering-notifications">4.3.2. Filtering notifications</a></li>
-<li><a href="#mail-notifications">4.3.3. Mail notifications</a></li>
-<li><a href="#pagerduty-notifications">4.3.4. PagerDuty notifications</a></li>
-<li><a href="#opsgenie-notifications">4.3.5. OpsGenie notifications</a></li>
-<li><a href="#_hipchat_notifications">4.3.6. Hipchat notifications</a></li>
-<li><a href="#_slack_notifications">4.3.7. Slack notifications</a></li>
-<li><a href="#_let_s_chat_notifications">4.3.8. Let&#8217;s Chat notifications</a></li>
-<li><a href="#_microsoft_teams_notifications">4.3.9. Microsoft Teams notifications</a></li>
-<li><a href="#_telegram_notifications">4.3.10. Telegram notifications</a></li>
+<li><a href="#_reminder_notifications">Reminder notifications</a></li>
+<li><a href="#filtering-notifications">4.3.1. Filtering notifications</a></li>
+<li><a href="#mail-notifications">4.3.2. Mail notifications</a></li>
+<li><a href="#pagerduty-notifications">4.3.3. PagerDuty notifications</a></li>
+<li><a href="#opsgenie-notifications">4.3.4. OpsGenie notifications</a></li>
+<li><a href="#_hipchat_notifications">Hipchat notifications</a></li>
+<li><a href="#_slack_notifications">Slack notifications</a></li>
+<li><a href="#_let_s_chat_notifications">Let&#8217;s Chat notifications</a></li>
+<li><a href="#_microsoft_teams_notifications">Microsoft Teams notifications</a></li>
+<li><a href="#_telegram_notifications">Telegram notifications</a></li>
 </ul>
 </li>
 <li><a href="#_ui_modules">4.4. UI Modules</a>
@@ -687,7 +694,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <div class="title">application.yml</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.url</span>: <span class="string"><span class="content">http://localhost:8080  </span></span><i class="conum" data-value="1"></i><b>(1)</b>
-<span class="key">management.security.enabled</span>: <span class="string"><span class="content">false  </span></span> <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+<span class="key">management.security.enabled</span>: <span class="string"><span class="content">false  </span></span><i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -760,7 +767,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
     <span class="key">serviceUrl</span>:
       <span class="key">defaultZone</span>: <span class="string"><span class="content">${EUREKA_SERVICE_URL:http://localhost:8761}/eureka/</span></span>
 
-<span class="key">management.security.enabled</span>: <span class="string"><span class="content">false  </span></span> <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+<span class="key">management.security.enabled</span>: <span class="string"><span class="content">false  </span></span><i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1305,7 +1312,7 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <div class="sect2">
 <h3 id="_notifications"><a class="anchor" href="#_notifications"></a><a class="link" href="#_notifications">4.3. Notifications</a></h3>
 <div class="sect3">
-<h4 id="_reminder_notifications"><a class="anchor" href="#_reminder_notifications"></a><a class="link" href="#_reminder_notifications">4.3.1. Reminder notifications</a></h4>
+<h4 id="_reminder_notifications"><a class="anchor" href="#_reminder_notifications"></a><a class="link" href="#_reminder_notifications">Reminder notifications</a></h4>
 <div class="paragraph">
 <p>The <code>RemindingNotifier</code> sends reminders for down/offline applications, it delegates the sending of notifications to another notifier.</p>
 </div>
@@ -1353,7 +1360,7 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 </div>
 </div>
 <div class="sect3">
-<h4 id="filtering-notifications"><a class="anchor" href="#filtering-notifications"></a><a class="link" href="#filtering-notifications">4.3.2. Filtering notifications</a></h4>
+<h4 id="filtering-notifications"><a class="anchor" href="#filtering-notifications"></a><a class="link" href="#filtering-notifications">4.3.1. Filtering notifications</a></h4>
 <div class="paragraph">
 <p>The <code>FilteringNotifier</code> allows you to filter certain notification based on rules you can add/remove at runtime. It delegates the sending of notifications to another notifier.</p>
 </div>
@@ -1418,7 +1425,7 @@ This example combines the reminding and filtering notifiers. This allows you to 
 </div>
 </div>
 <div class="sect3">
-<h4 id="mail-notifications"><a class="anchor" href="#mail-notifications"></a><a class="link" href="#mail-notifications">4.3.3. Mail notifications</a></h4>
+<h4 id="mail-notifications"><a class="anchor" href="#mail-notifications"></a><a class="link" href="#mail-notifications">4.3.2. Mail notifications</a></h4>
 <div class="paragraph">
 <p>Configure a <code>JavaMailSender</code> using <code>spring-boot-starter-mail</code> and set a recipient.</p>
 </div>
@@ -1492,7 +1499,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="pagerduty-notifications"><a class="anchor" href="#pagerduty-notifications"></a><a class="link" href="#pagerduty-notifications">4.3.4. PagerDuty notifications</a></h4>
+<h4 id="pagerduty-notifications"><a class="anchor" href="#pagerduty-notifications"></a><a class="link" href="#pagerduty-notifications">4.3.3. PagerDuty notifications</a></h4>
 <div class="paragraph">
 <p>To enable <a href="https://www.pagerduty.com/">PagerDuty</a> notifications you just have to add a generic service to your PagerDuty-account and set <code>spring.boot.admin.notify.pagerduty.service-key</code> to the service-key you received.</p>
 </div>
@@ -1550,7 +1557,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="opsgenie-notifications"><a class="anchor" href="#opsgenie-notifications"></a><a class="link" href="#opsgenie-notifications">4.3.5. OpsGenie notifications</a></h4>
+<h4 id="opsgenie-notifications"><a class="anchor" href="#opsgenie-notifications"></a><a class="link" href="#opsgenie-notifications">4.3.4. OpsGenie notifications</a></h4>
 <div class="paragraph">
 <p>To enable <a href="https://www.opsgenie.com/">OpsGenie</a> notifications you just have to add a new JSON Rest API integration to your OpsGenie account and set <code>spring.boot.admin.notify.opsgenie.api-key</code> to the apiKey you received.</p>
 </div>
@@ -1628,7 +1635,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_hipchat_notifications"><a class="anchor" href="#_hipchat_notifications"></a><a class="link" href="#_hipchat_notifications">4.3.6. Hipchat notifications</a></h4>
+<h4 id="_hipchat_notifications"><a class="anchor" href="#_hipchat_notifications"></a><a class="link" href="#_hipchat_notifications">Hipchat notifications</a></h4>
 <div class="paragraph">
 <p>To enable <a href="https://www.hipchat.com/">Hipchat</a> notifications you need to create an API token from you Hipchat account and set the appropriate configuration properties.</p>
 </div>
@@ -1686,7 +1693,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_slack_notifications"><a class="anchor" href="#_slack_notifications"></a><a class="link" href="#_slack_notifications">4.3.7. Slack notifications</a></h4>
+<h4 id="_slack_notifications"><a class="anchor" href="#_slack_notifications"></a><a class="link" href="#_slack_notifications">Slack notifications</a></h4>
 <div class="paragraph">
 <p>To enable <a href="https://slack.com/">Slack</a> notifications you need to add a incoming Webhook under custom integrations on your Slack
 account and configure it appropriately.</p>
@@ -1745,7 +1752,7 @@ account and configure it appropriately.</p>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_let_s_chat_notifications"><a class="anchor" href="#_let_s_chat_notifications"></a><a class="link" href="#_let_s_chat_notifications">4.3.8. Let&#8217;s Chat notifications</a></h4>
+<h4 id="_let_s_chat_notifications"><a class="anchor" href="#_let_s_chat_notifications"></a><a class="link" href="#_let_s_chat_notifications">Let&#8217;s Chat notifications</a></h4>
 <div class="paragraph">
 <p>To enable <a href="https://sdelements.github.io/lets-chat/">Let&#8217;s Chat</a> notifications you need to add the host url and add the API token and username from Let&#8217;s Chat</p>
 </div>
@@ -1803,7 +1810,7 @@ account and configure it appropriately.</p>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_microsoft_teams_notifications"><a class="anchor" href="#_microsoft_teams_notifications"></a><a class="link" href="#_microsoft_teams_notifications">4.3.9. Microsoft Teams notifications</a></h4>
+<h4 id="_microsoft_teams_notifications"><a class="anchor" href="#_microsoft_teams_notifications"></a><a class="link" href="#_microsoft_teams_notifications">Microsoft Teams notifications</a></h4>
 <div class="paragraph">
 <p>To enable Microsoft Teams notifications you need to setup a connector webhook url and set the appropriate configuration property.</p>
 </div>
@@ -1841,7 +1848,7 @@ account and configure it appropriately.</p>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_telegram_notifications"><a class="anchor" href="#_telegram_notifications"></a><a class="link" href="#_telegram_notifications">4.3.10. Telegram notifications</a></h4>
+<h4 id="_telegram_notifications"><a class="anchor" href="#_telegram_notifications"></a><a class="link" href="#_telegram_notifications">Telegram notifications</a></h4>
 <div class="paragraph">
 <p>To enable <a href="https://telegram.org/">Telegram</a> notifications you need to create and authorize a telegram bot and set the appropriate configuration properties for auth-token and chat-id.</p>
 </div>
@@ -1971,7 +1978,7 @@ account and configure it appropriately.</p>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.turbine</span>:
   <span class="key">clusters</span>: <span class="string"><span class="content">default</span></span>
-  <span class="key">location</span>: <span class="string"><span class="content">turbine  </span></span> <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+  <span class="key">location</span>: <span class="string"><span class="content">turbine  </span></span><i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -2136,7 +2143,7 @@ If you protect the <code>/api/applications</code> endpoint don&#8217;t forget to
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-There are more samples (e.g. using OAuth2) in <a href="https://github.com/joshiste/spring-boot-admin-samples" target="_blank">joshiste/spring-boot-admin-samples</a>.
+There are more samples (e.g. using OAuth2) in <a href="https://github.com/joshiste/spring-boot-admin-samples" target="_blank" rel="noopener">joshiste/spring-boot-admin-samples</a>.
 </td>
 </tr>
 </table>
@@ -2217,7 +2224,7 @@ When using Spring Cloud Discovery, you must be aware that anybody who can query 
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-When using this approach the SBA Server decides whether or not the user can access the registered applications. There are more complex solutions possible (using OAuth2) to let the clients decide if the user can access the endpoints. For that please have a look at the samples in <a href="https://github.com/joshiste/spring-boot-admin-samples" target="_blank">joshiste/spring-boot-admin-samples</a>.
+When using this approach the SBA Server decides whether or not the user can access the registered applications. There are more complex solutions possible (using OAuth2) to let the clients decide if the user can access the endpoints. For that please have a look at the samples in <a href="https://github.com/joshiste/spring-boot-admin-samples" target="_blank" rel="noopener">joshiste/spring-boot-admin-samples</a>.
 </td>
 </tr>
 </table>
