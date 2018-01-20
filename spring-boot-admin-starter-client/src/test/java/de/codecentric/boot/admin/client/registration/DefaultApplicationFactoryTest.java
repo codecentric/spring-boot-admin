@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
+import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.boot.web.server.Ssl;
@@ -40,11 +40,11 @@ public class DefaultApplicationFactoryTest {
     private InstanceProperties instanceProperties = new InstanceProperties();
     private ServerProperties server = new ServerProperties();
     private ManagementServerProperties management = new ManagementServerProperties();
-    private EndpointPathProvider endpointPathProvider = mock(EndpointPathProvider.class);
+    private PathMappedEndpoints pathMappedEndpoints = mock(PathMappedEndpoints.class);
     private WebEndpointProperties webEndpoint = new WebEndpointProperties();
 
     private DefaultApplicationFactory factory = new DefaultApplicationFactory(instanceProperties, management, server,
-            endpointPathProvider, webEndpoint);
+            pathMappedEndpoints, webEndpoint);
 
     @Before
     public void setup() {
@@ -54,7 +54,7 @@ public class DefaultApplicationFactoryTest {
     @Test
     public void test_mgmtPortPath() {
         webEndpoint.setBasePath("/admin");
-        when(endpointPathProvider.getPath("health")).thenReturn("/admin/alive");
+        when(pathMappedEndpoints.getPath("health")).thenReturn("/admin/alive");
         publishApplicationReadyEvent(factory, 8080, 8081);
 
         Application app = factory.createApplication();
@@ -65,7 +65,7 @@ public class DefaultApplicationFactoryTest {
 
     @Test
     public void test_default() {
-        when(endpointPathProvider.getPath("health")).thenReturn("/actuator/health");
+        when(pathMappedEndpoints.getPath("health")).thenReturn("/actuator/health");
         publishApplicationReadyEvent(factory, 8080, null);
 
         Application app = factory.createApplication();
@@ -78,7 +78,7 @@ public class DefaultApplicationFactoryTest {
     public void test_ssl() {
         server.setSsl(new Ssl());
         server.getSsl().setEnabled(true);
-        when(endpointPathProvider.getPath("health")).thenReturn("/actuator/health");
+        when(pathMappedEndpoints.getPath("health")).thenReturn("/actuator/health");
         publishApplicationReadyEvent(factory, 8080, null);
 
         Application app = factory.createApplication();
@@ -91,7 +91,7 @@ public class DefaultApplicationFactoryTest {
     public void test_ssl_management() {
         management.setSsl(new Ssl());
         management.getSsl().setEnabled(true);
-        when(endpointPathProvider.getPath("health")).thenReturn("/actuator/alive");
+        when(pathMappedEndpoints.getPath("health")).thenReturn("/actuator/alive");
         publishApplicationReadyEvent(factory, 8080, 9090);
 
         Application app = factory.createApplication();
@@ -103,7 +103,7 @@ public class DefaultApplicationFactoryTest {
     @Test
     public void test_preferIpAddress_serveraddress_missing() {
         instanceProperties.setPreferIp(true);
-        when(endpointPathProvider.getPath("health")).thenReturn("/application/alive");
+        when(pathMappedEndpoints.getPath("health")).thenReturn("/application/alive");
         publishApplicationReadyEvent(factory, 8080, null);
 
         Application app = factory.createApplication();
@@ -113,7 +113,7 @@ public class DefaultApplicationFactoryTest {
     @Test
     public void test_preferIpAddress_managementaddress_missing() {
         instanceProperties.setPreferIp(true);
-        when(endpointPathProvider.getPath("health")).thenReturn("/application/alive");
+        when(pathMappedEndpoints.getPath("health")).thenReturn("/application/alive");
         publishApplicationReadyEvent(factory, 8080, 8081);
 
         Application app = factory.createApplication();
@@ -125,7 +125,7 @@ public class DefaultApplicationFactoryTest {
         instanceProperties.setPreferIp(true);
         server.setAddress(InetAddress.getByName("127.0.0.1"));
         management.setAddress(InetAddress.getByName("127.0.0.2"));
-        when(endpointPathProvider.getPath("health")).thenReturn("/actuator/health");
+        when(pathMappedEndpoints.getPath("health")).thenReturn("/actuator/health");
         publishApplicationReadyEvent(factory, 8080, 8081);
 
         Application app = factory.createApplication();
@@ -151,7 +151,7 @@ public class DefaultApplicationFactoryTest {
         instanceProperties.setManagementBaseUrl("http://management:8090");
         instanceProperties.setServiceBaseUrl("http://service:80");
         webEndpoint.setBasePath("/admin");
-        when(endpointPathProvider.getPath("health")).thenReturn("/admin/health");
+        when(pathMappedEndpoints.getPath("health")).thenReturn("/admin/health");
 
         Application app = factory.createApplication();
         assertThat(app.getServiceUrl()).isEqualTo("http://service:80/");
@@ -163,7 +163,7 @@ public class DefaultApplicationFactoryTest {
     public void test_service_baseUrl() {
         instanceProperties.setServiceBaseUrl("http://service:80");
         webEndpoint.setBasePath("/admin");
-        when(endpointPathProvider.getPath("health")).thenReturn("/admin/health");
+        when(pathMappedEndpoints.getPath("health")).thenReturn("/admin/health");
 
         Application app = factory.createApplication();
         assertThat(app.getServiceUrl()).isEqualTo("http://service:80/");

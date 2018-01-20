@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,10 @@ import de.codecentric.boot.admin.client.registration.ServletApplicationFactory;
 
 import javax.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
+import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -59,9 +59,9 @@ public class SpringBootAdminClientAutoConfiguration {
                                                      ManagementServerProperties management,
                                                      ServerProperties server,
                                                      ServletContext servletContext,
-                                                     EndpointPathProvider endpointPathProvider,
+                                                     PathMappedEndpoints pathMappedEndpoints,
                                                      WebEndpointProperties webEndpoint) {
-            return new ServletApplicationFactory(instance, management, server, servletContext, endpointPathProvider,
+            return new ServletApplicationFactory(instance, management, server, servletContext, pathMappedEndpoints,
                     webEndpoint);
         }
     }
@@ -74,9 +74,9 @@ public class SpringBootAdminClientAutoConfiguration {
         public ApplicationFactory applicationFactory(InstanceProperties instance,
                                                      ManagementServerProperties management,
                                                      ServerProperties server,
-                                                     EndpointPathProvider endpointPathProvider,
+                                                     PathMappedEndpoints pathMappedEndpoints,
                                                      WebEndpointProperties webEndpoint) {
-            return new DefaultApplicationFactory(instance, management, server, endpointPathProvider, webEndpoint);
+            return new DefaultApplicationFactory(instance, management, server, pathMappedEndpoints, webEndpoint);
         }
     }
 
@@ -100,9 +100,9 @@ public class SpringBootAdminClientAutoConfiguration {
     public ApplicationFactory applicationFactory(InstanceProperties instance,
                                                  ManagementServerProperties management,
                                                  ServerProperties server,
-                                                 EndpointPathProvider endpointPathProvider,
+                                                 PathMappedEndpoints pathMappedEndpoints,
                                                  WebEndpointProperties webEndpoint) {
-        return new DefaultApplicationFactory(instance, management, server, endpointPathProvider, webEndpoint);
+        return new DefaultApplicationFactory(instance, management, server, pathMappedEndpoints, webEndpoint);
     }
 
     @Bean

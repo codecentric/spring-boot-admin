@@ -69,23 +69,19 @@ public class InstancesServletProxyController extends AbstractInstancesProxyContr
                                       .build(true)
                                       .toUri();
 
-        return super.forward(instanceId, uri, request.getMethod(), request.getHeaders(), () -> {
-            try {
-                return BodyInserters.fromDataBuffers(DataBufferUtils.read(request.getBody(), this.bufferFactory, 4096));
-            } catch (IOException ex) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, null, ex);
-            }
-        }).flatMap(clientResponse -> {
-            response.setStatusCode(clientResponse.statusCode());
-            response.getHeaders().addAll(clientResponse.headers().asHttpHeaders());
-            Arrays.stream(HOP_BY_HOP_HEADERS).forEach(response.getHeaders()::remove);
-            try {
-                return DataBufferUtils.write(clientResponse.body(BodyExtractors.toDataBuffers()), response.getBody())
-                                      .doOnNext(DataBufferUtils::release)
-                                      .then();
-            } catch (IOException ex) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, null, ex);
-            }
-        });
+        return super.forward(instanceId, uri, request.getMethod(), request.getHeaders(),
+                () -> BodyInserters.fromDataBuffers(
+                        DataBufferUtils.readInputStream(request::getBody, this.bufferFactory, 4096)))
+                    .flatMap(clientResponse -> {
+                        response.setStatusCode(clientResponse.statusCode());
+                        response.getHeaders().addAll(clientResponse.headers().asHttpHeaders());
+                        Arrays.stream(HOP_BY_HOP_HEADERS).forEach(response.getHeaders()::remove);
+                        try {
+                            return DataBufferUtils.write(clientResponse.body(BodyExtractors.toDataBuffers()),
+                                    response.getBody()).doOnNext(DataBufferUtils::release).then();
+                        } catch (IOException ex) {
+                            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, null, ex);
+                        }
+                    });
     }
 }

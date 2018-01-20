@@ -24,9 +24,9 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
+import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.boot.web.server.Ssl;
@@ -45,7 +45,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
     private final InstanceProperties instance;
     private final ServerProperties server;
     private final ManagementServerProperties management;
-    private final EndpointPathProvider endpointPathProvider;
+    private final PathMappedEndpoints pathMappedEndpoints;
     private final WebEndpointProperties webEndpoint;
     private final OffsetDateTime timestamp;
     private Integer localServerPort;
@@ -54,13 +54,12 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 
     public DefaultApplicationFactory(InstanceProperties instance,
                                      ManagementServerProperties management,
-                                     ServerProperties server,
-                                     EndpointPathProvider endpointPathProvider,
+                                     ServerProperties server, PathMappedEndpoints pathMappedEndpoints,
                                      WebEndpointProperties webEndpoint) {
         this.instance = instance;
         this.management = management;
         this.server = server;
-        this.endpointPathProvider = endpointPathProvider;
+        this.pathMappedEndpoints = pathMappedEndpoints;
         this.webEndpoint = webEndpoint;
         this.timestamp = OffsetDateTime.now();
     }
@@ -205,11 +204,11 @@ public class DefaultApplicationFactory implements ApplicationFactory {
     }
 
     protected String getHealthEndpointPath() {
-        String health = endpointPathProvider.getPath("health");
+        String health = pathMappedEndpoints.getPath("health");
         if (StringUtils.hasText(health)) {
             return health;
         }
-        String status = endpointPathProvider.getPath("status");
+        String status = pathMappedEndpoints.getPath("status");
         if (StringUtils.hasText(status)) {
             return status;
         }

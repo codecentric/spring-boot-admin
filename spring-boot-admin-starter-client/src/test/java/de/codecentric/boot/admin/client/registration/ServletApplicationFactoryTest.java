@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
+import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.boot.web.server.WebServer;
@@ -40,10 +40,10 @@ public class ServletApplicationFactoryTest {
     private ServerProperties server = new ServerProperties();
     private ManagementServerProperties management = new ManagementServerProperties();
     private MockServletContext servletContext = new MockServletContext();
-    private EndpointPathProvider endpointPathProvider = mock(EndpointPathProvider.class);
+    private PathMappedEndpoints pathMappedEndpoints = mock(PathMappedEndpoints.class);
     private WebEndpointProperties webEndpoint = new WebEndpointProperties();
     private ServletApplicationFactory factory = new ServletApplicationFactory(instance, management, server,
-            servletContext, endpointPathProvider, webEndpoint);
+            servletContext, pathMappedEndpoints, webEndpoint);
 
     @Before
     public void setup() {
@@ -54,7 +54,7 @@ public class ServletApplicationFactoryTest {
     public void test_contextPath_mgmtPath() {
         servletContext.setContextPath("app");
         webEndpoint.setBasePath("/admin");
-        when(endpointPathProvider.getPath("health")).thenReturn("/admin/health");
+        when(pathMappedEndpoints.getPath("health")).thenReturn("/admin/health");
         publishApplicationReadyEvent(factory, 8080, null);
 
         Application app = factory.createApplication();
@@ -67,7 +67,7 @@ public class ServletApplicationFactoryTest {
     public void test_contextPath_mgmtPortPath() {
         servletContext.setContextPath("app");
         webEndpoint.setBasePath("/admin");
-        when(endpointPathProvider.getPath("health")).thenReturn("/admin/health");
+        when(pathMappedEndpoints.getPath("health")).thenReturn("/admin/health");
         publishApplicationReadyEvent(factory, 8080, 8081);
 
         Application app = factory.createApplication();
@@ -79,7 +79,7 @@ public class ServletApplicationFactoryTest {
     @Test
     public void test_contextPath() {
         servletContext.setContextPath("app");
-        when(endpointPathProvider.getPath("health")).thenReturn("/actuator/health");
+        when(pathMappedEndpoints.getPath("health")).thenReturn("/actuator/health");
         publishApplicationReadyEvent(factory, 80, null);
 
         Application app = factory.createApplication();
@@ -92,7 +92,7 @@ public class ServletApplicationFactoryTest {
     public void test_servletPath() {
         server.getServlet().setPath("app");
         servletContext.setContextPath("srv");
-        when(endpointPathProvider.getPath("health")).thenReturn("/actuator/health");
+        when(pathMappedEndpoints.getPath("health")).thenReturn("/actuator/health");
         publishApplicationReadyEvent(factory, 80, null);
 
         Application app = factory.createApplication();
