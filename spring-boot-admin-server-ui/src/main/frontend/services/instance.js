@@ -146,10 +146,8 @@ class Instance {
     return await axios.get(`instances/events`);
   }
 
-  static async getEventStream() {
-    await waitForPolyfill();
-
-    return Observable.create(observer => {
+  static getEventStream() {
+    return Observable.from(waitForPolyfill()).ignoreElements().concat(Observable.create(observer => {
       const eventSource = new EventSource('instances/events');
       eventSource.onmessage = message => observer.next({
         ...message,
@@ -159,7 +157,7 @@ class Instance {
       return () => {
         eventSource.close();
       };
-    });
+    }));
   }
 
   static async get(id) {

@@ -96,8 +96,8 @@
         }), {});
         _.assign(this.instanceNames, newInstanceNames);
       },
-      async createSubscription() {
-        return (await Instance.getEventStream()).subscribe({
+      createSubscription() {
+        return Instance.getEventStream().subscribe({
           next: message => {
             this.addEvents([message.data])
           },

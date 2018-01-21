@@ -40,20 +40,20 @@ class Application {
     });
   }
 
-  static async getStream() {
-    await waitForPolyfill();
+  static getStream() {
+    return Observable.from(waitForPolyfill()).ignoreElements().concat(
+      Observable.create(observer => {
+        const eventSource = new EventSource('applications');
+        eventSource.onmessage = message => observer.next({
+          ...message,
+          data: Application._transformResponse(message.data)
+        });
 
-    return Observable.create(observer => {
-      const eventSource = new EventSource('applications');
-      eventSource.onmessage = message => observer.next({
-        ...message,
-        data: Application._transformResponse(message.data)
-      });
-      eventSource.onerror = err => observer.error(err);
-      return () => {
-        eventSource.close();
-      };
-    });
+        eventSource.onerror = err => observer.error(err);
+        return () => {
+          eventSource.close();
+        };
+      }));
   }
 
   static _transformResponse(data) {

@@ -54,13 +54,10 @@
 </template>
 
 <script>
-  import subscribing from '@/mixins/subscribing';
-  import Application from '@/services/application'
   import * as _ from 'lodash';
   import applicationsList from './applications-list';
 
   export default {
-    mixins: [subscribing],
     components: {
       applicationsList,
     },
@@ -70,7 +67,7 @@
     }),
     computed: {
       applications() {
-        return this.$data._applications.filter(application => application.instances.length > 0);
+        return this.$root.applications;
       },
       statusGroups() {
         const byStatus = _.groupBy(this.applications, application => application.status);
@@ -91,27 +88,7 @@
         }, 0);
       }
     },
-    methods: {
-      async createSubscription() {
-        try {
-          this.$data._applications = (await Application.list()).data;
-        } catch (e) {
-          this.errors.push(e);
-        }
-
-        return (await Application.getStream()).subscribe({
-          next: message => {
-            const idx = this.$data._applications.findIndex(application => application.name === message.data.name);
-            if (idx >= 0) {
-              this.$data._applications.splice(idx, 1, message.data);
-            } else {
-              this.$data._applications.push(message.data);
-            }
-          },
-          error: err => this.errors.push(err)
-        });
-      }
-    }
+    methods: {}
   }
 </script>
 

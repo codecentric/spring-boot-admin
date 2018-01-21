@@ -54,7 +54,8 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 
     public DefaultApplicationFactory(InstanceProperties instance,
                                      ManagementServerProperties management,
-                                     ServerProperties server, PathMappedEndpoints pathMappedEndpoints,
+                                     ServerProperties server,
+                                     PathMappedEndpoints pathMappedEndpoints,
                                      WebEndpointProperties webEndpoint) {
         this.instance = instance;
         this.management = management;
