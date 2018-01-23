@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import axios from 'axios';
 import moment from 'moment';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
@@ -38,6 +39,17 @@ const router = new VueRouter({
 });
 
 Notifications.requestPermissions();
+axios.interceptors.request.use(config => {
+  config.headers['X-Requested-With'] = 'XMLHttpRequest';
+  return config;
+});
+
+axios.interceptors.response.use(response => response, error => {
+  if (401 === error.response.status) {
+    window.location = `login?redirectTo=${encodeURIComponent(window.location.href)}`;
+  }
+  return Promise.reject(error);
+});
 
 const store = new Store();
 

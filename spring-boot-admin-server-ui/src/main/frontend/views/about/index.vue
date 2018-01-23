@@ -56,7 +56,7 @@
                         <font-awesome-icon size="lg" :icon="['fab', 'gitter']"></font-awesome-icon>&nbsp;Gitter</a>
                 </div>
             </div>
-            <h1 class="title is-5">Trademarks and License</h1>
+            <h1 class="title is-5">Trademarks and Licenses</h1>
             <div class="content">
                 <p>
                     The source code of Spring Boot Admin is licensed under <a
