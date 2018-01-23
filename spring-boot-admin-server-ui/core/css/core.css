@@ -55,15 +55,12 @@ pre {
   border-radius: 0;
   padding: 0;
 }
-.header--navbar .navbar-inner .spring-logo--container {
-  display: inline-block;
-}
-.header--navbar .navbar-inner .spring-logo--container .spring-logo {
-  margin: 12px 0 6px;
-  width: 160px;
-  height: 46px;
-  display: inline-block;
-  text-decoration: none;
+.header--navbar .navbar-inner .brand {
+  color: #eeeeee;
+  text-shadow: none;
+  font-size: 30px;
+  line-height: 70px;
+  padding: 0;
 }
 .header--navbar .navbar-inner .navbar-link.active a {
   background-color: #6db33f;
@@ -90,40 +87,11 @@ pre {
   max-width: 1024px;
   margin: 0 auto;
 }
-a.spring-logo {
-  background: url("../img/spring-logo.png") -1px -1px no-repeat;
-}
-.spring-logo span {
-  display: block;
-  width: 160px;
-  height: 46px;
-  background: url("../img/spring-logo.png") -1px -48px no-repeat;
-  opacity: 0;
-  -moz-transition: opacity 0.12s ease-in-out;
-  -webkit-transition: opacity 0.12s ease-in-out;
-  -o-transition: opacity 0.12s ease-in-out;
-}
-a.spring-logo span {
-  display: block;
-  width: 160px;
-  height: 46px;
-  background: url("../img/spring-logo.png") -1px -48px no-repeat;
-  opacity: 0;
-  -moz-transition: opacity 0.12s ease-in-out;
-  -webkit-transition: opacity 0.12s ease-in-out;
-  -o-transition: opacity 0.12s ease-in-out;
-}
-a:hover.spring-logo span {
-  opacity: 1;
-}
 a.spring-boot-logo span {
   display: block;
-  width: 160px;
-  height: 50px;
-  background: url("../img/platform-spring-boot.png") 20px -6px no-repeat;
-}
-a:hover.spring-boot-logo span {
-  opacity: 1;
+  width: 80px;
+  height: 70px;
+  background: url("../img/platform-spring-boot.png") 0 center no-repeat;
 }
 
 /* ---------- */
