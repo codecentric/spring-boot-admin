@@ -86,59 +86,44 @@
       : (val, key) => oldFilter(val, key) && addedFilter(val, key);
 
   class Trace {
-    constructor({timestamp, info}) {
-      this.info = info;
+    constructor({timestamp, ...trace}) {
+      Object.assign(this, trace);
       this.timestamp = moment(timestamp);
     }
 
     get key() {
-      return `${this.timestamp}-${this.method}-${this.path}`;
-    }
-
-    get method() {
-      return this.info.method;
-    }
-
-    get path() {
-      return this.info.path;
-    }
-
-    get status() {
-      return this.info.headers.response.status;
-    }
-
-    get timeTaken() {
-      const timeTaken = this.info.timeTaken;
-      if (timeTaken && /^\d+$/.test(timeTaken)) {
-        return parseInt(timeTaken);
-      }
+      return `${this.timestamp}-${this.request.method}-${this.request.uri}`;
     }
 
     get contentLength() {
-      const contentLength = this.info.headers.response['Content-Length'];
+      const contentLength = this.response.headers['Content-Length'] && this.response.headers['Content-Length'][0];
       if (contentLength && /^\d+$/.test(contentLength)) {
         return parseInt(contentLength);
       }
     }
 
     get contentType() {
-      const contentType = this.info.headers.response['Content-Type'];
+      const contentType = this.response.headers['Content-Type'] && this.response.headers['Content-Type'][0];
       if (contentType) {
         const idx = contentType.indexOf(';');
         return idx >= 0 ? contentType.substring(0, idx) : contentType;
       }
     }
 
+    compareTo(other) {
+      return this.timestamp - other.timestamp;
+    }
+
     isSuccess() {
-      return this.status <= 299
+      return this.response.status <= 399
     }
 
     isClientError() {
-      return this.status >= 400 && this.status <= 499
+      return this.response.status >= 400 && this.response.status <= 499
     }
 
     isServerError() {
-      return this.status >= 500 && this.status <= 599
+      return this.response.status >= 500 && this.response.status <= 599
     }
   }
 
@@ -187,9 +172,10 @@
     methods: {
       async fetchTrace() {
         const response = await this.instance.fetchTrace();
-        const traces = response.data.traces.filter(
-          trace => moment(trace.timestamp).isAfter(this.lastTimestamp)
+        const traces = response.data.traces.map(trace => new Trace(trace)).filter(
+          trace => trace.timestamp.isAfter(this.lastTimestamp)
         );
+        traces.sort((a, b) => -1 * a.compareTo(b));
         if (traces.length > 0) {
           this.lastTimestamp = traces[0].timestamp;
         }
@@ -202,8 +188,7 @@
           return Observable.timer(0, 5000)
             .concatMap(vm.fetchTrace)
             .subscribe({
-              next: rawTraces => {
-                const traces = rawTraces.map(trace => new Trace(trace));
+              next: traces => {
                 vm.traces = vm.traces ? traces.concat(vm.traces) : traces;
               },
               errors: err => {
@@ -215,11 +200,11 @@
       getFilterFn() {
         let filterFn = null;
         if (this.actuatorPath !== null && this.excludeActuator) {
-          filterFn = addToFilter(filterFn, (trace) => trace.path.indexOf(this.actuatorPath) !== 0);
+          filterFn = addToFilter(filterFn, (trace) => trace.request.uri.indexOf(this.actuatorPath) < 0);
         }
         if (this.filter) {
           const normalizedFilter = this.filter.toLowerCase();
-          filterFn = addToFilter(filterFn, (trace) => trace.path.toLowerCase().indexOf(normalizedFilter) >= 0);
+          filterFn = addToFilter(filterFn, (trace) => trace.request.uri.toLowerCase().indexOf(normalizedFilter) >= 0);
         }
         if (!this.showSuccess) {
           filterFn = addToFilter(filterFn, (trace) => !trace.isSuccess());

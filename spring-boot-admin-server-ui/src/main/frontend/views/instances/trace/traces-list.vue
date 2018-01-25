@@ -33,10 +33,10 @@
                 @click="showDetails[trace.key]  ?  $delete(showDetails, trace.key) : $set(showDetails, trace.key, true)"
                 :key="trace.key">
                 <td v-text="trace.timestamp.format('L HH:mm:ss.SSS')"></td>
-                <td v-text="trace.method"></td>
-                <td v-text="trace.path"></td>
+                <td v-text="trace.request.method"></td>
+                <td v-text="trace.request.uri"></td>
                 <td>
-                    <span v-text="trace.status" class="tag"
+                    <span v-text="trace.response.status" class="tag"
                           :class="{ 'is-success' : trace.isSuccess(), 'is-warning' : trace.isClientError(), 'is-danger' : trace.isServerError() }"></span>
                 </td>
                 <td v-text="trace.contentType"></td>
@@ -45,12 +45,12 @@
             </tr>
             <tr class="trace__detail" :key="`${trace.key}-detail`" v-if="showDetails[trace.key]">
                 <td colspan="7">
-                    <pre v-text="toJson(trace.info)"></pre>
+                    <pre v-text="toJson(trace)"></pre>
                 </td>
             </tr>
         </template>
         <tr v-if="traces.length === 0">
-            <td class="is-muted" colspan="5">No traces found.</td>
+            <td class="is-muted" colspan="7">No traces found.</td>
         </tr>
     </table>
 </template>

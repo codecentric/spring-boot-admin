@@ -54,7 +54,7 @@
   //see https://github.com/d3/d3/issues/2733#issuecomment-190743489
   import d3 from '@/utils/d3';
   import {event as d3Event} from 'd3-selection';
-  import moment from 'moment-shortformat';
+  import moment from 'moment';
 
   const interval = 1000;
   export default {
@@ -71,12 +71,12 @@
         const chartData = [];
         const now = moment.now().valueOf();
         let idx = this.traces.length - 1;
-        const oldest = this.traces[this.traces.length - 1].timestamp;
+        const oldest = this.traces[this.traces.length - 1].timestamp.valueOf();
 
         for (let time = Math.floor(oldest.valueOf() / interval) * interval; time < now; time += interval) {
           const bucket = {
-            timeStart: new Date(time),
-            timeEnd: new Date(time + interval),
+            timeStart: time,
+            timeEnd: time + interval,
             totalCount: 0,
             totalSuccess: 0,
             totalClientErrors: 0,
@@ -90,11 +90,9 @@
             bucket.totalCount++;
             if (trace.isSuccess()) {
               bucket.totalSuccess++;
-            }
-            if (trace.isClientError()) {
+            } else if (trace.isClientError()) {
               bucket.totalClientErrors++;
-            }
-            if (trace.isServerError()) {
+            } else if (trace.isServerError()) {
               bucket.totalServerErrors++;
             }
             if (trace.timeTaken) {
@@ -117,8 +115,6 @@
           bucket => bucket.timeStart.valueOf() >= selection[0] && bucket.timeStart.valueOf() < selection[1]
         ).reduce(
           (current, next) => ({
-            timeStart: new Date(Math.min(current.timeStart.valueOf(), next.timeStart.valueOf())),
-            timeEnd: new Date(Math.max(current.timeEnd.valueOf(), next.timeEnd.valueOf())),
             totalCount: current.totalCount + next.totalCount,
             totalSuccess: current.totalSuccess + next.totalSuccess,
             totalClientErrors: current.totalClientErrors + next.totalClientErrors,
@@ -127,8 +123,6 @@
             maxTime: Math.max(current.maxTime, next.maxTime)
           }),
           {
-            timeStart: new Date(selection[0]),
-            timeEnd: new Date(selection[1]),
             totalCount: 0,
             totalSuccess: 0,
             totalClientErrors: 0,
@@ -175,7 +169,7 @@
         //draw axis
         vm.xAxis.call(d3.axisBottom(x)
           .ticks(10)
-          .tickFormat(d => `-${moment(d).short(true)}`)
+          .tickFormat(d => moment(d).format("HH:mm:ss"))
         );
 
         vm.yAxis.call(d3.axisRight(y)
