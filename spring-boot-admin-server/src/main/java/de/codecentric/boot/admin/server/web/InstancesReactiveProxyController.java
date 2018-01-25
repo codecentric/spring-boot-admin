@@ -20,7 +20,7 @@ import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
-import java.util.Arrays;
+import java.util.Set;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,8 +34,10 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 @AdminController
 public class InstancesReactiveProxyController extends AbstractInstancesProxyController {
-    public InstancesReactiveProxyController(InstanceRegistry registry, InstanceWebClient instanceWebClient) {
-        super(registry, instanceWebClient);
+    public InstancesReactiveProxyController(Set<String> ignoredHeaders,
+                                            InstanceRegistry registry,
+                                            InstanceWebClient instanceWebClient) {
+        super(ignoredHeaders, registry, instanceWebClient);
     }
 
     @RequestMapping(path = REQUEST_MAPPING_PATH)
@@ -43,14 +45,15 @@ public class InstancesReactiveProxyController extends AbstractInstancesProxyCont
                                     ServerHttpRequest request,
                                     ServerHttpResponse response) {
         String endpointLocalPath = getEndpointLocalPath(request.getPath().pathWithinApplication().value());
-        URI uri = UriComponentsBuilder.fromPath(endpointLocalPath).query(request.getURI().getRawQuery()).build(true)
+        URI uri = UriComponentsBuilder.fromPath(endpointLocalPath)
+                                      .query(request.getURI().getRawQuery())
+                                      .build(true)
                                       .toUri();
 
         return super.forward(instanceId, uri, request.getMethod(), request.getHeaders(),
                 () -> BodyInserters.fromDataBuffers(request.getBody())).flatMap(clientResponse -> {
             response.setStatusCode(clientResponse.statusCode());
-            response.getHeaders().addAll(clientResponse.headers().asHttpHeaders());
-            Arrays.stream(HOP_BY_HOP_HEADERS).forEach(response.getHeaders()::remove);
+            response.getHeaders().addAll(filterHeaders(clientResponse.headers().asHttpHeaders()));
             return response.writeWith(clientResponse.body(BodyExtractors.toDataBuffers()));
         });
     }

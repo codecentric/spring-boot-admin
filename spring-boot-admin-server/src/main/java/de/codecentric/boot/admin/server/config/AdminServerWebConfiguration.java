@@ -77,9 +77,11 @@ public class AdminServerWebConfiguration {
     public static class ReactiveRestApiConfiguration {
         @Bean
         @ConditionalOnMissingBean
-        public InstancesReactiveProxyController instancesProxyController(InstanceRegistry instanceRegistry,
+        public InstancesReactiveProxyController instancesProxyController(AdminServerProperties adminServerProperties,
+                                                                         InstanceRegistry instanceRegistry,
                                                                          InstanceWebClient instanceWebClient) {
-            return new InstancesReactiveProxyController(instanceRegistry, instanceWebClient);
+            return new InstancesReactiveProxyController(adminServerProperties.getInstanceProxy().getIgnoredHeaders(),
+                    instanceRegistry, instanceWebClient);
         }
 
         @Bean
@@ -102,9 +104,11 @@ public class AdminServerWebConfiguration {
     public static class ServletRestApiConfirguation {
         @Bean
         @ConditionalOnMissingBean
-        public InstancesServletProxyController instancesProxyController(InstanceRegistry instanceRegistry,
+        public InstancesServletProxyController instancesProxyController(AdminServerProperties adminServerProperties,
+                                                                        InstanceRegistry instanceRegistry,
                                                                         InstanceWebClient instanceWebClient) {
-            return new InstancesServletProxyController(instanceRegistry, instanceWebClient);
+            return new InstancesServletProxyController(adminServerProperties.getInstanceProxy().getIgnoredHeaders(),
+                    instanceRegistry, instanceWebClient);
         }
 
         @Bean

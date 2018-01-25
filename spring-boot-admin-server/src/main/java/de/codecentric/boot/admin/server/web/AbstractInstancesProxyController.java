@@ -24,7 +24,10 @@ import reactor.core.publisher.Mono;
 
 import java.net.ConnectException;
 import java.net.URI;
-import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,16 +41,25 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toMap;
+
 public class AbstractInstancesProxyController {
     protected static final String REQUEST_MAPPING_PATH = "/instances/{instanceId}/actuator/**";
-    protected static final String[] HOP_BY_HOP_HEADERS = new String[]{"Connection", "Keep-Alive", "Proxy-Authenticate",
-            "Proxy-Authorization", "TE", "Trailer", "Transfer-Encoding", "Upgrade", "X-Application-Context"};
+    protected static final List<String> HOP_BY_HOP_HEADERS = asList("Host", "Connection", "Keep-Alive",
+            "Proxy-Authenticate", "Proxy-Authorization", "TE", "Trailer", "Transfer-Encoding", "Upgrade",
+            "X-Application-Context");
     private static final Logger log = LoggerFactory.getLogger(AbstractInstancesProxyController.class);
 
     private final InstanceRegistry registry;
     private final InstanceWebClient instanceWebClient;
+    private final Set<String> ignoredHeaders;
 
-    public AbstractInstancesProxyController(InstanceRegistry registry, InstanceWebClient instanceWebClient) {
+    public AbstractInstancesProxyController(Set<String> ignoredHeaders,
+                                            InstanceRegistry registry,
+                                            InstanceWebClient instanceWebClient) {
+        this.ignoredHeaders = new HashSet<>(ignoredHeaders);
+        this.ignoredHeaders.addAll(HOP_BY_HOP_HEADERS);
         this.registry = registry;
         this.instanceWebClient = instanceWebClient;
     }
@@ -62,11 +74,8 @@ public class AbstractInstancesProxyController {
         WebClient.RequestBodySpec bodySpec = instanceWebClient.instance(registry.getInstance(InstanceId.of(instanceId)))
                                                               .method(method)
                                                               .uri(uri)
-                                                              .headers(instanceHeaders -> {
-                                                                  instanceHeaders.addAll(headers);
-                                                                  Arrays.stream(HOP_BY_HOP_HEADERS)
-                                                                        .forEach(instanceHeaders::remove);
-                                                              });
+                                                              .headers(instanceHeaders -> instanceHeaders.addAll(
+                                                                      filterHeaders(headers)));
 
         WebClient.RequestHeadersSpec<?> headersSpec = bodySpec;
         if (requiresBody(method)) {
@@ -87,6 +96,19 @@ public class AbstractInstancesProxyController {
 
     protected String getEndpointLocalPath(String pathWithinApplication) {
         return new AntPathMatcher().extractPathWithinPattern(REQUEST_MAPPING_PATH, pathWithinApplication);
+    }
+
+    protected HttpHeaders filterHeaders(HttpHeaders headers) {
+        HttpHeaders filtered = new HttpHeaders();
+        filtered.putAll(headers.entrySet()
+                               .stream()
+                               .filter(e -> this.includeHeader(e.getKey()))
+                               .collect(toMap(Map.Entry::getKey, Map.Entry::getValue)));
+        return filtered;
+    }
+
+    private boolean includeHeader(String headers) {
+        return !ignoredHeaders.contains(headers);
     }
 
     private boolean requiresBody(HttpMethod method) {

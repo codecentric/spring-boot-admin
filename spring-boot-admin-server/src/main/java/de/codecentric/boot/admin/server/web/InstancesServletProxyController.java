@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Arrays;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.core.io.buffer.DataBufferFactory;
@@ -48,8 +48,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class InstancesServletProxyController extends AbstractInstancesProxyController {
     private final DataBufferFactory bufferFactory = new DefaultDataBufferFactory();
 
-    public InstancesServletProxyController(InstanceRegistry registry, InstanceWebClient instanceWebClient) {
-        super(registry, instanceWebClient);
+    public InstancesServletProxyController(Set<String> ignoredHeaders,
+                                           InstanceRegistry registry,
+                                           InstanceWebClient instanceWebClient) {
+        super(ignoredHeaders, registry, instanceWebClient);
     }
 
     @RequestMapping(path = REQUEST_MAPPING_PATH)
@@ -74,8 +76,7 @@ public class InstancesServletProxyController extends AbstractInstancesProxyContr
                         DataBufferUtils.readInputStream(request::getBody, this.bufferFactory, 4096)))
                     .flatMap(clientResponse -> {
                         response.setStatusCode(clientResponse.statusCode());
-                        response.getHeaders().addAll(clientResponse.headers().asHttpHeaders());
-                        Arrays.stream(HOP_BY_HOP_HEADERS).forEach(response.getHeaders()::remove);
+                        response.getHeaders().addAll(filterHeaders(clientResponse.headers().asHttpHeaders()));
                         try {
                             return DataBufferUtils.write(clientResponse.body(BodyExtractors.toDataBuffers()),
                                     response.getBody()).doOnNext(DataBufferUtils::release).then();

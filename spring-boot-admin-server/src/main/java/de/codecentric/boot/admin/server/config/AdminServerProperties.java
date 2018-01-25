@@ -18,8 +18,12 @@ package de.codecentric.boot.admin.server.config;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
+import java.util.Set;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
+
+import static java.util.Arrays.asList;
 
 @lombok.Data
 @ConfigurationProperties("spring.boot.admin")
@@ -31,6 +35,8 @@ public class AdminServerProperties {
     private String contextPath = "";
 
     private MonitorProperties monitor = new MonitorProperties();
+
+    private InstanceProxyProperties instanceProxy = new InstanceProxyProperties();
 
     /**
      * The metadata keys which should be sanitized when serializing to json
@@ -77,6 +83,10 @@ public class AdminServerProperties {
         this.probedEndpoints = probedEndpoints;
     }
 
+    public InstanceProxyProperties getInstanceProxy() {
+        return instanceProxy;
+    }
+
     @lombok.Data
     public static class MonitorProperties {
         /**
@@ -104,5 +114,21 @@ public class AdminServerProperties {
         @DefaultDurationUnit(ChronoUnit.MILLIS)
         private Duration readTimeout = Duration.ofMillis(5_000);
 
+    }
+
+    @lombok.Data
+    public static class InstanceProxyProperties {
+        /**
+         * Headers not to be forwarded when making requests to clients.
+         */
+        private Set<String> ignoredHeaders = new HashSet<>(asList("Cookie", "Set-Cookie", "Authorization"));
+
+        public Set<String> getIgnoredHeaders() {
+            return ignoredHeaders;
+        }
+
+        public void setIgnoredHeaders(Set<String> ignoredHeaders) {
+            this.ignoredHeaders = ignoredHeaders;
+        }
     }
 }
