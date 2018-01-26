@@ -1,5 +1,5 @@
-spring-boot-admin
-=================
+codecentric's Spring Boot Admin
+===============================
 [![Apache License 2](https://img.shields.io/badge/license-ASF2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 [![Build Status](https://travis-ci.org/codecentric/spring-boot-admin.svg?branch=master)](https://travis-ci.org/codecentric/spring-boot-admin)
 [![Coverage Status](https://coveralls.io/repos/codecentric/spring-boot-admin/badge.svg)](https://coveralls.io/r/codecentric/spring-boot-admin)
@@ -7,9 +7,9 @@ spring-boot-admin
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.codecentric/spring-boot-admin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.codecentric/spring-boot-admin/)
 [![Gitter](https://badges.gitter.im/codecentric/spring-boot-admin.svg)](https://gitter.im/codecentric/spring-boot-admin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-This is a simple admin interface for [Spring Boot](http://projects.spring.io/spring-boot/ "Official Spring-Boot website") applications.
+This community project provides an admin interface for [Spring Boot <sup>®</sup>](http://projects.spring.io/spring-boot/ "Official Spring-Boot website") applications.
 
-This application provides a simple UI to administrate Spring Boot applications. It provides the following features for registered application.
+It provides the following features for registered application.
 
 * Show health status
 * Show details, like
@@ -27,7 +27,7 @@ This application provides a simple UI to administrate Spring Boot applications. 
 * View traces
 * Hystrix-Dashboard integration
 * Download heapdump
-* Notification on status change (via mail, Slack, Hipchat, ...)
+* Notification on status change (via e-mail, Slack, Hipchat, ...)
 * Event journal of status changes (non persistent)
 
 ## Getting Started
@@ -36,15 +36,15 @@ This application provides a simple UI to administrate Spring Boot applications. 
 
 ## Getting Help
 
-Having trouble with Spring Boot Admin? We’d like to help!
+Having trouble with codecentric's Spring Boot Admin? We’d like to help!
 
- * Check the [reference documentation](http://codecentric.github.io/spring-boot-admin/1.5.6/).
+ * Check the [reference documentation](http://codecentric.github.io/spring-boot-admin/current/).
  
  * Ask a question on [stackoverflow.com](http://stackoverflow.com/questions/tagged/spring-boot-admin) - we monitor questions tagged with `spring-boot-admin`.
  
  * Ask for help in our [spring-boot-admin Gitter chat](https://gitter.im/codecentric/spring-boot-admin)
  
- * Report bugs with Spring Boot Admin at http://github.com/codecentric/spring-boot-admin/issues.
+ * Report bugs at http://github.com/codecentric/spring-boot-admin/issues.
 
 ## Reference Guide
 [Version 1.5.6](http://codecentric.github.io/spring-boot-admin/1.5.6/)
@@ -52,6 +52,11 @@ Having trouble with Spring Boot Admin? We’d like to help!
 [Version 1.4.6](http://codecentric.github.io/spring-boot-admin/1.4.6/)
 
 [Version 1.3.7](http://codecentric.github.io/spring-boot-admin/1.3.7/)
+
+## Trademarks and licenses
+The source code of codecentric's Spring Boot Admin is licensed under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+
+Spring, Spring Boot and Spring Cloud are trademarks of [Pivotal Software, Inc.](https://pivotal.io/) in the U.S. and other countries.
 
 ## Screenshots
 
