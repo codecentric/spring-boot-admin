@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {Observable} from 'rxjs/Observable';
-export {animationFrame} from 'rxjs/scheduler/animationFrame';
 
+import 'rxjs/add/observable/defer';
 import 'rxjs/add/observable/empty';
 import 'rxjs/add/observable/from';
 import 'rxjs/add/observable/of';
@@ -23,7 +22,31 @@ import 'rxjs/add/observable/timer';
 import 'rxjs/add/operator/concat';
 import 'rxjs/add/operator/concatAll';
 import 'rxjs/add/operator/concatMap';
+import 'rxjs/add/operator/delay';
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/finally';
 import 'rxjs/add/operator/ignoreElements';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/retryWhen';
+
+import {Observable} from 'rxjs/Observable';
+import {animationFrame} from 'rxjs/scheduler/animationFrame';
+
+Observable.prototype.doFirst = function (doFirst) {
+  let source = this;
+  let triggered = false;
+  return Observable.defer(() => {
+    triggered = false;
+    return source;
+  }).do(n => {
+    if (!triggered) {
+      triggered = true;
+      doFirst(n);
+    }
+  });
+};
+
+export {
+  Observable,
+  animationFrame
+};

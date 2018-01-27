@@ -17,6 +17,14 @@
 <template>
     <section class="section">
         <div class="container">
+            <div v-if="connectionFailed" class="message is-warning">
+                <div class="message-body">
+                    <strong>
+                        <font-awesome-icon class="has-text-warning" icon="exclamation-triangle"></font-awesome-icon>
+                        Server connection failed
+                    </strong>
+                </div>
+            </div>
             <div class="level">
                 <div class="level-item has-text-centered">
                     <div>
@@ -56,18 +64,18 @@
 <script>
   import * as _ from 'lodash';
   import applicationsList from './applications-list';
+  import handle from './handle';
 
-  export default {
+  const component = {
     components: {
       applicationsList,
     },
-    data: () => ({
-      _applications: [],
-      errors: []
-    }),
     computed: {
       applications() {
         return this.$root.applications;
+      },
+      connectionFailed() {
+        return this.$root.connectionFailed;
       },
       statusGroups() {
         const byStatus = _.groupBy(this.applications, application => application.status);
@@ -89,8 +97,14 @@
       }
     },
     methods: {}
-  }
-</script>
+  };
 
-<style lang="scss">
-</style>
+  export default component;
+  export const view = {
+    path: '/applications',
+    name: 'applications',
+    handle: handle,
+    order: 0,
+    component: component
+  };
+</script>

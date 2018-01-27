@@ -23,6 +23,7 @@ import faBook from '@fortawesome/fontawesome-free-solid/faBook';
 import faCheck from '@fortawesome/fontawesome-free-solid/faCheck';
 import faDownload from '@fortawesome/fontawesome-free-solid/faDownload';
 import faExclamation from '@fortawesome/fontawesome-free-solid/faExclamation';
+import faExclamationTriangle from '@fortawesome/fontawesome-free-solid/faExclamationTriangle';
 import faMinusCircle from '@fortawesome/fontawesome-free-solid/faMinusCircle';
 import faQuestionCircle from '@fortawesome/fontawesome-free-solid/faQuestionCircle';
 import faSignOutAlt from '@fortawesome/fontawesome-free-solid/faSignOutAlt';
@@ -33,6 +34,6 @@ import faTrash from '@fortawesome/fontawesome-free-solid/faTrash';
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 
 fontawesome.library.add(faGithub, faStackOverflow, faGitter, faTrash, faDownload, faStepForward, faStepBackward, faCheck, faQuestionCircle, faBan, faTimesCircle, faMinusCircle, faExclamation,
-  faBook, faSignOutAlt);
+  faBook, faSignOutAlt, faExclamationTriangle);
 
 export default FontAwesomeIcon;

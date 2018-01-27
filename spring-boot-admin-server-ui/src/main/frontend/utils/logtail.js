@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import axios from 'axios';
+import axios from './axios';
 import {Observable} from './rxjs';
 
 export default (url, interval, initialSize = 300 * 1024) => {
@@ -22,7 +22,7 @@ export default (url, interval, initialSize = 300 * 1024) => {
   let size = 0;
 
   return Observable.timer(0, interval)
-    .concatMap(tick =>
+    .concatMap(() =>
       axios.get(url, {
         headers: {
           range

@@ -32,8 +32,8 @@
                 <div class="navbar-start">
                 </div>
                 <div class="navbar-end">
-                    <router-link class="navbar-item" v-for="view in views" :to="{name: view.name}" :key="view.name"
-                                 v-html="view.template">
+                    <router-link class="navbar-item" v-for="view in views" :to="{name: view.name}" :key="view.name">
+                        <component :is="view.handle"></component>
                     </router-link>
 
                     <div class="navbar-item">

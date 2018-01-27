@@ -15,7 +15,7 @@
  */
 
 import sbaAbout from './about';
-import sbaApplications from './applications';
+import {view as applicationView} from './applications';
 import sbaInstancesAuditevents from './instances/auditevents';
 import sbaInstancesDetails from './instances/details';
 import sbaInstancesEnv from './instances/env';
@@ -29,10 +29,19 @@ import sbaInstancesThreaddump from './instances/threaddump';
 import sbaInstancesTrace from './instances/trace';
 import sbaJournal from './journal';
 
+
 export default router => {
   const views = [];
   views.register = view => {
-    if (view.template) {
+    if (view.handle) {
+      if (typeof view.handle === 'string') {
+        const label = view.handle;
+        view.handle = {
+          render() {
+            return this._v(label)
+          }
+        }
+      }
       views.push(view);
     }
 
@@ -48,15 +57,9 @@ export default router => {
     }
   };
 
-  views.register({
-    path: '/applications',
-    name: 'applications',
-    template: 'Applications',
-    order: 0,
-    component: sbaApplications
-  });
-  views.register({path: '/journal', name: 'journal', template: 'Journal', order: 100, component: sbaJournal});
-  views.register({path: '/about', name: 'about', template: 'About', order: 200, component: sbaAbout});
+  views.register(applicationView);
+  views.register({path: '/journal', name: 'journal', handle: 'Journal', order: 100, component: sbaJournal});
+  views.register({path: '/about', name: 'about', handle: 'About', order: 200, component: sbaAbout});
   views.register({
     path: '/instances/:instanceId', component: sbaInstancesShell, props: true,
     children: [{
@@ -83,67 +86,67 @@ export default router => {
   });
   views.register({
     name: 'instance/details',
-    template: 'Details',
+    handle: 'Details',
     order: 0,
   });
   views.register({
     name: 'instance/env',
-    template: 'Environment',
+    handle: 'Environment',
     order: 100,
     isActive: ({instance}) => instance.hasEndpoint('env')
   });
   views.register({
     name: 'instance/logfile',
-    template: 'Logfile',
+    handle: 'Logfile',
     order: 200,
     isActive: ({instance}) => instance.hasEndpoint('logfile')
   });
   views.register({
     name: 'instance/loggers',
-    template: 'Loggers',
+    handle: 'Loggers',
     order: 300,
     isActive: ({instance}) => instance.hasEndpoint('loggers')
   });
   views.register({
     name: 'instance/threaddump',
-    template: 'Threads',
+    handle: 'Threads',
     order: 400,
     isActive: ({instance}) => instance.hasEndpoint('threaddump')
   });
   views.register({
     name: 'instance/trace',
-    template: 'Traces',
+    handle: 'Traces',
     order: 500,
     isActive: ({instance}) => instance.hasEndpoint('trace')
   });
   views.register({
     name: 'instance/auditevents',
-    template: 'Audit Log',
+    handle: 'Audit Log',
     order: 600,
     isActive: ({instance}) => instance.hasEndpoint('auditevents')
   });
   views.register({
     name: 'instance/sessions',
-    template: 'Sessions',
+    handle: 'Sessions',
     order: 700,
     isActive: ({instance}) => instance.hasEndpoint('sessions')
   });
   views.register({
     name: 'instance/heapdump',
     href: params => `instances/${params.instanceId}/actuator/heapdump`,
-    template: 'Heapdump',
+    handle: 'Heapdump',
     order: 800,
     isActive: ({instance}) => instance.hasEndpoint('heapdump')
   });
   views.register({
     name: 'instance/liquibase',
-    template: 'Liquibase',
+    handle: 'Liquibase',
     order: 900,
     isActive: ({instance}) => instance.hasEndpoint('liquibase')
   });
   views.register({
     name: 'instance/flyway',
-    template: 'Flyway',
+    handle: 'Flyway',
     order: 900,
     isActive: ({instance}) => instance.hasEndpoint('flyway')
   });

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import axios from '@/utils/axios';
 import waitForPolyfill from '@/utils/eventsource-polyfill';
 import {Observable} from '@/utils/rxjs';
-import axios from 'axios';
 import * as _ from 'lodash';
 import Instance from './instance';
 
@@ -57,6 +57,9 @@ class Application {
   }
 
   static _transformResponse(data) {
+    if (!data) {
+      return data;
+    }
     const json = JSON.parse(data);
     if (json instanceof Array) {
       const applications = json.map(Application._toApplication);

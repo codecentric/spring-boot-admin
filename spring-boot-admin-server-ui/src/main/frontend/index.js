@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import axios from 'axios';
+import '@/assets/css/base.scss';
+import logoDanger from '@/assets/img/favicon-danger.png';
+import logoOk from '@/assets/img/favicon.png';
 import moment from 'moment';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import './assets/css/base.scss';
-import logoDanger from './assets/img/favicon-danger.png';
-import logoOk from './assets/img/favicon.png';
 import sbaComponents from './components'
 import Store from './store';
 import FontAwesomeIcon from './utils/fontawesome';
@@ -30,26 +29,7 @@ import sbaShell from './views/shell';
 
 moment.locale(window.navigator.language);
 
-Vue.use(VueRouter);
-Vue.use(sbaComponents);
-Vue.component('font-awesome-icon', FontAwesomeIcon);
-
-const router = new VueRouter({
-  linkActiveClass: 'is-active'
-});
-
 Notifications.requestPermissions();
-axios.interceptors.request.use(config => {
-  config.headers['X-Requested-With'] = 'XMLHttpRequest';
-  return config;
-});
-
-axios.interceptors.response.use(response => response, error => {
-  if (401 === error.response.status) {
-    window.location = `login?redirectTo=${encodeURIComponent(window.location.href)}`;
-  }
-  return Promise.reject(error);
-});
 
 const store = new Store();
 
@@ -61,10 +41,17 @@ store.addEventListener('updated', (newVal, oldVal) => {
       body: `was ${oldVal.status}.`,
       icon: newVal.status === 'UP' ? logoOk : logoDanger,
       renotify: true,
-      timeout:
-        10000
+      timeout: 10000
     })
   }
+});
+
+Vue.use(VueRouter);
+Vue.use(sbaComponents);
+Vue.component('font-awesome-icon', FontAwesomeIcon);
+
+const router = new VueRouter({
+  linkActiveClass: 'is-active'
 });
 
 new Vue({
@@ -75,23 +62,26 @@ new Vue({
   },
   data: {
     views: createViews(router),
-    applications: store.applications
+    applications: store.applications,
+    connectionFailed: false
   },
-  computed: {
-    allUp() {
-      return this.applications.findIndex(application => application.status !== 'UP') < 0;
-    }
-  },
-  watch: {
-    allUp(newVal) {
-      const link = document.querySelector('link[rel*="icon"]');
-      link.href = newVal ? logoOk : logoDanger;
+  methods: {
+    onError(error) {
+      console.warn("Connection to backend failed:", error);
+      this.connectionFailed = true;
+    },
+    onConnected() {
+      this.connectionFailed = false;
     }
   },
   created() {
+    store.addEventListener('connected', this.onConnected);
+    store.addEventListener('error', this.onError);
     store.start();
   },
   beforeDestroy() {
     store.stop();
+    store.removeEventListener('connected', this.onConnected);
+    store.removeEventListener('error', this.onError)
   },
 });

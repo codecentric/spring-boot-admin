@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import axios from '@/utils/axios';
 import waitForPolyfill from '@/utils/eventsource-polyfill';
 import logtail from '@/utils/logtail';
 import {Observable} from '@/utils/rxjs'
-import axios from 'axios';
 import _ from 'lodash';
 
 const actuatorMimeTypes = ['application/vnd.spring-boot.actuator.v2+json',
@@ -167,11 +167,17 @@ class Instance {
   }
 
   static _toInstance(data) {
+    if (!data) {
+      return data;
+    }
     const instance = JSON.parse(data);
     return Object.assign(new Instance(instance.id), instance);
   }
 
   static _toLoggers(data) {
+    if (!data) {
+      return data;
+    }
     const raw = JSON.parse(data);
     const loggers = _.transform(raw.loggers, (result, value, key) => {
       return result.push({name: key, ...value});

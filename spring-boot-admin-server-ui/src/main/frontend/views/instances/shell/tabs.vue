@@ -31,10 +31,13 @@
                             <ul>
                                 <li v-if="instance" v-for="view in activeViews"
                                     :class="{'is-active' : $route.name === view.name}">
-                                    <a v-if="view.href" v-html="view.template"
-                                       :href="view.href({ 'instanceId' : instance.id })" target="_blank"></a>
-                                    <router-link v-else v-html="view.template"
+                                    <a v-if="view.href" :href="view.href({ 'instanceId' : instance.id })"
+                                       target="_blank">
+                                        <component :is="view.handle"></component>
+                                    </a>
+                                    <router-link v-else
                                                  :to="{ name: view.name, params: { 'instanceId' : instance.id } }">
+                                        <component :is="view.handle"></component>
                                     </router-link>
                                 </li>
                             </ul>

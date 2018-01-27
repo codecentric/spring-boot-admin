@@ -19,7 +19,7 @@ import {Observable} from '@/utils/rxjs';
 export default class {
   constructor() {
     this.applications = [];
-    this.listeners = {
+    this._listeners = {
       added: [],
       updated: [],
       removed: []
@@ -31,57 +31,57 @@ export default class {
   }
 
   addEventListener(type, listener) {
-    if (!(type in this.listeners)) {
-      this.listeners[type] = [];
+    if (!(type in this._listeners)) {
+      this._listeners[type] = [];
     }
-    this.listeners[type].push(listener);
+    this._listeners[type].push(listener);
   }
 
   removeEventListener(type, listener) {
-    if (!(type in this.listeners)) {
+    if (!(type in this._listeners)) {
       return;
     }
 
-    const idx = this.listeners[type].indexOf(listener);
+    const idx = this._listeners[type].indexOf(listener);
     if (idx > 0) {
-      this.listeners[type].splice(idx, 1);
+      this._listeners[type].splice(idx, 1);
     }
   }
 
   dispatchEvent(type, ...args) {
-    if (!(type in this.listeners)) {
+    if (!(type in this._listeners)) {
       return;
     }
     const target = this;
-    this.listeners[type].forEach(
+    this._listeners[type].forEach(
       listener => listener.call(target, ...args)
     )
   }
 
   start() {
-    const initialListing = Observable.from(Application.list())
-      .concatMap(message => message.data);
-    const stream = Application.getStream()
-      .map(message => message.data);
-    this.subscription = initialListing.concat(stream)
-      .subscribe({
+    const listing = Observable.defer(() => Application.list()).concatMap(message => message.data);
+    const stream = Application.getStream().map(message => message.data);
+    this.subscription = listing.concat(stream)
+      .doFirst(() => this.dispatchEvent('connected'))
+      .retryWhen(errors => errors
+        .do(error => this.dispatchEvent('error', error))
+        .delay(5000)
+      ).subscribe({
         next: application => {
           const idx = this.indexOf(application.name);
           if (idx >= 0) {
-            const oldVal = this.applications[idx];
+            const oldApplication = this.applications[idx];
             if (application.instances.length > 0) {
               this.applications.splice(idx, 1, application);
-              this.dispatchEvent('updated', application, oldVal);
+              this.dispatchEvent('updated', application, oldApplication);
             } else {
               this.applications.splice(idx, 1);
-              this.dispatchEvent('removed', oldVal);
+              this.dispatchEvent('removed', oldApplication);
             }
           } else {
             this.applications.push(application);
             this.dispatchEvent('added', application);
           }
-        },
-        error: err => {
         }
       });
   }
@@ -89,7 +89,7 @@ export default class {
   stop() {
     if (this.subscription) {
       try {
-        this.subscription.unsubscribe();
+        !this.subscription.closed && this.subscription.unsubscribe();
       } finally {
         this.subscription = null;
       }

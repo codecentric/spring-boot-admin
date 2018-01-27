@@ -14,27 +14,18 @@
  * limitations under the License.
  */
 
-export default {
-  created() {
-    this.subscribe();
-  },
-  beforeDestroy() {
-    this.unsubscribe();
-  },
-  methods: {
-    async subscribe() {
-      if (!this.subscription) {
-        this.subscription = await this.createSubscription();
-      }
-    },
-    unsubscribe() {
-      if (this.subscription) {
-        try {
-          !this.subscription.closed && this.subscription.unsubscribe();
-        } finally {
-          this.subscription = null;
-        }
-      }
-    }
+import axios from 'axios';
+
+axios.interceptors.request.use(config => {
+  config.headers['X-Requested-With'] = 'XMLHttpRequest';
+  return config;
+});
+
+axios.interceptors.response.use(response => response, error => {
+  if (error.response && error.response.status === 401) {
+    window.location = `login?redirectTo=${encodeURIComponent(window.location.href)}`;
   }
-}
+  return Promise.reject(error);
+});
+
+export default axios;
