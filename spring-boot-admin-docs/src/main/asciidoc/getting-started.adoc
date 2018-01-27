@@ -14,7 +14,7 @@ First you need to setup your server. To do this just setup a simple boot project
 <dependencies>
     <dependency>
         <groupId>de.codecentric</groupId>
-        <artifactId>codecentric-spring-boot-admin-starter-server</artifactId>
+        <artifactId>spring-boot-admin-starter-server</artifactId>
         <version>{project-version}</version>
     </dependency>
 </dependencies>
@@ -55,7 +55,7 @@ Each application that wants to register has to include the Spring Boot Admin Cli
 ----
 <dependency>
     <groupId>de.codecentric</groupId>
-    <artifactId>codecentric-spring-boot-admin-starter-client</artifactId>
+    <artifactId>spring-boot-admin-starter-client</artifactId>
     <version>{project-version}</version>
 </dependency>
 ----

@@ -87,12 +87,6 @@ pre {
   max-width: 1024px;
   margin: 0 auto;
 }
-a.spring-boot-logo span {
-  display: block;
-  width: 80px;
-  height: 70px;
-  background: url("../img/platform-spring-boot.png") 0 center no-repeat;
-}
 
 /* ---------- */
 

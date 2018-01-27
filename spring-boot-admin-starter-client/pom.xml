@@ -9,37 +9,10 @@
         <version>${revision}</version>
         <relativePath>../spring-boot-admin-build</relativePath>
     </parent>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>flatten-maven-plugin</artifactId>
-                <inherited>true</inherited>
-                <executions>
-                    <execution>
-                        <!-- Tidy up all POMs before they are published -->
-                        <id>flatten</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>flatten</goal>
-                        </goals>
-                        <configuration>
-                            <updatePomFile>true</updatePomFile>
-                            <flattenMode>oss</flattenMode>
-                            <pomElements>
-                                <parent>expand</parent>
-                                <distributionManagement>keep</distributionManagement>
-                                <repositories>remove</repositories>
-                            </pomElements>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-    <distributionManagement>
-        <relocation>
-            <artifactId>codecentric-spring-boot-admin-starter-client</artifactId>
-        </relocation>
-    </distributionManagement>
+    <dependencies>
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-client</artifactId>
+        </dependency>
+    </dependencies>
 </project>
