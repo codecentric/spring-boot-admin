@@ -113,3 +113,33 @@ The Login module just provides you a login page and a logout button.
     <version>{project-version}</version>
 </dependency>
 ----
+
+==== JavaMelody UI Module ====
+
+This module adds a view that displays the javamelody overview for each
+registered application
+
+. Add the ui module to your classpath:
++
+[source,xml,subs="verbatim,attributes"]
+.pom.xml (spring boot admin)
+----
+<dependency>
+    <groupId>de.codecentric</groupId>
+    <artifactId>spring-boot-admin-server-ui-javamelody</artifactId>
+    <version>{project-version}</version>
+</dependency>
+----
+
+. Make sure each application that is registered with SBA has javamelody client support enabled and can be reached at the default endpoint */monitoring*
++
+[source,xml,subs="verbatim,attributes"]
+.pom.xml (javamelody client)
+----
+<!-- https://github.com/javamelody/javamelody/wiki/SpringBootStarter -->
+<dependency>
+    <groupId>net.bull.javamelody</groupId>
+    <artifactId>javamelody-spring-boot-starter</artifactId>
+    <version>${javamelody.version}</version>
+</dependency>
+----
