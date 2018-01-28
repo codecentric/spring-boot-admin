@@ -32,7 +32,7 @@ It provides the following features for registered application.
 
 ## Getting Started
 
-[A quick guide](http://codecentric.github.io/spring-boot-admin/1.5.6/#getting-started) to get started can be found in our docs.
+[A quick guide](http://codecentric.github.io/spring-boot-admin/1.5.7/#getting-started) to get started can be found in our docs.
 
 ## Getting Help
 
@@ -47,7 +47,7 @@ Having trouble with codecentric's Spring Boot Admin? We’d like to help!
  * Report bugs at http://github.com/codecentric/spring-boot-admin/issues.
 
 ## Reference Guide
-[Version 1.5.6](http://codecentric.github.io/spring-boot-admin/1.5.6/)
+[Version 1.5.7](http://codecentric.github.io/spring-boot-admin/1.5.7/)
 
 [Version 1.4.6](http://codecentric.github.io/spring-boot-admin/1.4.6/)
 

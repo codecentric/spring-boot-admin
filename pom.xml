@@ -10,7 +10,7 @@
     <description>Spring Boot Admin</description>
     <url>https://github.com/codecentric/spring-boot-admin/</url>
     <properties>
-        <revision>1.5.7-SNAPSHOT</revision>
+        <revision>1.5.8-SNAPSHOT</revision>
         <spring-boot.version>1.5.9.RELEASE</spring-boot.version>
         <spring-cloud.version>Edgware.SR1</spring-cloud.version>
         <hystrix-dashboard.version>1.5.5</hystrix-dashboard.version>
