@@ -4,13 +4,14 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>spring-boot-admin-build</artifactId>
     <packaging>pom</packaging>
+    <name>Spring Boot Admin Build</name>
+    <description>Spring Boot Admin Build</description>
     <parent>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-dependencies</artifactId>
         <version>${revision}</version>
         <relativePath>../spring-boot-admin-dependencies</relativePath>
     </parent>
-
     <dependencyManagement>
         <dependencies>
             <dependency>

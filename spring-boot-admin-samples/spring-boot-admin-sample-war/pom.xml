@@ -4,6 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>spring-boot-admin-sample-war</artifactId>
 	<packaging>war</packaging>
+	<name>Spring Boot Admin Sample War</name>
+	<description>Spring Boot Admin Sample packaged as war</description>
 	<parent>
 		<groupId>de.codecentric</groupId>
 		<artifactId>spring-boot-admin-samples</artifactId>

@@ -3,15 +3,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>spring-boot-admin-server-ui-turbine</artifactId>
+    <name>Spring Boot Admin Server Turbine UI</name>
+    <description>Spring Boot Admin Server Turbine UI</description>
     <parent>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-build</artifactId>
         <version>${revision}</version>
         <relativePath>../spring-boot-admin-build</relativePath>
     </parent>
-    <properties>
-        <maven.javadoc.skip>true</maven.javadoc.skip>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>de.codecentric</groupId>

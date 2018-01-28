@@ -1,13 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<artifactId>spring-boot-admin-sample-eureka</artifactId>
+	<name>Spring Boot Admin Sample Eureka</name>
+	<description>Spring Boot Admin Sample using Eureka</description>
 	<parent>
 		<groupId>de.codecentric</groupId>
 		<artifactId>spring-boot-admin-samples</artifactId>
 		<version>${revision}</version>
 		<relativePath>..</relativePath>
 	</parent>
-	<artifactId>spring-boot-admin-sample-eureka</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>de.codecentric</groupId>
