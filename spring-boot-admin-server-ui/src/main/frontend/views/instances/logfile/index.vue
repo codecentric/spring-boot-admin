@@ -15,8 +15,16 @@
   -->
 
 <template>
-    <div class="section logfile-view" :class="{ 'is-loading' : skippedBytes === null }">
-        <div class="logfile-view-actions">
+    <div class="section logfile-view" :class="{ 'is-loading' : hasLoaded }">
+        <div v-if="error" class="message is-danger">
+            <div class="message-body">
+                <strong>
+                    <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
+                    Fetching logfile failed.
+                </strong>
+            </div>
+        </div>
+        <div class="logfile-view-actions" v-if="hasLoaded">
             <div class="logfile-view-actions__navigation">
                 <sba-icon-button :disabled="atTop" @click.native="scrollToTop">
                     <font-awesome-icon icon="step-backward" size="lg" class="rotated"></font-awesome-icon>
@@ -29,7 +37,7 @@
                 <font-awesome-icon icon="download"></font-awesome-icon>&nbsp;Download
             </a>
         </div>
-        <p v-if="skippedBytes > 0" v-text="skippedHumanBytes"></p>
+        <p v-if="skippedBytes" v-text="`skipped ${prettyBytes(skippedBytes)}`"></p>
         <!-- log will be appended here -->
     </div>
 </template>
@@ -44,15 +52,12 @@
     props: ['instance'],
     mixins: [subscribing],
     data: () => ({
+      hasLoaded: false,
+      error: null,
       atBottom: true,
       atTop: false,
       skippedBytes: null
     }),
-    computed: {
-      skippedHumanBytes() {
-        return "skipped " + prettyBytes(this.skippedBytes);
-      }
-    },
     watch: {
       async instance() {
         this.subscribe();
@@ -69,9 +74,11 @@
       window.removeEventListener('scroll', this.onScroll);
     },
     methods: {
+      prettyBytes,
       createSubscription() {
         const vm = this;
         if (this.instance) {
+          vm.error = null;
           return this.instance.streamLogfile(1000)
             .do(chunk => vm.skippedBytes = vm.skippedBytes || chunk.skipped)
             .concatMap(chunk => _.chunk(chunk.addendum.split(/\r?\n/), 250))
@@ -79,6 +86,7 @@
             .concatAll()
             .subscribe({
               next: lines => {
+                vm.hasLoaded = true;
                 lines.forEach(line => {
                   const child = document.createElement('pre');
                   child.textContent = line;
@@ -89,8 +97,10 @@
                   vm.scrollToBottom();
                 }
               },
-              errors: err => {
-                vm.unsubscribe();
+              error: error => {
+                vm.hasLoaded = true;
+                console.warn('Fetching logfile failed:', error);
+                vm.error = error;
               }
             });
         }

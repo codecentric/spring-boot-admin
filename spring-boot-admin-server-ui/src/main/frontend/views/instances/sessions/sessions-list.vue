@@ -26,9 +26,13 @@
             </th>
             <th>Attributes</th>
             <th>
-                <sba-confirm-button class="button" :class="{ 'is-loading' : deletingAll }"
+                <sba-confirm-button class="button"
+                                    :class="{ 'is-loading' : deletingAll === 'deleting', 'is-danger' : deletingAll === 'failed' }"
+                                    :disabled="deletingAll !== null"
                                     v-if="sessions.length > 1" @click="deleteAllSessions()">
-                    <font-awesome-icon icon="trash"></font-awesome-icon>&nbsp;Delete
+                    <span v-if="deletingAll === 'deleted'">Deleted</span>
+                    <span v-else-if="deletingAll === 'failed'">Failed</span>
+                    <span v-else><font-awesome-icon icon="trash"></font-awesome-icon>&nbsp;Delete</span>
                 </sba-confirm-button>
             </th>
         </tr>
@@ -53,9 +57,12 @@
                       v-text="name"></span>
             </td>
             <td>
-                <button class="button" :class="{ 'is-loading' : deletingAll ||  deleting[session.id] }"
-                        @click="deleteSession(session.id)">
-                    <font-awesome-icon icon="trash"></font-awesome-icon>&nbsp;Delete
+                <button class="button"
+                        :class="{ 'is-loading' :  deleting[session.id] === 'deleting', 'is-info' : deleting[session.id] === 'deleted', 'is-danger' : deleting[session.id] === 'failed' }"
+                        :disabled="session.id in deleting" @click="deleteSession(session.id)">
+                    <span v-if="deleting[session.id] === 'deleted'">Deleted</span>
+                    <span v-else-if="deleting[session.id] === 'failed'">Failed</span>
+                    <span v-else><font-awesome-icon icon="trash"></font-awesome-icon>&nbsp;Delete</span>
                 </button>
             </td>
         </tr>
@@ -72,45 +79,48 @@
   export default {
     props: ['sessions', 'instance'],
     data: () => ({
-      deletingAll: false,
-      deleting: []
+      deletingAll: null,
+      deleting: {},
     }),
     methods: {
       prettyBytes,
-      async deleteAllSessions() {
+      deleteAllSessions() {
         const vm = this;
-        vm.deletingAll = true;
+        vm.deletingAll = 'deleting';
         this.subscription = Observable.from(vm.sessions)
           .map(session => session.id)
-          .concatMap(async sessionId => {
-            await vm.instance.deleteSession(sessionId);
-            return sessionId;
-          })
-          .finally(() => {
-            vm.deletingAll = false;
-            vm.$emit('deleted');
-          })
+          .concatMap(vm._deleteSession)
           .subscribe({
-            error: (err) => {
+            complete: () => {
+              vm.deletingAll = 'deleted';
+              vm.$emit('deleted', '*');
+            },
+            error: error => {
+              vm.deletingAll = 'failed';
             },
           });
       },
-      async deleteSession(sessionId) {
+      deleteSession(sessionId) {
         const vm = this;
-        vm.$set(vm.deleting, sessionId, true);
-        this.subscription = Observable.of(sessionId)
+        vm._deleteSession(sessionId)
+          .subscribe({
+            complete: () => vm.$emit('deleted', sessionId),
+          });
+      },
+      _deleteSession(sessionId) {
+        const vm = this;
+        vm.$set(vm.deleting, sessionId, 'deleting');
+        return Observable.of(sessionId)
           .concatMap(async sessionId => {
             await vm.instance.deleteSession(sessionId);
             return sessionId;
           })
-          .finally(() => {
-            vm.$emit('deleted');
-            vm.$delete(vm.deleting, sessionId);
+          .do(sessionId => vm.$set(vm.deleting, sessionId, 'deleted'))
+          .catch(error => {
+            vm.$set(vm.deleting, sessionId, 'failed');
+            console.warn(`Deleting session ${sessionId} failed:`, error);
+            throw error;
           })
-          .subscribe({
-            error: (err) => {
-            },
-          });
       }
     }
   }

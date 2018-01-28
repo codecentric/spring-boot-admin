@@ -67,7 +67,7 @@ new Vue({
   },
   methods: {
     onError(error) {
-      console.warn("Connection to backend failed:", error);
+      console.warn('Connection to server failed:', error);
       this.connectionFailed = true;
     },
     onConnected() {

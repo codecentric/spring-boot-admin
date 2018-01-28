@@ -15,9 +15,17 @@
   -->
 
 <template>
-    <section class="section" :class="{ 'is-loading' : !events}">
-        <div class="container" v-if="events">
-            <div class="content">
+    <section class="section" :class="{ 'is-loading' : !hasLoaded}">
+        <div class="container" v-if="hasLoaded">
+            <div v-if="error" class="message is-danger">
+                <div class="message-body">
+                    <strong>
+                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
+                        Fetching audit events failed.
+                    </strong>
+                </div>
+            </div>
+            <div class="content" v-if="events">
                 <auditevents-list :instance="instance" :events="events"></auditevents-list>
             </div>
         </div>
@@ -64,6 +72,8 @@
     mixins: [subscribing],
     components: {AuditeventsList},
     data: () => ({
+      hasLoaded: false,
+      error: null,
       events: null,
     }),
     watch: {
@@ -83,16 +93,20 @@
       },
       createSubscription() {
         const vm = this;
-        vm.lastTimestamp = moment(0);
         if (this.instance) {
+          vm.lastTimestamp = moment(0);
+          vm.error = null;
           return Observable.timer(0, 5000)
             .concatMap(this.fetchAuditevents)
             .subscribe({
               next: events => {
+                vm.hasLoaded = true;
                 vm.events = vm.events ? events.concat(vm.events) : events;
               },
-              errors: err => {
-                vm.unsubscribe();
+              error: error => {
+                vm.hasLoaded = true;
+                console.warn('Fetching audit events failed:', error);
+                vm.error = error;
               }
             });
         }

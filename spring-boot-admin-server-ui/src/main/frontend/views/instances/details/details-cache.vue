@@ -95,7 +95,7 @@
                 vm.current = data;
                 vm.chartData.push({...data, timestamp: moment.now().valueOf()});
               },
-              errors: err => {
+              error: err => {
                 vm.unsubscribe();
               }
             });

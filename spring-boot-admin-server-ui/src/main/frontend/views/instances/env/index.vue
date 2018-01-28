@@ -15,9 +15,17 @@
   -->
 
 <template>
-    <section class="section" :class="{ 'is-loading' : !env }">
-        <div class="container" v-if="env">
-            <div class="content" v-if="env.activeProfiles.length > 0">
+    <section class="section" :class="{ 'is-loading' : !hasLoaded }">
+        <div class="container">
+            <div v-if="error" class="message is-danger">
+                <div class="message-body">
+                    <strong>
+                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
+                        Fetching environment failed.
+                    </strong>
+                </div>
+            </div>
+            <div class="content" v-if="env && env.activeProfiles.length > 0">
                 <div class="field is-grouped is-grouped-multiline">
                     <div class="control" v-for="profile in env.activeProfiles">
                         <div class="tags has-addons">
@@ -27,14 +35,14 @@
                     </div>
                 </div>
             </div>
-            <div class="content">
+            <div class="content" v-if="env">
                 <div class="field has-addons">
                     <p class="control is-expanded">
                         <input class="input" type="text" placeholder="name / value" v-model="filter">
                     </p>
                 </div>
             </div>
-            <div class="content">
+            <div class="content" v-if="env">
                 <sba-panel class="property-source"
                            v-for="propertySource in propertySources" :key="propertySource.name"
                            :title="propertySource.name">
@@ -76,8 +84,10 @@
     props: ['instance'],
 
     data: () => ({
-      filter: null,
-      env: null
+      hasLoaded: false,
+      error: null,
+      env: null,
+      filter: null
     }),
     computed: {
       propertySources() {
@@ -100,8 +110,15 @@
     methods: {
       async fetchEnv() {
         if (this.instance) {
-          const res = await this.instance.fetchEnv();
-          this.env = res.data;
+          this.error = null;
+          try {
+            const res = await this.instance.fetchEnv();
+            this.env = res.data;
+          } catch (error) {
+            console.warn('Fetching environment failed:', error);
+            this.error = error;
+          }
+          this.hasLoaded = true;
         }
       }
     }

@@ -59,7 +59,7 @@
               next: names => {
                 vm.caches = names
               },
-              errors: err => {
+              error: err => {
                 vm.unsubscribe();
               }
             });

@@ -58,7 +58,7 @@
               next: names => {
                 vm.dataSources = names
               },
-              errors: err => {
+              error: err => {
                 vm.unsubscribe();
               }
             });

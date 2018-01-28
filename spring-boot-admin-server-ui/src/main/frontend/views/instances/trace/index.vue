@@ -15,9 +15,17 @@
   -->
 
 <template>
-    <section class="section" :class="{ 'is-loading' : !traces}">
-        <div class="container" v-if="traces">
-            <div class="content">
+    <section class="section" :class="{ 'is-loading' : !hasLoaded}">
+        <div class="container" v-if="hasLoaded">
+            <div v-if="error" class="message is-danger">
+                <div class="message-body">
+                    <strong>
+                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
+                        Fetching traces failed.
+                    </strong>
+                </div>
+            </div>
+            <div class="content" v-if="traces">
                 <div class="field-body">
                     <div class="field has-addons">
                         <p class="control is-expanded">
@@ -134,6 +142,8 @@
       sbaTracesList, sbaTracesChart
     },
     data: () => ({
+      hasLoaded: false,
+      error: null,
       traces: null,
       filter: null,
       excludeActuator: true,
@@ -183,16 +193,20 @@
       },
       createSubscription() {
         const vm = this;
-        vm.lastTimestamp = moment(0);
         if (this.instance) {
+          vm.lastTimestamp = moment(0);
+          vm.error = null;
           return Observable.timer(0, 5000)
             .concatMap(vm.fetchTrace)
             .subscribe({
               next: traces => {
+                vm.hasLoaded = true;
                 vm.traces = vm.traces ? traces.concat(vm.traces) : traces;
               },
-              errors: err => {
-                vm.unsubscribe();
+              error: error => {
+                vm.hasLoaded = true;
+                console.warn('Fetching traces failed:', error);
+                vm.error = error;
               }
             });
         }

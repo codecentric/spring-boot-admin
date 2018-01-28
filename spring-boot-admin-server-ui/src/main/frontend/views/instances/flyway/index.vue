@@ -15,9 +15,17 @@
   -->
 
 <template>
-    <section class="section" :class="{ 'is-loading' : !reports }">
-        <div class="container" v-if="reports">
-            <div class="content">
+    <section class="section" :class="{ 'is-loading' : !hasLoaded }">
+        <div class="container" v-if="hasLoaded">
+            <div v-if="error" class="message is-danger">
+                <div class="message-body">
+                    <strong>
+                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
+                        Fetching Flyway reports failed.
+                    </strong>
+                </div>
+            </div>
+            <div class="content" v-if="reports">
                 <sba-panel v-for="(report, name) in reports" :key="name" :title="name" class="migration">
                     <table class="table" slot="text">
                         <thead>
@@ -60,6 +68,8 @@
   export default {
     props: ['instance'],
     data: () => ({
+      hasLoaded: false,
+      error: null,
       reports: null
     }),
     computed: {},
@@ -74,8 +84,15 @@
     methods: {
       async fetchFlyway() {
         if (this.instance) {
-          const res = await this.instance.fetchFlyway();
-          this.reports = res.data;
+          this.error = null;
+          try {
+            const res = await this.instance.fetchFlyway();
+            this.reports = res.data;
+          } catch (error) {
+            console.warn('Fetching flyway reports failed:', error);
+            this.error = error;
+          }
+          this.hasLoaded = true;
         }
       },
       stateClass(state) {

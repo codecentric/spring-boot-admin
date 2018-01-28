@@ -17,6 +17,14 @@
 <template>
     <section class="section">
         <div class="container">
+            <div v-if="error" class="message is-danger">
+                <div class="message-body">
+                    <strong>
+                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
+                        Fetching sessions failed.
+                    </strong>
+                </div>
+            </div>
             <div class="content">
                 <div class="field has-addons">
                     <div class="control">
@@ -34,7 +42,7 @@
             </div>
             <div class="content" :class="{ 'is-loading' : isLoading }">
                 <sba-sessions-list :instance="instance" :sessions="sessions"
-                                   @deleted="fetchSessions()"></sba-sessions-list>
+                                   @deleted="fetch()"></sba-sessions-list>
             </div>
         </div>
     </section>
@@ -62,13 +70,15 @@
     props: ['instance', 'sessionId'],
     components: {sbaSessionsList},
     data: () => ({
+      error: null,
       filter: '',
       filterType: 'username',
       sessions: [],
       isLoading: false
     }),
     methods: {
-      fetchSessions: _.debounce(async function () {
+      fetch: _.debounce(async function () {
+        this.error = null;
         if (!this.filter) {
           this.sessions = [];
           return;
@@ -77,25 +87,34 @@
         this.isLoading = true;
         try {
           if (this.filterType === 'username') {
-            const response = await this.instance.fetchSessions(this.filter);
-            this.sessions = response.data.sessions.map(session => new Session(session));
+            this.sessions = await this.fetchSessions();
           } else {
-            try {
-              const response = await this.instance.fetchSession(this.filter);
-              this.sessions = [new Session(response.data)];
-            } catch (error) {
-              if (error.response.status === 404) {
-                this.sessions = [];
-              } else {
-                throw error;
-              }
-            }
+            this.sessions = await this.fetchSession();
           }
+        } catch (error) {
+          console.warn('Fetching sessions failed:', error);
+          this.error = error;
         } finally {
           this.isLoading = false;
         }
       }, 250),
-      updateFilterfilter() {
+      async fetchSession() {
+        try {
+          const response = await this.instance.fetchSession(this.filter);
+          return [new Session(response.data)];
+        } catch (error) {
+          if (error.response.status === 404) {
+            return [];
+          } else {
+            throw error;
+          }
+        }
+      },
+      async fetchSessions() {
+        const response = await this.instance.fetchSessions(this.filter);
+        return response.data.sessions.map(session => new Session(session));
+      },
+      updateFilter() {
         if (this.sessionId) {
           this.filterType = 'sessionId';
           this.filter = this.sessionId;
@@ -120,15 +139,15 @@
       }
     },
     mounted() {
-      this.updateFilterfilter()
+      this.updateFilter()
     },
     watch: {
       sessionId() {
-        this.updateFilterfilter();
+        this.updateFilter();
       },
       filterType() {
         this.updateRoute();
-        this.fetchSessions();
+        this.fetch();
       },
       filter() {
         const looksLikeSessionId = this.filter.match(regexUuid);
@@ -138,7 +157,7 @@
           this.filterType = 'username';
         }
         this.updateRoute();
-        this.fetchSessions();
+        this.fetch();
       }
     }
   }

@@ -75,7 +75,7 @@
               next: data => {
                 vm.current = data;
               },
-              errors: err => {
+              error: err => {
                 vm.unsubscribe();
               }
             });

@@ -15,9 +15,17 @@
   -->
 
 <template>
-    <section class="section" :class="{ 'is-loading' : !reports }">
-        <div class="container" v-if="reports">
-            <div class="content">
+    <section class="section" :class="{ 'is-loading' : !hasLoaded }">
+        <div class="container" v-if="hasLoaded">
+            <div v-if="error" class="message is-danger">
+                <div class="message-body">
+                    <strong>
+                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
+                        Fetching Liquibase migrations failed.
+                    </strong>
+                </div>
+            </div>
+            <div class="content" v-if="reports">
                 <template v-for="(report, name) in reports">
                     <h4 class="title" v-text="name" :key="name"></h4>
                     <sba-panel v-for="changeSet in report.changeSets" :key="`${name}-${changeSet.id}`"
@@ -39,6 +47,8 @@
       changeSet
     },
     data: () => ({
+      hasLoaded: false,
+      error: null,
       reports: null
     }),
     computed: {},
@@ -53,8 +63,15 @@
     methods: {
       async fetchLiquibase() {
         if (this.instance) {
-          const res = await this.instance.fetchLiquibase();
-          this.reports = res.data;
+          this.error = null;
+          try {
+            const res = await this.instance.fetchLiquibase();
+            this.reports = res.data;
+          } catch (error) {
+            console.warn('Fetching Liquibase migrations failed:', error);
+            this.error = error;
+          }
+          this.hasLoaded = true;
         }
       }
     }

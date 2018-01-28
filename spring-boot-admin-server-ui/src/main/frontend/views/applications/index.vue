@@ -21,7 +21,7 @@
                 <div class="message-body">
                     <strong>
                         <font-awesome-icon class="has-text-warning" icon="exclamation-triangle"></font-awesome-icon>
-                        Server connection failed
+                        Server connection failed.
                     </strong>
                 </div>
             </div>

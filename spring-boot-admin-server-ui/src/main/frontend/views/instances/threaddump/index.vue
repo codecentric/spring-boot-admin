@@ -15,9 +15,17 @@
   -->
 
 <template>
-    <section class="section" :class="{ 'is-loading' : !threads }">
-        <div class="container" v-if="threads">
-            <div class="content">
+    <section class="section" :class="{ 'is-loading' : !hasLoaded }">
+        <div class="container" v-if="hasLoaded">
+            <div v-if="error" class="message is-danger">
+                <div class="message-body">
+                    <strong>
+                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
+                        Fetching threaddump failed.
+                    </strong>
+                </div>
+            </div>
+            <div class="content" v-if="threads">
                 <threads-list :thread-timelines="threads"></threads-list>
             </div>
         </div>
@@ -38,6 +46,8 @@
       threadsList
     },
     data: () => ({
+      hasLoaded: false,
+      error: null,
       threads: null
     }),
     computed: {},
@@ -99,15 +109,19 @@
       },
       createSubscription() {
         const vm = this;
+        vm.error = null;
         if (this.instance) {
           return Observable.timer(0, 1000)
             .concatMap(vm.fetchThreaddump)
             .subscribe({
               next: threads => {
+                vm.hasLoaded = true;
                 vm.updateTimelines(threads);
               },
-              errors: err => {
-                vm.unsubscribe();
+              error: error => {
+                vm.hasLoaded = true;
+                console.warn('Fetching threaddump failed:', error);
+                vm.error = error;
               }
             });
         }

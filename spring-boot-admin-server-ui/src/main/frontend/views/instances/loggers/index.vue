@@ -15,9 +15,17 @@
   -->
 
 <template>
-    <section class="section" :class="{ 'is-loading' : !loggerConfig }">
-        <div class="container" v-if="loggerConfig">
-            <div class="content">
+    <section class="section" :class="{ 'is-loading' : !hasLoaded }">
+        <div class="container" v-if="hasLoaded">
+            <div v-if="error" class="message is-danger">
+                <div class="message-body">
+                    <strong>
+                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
+                        Fetching loggers failed.
+                    </strong>
+                </div>
+            </div>
+            <div class="content" v-if="loggerConfig">
                 <div class="field-body">
                     <div class="field has-addons">
                         <p class="control is-expanded">
@@ -51,17 +59,23 @@
                     </div>
                 </div>
             </div>
-            <div class="content">
+            <div class="content" v-if="loggerConfig">
                 <table class="table is-hoverable">
                     <tbody>
                     <tr v-for="logger in limitedLoggers" :key="logger.name">
                         <td>
                             <span class="is-breakable" v-text="logger.name"></span>
+                            <span class="has-text-danger" v-if="logger.name in failed">
+                                <font-awesome-icon class="has-text-danger"
+                                                   icon="exclamation-triangle"></font-awesome-icon>
+                                <span v-text="`Configuring ${failed[logger.name]} failed.`"></span>
+                            </span>
                             <sba-logger-control class="is-pulled-right"
                                                 :level-options="levels"
                                                 :effective-level="logger.effectiveLevel"
                                                 :configured-level="logger.configuredLevel"
                                                 :is-loading="loading[logger.name]"
+                                                :has-failed="failed[logger.name]"
                                                 :allow-reset="logger.name !== 'ROOT'"
                                                 @input="level => configureLogger(logger, level)">
                             </sba-logger-control>
@@ -97,12 +111,15 @@
     },
     props: ['instance'],
     data: () => ({
+      hasLoaded: false,
+      error: null,
       loggerConfig: null,
       filter: '',
       showClassLoggersOnly: true,
       showConfiguredLoggersOnly: false,
       visibleLimit: 25,
-      loading: {}
+      loading: {},
+      failed: {}
     }),
     computed: {
       levels() {
@@ -123,16 +140,33 @@
     methods: {
       async configureLogger(logger, level) {
         const vm = this;
-        const handle = setTimeout(() => vm.$set(vm.loading, logger.name, level), 150);
-        await this.instance.configureLogger(logger.name, level);
-        await this.fetchLoggers();
-        vm.$delete(vm.loading, logger.name);
-        clearTimeout(handle);
+        const setLoadingHandle = setTimeout(() => vm.$set(vm.loading, logger.name, level), 150);
+        try {
+          await this.instance.configureLogger(logger.name, level);
+          vm.$delete(vm.failed, logger.name, level)
+        } catch (error) {
+          console.warn(`Configuring logger '${logger.name}' failed:`, error);
+          vm.$set(vm.failed, logger.name, level);
+        }
+
+        try {
+          await this.fetchLoggers();
+        } finally {
+          vm.$delete(vm.loading, logger.name);
+          clearTimeout(setLoadingHandle);
+        }
       },
-      async fetchLoggers() {
+      fetchLoggers: async function () {
         if (this.instance) {
-          const res = await this.instance.fetchLoggers();
-          this.loggerConfig = res.data;
+          this.error = null;
+          try {
+            const res = await this.instance.fetchLoggers();
+            this.loggerConfig = res.data;
+          } catch (error) {
+            console.warn('Fetching loggers failed:', error);
+            this.error = error;
+          }
+          this.hasLoaded = true;
         }
       },
       onScroll() {
