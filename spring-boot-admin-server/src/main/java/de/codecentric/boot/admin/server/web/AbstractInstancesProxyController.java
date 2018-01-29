@@ -24,11 +24,12 @@ import reactor.core.publisher.Mono;
 
 import java.net.ConnectException;
 import java.net.URI;
-import java.util.HashSet;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -41,14 +42,13 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toMap;
 
 public class AbstractInstancesProxyController {
     protected static final String REQUEST_MAPPING_PATH = "/instances/{instanceId}/actuator/**";
-    protected static final List<String> HOP_BY_HOP_HEADERS = asList("Host", "Connection", "Keep-Alive",
+    protected static final String[] HOP_BY_HOP_HEADERS = new String[]{"Host", "Connection", "Keep-Alive",
             "Proxy-Authenticate", "Proxy-Authorization", "TE", "Trailer", "Transfer-Encoding", "Upgrade",
-            "X-Application-Context");
+            "X-Application-Context"};
     private static final Logger log = LoggerFactory.getLogger(AbstractInstancesProxyController.class);
 
     private final InstanceRegistry registry;
@@ -58,8 +58,10 @@ public class AbstractInstancesProxyController {
     public AbstractInstancesProxyController(Set<String> ignoredHeaders,
                                             InstanceRegistry registry,
                                             InstanceWebClient instanceWebClient) {
-        this.ignoredHeaders = new HashSet<>(ignoredHeaders);
-        this.ignoredHeaders.addAll(HOP_BY_HOP_HEADERS);
+        this.ignoredHeaders = Stream.concat(ignoredHeaders.stream(), Arrays.stream(HOP_BY_HOP_HEADERS))
+                                    .map(String::toLowerCase)
+                                    .collect(Collectors.toSet());
+
         this.registry = registry;
         this.instanceWebClient = instanceWebClient;
     }
@@ -107,8 +109,8 @@ public class AbstractInstancesProxyController {
         return filtered;
     }
 
-    private boolean includeHeader(String headers) {
-        return !ignoredHeaders.contains(headers);
+    private boolean includeHeader(String header) {
+        return !ignoredHeaders.contains(header.toLowerCase());
     }
 
     private boolean requiresBody(HttpMethod method) {
