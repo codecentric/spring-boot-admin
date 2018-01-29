@@ -15,9 +15,17 @@
   -->
 
 <template>
-    <sba-panel :title="`Memory: ${name}`" v-if="current">
+    <sba-panel :title="`Memory: ${name}`" v-if="hasLoaded">
         <div slot="text">
-            <div class="level memory-current">
+            <div v-if="error" class="message is-danger">
+                <div class="message-body">
+                    <strong>
+                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
+                        Fetching memory metrics failed.
+                    </strong>
+                </div>
+            </div>
+            <div class="level memory-current" v-if="current">
                 <div class="level-item has-text-centered" v-if="current.metaspace">
                     <div>
                         <p class="heading has-bullet has-bullet-primary">Metaspace</p>
@@ -43,7 +51,7 @@
                     </div>
                 </div>
             </div>
-            <mem-chart :data="chartData"></mem-chart>
+            <mem-chart v-if="chartData.length > 0" :data="chartData"></mem-chart>
         </div>
     </sba-panel>
 </template>
@@ -60,6 +68,8 @@
     mixins: [subscribing],
     components: {memChart},
     data: () => ({
+      hasLoaded: false,
+      error: null,
       current: null,
       chartData: [],
     }),
@@ -105,11 +115,14 @@
             .concatMap(this.fetchMetrics)
             .subscribe({
               next: data => {
+                vm.hasLoaded = true;
                 vm.current = data;
                 vm.chartData.push({...data, timestamp: moment.now().valueOf()});
               },
-              error: err => {
-                vm.unsubscribe();
+              error: error => {
+                vm.hasLoaded = true;
+                console.warn('Fetching memory metrics failed:', error);
+                vm.error = error;
               }
             });
         }

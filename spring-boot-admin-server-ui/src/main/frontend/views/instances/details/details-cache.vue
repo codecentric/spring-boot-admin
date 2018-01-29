@@ -15,9 +15,17 @@
   -->
 
 <template>
-    <sba-panel :title="`Cache: ${cacheName}`" v-if="current">
+    <sba-panel :title="`Cache: ${cacheName}`" v-if="hasLoaded">
         <div slot="text">
-            <div class="level cache-current">
+            <div v-if="error" class="message is-danger">
+                <div class="message-body">
+                    <strong>
+                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
+                        Fetching cache metrics failed.
+                    </strong>
+                </div>
+            </div>
+            <div class="level cache-current" v-if="current">
                 <div class="level-item has-text-centered">
                     <div>
                         <p class="heading has-bullet has-bullet-info">Hits</p>
@@ -37,7 +45,7 @@
                     </div>
                 </div>
             </div>
-            <cache-chart :data="chartData"></cache-chart>
+            <cache-chart v-if="chartData.length > 0" :data="chartData"></cache-chart>
         </div>
     </sba-panel>
 </template>
@@ -53,6 +61,8 @@
     mixins: [subscribing],
     components: {cacheChart},
     data: () => ({
+      hasLoaded: false,
+      error: null,
       current: null,
       chartData: [],
     }),
@@ -89,14 +99,16 @@
         const vm = this;
         if (this.instance) {
           return Observable.timer(0, 2500)
-            .concatMap(this.fetchMetrics)
+            .concatMap(vm.fetchMetrics)
             .subscribe({
               next: data => {
                 vm.current = data;
                 vm.chartData.push({...data, timestamp: moment.now().valueOf()});
               },
-              error: err => {
-                vm.unsubscribe();
+              error: error => {
+                vm.hasLoaded = true;
+                console.warn(`Fetching cache ${vm.cacheName} metrics failed:`, error);
+                vm.error = error;
               }
             });
         }

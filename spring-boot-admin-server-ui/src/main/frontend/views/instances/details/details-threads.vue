@@ -15,9 +15,17 @@
   -->
 
 <template>
-    <sba-panel title="Threads" v-if="current">
+    <sba-panel title="Threads" v-if="hasLoaded">
         <div slot="text">
-            <div class="level threads-current">
+            <div v-if="error" class="message is-danger">
+                <div class="message-body">
+                    <strong>
+                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
+                        Fetching threads metrics failed.
+                    </strong>
+                </div>
+            </div>
+            <div class="level threads-current" v-if="current">
                 <div class="level-item has-text-centered">
                     <div>
                         <p class="heading has-bullet has-bullet-warning">Live</p>
@@ -37,7 +45,7 @@
                     </div>
                 </div>
             </div>
-            <threads-chart :data="chartData"></threads-chart>
+            <threads-chart v-if="chartData.length > 0" :data="chartData"></threads-chart>
         </div>
     </sba-panel>
 </template>
@@ -53,6 +61,8 @@
     mixins: [subscribing],
     components: {threadsChart},
     data: () => ({
+      hasLoaded: false,
+      error: null,
       current: null,
       chartData: [],
     }),
@@ -84,11 +94,14 @@
             .concatMap(this.fetchMetrics)
             .subscribe({
               next: data => {
+                vm.hasLoaded = true;
                 vm.current = data;
                 vm.chartData.push({...data, timestamp: moment.now().valueOf()});
               },
-              error: err => {
-                vm.unsubscribe();
+              error: error => {
+                vm.hasLoaded = true;
+                console.warn('Fetching threads metrics failed:', error);
+                vm.error = error;
               }
             });
         }

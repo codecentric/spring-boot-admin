@@ -15,7 +15,7 @@
   -->
 
 <template>
-    <div class="section logfile-view" :class="{ 'is-loading' : hasLoaded }">
+    <div class="section logfile-view" :class="{ 'is-loading' : !hasLoaded }">
         <div v-if="error" class="message is-danger">
             <div class="message-body">
                 <strong>

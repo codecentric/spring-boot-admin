@@ -15,9 +15,17 @@
   -->
 
 <template>
-    <sba-panel :title="`Datasource: ${dataSource}`" v-if="current">
+    <sba-panel :title="`Datasource: ${dataSource}`" v-if="hasLoaded">
         <div slot="text">
-            <div class="level datasource-current">
+            <div v-if="error" class="message is-danger">
+                <div class="message-body">
+                    <strong>
+                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
+                        Fetching datasource metrics failed.
+                    </strong>
+                </div>
+            </div>
+            <div class="level datasource-current" v-if="current">
                 <div class="level-item has-text-centered">
                     <div>
                         <p class="heading has-bullet has-bullet-info">Active connections</p>
@@ -38,7 +46,7 @@
                     </div>
                 </div>
             </div>
-            <datasource-chart :data="chartData"></datasource-chart>
+            <datasource-chart v-if="chartData.length > 0" :data="chartData"></datasource-chart>
         </div>
     </sba-panel>
 </template>
@@ -54,6 +62,8 @@
     mixins: [subscribing],
     components: {datasourceChart},
     data: () => ({
+      hasLoaded: false,
+      error: null,
       current: null,
       chartData: [],
     }),
@@ -82,14 +92,17 @@
         const vm = this;
         if (this.instance) {
           return Observable.timer(0, 2500)
-            .concatMap(this.fetchMetrics)
+            .concatMap(vm.fetchMetrics)
             .subscribe({
               next: data => {
+                vm.hasLoaded = true;
                 vm.current = data;
                 vm.chartData.push({...data, timestamp: moment.now().valueOf()});
               },
-              error: err => {
-                vm.unsubscribe();
+              error: error => {
+                vm.hasLoaded = true;
+                console.warn(`Fetching datasource ${vm.dataSource} metrics failed:`, error);
+                vm.error = error;
               }
             });
         }

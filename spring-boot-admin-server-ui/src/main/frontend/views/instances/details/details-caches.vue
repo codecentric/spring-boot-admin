@@ -42,12 +42,8 @@
     methods: {
       async fetchcaches() {
         if (this.instance) {
-          try {
-            const response = await this.instance.fetchMetric('cache.requests');
-            return _.uniq(response.data.availableTags.filter(tag => tag.tag === 'name')[0].values);
-          } catch (error) {
-            return [];
-          }
+          const response = await this.instance.fetchMetric('cache.requests');
+          return _.uniq(response.data.availableTags.filter(tag => tag.tag === 'name')[0].values);
         }
       },
       createSubscription() {
@@ -59,8 +55,8 @@
               next: names => {
                 vm.caches = names
               },
-              error: err => {
-                vm.unsubscribe();
+              error: error => {
+                console.warn('Fetching caches failed:', error);
               }
             });
         }

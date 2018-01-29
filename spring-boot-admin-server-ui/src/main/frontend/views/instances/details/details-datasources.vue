@@ -41,12 +41,8 @@
     methods: {
       async fetchDataSources() {
         if (this.instance) {
-          try {
-            const response = await this.instance.fetchMetric('data.source.active.connections');
-            return response.data.availableTags.filter(tag => tag.tag === 'name')[0].values;
-          } catch (error) {
-            return [];
-          }
+          const response = await this.instance.fetchMetric('data.source.active.connections');
+          return response.data.availableTags.filter(tag => tag.tag === 'name')[0].values;
         }
       },
       createSubscription() {
@@ -58,8 +54,8 @@
               next: names => {
                 vm.dataSources = names
               },
-              error: err => {
-                vm.unsubscribe();
+              error: error => {
+                console.warn('Fetching datasources failed:', error);
               }
             });
         }

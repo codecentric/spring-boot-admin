@@ -15,9 +15,17 @@
   -->
 
 <template>
-    <sba-panel title="Garbage Collection Pauses" v-if="current">
+    <sba-panel title="Garbage Collection Pauses" v-if="hasLoaded">
         <div slot="text">
-            <div class="level">
+            <div v-if="error" class="message is-danger">
+                <div class="message-body">
+                    <strong>
+                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
+                        Fetching GC metrics failed.
+                    </strong>
+                </div>
+            </div>
+            <div class="level" v-if="current">
                 <div class="level-item has-text-centered">
                     <div>
                         <p class="heading">Count</p>
@@ -45,6 +53,8 @@
     props: ['instance'],
     mixins: [subscribing],
     data: () => ({
+      hasLoaded: false,
+      error: null,
       current: null,
     }),
     watch: {
@@ -73,10 +83,13 @@
             .concatMap(this.fetchMetrics)
             .subscribe({
               next: data => {
+                vm.hasLoaded = true;
                 vm.current = data;
               },
-              error: err => {
-                vm.unsubscribe();
+              error: error => {
+                vm.hasLoaded = true;
+                console.warn('Fetching GC metrics failed:', error);
+                vm.error = error;
               }
             });
         }

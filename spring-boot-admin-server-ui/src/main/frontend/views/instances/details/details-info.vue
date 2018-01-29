@@ -15,27 +15,44 @@
   -->
 
 <template>
-    <sba-panel title="Info" v-if="info">
-        <div class="content" slot="text">
-            <table class="table">
-                <tr v-for="(value, key) in info" :key="key">
-                    <td class="info__key" v-text="key"></td>
-                    <td>
-                        <sba-formatted-obj :value="value"></sba-formatted-obj>
-                    </td>
-                </tr>
-            </table>
+    <sba-panel title="Info" v-if="hasLoaded">
+        <div slot="text">
+            <div v-if="error" class="message is-danger">
+                <div class="message-body">
+                    <strong>
+                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
+                        Fetching info failed.
+                    </strong>
+                </div>
+            </div>
+            <div class="content" v-if="info">
+                <table class="table" v-if="!isEmptyInfo">
+                    <tr v-for="(value, key) in info" :key="key">
+                        <td class="info__key" v-text="key"></td>
+                        <td>
+                            <sba-formatted-obj :value="value"></sba-formatted-obj>
+                        </td>
+                    </tr>
+                </table>
+                <p v-else class="is-muted">No info provided.</p>
+            </div>
         </div>
     </sba-panel>
 </template>
 
 <script>
-
   export default {
     props: ['instance'],
     data: () => ({
-      info: null,
+      hasLoaded: false,
+      error: null,
+      info: null
     }),
+    computed: {
+      isEmptyInfo() {
+        return Object.keys(this.info).length <= 0;
+      }
+    },
     created() {
       this.fetchInfo();
     },
@@ -46,11 +63,16 @@
     },
     methods: {
       async fetchInfo() {
-        if (this.instance) {
-          const res = await this.instance.fetchInfo();
-          if (Object.keys(res.data).length > 0) {
+        if (this.instance && this.instance.hasEndpoint('info')) {
+          try {
+            this.error = null;
+            const res = await this.instance.fetchInfo();
             this.info = res.data;
+          } catch (error) {
+            this.error = error;
+            console.warn('Fetching info failed:', error);
           }
+          this.hasLoaded = true;
         }
       }
     }

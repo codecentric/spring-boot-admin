@@ -16,8 +16,18 @@
 
 <template>
     <sba-panel title="Health">
-        <div class="content" slot="text">
-            <health-default name="Instance" :health="health"></health-default>
+        <div slot="text">
+            <div v-if="error" class="message is-danger">
+                <div class="message-body">
+                    <strong>
+                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
+                        Fetching health failed.
+                    </strong>
+                </div>
+            </div>
+            <div class="content" :class="{ 'is-loading' : !hasLoaded }">
+                <health-default v-if="health" name="Instance" :health="health"></health-default>
+            </div>
         </div>
     </sba-panel>
 </template>
@@ -29,7 +39,9 @@
     components: {healthDefault},
     props: ['instance'],
     data: () => ({
-      health: {status: 'UNKNOWN', details: []},
+      hasLoaded: false,
+      error: null,
+      health: null,
     }),
     created() {
       this.fetchHealth();
@@ -42,13 +54,17 @@
     methods: {
       async fetchHealth() {
         if (this.instance) {
-          const res = await this.instance.fetchHealth();
-          this.health = res.data;
+          this.error = null;
+          try {
+            const res = await this.instance.fetchHealth();
+            this.health = res.data;
+          } catch (error) {
+            console.warn('Fetching health failed:', error);
+            this.error = error;
+          }
+          this.hasLoaded = true;
         }
       }
     }
   }
 </script>
-
-<style lang="scss">
-</style>

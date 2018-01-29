@@ -36,14 +36,13 @@
   import subscribing from '@/mixins/subscribing';
   import {Observable} from '@/utils/rxjs';
   import AuditeventsList from '@/views/instances/auditevents/auditevents-list';
+  import _ from 'lodash';
   import moment from 'moment';
 
   class Auditevent {
-    constructor({timestamp, type, principal, data}) {
+    constructor({timestamp, ...event}) {
       this.timestamp = moment(timestamp);
-      this.type = type;
-      this.principal = principal;
-      this.data = data;
+      Object.assign(this, event);
     }
 
     get key() {
@@ -101,7 +100,7 @@
             .subscribe({
               next: events => {
                 vm.hasLoaded = true;
-                vm.events = vm.events ? events.concat(vm.events) : events;
+                vm.addEvents(events);
               },
               error: error => {
                 vm.hasLoaded = true;
@@ -110,6 +109,9 @@
               }
             });
         }
+      },
+      addEvents(events) {
+        this.events = _.uniqBy(this.events ? events.concat(this.events) : events, event => event.key);
       }
     }
   }

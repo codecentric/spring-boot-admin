@@ -47,6 +47,11 @@ class Instance {
     });
   }
 
+  async fetchMetrics() {
+    return axios.get(`instances/${this.id}/actuator/metrics`, {
+      headers: {'Accept': actuatorMimeTypes}
+    });
+  }
   async fetchMetric(metric, tags) {
     const params = tags ? {tag: _.entries(tags).map(([name, value]) => `${name}:${value}`).join(',')} : {};
     return axios.get(`instances/${this.id}/actuator/metrics/${metric}`, {

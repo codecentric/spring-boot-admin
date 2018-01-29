@@ -15,32 +15,42 @@
   -->
 
 <template>
-    <sba-panel title="Process" v-if="pid || metrics['process.uptime'] ">
-        <div class="level" slot="text">
-            <div class="level-item has-text-centered" v-if="pid">
-                <div>
-                    <p class="heading">PID</p>
-                    <p v-text="pid"></p>
+    <sba-panel title="Process" v-if="hasLoaded">
+        <div slot="text">
+            <div v-if="error" class="message is-danger">
+                <div class="message-body">
+                    <strong>
+                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
+                        Fetching process metrics failed.
+                    </strong>
                 </div>
             </div>
-            <div class="level-item has-text-centered" v-if="metrics['process.uptime']">
-                <div>
-                    <p class="heading">Uptime</p>
-                    <p>
-                        <process-uptime :value="metrics['process.uptime']"></process-uptime>
-                    </p>
+            <div class="level">
+                <div class="level-item has-text-centered" v-if="pid">
+                    <div>
+                        <p class="heading">PID</p>
+                        <p v-text="pid"></p>
+                    </div>
                 </div>
-            </div>
-            <div class="level-item has-text-centered" v-if="metrics['system.cpu.count']">
-                <div>
-                    <p class="heading">CPUs</p>
-                    <p v-text="metrics['system.cpu.count']"></p>
+                <div class="level-item has-text-centered" v-if="metrics['process.uptime']">
+                    <div>
+                        <p class="heading">Uptime</p>
+                        <p>
+                            <process-uptime :value="metrics['process.uptime']"></process-uptime>
+                        </p>
+                    </div>
                 </div>
-            </div>
-            <div class="level-item has-text-centered" v-if="metrics['system.load.average.1m']">
-                <div>
-                    <p class="heading">System Load (last 1m)</p>
-                    <p v-text="metrics['system.load.average.1m'].toFixed(2)"></p>
+                <div class="level-item has-text-centered" v-if="metrics['system.cpu.count']">
+                    <div>
+                        <p class="heading">CPUs</p>
+                        <p v-text="metrics['system.cpu.count']"></p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered" v-if="metrics['system.load.average.1m']">
+                    <div>
+                        <p class="heading">System Load (last 1m)</p>
+                        <p v-text="metrics['system.load.average.1m'].toFixed(2)"></p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -55,6 +65,8 @@
     props: ['instance'],
     components: {processUptime},
     data: () => ({
+      hasLoaded: false,
+      error: null,
       pid: null,
       metrics: {
         'process.uptime': null,
@@ -76,18 +88,29 @@
       async fetchMetrics() {
         if (this.instance) {
           const vm = this;
-          _.entries(vm.metrics).forEach(async ([name]) => {
-              const response = await vm.instance.fetchMetric(name);
-              vm.metrics[name] = response.data.measurements[0].value;
-            }
-          )
+          vm.error = null;
+          try {
+            await Promise.all(_.entries(vm.metrics)
+              .map(async ([name]) => {
+                  const response = await vm.instance.fetchMetric(name);
+                  vm.metrics[name] = response.data.measurements[0].value;
+                }
+              ));
+          } catch (error) {
+            console.warn('Fetching process metrics failed:', error);
+            this.error = error;
+          }
+          this.hasLoaded = true;
         }
       },
       async fetchPid() {
-        if (this.instance) {
-          const vm = this;
-          const response = await vm.instance.fetchEnv('PID');
-          vm.pid = response.data.property.value;
+        if (this.instance && this.instance.hasEndpoint('env')) {
+          try {
+            const response = await this.instance.fetchEnv('PID');
+            this.pid = response.data.property.value;
+          } catch (error) {
+            console.warn('Fetching PID failed:', error);
+          }
         }
       }
     }
