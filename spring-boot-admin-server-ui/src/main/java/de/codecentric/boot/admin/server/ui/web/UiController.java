@@ -20,9 +20,20 @@ import de.codecentric.boot.admin.server.web.AdminController;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 @AdminController
 public class UiController {
+    private final String adminContextPath;
+
+    public UiController(String adminContextPath) {
+        this.adminContextPath = adminContextPath;
+    }
+
+    @ModelAttribute(value = "adminContextPath", binding = false)
+    public String getAdminContextPath() {
+        return adminContextPath;
+    }
 
     @GetMapping(path = "/", produces = MediaType.TEXT_HTML_VALUE)
     public String index() {

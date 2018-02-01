@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.ui.config;
 
 import de.codecentric.boot.admin.server.config.AdminServerMarkerConfiguration;
+import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.AdminServerWebConfiguration;
 import de.codecentric.boot.admin.server.ui.web.UiController;
 
@@ -38,17 +39,21 @@ import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 @EnableConfigurationProperties(AdminServerUiProperties.class)
 public class AdminServerUiAutoConfiguration {
     private final AdminServerUiProperties uiProperties;
+    private final AdminServerProperties adminServerProperties;
     private final ApplicationContext applicationContext;
 
-    public AdminServerUiAutoConfiguration(AdminServerUiProperties uiProperties, ApplicationContext applicationContext) {
+    public AdminServerUiAutoConfiguration(AdminServerUiProperties uiProperties,
+                                          AdminServerProperties serverProperties,
+                                          ApplicationContext applicationContext) {
         this.uiProperties = uiProperties;
+        this.adminServerProperties = serverProperties;
         this.applicationContext = applicationContext;
     }
 
     @Bean
     @ConditionalOnMissingBean
     public UiController homeUiController() {
-        return new UiController();
+        return new UiController(adminServerProperties.getContextPath());
     }
 
     @Bean
@@ -69,14 +74,17 @@ public class AdminServerUiAutoConfiguration {
     @Configuration
     public static class ReactiveUiConfiguration implements WebFluxConfigurer {
         private final AdminServerUiProperties uiProperties;
+        private final AdminServerProperties adminServerProperties;
 
-        public ReactiveUiConfiguration(AdminServerUiProperties uiProperties) {
+        public ReactiveUiConfiguration(AdminServerUiProperties uiProperties,
+                                       AdminServerProperties adminServerProperties) {
             this.uiProperties = uiProperties;
+            this.adminServerProperties = adminServerProperties;
         }
 
         @Override
         public void addResourceHandlers(org.springframework.web.reactive.config.ResourceHandlerRegistry registry) {
-            registry.addResourceHandler("/**")
+            registry.addResourceHandler(adminServerProperties.getContextPath() + "/**")
                     .addResourceLocations(uiProperties.getResourceLocations())
                     .setCacheControl(uiProperties.getCache().toCacheControl());
         }
@@ -86,14 +94,17 @@ public class AdminServerUiAutoConfiguration {
     @Configuration
     public static class ServletUiConfiguration implements WebMvcConfigurer {
         private final AdminServerUiProperties uiProperties;
+        private final AdminServerProperties adminServerProperties;
 
-        public ServletUiConfiguration(AdminServerUiProperties uiProperties) {
+        public ServletUiConfiguration(AdminServerUiProperties uiProperties,
+                                      AdminServerProperties adminServerProperties) {
             this.uiProperties = uiProperties;
+            this.adminServerProperties = adminServerProperties;
         }
 
         @Override
         public void addResourceHandlers(org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
-            registry.addResourceHandler("/**")
+            registry.addResourceHandler(adminServerProperties.getContextPath() + "/**")
                     .addResourceLocations(uiProperties.getResourceLocations())
                     .setCacheControl(uiProperties.getCache().toCacheControl());
         }

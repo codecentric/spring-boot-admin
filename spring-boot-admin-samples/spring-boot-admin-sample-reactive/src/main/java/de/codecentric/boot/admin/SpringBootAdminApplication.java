@@ -15,6 +15,7 @@
  */
 package de.codecentric.boot.admin;
 
+import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.notify.LoggingNotifier;
@@ -36,6 +37,12 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableAutoConfiguration
 @EnableAdminServer
 public class SpringBootAdminApplication {
+    private final String adminContextPath;
+
+    public SpringBootAdminApplication(AdminServerProperties adminServerProperties) {
+        this.adminContextPath = adminServerProperties.getContextPath();
+    }
+
     public static void main(String[] args) {
         SpringApplication.run(SpringBootAdminApplication.class, args);
     }
@@ -53,12 +60,12 @@ public class SpringBootAdminApplication {
     public SecurityWebFilterChain securityWebFilterChainSecure(ServerHttpSecurity http) {
         // @formatter:off
         return http.authorizeExchange()
-                .pathMatchers("/assets/**").permitAll()
-                .pathMatchers("/login").permitAll()
+                .pathMatchers(adminContextPath + "/assets/**").permitAll()
+                .pathMatchers(adminContextPath + "/login").permitAll()
                 .anyExchange().authenticated()
                 .and()
-            .formLogin().loginPage("/login").and()
-            .logout().and()
+            .formLogin().loginPage(adminContextPath + "/login").and()
+            .logout().logoutUrl(adminContextPath + "/logout").and()
             .httpBasic().and()
             .csrf().disable()
             .build();

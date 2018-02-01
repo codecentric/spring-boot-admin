@@ -28,7 +28,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * Registration info for the instance registers with (inluding metadata)
+ * Registration info for the instance registers with (including metadata)
  *
  * @author Johannes Edmeier
  */

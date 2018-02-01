@@ -64,6 +64,7 @@ public class InstancesController {
      * Register an instance.
      *
      * @param registration registration info
+     * @param builder      UriComponentsBuilder
      * @return The registered instance id;
      */
     @PostMapping(path = "/instances", consumes = MediaType.APPLICATION_JSON_VALUE)

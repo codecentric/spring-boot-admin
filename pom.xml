@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2014-2017 the original author or authors.
+  ~ Copyright 2014-2018 the original author or authors.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.0.BUILD-SNAPSHOT</version>
+        <version>2.0.0.RC1</version>
         <relativePath/>
     </parent>
     <groupId>de.codecentric</groupId>
@@ -34,7 +34,7 @@
     <properties>
         <java.version>1.8</java.version>
         <main.basedir>${basedir}</main.basedir>
-        <spring-boot.version>2.0.0.BUILD-SNAPSHOT</spring-boot.version>
+        <spring-boot.version>2.0.0.RC1</spring-boot.version>
         <spring-cloud.version>Finchley.BUILD-SNAPSHOT</spring-cloud.version>
         <build-plugin.jacoco.version>0.7.9</build-plugin.jacoco.version>
         <build-plugin.coveralls.version>4.3.0</build-plugin.coveralls.version>

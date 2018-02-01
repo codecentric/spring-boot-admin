@@ -50,20 +50,21 @@ public class AbstractInstancesProxyController {
             "Proxy-Authenticate", "Proxy-Authorization", "TE", "Trailer", "Transfer-Encoding", "Upgrade",
             "X-Application-Context"};
     private static final Logger log = LoggerFactory.getLogger(AbstractInstancesProxyController.class);
-
+    private final String realRequestMappingPath;
     private final InstanceRegistry registry;
     private final InstanceWebClient instanceWebClient;
     private final Set<String> ignoredHeaders;
 
-    public AbstractInstancesProxyController(Set<String> ignoredHeaders,
+    public AbstractInstancesProxyController(String adminContextPath,
+                                            Set<String> ignoredHeaders,
                                             InstanceRegistry registry,
                                             InstanceWebClient instanceWebClient) {
         this.ignoredHeaders = Stream.concat(ignoredHeaders.stream(), Arrays.stream(HOP_BY_HOP_HEADERS))
                                     .map(String::toLowerCase)
                                     .collect(Collectors.toSet());
-
         this.registry = registry;
         this.instanceWebClient = instanceWebClient;
+        this.realRequestMappingPath = adminContextPath + REQUEST_MAPPING_PATH;
     }
 
     protected Mono<ClientResponse> forward(String instanceId,
@@ -97,7 +98,7 @@ public class AbstractInstancesProxyController {
     }
 
     protected String getEndpointLocalPath(String pathWithinApplication) {
-        return new AntPathMatcher().extractPathWithinPattern(REQUEST_MAPPING_PATH, pathWithinApplication);
+        return new AntPathMatcher().extractPathWithinPattern(this.realRequestMappingPath, pathWithinApplication);
     }
 
     protected HttpHeaders filterHeaders(HttpHeaders headers) {

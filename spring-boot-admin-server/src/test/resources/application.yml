@@ -5,3 +5,6 @@ spring:
         name: spring-boot-admin-server-test
     jmx:
         enabled: false
+logging:
+  level:
+    de.codecentric: DEBUG

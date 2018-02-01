@@ -16,6 +16,8 @@
 
 package de.codecentric.boot.admin.server.config;
 
+import de.codecentric.boot.admin.server.web.PathUtils;
+
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
@@ -52,11 +54,8 @@ public class AdminServerProperties {
     private String[] probedEndpoints = {"health", "env", "metrics", "trace", "threaddump:dump", "jolokia", "info",
             "logfile", "refresh", "flyway", "liquibase", "heapdump", "loggers", "auditevents"};
 
-    public void setContextPath(String pathPrefix) {
-        if (!pathPrefix.startsWith("/") || pathPrefix.endsWith("/")) {
-            throw new IllegalArgumentException("ContextPath must start with '/' and not end with '/'");
-        }
-        this.contextPath = pathPrefix;
+    public void setContextPath(String contextPath) {
+        this.contextPath = PathUtils.normalizePath(contextPath);
     }
 
     public String getContextPath() {

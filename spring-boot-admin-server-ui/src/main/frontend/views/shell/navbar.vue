@@ -18,10 +18,11 @@
     <nav id="navigation" class="navbar is-fixed-top">
         <div class="container">
             <div class="navbar-brand">
-                <a class="navbar-item logo" href="/">
+                <router-link class="navbar-item logo" to="/">
                     <boot-logo></boot-logo>
                     Spring Boot Admin
-                </a>
+                </router-link>
+
                 <div class="navbar-burger burger" @click.stop="showMenu = !showMenu">
                     <span></span>
                     <span></span>

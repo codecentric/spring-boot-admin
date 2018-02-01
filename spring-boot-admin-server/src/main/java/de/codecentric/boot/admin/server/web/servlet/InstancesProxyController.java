@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.codecentric.boot.admin.server.web;
+package de.codecentric.boot.admin.server.web.servlet;
 
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
+import de.codecentric.boot.admin.server.web.AbstractInstancesProxyController;
+import de.codecentric.boot.admin.server.web.AdminController;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 import reactor.core.publisher.Mono;
 
@@ -45,13 +47,14 @@ import org.springframework.web.util.UriComponentsBuilder;
  * Http Handler for proxied requests
  */
 @AdminController
-public class InstancesServletProxyController extends AbstractInstancesProxyController {
+public class InstancesProxyController extends AbstractInstancesProxyController {
     private final DataBufferFactory bufferFactory = new DefaultDataBufferFactory();
 
-    public InstancesServletProxyController(Set<String> ignoredHeaders,
-                                           InstanceRegistry registry,
-                                           InstanceWebClient instanceWebClient) {
-        super(ignoredHeaders, registry, instanceWebClient);
+    public InstancesProxyController(String adminContextPath,
+                                    Set<String> ignoredHeaders,
+                                    InstanceRegistry registry,
+                                    InstanceWebClient instanceWebClient) {
+        super(adminContextPath, ignoredHeaders, registry, instanceWebClient);
     }
 
     @RequestMapping(path = REQUEST_MAPPING_PATH)

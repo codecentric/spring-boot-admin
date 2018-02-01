@@ -15,6 +15,7 @@
  */
 package de.codecentric.boot.admin;
 
+import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.notify.LoggingNotifier;
@@ -54,6 +55,12 @@ public class SpringBootAdminApplication {
     @Configuration
     @Profile("secure")
     public static class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
+        private final String adminContextPath;
+
+        public SecuritySecureConfig(AdminServerProperties adminServerProperties) {
+            this.adminContextPath = adminServerProperties.getContextPath();
+        }
+
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             // @formatter:off
@@ -61,12 +68,12 @@ public class SpringBootAdminApplication {
             successHandler.setTargetUrlParameter("redirectTo");
 
             http.authorizeRequests()
-                .antMatchers("/assets/**").permitAll()
-                .antMatchers("/login").permitAll()
+                .antMatchers(adminContextPath + "/assets/**").permitAll()
+                .antMatchers(adminContextPath + "/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
-            .formLogin().loginPage("/login").successHandler(successHandler).and()
-            .logout().and()
+            .formLogin().loginPage(adminContextPath + "/login").successHandler(successHandler).and()
+            .logout().logoutUrl(adminContextPath + "/logout").and()
             .httpBasic().and()
             .csrf().disable();
             // @formatter:on
