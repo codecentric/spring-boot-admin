@@ -1,11 +1,11 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,11 +19,15 @@ import de.codecentric.boot.admin.client.registration.ApplicationFactory;
 import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
 import de.codecentric.boot.admin.client.registration.DefaultApplicationFactory;
 import de.codecentric.boot.admin.client.registration.RegistrationApplicationListener;
+import de.codecentric.boot.admin.client.registration.ServletApplicationFactory;
 
 import javax.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
+import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -37,35 +41,68 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
+import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+
 @Configuration
-@EnableConfigurationProperties({AdminProperties.class, AdminClientProperties.class})
+@EnableConfigurationProperties({ClientProperties.class, InstanceProperties.class})
 @ConditionalOnWebApplication
 @Conditional(SpringBootAdminClientEnabledCondition.class)
+@AutoConfigureAfter(WebMvcEndpointManagementContextConfiguration.class)
 public class SpringBootAdminClientAutoConfiguration {
 
-    @Bean
-    @ConditionalOnMissingBean
-    public ApplicationRegistrator registrator(AdminProperties admin,
-                                              ApplicationFactory applicationFactory,
-                                              RestTemplateBuilder restTemplBuilder) {
-        RestTemplateBuilder builder = restTemplBuilder.messageConverters(new MappingJackson2HttpMessageConverter())
-                                                      .requestFactory(SimpleClientHttpRequestFactory.class)
-                                                      .setConnectTimeout(admin.getConnectTimeout())
-                                                      .setReadTimeout(admin.getReadTimeout());
-        if (admin.getUsername() != null) {
-            builder = builder.basicAuthorization(admin.getUsername(), admin.getPassword());
+    @Configuration
+    @ConditionalOnWebApplication(type = Type.SERVLET)
+    public static class ServletConfiguration {
+        @Bean
+        @ConditionalOnMissingBean
+        public ApplicationFactory applicationFactory(InstanceProperties instance,
+                                                     ManagementServerProperties management,
+                                                     ServerProperties server,
+                                                     ServletContext servletContext,
+                                                     PathMappedEndpoints pathMappedEndpoints,
+                                                     WebEndpointProperties webEndpoint) {
+            return new ServletApplicationFactory(instance, management, server, servletContext, pathMappedEndpoints,
+                    webEndpoint);
         }
-        return new ApplicationRegistrator(builder.build(), admin, applicationFactory);
+    }
+
+    @Configuration
+    @ConditionalOnWebApplication(type = Type.REACTIVE)
+    public static class ReactiveConfiguration {
+        @Bean
+        @ConditionalOnMissingBean
+        public ApplicationFactory applicationFactory(InstanceProperties instance,
+                                                     ManagementServerProperties management,
+                                                     ServerProperties server,
+                                                     PathMappedEndpoints pathMappedEndpoints,
+                                                     WebEndpointProperties webEndpoint) {
+            return new DefaultApplicationFactory(instance, management, server, pathMappedEndpoints, webEndpoint);
+        }
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ApplicationFactory applicationFactory(AdminClientProperties client,
+    public ApplicationRegistrator registrator(ClientProperties client,
+                                              ApplicationFactory applicationFactory,
+                                              RestTemplateBuilder restTemplBuilder) {
+        RestTemplateBuilder builder = restTemplBuilder.messageConverters(new MappingJackson2HttpMessageConverter())
+                                                      .requestFactory(SimpleClientHttpRequestFactory.class)
+                                                      .setConnectTimeout((int) client.getConnectTimeout().toMillis())
+                                                      .setReadTimeout((int) client.getReadTimeout().toMillis());
+        if (client.getUsername() != null) {
+            builder = builder.basicAuthorization(client.getUsername(), client.getPassword());
+        }
+        return new ApplicationRegistrator(builder.build(), client, applicationFactory);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ApplicationFactory applicationFactory(InstanceProperties instance,
                                                  ManagementServerProperties management,
                                                  ServerProperties server,
-                                                 @Value("${endpoints.health.path:/${endpoints.health.id:health}}") String healthEndpointPath,
-                                                 ServletContext servletContext) {
-        return new DefaultApplicationFactory(client, management, server, servletContext, healthEndpointPath);
+                                                 PathMappedEndpoints pathMappedEndpoints,
+                                                 WebEndpointProperties webEndpoint) {
+        return new DefaultApplicationFactory(instance, management, server, pathMappedEndpoints, webEndpoint);
     }
 
     @Bean
@@ -80,13 +117,13 @@ public class SpringBootAdminClientAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public RegistrationApplicationListener registrationListener(AdminProperties admin,
+    public RegistrationApplicationListener registrationListener(ClientProperties client,
                                                                 ApplicationRegistrator registrator) {
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator,
                 registrationTaskScheduler());
-        listener.setAutoRegister(admin.isAutoRegistration());
-        listener.setAutoDeregister(admin.isAutoDeregistration());
-        listener.setRegisterPeriod(admin.getPeriod());
+        listener.setAutoRegister(client.isAutoRegistration());
+        listener.setAutoDeregister(client.isAutoDeregistration());
+        listener.setRegisterPeriod(client.getPeriod());
         return listener;
     }
 }

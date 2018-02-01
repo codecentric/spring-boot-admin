@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,19 @@
  */
 package de.codecentric.boot.admin.client.registration;
 
-import de.codecentric.boot.admin.client.config.AdminProperties;
+import de.codecentric.boot.admin.client.config.ClientProperties;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.LongAdder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -35,15 +37,19 @@ import org.springframework.web.client.RestTemplate;
  */
 public class ApplicationRegistrator {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationRegistrator.class);
+    private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
+    };
     private static final HttpHeaders HTTP_HEADERS = createHttpHeaders();
-    private final AtomicInteger unsuccessfulAttempts = new AtomicInteger(0);
+    private final ConcurrentHashMap<String, LongAdder> attempts = new ConcurrentHashMap<>();
     private final AtomicReference<String> registeredId = new AtomicReference<>();
-    private final AdminProperties admin;
+    private final ClientProperties client;
     private final RestTemplate template;
     private final ApplicationFactory applicationFactory;
 
-    public ApplicationRegistrator(RestTemplate template, AdminProperties admin, ApplicationFactory applicationFactory) {
-        this.admin = admin;
+    public ApplicationRegistrator(RestTemplate template,
+                                  ClientProperties client,
+                                  ApplicationFactory applicationFactory) {
+        this.client = client;
         this.template = template;
         this.applicationFactory = applicationFactory;
     }
@@ -61,61 +67,70 @@ public class ApplicationRegistrator {
      * @return true if successful registration on at least one admin server
      */
     public boolean register() {
-        boolean isRegistrationSuccessful = false;
         Application self = createApplication();
-        for (String adminUrl : admin.getAdminUrl()) {
-            try {
-                @SuppressWarnings("rawtypes") ResponseEntity<Map> response = template.postForEntity(adminUrl,
-                        new HttpEntity<>(self, HTTP_HEADERS), Map.class);
+        boolean isRegistrationSuccessful = false;
+        for (String adminUrl : client.getAdminUrl()) {
+            LongAdder attempt = this.attempts.computeIfAbsent(adminUrl, k -> new LongAdder());
+            boolean successful = register(self, adminUrl, attempt.intValue() == 0);
 
-                if (response.getStatusCode().equals(HttpStatus.CREATED)) {
-                    if (registeredId.compareAndSet(null, response.getBody().get("id").toString())) {
-                        LOGGER.info("Application registered itself as {}", response.getBody().get("id").toString());
-                    } else {
-                        LOGGER.debug("Application refreshed itself as {}", response.getBody().get("id").toString());
-                    }
-
-                    isRegistrationSuccessful = true;
-                    if (admin.isRegisterOnce()) {
-                        break;
-                    }
-                } else {
-                    if (unsuccessfulAttempts.get() == 0) {
-                        LOGGER.warn(
-                                "Application failed to registered itself as {}. Response: {}. Further attempts are logged on DEBUG level",
-                                self, response.toString());
-                    } else {
-                        LOGGER.debug("Application failed to registered itself as {}. Response: {}", self,
-                                response.toString());
-                    }
-                }
-            } catch (Exception ex) {
-                if (unsuccessfulAttempts.get() == 0) {
-                    LOGGER.warn(
-                            "Failed to register application as {} at spring-boot-admin ({}): {}. Further attempts are logged on DEBUG level",
-                            self, admin.getAdminUrl(), ex.getMessage());
-                } else {
-                    LOGGER.debug("Failed to register application as {} at spring-boot-admin ({}): {}", self,
-                            admin.getAdminUrl(), ex.getMessage());
+            if (!successful) {
+                attempt.increment();
+            } else {
+                attempt.reset();
+                isRegistrationSuccessful = true;
+                if (client.isRegisterOnce()) {
+                    break;
                 }
             }
         }
-        if (!isRegistrationSuccessful) {
-            unsuccessfulAttempts.incrementAndGet();
-        } else {
-            unsuccessfulAttempts.set(0);
-        }
+
         return isRegistrationSuccessful;
+    }
+
+    protected boolean register(Application self, String adminUrl, boolean firstAttempt) {
+        try {
+            ResponseEntity<Map<String, Object>> response = template.exchange(adminUrl, HttpMethod.POST,
+                    new HttpEntity<>(self, HTTP_HEADERS), RESPONSE_TYPE);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                if (registeredId.compareAndSet(null, response.getBody().get("id").toString())) {
+                    LOGGER.info("Application registered itself as {}", response.getBody().get("id").toString());
+                } else {
+                    LOGGER.debug("Application refreshed itself as {}", response.getBody().get("id").toString());
+                }
+                return true;
+            } else {
+                if (firstAttempt) {
+                    LOGGER.warn(
+                            "Application failed to registered itself as {}. Response: {}. Further attempts are logged on DEBUG level",
+                            self, response.toString());
+                } else {
+                    LOGGER.debug("Application failed to registered itself as {}. Response: {}", self,
+                            response.toString());
+                }
+            }
+        } catch (Exception ex) {
+            if (firstAttempt) {
+                LOGGER.warn(
+                        "Failed to register application as {} at spring-boot-admin ({}): {}. Further attempts are logged on DEBUG level",
+                        self, client.getAdminUrl(), ex.getMessage());
+            } else {
+                LOGGER.debug("Failed to register application as {} at spring-boot-admin ({}): {}", self,
+                        client.getAdminUrl(), ex.getMessage());
+            }
+
+        }
+        return false;
     }
 
     public void deregister() {
         String id = registeredId.get();
         if (id != null) {
-            for (String adminUrl : admin.getAdminUrl()) {
+            for (String adminUrl : client.getAdminUrl()) {
                 try {
                     template.delete(adminUrl + "/" + id);
                     registeredId.compareAndSet(id, null);
-                    if (admin.isRegisterOnce()) {
+                    if (client.isRegisterOnce()) {
                         break;
                     }
                 } catch (Exception ex) {
@@ -127,10 +142,8 @@ public class ApplicationRegistrator {
     }
 
     /**
-     * Returns the id of this client as given by the admin server.
+     * @return the id of this client as given by the admin server.
      * Returns null if the client has not registered against the admin server yet.
-     *
-     * @return
      */
     public String getRegisteredId() {
         return registeredId.get();

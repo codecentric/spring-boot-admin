@@ -1,4 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2014-2018 the original author or authors.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -11,9 +27,27 @@
         <version>${revision}</version>
         <relativePath>../spring-boot-admin-build</relativePath>
     </parent>
-    <properties>
-        <maven.javadoc.skip>true</maven.javadoc.skip>
-    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
             <plugin>
@@ -21,40 +55,43 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>yarn-install</id>
+                        <id>npm-install</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>yarn</executable>
+                            <executable>npm</executable>
                             <arguments>
                                 <argument>install</argument>
                             </arguments>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>yarn-build</id>
+                        <id>npm-build</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>yarn</executable>
+                            <executable>npm</executable>
                             <arguments>
                                 <argument>run</argument>
                                 <argument>build</argument>
                             </arguments>
+                            <environmentVariables>
+                                <PROJECT_VERSION>${project.version}</PROJECT_VERSION>
+                            </environmentVariables>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>yarn-test</id>
+                        <id>npm-test</id>
                         <phase>test</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>yarn</executable>
+                            <executable>npm</executable>
                             <arguments>
                                 <argument>run</argument>
                                 <argument>test</argument>
@@ -74,15 +111,19 @@
                         <nonFilteredFileExtension>eot</nonFilteredFileExtension>
                         <nonFilteredFileExtension>swf</nonFilteredFileExtension>
                         <nonFilteredFileExtension>ico</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>png</nonFilteredFileExtension>
                     </nonFilteredFileExtensions>
                 </configuration>
             </plugin>
         </plugins>
         <resources>
             <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
                 <directory>target/dist</directory>
                 <targetPath>META-INF/spring-boot-admin-server-ui</targetPath>
-                <filtering>true</filtering>
+                <filtering>false</filtering>
             </resource>
         </resources>
     </build>

@@ -15,11 +15,6 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.netflix.hystrix</groupId>
-                <artifactId>hystrix-dashboard</artifactId>
-                <version>${hystrix-dashboard.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>${spring-cloud.version}</version>
@@ -32,6 +27,12 @@
                 <version>${spring-boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.hazelcast</groupId>
+                <artifactId>hazelcast</artifactId>
+                <version>${hazelcast-tests.version}</version>
+                <classifier>tests</classifier>
             </dependency>
         </dependencies>
     </dependencyManagement>

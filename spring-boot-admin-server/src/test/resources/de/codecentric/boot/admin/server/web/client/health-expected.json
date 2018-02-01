@@ -1,0 +1,27 @@
+{
+  "status": "DOWN",
+  "details": {
+    "info": "Hello",
+    "sub-1": {
+      "status": "DOWN",
+      "details": {
+        "info-1": false,
+        "sub-1-1": {
+          "status": "UP"
+        },
+        "sub-1-2": {
+          "status": "DOWN",
+          "details": {
+            "info-1-2": "World"
+          }
+        }
+      }
+    },
+    "sub-2": {
+      "status": "UP",
+      "details": {
+        "info-2": 1
+      }
+    }
+  }
+}

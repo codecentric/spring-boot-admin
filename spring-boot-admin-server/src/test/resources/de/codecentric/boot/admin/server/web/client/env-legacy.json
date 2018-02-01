@@ -1,0 +1,17 @@
+{
+  "profiles": [
+    "one"
+  ],
+  "server.ports": {
+    "local.server.port": 9000
+  },
+  "servletContextInitParams": {},
+  "systemProperties": {
+    "java.runtime.name": "OpenJDK Runtime Environment",
+    "java.protocol.handler.pkgs": "org.springframework.boot.loader",
+    "sun.boot.library.path": "/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/jre/lib/amd64"
+  },
+  "class path resource [spring-boot-starter-batch-web.properties]": {
+    "spring.batch.job.enabled": "false"
+  }
+}

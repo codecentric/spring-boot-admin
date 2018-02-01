@@ -1,0 +1,10 @@
+[
+  {
+    "threadId": "1",
+    "threadName": "foo"
+  },
+  {
+    "threadId": "2",
+    "threadName": "bar"
+  }
+]

@@ -1,0 +1,41 @@
+{
+  "activeProfiles": [
+    "one"
+  ],
+  "propertySources": [
+    {
+      "name": "server.ports",
+      "properties": {
+        "local.server.port": {
+          "value": 9000
+        }
+      }
+    },
+    {
+      "name": "servletContextInitParams",
+      "properties": {}
+    },
+    {
+      "name": "systemProperties",
+      "properties": {
+        "java.runtime.name": {
+          "value": "OpenJDK Runtime Environment"
+        },
+        "java.protocol.handler.pkgs": {
+          "value": "org.springframework.boot.loader"
+        },
+        "sun.boot.library.path": {
+          "value": "/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-0.b13.el7_3.x86_64/jre/lib/amd64"
+        }
+      }
+    },
+    {
+      "name": "class path resource [spring-boot-starter-batch-web.properties]",
+      "properties": {
+        "spring.batch.job.enabled": {
+          "value": "false"
+        }
+      }
+    }
+  ]
+}

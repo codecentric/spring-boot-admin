@@ -1,11 +1,11 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2014-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,34 +15,34 @@
  */
 package de.codecentric.boot.admin;
 
+import de.codecentric.boot.admin.server.config.EnableAdminServer;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import com.hazelcast.config.Config;
 import com.hazelcast.config.EvictionPolicy;
 import com.hazelcast.config.ListConfig;
 import com.hazelcast.config.MapConfig;
-
-import de.codecentric.boot.admin.config.EnableAdminServer;
 
 // tag::application-hazelcast[]
 @Configuration
 @EnableAutoConfiguration
 @EnableAdminServer
 public class SpringBootAdminApplication {
-	@Bean
-	public Config hazelcastConfig() {
-		return new Config().setProperty("hazelcast.jmx", "true")
-				.addMapConfig(new MapConfig("spring-boot-admin-application-store").setBackupCount(1)
-						.setEvictionPolicy(EvictionPolicy.NONE))
-				.addListConfig(new ListConfig("spring-boot-admin-event-store").setBackupCount(1)
-						.setMaxSize(1000));
-	}
+    @Bean
+    public Config hazelcastConfig() {
+        return new Config().setProperty("hazelcast.jmx", "true")
+                           .addMapConfig(new MapConfig("spring-boot-admin-application-eventstore").setBackupCount(1)
+                                                                                                  .setEvictionPolicy(
+                                                                                                          EvictionPolicy.NONE))
+                           .addListConfig(new ListConfig("spring-boot-admin-event-eventstore").setBackupCount(1)
+                                                                                              .setMaxSize(1000));
+    }
 
-	public static void main(String[] args) {
-		SpringApplication.run(SpringBootAdminApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(SpringBootAdminApplication.class, args);
+    }
 }
 // end::application-hazelcast[]

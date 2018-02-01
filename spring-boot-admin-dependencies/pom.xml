@@ -18,40 +18,14 @@
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-server</artifactId>
                 <version>${revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>de.codecentric</groupId>
-                <artifactId>spring-boot-admin-client</artifactId>
-                <version>${revision}</version>
-            </dependency>
-            <dependency>
+            </dependency>            <dependency>
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-server-ui</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>de.codecentric</groupId>
-                <artifactId>spring-boot-admin-server-ui-activiti</artifactId>
-                <version>${revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>de.codecentric</groupId>
-                <artifactId>spring-boot-admin-server-ui-hystrix</artifactId>
-                <version>${revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>de.codecentric</groupId>
-                <artifactId>spring-boot-admin-server-ui-login</artifactId>
-                <version>${revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>de.codecentric</groupId>
-                <artifactId>spring-boot-admin-server-ui-turbine</artifactId>
-                <version>${revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>de.codecentric</groupId>
-                <artifactId>spring-boot-admin-starter-client</artifactId>
+                <artifactId>spring-boot-admin-client</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
@@ -66,7 +40,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
     <build>
         <plugins>
             <plugin>
