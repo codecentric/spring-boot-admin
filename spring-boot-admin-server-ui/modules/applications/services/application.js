@@ -48,6 +48,10 @@ module.exports = function ($resource, $http) {
     return $http.get('api/applications/' + this.id + '/info').then(convert);
   };
 
+  Application.prototype.getMappings = function () {
+    return $http.get('api/applications/' + this.id + '/mappings').then(convert);
+  };
+
   Application.prototype.getMetrics = function () {
     return $http.get('api/applications/' + this.id + '/metrics').then(convert);
   };

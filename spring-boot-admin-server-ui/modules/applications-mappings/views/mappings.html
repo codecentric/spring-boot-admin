@@ -1,0 +1,16 @@
+<div class="container" ui-view>
+  <div class="alert alert-error" ng-if="error">
+    <b>Error:</b> {{ error }}
+  </div>
+  <div>
+    <input placeholder="Filter" class="input-xxlarge" type="search" ng-model="searchFilter"/>
+  </div>
+  <sba-info-panel panel-title="Mappings" raw="api/applications/{{ application.id }}/mappings">
+    <table class="table">
+      <tr ng-repeat="mapping in mappings | filter:searchFilter">
+        <td style="width: 40%; word-break: break-all;" ng-bind="mapping.name"></td>
+        <td style="width: 60%; word-break: break-all; white-space: pre-wrap;" ng-bind-html="mapping.value | yaml"></td>
+      </tr>
+    </table>
+  </sba-info-panel>
+</div>
