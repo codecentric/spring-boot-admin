@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,12 @@ package de.codecentric.boot.admin.server.notify.filter;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
+import java.time.Instant;
+
 public class ApplicationNameNotificationFilter extends ExpiringNotificationFilter {
     private final String name;
 
-    public ApplicationNameNotificationFilter(String name, long expiry) {
+    public ApplicationNameNotificationFilter(String name, Instant expiry) {
         super(expiry);
         this.name = name;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import de.codecentric.boot.admin.server.notify.Notifier;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class FilteringNotifier extends AbstractEventNotifier {
     private static final Logger LOGGER = LoggerFactory.getLogger(FilteringNotifier.class);
     private final ConcurrentMap<String, NotificationFilter> filters = new ConcurrentHashMap<>();
     private final Notifier delegate;
-    private long lastCleanup;
+    private Instant lastCleanup = Instant.EPOCH;
     private Duration cleanupInterval = Duration.ofSeconds(10);
     private AtomicLong counter = new AtomicLong();
 
@@ -79,8 +80,8 @@ public class FilteringNotifier extends AbstractEventNotifier {
     }
 
     private void cleanUp() {
-        long now = System.currentTimeMillis();
-        if (lastCleanup + cleanupInterval.toMillis() > now) {
+        Instant now = Instant.now();
+        if (lastCleanup.plus(cleanupInterval).isAfter(now)) {
             return;
         }
         lastCleanup = now;

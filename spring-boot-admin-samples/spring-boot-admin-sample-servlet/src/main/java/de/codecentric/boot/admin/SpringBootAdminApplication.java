@@ -22,7 +22,7 @@ import de.codecentric.boot.admin.server.notify.LoggingNotifier;
 import de.codecentric.boot.admin.server.notify.RemindingNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -92,7 +92,7 @@ public class SpringBootAdminApplication {
         @Primary
         public RemindingNotifier remindingNotifier() {
             RemindingNotifier notifier = new RemindingNotifier(filteringNotifier(), repository);
-            notifier.setReminderPeriod(TimeUnit.SECONDS.toMillis(10));
+            notifier.setReminderPeriod(Duration.ofMinutes(10));
             return notifier;
         }
 

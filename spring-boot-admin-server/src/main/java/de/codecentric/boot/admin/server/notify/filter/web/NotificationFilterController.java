@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import de.codecentric.boot.admin.server.notify.filter.InstanceIdNotificationFilt
 import de.codecentric.boot.admin.server.notify.filter.NotificationFilter;
 import de.codecentric.boot.admin.server.web.AdminController;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Map;
 import org.springframework.http.ResponseEntity;
@@ -57,7 +59,7 @@ public class NotificationFilterController {
     @PostMapping(path = "/notifications/filters", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addFilter(@RequestParam(name = "id", required = false) String id,
                                        @RequestParam(name = "name", required = false) String name,
-                                       @RequestParam(name = "ttl", required = false, defaultValue = "-1") long ttl) {
+                                       @RequestParam(name = "ttl", required = false) Duration ttl) {
         if (hasText(id) || hasText(name)) {
             NotificationFilter filter = createFilter(hasText(id) ? InstanceId.of(id) : null, name, ttl);
             String filterId = filteringNotifier.addFilter(filter);
@@ -77,8 +79,8 @@ public class NotificationFilterController {
         }
     }
 
-    private NotificationFilter createFilter(InstanceId id, String name, long ttl) {
-        long expiry = ttl > 0L ? System.currentTimeMillis() + ttl : ttl;
+    private NotificationFilter createFilter(InstanceId id, String name, Duration ttl) {
+        Instant expiry = ttl != null ? Instant.now().plus(ttl) : null;
 
         return id != null ?
                 new InstanceIdNotificationFilter(id, expiry) :

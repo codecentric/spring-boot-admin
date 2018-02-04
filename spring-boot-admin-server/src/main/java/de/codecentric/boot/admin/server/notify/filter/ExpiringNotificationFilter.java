@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,17 @@ package de.codecentric.boot.admin.server.notify.filter;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
-public abstract class ExpiringNotificationFilter implements NotificationFilter {
-    private final long expiry;
+import java.time.Instant;
 
-    public ExpiringNotificationFilter(long expiry) {
+public abstract class ExpiringNotificationFilter implements NotificationFilter {
+    private final Instant expiry;
+
+    public ExpiringNotificationFilter(Instant expiry) {
         this.expiry = expiry;
     }
 
     public boolean isExpired() {
-        return expiry >= 0 && expiry < System.currentTimeMillis();
+        return expiry != null && expiry.isBefore(Instant.now());
     }
 
     @Override
@@ -36,7 +38,7 @@ public abstract class ExpiringNotificationFilter implements NotificationFilter {
 
     protected abstract boolean doFilter(InstanceEvent event, Instance instance);
 
-    public long getExpiry() {
+    public Instant getExpiry() {
         return expiry;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
@@ -30,7 +32,7 @@ public class InstanceNameNotificationFilterTest {
 
     @Test
     public void test_filterByName() {
-        NotificationFilter filter = new ApplicationNameNotificationFilter("foo", -1L);
+        NotificationFilter filter = new ApplicationNameNotificationFilter("foo", null);
 
         Instance filteredInstance = Instance.create(InstanceId.of("-"))
                                             .register(Registration.create("foo", "http://health").build());
@@ -47,16 +49,17 @@ public class InstanceNameNotificationFilterTest {
 
     @Test
     public void test_expiry() throws InterruptedException {
-        ExpiringNotificationFilter filterForever = new ApplicationNameNotificationFilter("foo", -1L);
-        ExpiringNotificationFilter filterExpired = new ApplicationNameNotificationFilter("foo", 0L);
+        ExpiringNotificationFilter filterForever = new ApplicationNameNotificationFilter("foo", null);
+        ExpiringNotificationFilter filterExpired = new ApplicationNameNotificationFilter("foo",
+                Instant.now().minus(Duration.ofSeconds(1)));
         ExpiringNotificationFilter filterLong = new ApplicationNameNotificationFilter("foo",
-                System.currentTimeMillis() + 500L);
+                Instant.now().plus(Duration.ofMillis(100)));
 
         assertThat(filterForever.isExpired()).isFalse();
         assertThat(filterLong.isExpired()).isFalse();
         assertThat(filterExpired.isExpired()).isTrue();
 
-        TimeUnit.MILLISECONDS.sleep(501);
+        TimeUnit.MILLISECONDS.sleep(200);
         assertThat(filterLong.isExpired()).isTrue();
     }
 }

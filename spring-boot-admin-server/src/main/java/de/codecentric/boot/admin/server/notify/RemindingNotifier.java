@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,11 @@ import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import org.springframework.util.Assert;
 
 /**
@@ -36,7 +37,7 @@ import org.springframework.util.Assert;
  */
 public class RemindingNotifier extends AbstractEventNotifier {
     private final ConcurrentHashMap<InstanceId, Reminder> reminders = new ConcurrentHashMap<>();
-    private long reminderPeriod = TimeUnit.MINUTES.toMillis(10L);
+    private Duration reminderPeriod = Duration.ofMinutes(10);
     private String[] reminderStatuses = {"DOWN", "OFFLINE"};
     private final Notifier delegate;
 
@@ -58,9 +59,9 @@ public class RemindingNotifier extends AbstractEventNotifier {
     }
 
     public void sendReminders() {
-        long now = System.currentTimeMillis();
+        Instant now = Instant.now();
         for (Reminder reminder : new ArrayList<>(reminders.values())) {
-            if (now - reminder.getLastNotification() > reminderPeriod) {
+            if (reminder.getLastNotification().plus(reminderPeriod).isBefore(now)) {
                 reminder.setLastNotification(now);
                 delegate.notify(reminder.getEvent());
             }
@@ -86,7 +87,7 @@ public class RemindingNotifier extends AbstractEventNotifier {
         return false;
     }
 
-    public void setReminderPeriod(long reminderPeriod) {
+    public void setReminderPeriod(Duration reminderPeriod) {
         this.reminderPeriod = reminderPeriod;
     }
 
@@ -98,18 +99,18 @@ public class RemindingNotifier extends AbstractEventNotifier {
 
     private static class Reminder {
         private final InstanceEvent event;
-        private long lastNotification;
+        private Instant lastNotification;
 
         private Reminder(InstanceEvent event) {
             this.event = event;
             this.lastNotification = event.getTimestamp();
         }
 
-        public void setLastNotification(long lastNotification) {
+        public void setLastNotification(Instant lastNotification) {
             this.lastNotification = lastNotification;
         }
 
-        public long getLastNotification() {
+        public Instant getLastNotification() {
             return lastNotification;
         }
 

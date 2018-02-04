@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import reactor.core.scheduler.Schedulers;
 import reactor.retry.Retry;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -36,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class StatusUpdateTrigger extends ResubscribingEventHandler<InstanceRegisteredEvent> {
     private static final Logger log = LoggerFactory.getLogger(StatusUpdateTrigger.class);
     private final StatusUpdater statusUpdater;
-    private Map<InstanceId, Long> lastQueried = new HashMap<>();
+    private Map<InstanceId, Instant> lastQueried = new HashMap<>();
     private Duration updateInterval = Duration.ofSeconds(10);
     private Duration statusLifetime = Duration.ofSeconds(10);
     private Disposable intervalSubscription;
@@ -79,17 +80,15 @@ public class StatusUpdateTrigger extends ResubscribingEventHandler<InstanceRegis
 
     protected Mono<Void> updateStatusForAllInstances() {
         log.debug("Updating status for all instances");
-        long expiryInstant = System.currentTimeMillis() - statusLifetime.toMillis();
-        return Flux.fromIterable(lastQueried.entrySet())
-                   .filter(e -> e.getValue() < expiryInstant)
+        Instant expiryInstant = Instant.now().minus(statusLifetime);
+        return Flux.fromIterable(lastQueried.entrySet()).filter(e -> e.getValue().isBefore(expiryInstant))
                    .map(Map.Entry::getKey)
                    .flatMap(this::updateStatus)
                    .then();
     }
 
     protected Mono<Void> updateStatus(InstanceId instanceId) {
-        return statusUpdater.updateStatus(instanceId)
-                            .doFinally((s) -> lastQueried.put(instanceId, System.currentTimeMillis()));
+        return statusUpdater.updateStatus(instanceId).doFinally((s) -> lastQueried.put(instanceId, Instant.now()));
     }
 
     public void setUpdateInterval(Duration updateInterval) {

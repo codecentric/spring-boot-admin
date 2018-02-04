@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -53,21 +54,20 @@ public class Instance implements Serializable {
     private final Registration registration;
     private final boolean registered;
     private final StatusInfo statusInfo;
-    private final long statusTimestamp;
+    private final Instant statusTimestamp;
     private final Info info;
     private final List<InstanceEvent> unsavedEvents;
     private final Endpoints endpoints;
 
     private Instance(InstanceId id) {
-        this(id, -1L, null, false, StatusInfo.ofUnknown(), -1L, Info.empty(), Endpoints.empty(), emptyList());
+        this(id, -1L, null, false, StatusInfo.ofUnknown(), Instant.EPOCH, Info.empty(), Endpoints.empty(), emptyList());
     }
 
     private Instance(InstanceId id,
                      long version,
                      Registration registration,
                      boolean registered,
-                     StatusInfo statusInfo,
-                     long statusTimestamp,
+                     StatusInfo statusInfo, Instant statusTimestamp,
                      Info info,
                      Endpoints endpoints,
                      List<InstanceEvent> unsavedEvents) {

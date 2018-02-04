@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -100,7 +101,7 @@ public class ApplicationsController {
             Application group = new Application(name);
             group.setInstances(instanceList);
             group.setVersion(getVersion(instanceList));
-            Tuple2<String, Long> status = getStatus(instanceList);
+            Tuple2<String, Instant> status = getStatus(instanceList);
             group.setStatus(status.getT1());
             group.setStatusTimestamp(status.getT2());
             return group;
@@ -123,24 +124,24 @@ public class ApplicationsController {
         }
     }
 
-    protected Tuple2<String, Long> getStatus(List<Instance> instances) {
+    protected Tuple2<String, Instant> getStatus(List<Instance> instances) {
         //TODO: Correct is just a second readmodel for groups
-        Map<String, Long> statusWithTime = instances.stream()
-                                                    .collect(toMap(instance -> instance.getStatusInfo().getStatus(),
-                                                            Instance::getStatusTimestamp, Math::min));
+        Map<String, Instant> statusWithTime = instances.stream()
+                                                       .collect(toMap(instance -> instance.getStatusInfo().getStatus(),
+                                                               Instance::getStatusTimestamp, this::getMax));
         if (statusWithTime.size() == 1) {
-            Map.Entry<String, Long> e = statusWithTime.entrySet().iterator().next();
+            Map.Entry<String, Instant> e = statusWithTime.entrySet().iterator().next();
             return Tuples.of(e.getKey(), e.getValue());
         }
 
         if (statusWithTime.containsKey(StatusInfo.STATUS_UP)) {
-            Long oldestNonUp = statusWithTime.entrySet()
-                                             .stream()
-                                             .filter(e -> !StatusInfo.STATUS_UP.equals(e.getKey()))
-                                             .map(Map.Entry::getValue)
-                                             .min(naturalOrder())
-                                             .orElse(-1L);
-            long latest = Math.max(oldestNonUp, statusWithTime.getOrDefault(StatusInfo.STATUS_UP, -1L));
+            Instant oldestNonUp = statusWithTime.entrySet()
+                                                .stream()
+                                                .filter(e -> !StatusInfo.STATUS_UP.equals(e.getKey()))
+                                                .map(Map.Entry::getValue)
+                                                .min(naturalOrder())
+                                                .orElse(Instant.EPOCH);
+            Instant latest = getMax(oldestNonUp, statusWithTime.getOrDefault(StatusInfo.STATUS_UP, Instant.EPOCH));
             return Tuples.of(StatusInfo.STATUS_RESTRICTED, latest);
         }
 
@@ -148,7 +149,11 @@ public class ApplicationsController {
                              .stream()
                              .min(Map.Entry.comparingByKey(StatusInfo.severity()))
                              .map(e -> Tuples.of(e.getKey(), e.getValue()))
-                             .orElse(Tuples.of(StatusInfo.STATUS_UNKNOWN, -1L));
+                             .orElse(Tuples.of(StatusInfo.STATUS_UNKNOWN, Instant.EPOCH));
+    }
+
+    private Instant getMax(Instant t1, Instant t2) {
+        return t1.compareTo(t2) >= 0 ? t1 : t2;
     }
 
     @SuppressWarnings("unchecked")
@@ -161,7 +166,7 @@ public class ApplicationsController {
         private final String name;
         private String version;
         private String status;
-        private long statusTimestamp;
+        private Instant statusTimestamp;
         private List<Instance> instances;
     }
 }

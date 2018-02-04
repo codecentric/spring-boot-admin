@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.domain.events;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 import java.io.Serializable;
+import java.time.Instant;
 
 /**
  * Abstract Event regarding registered instances
@@ -29,13 +30,13 @@ public abstract class InstanceEvent implements Serializable {
     private static final long serialVersionUID = 1L;
     private final InstanceId instance;
     private final long version;
-    private final long timestamp;
+    private final Instant timestamp;
     private final String type;
 
     protected InstanceEvent(InstanceId instance, long version, String type) {
         this.instance = instance;
         this.version = version;
-        this.timestamp = System.currentTimeMillis();
+        this.timestamp = Instant.now();
         this.type = type;
     }
 }

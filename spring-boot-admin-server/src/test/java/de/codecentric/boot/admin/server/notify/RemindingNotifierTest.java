@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.time.Duration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,7 +50,7 @@ public class RemindingNotifierTest {
     private InstanceRepository repository;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         repository = mock(InstanceRepository.class);
         when(repository.find(instance1.getId())).thenReturn(Mono.just(instance1));
         when(repository.find(instance2.getId())).thenReturn(Mono.just(instance2));
@@ -61,10 +62,10 @@ public class RemindingNotifierTest {
     }
 
     @Test
-    public void test_remind() throws Exception {
+    public void test_remind() {
         TestNotifier notifier = new TestNotifier();
         RemindingNotifier reminder = new RemindingNotifier(notifier, repository);
-        reminder.setReminderPeriod(-1000L);
+        reminder.setReminderPeriod(Duration.ZERO);
 
         StepVerifier.create(reminder.notify(appDown)).verifyComplete();
         StepVerifier.create(reminder.notify(otherAppUp)).verifyComplete();
@@ -76,10 +77,10 @@ public class RemindingNotifierTest {
     }
 
     @Test
-    public void test_no_remind_after_up() throws Exception {
+    public void test_no_remind_after_up() {
         TestNotifier notifier = new TestNotifier();
         RemindingNotifier reminder = new RemindingNotifier(notifier, repository);
-        reminder.setReminderPeriod(0L);
+        reminder.setReminderPeriod(Duration.ZERO);
 
         StepVerifier.create(reminder.notify(appDown)).verifyComplete();
         StepVerifier.create(reminder.notify(appUp)).verifyComplete();
@@ -89,10 +90,10 @@ public class RemindingNotifierTest {
     }
 
     @Test
-    public void test_no_remind_before_end() throws Exception {
+    public void test_no_remind_before_end() {
         TestNotifier notifier = new TestNotifier();
         RemindingNotifier reminder = new RemindingNotifier(notifier, repository);
-        reminder.setReminderPeriod(Long.MAX_VALUE);
+        reminder.setReminderPeriod(Duration.ofHours(24));
 
         StepVerifier.create(reminder.notify(appDown)).verifyComplete();
         reminder.sendReminders();
