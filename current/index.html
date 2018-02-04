@@ -524,8 +524,8 @@ table.CodeRay td.code>pre{padding:0}
 <div class="details">
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
-<span id="revnumber">version 1.5.8-SNAPSHOT,</span>
-<span id="revdate">28.01.2018</span>
+<span id="revnumber">version 2.0.0-SNAPSHOT,</span>
+<span id="revdate">04.02.2018</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -624,7 +624,7 @@ The UI is just an AngularJs application on top of the Spring Boot Actuator endpo
     <span class="tag">&lt;dependency&gt;</span>
         <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
         <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-starter-server<span class="tag">&lt;/artifactId&gt;</span>
-        <span class="tag">&lt;version&gt;</span>1.5.8-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
+        <span class="tag">&lt;version&gt;</span>2.0.0-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
     <span class="tag">&lt;/dependency&gt;</span>
 <span class="tag">&lt;/dependencies&gt;</span></code></pre>
 </div>
@@ -683,7 +683,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
     <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
     <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-starter-client<span class="tag">&lt;/artifactId&gt;</span>
-    <span class="tag">&lt;version&gt;</span>1.5.8-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;version&gt;</span>2.0.0-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
 <span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
@@ -693,7 +693,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.url</span>: <span class="string"><span class="content">http://localhost:8080  </span></span><i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.client.url</span>: <span class="string"><span class="content">http://localhost:8080  </span></span><i class="conum" data-value="1"></i><b>(1)</b>
 <span class="key">management.security.enabled</span>: <span class="string"><span class="content">false  </span></span><i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
@@ -733,7 +733,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
   <span class="tag">&lt;groupId&gt;</span>org.springframework.cloud<span class="tag">&lt;/groupId&gt;</span>
-  <span class="tag">&lt;artifactId&gt;</span>spring-cloud-starter-eureka<span class="tag">&lt;/artifactId&gt;</span>
+  <span class="tag">&lt;artifactId&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="tag">&lt;/artifactId&gt;</span>
 <span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
@@ -747,9 +747,9 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <span class="annotation">@EnableDiscoveryClient</span>
 <span class="annotation">@EnableAdminServer</span>
 <span class="directive">public</span> <span class="type">class</span> <span class="class">SpringBootAdminApplication</span> {
-  <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
-    SpringApplication.run(SpringBootAdminApplication.class, args);
-  }
+    <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
+        SpringApplication.run(SpringBootAdminApplication.class, args);
+    }
 }</code></pre>
 </div>
 </div>
@@ -915,23 +915,23 @@ There are plenty of properties to influence the way how the SBA Client registers
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.url</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Comma separated ordered list of URLs of the Spring Boot Admin server to register at. This triggers the AutoConfiguration. <strong>Mandatory</strong>.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.api-path</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.api-path</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Http-path of registration endpoint at your admin server.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>"api/applications"</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.username<br>
-spring.boot.admin.password</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.username<br>
+spring.boot.admin.client.password</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Username and password in case the SBA Server api is protected with HTTP Basic authentication.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.period</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.period</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Interval for repeating the registration (in ms).</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>10,000</code></p></td>
 </tr>
@@ -951,53 +951,53 @@ spring.boot.admin.password</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.auto-deregistration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.auto-deregistration</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Switch to enable auto-deregistration at Spring Boot Admin server when context is closed.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.register-once</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">If set to true the client will only register against one admin server (in order defined by <code>spring.boot.admin.url</code>); if that admin server goes down, will automatically register against the next admin server. If false, will register against all admin servers.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.register-once</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If set to true the client will only register against one admin server (in order defined by <code>spring.boot.admin.instance.url</code>); if that admin server goes down, will automatically register against the next admin server. If false, will register against all admin servers.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.health-url</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Client-health-url to register with. Can be overridden in case the reachable URL is different (e.g. Docker). Must be unique in registry.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.instance.health-url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Health-url to register with. Can be overridden in case the reachable URL is different (e.g. Docker). Must be unique in registry.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Guessed based on management-url and <code>endpoints.health.id</code>.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.management-base-url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.instance.management-base-url</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Base url for computing the management-url to register with. The path is inferred at runtime, and appended to the base url.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Guessed based on <code>management.port</code>, service-url and <code>server.servlet-path</code>.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.management-url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.instance.management-url</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Management-url to register with. Can be overridden in case the reachable url is different (e.g. Docker).</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Guessed based on management-base-url and <code>management.context-path</code>.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.service-base-url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.instance.service-base-url</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Base url for computing the service-url to register with. The path is inferred at runtime, and appended to the base url.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Guessed based on hostname, <code>server.port</code>.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.service-url</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Client-service-url to register with. Can be overridden in case the reachable url is different (e.g. Docker).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.instance.service-url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Service-url to register with. Can be overridden in case the reachable url is different (e.g. Docker).</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Guessed based on service-base-url and <code>server.context-path</code>.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.instance.name</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Name to register with.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>${spring.application.name}</code> if set, <code>"spring-boot-application"</code> otherwise.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.prefer-ip</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.instance.prefer-ip</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Use the ip-address rather then the hostname in the guessed urls. If <code>server.address</code> / <code>management.address</code> is set, it get used. Otherwise the IP address returned from <code>InetAddress.getLocalHost()</code> gets used.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.metadata.*</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Metadata key-value-pairs to be associated with this instance.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.instance.metadata.*</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Metadata key-value-pairs to be asscoiated with this instance.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 </tbody>
@@ -1258,18 +1258,19 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <span class="annotation">@EnableAutoConfiguration</span>
 <span class="annotation">@EnableAdminServer</span>
 <span class="directive">public</span> <span class="type">class</span> <span class="class">SpringBootAdminApplication</span> {
-  <span class="annotation">@Bean</span>
-  <span class="directive">public</span> Config hazelcastConfig() {
-    <span class="keyword">return</span> <span class="keyword">new</span> Config().setProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">hazelcast.jmx</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>)
-        .addMapConfig(<span class="keyword">new</span> MapConfig(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-boot-admin-application-store</span><span class="delimiter">&quot;</span></span>).setBackupCount(<span class="integer">1</span>)
-            .setEvictionPolicy(EvictionPolicy.NONE))
-        .addListConfig(<span class="keyword">new</span> ListConfig(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-boot-admin-event-store</span><span class="delimiter">&quot;</span></span>).setBackupCount(<span class="integer">1</span>)
-            .setMaxSize(<span class="integer">1000</span>));
-  }
+    <span class="annotation">@Bean</span>
+    <span class="directive">public</span> Config hazelcastConfig() {
+        <span class="keyword">return</span> <span class="keyword">new</span> Config().setProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">hazelcast.jmx</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>)
+                           .addMapConfig(<span class="keyword">new</span> MapConfig(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-boot-admin-application-eventstore</span><span class="delimiter">&quot;</span></span>).setBackupCount(<span class="integer">1</span>)
+                                                                                                  .setEvictionPolicy(
+                                                                                                          EvictionPolicy.NONE))
+                           .addListConfig(<span class="keyword">new</span> ListConfig(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-boot-admin-event-eventstore</span><span class="delimiter">&quot;</span></span>).setBackupCount(<span class="integer">1</span>)
+                                                                                              .setMaxSize(<span class="integer">1000</span>));
+    }
 
-  <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
-    SpringApplication.run(SpringBootAdminApplication.class, args);
-  }
+    <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
+        SpringApplication.run(SpringBootAdminApplication.class, args);
+    }
 }</code></pre>
 </div>
 </div>
@@ -1297,13 +1298,8 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.hazelcast.application-store</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the Hazelcast-map to store the applications</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"spring-boot-admin-application-store"</code></p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.hazelcast.event-store</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the Hazelcast-list to store the events</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the Hazelcast-map to store the events</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>"spring-boot-admin-event-store"</code></p></td>
 </tr>
 </tbody>
@@ -1934,7 +1930,7 @@ account and configure it appropriately.</p>
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
     <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
     <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-server-ui-hystrix<span class="tag">&lt;/artifactId&gt;</span>
-    <span class="tag">&lt;version&gt;</span>1.5.8-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;version&gt;</span>2.0.0-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
 <span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
@@ -1954,7 +1950,7 @@ account and configure it appropriately.</p>
 <div class="sect3">
 <h4 id="_turbine_ui_module"><a class="anchor" href="#_turbine_ui_module"></a><a class="link" href="#_turbine_ui_module">4.4.2. Turbine UI Module</a></h4>
 <div class="paragraph">
-<p>The Turbine module uses the hystrix-dashboard to display the metrics from a Turbine stream. The UI module does not configure Turbine for you. Either you run Turbine as a separate application or integrate it into your Spring Boot Admin application. Please see <a href="http://cloud.spring.io/spring-cloud-static/Edgware.SR1/#_turbine">Spring Cloud Reference</a> on setting up Turbine.</p>
+<p>The Turbine module uses the hystrix-dashboard to display the metrics from a Turbine stream. The UI module does not configure Turbine for you. Either you run Turbine as a separate application or integrate it into your Spring Boot Admin application. Please see <a href="http://cloud.spring.io/spring-cloud-static/Finchley.BUILD-SNAPSHOT/#_turbine">Spring Cloud Reference</a> on setting up Turbine.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -1966,7 +1962,7 @@ account and configure it appropriately.</p>
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
     <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
     <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-server-ui-turbine<span class="tag">&lt;/artifactId&gt;</span>
-    <span class="tag">&lt;version&gt;</span>1.5.8-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;version&gt;</span>2.0.0-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
 <span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
@@ -2040,7 +2036,7 @@ account and configure it appropriately.</p>
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
     <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
     <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-server-ui-activiti<span class="tag">&lt;/artifactId&gt;</span>
-    <span class="tag">&lt;version&gt;</span>1.5.8-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;version&gt;</span>2.0.0-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
 <span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
@@ -2072,7 +2068,7 @@ account and configure it appropriately.</p>
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
     <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
     <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-server-ui-login<span class="tag">&lt;/artifactId&gt;</span>
-    <span class="tag">&lt;version&gt;</span>1.5.8-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;version&gt;</span>2.0.0-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
 <span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
@@ -2097,28 +2093,7 @@ If you include the <code>spring-boot-admin-server-ui-login</code> in your depend
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">  <span class="annotation">@Configuration</span>
-  <span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SecurityConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
-    <span class="annotation">@Override</span>
-    <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
-      <span class="comment">// Page with login form is served as /login.html and does a POST on /login</span>
-      http.formLogin().loginPage(<span class="string"><span class="delimiter">&quot;</span><span class="content">/login.html</span><span class="delimiter">&quot;</span></span>).loginProcessingUrl(<span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>).permitAll();
-      <span class="comment">// The UI does a POST on /logout on logout</span>
-      http.logout().logoutUrl(<span class="string"><span class="delimiter">&quot;</span><span class="content">/logout</span><span class="delimiter">&quot;</span></span>);
-      <span class="comment">// The ui currently doesn't support csrf</span>
-      http.csrf().disable();
-
-      <span class="comment">// Requests for the login page and the static assets are allowed</span>
-      http.authorizeRequests()
-          .antMatchers(<span class="string"><span class="delimiter">&quot;</span><span class="content">/login.html</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">/**/*.css</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">/img/**</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">/third-party/**</span><span class="delimiter">&quot;</span></span>)
-          .permitAll();
-      <span class="comment">// ... and any other request needs to be authorized</span>
-      http.authorizeRequests().antMatchers(<span class="string"><span class="delimiter">&quot;</span><span class="content">/**</span><span class="delimiter">&quot;</span></span>).authenticated();
-
-      <span class="comment">// Enable so that the clients can authenticate via HTTP basic for registering</span>
-      http.httpBasic();
-    }
-  }</code></pre>
+<pre class="CodeRay highlight"><code data-lang="java">Unresolved directive in security.adoc - include::/home/travis/build/codecentric/spring-boot-admin/spring-boot-admin-docs/../spring-boot-admin-samples<span class="comment">//spring-boot-admin-sample/src/main/java/de/codecentric/boot/admin/SpringBootAdminApplication.java[tags=configuration-spring-security]</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2131,7 +2106,7 @@ If you include the <code>spring-boot-admin-server-ui-login</code> in your depend
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-If you protect the <code>/api/applications</code> endpoint don&#8217;t forget to configure the username and password on your SBA-Client using <code>spring.boot.admin.username</code> and <code>spring.boot.admin.password</code>.
+If you protect the <code>/api/applications</code> endpoint don&#8217;t forget to configure the username and password on your SBA-Client using <code>spring.boot.admin.client.username</code> and <code>spring.boot.admin.instance.password</code>.
 </td>
 </tr>
 </table>
@@ -2160,12 +2135,12 @@ There are more samples (e.g. using OAuth2) in <a href="https://github.com/joshis
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">spring.boot.admin</span>:
-  <span class="key">url</span>: <span class="string"><span class="content">http://localhost:8080</span></span>
-  <span class="key">client</span>:
-    <span class="key">metadata</span>:
-      <span class="key">user.name</span>: <span class="string"><span class="content">${security.user.name}</span></span>
-      <span class="key">user.password</span>: <span class="string"><span class="content">${security.user.password}</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">spring.boot.admin.client</span>:
+    <span class="key">url</span>: <span class="string"><span class="content">http://localhost:8080</span></span>
+    <span class="key">instance</span>:
+      <span class="key">metadata</span>:
+        <span class="key">user.name</span>: <span class="string"><span class="content">${security.user.name}</span></span>
+        <span class="key">user.password</span>: <span class="string"><span class="content">${security.user.password}</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2253,7 +2228,7 @@ You can set <code>spring.boot.admin.context-path</code> to alter the path where 
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 1.5.8-SNAPSHOT<br>
+Version 2.0.0-SNAPSHOT<br>
 </div>
 </div>
 </body>
