@@ -26,35 +26,35 @@
                 </div>
             </div>
             <div class="columns is-desktop">
-                <div class="column">
+                <div class="column is-half">
                     <details-info v-if="hasInfo" :instance="instance"></details-info>
                 </div>
-                <div class="column">
+                <div class="column is-half">
                     <details-health :instance="instance"></details-health>
                 </div>
             </div>
             <div class="columns is-desktop">
-                <div class="column">
+                <div class="column is-half">
                     <details-process v-if="hasProcess" :instance="instance"></details-process>
                     <details-gc v-if="hasGc" :instance="instance"></details-gc>
                 </div>
-                <div class="column">
+                <div class="column is-half">
                     <details-threads v-if="hasThreads" :instance="instance"></details-threads>
                 </div>
             </div>
             <div class="columns is-desktop">
-                <div class="column">
+                <div class="column is-half">
                     <details-memory v-if="hasMemory" :instance="instance" type="heap"></details-memory>
                 </div>
-                <div class="column">
+                <div class="column is-half">
                     <details-memory v-if="hasMemory" :instance="instance" type="nonheap"></details-memory>
                 </div>
             </div>
             <div class="columns is-desktop">
-                <div class="column">
+                <div class="column is-half">
                     <details-datasources v-if="hasDatasources" :instance="instance"></details-datasources>
                 </div>
-                <div class="column">
+                <div class="column is-half">
                     <details-caches v-if="hasCaches" :instance="instance"></details-caches>
                 </div>
             </div>

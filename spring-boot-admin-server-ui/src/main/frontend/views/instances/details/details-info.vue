@@ -25,7 +25,7 @@
                     </strong>
                 </div>
             </div>
-            <div class="content" v-if="info">
+            <div class="content info" v-if="info">
                 <table class="table" v-if="!isEmptyInfo">
                     <tr v-for="(value, key) in info" :key="key">
                         <td class="info__key" v-text="key"></td>
@@ -80,7 +80,12 @@
 </script>
 
 <style lang="scss">
-    .info__key {
-        vertical-align: top;
+    .info {
+        overflow: auto;
+
+        &__key {
+            vertical-align: top;
+        }
     }
+
 </style>
