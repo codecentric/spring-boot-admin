@@ -35,7 +35,13 @@
                 <div class="level-item has-text-centered">
                     <div>
                         <p class="heading">Total time spent</p>
-                        <p v-text="`${current.totalTime.asSeconds()}s`"></p>
+                        <p v-text="`${current.total_time.asSeconds()}s`"></p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Max time spent</p>
+                        <p v-text="`${current.max.asSeconds()}s`"></p>
                     </div>
                 </div>
             </div>
@@ -46,7 +52,6 @@
 <script>
   import subscribing from '@/mixins/subscribing';
   import {Observable} from '@/utils/rxjs';
-  import _ from 'lodash';
   import moment from 'moment';
 
   export default {
@@ -71,10 +76,14 @@
         const measurements = response.data.measurements.reduce(
           (current, measurement) => ({
             ...current,
-            [_.lowerFirst(measurement.statistic)]: measurement.value
+            [measurement.statistic.toLowerCase()]: measurement.value
           }), {}
         );
-        return {...measurements, totalTime: moment.duration(Math.round(measurements.totalTime / 1000))};
+        return {
+          ...measurements,
+          total_time: moment.duration(Math.round(measurements.total_time * 1000)),
+          max: moment.duration(Math.round(measurements.max * 1000)),
+        };
       },
       createSubscription() {
         const vm = this;
