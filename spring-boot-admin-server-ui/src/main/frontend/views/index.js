@@ -20,13 +20,13 @@ import sbaInstancesAuditevents from './instances/auditevents';
 import sbaInstancesDetails from './instances/details';
 import sbaInstancesEnv from './instances/env';
 import sbaInstancesFlyway from './instances/flyway';
+import sbaInstancesTrace from './instances/httptrace';
 import sbaInstancesLiquibase from './instances/liquibase';
 import sbaInstancesLogfile from './instances/logfile';
 import sbaInstancesLoggers from './instances/loggers';
 import sbaInstancesSessions from './instances/sessions';
 import sbaInstancesShell from './instances/shell';
 import sbaInstancesThreaddump from './instances/threaddump';
-import sbaInstancesTrace from './instances/trace';
 import sbaJournal from './journal';
 
 
@@ -71,7 +71,7 @@ export default router => {
     }, {
       path: 'loggers', component: sbaInstancesLoggers, props: true, name: 'instance/loggers'
     }, {
-      path: 'trace', component: sbaInstancesTrace, props: true, name: 'instance/trace'
+      path: 'httptrace', component: sbaInstancesTrace, props: true, name: 'instance/httptrace'
     }, {
       path: 'auditevents', component: sbaInstancesAuditevents, props: true, name: 'instance/auditevents'
     }, {
@@ -114,10 +114,10 @@ export default router => {
     isActive: ({instance}) => instance.hasEndpoint('threaddump')
   });
   views.register({
-    name: 'instance/trace',
-    handle: 'Traces',
+    name: 'instance/httptrace',
+    handle: 'Http Traces',
     order: 500,
-    isActive: ({instance}) => instance.hasEndpoint('trace')
+    isActive: ({instance}) => instance.hasEndpoint('httptrace')
   });
   views.register({
     name: 'instance/auditevents',

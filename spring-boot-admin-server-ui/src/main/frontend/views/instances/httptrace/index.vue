@@ -180,8 +180,8 @@
       },
     },
     methods: {
-      async fetchTrace() {
-        const response = await this.instance.fetchTrace();
+      async fetchHttptrace() {
+        const response = await this.instance.fetchHttptrace();
         const traces = response.data.traces.map(trace => new Trace(trace)).filter(
           trace => trace.timestamp.isAfter(this.lastTimestamp)
         );
@@ -197,7 +197,7 @@
           vm.lastTimestamp = moment(0);
           vm.error = null;
           return Observable.timer(0, 5000)
-            .concatMap(vm.fetchTrace)
+            .concatMap(vm.fetchHttptrace)
             .subscribe({
               next: traces => {
                 vm.hasLoaded = true;

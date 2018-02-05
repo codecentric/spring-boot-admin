@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ public class Endpoint implements Serializable {
     public static final String INFO = "info";
     public static final String HEALTH = "health";
     public static final String ENV = "env";
-    public static final String TRACE = "trace";
+    public static final String HTTPTRACE = "httptrace";
     public static final String THREADDUMP = "threaddump";
     public static final String LIQUIBASE = "liquibase";
     public static final String FLYWAY = "flyway";

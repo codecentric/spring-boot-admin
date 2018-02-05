@@ -71,14 +71,14 @@ public class LegacyEndpointConvertersTest {
 
     @Test
     public void should_convert_trace() {
-        LegacyEndpointConverter converter = LegacyEndpointConverters.trace();
-        assertThat(converter.canConvert("trace")).isTrue();
+        LegacyEndpointConverter converter = LegacyEndpointConverters.httptrace();
+        assertThat(converter.canConvert("httptrace")).isTrue();
         assertThat(converter.canConvert("foo")).isFalse();
 
-        Flux<DataBuffer> legacyInput = this.read("trace-legacy.json");
+        Flux<DataBuffer> legacyInput = this.read("httptrace-legacy.json");
 
         Flux<Object> converted = converter.convert(legacyInput).transform(this::unmarshal);
-        Flux<Object> expected = this.read("trace-expected.json").transform(this::unmarshal);
+        Flux<Object> expected = this.read("httptrace-expected.json").transform(this::unmarshal);
 
         StepVerifier.create(Flux.zip(converted, expected))
                     .assertNext(t -> assertThat(t.getT1()).isEqualTo(t.getT2()))

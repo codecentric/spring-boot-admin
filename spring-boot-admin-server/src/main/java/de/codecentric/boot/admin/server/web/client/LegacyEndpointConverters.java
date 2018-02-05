@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -39,6 +40,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
+import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -47,6 +49,8 @@ public class LegacyEndpointConverters {
     private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE_MAP = new ParameterizedTypeReference<Map<String, Object>>() {
     };
     private static final ParameterizedTypeReference<List<Object>> RESPONSE_TYPE_LIST = new ParameterizedTypeReference<List<Object>>() {
+    };
+    private static final ParameterizedTypeReference<List<Map<String, Object>>> RESPONSE_TYPE_LIST_MAP = new ParameterizedTypeReference<List<Map<String, Object>>>() {
     };
     private static final Jackson2JsonDecoder DECODER;
     private static final Jackson2JsonEncoder ENCODER;
@@ -69,9 +73,9 @@ public class LegacyEndpointConverters {
                 convertUsing(RESPONSE_TYPE_MAP, RESPONSE_TYPE_MAP, LegacyEndpointConverters::convertEnv));
     }
 
-    public static LegacyEndpointConverter trace() {
-        return new LegacyEndpointConverter(Endpoint.TRACE,
-                convertUsing(RESPONSE_TYPE_LIST, RESPONSE_TYPE_MAP, LegacyEndpointConverters::convertTrace));
+    public static LegacyEndpointConverter httptrace() {
+        return new LegacyEndpointConverter(Endpoint.HTTPTRACE,
+                convertUsing(RESPONSE_TYPE_LIST_MAP, RESPONSE_TYPE_MAP, LegacyEndpointConverters::convertHttptrace));
     }
 
     public static LegacyEndpointConverter threaddump() {
@@ -81,12 +85,12 @@ public class LegacyEndpointConverters {
 
     public static LegacyEndpointConverter liquibase() {
         return new LegacyEndpointConverter(Endpoint.LIQUIBASE,
-                convertUsing(RESPONSE_TYPE_LIST, RESPONSE_TYPE_MAP, LegacyEndpointConverters::convertLiquibase));
+                convertUsing(RESPONSE_TYPE_LIST_MAP, RESPONSE_TYPE_MAP, LegacyEndpointConverters::convertLiquibase));
     }
 
     public static LegacyEndpointConverter flyway() {
         return new LegacyEndpointConverter(Endpoint.FLYWAY,
-                convertUsing(RESPONSE_TYPE_LIST, RESPONSE_TYPE_MAP, LegacyEndpointConverters::convertFlyway));
+                convertUsing(RESPONSE_TYPE_LIST_MAP, RESPONSE_TYPE_MAP, LegacyEndpointConverters::convertFlyway));
     }
 
     @SuppressWarnings("unchecked")
@@ -145,8 +149,52 @@ public class LegacyEndpointConverters {
         return converted;
     }
 
-    private static Map<String, Object> convertTrace(List<Object> traces) {
-        return singletonMap("traces", traces);
+    private static Map<String, Object> convertHttptrace(List<Map<String, Object>> traces) {
+        return singletonMap("traces",
+                traces.stream().sequential().map(LegacyEndpointConverters::convertHttptrace).collect(toList()));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> convertHttptrace(Map<String, Object> in) {
+        Map<String, Object> out = new LinkedHashMap<>();
+        out.put("timestamp", Instant.ofEpochMilli((Long) in.get("timestamp")));
+        Map<String, Object> in_info = (Map<String, Object>) in.get("info");
+        if (in_info != null) {
+            Map<String, Object> request = new LinkedHashMap<>();
+            request.put("method", in_info.get("method"));
+            request.put("uri", in_info.get("path"));
+            out.put("request", request);
+
+            Map<String, Object> response = new LinkedHashMap<>();
+
+            Map<String, Object> in_headers = (Map<String, Object>) in_info.get("headers");
+            if (in_headers != null) {
+                Map<String, Object> in_request_headers = (Map<String, Object>) in_headers.get("request");
+                if (in_request_headers != null) {
+                    Map<String, Object> requestHeaders = new LinkedHashMap<>();
+                    in_request_headers.forEach((k, v) -> requestHeaders.put(k, singletonList(v)));
+                    request.put("headers", requestHeaders);
+                }
+
+                Map<String, Object> in_response_headers = (Map<String, Object>) in_headers.get("response");
+                if (in_response_headers != null) {
+                    if (in_response_headers.get("status") instanceof String) {
+                        response.put("status", Long.valueOf(in_response_headers.get("status").toString()));
+                    }
+
+                    Map<String, Object> responseHeaders = new LinkedHashMap<>();
+                    in_response_headers.forEach((k, v) -> responseHeaders.put(k, singletonList(v)));
+                    responseHeaders.remove("status");
+                    response.put("headers", responseHeaders);
+                }
+            }
+
+            out.put("response", response);
+            if (in_info.get("timeTaken") instanceof String) {
+                out.put("timeTaken", Long.valueOf(in_info.get("timeTaken").toString()));
+            }
+        }
+        return out;
     }
 
     private static Map<String, Object> convertThreaddump(List<Object> threads) {
@@ -154,10 +202,8 @@ public class LegacyEndpointConverters {
     }
 
     @SuppressWarnings("unchecked")
-    private static Map<String, Object> convertLiquibase(List<Object> reports) {
-        return reports.stream()
-                      .filter(Map.class::isInstance)
-                      .map(r -> (Map<String, Object>) r)
+    private static Map<String, Object> convertLiquibase(List<Map<String, Object>> reports) {
+        return reports.stream().sequential()
                       .collect(toMap(r -> (String) r.get("name"), r -> singletonMap("changeSets",
                               LegacyEndpointConverters.convertLiquibaseChangesets(
                                       (List<Map<String, Object>>) r.get("changeLogs")))));
@@ -190,10 +236,8 @@ public class LegacyEndpointConverters {
     }
 
     @SuppressWarnings("unchecked")
-    private static Map<String, Object> convertFlyway(List<Object> reports) {
-        return reports.stream()
-                      .filter(Map.class::isInstance)
-                      .map(r -> (Map<String, Object>) r)
+    private static Map<String, Object> convertFlyway(List<Map<String, Object>> reports) {
+        return reports.stream().sequential()
                       .collect(toMap(r -> (String) r.get("name"), r -> singletonMap("migrations",
                               LegacyEndpointConverters.convertFlywayMigrations(
                                       (List<Map<String, Object>>) r.get("migrations")))));

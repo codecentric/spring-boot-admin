@@ -101,8 +101,8 @@ class Instance {
     });
   }
 
-  async fetchTrace() {
-    return await axios.get(`instances/${this.id}/actuator/trace`, {
+  async fetchHttptrace() {
+    return await axios.get(`instances/${this.id}/actuator/httptrace`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }

@@ -1,0 +1,49 @@
+[
+  {
+    "timestamp": 1517781533427,
+    "info": {
+      "method": "HEAD",
+      "path": "/actuator/liquibase",
+      "headers": {
+        "request": {
+          "pragma": "no-cache",
+          "cache-control": "no-cache",
+          "accept": "application/json, text/plain, */*",
+          "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36",
+          "accept-language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
+          "accept-encoding": "gzip",
+          "host": "172.17.0.17:8080",
+          "connection": "Keep-Alive"
+        },
+        "response": {
+          "X-Application-Context": "spring-application",
+          "status": "404"
+        }
+      },
+      "timeTaken": "2"
+    }
+  },
+  {
+    "timestamp": 1517781525290,
+    "info": {
+      "method": "GET",
+      "path": "",
+      "headers": {
+        "request": {
+          "accept": "application/json, text/plain, */*",
+          "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36",
+          "accept-language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
+          "accept-encoding": "gzip, deflate, br",
+          "x-requested-with": "XMLHttpRequest"
+        },
+        "response": {
+          "X-Application-Context": "spring-application",
+          "Content-Type": "application/json;charset=UTF-8",
+          "Transfer-Encoding": "chunked",
+          "Date": "Sun, 04 Feb 2018 21:58:44 GMT",
+          "status": "200"
+        }
+      }
+    }
+  }
+]
