@@ -15,7 +15,7 @@
   -->
 
 <template>
-    <button @click="click()" class="confirm-button" :class="{ 'is-warning' : confirm }" v-on-clickaway="abort">
+    <button @click="click" class="confirm-button" :class="{ 'is-warning' : confirm }" v-on-clickaway="abort">
         <slot name="confirm" v-if="confirm">Confirm</slot>
         <slot v-else></slot>
     </button>
@@ -37,7 +37,11 @@
       },
       click(event) {
         if (this.confirm) {
+          event.target.style.width = null;
           this.$emit('click', event);
+        } else {
+          const width = event.target.getBoundingClientRect().width;
+          event.target.style.width = `${width}px`;
         }
         this.confirm = !this.confirm;
       }
