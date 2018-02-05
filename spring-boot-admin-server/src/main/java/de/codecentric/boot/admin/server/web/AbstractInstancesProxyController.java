@@ -84,7 +84,6 @@ public class AbstractInstancesProxyController {
         if (requiresBody(method)) {
             try {
                 headersSpec = bodySpec.body(bodyInserter.get());
-
             } catch (Exception ex) {
                 return Mono.error(ex);
             }

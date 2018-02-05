@@ -36,9 +36,11 @@ import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -57,8 +59,9 @@ public class InstancesProxyController extends AbstractInstancesProxyController {
         super(adminContextPath, ignoredHeaders, registry, instanceWebClient);
     }
 
-    @RequestMapping(path = REQUEST_MAPPING_PATH)
     @ResponseBody
+    @RequestMapping(path = REQUEST_MAPPING_PATH, method = {RequestMethod.GET, RequestMethod.HEAD, RequestMethod.POST,
+            RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS})
     public Mono<Void> endpointProxy(@PathVariable("instanceId") String instanceId,
                                     HttpServletRequest servletRequest,
                                     HttpServletResponse servletResponse) {
@@ -74,18 +77,21 @@ public class InstancesProxyController extends AbstractInstancesProxyController {
                                       .build(true)
                                       .toUri();
 
-        return super.forward(instanceId, uri, request.getMethod(), request.getHeaders(),
+        //We need to explicitly block until the headers are recieved.
+        // otherwise the FrameworkServlet will add wrong Allow header for OPTIONS request
+        ClientResponse clientResponse = super.forward(instanceId, uri, request.getMethod(), request.getHeaders(),
                 () -> BodyInserters.fromDataBuffers(
-                        DataBufferUtils.readInputStream(request::getBody, this.bufferFactory, 4096)))
-                    .flatMap(clientResponse -> {
-                        response.setStatusCode(clientResponse.statusCode());
-                        response.getHeaders().addAll(filterHeaders(clientResponse.headers().asHttpHeaders()));
-                        try {
-                            return DataBufferUtils.write(clientResponse.body(BodyExtractors.toDataBuffers()),
-                                    response.getBody()).doOnNext(DataBufferUtils::release).then();
-                        } catch (IOException ex) {
-                            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, null, ex);
-                        }
-                    });
+                        DataBufferUtils.readInputStream(request::getBody, this.bufferFactory, 16384))).block();
+
+        response.setStatusCode(clientResponse.statusCode());
+        response.getHeaders().addAll(filterHeaders(clientResponse.headers().asHttpHeaders()));
+
+        try {
+            return DataBufferUtils.write(clientResponse.body(BodyExtractors.toDataBuffers()), response.getBody())
+                                  .doOnNext(DataBufferUtils::release)
+                                  .then();
+        } catch (IOException ex) {
+            return Mono.error(new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, null, ex));
+        }
     }
 }

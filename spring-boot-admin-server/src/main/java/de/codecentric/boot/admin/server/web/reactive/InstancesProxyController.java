@@ -27,6 +27,7 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -43,7 +44,8 @@ public class InstancesProxyController extends AbstractInstancesProxyController {
         super(adminContextPath, ignoredHeaders, registry, instanceWebClient);
     }
 
-    @RequestMapping(path = REQUEST_MAPPING_PATH)
+    @RequestMapping(path = REQUEST_MAPPING_PATH, method = {RequestMethod.GET, RequestMethod.HEAD, RequestMethod.POST,
+            RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS})
     public Mono<Void> endpointProxy(@PathVariable("instanceId") String instanceId,
                                     ServerHttpRequest request,
                                     ServerHttpResponse response) {
