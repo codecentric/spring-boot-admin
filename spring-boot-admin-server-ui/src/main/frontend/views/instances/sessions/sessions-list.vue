@@ -115,12 +115,13 @@
             await vm.instance.deleteSession(sessionId);
             return sessionId;
           })
-          .do(sessionId => vm.$set(vm.deleting, sessionId, 'deleted'))
-          .catch(error => {
-            vm.$set(vm.deleting, sessionId, 'failed');
-            console.warn(`Deleting session ${sessionId} failed:`, error);
-            throw error;
-          })
+          .do({
+            next: sessionId => vm.$set(vm.deleting, sessionId, 'deleted'),
+            error: error => {
+              console.warn(`Deleting session ${sessionId} failed:`, error);
+              vm.$set(vm.deleting, sessionId, 'failed');
+            }
+          });
       }
     }
   }

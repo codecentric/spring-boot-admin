@@ -36,10 +36,9 @@
                 <div class="applications-list-item__text"
                      v-text="application.version"></div>
                 <div class="applications-list-item__actions">
-                    <sba-icon-button
-                            v-if="application.isUnregisterable"
-                            @click.native.stop="unregister(application)">
-                        <font-awesome-icon icon="trash"></font-awesome-icon>
+                    <sba-icon-button icon="trash"
+                                     v-if="application.isUnregisterable"
+                                     @click.native.stop="unregister(application)">
                     </sba-icon-button>
                 </div>
             </div>
@@ -50,10 +49,9 @@
                      @click.stop="deselect()">
                     <div class="applications-list-item__header-text" v-text="application.name"></div>
                     <div class="applications-list-item__header-actions">
-                        <sba-icon-button
-                                v-if="application.isUnregisterable"
-                                @click.native.stop="unregister(application)">
-                            <font-awesome-icon icon="trash"></font-awesome-icon>
+                        <sba-icon-button icon="trash"
+                                         v-if="application.isUnregisterable"
+                                         @click.native.stop="unregister(application)">
                         </sba-icon-button>
                     </div>
                 </div>
@@ -74,9 +72,9 @@
                         <span v-text="instance.info.version"
                               class="applications-list-item__text"></span>
                         <div class="applications-list-item__actions">
-                            <sba-icon-button v-if="instance.isUnregisterable"
+                            <sba-icon-button icon="trash"
+                                             v-if="instance.isUnregisterable"
                                              @click.native.stop="unregister(instance)">
-                                <font-awesome-icon icon="trash"></font-awesome-icon>
                             </sba-icon-button>
                         </div>
                     </li>

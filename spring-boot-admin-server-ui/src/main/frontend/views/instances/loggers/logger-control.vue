@@ -23,7 +23,7 @@
             </button>
         </div>
         <div class="control">
-            <button class="button" :class="{ 'is-loading' : isLoading === null }"
+            <button class="button is-light" :class="{ 'is-loading' : isLoading === null }"
                     :disabled="!configured || !allowReset" @click.stop="selectLevel(null)">
                 Reset
             </button>

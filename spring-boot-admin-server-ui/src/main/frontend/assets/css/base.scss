@@ -42,7 +42,8 @@
   }
 }
 
-.is-loading {
+.section.is-loading,
+.content.is-loading {
   &::after {
     @include loader;
     height: 5rem;

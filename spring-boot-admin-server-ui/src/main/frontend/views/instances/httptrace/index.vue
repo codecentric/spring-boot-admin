@@ -29,7 +29,7 @@
                 <div class="field-body">
                     <div class="field has-addons">
                         <p class="control is-expanded">
-                            <input class="input" type="text" placeholder="path" v-model="filter">
+                            <input class="input" type="search" placeholder="path filter" v-model="filter">
                         </p>
                         <p class="control">
                     <span class="button is-static">

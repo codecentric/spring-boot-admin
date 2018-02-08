@@ -46,9 +46,9 @@ store.addEventListener('updated', (newVal, oldVal) => {
   }
 });
 
+Vue.component('font-awesome-icon', FontAwesomeIcon);
 Vue.use(VueRouter);
 Vue.use(sbaComponents);
-Vue.component('font-awesome-icon', FontAwesomeIcon);
 
 const router = new VueRouter({
   linkActiveClass: 'is-active'

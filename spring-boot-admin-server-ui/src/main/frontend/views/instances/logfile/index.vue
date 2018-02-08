@@ -26,11 +26,11 @@
         </div>
         <div class="logfile-view-actions" v-if="hasLoaded">
             <div class="logfile-view-actions__navigation">
-                <sba-icon-button :disabled="atTop" @click.native="scrollToTop">
-                    <font-awesome-icon icon="step-backward" size="lg" class="rotated"></font-awesome-icon>
+                <sba-icon-button :disabled="atTop" @click.native="scrollToTop" icon="step-backward" size="lg"
+                                 icon-class="rotated">
                 </sba-icon-button>
-                <sba-icon-button :disabled="atBottom" @click.native="scrollToBottom">
-                    <font-awesome-icon icon="step-forward" size="lg" class="rotated"></font-awesome-icon>
+                <sba-icon-button :disabled="atBottom" @click.native="scrollToBottom" icon="step-forward" size="lg"
+                                 icon-class="rotated">
                 </sba-icon-button>
             </div>
             <a class="button" v-if="instance" :href="`instances/${instance.id}/logfile`" target="_blank">

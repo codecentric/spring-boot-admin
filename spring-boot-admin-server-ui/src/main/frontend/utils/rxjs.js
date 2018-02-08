@@ -19,18 +19,26 @@ import 'rxjs/add/observable/empty';
 import 'rxjs/add/observable/from';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/timer';
-import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/concat';
 import 'rxjs/add/operator/concatAll';
 import 'rxjs/add/operator/concatMap';
 import 'rxjs/add/operator/delay';
 import 'rxjs/add/operator/do';
+import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/ignoreElements';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/retryWhen';
 
 import {Observable} from 'rxjs/Observable';
 import {animationFrame} from 'rxjs/scheduler/animationFrame';
+
+Observable.prototype.doOnSubscribe = function (onSubscribe) {
+  let source = this;
+  return Observable.defer(() => {
+    onSubscribe();
+    return source;
+  });
+};
 
 Observable.prototype.doFirst = function (doFirst) {
   let source = this;
@@ -44,6 +52,22 @@ Observable.prototype.doFirst = function (doFirst) {
       doFirst(n);
     }
   });
+};
+
+Observable.prototype.listen = function (callbackFn) {
+  let handle = null;
+  return this.doOnSubscribe(() => handle = setTimeout(() => callbackFn('executing'), 150))
+    .do({
+      complete: () => {
+        handle && clearTimeout(handle);
+        callbackFn('completed');
+      },
+      error: (error) => {
+        console.warn("Operation failed:", error);
+        handle && clearTimeout(handle);
+        callbackFn('failed');
+      }
+    });
 };
 
 export {

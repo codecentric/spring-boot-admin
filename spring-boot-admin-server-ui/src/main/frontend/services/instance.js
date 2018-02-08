@@ -52,6 +52,7 @@ class Instance {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
+
   async fetchMetric(metric, tags) {
     const params = tags ? {tag: _.entries(tags).map(([name, value]) => `${name}:${value}`).join(',')} : {};
     return axios.get(`instances/${this.id}/actuator/metrics/${metric}`, {
@@ -67,25 +68,46 @@ class Instance {
   }
 
   async fetchEnv(name) {
-    return await axios.get(`instances/${this.id}/actuator/env${name ? `/${name}` : '' }`, {
+    return axios.get(`instances/${this.id}/actuator/env${name ? `/${name}` : '' }`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
+  async hasEnvManagerSupport() {
+    const response = await axios.options(`instances/${this.id}/actuator/env`);
+    return response.headers['allow'] && response.headers['allow'].indexOf('POST') >= 0;
+  }
+
+  async resetEnv() {
+    return axios.delete(`instances/${this.id}/actuator/env`);
+  }
+
+  async setEnv(name, value) {
+    return axios.post(`instances/${this.id}/actuator/env`, {name, value}, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+  }
+
+  async refreshContext() {
+    return axios.post(`instances/${this.id}/actuator/refresh`);
+  }
+
   async fetchLiquibase() {
-    return await axios.get(`instances/${this.id}/actuator/liquibase`, {
+    return axios.get(`instances/${this.id}/actuator/liquibase`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async fetchFlyway() {
-    return await axios.get(`instances/${this.id}/actuator/flyway`, {
+    return axios.get(`instances/${this.id}/actuator/flyway`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async fetchLoggers() {
-    return await axios.get(`instances/${this.id}/actuator/loggers`, {
+    return axios.get(`instances/${this.id}/actuator/loggers`, {
       headers: {
         'Accept': actuatorMimeTypes
       },
@@ -94,7 +116,7 @@ class Instance {
   }
 
   async configureLogger(name, level) {
-    return await axios.post(`instances/${this.id}/actuator/loggers/${name}`, {configuredLevel: level}, {
+    return axios.post(`instances/${this.id}/actuator/loggers/${name}`, {configuredLevel: level}, {
       headers: {
         'Content-Type': 'application/json'
       }
@@ -102,19 +124,19 @@ class Instance {
   }
 
   async fetchHttptrace() {
-    return await axios.get(`instances/${this.id}/actuator/httptrace`, {
+    return axios.get(`instances/${this.id}/actuator/httptrace`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async fetchThreaddump() {
-    return await axios.get(`instances/${this.id}/actuator/threaddump`, {
+    return axios.get(`instances/${this.id}/actuator/threaddump`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async fetchAuditevents(after) {
-    return await axios.get(`instances/${this.id}/actuator/auditevents`, {
+    return axios.get(`instances/${this.id}/actuator/auditevents`, {
       headers: {'Accept': actuatorMimeTypes},
       params: {
         after: after.toISOString()
@@ -123,7 +145,7 @@ class Instance {
   }
 
   async fetchSessions(username) {
-    return await axios.get(`instances/${this.id}/actuator/sessions`, {
+    return axios.get(`instances/${this.id}/actuator/sessions`, {
       headers: {'Accept': actuatorMimeTypes},
       params: {
         username
@@ -132,13 +154,13 @@ class Instance {
   }
 
   async fetchSession(sessionId) {
-    return await axios.get(`instances/${this.id}/actuator/sessions/${sessionId}`, {
+    return axios.get(`instances/${this.id}/actuator/sessions/${sessionId}`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async deleteSession(sessionId) {
-    return await axios.delete(`instances/${this.id}/actuator/sessions/${sessionId}`, {
+    return axios.delete(`instances/${this.id}/actuator/sessions/${sessionId}`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
@@ -148,7 +170,7 @@ class Instance {
   }
 
   static async fetchEvents() {
-    return await axios.get(`instances/events`);
+    return axios.get(`instances/events`);
   }
 
   static getEventStream() {
@@ -166,7 +188,7 @@ class Instance {
   }
 
   static async get(id) {
-    return await axios.get(`instances/${id}`, {
+    return axios.get(`instances/${id}`, {
       transformResponse: Instance._toInstance
     });
   }

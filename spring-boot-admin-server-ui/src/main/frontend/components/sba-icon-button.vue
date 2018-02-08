@@ -16,32 +16,40 @@
 
 <template>
     <button type="button" class="icon-button" :disabled="disabled">
-        <slot></slot>
+        <font-awesome-icon :icon="icon" :size="size" :class="iconClass"></font-awesome-icon>
     </button>
 </template>
 
 <script>
   export default {
-    props: {
-      disabled: Boolean,
-    },
+    props: ['disabled', 'icon', 'size', 'icon-class']
   }
 </script>
 
 <style lang="scss">
+    @import "~@/assets/css/utilities";
 
     .icon-button {
         background: none;
         border: none;
         padding: 0;
+        font-size: 1em;
+        color: inherit;
 
         &:not([disabled]) {
             cursor: pointer;
+
             &:hover {
+                color: $black;
+            }
+
+            & svg {
+                fill: currentcolor;
             }
         }
 
         &:disabled {
+            opacity: 0.5;
             pointer-events: none;
         }
 

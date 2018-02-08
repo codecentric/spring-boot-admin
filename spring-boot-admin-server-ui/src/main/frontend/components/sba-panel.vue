@@ -34,8 +34,6 @@
 </script>
 
 <style lang="scss">
-    @import "~@/assets/css/utilities";
-
     .panel {
         margin-bottom: 1.5rem;
     }

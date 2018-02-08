@@ -35,10 +35,15 @@
                     </div>
                 </div>
             </div>
+            <div class="content" v-if="env && hasEnvManagerSupport">
+                <sba-env-manager :instance="instance" :property-sources="env.propertySources"
+                                 @refresh="fetchEnv()" @update="fetchEnv" @reset="fetchEnv()">
+                </sba-env-manager>
+            </div>
             <div class="content" v-if="env">
                 <div class="field has-addons">
                     <p class="control is-expanded">
-                        <input class="input" type="text" placeholder="name / value" v-model="filter">
+                        <input class="input" type="search" placeholder="name / value filter" v-model="filter">
                     </p>
                 </div>
             </div>
@@ -65,6 +70,7 @@
 
 <script>
   import _ from 'lodash';
+  import sbaEnvManager from './env-manager';
 
   const filterProperty = (needle) => (property, name) => {
     return name.toString().toLowerCase().indexOf(needle) >= 0 || property.value.toString().toLowerCase().indexOf(needle) >= 0;
@@ -82,12 +88,13 @@
 
   export default {
     props: ['instance'],
-
+    components: {sbaEnvManager},
     data: () => ({
       hasLoaded: false,
       error: null,
       env: null,
-      filter: null
+      filter: null,
+      hasEnvManagerSupport: false
     }),
     computed: {
       propertySources() {
@@ -101,10 +108,12 @@
     },
     created() {
       this.fetchEnv();
+      this.determineEnvManagerSupport();
     },
     watch: {
       instance() {
         this.fetchEnv();
+        this.determineEnvManagerSupport();
       }
     },
     methods: {
@@ -119,6 +128,16 @@
             this.error = error;
           }
           this.hasLoaded = true;
+        }
+      },
+      async determineEnvManagerSupport() {
+        if (this.instance) {
+          try {
+            this.hasEnvManagerSupport = await this.instance.hasEnvManagerSupport();
+          } catch (error) {
+            console.warn('Determine env manager support failed:', error);
+            this.hasEnvManagerSupport = false;
+          }
         }
       }
     }

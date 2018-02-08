@@ -37,11 +37,11 @@
       },
       click(event) {
         if (this.confirm) {
-          event.target.style.width = null;
+          this.$el.style.width = null;
           this.$emit('click', event);
         } else {
-          const width = event.target.getBoundingClientRect().width;
-          event.target.style.width = `${width}px`;
+          const width = this.$el.getBoundingClientRect().width;
+          this.$el.style.width = `${width}px`;
         }
         this.confirm = !this.confirm;
       }
