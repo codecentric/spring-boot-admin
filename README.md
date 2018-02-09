@@ -34,6 +34,11 @@ It provides the following features for registered application.
 
 [A quick guide](http://codecentric.github.io/spring-boot-admin/1.5.7/#getting-started) to get started can be found in our docs.
 
+There is also a <a href="https://goo.gl/2tRiUi" target="_blank">introductory talk availabe on YouTube</a>:
+
+<a href="https://goo.gl/2tRiUi" target="_blank"><img src="https://i.ytimg.com/vi/PWd9Q8_4OFo/maxresdefault.jpg" 
+alt="Spring Boot® Admin - Monitoring and Configuring Spring Boot Applications at Runtime" width="240" height="135" border="10" /></a>
+
 ## Getting Help
 
 Having trouble with codecentric's Spring Boot Admin? We’d like to help!
