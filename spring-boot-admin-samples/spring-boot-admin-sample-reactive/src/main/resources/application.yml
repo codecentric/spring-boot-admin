@@ -12,7 +12,7 @@ management:
       expose: "*"
   endpoint:
     health:
-      show-details: true
+      show-details: ALWAYS
 
 spring:
   application:

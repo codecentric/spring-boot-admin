@@ -26,10 +26,10 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointPr
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
-import org.springframework.context.ApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -194,24 +194,18 @@ public class DefaultApplicationFactoryTest {
     }
 
     private static class TestWebServerInitializedEvent extends WebServerInitializedEvent {
-        private final String serverId;
-        private final WebServer server;
+        private final WebServer server = mock(WebServer.class);
+        private final WebServerApplicationContext context = mock(WebServerApplicationContext.class);
 
-        private TestWebServerInitializedEvent(String serverId, int port) {
+        private TestWebServerInitializedEvent(String name, int port) {
             super(mock(WebServer.class));
-            this.serverId = serverId;
-            this.server = mock(WebServer.class);
             when(server.getPort()).thenReturn(port);
+            when(context.getServerNamespace()).thenReturn(name);
         }
 
         @Override
-        public ApplicationContext getApplicationContext() {
-            return null;
-        }
-
-        @Override
-        public String getServerId() {
-            return this.serverId;
+        public WebServerApplicationContext getApplicationContext() {
+            return context;
         }
 
         @Override

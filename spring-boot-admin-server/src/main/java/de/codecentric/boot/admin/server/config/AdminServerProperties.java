@@ -52,8 +52,7 @@ public class AdminServerProperties {
      * If the path differs from the id you can specify this as id:path (e.g. health:ping).
      */
     private String[] probedEndpoints = {"health", "env", "metrics", "httptrace:trace", "threaddump:dump", "jolokia",
-            "info",
-            "logfile", "refresh", "flyway", "liquibase", "heapdump", "loggers", "auditevents"};
+            "info", "logfile", "refresh", "flyway", "liquibase", "heapdump", "loggers", "auditevents"};
 
     public void setContextPath(String contextPath) {
         this.contextPath = PathUtils.normalizePath(contextPath);
