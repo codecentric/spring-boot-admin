@@ -525,7 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.0.0-SNAPSHOT,</span>
-<span id="revdate">09.02.2018</span>
+<span id="revdate">11.02.2018</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -732,8 +732,8 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <div class="title">pom.xml</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
-  <span class="tag">&lt;groupId&gt;</span>org.springframework.cloud<span class="tag">&lt;/groupId&gt;</span>
-  <span class="tag">&lt;artifactId&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>org.springframework.cloud<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="tag">&lt;/artifactId&gt;</span>
 <span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
@@ -750,6 +750,16 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
     <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
         SpringApplication.run(SpringBootAdminApplication.class, args);
     }
+
+    <span class="annotation">@Configuration</span>
+    <span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SecurityPermitAllConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
+        <span class="annotation">@Override</span>
+        <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
+            http.authorizeRequests().anyRequest().permitAll()<span class="comment">//</span>
+                .and().csrf().disable();
+        }
+    }
+
 }</code></pre>
 </div>
 </div>
@@ -759,15 +769,13 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">eureka</span>:  <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">eureka</span>:
   <span class="key">instance</span>:
     <span class="key">leaseRenewalIntervalInSeconds</span>: <span class="string"><span class="content">10</span></span>
   <span class="key">client</span>:
     <span class="key">registryFetchIntervalSeconds</span>: <span class="string"><span class="content">5</span></span>
     <span class="key">serviceUrl</span>:
-      <span class="key">defaultZone</span>: <span class="string"><span class="content">${EUREKA_SERVICE_URL:http://localhost:8761}/eureka/</span></span>
-
-<span class="key">management.security.enabled</span>: <span class="string"><span class="content">false  </span></span><i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+      <span class="key">defaultZone</span>: <span class="string"><span class="content">${EUREKA_SERVICE_URL:http://localhost:8761}/eureka/</span></span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1940,7 +1948,7 @@ account and configure it appropriately.</p>
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.routes.endpoints</span>: <span class="string"><span class="content">env,metrics,dump,jolokia,info,configprops,trace,logfile,refresh,flyway,liquibase,heapdump,loggers,auditevents,hystrix.stream</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="yml"></code></pre>
 </div>
 </div>
 </li>
@@ -1972,9 +1980,7 @@ account and configure it appropriately.</p>
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.turbine</span>:
-  <span class="key">clusters</span>: <span class="string"><span class="content">default</span></span>
-  <span class="key">location</span>: <span class="string"><span class="content">turbine  </span></span><i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+<pre class="CodeRay highlight"><code data-lang="yml"></code></pre>
 </div>
 </div>
 <div class="colist arabic">
