@@ -35,17 +35,14 @@
 <script>
   export default {
     props: ['instance'],
-    data: () => ({
-      metadata: {}
-    }),
     computed: {
+      metadata() {
+        return this.instance.registration.metadata;
+      },
       isEmptyMetadata() {
         return Object.keys(this.metadata).length <= 0;
       }
     },
-    created() {
-      this.metadata = this.instance.registration.metadata;
-    }
   }
 </script>
 
