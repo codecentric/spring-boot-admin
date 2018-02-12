@@ -15,7 +15,8 @@ eureka:
 management:
   endpoints:
     web:
-      expose: "*"
+      exposure:
+        include: "*"
   endpoint:
     health:
       show-details: ALWAYS
