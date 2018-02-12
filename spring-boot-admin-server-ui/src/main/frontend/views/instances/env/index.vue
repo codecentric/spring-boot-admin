@@ -25,45 +25,38 @@
                     </strong>
                 </div>
             </div>
-            <div class="content" v-if="env && env.activeProfiles.length > 0">
-                <div class="field is-grouped is-grouped-multiline">
-                    <div class="control" v-for="profile in env.activeProfiles">
-                        <div class="tags has-addons">
-                            <span class="tag is-medium">Profile</span>
-                            <span class="tag is-medium is-info" v-text="profile"></span>
-                        </div>
+            <div class="field is-grouped is-grouped-multiline" v-if="env && env.activeProfiles.length > 0">
+                <div class="control" v-for="profile in env.activeProfiles">
+                    <div class="tags has-addons">
+                        <span class="tag is-medium">Profile</span>
+                        <span class="tag is-medium is-info" v-text="profile"></span>
                     </div>
                 </div>
             </div>
-            <div class="content" v-if="env && hasEnvManagerSupport">
-                <sba-env-manager :instance="instance" :property-sources="env.propertySources"
-                                 @refresh="fetchEnv()" @update="fetchEnv" @reset="fetchEnv()">
-                </sba-env-manager>
+            <sba-env-manager v-if="env && hasEnvManagerSupport"
+                             :instance="instance" :property-sources="env.propertySources"
+                             @refresh="fetchEnv()" @update="fetchEnv" @reset="fetchEnv()">
+            </sba-env-manager>
+            <div class="field has-addons" v-if="env">
+                <p class="control is-expanded">
+                    <input class="input" type="search" placeholder="name / value filter" v-model="filter">
+                </p>
             </div>
-            <div class="content" v-if="env">
-                <div class="field has-addons">
-                    <p class="control is-expanded">
-                        <input class="input" type="search" placeholder="name / value filter" v-model="filter">
-                    </p>
-                </div>
-            </div>
-            <div class="content" v-if="env">
-                <sba-panel class="property-source"
-                           v-for="propertySource in propertySources" :key="propertySource.name"
-                           :title="propertySource.name">
-                    <table class="table is-fullwidth" slot="text"
-                           v-if="Object.keys(propertySource.properties).length > 0">
-                        <tr v-for="(value, name) in propertySource.properties">
-                            <td>
-                                <span v-text="name"></span><br>
-                                <small class="is-muted" v-if="value.origin" v-text="value.origin"></small>
-                            </td>
-                            <td class="is-breakable" v-text="value.value"></td>
-                        </tr>
-                    </table>
-                    <p class="is-muted" v-else slot="text">No properties set</p>
-                </sba-panel>
-            </div>
+            <sba-panel v-if="env" class="property-source"
+                       v-for="propertySource in propertySources" :key="propertySource.name"
+                       :title="propertySource.name">
+                <table class="table is-fullwidth"
+                       v-if="Object.keys(propertySource.properties).length > 0">
+                    <tr v-for="(value, name) in propertySource.properties">
+                        <td>
+                            <span v-text="name"></span><br>
+                            <small class="is-muted" v-if="value.origin" v-text="value.origin"></small>
+                        </td>
+                        <td class="is-breakable" v-text="value.value"></td>
+                    </tr>
+                </table>
+                <p class="is-muted" v-else>No properties set</p>
+            </sba-panel>
         </div>
     </section>
 </template>

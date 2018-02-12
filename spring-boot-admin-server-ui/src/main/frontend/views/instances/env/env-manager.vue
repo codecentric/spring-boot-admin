@@ -55,7 +55,7 @@
                                             :disabled="refreshStatus === 'executing'"
                                             @click="refreshContext">
                             <span v-if="refreshStatus === 'completed'">Context refreshed</span>
-                            <span v-else-if="refreshStatus === 'failed'">Refresh failed</span>
+                            <span v-else-if="refreshStatus === 'failed'">Failed</span>
                             <span v-else>Refresh Context</span>
                         </sba-confirm-button>
                     </div>
@@ -64,24 +64,24 @@
             <div class="field-body">
                 <div class="field is-grouped is-grouped-right">
                     <div class="control">
-                        <sba-confirm-button class="button is-light"
-                                            :class="{'is-loading' : resetStatus === 'executing', 'is-danger' : resetStatus === 'failed', 'is-success' : resetStatus === 'completed'}"
-                                            :disabled="!hasManagedProperty || resetStatus === 'executing'"
-                                            @click="resetEnvironment">
-                            <span v-if="resetStatus === 'completed'">Environment reset</span>
-                            <span v-else-if="resetStatus === 'failed'">Reset failed</span>
-                            <span v-else>Reset Environment</span>
-                        </sba-confirm-button>
+                        <button class="button is-light"
+                                :class="{'is-loading' : resetStatus === 'executing', 'is-danger' : resetStatus === 'failed', 'is-success' : resetStatus === 'completed'}"
+                                :disabled="!hasManagedProperty || resetStatus === 'executing'"
+                                @click="resetEnvironment">
+                            <span v-if="resetStatus === 'completed'">Resetted</span>
+                            <span v-else-if="resetStatus === 'failed'">Failed</span>
+                            <span v-else>Reset</span>
+                        </button>
                     </div>
                     <div class="control">
-                        <sba-confirm-button class="button is-primary"
-                                            :class="{'is-loading' : updateStatus === 'executing', 'is-danger' : updateStatus === 'failed', 'is-success' : updateStatus === 'completed'}"
-                                            :disabled="hasErrorProperty || !hasChangedProperty || updateStatus === 'executing'"
-                                            @click="updateEnvironment">
-                            <span v-if="updateStatus === 'completed'">Environment updated</span>
-                            <span v-else-if="updateStatus === 'failed'">Update failed</span>
-                            <span v-else>Update Environment</span>
-                        </sba-confirm-button>
+                        <button class="button is-primary"
+                                :class="{'is-loading' : updateStatus === 'executing', 'is-danger' : updateStatus === 'failed', 'is-success' : updateStatus === 'completed'}"
+                                :disabled="hasErrorProperty || !hasChangedProperty || updateStatus === 'executing'"
+                                @click="updateEnvironment">
+                            <span v-if="updateStatus === 'completed'">Updated</span>
+                            <span v-else-if="updateStatus === 'failed'">Failed</span>
+                            <span v-else>Update</span>
+                        </button>
                     </div>
                 </div>
             </div>

@@ -49,12 +49,11 @@
                     </div>
                 </div>
             </div>
-            <div v-for="group in statusGroups" :key="group.status" class="content">
+            <div v-for="group in statusGroups" :key="group.status">
                 <p class="heading" v-text="group.status"></p>
                 <applications-list :applications="group.applications"></applications-list>
             </div>
-            <div v-if="statusGroups.length === 0"
-                 class="content">
+            <div v-if="statusGroups.length === 0">
                 <p class="is-muted">No applications registered.</p>
             </div>
         </div>

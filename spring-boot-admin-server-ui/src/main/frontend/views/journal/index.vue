@@ -26,37 +26,35 @@
                     </strong>
                 </div>
             </div>
-            <div class="content">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Application</th>
-                        <th>Instance</th>
-                        <th>Time</th>
-                        <th>Event</th>
+            <table class="table is-fullwidth">
+                <thead>
+                <tr>
+                    <th>Application</th>
+                    <th>Instance</th>
+                    <th>Time</th>
+                    <th>Event</th>
+                </tr>
+                </thead>
+                <tbody>
+                <template v-for="event in events">
+                    <tr class="is-selectable" :key="event.key"
+                        @click="showPayload[event.key]  ?  $delete(showPayload, event.key) : $set(showPayload, event.key, true)">
+                        <td v-text="instanceNames[event.instance] || '?'"></td>
+                        <td v-text="event.instance"></td>
+                        <td v-text="event.timestamp.format('L HH:mm:ss.SSS')"></td>
+                        <td>
+                            <span v-text="event.type"></span> <span v-if="event.type === 'STATUS_CHANGED'"
+                                                                    v-text="`(${event.payload.statusInfo.status})`"></span>
+                        </td>
                     </tr>
-                    </thead>
-                    <tbody>
-                    <template v-for="event in events">
-                        <tr class="is-selectable" :key="event.key"
-                            @click="showPayload[event.key]  ?  $delete(showPayload, event.key) : $set(showPayload, event.key, true)">
-                            <td v-text="instanceNames[event.instance] || '?'"></td>
-                            <td v-text="event.instance"></td>
-                            <td v-text="event.timestamp.format('L HH:mm:ss.SSS')"></td>
-                            <td>
-                                <span v-text="event.type"></span> <span v-if="event.type === 'STATUS_CHANGED'"
-                                                                        v-text="`(${event.payload.statusInfo.status})`"></span>
-                            </td>
-                        </tr>
-                        <tr :key="`${event.key}-detail`" v-if="showPayload[event.key]">
-                            <td colspan="4">
-                                <pre v-text="toJson(event.payload)"></pre>
-                            </td>
-                        </tr>
-                    </template>
-                    </tbody>
-                </table>
-            </div>
+                    <tr :key="`${event.key}-detail`" v-if="showPayload[event.key]">
+                        <td colspan="4">
+                            <pre v-text="toJson(event.payload)"></pre>
+                        </td>
+                    </tr>
+                </template>
+                </tbody>
+            </table>
         </div>
     </div>
 </template>
@@ -81,7 +79,7 @@
     }
   }
 
-  export default {
+  const component = {
     mixins: [subscribing],
     data: () => ({
       events: [],
@@ -127,5 +125,14 @@
         this.connectionFailed = true;
       }
     }
-  }
+  };
+
+  export default component;
+  export const view = {
+    path: '/journal',
+    name: 'journal',
+    handle: 'Journal',
+    order: 100,
+    component: component
+  };
 </script>

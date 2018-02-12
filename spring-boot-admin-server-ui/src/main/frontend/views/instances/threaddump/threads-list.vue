@@ -15,7 +15,7 @@
   -->
 
 <template>
-    <table class="threads table is-narrow">
+    <table class="threads table is-fullwidth">
         <thead>
         <tr>
             <th class="threads__thread-name">Name</th>

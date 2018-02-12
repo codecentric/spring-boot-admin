@@ -25,41 +25,39 @@
                     </strong>
                 </div>
             </div>
-            <div class="content" v-if="reports">
-                <sba-panel v-for="(report, name) in reports" :key="name" :title="name" class="migration">
-                    <table class="table" slot="text">
-                        <thead>
-                        <tr>
-                            <th>Type</th>
-                            <th>Checksum</th>
-                            <th>Version</th>
-                            <th>Description</th>
-                            <th>Script</th>
-                            <th>State</th>
-                            <th>Installed by</th>
-                            <th>Installed on</th>
-                            <th>Installed rank</th>
-                            <th>Execution Time</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="migration in report.migrations">
-                            <td v-text="migration.type"></td>
-                            <td v-text="migration.checksum"></td>
-                            <td v-text="migration.version"></td>
-                            <td v-text="migration.description"></td>
-                            <td v-text="migration.script"></td>
-                            <td><span v-text="migration.state" class="tag"
-                                      :class="stateClass(migration.state)"></span></td>
-                            <td v-text="migration.installedBy"></td>
-                            <td v-text="migration.installedOn"></td>
-                            <td v-text="migration.installedRank"></td>
-                            <td v-text="`${migration.executionTime}ms`"></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </sba-panel>
-            </div>
+            <sba-panel v-for="(report, name) in reports" :key="name" :title="name" class="migration">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Checksum</th>
+                        <th>Version</th>
+                        <th>Description</th>
+                        <th>Script</th>
+                        <th>State</th>
+                        <th>Installed by</th>
+                        <th>Installed on</th>
+                        <th>Installed rank</th>
+                        <th>Execution Time</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="migration in report.migrations">
+                        <td v-text="migration.type"></td>
+                        <td v-text="migration.checksum"></td>
+                        <td v-text="migration.version"></td>
+                        <td v-text="migration.description"></td>
+                        <td v-text="migration.script"></td>
+                        <td><span v-text="migration.state" class="tag"
+                                  :class="stateClass(migration.state)"></span></td>
+                        <td v-text="migration.installedBy"></td>
+                        <td v-text="migration.installedOn"></td>
+                        <td v-text="migration.installedRank"></td>
+                        <td v-text="`${migration.executionTime}ms`"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </sba-panel>
         </div>
     </section>
 </template>
@@ -70,7 +68,7 @@
     data: () => ({
       hasLoaded: false,
       error: null,
-      reports: null
+      reports: []
     }),
     computed: {},
     created() {

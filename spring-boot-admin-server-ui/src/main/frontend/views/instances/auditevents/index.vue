@@ -25,9 +25,7 @@
                     </strong>
                 </div>
             </div>
-            <div class="content" v-if="events">
-                <auditevents-list :instance="instance" :events="events"></auditevents-list>
-            </div>
+            <auditevents-list v-if="events" :instance="instance" :events="events"></auditevents-list>
         </div>
     </section>
 </template>
@@ -41,8 +39,8 @@
 
   class Auditevent {
     constructor({timestamp, ...event}) {
-      this.timestamp = moment(timestamp);
       Object.assign(this, event);
+      this.timestamp = moment(timestamp);
     }
 
     get key() {

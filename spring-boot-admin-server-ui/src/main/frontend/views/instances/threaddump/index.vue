@@ -25,9 +25,7 @@
                     </strong>
                 </div>
             </div>
-            <div class="content" v-if="threads">
-                <threads-list :thread-timelines="threads"></threads-list>
-            </div>
+            <threads-list v-if="threads" :thread-timelines="threads"></threads-list>
         </div>
     </section>
 </template>

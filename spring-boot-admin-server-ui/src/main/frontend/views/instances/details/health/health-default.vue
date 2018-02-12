@@ -15,7 +15,7 @@
   -->
 
 <template>
-    <table class="table">
+    <table class="table is-fullwidth">
         <tr>
             <td>
                 <sba-status v-if="health.status" :status="health.status"></sba-status>

@@ -84,9 +84,7 @@ class Instance {
 
   async setEnv(name, value) {
     return axios.post(`instances/${this.id}/actuator/env`, {name, value}, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      headers: {'Content-Type': 'application/json'}
     });
   }
 
@@ -108,18 +106,14 @@ class Instance {
 
   async fetchLoggers() {
     return axios.get(`instances/${this.id}/actuator/loggers`, {
-      headers: {
-        'Accept': actuatorMimeTypes
-      },
+      headers: {'Accept': actuatorMimeTypes},
       transformResponse: Instance._toLoggers
     });
   }
 
   async configureLogger(name, level) {
     return axios.post(`instances/${this.id}/actuator/loggers/${name}`, {configuredLevel: level}, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      headers: {'Content-Type': 'application/json'}
     });
   }
 
@@ -138,18 +132,14 @@ class Instance {
   async fetchAuditevents(after) {
     return axios.get(`instances/${this.id}/actuator/auditevents`, {
       headers: {'Accept': actuatorMimeTypes},
-      params: {
-        after: after.toISOString()
-      }
+      params: {after: after.toISOString()}
     });
   }
 
   async fetchSessions(username) {
     return axios.get(`instances/${this.id}/actuator/sessions`, {
       headers: {'Accept': actuatorMimeTypes},
-      params: {
-        username
-      }
+      params: {username}
     });
   }
 
@@ -167,6 +157,14 @@ class Instance {
 
   streamLogfile(interval) {
     return logtail(`instances/${this.id}/actuator/logfile`, interval);
+  }
+
+  async listMBeans() {
+    return axios.get(`instances/${this.id}/actuator/jolokia/list`, {
+      headers: {'Accept': 'application/json'},
+      params: {canonicalNaming: false},
+      transformResponse: Instance._toMBeans
+    });
   }
 
   static async fetchEvents() {
@@ -212,6 +210,19 @@ class Instance {
     return {levels: raw.levels, loggers};
   }
 
+  static _toMBeans(data) {
+    if (!data) {
+      return data;
+    }
+    const raw = JSON.parse(data);
+    return _.entries(raw.value).map(([domain, mBeans]) => ({
+      domain,
+      mBeans: _.entries(mBeans).map(([descriptor, mBean]) => ({
+        descriptor: descriptor,
+        ...mBean
+      }))
+    }))
+  }
 }
 
 export default Instance;

@@ -16,7 +16,7 @@
 
 <template>
     <sba-panel title="Info" v-if="hasLoaded">
-        <div slot="text">
+        <div>
             <div v-if="error" class="message is-danger">
                 <div class="message-body">
                     <strong>

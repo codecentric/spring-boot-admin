@@ -25,7 +25,7 @@
                     </strong>
                 </div>
             </div>
-            <div class="content" v-if="traces">
+            <template v-if="traces">
                 <div class="field-body">
                     <div class="field has-addons">
                         <p class="control is-expanded">
@@ -76,7 +76,7 @@
                 </div>
                 <sba-traces-chart :traces="filteredTraces" @selected="(d) => selection = d"></sba-traces-chart>
                 <sba-traces-list :traces="selectedTraces"></sba-traces-list>
-            </div>
+            </template>
         </div>
     </section>
 </template>

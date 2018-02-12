@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import sbaAbout from './about';
+import {view as aboutView} from './about';
 import {view as applicationView} from './applications';
 import sbaInstancesAuditevents from './instances/auditevents';
 import sbaInstancesDetails from './instances/details';
@@ -27,8 +27,7 @@ import sbaInstancesLoggers from './instances/loggers';
 import sbaInstancesSessions from './instances/sessions';
 import sbaInstancesShell from './instances/shell';
 import sbaInstancesThreaddump from './instances/threaddump';
-import sbaJournal from './journal';
-
+import {view as journalView} from './journal';
 
 export default router => {
   const views = [];
@@ -58,8 +57,8 @@ export default router => {
   };
 
   views.register(applicationView);
-  views.register({path: '/journal', name: 'journal', handle: 'Journal', order: 100, component: sbaJournal});
-  views.register({path: '/about', name: 'about', handle: 'About', order: 200, component: sbaAbout});
+  views.register(journalView);
+  views.register(aboutView);
   views.register({
     path: '/instances/:instanceId', component: sbaInstancesShell, props: true,
     children: [{
@@ -70,6 +69,8 @@ export default router => {
       path: 'logfile', component: sbaInstancesLogfile, props: true, name: 'instance/logfile'
     }, {
       path: 'loggers', component: sbaInstancesLoggers, props: true, name: 'instance/loggers'
+    }, {
+      path: 'jolokia', component: sbaInstancesJolokia, props: true, name: 'instance/jolokia'
     }, {
       path: 'httptrace', component: sbaInstancesTrace, props: true, name: 'instance/httptrace'
     }, {

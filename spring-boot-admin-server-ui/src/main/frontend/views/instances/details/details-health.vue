@@ -16,7 +16,7 @@
 
 <template>
     <sba-panel title="Health">
-        <div slot="text">
+        <div>
             <div v-if="error" class="message is-danger">
                 <div class="message-body">
                     <strong>
@@ -25,9 +25,7 @@
                     </strong>
                 </div>
             </div>
-            <div class="content" :class="{ 'is-loading' : !hasLoaded }">
-                <health-default v-if="health" name="Instance" :health="health"></health-default>
-            </div>
+            <health-default v-if="health" name="Instance" :health="health"></health-default>
         </div>
     </sba-panel>
 </template>

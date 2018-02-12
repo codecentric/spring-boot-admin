@@ -25,25 +25,21 @@
                     </strong>
                 </div>
             </div>
-            <div class="content">
-                <div class="field has-addons">
-                    <div class="control">
+            <div class="field has-addons">
+                <div class="control">
                         <span class="select">
                           <select v-model="filterType">
                             <option value="username">Username</option>
                             <option value="sessionId">SessionId</option>
                           </select>
                         </span>
-                    </div>
-                    <div class="control is-expanded">
-                        <input class="input" type="text" v-model="filter" @keyup.enter="fetchSessions()">
-                    </div>
+                </div>
+                <div class="control is-expanded">
+                    <input class="input" type="text" v-model="filter" @keyup.enter="fetchSessions()">
                 </div>
             </div>
-            <div class="content" :class="{ 'is-loading' : isLoading }">
-                <sba-sessions-list :instance="instance" :sessions="sessions"
-                                   @deleted="fetch()"></sba-sessions-list>
-            </div>
+            <sba-sessions-list :instance="instance" :sessions="sessions"
+                               @deleted="fetch()"></sba-sessions-list>
         </div>
     </section>
 </template>
@@ -56,13 +52,10 @@
   const regexUuid = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/;
 
   class Session {
-    constructor({id, attributeNames, creationTime, lastAccessedTime, maxInactiveInterval, expired}) {
-      this.id = id;
-      this.attributeNames = attributeNames;
+    constructor({creationTime, lastAccessedTime, ...session}) {
+      Object.assign(this, session);
       this.creationTime = moment(creationTime);
       this.lastAccessedTime = moment(lastAccessedTime);
-      this.maxInactiveInterval = maxInactiveInterval;
-      this.expired = expired;
     }
   }
 

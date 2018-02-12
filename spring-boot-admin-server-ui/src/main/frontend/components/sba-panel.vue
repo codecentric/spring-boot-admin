@@ -19,8 +19,8 @@
         <header v-if="title" class="card-header">
             <p v-text="title" class="card-header-title"></p>
         </header>
-        <div v-if="$slots['text']" class="card-content">
-            <slot name="text"></slot>
+        <div v-if="$slots['default']" class="card-content">
+            <slot></slot>
         </div>
     </div>
 </template>

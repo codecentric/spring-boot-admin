@@ -25,15 +25,13 @@
                     </strong>
                 </div>
             </div>
-            <div class="content" v-if="reports">
-                <template v-for="(report, name) in reports">
-                    <h4 class="title" v-text="name" :key="name"></h4>
-                    <sba-panel v-for="changeSet in report.changeSets" :key="`${name}-${changeSet.id}`"
-                               :title="`${changeSet.id}: ${changeSet.description}`" class="change-set">
-                        <change-set :change-set="changeSet" slot="text"></change-set>
-                    </sba-panel>
-                </template>
-            </div>
+            <template v-for="(report, name) in reports">
+                <h4 class="title" v-text="name" :key="name"></h4>
+                <sba-panel v-for="changeSet in report.changeSets" :key="`${name}-${changeSet.id}`"
+                           :title="`${changeSet.id}: ${changeSet.description}`" class="change-set">
+                    <change-set :change-set="changeSet"></change-set>
+                </sba-panel>
+            </template>
         </div>
     </section>
 </template>
@@ -49,7 +47,7 @@
     data: () => ({
       hasLoaded: false,
       error: null,
-      reports: null
+      reports: []
     }),
     computed: {},
     created() {

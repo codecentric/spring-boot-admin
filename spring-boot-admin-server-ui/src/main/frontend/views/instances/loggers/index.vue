@@ -25,7 +25,7 @@
                     </strong>
                 </div>
             </div>
-            <div class="content" v-if="loggerConfig">
+            <template v-if="loggerConfig">
                 <div class="field-body">
                     <div class="field has-addons">
                         <p class="control is-expanded">
@@ -58,36 +58,34 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="content" v-if="loggerConfig">
-                <table class="table is-hoverable">
-                    <tbody>
-                    <tr v-for="logger in limitedLoggers" :key="logger.name">
-                        <td>
-                            <span class="is-breakable" v-text="logger.name"></span>
-                            <span class="has-text-danger" v-if="logger.name in failed">
+            </template>
+            <table v-if="loggerConfig" class="table is-hoverable is-fullwidth">
+                <tbody>
+                <tr v-for="logger in limitedLoggers" :key="logger.name">
+                    <td>
+                        <span class="is-breakable" v-text="logger.name"></span>
+                        <span class="has-text-danger" v-if="logger.name in failed">
                                 <font-awesome-icon class="has-text-danger"
                                                    icon="exclamation-triangle"></font-awesome-icon>
                                 <span v-text="`Configuring ${failed[logger.name]} failed.`"></span>
                             </span>
-                            <sba-logger-control class="is-pulled-right"
-                                                :level-options="levels"
-                                                :effective-level="logger.effectiveLevel"
-                                                :configured-level="logger.configuredLevel"
-                                                :is-loading="loading[logger.name]"
-                                                :has-failed="failed[logger.name]"
-                                                :allow-reset="logger.name !== 'ROOT'"
-                                                @input="level => configureLogger(logger, level)">
-                            </sba-logger-control>
-                        </td>
-                    </tr>
-                    <tr v-if="limitedLoggers.length === 0">
-                        <td class="is-muted" colspan="5">No loggers found.
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+                        <sba-logger-control class="is-pulled-right"
+                                            :level-options="levels"
+                                            :effective-level="logger.effectiveLevel"
+                                            :configured-level="logger.configuredLevel"
+                                            :is-loading="loading[logger.name]"
+                                            :has-failed="failed[logger.name]"
+                                            :allow-reset="logger.name !== 'ROOT'"
+                                            @input="level => configureLogger(logger, level)">
+                        </sba-logger-control>
+                    </td>
+                </tr>
+                <tr v-if="limitedLoggers.length === 0">
+                    <td class="is-muted" colspan="5">No loggers found.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </section>
 </template>
