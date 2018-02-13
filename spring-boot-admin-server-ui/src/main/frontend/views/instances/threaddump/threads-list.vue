@@ -131,7 +131,7 @@
     },
     methods: {
       getTimeExtent(timelines) {
-        return _.entries(timelines).map(([threadId, value]) => value.timeline)
+        return _.entries(timelines).map(([, value]) => value.timeline)
           .map(timeline => ({
             start: timeline[0].start,
             end: timeline[timeline.length - 1].end
@@ -157,7 +157,7 @@
             .attr('width', width)
             .call(d3.axisBottom(x)
               .ticks(Math.max(2, Math.floor(width / 50)))
-              .tickFormat(d => moment(d).format("HH:mm:ss"))
+              .tickFormat(d => moment(d).format('HH:mm:ss'))
             );
 
           _.entries(timelines).forEach(([threadId, value]) => {

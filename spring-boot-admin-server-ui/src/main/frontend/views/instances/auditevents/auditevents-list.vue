@@ -35,11 +35,16 @@
                     <span v-text="event.type" class="tag"
                           :class="{ 'is-success' : event.isSuccess(),  'is-danger' : event.isFailure() }"></span>
                 </td>
-                <td v-text="event.principal"></td>
+                <td v-if="hasSessionEndpoint && event.principal">
+                    <router-link v-text="event.principal"
+                                 :to="{ name: 'instance/sessions', params: { 'instanceId' : instance.id }, query: { username : event.principal} }">
+                    </router-link>
+                </td>
+                <td v-else v-text="event.principal"></td>
                 <td v-text="event.remoteAddress"></td>
                 <td v-if="hasSessionEndpoint && event.sessionId">
                     <router-link v-text="event.sessionId"
-                                 :to="{ name: 'instance/sessions', params: { 'instanceId' : instance.id, sessionId : event.sessionId } }">
+                                 :to="{ name: 'instance/sessions', params: { 'instanceId' : instance.id }, query: { sessionId : event.sessionId } }">
                     </router-link>
                 </td>
                 <td v-else v-text="event.sessionId"></td>

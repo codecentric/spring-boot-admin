@@ -17,25 +17,25 @@
 <template>
     <section class="section">
         <div class="container">
+            <div class="field has-addons">
+                <div class="control">
+                    <span class="select">
+                      <select v-model="filter.type">
+                        <option value="username">Username</option>
+                        <option value="sessionId">SessionId</option>
+                      </select>
+                    </span>
+                </div>
+                <div class="control is-expanded">
+                    <input class="input" type="text" v-model="filter.value" @keyup.enter="fetchSessions()">
+                </div>
+            </div>
             <div v-if="error" class="message is-danger">
                 <div class="message-body">
                     <strong>
                         <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
                         Fetching sessions failed.
                     </strong>
-                </div>
-            </div>
-            <div class="field has-addons">
-                <div class="control">
-                        <span class="select">
-                          <select v-model="filterType">
-                            <option value="username">Username</option>
-                            <option value="sessionId">SessionId</option>
-                          </select>
-                        </span>
-                </div>
-                <div class="control is-expanded">
-                    <input class="input" type="text" v-model="filter" @keyup.enter="fetchSessions()">
                 </div>
             </div>
             <sba-sessions-list :instance="instance" :sessions="sessions"
@@ -45,9 +45,9 @@
 </template>
 
 <script>
-  import _ from 'lodash';
-  import moment from 'moment';
-  import sbaSessionsList from './sessions-list';
+  import _ from 'lodash'
+  import moment from 'moment'
+  import sbaSessionsList from './sessions-list'
 
   const regexUuid = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/;
 
@@ -55,102 +55,91 @@
     constructor({creationTime, lastAccessedTime, ...session}) {
       Object.assign(this, session);
       this.creationTime = moment(creationTime);
-      this.lastAccessedTime = moment(lastAccessedTime);
+      this.lastAccessedTime = moment(lastAccessedTime)
     }
   }
 
   export default {
-    props: ['instance', 'sessionId'],
+    props: ['instance'],
     components: {sbaSessionsList},
     data: () => ({
       error: null,
-      filter: '',
-      filterType: 'username',
+      filter: {value: '', type: null},
       sessions: [],
       isLoading: false
     }),
     methods: {
       fetch: _.debounce(async function () {
         this.error = null;
-        if (!this.filter) {
+        if (!this.filter.value) {
           this.sessions = [];
           return;
         }
 
         this.isLoading = true;
         try {
-          if (this.filterType === 'username') {
-            this.sessions = await this.fetchSessions();
+          if (this.filter.type === 'sessionId') {
+            this.sessions = await this.fetchSession()
           } else {
-            this.sessions = await this.fetchSession();
+            this.sessions = await this.fetchSessions()
           }
         } catch (error) {
           console.warn('Fetching sessions failed:', error);
-          this.error = error;
+          this.error = error
         } finally {
-          this.isLoading = false;
+          this.isLoading = false
         }
       }, 250),
       async fetchSession() {
         try {
-          const response = await this.instance.fetchSession(this.filter);
-          return [new Session(response.data)];
+          const response = await this.instance.fetchSession(this.filter.value);
+          return [new Session(response.data)]
         } catch (error) {
           if (error.response.status === 404) {
-            return [];
+            return []
           } else {
-            throw error;
+            throw error
           }
         }
       },
       async fetchSessions() {
-        const response = await this.instance.fetchSessions(this.filter);
-        return response.data.sessions.map(session => new Session(session));
+        const response = await this.instance.fetchSessions(this.filter.value);
+        return response.data.sessions.map(session => new Session(session))
       },
       updateFilter() {
-        if (this.sessionId) {
-          this.filterType = 'sessionId';
-          this.filter = this.sessionId;
-        }
-      },
-      updateRoute() {
-        if (this.filterType === 'username') {
-          if (this.sessionId) {
-            this.$router.replace({
-              name: 'instance/sessions',
-              params: {'instanceId': this.instance.id}
-            });
-          }
-        } else {
-          if (this.sessionId !== this.filter) {
-            this.$router.replace({
-              name: 'instance/sessions',
-              params: {'instanceId': this.instance.id, sessionId: this.filter}
-            });
-          }
-        }
+        this.filter = _.entries(this.$route.query)
+          .reduce((acc, [name, value]) => {
+            acc.type = name;
+            acc.value = value;
+            return acc;
+          }, {type: null, value: ''});
       }
     },
     mounted() {
-      this.updateFilter()
+      this.updateFilter();
     },
     watch: {
-      sessionId() {
+      '$route.query'() {
         this.updateFilter();
       },
-      filterType() {
-        this.updateRoute();
-        this.fetch();
-      },
-      filter() {
-        const looksLikeSessionId = this.filter.match(regexUuid);
-        if (looksLikeSessionId && this.filterType !== 'sessionId') {
-          this.filterType = 'sessionId';
-        } else if (!looksLikeSessionId && this.filterType !== 'username') {
-          this.filterType = 'username';
+      filter: {
+        deep: true,
+        handler() {
+          if (this.filter.type === null) {
+            const looksLikeSessionId = this.filter.value.match(regexUuid);
+            this.filter.type = looksLikeSessionId ? 'sessionId' : 'username';
+          }
+
+          const query = {[this.filter.type]: this.filter.value};
+          if (!_.isEqual(query, !this.$route.query)) {
+            this.$router.replace({
+              name: 'instance/sessions',
+              query: query
+            });
+          }
+
+          this.fetch();
         }
-        this.updateRoute();
-        this.fetch();
       }
     }
   }

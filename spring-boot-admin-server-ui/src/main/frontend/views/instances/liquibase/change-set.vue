@@ -70,7 +70,7 @@
         <tr v-if="changeSet.labels && changeSet.labels.length > 0">
             <td>Labels</td>
             <td>
-                <span v-for="label in changeSet.labels" class="tag is-info" v-text="label"></span>
+                <span v-for="label in changeSet.labels" :key="label" class="tag is-info" v-text="label"></span>
             </td>
         </tr>
     </table>

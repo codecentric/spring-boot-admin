@@ -60,7 +60,8 @@
         const now = moment.now().valueOf();
         vm.threads = vm.threads || {};
         //initialize with all known live threads, which will be removed from the list if still alive
-        const terminatedThreads = _.entries(vm.threads).filter(([threadId, value]) => value.threadState !== 'TERMINATED')
+        const terminatedThreads = _.entries(vm.threads)
+          .filter(([, value]) => value.threadState !== 'TERMINATED')
           .map(([threadId]) => parseInt(threadId));
 
         threads.forEach(

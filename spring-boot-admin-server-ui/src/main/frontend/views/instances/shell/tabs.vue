@@ -29,7 +29,7 @@
                     <div class="level-right">
                         <nav class="tabs is-boxed is-right">
                             <ul>
-                                <li v-if="instance" v-for="view in activeViews"
+                                <li v-if="instance" v-for="view in activeViews" :key="view.name"
                                     :class="{'is-active' : $route.name === view.name}">
                                     <a v-if="view.href" :href="view.href({ 'instanceId' : instance.id })"
                                        target="_blank">

@@ -42,7 +42,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr v-for="migration in report.migrations">
+                    <tr v-for="migration in report.migrations" :key="migration.checksum">
                         <td v-text="migration.type"></td>
                         <td v-text="migration.checksum"></td>
                         <td v-text="migration.version"></td>

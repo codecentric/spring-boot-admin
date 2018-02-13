@@ -91,7 +91,7 @@
         //draw axis
         vm.xAxis.call(d3.axisBottom(x)
           .ticks(5)
-          .tickFormat(d => moment(d).format("HH:mm:ss"))
+          .tickFormat(d => moment(d).format('HH:mm:ss'))
         );
 
         vm.yAxis.call(d3.axisLeft(y)

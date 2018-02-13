@@ -44,7 +44,7 @@
     },
     methods: {
       selectLevel(level) {
-        this.$emit("input", level);
+        this.$emit('input', level);
       },
       cssClass(level) {
         return {

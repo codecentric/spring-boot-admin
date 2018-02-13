@@ -43,7 +43,7 @@
             </td>
             <td>
                 <router-link v-text="session.id"
-                             :to="{ name: 'instance/sessions', params: { 'instanceId' : instance.id, sessionId : session.id } }">
+                             :to="{ name: 'instance/sessions', params: { 'instanceId' : instance.id}, query: { sessionId : session.id } }">
                 </router-link>
             </td>
             <td v-text="session.creationTime.format('L HH:mm:ss.SSS')"></td>
@@ -66,7 +66,7 @@
                 </button>
             </td>
         </tr>
-        <tr v-if="sessions.length=== 0">
+        <tr v-if="sessions.length === 0">
             <td class="is-muted" colspan="7 ">No sessions found.</td>
         </tr>
     </table>
@@ -95,7 +95,7 @@
               vm.deletingAll = 'deleted';
               vm.$emit('deleted', '*');
             },
-            error: error => {
+            error: () => {
               vm.deletingAll = 'failed';
             },
           });

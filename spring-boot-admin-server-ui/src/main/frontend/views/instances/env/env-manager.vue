@@ -31,7 +31,7 @@
                 </div>
                 <div class="field">
                     <div class="control has-icons-right" :class="{'is-loading' : prop.status === 'executing'}">
-                        <input class="input" type="text" placeholder="Value" s v-model="prop.input"
+                        <input class="input" type="text" placeholder="Value" v-model="prop.input"
                                @input="prop.status = null">
                         <span class="icon is-right has-text-success" v-if="prop.status === 'completed'">
                              <font-awesome-icon icon="check"></font-awesome-icon>

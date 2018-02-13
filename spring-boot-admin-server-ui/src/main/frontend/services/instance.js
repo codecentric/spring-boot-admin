@@ -167,8 +167,19 @@ class Instance {
     });
   }
 
+  async readMBeanAttributes(domain, mBean) {
+    const body = {
+      type: 'read',
+      mbean: `${domain}:${mBean}`,
+      config: {ignoreErrors: true}
+    };
+    return axios.post(`instances/${this.id}/actuator/jolokia/`, body, {
+      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    });
+  }
+
   static async fetchEvents() {
-    return axios.get(`instances/events`);
+    return axios.get('instances/events');
   }
 
   static getEventStream() {

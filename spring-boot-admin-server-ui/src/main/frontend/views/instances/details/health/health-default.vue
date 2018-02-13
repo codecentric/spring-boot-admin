@@ -51,7 +51,7 @@
   };
 
   export default {
-    name: "health-default",
+    name: 'health-default',
     components: {healthDiskspace},
 
     props: {
@@ -62,19 +62,17 @@
     computed: {
       details() {
         if (this.health.details) {
-          return _.entries(this.health.details).filter(([name, value]) => !isChildHealth(value)).map(([name, value]) => ({
-            name,
-            value
-          }));
+          return _.entries(this.health.details)
+            .filter(([, value]) => !isChildHealth(value))
+            .map(([name, value]) => ({name, value}));
         }
         return [];
       },
       childHealth() {
         if (this.health.details) {
-          return _.entries(this.health.details).filter(([name, value]) => isChildHealth(value)).map(([name, value]) => ({
-            name,
-            value
-          }));
+          return _.entries(this.health.details)
+            .filter(([, value]) => isChildHealth(value))
+            .map(([name, value]) => ({name, value}));
         }
         return [];
       }

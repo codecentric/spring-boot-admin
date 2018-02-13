@@ -42,8 +42,15 @@
   }
 }
 
-.card-list .card {
-  margin-bottom: 0;
+.card {
+  &.is-hoverable .card-header:hover {
+    background-color: $white-bis;
+  }
+
+  &.is-active {
+    margin: $column-gap (-$column-gap);
+    max-width: unset;
+  }
 }
 
 //Badge

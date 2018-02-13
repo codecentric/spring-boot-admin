@@ -65,7 +65,7 @@
                         <span class="applications-list-item__text">
                             <a v-text="instance.registration.serviceUrl || instance.registration.healthUrl"
                                :href="instance.registration.serviceUrl || instance.registration.healthUrl"
-                               @click.stop=""></a>
+                               @click.stop></a>
                             <span v-text="instance.id"
                                   class="applications-list-item__secondary"></span>
                         </span>
@@ -88,15 +88,11 @@
   import {directive as onClickaway} from 'vue-clickaway';
 
   export default {
-    directives: {
-      onClickaway
-    },
-
+    directives: {onClickaway},
     data: () => ({
       selected: null,
       errors: []
     }),
-
     methods: {
       select(name) {
         this.selected = name;

@@ -63,7 +63,7 @@ Observable.prototype.listen = function (callbackFn) {
         callbackFn('completed');
       },
       error: (error) => {
-        console.warn("Operation failed:", error);
+        console.warn('Operation failed:', error);
         handle && clearTimeout(handle);
         callbackFn('failed');
       }

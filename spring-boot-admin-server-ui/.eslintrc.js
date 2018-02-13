@@ -18,8 +18,8 @@
 
 module.exports = {
   root: true,
-  parser: 'babel-eslint',
   parserOptions: {
+    parser: 'babel-eslint',
     sourceType: 'module',
     ecmaVersion: '2017'
   },
@@ -28,11 +28,12 @@ module.exports = {
   },
   extends: [
     'eslint:recommended',
-    'plugin:vue-libs/recommended'
+    'plugin:vue/essential'
   ],
   rules: {
-    quotes: ['error', 'single']
+    'quotes': ['error', 'single'],
+    'no-console': ["error", {allow: ["warn"]}]
   },
   // required to lint *.vue files
-  plugins: ['html']
+  plugins: ['vue']
 };

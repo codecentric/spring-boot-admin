@@ -169,7 +169,7 @@
         //draw axis
         vm.xAxis.call(d3.axisBottom(x)
           .ticks(10)
-          .tickFormat(d => moment(d).format("HH:mm:ss"))
+          .tickFormat(d => moment(d).format('HH:mm:ss'))
         );
 
         vm.yAxis.call(d3.axisRight(y)

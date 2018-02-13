@@ -70,13 +70,11 @@ export default router => {
     }, {
       path: 'loggers', component: sbaInstancesLoggers, props: true, name: 'instance/loggers'
     }, {
-      path: 'jolokia', component: sbaInstancesJolokia, props: true, name: 'instance/jolokia'
-    }, {
       path: 'httptrace', component: sbaInstancesTrace, props: true, name: 'instance/httptrace'
     }, {
       path: 'auditevents', component: sbaInstancesAuditevents, props: true, name: 'instance/auditevents'
     }, {
-      path: 'sessions/:sessionId?', component: sbaInstancesSessions, props: true, name: 'instance/sessions'
+      path: 'sessions', component: sbaInstancesSessions, props: true, name: 'instance/sessions'
     }, {
       path: 'liquibase', component: sbaInstancesLiquibase, props: true, name: 'instance/liquibase'
     }, {

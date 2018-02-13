@@ -74,6 +74,7 @@
 <script>
   const component = {
     data: () => ({
+      // eslint-disable-next-line no-undef
       version: __PROJECT_VERSION__
     })
   };
