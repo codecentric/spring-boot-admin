@@ -23,6 +23,7 @@
                         <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
                         Fetching cache metrics failed.
                     </strong>
+                    <p v-text="error.message"></p>
                 </div>
             </div>
             <div class="level cache-current" v-if="current">

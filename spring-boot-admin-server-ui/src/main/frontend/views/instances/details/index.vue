@@ -23,6 +23,7 @@
                         <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
                         Fetching metrics index failed.
                     </strong>
+                    <p v-text="error.message"></p>
                 </div>
             </div>
             <div class="columns is-desktop">

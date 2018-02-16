@@ -23,6 +23,7 @@
                         <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
                         Fetching Flyway reports failed.
                     </strong>
+                    <p v-text="error.message"></p>
                 </div>
             </div>
             <sba-panel v-for="(report, name) in reports" :key="name" :title="name" class="migration">

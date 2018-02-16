@@ -173,7 +173,31 @@ class Instance {
       mbean: `${domain}:${mBean}`,
       config: {ignoreErrors: true}
     };
-    return axios.post(`instances/${this.id}/actuator/jolokia/`, body, {
+    return axios.post(`instances/${this.id}/actuator/jolokia`, body, {
+      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    });
+  }
+
+  async writeMBeanAttribute(domain, mBean, attribute, value) {
+    const body = {
+      type: 'write',
+      mbean: `${domain}:${mBean}`,
+      attribute,
+      value
+    };
+    return axios.post(`instances/${this.id}/actuator/jolokia`, body, {
+      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    });
+  }
+
+  async invokeMBeanOperation(domain, mBean, operation, args) {
+    const body = {
+      type: 'exec',
+      mbean: `${domain}:${mBean}`,
+      operation,
+      'arguments': args
+    };
+    return axios.post(`instances/${this.id}/actuator/jolokia`, body, {
       headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
     });
   }

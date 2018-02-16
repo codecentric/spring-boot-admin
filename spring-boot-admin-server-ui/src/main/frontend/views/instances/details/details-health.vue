@@ -23,6 +23,7 @@
                         <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
                         Fetching health failed.
                     </strong>
+                    <p v-text="error.message"></p>
                 </div>
             </div>
             <health-default v-if="health" name="Instance" :health="health"></health-default>

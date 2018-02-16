@@ -21,6 +21,7 @@ import sbaInstancesDetails from './instances/details';
 import sbaInstancesEnv from './instances/env';
 import sbaInstancesFlyway from './instances/flyway';
 import sbaInstancesTrace from './instances/httptrace';
+import sbaInstancesJolokia from './instances/jolokia';
 import sbaInstancesLiquibase from './instances/liquibase';
 import sbaInstancesLogfile from './instances/logfile';
 import sbaInstancesLoggers from './instances/loggers';
@@ -70,6 +71,8 @@ export default router => {
     }, {
       path: 'loggers', component: sbaInstancesLoggers, props: true, name: 'instance/loggers'
     }, {
+      path: 'jolokia', component: sbaInstancesJolokia, props: true, name: 'instance/jolokia'
+    }, {
       path: 'httptrace', component: sbaInstancesTrace, props: true, name: 'instance/httptrace'
     }, {
       path: 'auditevents', component: sbaInstancesAuditevents, props: true, name: 'instance/auditevents'
@@ -105,6 +108,12 @@ export default router => {
     handle: 'Loggers',
     order: 300,
     isActive: ({instance}) => instance.hasEndpoint('loggers')
+  });
+  views.register({
+    name: 'instance/jolokia',
+    handle: 'JMX',
+    order: 350,
+    isActive: ({instance}) => instance.hasEndpoint('jolokia')
   });
   views.register({
     name: 'instance/threaddump',

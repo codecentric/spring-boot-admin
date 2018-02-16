@@ -63,15 +63,15 @@ new Vue({
   data: {
     views: createViews(router),
     applications: store.applications,
-    connectionFailed: false
+    error: null
   },
   methods: {
     onError(error) {
       console.warn('Connection to server failed:', error);
-      this.connectionFailed = true;
+      this.error = error;
     },
     onConnected() {
-      this.connectionFailed = false;
+      this.error = null;
     }
   },
   created() {

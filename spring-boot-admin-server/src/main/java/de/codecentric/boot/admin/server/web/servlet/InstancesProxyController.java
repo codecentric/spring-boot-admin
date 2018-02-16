@@ -23,6 +23,7 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.Duration;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,12 +52,15 @@ import org.springframework.web.util.UriComponentsBuilder;
 @AdminController
 public class InstancesProxyController extends AbstractInstancesProxyController {
     private final DataBufferFactory bufferFactory = new DefaultDataBufferFactory();
+    private final Duration readTimeout;
 
     public InstancesProxyController(String adminContextPath,
                                     Set<String> ignoredHeaders,
                                     InstanceRegistry registry,
-                                    InstanceWebClient instanceWebClient) {
+                                    InstanceWebClient instanceWebClient,
+                                    Duration readTimeout) {
         super(adminContextPath, ignoredHeaders, registry, instanceWebClient);
+        this.readTimeout = readTimeout;
     }
 
     @ResponseBody
@@ -81,7 +85,8 @@ public class InstancesProxyController extends AbstractInstancesProxyController {
         // otherwise the FrameworkServlet will add wrong Allow header for OPTIONS request
         ClientResponse clientResponse = super.forward(instanceId, uri, request.getMethod(), request.getHeaders(),
                 () -> BodyInserters.fromDataBuffers(
-                        DataBufferUtils.readInputStream(request::getBody, this.bufferFactory, 16384))).block();
+                        DataBufferUtils.readInputStream(request::getBody, this.bufferFactory, 16384)))
+                                             .block(this.readTimeout);
 
         response.setStatusCode(clientResponse.statusCode());
         response.getHeaders().addAll(filterHeaders(clientResponse.headers().asHttpHeaders()));

@@ -11,6 +11,7 @@
   "dependencies": {
     "@fortawesome/fontawesome": "^1.1.3",
     "@fortawesome/fontawesome-free-brands": "^5.0.6",
+    "@fortawesome/fontawesome-free-regular": "^5.0.6",
     "@fortawesome/fontawesome-free-solid": "^5.0.6",
     "@fortawesome/vue-fontawesome": "0.0.22",
     "axios": "^0.17.1",
@@ -61,7 +62,7 @@
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^2.30.0",
     "identity-obj-proxy": "^3.0.0",
-    "jest": "^22.2.2",
+    "jest": "^22.3.0",
     "jest-vue": "^0.8.2",
     "lodash-webpack-plugin": "^0.11.4",
     "node-sass": "^4.7.2",

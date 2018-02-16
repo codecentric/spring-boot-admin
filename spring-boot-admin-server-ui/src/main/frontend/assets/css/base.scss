@@ -42,17 +42,6 @@
   }
 }
 
-.card {
-  &.is-hoverable .card-header:hover {
-    background-color: $white-bis;
-  }
-
-  &.is-active {
-    margin: $column-gap (-$column-gap);
-    max-width: unset;
-  }
-}
-
 //Badge
 .badge.has-black-background {
   &[data-badge]::after {
@@ -72,6 +61,12 @@
     border-width: 0.5rem;
   }
 }
+
+//hero as card-header
+.card .hero {
+  padding: 0.75rem;
+}
+
 
 //Bullets
 .has-bullet::before {

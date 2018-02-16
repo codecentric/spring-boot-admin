@@ -18,12 +18,13 @@
     <div class="section">
         <div class="container">
             <h1 class="title">Event Journal</h1>
-            <div v-if="connectionFailed" class="message is-warning">
+            <div v-if="error" class="message is-warning">
                 <div class="message-body">
                     <strong>
                         <font-awesome-icon class="has-text-warning" icon="exclamation-triangle"></font-awesome-icon>
                         Server connection failed.
                     </strong>
+                    <p v-text="error.message"></p>
                 </div>
             </div>
             <table class="table is-fullwidth">
@@ -85,7 +86,7 @@
       events: [],
       showPayload: {},
       instanceNames: {},
-      connectionFailed: false
+      error: null
     }),
     methods: {
       toJson(obj) {
@@ -105,12 +106,12 @@
       createSubscription() {
         return Instance.getEventStream().subscribe({
           next: message => {
-            this.connectionFailed = false;
+            this.error = null;
             this.addEvents([message.data])
           },
           error: error => {
             console.warn('Listening for events failed:', error);
-            this.connectionFailed = true;
+            this.error = error;
           }
         });
       }
@@ -118,11 +119,11 @@
     async created() {
       try {
         this.addEvents((await Instance.fetchEvents()).data);
-        this.connectionFailed = false;
+        this.error = null;
         this.events.sort((a, b) => b.timestamp - a.timestamp)
       } catch (error) {
         console.warn('Fetching events failed:', error);
-        this.connectionFailed = true;
+        this.error = error;
       }
     }
   };

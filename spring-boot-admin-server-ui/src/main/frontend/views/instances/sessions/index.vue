@@ -36,10 +36,11 @@
                         <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
                         Fetching sessions failed.
                     </strong>
+                    <p v-text="error.message"></p>
                 </div>
             </div>
             <sba-sessions-list :instance="instance" :sessions="sessions"
-                               @deleted="fetch()"></sba-sessions-list>
+                               @deleted="fetch"></sba-sessions-list>
         </div>
     </section>
 </template>

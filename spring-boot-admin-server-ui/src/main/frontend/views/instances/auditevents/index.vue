@@ -23,6 +23,7 @@
                         <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
                         Fetching audit events failed.
                     </strong>
+                    <p v-text="error.message"></p>
                 </div>
             </div>
             <auditevents-list v-if="events" :instance="instance" :events="events"></auditevents-list>

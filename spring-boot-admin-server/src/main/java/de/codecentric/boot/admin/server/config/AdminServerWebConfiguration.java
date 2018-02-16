@@ -118,7 +118,8 @@ public class AdminServerWebConfiguration {
         public InstancesProxyController instancesProxyController(InstanceRegistry instanceRegistry,
                                                                  InstanceWebClient instanceWebClient) {
             return new InstancesProxyController(adminServerProperties.getContextPath(),
-                    adminServerProperties.getInstanceProxy().getIgnoredHeaders(), instanceRegistry, instanceWebClient);
+                    adminServerProperties.getInstanceProxy().getIgnoredHeaders(), instanceRegistry, instanceWebClient,
+                    adminServerProperties.getMonitor().getReadTimeout());
         }
 
         @Bean

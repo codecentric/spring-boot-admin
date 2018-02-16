@@ -23,6 +23,7 @@
                         <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
                         Fetching loggers failed.
                     </strong>
+                    <p v-text="error.message"></p>
                 </div>
             </div>
             <template v-if="loggerConfig">

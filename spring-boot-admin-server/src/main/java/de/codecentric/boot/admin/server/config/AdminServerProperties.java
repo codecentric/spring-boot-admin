@@ -111,7 +111,7 @@ public class AdminServerProperties {
          * read timeout when querying the instances' status and info.
          */
         @DefaultDurationUnit(ChronoUnit.MILLIS)
-        private Duration readTimeout = Duration.ofMillis(5_000);
+        private Duration readTimeout = Duration.ofMillis(20_000);
 
     }
 

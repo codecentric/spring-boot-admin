@@ -17,12 +17,13 @@
 <template>
     <section class="section">
         <div class="container">
-            <div v-if="connectionFailed" class="message is-warning">
+            <div v-if="error" class="message is-warning">
                 <div class="message-body">
                     <strong>
                         <font-awesome-icon class="has-text-warning" icon="exclamation-triangle"></font-awesome-icon>
                         Server connection failed.
                     </strong>
+                    <p v-text="error.message"></p>
                 </div>
             </div>
             <div class="level">
@@ -73,8 +74,8 @@
       applications() {
         return this.$root.applications;
       },
-      connectionFailed() {
-        return this.$root.connectionFailed;
+      error() {
+        return this.$root.error;
       },
       statusGroups() {
         const byStatus = _.groupBy(this.applications, application => application.status);

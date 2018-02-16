@@ -23,13 +23,14 @@
                         <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
                         Fetching environment failed.
                     </strong>
+                    <p v-text="error.message"></p>
                 </div>
             </div>
             <div class="field is-grouped is-grouped-multiline" v-if="env && env.activeProfiles.length > 0">
                 <div class="control" v-for="profile in env.activeProfiles" :key="profile">
                     <div class="tags has-addons">
-                        <span class="tag is-medium">Profile</span>
-                        <span class="tag is-medium is-info" v-text="profile"></span>
+                        <span class="tag is-medium is-primary">Profile</span>
+                        <span class="tag is-medium" v-text="profile"></span>
                     </div>
                 </div>
             </div>

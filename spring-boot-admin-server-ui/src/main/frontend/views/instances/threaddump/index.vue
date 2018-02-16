@@ -23,6 +23,7 @@
                         <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
                         Fetching threaddump failed.
                     </strong>
+                    <p v-text="error.message"></p>
                 </div>
             </div>
             <threads-list v-if="threads" :thread-timelines="threads"></threads-list>
