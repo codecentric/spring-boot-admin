@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
-import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.netflix.discovery.EurekaClient;
@@ -38,7 +37,9 @@ import com.netflix.discovery.EurekaClient;
 @ConditionalOnSingleCandidate(DiscoveryClient.class)
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
 @ConditionalOnProperty(prefix = "spring.boot.admin.discovery", name = "enabled", matchIfMissing = true)
-@AutoConfigureAfter({AdminServerAutoConfiguration.class, SimpleDiscoveryClientAutoConfiguration.class})
+@AutoConfigureAfter(value = AdminServerAutoConfiguration.class, name = {
+        "org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration",
+        "org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration"})
 public class AdminServerDiscoveryAutoConfiguration {
 
     @Bean
