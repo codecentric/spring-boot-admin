@@ -15,24 +15,31 @@
   -->
 
 <template>
-    <sba-panel title="Metadata">
-        <div class="content metadata" v-if="metadata">
-            <table class="table" v-if="!isEmptyMetadata">
-                <tr v-for="(value, key) in metadata" :key="key">
-                    <td class="metadata__key" v-text="key"></td>
-                    <td>
-                        <sba-formatted-obj :value="value"></sba-formatted-obj>
-                    </td>
-                </tr>
-            </table>
-            <p v-else class="is-muted">No metadata provided.</p>
-        </div>
-    </sba-panel>
+  <sba-panel title="Metadata">
+    <div class="content metadata" v-if="metadata">
+      <table class="table" v-if="!isEmptyMetadata">
+        <tr v-for="(value, key) in metadata" :key="key">
+          <td class="metadata__key" v-text="key"/>
+          <td>
+            <sba-formatted-obj :value="value"/>
+          </td>
+        </tr>
+      </table>
+      <p v-else class="is-muted">No metadata provided.</p>
+    </div>
+  </sba-panel>
 </template>
 
 <script>
+  import Instance from '@/services/instance';
+
   export default {
-    props: ['instance'],
+    props: {
+      instance: {
+        type: Instance,
+        required: true
+      }
+    },
     computed: {
       metadata() {
         return this.instance.registration.metadata;
@@ -40,16 +47,16 @@
       isEmptyMetadata() {
         return Object.keys(this.metadata).length <= 0;
       }
-    },
+    }
   }
 </script>
 
 <style lang="scss">
-    .metadata {
-        overflow: auto;
+  .metadata {
+    overflow: auto;
 
-        &__key {
-            vertical-align: top;
-        }
+    &__key {
+      vertical-align: top;
     }
+  }
 </style>

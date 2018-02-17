@@ -15,37 +15,38 @@
   -->
 
 <template>
-    <section class="section">
-        <div class="container">
-            <div class="field has-addons">
-                <div class="control">
-                    <span class="select">
-                      <select v-model="filter.type">
-                        <option value="username">Username</option>
-                        <option value="sessionId">SessionId</option>
-                      </select>
-                    </span>
-                </div>
-                <div class="control is-expanded">
-                    <input class="input" type="text" v-model="filter.value" @keyup.enter="fetchSessions()">
-                </div>
-            </div>
-            <div v-if="error" class="message is-danger">
-                <div class="message-body">
-                    <strong>
-                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
-                        Fetching sessions failed.
-                    </strong>
-                    <p v-text="error.message"></p>
-                </div>
-            </div>
-            <sba-sessions-list :instance="instance" :sessions="sessions"
-                               @deleted="fetch"></sba-sessions-list>
+  <section class="section">
+    <div class="container">
+      <div class="field has-addons">
+        <div class="control">
+          <span class="select">
+            <select v-model="filter.type">
+              <option value="username">Username</option>
+              <option value="sessionId">SessionId</option>
+            </select>
+          </span>
         </div>
-    </section>
+        <div class="control is-expanded">
+          <input class="input" type="text" v-model="filter.value" @keyup.enter="fetchSessions()">
+        </div>
+      </div>
+      <div v-if="error" class="message is-danger">
+        <div class="message-body">
+          <strong>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            Fetching sessions failed.
+          </strong>
+          <p v-text="error.message"/>
+        </div>
+      </div>
+      <sba-sessions-list :instance="instance" :sessions="sessions"
+                         @deleted="fetch"/>
+    </div>
+  </section>
 </template>
 
 <script>
+  import Instance from '@/services/instance';
   import _ from 'lodash'
   import moment from 'moment'
   import sbaSessionsList from './sessions-list'
@@ -61,7 +62,12 @@
   }
 
   export default {
-    props: ['instance'],
+    props: {
+      instance: {
+        type: Instance,
+        required: true
+      }
+    },
     components: {sbaSessionsList},
     data: () => ({
       error: null,

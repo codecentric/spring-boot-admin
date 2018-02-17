@@ -15,42 +15,46 @@
   -->
 
 <template>
-    <div class="section logfile-view" :class="{ 'is-loading' : !hasLoaded }">
-        <div v-if="error" class="message is-danger">
-            <div class="message-body">
-                <strong>
-                    <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
-                    Fetching logfile failed.
-                </strong>
-                <p v-text="error.message"></p>
-            </div>
-        </div>
-        <div class="logfile-view-actions" v-if="hasLoaded">
-            <div class="logfile-view-actions__navigation">
-                <sba-icon-button :disabled="atTop" @click.native="scrollToTop" icon="step-backward" size="lg"
-                                 icon-class="rotated">
-                </sba-icon-button>
-                <sba-icon-button :disabled="atBottom" @click.native="scrollToBottom" icon="step-forward" size="lg"
-                                 icon-class="rotated">
-                </sba-icon-button>
-            </div>
-            <a class="button" v-if="instance" :href="`instances/${instance.id}/logfile`" target="_blank">
-                <font-awesome-icon icon="download"></font-awesome-icon>&nbsp;Download
-            </a>
-        </div>
-        <p v-if="skippedBytes" v-text="`skipped ${prettyBytes(skippedBytes)}`"></p>
-        <!-- log will be appended here -->
+  <div class="section logfile-view" :class="{ 'is-loading' : !hasLoaded }">
+    <div v-if="error" class="message is-danger">
+      <div class="message-body">
+        <strong>
+          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+          Fetching logfile failed.
+        </strong>
+        <p v-text="error.message"/>
+      </div>
     </div>
+    <div class="logfile-view-actions" v-if="hasLoaded">
+      <div class="logfile-view-actions__navigation">
+        <sba-icon-button :disabled="atTop" @click.native="scrollToTop" icon="step-backward" size="lg"
+                         icon-class="rotated"/>
+        <sba-icon-button :disabled="atBottom" @click.native="scrollToBottom" icon="step-forward" size="lg"
+                         icon-class="rotated"/>
+      </div>
+      <a class="button" v-if="instance" :href="`instances/${instance.id}/logfile`" target="_blank">
+        <font-awesome-icon icon="download"/>&nbsp;Download
+      </a>
+    </div>
+    <p v-if="skippedBytes" v-text="`skipped ${prettyBytes(skippedBytes)}`"/>
+    <!-- log will be appended here -->
+  </div>
 </template>
 
 <script>
   import subscribing from '@/mixins/subscribing';
+  import Instance from '@/services/instance';
   import {animationFrame, Observable} from '@/utils/rxjs';
   import _ from 'lodash';
   import prettyBytes from 'pretty-bytes';
 
   export default {
-    props: ['instance'],
+    props: {
+      instance: {
+        type: Instance,
+        required: true
+      }
+    },
     mixins: [subscribing],
     data: () => ({
       hasLoaded: false,
@@ -59,11 +63,6 @@
       atTop: false,
       skippedBytes: null
     }),
-    watch: {
-      async instance() {
-        this.subscribe();
-      }
-    },
     created() {
       this.scrollParent = null;
     },
@@ -121,38 +120,38 @@
 </script>
 
 <style lang="scss">
-    @import "~@/assets/css/utilities";
+  @import "~@/assets/css/utilities";
 
-    .logfile-view {
-        pre {
-            word-break: break-all;
-            padding: 0;
-            white-space: pre-wrap;
-            width: 100%;
+  .logfile-view {
+    pre {
+      word-break: break-all;
+      padding: 0;
+      white-space: pre-wrap;
+      width: 100%;
 
-            &:hover {
-                background: $grey-lighter;
-            }
-        }
-
-        &-actions {
-            top: (($gap / 2) + $navbar-height-px + $tabs-height-px);
-            right: ($gap /2);
-            display: flex;
-            align-items: center;
-            position: sticky;
-            float: right;
-
-            &__navigation {
-                display: inline-flex;
-                flex-direction: column;
-                justify-content: space-between;
-                margin-right: 0.5rem;
-            }
-        }
+      &:hover {
+        background: $grey-lighter;
+      }
     }
 
-    .rotated {
-        transform: rotate(90deg);
+    &-actions {
+      top: (($gap / 2) + $navbar-height-px + $tabs-height-px);
+      right: ($gap /2);
+      display: flex;
+      align-items: center;
+      position: sticky;
+      float: right;
+
+      &__navigation {
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: space-between;
+        margin-right: 0.5rem;
+      }
     }
+  }
+
+  .rotated {
+    transform: rotate(90deg);
+  }
 </style>

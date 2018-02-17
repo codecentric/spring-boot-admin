@@ -15,9 +15,9 @@
   -->
 
 <template>
-    <div class="datasource-chart">
-        <svg class="datasource-chart__svg"></svg>
-    </div>
+  <div class="datasource-chart">
+    <svg class="datasource-chart__svg"/>
+  </div>
 </template>
 
 <script>
@@ -25,7 +25,12 @@
   import moment from 'moment';
 
   export default {
-    props: ['data'],
+    props: {
+      data: {
+        type: Array,
+        default: () => []
+      }
+    },
     methods: {
       drawChart(_data) {
         const vm = this;

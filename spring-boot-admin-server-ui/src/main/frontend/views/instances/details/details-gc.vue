@@ -15,48 +15,54 @@
   -->
 
 <template>
-    <sba-panel title="Garbage Collection Pauses" v-if="hasLoaded">
-        <div>
-            <div v-if="error" class="message is-danger">
-                <div class="message-body">
-                    <strong>
-                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
-                        Fetching GC metrics failed.
-                    </strong>
-                    <p v-text="error.message"></p>
-                </div>
-            </div>
-            <div class="level" v-if="current">
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Count</p>
-                        <p v-text="current.count"></p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Total time spent</p>
-                        <p v-text="`${current.total_time.asSeconds()}s`"></p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Max time spent</p>
-                        <p v-text="`${current.max.asSeconds()}s`"></p>
-                    </div>
-                </div>
-            </div>
+  <sba-panel title="Garbage Collection Pauses" v-if="hasLoaded">
+    <div>
+      <div v-if="error" class="message is-danger">
+        <div class="message-body">
+          <strong>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            Fetching GC metrics failed.
+          </strong>
+          <p v-text="error.message"/>
         </div>
-    </sba-panel>
+      </div>
+      <div class="level" v-if="current">
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Count</p>
+            <p v-text="current.count"/>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Total time spent</p>
+            <p v-text="`${current.total_time.asSeconds()}s`"/>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Max time spent</p>
+            <p v-text="`${current.max.asSeconds()}s`"/>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sba-panel>
 </template>
 
 <script>
   import subscribing from '@/mixins/subscribing';
+  import Instance from '@/services/instance';
   import {Observable} from '@/utils/rxjs';
   import moment from 'moment';
 
   export default {
-    props: ['instance'],
+    props: {
+      instance: {
+        type: Instance,
+        required: true
+      }
+    },
     mixins: [subscribing],
     data: () => ({
       hasLoaded: false,
@@ -64,9 +70,6 @@
       current: null,
     }),
     watch: {
-      instance() {
-        this.subscribe()
-      },
       dataSource() {
         this.current = null;
       }

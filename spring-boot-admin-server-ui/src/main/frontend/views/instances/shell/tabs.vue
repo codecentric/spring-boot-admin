@@ -15,43 +15,54 @@
   -->
 
 <template>
-    <section class="hero is-primary instance-tabs">
-        <div class="hero-foot">
-            <div class="container">
-                <div class="level">
-                    <div class="level-left">
-                        <div class="instance-tabs__name"
-                             :class="{ 'is-active' : isStuck }">
-                            <h1 class="title is-5" v-if="instance" v-text="instance.registration.name"></h1>
-                            <h1 class="subtitle is-6" v-if="instance" v-text="instance.id"></h1>
-                        </div>
-                    </div>
-                    <div class="level-right">
-                        <nav class="tabs is-boxed is-right">
-                            <ul>
-                                <li v-if="instance" v-for="view in activeViews" :key="view.name"
-                                    :class="{'is-active' : $route.name === view.name}">
-                                    <a v-if="view.href" :href="view.href({ 'instanceId' : instance.id })"
-                                       target="_blank">
-                                        <component :is="view.handle"></component>
-                                    </a>
-                                    <router-link v-else
-                                                 :to="{ name: view.name, params: { 'instanceId' : instance.id } }">
-                                        <component :is="view.handle"></component>
-                                    </router-link>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-                </div>
+  <section class="hero is-primary instance-tabs">
+    <div class="hero-foot">
+      <div class="container">
+        <div class="level">
+          <div class="level-left">
+            <div class="instance-tabs__name"
+                 :class="{ 'is-active' : isStuck }">
+              <h1 class="title is-5" v-if="instance" v-text="instance.registration.name"/>
+              <h1 class="subtitle is-6" v-if="instance" v-text="instance.id"/>
             </div>
+          </div>
+          <div class="level-right">
+            <nav class="tabs is-boxed is-right">
+              <ul>
+                <li v-if="instance" v-for="view in activeViews" :key="view.name"
+                    :class="{'is-active' : $route.name === view.name}">
+                  <a v-if="view.href" :href="view.href({ 'instanceId' : instance.id })"
+                     target="_blank">
+                    <component :is="view.handle"/>
+                  </a>
+                  <router-link v-else
+                               :to="{ name: view.name, params: { 'instanceId' : instance.id } }">
+                    <component :is="view.handle"/>
+                  </router-link>
+                </li>
+              </ul>
+            </nav>
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script>
+  import Instance from '@/services/instance';
+
   export default {
-    props: ['instance', 'views'],
+    props: {
+      instance: {
+        type: Instance,
+        default: null
+      },
+      views: {
+        type: Array,
+        default: () => []
+      }
+    },
     data: () => ({
       isStuck: false
     }),
@@ -81,24 +92,24 @@
 </script>
 
 <style lang="scss">
-    @import "~@/assets/css/utilities";
+  @import "~@/assets/css/utilities";
 
-    .instance-tabs {
-        z-index: 29;
-        position: sticky;
-        top: $navbar-height-px;
-        overflow: hidden;
+  .instance-tabs {
+    z-index: 29;
+    position: sticky;
+    top: $navbar-height-px;
+    overflow: hidden;
 
-        &__name {
-            transition: all $easing $speed;
-            will-change: transform;
-            transform: translateY(41px);
-            visibility: hidden;
+    &__name {
+      transition: all $easing $speed;
+      will-change: transform;
+      transform: translateY(41px);
+      visibility: hidden;
 
-            &.is-active {
-                transform: translateY(0px);
-                visibility: visible;
-            }
-        }
+      &.is-active {
+        transform: translateY(0px);
+        visibility: visible;
+      }
     }
+  }
 </style>

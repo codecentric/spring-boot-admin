@@ -15,31 +15,31 @@
   -->
 
 <template>
-    <table class="table is-fullwidth">
-        <tr>
-            <td>
-                <sba-status v-if="health.status" :status="health.status"></sba-status>
-                <span v-text="name"></span>
-            </td>
-        </tr>
-        <tr v-if="details && details.length > 0">
-            <td>
-                <table class="table ">
-                    <tr v-for="detail in details" :key="detail.name">
-                        <td v-text="detail.name"></td>
-                        <td v-text="detail.value"></td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr v-for="child in childHealth" :key="child.name">
-            <td>
-                <health-diskspace v-if="child.name === 'diskSpace'"
-                                  :name="child.name" :health="child.value"></health-diskspace>
-                <health-default v-else :name="child.name" :health="child.value"></health-default>
-            </td>
-        </tr>
-    </table>
+  <table class="table is-fullwidth">
+    <tr>
+      <td>
+        <sba-status v-if="health.status" :status="health.status"/>
+        <span v-text="name"/>
+      </td>
+    </tr>
+    <tr v-if="details && details.length > 0">
+      <td>
+        <table class="table ">
+          <tr v-for="detail in details" :key="detail.name">
+            <td v-text="detail.name"/>
+            <td v-text="detail.value"/>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr v-for="child in childHealth" :key="child.name">
+      <td>
+        <health-diskspace v-if="child.name === 'diskSpace'"
+                          :name="child.name" :health="child.value"/>
+        <health-default v-else :name="child.name" :health="child.value"/>
+      </td>
+    </tr>
+  </table>
 </template>
 
 <script>
@@ -51,14 +51,18 @@
   };
 
   export default {
-    name: 'health-default',
+    name: 'HealthDefault',
     components: {healthDiskspace},
-
     props: {
-      name: String,
-      health: Object
+      name: {
+        type: String,
+        required: true
+      },
+      health: {
+        type: Object,
+        required: true
+      }
     },
-
     computed: {
       details() {
         if (this.health.details) {

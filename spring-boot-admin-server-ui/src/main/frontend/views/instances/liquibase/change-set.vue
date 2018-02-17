@@ -15,70 +15,75 @@
   -->
 
 <template>
-    <table class="table">
-        <tr>
-            <td>Id</td>
-            <td v-text="changeSet.id"></td>
-        </tr>
-        <tr>
-            <td>Author</td>
-            <td v-text="changeSet.author"></td>
-        </tr>
-        <tr>
-            <td>Change log</td>
-            <td v-text="changeSet.changeLog"></td>
-        </tr>
-        <tr>
-            <td>Description</td>
-            <td v-text="changeSet.description"></td>
-        </tr>
-        <tr>
-            <td>Execution</td>
-            <td>
-                    <span v-text="changeSet.execType" class="tag"
-                          :class="execClass"></span>
-            </td>
-        </tr>
-        <tr>
-            <td>Execution Date</td>
-            <td v-text="changeSet.dateExecuted"></td>
-        </tr>
-        <tr>
-            <td>Execution Order</td>
-            <td v-text="changeSet.orderExecuted"></td>
-        </tr>
-        <tr>
-            <td>Checksum</td>
-            <td v-text="changeSet.checksum"></td>
-        </tr>
-        <tr v-if="changeSet.comments">
-            <td>Comments</td>
-            <td v-text="changeSet.comments"></td>
-        </tr>
-        <tr>
-            <td>Deployment Id</td>
-            <td v-text="changeSet.deploymentId"></td>
-        </tr>
-        <tr v-if="changeSet.tag">
-            <td>Tag</td>
-            <td v-text="changeSet.tag"></td>
-        </tr>
-        <tr v-if="changeSet.contexts && changeSet.contexts.length > 0">
-            <td>Contexts</td>
-            <td v-text="changeSet.contexts"></td>
-        </tr>
-        <tr v-if="changeSet.labels && changeSet.labels.length > 0">
-            <td>Labels</td>
-            <td>
-                <span v-for="label in changeSet.labels" :key="label" class="tag is-info" v-text="label"></span>
-            </td>
-        </tr>
-    </table>
+  <table class="table">
+    <tr>
+      <td>Id</td>
+      <td v-text="changeSet.id"/>
+    </tr>
+    <tr>
+      <td>Author</td>
+      <td v-text="changeSet.author"/>
+    </tr>
+    <tr>
+      <td>Change log</td>
+      <td v-text="changeSet.changeLog"/>
+    </tr>
+    <tr>
+      <td>Description</td>
+      <td v-text="changeSet.description"/>
+    </tr>
+    <tr>
+      <td>Execution</td>
+      <td>
+        <span v-text="changeSet.execType" class="tag"
+              :class="execClass"/>
+      </td>
+    </tr>
+    <tr>
+      <td>Execution Date</td>
+      <td v-text="changeSet.dateExecuted"/>
+    </tr>
+    <tr>
+      <td>Execution Order</td>
+      <td v-text="changeSet.orderExecuted"/>
+    </tr>
+    <tr>
+      <td>Checksum</td>
+      <td v-text="changeSet.checksum"/>
+    </tr>
+    <tr v-if="changeSet.comments">
+      <td>Comments</td>
+      <td v-text="changeSet.comments"/>
+    </tr>
+    <tr>
+      <td>Deployment Id</td>
+      <td v-text="changeSet.deploymentId"/>
+    </tr>
+    <tr v-if="changeSet.tag">
+      <td>Tag</td>
+      <td v-text="changeSet.tag"/>
+    </tr>
+    <tr v-if="changeSet.contexts && changeSet.contexts.length > 0">
+      <td>Contexts</td>
+      <td v-text="changeSet.contexts"/>
+    </tr>
+    <tr v-if="changeSet.labels && changeSet.labels.length > 0">
+      <td>Labels</td>
+      <td>
+        <span v-for="label in changeSet.labels" :key="label" class="tag is-info" v-text="label"/>
+      </td>
+    </tr>
+  </table>
 </template>
 
 <script>
   export default {
-    props: ['changeSet'],
+    props: {
+      changeSet: {
+        type: Object,
+        required: true
+      }
+    },
     computed: {
       execClass() {
         switch (this.changeSet.execType) {

@@ -15,24 +15,25 @@
   -->
 
 <template>
-    <section class="section" :class="{ 'is-loading' : !hasLoaded}">
-        <div class="container" v-if="hasLoaded">
-            <div v-if="error" class="message is-danger">
-                <div class="message-body">
-                    <strong>
-                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
-                        Fetching audit events failed.
-                    </strong>
-                    <p v-text="error.message"></p>
-                </div>
-            </div>
-            <auditevents-list v-if="events" :instance="instance" :events="events"></auditevents-list>
+  <section class="section" :class="{ 'is-loading' : !hasLoaded}">
+    <div class="container" v-if="hasLoaded">
+      <div v-if="error" class="message is-danger">
+        <div class="message-body">
+          <strong>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            Fetching audit events failed.
+          </strong>
+          <p v-text="error.message"/>
         </div>
-    </section>
+      </div>
+      <auditevents-list v-if="events" :instance="instance" :events="events"/>
+    </div>
+  </section>
 </template>
 
 <script>
   import subscribing from '@/mixins/subscribing';
+  import Instance from '@/services/instance';
   import {Observable} from '@/utils/rxjs';
   import AuditeventsList from '@/views/instances/auditevents/auditevents-list';
   import _ from 'lodash';
@@ -66,7 +67,12 @@
   }
 
   export default {
-    props: ['instance'],
+    props: {
+      instance: {
+        type: Instance,
+        required: true
+      }
+    },
     mixins: [subscribing],
     components: {AuditeventsList},
     data: () => ({
@@ -74,11 +80,6 @@
       error: null,
       events: null,
     }),
-    watch: {
-      instance() {
-        this.subscribe();
-      },
-    },
     methods: {
       async fetchAuditevents() {
         const response = await this.instance.fetchAuditevents(this.lastTimestamp);

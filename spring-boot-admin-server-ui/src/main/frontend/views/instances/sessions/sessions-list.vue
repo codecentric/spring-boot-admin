@@ -15,69 +15,78 @@
   -->
 
 <template>
-    <table class="table is-fullwidth">
-        <thead>
-        <tr>
-            <th></th>
-            <th>Session Id</th>
-            <th>Created at</th>
-            <th>Last accessed at</th>
-            <th>Max. inactive<br>interval
-            </th>
-            <th>Attributes</th>
-            <th>
-                <sba-confirm-button class="button"
-                                    :class="{ 'is-loading' : deletingAll === 'deleting', 'is-danger' : deletingAll === 'failed' }"
-                                    :disabled="deletingAll !== null"
-                                    v-if="sessions.length > 1" @click="deleteAllSessions()">
-                    <span v-if="deletingAll === 'deleted'">Deleted</span>
-                    <span v-else-if="deletingAll === 'failed'">Failed</span>
-                    <span v-else><font-awesome-icon icon="trash"></font-awesome-icon>&nbsp;Delete</span>
-                </sba-confirm-button>
-            </th>
-        </tr>
-        </thead>
-        <tr v-for="session in sessions" :key="session.id">
-            <td>
-                <span v-if="session.expired" class="tag is-info">Expired</span>
-            </td>
-            <td>
-                <router-link v-text="session.id"
-                             :to="{ name: 'instance/sessions', params: { 'instanceId' : instance.id}, query: { sessionId : session.id } }">
-                </router-link>
-            </td>
-            <td v-text="session.creationTime.format('L HH:mm:ss.SSS')"></td>
-            <td v-text="session.lastAccessedTime.format('L HH:mm:ss.SSS')"></td>
-            <td>
-                <span v-if="session.maxInactiveInterval >= 0" v-text="`${session.maxInactiveInterval}s`"></span>
-                <span v-else>unlimited</span>
-            </td>
-            <td>
-                <span class="tag" v-for="name in session.attributeNames" :key="`${session.id}-${name}`"
-                      v-text="name"></span>
-            </td>
-            <td>
-                <button class="button"
-                        :class="{ 'is-loading' :  deleting[session.id] === 'deleting', 'is-info' : deleting[session.id] === 'deleted', 'is-danger' : deleting[session.id] === 'failed' }"
-                        :disabled="session.id in deleting" @click="deleteSession(session.id)">
-                    <span v-if="deleting[session.id] === 'deleted'">Deleted</span>
-                    <span v-else-if="deleting[session.id] === 'failed'">Failed</span>
-                    <span v-else><font-awesome-icon icon="trash"></font-awesome-icon>&nbsp;Delete</span>
-                </button>
-            </td>
-        </tr>
-        <tr v-if="sessions.length === 0">
-            <td class="is-muted" colspan="7 ">No sessions found.</td>
-        </tr>
-    </table>
+  <table class="table is-fullwidth">
+    <thead>
+      <tr>
+        <th/>
+        <th>Session Id</th>
+        <th>Created at</th>
+        <th>Last accessed at</th>
+        <th>Max. inactive<br>interval
+        </th>
+        <th>Attributes</th>
+        <th>
+          <sba-confirm-button class="button"
+                              :class="{ 'is-loading' : deletingAll === 'deleting', 'is-danger' : deletingAll === 'failed' }"
+                              :disabled="deletingAll !== null"
+                              v-if="sessions.length > 1" @click="deleteAllSessions()">
+            <span v-if="deletingAll === 'deleted'">Deleted</span>
+            <span v-else-if="deletingAll === 'failed'">Failed</span>
+            <span v-else><font-awesome-icon icon="trash"/>&nbsp;Delete</span>
+          </sba-confirm-button>
+        </th>
+      </tr>
+    </thead>
+    <tr v-for="session in sessions" :key="session.id">
+      <td>
+        <span v-if="session.expired" class="tag is-info">Expired</span>
+      </td>
+      <td>
+        <router-link v-text="session.id"
+                     :to="{ name: 'instance/sessions', params: { 'instanceId' : instance.id}, query: { sessionId : session.id } }"/>
+      </td>
+      <td v-text="session.creationTime.format('L HH:mm:ss.SSS')"/>
+      <td v-text="session.lastAccessedTime.format('L HH:mm:ss.SSS')"/>
+      <td>
+        <span v-if="session.maxInactiveInterval >= 0" v-text="`${session.maxInactiveInterval}s`"/>
+        <span v-else>unlimited</span>
+      </td>
+      <td>
+        <span class="tag" v-for="name in session.attributeNames" :key="`${session.id}-${name}`"
+              v-text="name"/>
+      </td>
+      <td>
+        <button class="button"
+                :class="{ 'is-loading' : deleting[session.id] === 'deleting', 'is-info' : deleting[session.id] === 'deleted', 'is-danger' : deleting[session.id] === 'failed' }"
+                :disabled="session.id in deleting" @click="deleteSession(session.id)">
+          <span v-if="deleting[session.id] === 'deleted'">Deleted</span>
+          <span v-else-if="deleting[session.id] === 'failed'">Failed</span>
+          <span v-else><font-awesome-icon icon="trash"/>&nbsp;Delete</span>
+        </button>
+      </td>
+    </tr>
+    <tr v-if="sessions.length === 0">
+      <td class="is-muted" colspan="7 ">No sessions found.</td>
+    </tr>
+  </table>
 </template>
 
 <script>
+  import Instance from '@/services/instance';
   import {Observable} from '@/utils/rxjs';
   import prettyBytes from 'pretty-bytes';
 
   export default {
-    props: ['sessions', 'instance'],
+    props: {
+      sessions: {
+        type: Array,
+        default: () => []
+      },
+      instance: {
+        type: Instance,
+        required: true
+      }
+    },
     data: () => ({
       deletingAll: null,
       deleting: {},

@@ -15,75 +15,76 @@
   -->
 
 <template>
-    <section class="section" :class="{ 'is-loading' : !hasLoaded}">
-        <div class="container" v-if="hasLoaded">
-            <div v-if="error" class="message is-danger">
-                <div class="message-body">
-                    <strong>
-                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
-                        Fetching traces failed.
-                    </strong>
-                    <p v-text="error.message"></p>
-                </div>
-            </div>
-            <template v-if="traces">
-                <div class="field-body">
-                    <div class="field has-addons">
-                        <p class="control is-expanded">
-                            <input class="input" type="search" placeholder="path filter" v-model="filter">
-                        </p>
-                        <p class="control">
-                    <span class="button is-static">
-                        <span v-text="filteredTraces.length"></span>
-                        /
-                        <span v-text="traces.length"></span>
-                    </span>
-                        </p>
-                    </div>
-                </div>
-                <div class="field-body">
-                    <div class="field is-narrow">
-                        <div class="control">
-                            <label class="checkbox">
-                                <input type="checkbox" v-model="showSuccess">
-                                success
-                            </label>
-                        </div>
-                    </div>
-                    <div class="field is-narrow">
-                        <div class="control">
-                            <label class="checkbox">
-                                <input type="checkbox" v-model="showClientErrors">
-                                client errors
-                            </label>
-                        </div>
-                    </div>
-                    <div class="field is-narrow">
-                        <div class="control">
-                            <label class="checkbox">
-                                <input type="checkbox" v-model="showServerErrors">
-                                server errors
-                            </label>
-                        </div>
-                    </div>
-                    <div class="field is-narrow" v-if="actuatorPath">
-                        <div class="control">
-                            <label class="checkbox">
-                                <input type="checkbox" v-model="excludeActuator">
-                                exclude <span v-text="actuatorPath"></span>/**
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <sba-traces-chart :traces="filteredTraces" @selected="(d) => selection = d"></sba-traces-chart>
-                <sba-traces-list :traces="selectedTraces"></sba-traces-list>
-            </template>
+  <section class="section" :class="{ 'is-loading' : !hasLoaded}">
+    <div class="container" v-if="hasLoaded">
+      <div v-if="error" class="message is-danger">
+        <div class="message-body">
+          <strong>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            Fetching traces failed.
+          </strong>
+          <p v-text="error.message"/>
         </div>
-    </section>
+      </div>
+      <template v-if="traces">
+        <div class="field-body">
+          <div class="field has-addons">
+            <p class="control is-expanded">
+              <input class="input" type="search" placeholder="path filter" v-model="filter">
+            </p>
+            <p class="control">
+              <span class="button is-static">
+                <span v-text="filteredTraces.length"/>
+                /
+                <span v-text="traces.length"/>
+              </span>
+            </p>
+          </div>
+        </div>
+        <div class="field-body">
+          <div class="field is-narrow">
+            <div class="control">
+              <label class="checkbox">
+                <input type="checkbox" v-model="showSuccess">
+                success
+              </label>
+            </div>
+          </div>
+          <div class="field is-narrow">
+            <div class="control">
+              <label class="checkbox">
+                <input type="checkbox" v-model="showClientErrors">
+                client errors
+              </label>
+            </div>
+          </div>
+          <div class="field is-narrow">
+            <div class="control">
+              <label class="checkbox">
+                <input type="checkbox" v-model="showServerErrors">
+                server errors
+              </label>
+            </div>
+          </div>
+          <div class="field is-narrow" v-if="actuatorPath">
+            <div class="control">
+              <label class="checkbox">
+                <input type="checkbox" v-model="excludeActuator">
+                exclude <span v-text="actuatorPath"/>/**
+              </label>
+            </div>
+          </div>
+        </div>
+        <sba-traces-chart :traces="filteredTraces" @selected="(d) => selection = d"/>
+        <sba-traces-list :traces="selectedTraces"/>
+      </template>
+    </div>
+  </section>
 </template>
 
 <script>
   import subscribing from '@/mixins/subscribing';
+  import Instance from '@/services/instance';
   import {Observable} from '@/utils/rxjs';
   import moment from 'moment';
   import sbaTracesChart from './traces-chart';
@@ -137,7 +138,12 @@
   }
 
   export default {
-    props: ['instance'],
+    props: {
+      instance: {
+        type: Instance,
+        required: true
+      }
+    },
     mixins: [subscribing],
     components: {
       sbaTracesList, sbaTracesChart
@@ -174,11 +180,6 @@
         const [start, end] = this.selection;
         return this.filteredTraces.filter(trace => !trace.timestamp.isBefore(start) && !trace.timestamp.isAfter(end));
       }
-    },
-    watch: {
-      instance() {
-        this.subscribe();
-      },
     },
     methods: {
       async fetchHttptrace() {

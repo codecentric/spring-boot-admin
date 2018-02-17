@@ -15,28 +15,34 @@
   -->
 
 <template>
-    <sba-panel title="Health">
-        <div>
-            <div v-if="error" class="message is-danger">
-                <div class="message-body">
-                    <strong>
-                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
-                        Fetching health failed.
-                    </strong>
-                    <p v-text="error.message"></p>
-                </div>
-            </div>
-            <health-default v-if="health" name="Instance" :health="health"></health-default>
+  <sba-panel title="Health">
+    <div>
+      <div v-if="error" class="message is-danger">
+        <div class="message-body">
+          <strong>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            Fetching health failed.
+          </strong>
+          <p v-text="error.message"/>
         </div>
-    </sba-panel>
+      </div>
+      <health-default v-if="health" name="Instance" :health="health"/>
+    </div>
+  </sba-panel>
 </template>
 
 <script>
+  import Instance from '@/services/instance';
   import healthDefault from './health/health-default';
 
   export default {
     components: {healthDefault},
-    props: ['instance'],
+    props: {
+      instance: {
+        type: Instance,
+        required: true
+      }
+    },
     data: () => ({
       hasLoaded: false,
       error: null,
@@ -44,11 +50,6 @@
     }),
     created() {
       this.fetchHealth();
-    },
-    watch: {
-      instance() {
-        this.fetchHealth();
-      }
     },
     methods: {
       async fetchHealth() {

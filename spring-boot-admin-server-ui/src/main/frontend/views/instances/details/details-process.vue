@@ -15,55 +15,61 @@
   -->
 
 <template>
-    <sba-panel title="Process" v-if="hasLoaded">
-        <div>
-            <div v-if="error" class="message is-danger">
-                <div class="message-body">
-                    <strong>
-                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
-                        Fetching process metrics failed.
-                    </strong>
-                    <p v-text="error.message"></p>
-                </div>
-            </div>
-            <div class="level">
-                <div class="level-item has-text-centered" v-if="pid">
-                    <div>
-                        <p class="heading">PID</p>
-                        <p v-text="pid"></p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered" v-if="metrics['process.uptime']">
-                    <div>
-                        <p class="heading">Uptime</p>
-                        <p>
-                            <process-uptime :value="metrics['process.uptime']"></process-uptime>
-                        </p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered" v-if="metrics['system.cpu.count']">
-                    <div>
-                        <p class="heading">CPUs</p>
-                        <p v-text="metrics['system.cpu.count']"></p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered" v-if="metrics['system.load.average.1m']">
-                    <div>
-                        <p class="heading">System Load (last 1m)</p>
-                        <p v-text="metrics['system.load.average.1m'].toFixed(2)"></p>
-                    </div>
-                </div>
-            </div>
+  <sba-panel title="Process" v-if="hasLoaded">
+    <div>
+      <div v-if="error" class="message is-danger">
+        <div class="message-body">
+          <strong>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            Fetching process metrics failed.
+          </strong>
+          <p v-text="error.message"/>
         </div>
-    </sba-panel>
+      </div>
+      <div class="level">
+        <div class="level-item has-text-centered" v-if="pid">
+          <div>
+            <p class="heading">PID</p>
+            <p v-text="pid"/>
+          </div>
+        </div>
+        <div class="level-item has-text-centered" v-if="metrics['process.uptime']">
+          <div>
+            <p class="heading">Uptime</p>
+            <p>
+              <process-uptime :value="metrics['process.uptime']"/>
+            </p>
+          </div>
+        </div>
+        <div class="level-item has-text-centered" v-if="metrics['system.cpu.count']">
+          <div>
+            <p class="heading">CPUs</p>
+            <p v-text="metrics['system.cpu.count']"/>
+          </div>
+        </div>
+        <div class="level-item has-text-centered" v-if="metrics['system.load.average.1m']">
+          <div>
+            <p class="heading">System Load (last 1m)</p>
+            <p v-text="metrics['system.load.average.1m'].toFixed(2)"/>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sba-panel>
 </template>
 
 <script>
-  import _ from 'lodash';
-  import processUptime from './process-uptime'
+  import Instance from '@/services/instance';
+  import _ from 'lodash'
+  import processUptime from './process-uptime';
 
   export default {
-    props: ['instance'],
+    props: {
+      instance: {
+        type: Instance,
+        required: true
+      }
+    },
     components: {processUptime},
     data: () => ({
       hasLoaded: false,
@@ -78,12 +84,6 @@
     created() {
       this.fetchMetrics();
       this.fetchPid();
-    },
-    watch: {
-      instance() {
-        this.fetchMetrics();
-        this.fetchPid();
-      }
     },
     methods: {
       async fetchMetrics() {

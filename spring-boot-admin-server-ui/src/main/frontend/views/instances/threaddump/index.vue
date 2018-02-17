@@ -15,31 +15,37 @@
   -->
 
 <template>
-    <section class="section" :class="{ 'is-loading' : !hasLoaded }">
-        <div class="container" v-if="hasLoaded">
-            <div v-if="error" class="message is-danger">
-                <div class="message-body">
-                    <strong>
-                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
-                        Fetching threaddump failed.
-                    </strong>
-                    <p v-text="error.message"></p>
-                </div>
-            </div>
-            <threads-list v-if="threads" :thread-timelines="threads"></threads-list>
+  <section class="section" :class="{ 'is-loading' : !hasLoaded }">
+    <div class="container" v-if="hasLoaded">
+      <div v-if="error" class="message is-danger">
+        <div class="message-body">
+          <strong>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            Fetching threaddump failed.
+          </strong>
+          <p v-text="error.message"/>
         </div>
-    </section>
+      </div>
+      <threads-list v-if="threads" :thread-timelines="threads"/>
+    </div>
+  </section>
 </template>
 
 <script>
   import subscribing from '@/mixins/subscribing';
+  import Instance from '@/services/instance';
   import {Observable} from '@/utils/rxjs';
   import _ from 'lodash';
   import moment from 'moment-shortformat';
   import threadsList from './threads-list';
 
   export default {
-    props: ['instance'],
+    props: {
+      instance: {
+        type: Instance,
+        required: true
+      }
+    },
     mixins: [subscribing],
     components: {
       threadsList
@@ -50,11 +56,6 @@
       threads: null
     }),
     computed: {},
-    watch: {
-      instance() {
-        this.subscribe()
-      },
-    },
     methods: {
       updateTimelines(threads) {
         const vm = this;

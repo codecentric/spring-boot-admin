@@ -15,50 +15,56 @@
   -->
 
 <template>
-    <sba-panel title="Threads" v-if="hasLoaded">
-        <div>
-            <div v-if="error" class="message is-danger">
-                <div class="message-body">
-                    <strong>
-                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
-                        Fetching threads metrics failed.
-                    </strong>
-                    <p v-text="error.message"></p>
-                </div>
-            </div>
-            <div class="level threads-current" v-if="current">
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading has-bullet has-bullet-warning">Live</p>
-                        <p v-text="current.live"></p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading  has-bullet has-bullet-info">Daemon</p>
-                        <p v-text="current.daemon"></p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Peak Live</p>
-                        <p v-text="current.peak"></p>
-                    </div>
-                </div>
-            </div>
-            <threads-chart v-if="chartData.length > 0" :data="chartData"></threads-chart>
+  <sba-panel title="Threads" v-if="hasLoaded">
+    <div>
+      <div v-if="error" class="message is-danger">
+        <div class="message-body">
+          <strong>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            Fetching threads metrics failed.
+          </strong>
+          <p v-text="error.message"/>
         </div>
-    </sba-panel>
+      </div>
+      <div class="level threads-current" v-if="current">
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading has-bullet has-bullet-warning">Live</p>
+            <p v-text="current.live"/>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading  has-bullet has-bullet-info">Daemon</p>
+            <p v-text="current.daemon"/>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Peak Live</p>
+            <p v-text="current.peak"/>
+          </div>
+        </div>
+      </div>
+      <threads-chart v-if="chartData.length > 0" :data="chartData"/>
+    </div>
+  </sba-panel>
 </template>
 
 <script>
   import subscribing from '@/mixins/subscribing';
+  import Instance from '@/services/instance';
   import {Observable} from '@/utils/rxjs';
   import moment from 'moment';
   import threadsChart from './threads-chart';
 
   export default {
-    props: ['instance'],
+    props: {
+      instance: {
+        type: Instance,
+        required: true
+      }
+    },
     mixins: [subscribing],
     components: {threadsChart},
     data: () => ({
@@ -68,9 +74,6 @@
       chartData: [],
     }),
     watch: {
-      instance() {
-        this.subscribe()
-      },
       dataSource() {
         this.current = null;
         this.chartData = [];
@@ -112,7 +115,7 @@
 </script>
 
 <style lang="scss">
-    .threads-current {
-        margin-bottom: 0 !important;
-    }
+  .threads-current {
+    margin-bottom: 0 !important;
+  }
 </style>

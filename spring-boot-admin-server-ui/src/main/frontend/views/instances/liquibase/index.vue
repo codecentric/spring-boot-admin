@@ -15,33 +15,39 @@
   -->
 
 <template>
-    <section class="section" :class="{ 'is-loading' : !hasLoaded }">
-        <div class="container" v-if="hasLoaded">
-            <div v-if="error" class="message is-danger">
-                <div class="message-body">
-                    <strong>
-                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
-                        Fetching Liquibase migrations failed.
-                    </strong>
-                    <p v-text="error.message"></p>
-                </div>
-            </div>
-            <template v-for="(report, name) in reports">
-                <h4 class="title" v-text="name" :key="name"></h4>
-                <sba-panel v-for="changeSet in report.changeSets" :key="`${name}-${changeSet.id}`"
-                           :title="`${changeSet.id}: ${changeSet.description}`" class="change-set">
-                    <change-set :change-set="changeSet"></change-set>
-                </sba-panel>
-            </template>
+  <section class="section" :class="{ 'is-loading' : !hasLoaded }">
+    <div class="container" v-if="hasLoaded">
+      <div v-if="error" class="message is-danger">
+        <div class="message-body">
+          <strong>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            Fetching Liquibase migrations failed.
+          </strong>
+          <p v-text="error.message"/>
         </div>
-    </section>
+      </div>
+      <template v-for="(report, name) in reports">
+        <h4 class="title" v-text="name" :key="name"/>
+        <sba-panel v-for="changeSet in report.changeSets" :key="`${name}-${changeSet.id}`"
+                   :title="`${changeSet.id}: ${changeSet.description}`" class="change-set">
+          <change-set :change-set="changeSet"/>
+        </sba-panel>
+      </template>
+    </div>
+  </section>
 </template>
 
 <script>
-  import changeSet from './change-set'
+  import Instance from '@/services/instance';
+  import changeSet from './change-set';
 
   export default {
-    props: ['instance'],
+    props: {
+      instance: {
+        type: Instance,
+        required: true
+      }
+    },
     components: {
       changeSet
     },
@@ -53,11 +59,6 @@
     computed: {},
     created() {
       this.fetchLiquibase();
-    },
-    watch: {
-      instance() {
-        this.fetchLiquibase();
-      }
     },
     methods: {
       async fetchLiquibase() {
@@ -78,11 +79,11 @@
 </script>
 
 <style lang="scss">
-    @import "~@/assets/css/utilities";
+  @import "~@/assets/css/utilities";
 
-    .change-set .card-header {
-        position: sticky;
-        background: $white;
-        top: ($navbar-height-px + $tabs-height-px);
-    }
+  .change-set .card-header {
+    position: sticky;
+    background: $white;
+    top: ($navbar-height-px + $tabs-height-px);
+  }
 </style>

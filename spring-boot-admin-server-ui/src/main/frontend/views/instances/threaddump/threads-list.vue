@@ -15,91 +15,90 @@
   -->
 
 <template>
-    <table class="threads table is-fullwidth">
-        <thead>
-        <tr>
-            <th class="threads__thread-name">Name</th>
-            <th class="threads__timeline">
-                <svg class="threads__scale" height="24px"></svg>
-            </th>
+  <table class="threads table is-fullwidth">
+    <thead>
+      <tr>
+        <th class="threads__thread-name">Name</th>
+        <th class="threads__timeline">
+          <svg class="threads__scale" height="24px"/>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <template v-for="thread in threadTimelines">
+        <tr class="is-selectable" :key="thread.threadId"
+            @click="showDetails[thread.threadId] ? $delete(showDetails, thread.threadId) : $set(showDetails, thread.threadId, true)">
+          <td class="threads__thread-name">
+            <thread-tag :thread-state="thread.threadState"/>
+            <span v-text="thread.threadName"/>
+          </td>
+          <td class="threads__timeline">
+            <svg :id="`thread-${thread.threadId}`" height="26px"/>
+          </td>
         </tr>
-        </thead>
-        <tbody>
-        <template v-for="thread in threadTimelines">
-            <tr class="is-selectable" :key="thread.threadId"
-                @click="showDetails[thread.threadId] ? $delete(showDetails, thread.threadId) : $set(showDetails, thread.threadId, true)">
-                <td class="threads__thread-name">
-                    <thread-tag :thread-state="thread.threadState"></thread-tag>
-                    <span v-text="thread.threadName"></span>
-                </td>
-                <td class="threads__timeline">
-                    <svg :id="`thread-${thread.threadId}`" height="26px"></svg>
-                </td>
-            </tr>
-            <tr :key="`${thread.threadId}-detail`"
-                v-if="showDetails[thread.threadId]">
-                <td colspan="2">
-                    <table class="table is-narrow">
-                        <tr>
-                            <td>Thread Id</td>
-                            <td v-text="thread.threadId"></td>
-                        </tr>
-                        <tr>
-                            <td>Thread name</td>
-                            <td v-text="thread.threadName"></td>
-                        </tr>
-                        <tr>
-                            <td>Thread state</td>
-                            <td v-text="thread.threadState"></td>
-                        </tr>
-                        <template v-if="thread.details !== null">
-                            <tr>
-                                <td>Blocked count</td>
-                                <td v-text="thread.details.blockedCount"></td>
-                            </tr>
-                            <tr>
-                                <td>Blocked time</td>
-                                <td v-text="thread.details.blockedTime"></td>
-                            </tr>
-                            <tr>
-                                <td>Waited count</td>
-                                <td v-text="thread.details.waitedCount"></td>
-                            </tr>
-                            <tr>
-                                <td>Waited time</td>
-                                <td v-text="thread.details.waitedTime"></td>
-                            </tr>
-                            <tr>
-                                <td>Lock name</td>
-                                <td v-text="thread.details.lockName"></td>
-                            </tr>
-                            <tr>
-                                <td>Lock owner id</td>
-                                <td v-text="thread.details.lockOwnerId"></td>
-                            </tr>
-                            <tr>
-                                <td>Lock owner name</td>
-                                <td v-text="thread.details.lockOwnerName"></td>
-                            </tr>
-                            <tr v-if="thread.details.stackTrace.length > 0">
-                                <td colspan="2">Stacktrace
-                                    <pre><template
-                                            v-for="(frame, idx) in thread.details.stackTrace"><span
-                                            :key="`frame-${thread.threadId}-${idx}`"
-                                            v-text="`${frame.className}.${frame.methodName}(${frame.fileName}:${frame.lineNumber})`"></span> <span
-                                            :key="`frame-${thread.threadId}-${idx}-native`"
-                                            class="tag is-dark" v-if="frame.nativeMethod">native</span>
-</template></pre>
-                                </td>
-                            </tr>
-                        </template>
-                    </table>
-
-                </td>
-            </tr>
-        </template>
-        </tbody>
-    </table>
+        <tr :key="`${thread.threadId}-detail`"
+            v-if="showDetails[thread.threadId]">
+          <td colspan="2">
+            <table class="table is-narrow">
+              <tr>
+                <td>Thread Id</td>
+                <td v-text="thread.threadId"/>
+              </tr>
+              <tr>
+                <td>Thread name</td>
+                <td v-text="thread.threadName"/>
+              </tr>
+              <tr>
+                <td>Thread state</td>
+                <td v-text="thread.threadState"/>
+              </tr>
+              <template v-if="thread.details !== null">
+                <tr>
+                  <td>Blocked count</td>
+                  <td v-text="thread.details.blockedCount"/>
+                </tr>
+                <tr>
+                  <td>Blocked time</td>
+                  <td v-text="thread.details.blockedTime"/>
+                </tr>
+                <tr>
+                  <td>Waited count</td>
+                  <td v-text="thread.details.waitedCount"/>
+                </tr>
+                <tr>
+                  <td>Waited time</td>
+                  <td v-text="thread.details.waitedTime"/>
+                </tr>
+                <tr>
+                  <td>Lock name</td>
+                  <td v-text="thread.details.lockName"/>
+                </tr>
+                <tr>
+                  <td>Lock owner id</td>
+                  <td v-text="thread.details.lockOwnerId"/>
+                </tr>
+                <tr>
+                  <td>Lock owner name</td>
+                  <td v-text="thread.details.lockOwnerName"/>
+                </tr>
+                <tr v-if="thread.details.stackTrace.length > 0">
+                  <td colspan="2">Stacktrace
+                    <pre><template
+                      v-for="(frame, idx) in thread.details.stackTrace"><span
+                      :key="`frame-${thread.threadId}-${idx}`"
+                      v-text="`${frame.className}.${frame.methodName}(${frame.fileName}:${frame.lineNumber})`"/> <span
+                      :key="`frame-${thread.threadId}-${idx}-native`"
+                      class="tag is-dark" v-if="frame.nativeMethod">native</span>
+                    </template></pre>
+                  </td>
+                </tr>
+              </template>
+            </table>
+          </td>
+        </tr>
+      </template>
+    </tbody>
+  </table>
 </template>
 <script>
   import d3 from '@/utils/d3';
@@ -110,7 +109,12 @@
   const maxPixelsPerSeconds = 15;
 
   export default {
-    props: ['threadTimelines'],
+    props: {
+      threadTimelines: {
+        type: Object,
+        required: true
+      }
+    },
     data: () => ({
       showDetails: {},
       lastEndPosition: 0
@@ -123,10 +127,10 @@
     },
     watch: {
       threadTimelines: {
+        deep: true,
         handler(newVal) {
           this.drawTimelines(newVal);
-        },
-        deep: true
+        }
       }
     },
     methods: {

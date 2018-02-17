@@ -15,7 +15,7 @@
   -->
 
 <template>
-    <div v-html="yaml" class="yaml"></div>
+  <div v-html="yaml" class="yaml"/>
 </template>
 
 <script>
@@ -23,8 +23,12 @@
   import yaml from 'yamljs';
 
   export default {
-    props: ['value'],
-
+    props: {
+      value: {
+        type: null,
+        required: true
+      },
+    },
     computed: {
       yaml() {
         return linkify(yaml.stringify(this.value, 2), 50);
@@ -34,7 +38,7 @@
 </script>
 
 <style lang="scss">
-    .yaml {
-        white-space: pre;
-    }
+  .yaml {
+    white-space: pre;
+  }
 </style>

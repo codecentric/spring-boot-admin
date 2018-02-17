@@ -15,39 +15,39 @@
   -->
 
 <template>
-    <div class="trace-chart">
-        <div class="trace-chart__tooltip"
-             v-if="tooltipSelection "
-             :class="`trace-chart__tooltip--${this.x(tooltipSelection[0]) > this.width / 2 ? 'left' : 'right'}`">
-            <table class="is-narrow is-size-7">
-                <tr>
-                    <th>total requests</th>
-                    <td v-text="tooltipContent.totalCount"></td>
-                </tr>
-                <tr>
-                    <th>successful</th>
-                    <td v-text="tooltipContent.totalSuccess"></td>
-                </tr>
-                <tr>
-                    <th>status 4xx</th>
-                    <td v-text="tooltipContent.totalClientErrors"></td>
-                </tr>
-                <tr>
-                    <th>status 5xx</th>
-                    <td v-text="tooltipContent.totalServerErrors"></td>
-                </tr>
-                <tr>
-                    <th>max duration</th>
-                    <td v-text="`${tooltipContent.maxTime}ms`"></td>
-                </tr>
-                <tr>
-                    <th>ø duration</th>
-                    <td v-text="`${tooltipContent.totalCount >0 ? Math.floor(tooltipContent.totalTime / tooltipContent.totalCount) : 0}ms`"></td>
-                </tr>
-            </table>
-        </div>
-        <svg class="trace-chart__svg"></svg>
+  <div class="trace-chart">
+    <div class="trace-chart__tooltip"
+         v-if="tooltipSelection "
+         :class="`trace-chart__tooltip--${this.x(tooltipSelection[0]) > this.width / 2 ? 'left' : 'right'}`">
+      <table class="is-narrow is-size-7">
+        <tr>
+          <th>total requests</th>
+          <td v-text="tooltipContent.totalCount"/>
+        </tr>
+        <tr>
+          <th>successful</th>
+          <td v-text="tooltipContent.totalSuccess"/>
+        </tr>
+        <tr>
+          <th>status 4xx</th>
+          <td v-text="tooltipContent.totalClientErrors"/>
+        </tr>
+        <tr>
+          <th>status 5xx</th>
+          <td v-text="tooltipContent.totalServerErrors"/>
+        </tr>
+        <tr>
+          <th>max duration</th>
+          <td v-text="`${tooltipContent.maxTime}ms`"/>
+        </tr>
+        <tr>
+          <th>ø duration</th>
+          <td v-text="`${tooltipContent.avgTime}ms`"/>
+        </tr>
+      </table>
     </div>
+    <svg class="trace-chart__svg"/>
+  </div>
 </template>
 
 <script>
@@ -58,7 +58,12 @@
 
   const interval = 1000;
   export default {
-    props: ['traces'],
+    props: {
+      traces: {
+        type: Array,
+        default: () => []
+      }
+    },
     data: () => ({
       brushSelection: null,
       hovered: null
@@ -111,7 +116,7 @@
       },
       tooltipContent() {
         const selection = this.tooltipSelection;
-        return this.chartData.filter(
+        const totals = this.chartData.filter(
           bucket => bucket.timeStart.valueOf() >= selection[0] && bucket.timeStart.valueOf() < selection[1]
         ).reduce(
           (current, next) => ({
@@ -121,16 +126,18 @@
             totalServerErrors: current.totalServerErrors + next.totalServerErrors,
             totalTime: current.totalTime + next.totalTime,
             maxTime: Math.max(current.maxTime, next.maxTime)
-          }),
-          {
+          }), {
             totalCount: 0,
             totalSuccess: 0,
             totalClientErrors: 0,
             totalServerErrors: 0,
             totalTime: 0,
             maxTime: 0
-          }
-        );
+          });
+        return {
+          ...totals,
+          avgTime: totals.totalCount > 0 ? Math.floor(totals.totalTime / totals.totalCount) : 0
+        };
       }
     },
     methods: {
@@ -278,81 +285,81 @@
 </script>
 
 <style lang="scss">
-    @import "~@/assets/css/utilities";
+  @import "~@/assets/css/utilities";
 
-    .trace-chart {
-        &__svg {
-            height: 200px;
-            width: 100%;
-        }
-
-        &__hover {
-            stroke: $grey-light;
-            stroke-width: 1px;
-        }
-
-        &__tooltip {
-            position: absolute;
-            background: $black;
-            opacity: 0.8;
-            pointer-events: none;
-            border-radius: $radius-large;
-            padding: 0.825em;
-            width: 200px;
-
-            & table th,
-            & table td {
-                border: none;
-                color: $grey-light;
-                padding: 0.25em 0.75em;
-            }
-
-            & table td {
-                text-align: right;
-            }
-
-            &--left {
-                left: 5px;
-            }
-            &--right {
-                right: 5px;
-            }
-        }
-
-        & .selection {
-            stroke: none;
-            fill: rgba(0, 0, 0, 0.2);
-            fill-opacity: 1;
-        }
-
-        &__axis-y {
-            & .domain {
-                stroke: none;
-            }
-
-            .tick:not(:first-of-type) {
-                & line {
-                    stroke-dasharray: 2, 2;
-                    stroke: $grey-light;
-                }
-            }
-        }
-
-        &__area {
-            &--totalSuccess {
-                fill: $success;
-                opacity: 0.8;
-            }
-
-            &--totalClientErrors {
-                fill: $warning;
-                opacity: 0.8;
-            }
-
-            &--totalServerErrors {
-                fill: $danger;
-                opacity: 0.8;
-            }
-        }
+  .trace-chart {
+    &__svg {
+      height: 200px;
+      width: 100%;
     }
+
+    &__hover {
+      stroke: $grey-light;
+      stroke-width: 1px;
+    }
+
+    &__tooltip {
+      position: absolute;
+      background: $black;
+      opacity: 0.8;
+      pointer-events: none;
+      border-radius: $radius-large;
+      padding: 0.825em;
+      width: 200px;
+
+      & table th,
+      & table td {
+        border: none;
+        color: $grey-light;
+        padding: 0.25em 0.75em;
+      }
+
+      & table td {
+        text-align: right;
+      }
+
+      &--left {
+        left: 5px;
+      }
+      &--right {
+        right: 5px;
+      }
+    }
+
+    & .selection {
+      stroke: none;
+      fill: rgba(0, 0, 0, 0.2);
+      fill-opacity: 1;
+    }
+
+    &__axis-y {
+      & .domain {
+        stroke: none;
+      }
+
+      .tick:not(:first-of-type) {
+        & line {
+          stroke-dasharray: 2, 2;
+          stroke: $grey-light;
+        }
+      }
+    }
+
+    &__area {
+      &--totalSuccess {
+        fill: $success;
+        opacity: 0.8;
+      }
+
+      &--totalClientErrors {
+        fill: $warning;
+        opacity: 0.8;
+      }
+
+      &--totalServerErrors {
+        fill: $danger;
+        opacity: 0.8;
+      }
+    }
+  }
 </style>

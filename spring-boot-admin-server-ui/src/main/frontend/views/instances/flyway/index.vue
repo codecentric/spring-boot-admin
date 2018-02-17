@@ -15,57 +15,64 @@
   -->
 
 <template>
-    <section class="section" :class="{ 'is-loading' : !hasLoaded }">
-        <div class="container" v-if="hasLoaded">
-            <div v-if="error" class="message is-danger">
-                <div class="message-body">
-                    <strong>
-                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
-                        Fetching Flyway reports failed.
-                    </strong>
-                    <p v-text="error.message"></p>
-                </div>
-            </div>
-            <sba-panel v-for="(report, name) in reports" :key="name" :title="name" class="migration">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Type</th>
-                        <th>Checksum</th>
-                        <th>Version</th>
-                        <th>Description</th>
-                        <th>Script</th>
-                        <th>State</th>
-                        <th>Installed by</th>
-                        <th>Installed on</th>
-                        <th>Installed rank</th>
-                        <th>Execution Time</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="migration in report.migrations" :key="migration.checksum">
-                        <td v-text="migration.type"></td>
-                        <td v-text="migration.checksum"></td>
-                        <td v-text="migration.version"></td>
-                        <td v-text="migration.description"></td>
-                        <td v-text="migration.script"></td>
-                        <td><span v-text="migration.state" class="tag"
-                                  :class="stateClass(migration.state)"></span></td>
-                        <td v-text="migration.installedBy"></td>
-                        <td v-text="migration.installedOn"></td>
-                        <td v-text="migration.installedRank"></td>
-                        <td v-text="`${migration.executionTime}ms`"></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </sba-panel>
+  <section class="section" :class="{ 'is-loading' : !hasLoaded }">
+    <div class="container" v-if="hasLoaded">
+      <div v-if="error" class="message is-danger">
+        <div class="message-body">
+          <strong>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            Fetching Flyway reports failed.
+          </strong>
+          <p v-text="error.message"/>
         </div>
-    </section>
+      </div>
+      <sba-panel v-for="(report, name) in reports" :key="name" :title="name" class="migration">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Checksum</th>
+              <th>Version</th>
+              <th>Description</th>
+              <th>Script</th>
+              <th>State</th>
+              <th>Installed by</th>
+              <th>Installed on</th>
+              <th>Installed rank</th>
+              <th>Execution Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="migration in report.migrations" :key="migration.checksum">
+              <td v-text="migration.type"/>
+              <td v-text="migration.checksum"/>
+              <td v-text="migration.version"/>
+              <td v-text="migration.description"/>
+              <td v-text="migration.script"/>
+              <td><span v-text="migration.state" class="tag"
+                        :class="stateClass(migration.state)"/></td>
+              <td v-text="migration.installedBy"/>
+              <td v-text="migration.installedOn"/>
+              <td v-text="migration.installedRank"/>
+              <td v-text="`${migration.executionTime}ms`"/>
+            </tr>
+          </tbody>
+        </table>
+      </sba-panel>
+    </div>
+  </section>
 </template>
 
 <script>
+  import Instance from '@/services/instance';
+
   export default {
-    props: ['instance'],
+    props: {
+      instance: {
+        type: Instance,
+        required: true
+      }
+    },
     data: () => ({
       hasLoaded: false,
       error: null,
@@ -74,11 +81,6 @@
     computed: {},
     created() {
       this.fetchFlyway();
-    },
-    watch: {
-      instance() {
-        this.fetchFlyway();
-      }
     },
     methods: {
       async fetchFlyway() {
@@ -121,11 +123,11 @@
 </script>
 
 <style lang="scss">
-    @import "~@/assets/css/utilities";
+  @import "~@/assets/css/utilities";
 
-    .migration .card-header {
-        position: sticky;
-        background: $white;
-        top: ($navbar-height-px + $tabs-height-px);
-    }
+  .migration .card-header {
+    position: sticky;
+    background: $white;
+    top: ($navbar-height-px + $tabs-height-px);
+  }
 </style>

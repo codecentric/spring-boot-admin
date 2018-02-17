@@ -15,51 +15,61 @@
   -->
 
 <template>
-    <sba-panel :title="`Datasource: ${dataSource}`" v-if="hasLoaded">
-        <div>
-            <div v-if="error" class="message is-danger">
-                <div class="message-body">
-                    <strong>
-                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
-                        Fetching datasource metrics failed.
-                    </strong>
-                    <p v-text="error.message"></p>
-                </div>
-            </div>
-            <div class="level datasource-current" v-if="current">
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading has-bullet has-bullet-info">Active connections</p>
-                        <p v-text="current.active"></p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Min connections</p>
-                        <p v-text="current.min"></p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Max connections</p>
-                        <p v-if="current.max >= 0" v-text="current.max"></p>
-                        <p v-else>unlimited</p>
-                    </div>
-                </div>
-            </div>
-            <datasource-chart v-if="chartData.length > 0" :data="chartData"></datasource-chart>
+  <sba-panel :title="`Datasource: ${dataSource}`" v-if="hasLoaded">
+    <div>
+      <div v-if="error" class="message is-danger">
+        <div class="message-body">
+          <strong>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            Fetching datasource metrics failed.
+          </strong>
+          <p v-text="error.message"/>
         </div>
-    </sba-panel>
+      </div>
+      <div class="level datasource-current" v-if="current">
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading has-bullet has-bullet-info">Active connections</p>
+            <p v-text="current.active"/>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Min connections</p>
+            <p v-text="current.min"/>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Max connections</p>
+            <p v-if="current.max >= 0" v-text="current.max"/>
+            <p v-else>unlimited</p>
+          </div>
+        </div>
+      </div>
+      <datasource-chart v-if="chartData.length > 0" :data="chartData"/>
+    </div>
+  </sba-panel>
 </template>
 
 <script>
   import subscribing from '@/mixins/subscribing';
+  import Instance from '@/services/instance';
   import {Observable} from '@/utils/rxjs';
   import moment from 'moment';
   import datasourceChart from './datasource-chart';
 
   export default {
-    props: ['instance', 'dataSource'],
+    props: {
+      instance: {
+        type: Instance,
+        required: true
+      },
+      dataSource: {
+        type: String,
+        required: true
+      }
+    },
     mixins: [subscribing],
     components: {datasourceChart},
     data: () => ({
@@ -69,9 +79,6 @@
       chartData: [],
     }),
     watch: {
-      instance() {
-        this.subscribe()
-      },
       dataSource() {
         this.current = null;
         this.chartData = [];
@@ -113,7 +120,7 @@
 </script>
 
 <style lang="scss">
-    .datasource-current {
-        margin-bottom: 0 !important;
-    }
+  .datasource-current {
+    margin-bottom: 0 !important;
+  }
 </style>

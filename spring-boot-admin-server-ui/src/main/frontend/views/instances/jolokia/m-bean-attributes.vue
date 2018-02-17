@@ -15,27 +15,42 @@
   -->
 
 <template>
-    <div>
-        <div v-if="error" class="message is-danger">
-            <div class="message-body">
-                <strong>
-                    <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
-                    Fetching attributes failed.
-                </strong>
-                <p v-text="error.message"></p>
-            </div>
-        </div>
-        <m-bean-attribute v-for="(attribute, name) in mBean.attr" :key="`attr-${name}`"
-                          :name="name" :descriptor="attribute" :value="attributeValues && attributeValues[name]"
-                          :onSaveValue="value => writeAttribute(name, value)"></m-bean-attribute>
+  <div>
+    <div v-if="error" class="message is-danger">
+      <div class="message-body">
+        <strong>
+          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+          Fetching attributes failed.
+        </strong>
+        <p v-text="error.message"/>
+      </div>
     </div>
+    <m-bean-attribute v-for="(attribute, name) in mBean.attr" :key="`attr-${name}`"
+                      :name="name" :descriptor="attribute" :value="attributeValues && attributeValues[name]"
+                      :on-save-value="value => writeAttribute(name, value)"/>
+  </div>
 </template>
 
 <script>
+  import Instance from '@/services/instance';
+  import {MBean} from './index';
   import mBeanAttribute from './m-bean-attribute';
 
   export default {
-    props: ['mBean', 'domain', 'instance'],
+    props: {
+      domain: {
+        type: String,
+        required: true
+      },
+      mBean: {
+        type: MBean,
+        required: true
+      },
+      instance: {
+        type: Instance,
+        required: true
+      }
+    },
     components: {mBeanAttribute},
     data: () => ({
       attributeValues: null,
@@ -65,14 +80,9 @@
     created() {
       this.readAttributes();
     },
-    watch: {
-      instance() {
-        this.readAttributes();
-      },
-    }
   }
 </script>
 
 <style lang="scss">
-    @import "~@/assets/css/utilities";
+  @import "~@/assets/css/utilities";
 </style>

@@ -15,10 +15,10 @@
   -->
 
 <template>
-    <div id="app">
-        <sba-navbar :views="mainViews"></sba-navbar>
-        <router-view></router-view>
-    </div>
+  <div id="app">
+    <sba-navbar :views="mainViews"/>
+    <router-view/>
+  </div>
 </template>
 
 <script>

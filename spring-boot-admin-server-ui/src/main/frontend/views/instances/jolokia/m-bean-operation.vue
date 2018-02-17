@@ -15,18 +15,27 @@
   -->
 
 <template>
-    <div class="field">
-        <div class="control">
-            <button class="button is-light is-fullwidth" @click="$emit('click', $event)">
-                <small class="is-light is-muted" v-text="descriptor.ret"></small>&nbsp;<span v-text="name"></span>
-            </button>
-            <p class="help" v-text="descriptor.desc"></p>
-        </div>
+  <div class="field">
+    <div class="control">
+      <button class="button is-light is-fullwidth" @click="$emit('click', $event)">
+        <small class="is-light is-muted" v-text="descriptor.ret"/>&nbsp;<span v-text="name"/>
+      </button>
+      <p class="help" v-text="descriptor.desc"/>
     </div>
+  </div>
 </template>
 
 <script>
   export default {
-    props: ['name', 'descriptor']
+    props: {
+      name: {
+        type: String,
+        required: true
+      },
+      descriptor: {
+        type: Object,
+        required: true
+      }
+    },
   }
 </script>

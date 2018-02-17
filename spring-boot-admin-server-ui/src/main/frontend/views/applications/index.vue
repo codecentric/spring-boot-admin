@@ -15,50 +15,50 @@
   -->
 
 <template>
-    <section class="section">
-        <div class="container">
-            <div v-if="error" class="message is-warning">
-                <div class="message-body">
-                    <strong>
-                        <font-awesome-icon class="has-text-warning" icon="exclamation-triangle"></font-awesome-icon>
-                        Server connection failed.
-                    </strong>
-                    <p v-text="error.message"></p>
-                </div>
-            </div>
-            <div class="level">
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Applications</p>
-                        <p class="title" v-text="applicationsCount">1</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Instances</p>
-                        <p class="title" v-text="instancesCount">1</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div v-if="downCount === 0">
-                        <p class="heading">Status</p>
-                        <p class="title has-text-success">all up</p>
-                    </div>
-                    <div v-else>
-                        <p class="heading">instances down</p>
-                        <p class="title has-text-danger" v-text="downCount"></p>
-                    </div>
-                </div>
-            </div>
-            <div v-for="group in statusGroups" :key="group.status">
-                <p class="heading" v-text="group.status"></p>
-                <applications-list :applications="group.applications"></applications-list>
-            </div>
-            <div v-if="statusGroups.length === 0">
-                <p class="is-muted">No applications registered.</p>
-            </div>
+  <section class="section">
+    <div class="container">
+      <div v-if="error" class="message is-warning">
+        <div class="message-body">
+          <strong>
+            <font-awesome-icon class="has-text-warning" icon="exclamation-triangle"/>
+            Server connection failed.
+          </strong>
+          <p v-text="error.message"/>
         </div>
-    </section>
+      </div>
+      <div class="level">
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Applications</p>
+            <p class="title" v-text="applicationsCount">1</p>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Instances</p>
+            <p class="title" v-text="instancesCount">1</p>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div v-if="downCount === 0">
+            <p class="heading">Status</p>
+            <p class="title has-text-success">all up</p>
+          </div>
+          <div v-else>
+            <p class="heading">instances down</p>
+            <p class="title has-text-danger" v-text="downCount"/>
+          </div>
+        </div>
+      </div>
+      <div v-for="group in statusGroups" :key="group.status">
+        <p class="heading" v-text="group.status"/>
+        <applications-list :applications="group.applications"/>
+      </div>
+      <div v-if="statusGroups.length === 0">
+        <p class="is-muted">No applications registered.</p>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script>

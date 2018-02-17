@@ -15,45 +15,62 @@
   -->
 
 <template>
-    <div class="field">
-        <label class="label">
-            <span v-text="name"></span>
-            <small class="is-muted has-text-weight-normal" v-text="descriptor.type"></small>
-        </label>
-        <div class="field-body">
-            <div class="field is-expanded">
-                <div class="field has-addons">
-                    <div class="control">
-                        <button class="button" :disabled="!descriptor.rw" @click="edit">
-                            <font-awesome-icon icon="pencil-alt"></font-awesome-icon>
-                        </button>
-                    </div>
-                    <div class="control is-expanded has-icons-right">
-                        <input v-if="!hasComplexValue" class="input" type="text" :readonly="!editing"
-                               :value="editing? input : value" @input="input = $event.target.value"
-                               @dblclick="edit">
-                        <textarea v-else class="input m-bean-attribute--text" :readonly="!editing"
-                                  v-text="jsonValue"></textarea>
-                        <span class="icon is-right has-text-warning" v-if="error">
-                             <font-awesome-icon icon="exclamation-triangle"></font-awesome-icon>
-                        </span>
-                    </div>
-                </div>
-                <div class="help" v-text="descriptor.desc"></div>
-            </div>
-        </div>
-        <div class="control" v-if="editing">
-            <button class="button is-light is-small" @click="cancel">Cancel</button>
-            <button class="button is-primary is-small" :class="{'is-loading' : saving}" @click="save"
-                    :disabled="value === input">Save
+  <div class="field">
+    <label class="label">
+      <span v-text="name"/>
+      <small class="is-muted has-text-weight-normal" v-text="descriptor.type"/>
+    </label>
+    <div class="field-body">
+      <div class="field is-expanded">
+        <div class="field has-addons">
+          <div class="control">
+            <button class="button" :disabled="!descriptor.rw" @click="edit">
+              <font-awesome-icon icon="pencil-alt"/>
             </button>
+          </div>
+          <div class="control is-expanded has-icons-right">
+            <input v-if="!hasComplexValue" class="input" type="text" :readonly="!editing"
+                   :value="editing? input : value" @input="input = $event.target.value"
+                   @dblclick="edit">
+            <textarea v-else class="input m-bean-attribute--text" :readonly="!editing"
+                      v-text="jsonValue"/>
+            <span class="icon is-right has-text-warning" v-if="error">
+              <font-awesome-icon icon="exclamation-triangle"/>
+            </span>
+          </div>
         </div>
+        <div class="help" v-text="descriptor.desc"/>
+      </div>
     </div>
+    <div class="control" v-if="editing">
+      <button class="button is-light is-small" @click="cancel">Cancel</button>
+      <button class="button is-primary is-small" :class="{'is-loading' : saving}" @click="save"
+              :disabled="value === input">Save
+      </button>
+    </div>
+  </div>
 </template>
 
 <script>
   export default {
-    props: ['name', 'descriptor', 'value', 'onSaveValue'],
+    props: {
+      name: {
+        type: String,
+        required: true
+      },
+      descriptor: {
+        type: Object,
+        required: true
+      },
+      value: {
+        type: null,
+        default: null
+      },
+      onSaveValue: {
+        type: Function,
+        required: true
+      }
+    },
     data: () => ({
       input: null,
       editing: false,
@@ -95,10 +112,10 @@
 </script>
 
 <style lang="scss">
-    @import "~@/assets/css/utilities";
+  @import "~@/assets/css/utilities";
 
-    .m-bean-attribute--text {
-        resize: vertical;
-        min-height: 120px;
-    }
+  .m-bean-attribute--text {
+    resize: vertical;
+    min-height: 120px;
+  }
 </style>

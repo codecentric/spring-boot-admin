@@ -15,24 +15,24 @@
   -->
 
 <template>
-    <table class="table is-fullwidth">
-        <tr>
-            <td>
-                <sba-status :status="health.status"></sba-status>
-                <span v-text="name"></span>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <table class="table is-fullwidth">
-                    <tr v-for="detail in details" :key="detail.name">
-                        <td v-text="detail.name"></td>
-                        <td v-text="detail.value"></td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+  <table class="table is-fullwidth">
+    <tr>
+      <td>
+        <sba-status :status="health.status"/>
+        <span v-text="name"/>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <table class="table is-fullwidth">
+          <tr v-for="detail in details" :key="detail.name">
+            <td v-text="detail.name"/>
+            <td v-text="detail.value"/>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </template>
 
 <script>
@@ -41,10 +41,15 @@
 
   export default {
     props: {
-      name: String,
-      health: Object
+      name: {
+        type: String,
+        required: true
+      },
+      health: {
+        type: Object,
+        required: true
+      }
     },
-
     computed: {
       details() {
         return _.entries(this.health.details).map(([name, value]) => ({

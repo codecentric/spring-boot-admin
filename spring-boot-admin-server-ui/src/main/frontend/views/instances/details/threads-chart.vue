@@ -15,9 +15,9 @@
   -->
 
 <template>
-    <div class="threads-chart">
-        <svg class="threads-chart__svg"></svg>
-    </div>
+  <div class="threads-chart">
+    <svg class="threads-chart__svg"/>
+  </div>
 </template>
 
 <script>
@@ -25,7 +25,12 @@
   import moment from 'moment';
 
   export default {
-    props: ['data'],
+    props: {
+      data: {
+        type: Array,
+        default: () => []
+      }
+    },
     methods: {
       drawChart(_data) {
         const vm = this;
@@ -112,24 +117,24 @@
 </script>
 
 <style lang="scss">
-    @import "~@/assets/css/utilities";
+  @import "~@/assets/css/utilities";
 
-    .threads-chart {
-        &__svg {
-            height: 159px;
-            width: 100%;
-        }
-
-        &__area {
-            &--live {
-                fill: $warning;
-                opacity: 0.8;
-            }
-            &--daemon {
-                fill: $info;
-                opacity: 0.8;
-            }
-        }
-
+  .threads-chart {
+    &__svg {
+      height: 159px;
+      width: 100%;
     }
+
+    &__area {
+      &--live {
+        fill: $warning;
+        opacity: 0.8;
+      }
+      &--daemon {
+        fill: $info;
+        opacity: 0.8;
+      }
+    }
+
+  }
 </style>

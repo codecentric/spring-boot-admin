@@ -15,26 +15,29 @@
   -->
 
 <template>
-    <div class="card panel">
-        <header v-if="title" class="card-header">
-            <p v-text="title" class="card-header-title"></p>
-        </header>
-        <div v-if="$slots['default']" class="card-content">
-            <slot></slot>
-        </div>
+  <div class="card panel">
+    <header v-if="title" class="card-header">
+      <p v-text="title" class="card-header-title"/>
+    </header>
+    <div v-if="$slots['default']" class="card-content">
+      <slot/>
     </div>
+  </div>
 </template>
 
 <script>
   export default {
     props: {
-      title: String
+      title: {
+        type: String,
+        required: true
+      }
     }
   }
 </script>
 
 <style lang="scss">
-    .panel {
-        margin-bottom: 1.5rem;
-    }
+  .panel {
+    margin-bottom: 1.5rem;
+  }
 </style>

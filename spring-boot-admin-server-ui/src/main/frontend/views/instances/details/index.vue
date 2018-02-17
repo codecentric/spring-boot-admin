@@ -15,65 +15,66 @@
   -->
 
 <template>
-    <section class="section">
-        <div class="container">
-            <div v-if="error" class="message is-danger">
-                <div class="message-body">
-                    <strong>
-                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
-                        Fetching metrics index failed.
-                    </strong>
-                    <p v-text="error.message"></p>
-                </div>
-            </div>
-            <div class="columns is-desktop">
-                <div class="column is-half-desktop">
-                    <details-info v-if="hasInfo" :instance="instance"></details-info>
-                    <details-metadata v-if="hasMetadata" :instance="instance"></details-metadata>
-                </div>
-                <div class="column is-half-desktop">
-                    <details-health :instance="instance"></details-health>
-                </div>
-            </div>
-            <div class="columns is-desktop">
-                <div class="column is-half-desktop">
-                    <details-process v-if="hasProcess" :instance="instance"></details-process>
-                    <details-gc v-if="hasGc" :instance="instance"></details-gc>
-                </div>
-                <div class="column is-half-desktop">
-                    <details-threads v-if="hasThreads" :instance="instance"></details-threads>
-                </div>
-            </div>
-            <div class="columns is-desktop">
-                <div class="column is-half-desktop">
-                    <details-memory v-if="hasMemory" :instance="instance" type="heap"></details-memory>
-                </div>
-                <div class="column is-half-desktop">
-                    <details-memory v-if="hasMemory" :instance="instance" type="nonheap"></details-memory>
-                </div>
-            </div>
-            <div class="columns is-desktop">
-                <div class="column is-half-desktop">
-                    <details-datasources v-if="hasDatasources" :instance="instance"></details-datasources>
-                </div>
-                <div class="column is-half-desktop">
-                    <details-caches v-if="hasCaches" :instance="instance"></details-caches>
-                </div>
-            </div>
+  <section class="section">
+    <div class="container">
+      <div v-if="error" class="message is-danger">
+        <div class="message-body">
+          <strong>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            Fetching metrics index failed.
+          </strong>
+          <p v-text="error.message"/>
         </div>
-    </section>
+      </div>
+      <div class="columns is-desktop">
+        <div class="column is-half-desktop">
+          <details-info v-if="hasInfo" :instance="instance"/>
+          <details-metadata v-if="hasMetadata" :instance="instance"/>
+        </div>
+        <div class="column is-half-desktop">
+          <details-health :instance="instance"/>
+        </div>
+      </div>
+      <div class="columns is-desktop">
+        <div class="column is-half-desktop">
+          <details-process v-if="hasProcess" :instance="instance"/>
+          <details-gc v-if="hasGc" :instance="instance"/>
+        </div>
+        <div class="column is-half-desktop">
+          <details-threads v-if="hasThreads" :instance="instance"/>
+        </div>
+      </div>
+      <div class="columns is-desktop">
+        <div class="column is-half-desktop">
+          <details-memory v-if="hasMemory" :instance="instance" type="heap"/>
+        </div>
+        <div class="column is-half-desktop">
+          <details-memory v-if="hasMemory" :instance="instance" type="nonheap"/>
+        </div>
+      </div>
+      <div class="columns is-desktop">
+        <div class="column is-half-desktop">
+          <details-datasources v-if="hasDatasources" :instance="instance"/>
+        </div>
+        <div class="column is-half-desktop">
+          <details-caches v-if="hasCaches" :instance="instance"/>
+        </div>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script>
+  import Instance from '@/services/instance';
   import detailsCaches from './details-caches';
   import detailsDatasources from './details-datasources';
   import detailsGc from './details-gc';
   import detailsHealth from './details-health';
   import detailsInfo from './details-info';
   import detailsMemory from './details-memory';
+  import detailsMetadata from './details-metadata';
   import detailsProcess from './details-process';
   import detailsThreads from './details-threads';
-  import detailsMetadata from './details-metadata';
 
   export default {
     components: {
@@ -87,7 +88,12 @@
       detailsCaches,
       detailsMetadata
     },
-    props: ['instance'],
+    props: {
+      instance: {
+        type: Instance,
+        required: true
+      }
+    },
     data: () => ({
       hasLoaded: false,
       error: null,
@@ -121,11 +127,6 @@
     },
     created() {
       this.fetchMetricIndex();
-    },
-    watch: {
-      instance() {
-        this.fetchMetricIndex();
-      }
     },
     methods: {
       async fetchMetricIndex() {

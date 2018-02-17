@@ -15,13 +15,13 @@
   -->
 
 <template>
-    <div class="application-status">
-        <font-awesome-icon :icon="icon" class="application-status__icon"
-                           :class="`application-status__icon--${status}`"></font-awesome-icon>
-        <small v-if="date">
-            <sba-time-ago :date="date"></sba-time-ago>
-        </small>
-    </div>
+  <div class="application-status">
+    <font-awesome-icon :icon="icon" class="application-status__icon"
+                       :class="`application-status__icon--${status}`"/>
+    <small v-if="date">
+      <sba-time-ago :date="date"/>
+    </small>
+  </div>
 </template>
 
 <script>
@@ -41,8 +41,14 @@
       sbaTimeAgo,
     },
     props: {
-      status: String,
-      date: {},
+      status: {
+        type: String,
+        default: 'UNKNOWN'
+      },
+      date: {
+        type: null,
+        default: null
+      },
     },
     computed: {
       icon() {
@@ -53,35 +59,35 @@
 </script>
 
 <style lang="scss">
-    @import "~@/assets/css/utilities";
+  @import "~@/assets/css/utilities";
 
-    .application-status {
-        text-align: center;
-        line-height: 1rem;
-        display: inline-flex;
-        flex-direction: column;
+  .application-status {
+    text-align: center;
+    line-height: 1rem;
+    display: inline-flex;
+    flex-direction: column;
 
-        &__icon {
-            color: gray;
-            margin: 0 auto;
+    &__icon {
+      color: gray;
+      margin: 0 auto;
 
-            &--UP {
-                color: $success;
-            }
+      &--UP {
+        color: $success;
+      }
 
-            &--RESTRICTED {
-                color: $warning;
-            }
+      &--RESTRICTED {
+        color: $warning;
+      }
 
-            &--OUT_OF_SERVICE,
-            &--DOWN {
-                color: $danger;
-            }
+      &--OUT_OF_SERVICE,
+      &--DOWN {
+        color: $danger;
+      }
 
-            &--UNKNOWN,
-            &--OFFLINE {
-                color: $grey;
-            }
-        }
+      &--UNKNOWN,
+      &--OFFLINE {
+        color: $grey;
+      }
     }
+  }
 </style>

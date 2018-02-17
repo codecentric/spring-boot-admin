@@ -15,49 +15,49 @@
   -->
 
 <template>
-    <div class="section">
-        <div class="container">
-            <h1 class="title">Event Journal</h1>
-            <div v-if="error" class="message is-warning">
-                <div class="message-body">
-                    <strong>
-                        <font-awesome-icon class="has-text-warning" icon="exclamation-triangle"></font-awesome-icon>
-                        Server connection failed.
-                    </strong>
-                    <p v-text="error.message"></p>
-                </div>
-            </div>
-            <table class="table is-fullwidth">
-                <thead>
-                <tr>
-                    <th>Application</th>
-                    <th>Instance</th>
-                    <th>Time</th>
-                    <th>Event</th>
-                </tr>
-                </thead>
-                <tbody>
-                <template v-for="event in events">
-                    <tr class="is-selectable" :key="event.key"
-                        @click="showPayload[event.key]  ?  $delete(showPayload, event.key) : $set(showPayload, event.key, true)">
-                        <td v-text="instanceNames[event.instance] || '?'"></td>
-                        <td v-text="event.instance"></td>
-                        <td v-text="event.timestamp.format('L HH:mm:ss.SSS')"></td>
-                        <td>
-                            <span v-text="event.type"></span> <span v-if="event.type === 'STATUS_CHANGED'"
-                                                                    v-text="`(${event.payload.statusInfo.status})`"></span>
-                        </td>
-                    </tr>
-                    <tr :key="`${event.key}-detail`" v-if="showPayload[event.key]">
-                        <td colspan="4">
-                            <pre v-text="toJson(event.payload)"></pre>
-                        </td>
-                    </tr>
-                </template>
-                </tbody>
-            </table>
+  <div class="section">
+    <div class="container">
+      <h1 class="title">Event Journal</h1>
+      <div v-if="error" class="message is-warning">
+        <div class="message-body">
+          <strong>
+            <font-awesome-icon class="has-text-warning" icon="exclamation-triangle"/>
+            Server connection failed.
+          </strong>
+          <p v-text="error.message"/>
         </div>
+      </div>
+      <table class="table is-fullwidth">
+        <thead>
+          <tr>
+            <th>Application</th>
+            <th>Instance</th>
+            <th>Time</th>
+            <th>Event</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template v-for="event in events">
+            <tr class="is-selectable" :key="event.key"
+                @click="showPayload[event.key] ? $delete(showPayload, event.key) : $set(showPayload, event.key, true)">
+              <td v-text="instanceNames[event.instance] || '?'"/>
+              <td v-text="event.instance"/>
+              <td v-text="event.timestamp.format('L HH:mm:ss.SSS')"/>
+              <td>
+                <span v-text="event.type"/> <span v-if="event.type === 'STATUS_CHANGED'"
+                                                  v-text="`(${event.payload.statusInfo.status})`"/>
+              </td>
+            </tr>
+            <tr :key="`${event.key}-detail`" v-if="showPayload[event.key]">
+              <td colspan="4">
+                <pre v-text="toJson(event.payload)"/>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
     </div>
+  </div>
 </template>
 
 <script>

@@ -15,67 +15,70 @@
   -->
 
 <template>
-    <span class="tag thread-tag" :class="`thread-tag--${threadState.toLowerCase()}`" :title="threadState"></span>
+  <span class="tag thread-tag" :class="`thread-tag--${threadState.toLowerCase()}`" :title="threadState"/>
 </template>
 
 <script>
   export default {
     props: {
-      threadState: String,
+      threadState: {
+        type: String,
+        required: true
+      }
     }
   }
 </script>
 
 <style lang="scss">
-    @import "~@/assets/css/utilities";
+  @import "~@/assets/css/utilities";
 
-    .thread-tag {
-        width: 2em;
+  .thread-tag {
+    width: 2em;
 
-        &--runnable {
-            color: $success-invert !important;
-            background-color: $success !important;
+    &--runnable {
+      color: $success-invert !important;
+      background-color: $success !important;
 
-            &:before {
-                content: 'R';
-            }
-        }
-
-        &--timed_waiting,
-        &--waiting {
-            color: $warning-invert !important;
-            background-color: $warning !important;
-
-            &:before {
-                content: 'W';
-            }
-        }
-
-        &--blocked {
-            color: $danger-invert !important;
-            background-color: $danger !important;
-
-            &:before {
-                content: 'B';
-            }
-        }
-
-        &--terminated {
-            color: $light-invert !important;
-            background-color: $light !important;
-
-            &:before {
-                content: 'T';
-            }
-        }
-
-        &--new {
-            color: $light-invert !important;
-            background-color: $light !important;
-
-            &:before {
-                content: 'N';
-            }
-        }
+      &:before {
+        content: 'R';
+      }
     }
+
+    &--timed_waiting,
+    &--waiting {
+      color: $warning-invert !important;
+      background-color: $warning !important;
+
+      &:before {
+        content: 'W';
+      }
+    }
+
+    &--blocked {
+      color: $danger-invert !important;
+      background-color: $danger !important;
+
+      &:before {
+        content: 'B';
+      }
+    }
+
+    &--terminated {
+      color: $light-invert !important;
+      background-color: $light !important;
+
+      &:before {
+        content: 'T';
+      }
+    }
+
+    &--new {
+      color: $light-invert !important;
+      background-color: $light !important;
+
+      &:before {
+        content: 'N';
+      }
+    }
+  }
 </style>

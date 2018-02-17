@@ -15,96 +15,117 @@
   -->
 
 <template>
-    <div class="modal is-active">
-        <div class="modal-background" @click="abort"></div>
-        <div class="modal-content">
-            <div class="modal-card">
-                <header class="modal-card-head">
-                    <p class="modal-card-title" v-text="name"></p>
-                </header>
+  <div class="modal is-active">
+    <div class="modal-background" @click="abort"/>
+    <div class="modal-content">
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title" v-text="name"/>
+        </header>
 
-                <template v-if="state === 'input-args'">
-                    <section class="modal-card-body" @keyup.ctrl.enter="invoke(args)">
-                        <div class="field" v-for="(arg, idx) in descriptor.args" :key="arg.name">
-                            <label class="label">
-                                <span v-text="arg.name"></span>
-                                <small class="is-muted has-text-weight-normal" v-text="arg.type"></small>
-                            </label>
-                            <div class="control">
-                                <input type="text" class="input" v-model="args[idx]">
-                            </div>
-                            <p class="help" v-text="arg.desc"></p>
-                        </div>
-                    </section>
-                    <footer class="modal-card-foot">
-                        <div class="field is-grouped is-grouped-right">
-                            <div class="control">
-                                <button class="button is-primary" @click="invoke(args)">Execute</button>
-                            </div>
-                        </div>
-                    </footer>
-                </template>
-
-                <template v-else-if="state === 'executing'">
-                    <section class="modal-card-body">
-                        <section class="section is-loading">
-                            <p>Executing...</p>
-                        </section>
-                    </section>
-                </template>
-
-                <template v-else-if="state === 'completed'">
-                    <section class="modal-card-body">
-                        <div class="message is-success">
-                            <div class="message-body">
-                                <strong>Execution successful.</strong>
-                            </div>
-                        </div>
-                        <pre v-text="result"></pre>
-                    </section>
-                    <footer class="modal-card-foot">
-                        <div class="field is-grouped is-grouped-right">
-                            <div class="control">
-                                <button class="button is-light" @click="abort"> Close</button>
-                            </div>
-                        </div>
-                    </footer>
-                </template>
-
-                <template v-else-if="state === 'failed'">
-                    <section class="modal-card-body">
-                        <div class="message is-danger">
-                            <div class="message-body">
-                                <strong>
-                                    <font-awesome-icon class="has-text-danger"
-                                                       icon="exclamation-triangle"></font-awesome-icon>
-                                    Execution failed.
-                                </strong>
-                                <p v-text="error.message"></p>
-                            </div>
-                        </div>
-                        <pre v-if="error.stacktrace"
-                             v-text="error.stacktrace"></pre>
-                        <pre v-if="error.response && error.response.data"
-                             v-text="error.response.data"></pre>
-                    </section>
-                    <footer class="modal-card-foot">
-                        <div class="field is-grouped is-grouped-right">
-                            <div class="control">
-                                <button class="button is-light" @click="abort"> Close</button>
-                            </div>
-                        </div>
-                    </footer>
-                </template>
+        <template v-if="state === 'input-args'">
+          <section class="modal-card-body" @keyup.ctrl.enter="invoke(args)">
+            <div class="field" v-for="(arg, idx) in descriptor.args" :key="arg.name">
+              <label class="label">
+                <span v-text="arg.name"/>
+                <small class="is-muted has-text-weight-normal" v-text="arg.type"/>
+              </label>
+              <div class="control">
+                <input type="text" class="input" v-model="args[idx]">
+              </div>
+              <p class="help" v-text="arg.desc"/>
             </div>
-        </div>
+          </section>
+          <footer class="modal-card-foot">
+            <div class="field is-grouped is-grouped-right">
+              <div class="control">
+                <button class="button is-primary" @click="invoke(args)">Execute</button>
+              </div>
+            </div>
+          </footer>
+        </template>
+
+        <template v-else-if="state === 'executing'">
+          <section class="modal-card-body">
+            <section class="section is-loading">
+              <p>Executing...</p>
+            </section>
+          </section>
+        </template>
+
+        <template v-else-if="state === 'completed'">
+          <section class="modal-card-body">
+            <div class="message is-success">
+              <div class="message-body">
+                <strong>Execution successful.</strong>
+              </div>
+            </div>
+            <pre v-text="result"/>
+          </section>
+          <footer class="modal-card-foot">
+            <div class="field is-grouped is-grouped-right">
+              <div class="control">
+                <button class="button is-light" @click="abort"> Close</button>
+              </div>
+            </div>
+          </footer>
+        </template>
+
+        <template v-else-if="state === 'failed'">
+          <section class="modal-card-body">
+            <div class="message is-danger">
+              <div class="message-body">
+                <strong>
+                  <font-awesome-icon class="has-text-danger"
+                                     icon="exclamation-triangle"/>
+                  Execution failed.
+                </strong>
+                <p v-text="error.message"/>
+              </div>
+            </div>
+            <pre v-if="error.stacktrace"
+                 v-text="error.stacktrace"/>
+            <pre v-if="error.response && error.response.data"
+                 v-text="error.response.data"/>
+          </section>
+          <footer class="modal-card-foot">
+            <div class="field is-grouped is-grouped-right">
+              <div class="control">
+                <button class="button is-light" @click="abort"> Close</button>
+              </div>
+            </div>
+          </footer>
+        </template>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
 
   export default {
-    props: ['name', 'descriptor', 'onClose', 'onExecute'],
+    props: {
+      name: {
+        type: String,
+        required: true
+      },
+      descriptor: {
+        type: Object,
+        required: true
+      },
+      value: {
+        type: null,
+        default: null
+      },
+      onClose: {
+        type: Function,
+        required: true
+      },
+      onExecute: {
+        type: Function,
+        required: true
+      }
+    },
     data: () => ({
       state: null,
       error: null,
@@ -167,5 +188,5 @@
 </script>
 
 <style lang="scss">
-    @import "~@/assets/css/utilities";
+  @import "~@/assets/css/utilities";
 </style>

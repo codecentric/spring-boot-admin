@@ -28,11 +28,12 @@ module.exports = {
   },
   extends: [
     'eslint:recommended',
-    'plugin:vue/essential'
+    'plugin:vue/strongly-recommended'
   ],
   rules: {
     'quotes': ['error', 'single'],
-    'no-console': ["error", {allow: ["warn"]}]
+    'no-console': ['error', {allow: ['warn']}],
+    'vue/max-attributes-per-line': 'off'
   },
   // required to lint *.vue files
   plugins: ['vue']

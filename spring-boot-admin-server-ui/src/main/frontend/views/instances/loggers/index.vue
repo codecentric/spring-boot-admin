@@ -15,83 +15,82 @@
   -->
 
 <template>
-    <section class="section" :class="{ 'is-loading' : !hasLoaded }">
-        <div class="container" v-if="hasLoaded">
-            <div v-if="error" class="message is-danger">
-                <div class="message-body">
-                    <strong>
-                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
-                        Fetching loggers failed.
-                    </strong>
-                    <p v-text="error.message"></p>
-                </div>
-            </div>
-            <template v-if="loggerConfig">
-                <div class="field-body">
-                    <div class="field has-addons">
-                        <p class="control is-expanded">
-                            <input class="input" type="search" placeholder="name filter" v-model="filter">
-                        </p>
-                        <p class="control">
-                    <span class="button is-static">
-                        <span v-text="filteredLoggers.length"></span>
-                        /
-                        <span v-text="loggerConfig.loggers.length"></span>
-                    </span>
-                        </p>
-                    </div>
-                </div>
-                <div class="field-body">
-                    <div class="field is-narrow">
-                        <div class="control">
-                            <label class="checkbox">
-                                <input type="checkbox" v-model="showClassLoggersOnly">
-                                class
-                            </label>
-                        </div>
-                    </div>
-                    <div class="field is-narrow">
-                        <div class="control">
-                            <label class="checkbox">
-                                <input type="checkbox" v-model="showConfiguredLoggersOnly">
-                                configured
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </template>
-            <table v-if="loggerConfig" class="table is-hoverable is-fullwidth">
-                <tbody>
-                <tr v-for="logger in limitedLoggers" :key="logger.name">
-                    <td>
-                        <span class="is-breakable" v-text="logger.name"></span>
-                        <span class="has-text-danger" v-if="logger.name in failed">
-                                <font-awesome-icon class="has-text-danger"
-                                                   icon="exclamation-triangle"></font-awesome-icon>
-                                <span v-text="`Configuring ${failed[logger.name]} failed.`"></span>
-                            </span>
-                        <sba-logger-control class="is-pulled-right"
-                                            :level-options="levels"
-                                            :effective-level="logger.effectiveLevel"
-                                            :configured-level="logger.configuredLevel"
-                                            :is-loading="loading[logger.name]"
-                                            :has-failed="failed[logger.name]"
-                                            :allow-reset="logger.name !== 'ROOT'"
-                                            @input="level => configureLogger(logger, level)">
-                        </sba-logger-control>
-                    </td>
-                </tr>
-                <tr v-if="limitedLoggers.length === 0">
-                    <td class="is-muted" colspan="5">No loggers found.
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+  <section class="section" :class="{ 'is-loading' : !hasLoaded }">
+    <div class="container" v-if="hasLoaded">
+      <div v-if="error" class="message is-danger">
+        <div class="message-body">
+          <strong>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            Fetching loggers failed.
+          </strong>
+          <p v-text="error.message"/>
         </div>
-    </section>
+      </div>
+      <template v-if="loggerConfig">
+        <div class="field-body">
+          <div class="field has-addons">
+            <p class="control is-expanded">
+              <input class="input" type="search" placeholder="name filter" v-model="filter">
+            </p>
+            <p class="control">
+              <span class="button is-static">
+                <span v-text="filteredLoggers.length"/>
+                /
+                <span v-text="loggerConfig.loggers.length"/>
+              </span>
+            </p>
+          </div>
+        </div>
+        <div class="field-body">
+          <div class="field is-narrow">
+            <div class="control">
+              <label class="checkbox">
+                <input type="checkbox" v-model="showClassLoggersOnly">
+                class
+              </label>
+            </div>
+          </div>
+          <div class="field is-narrow">
+            <div class="control">
+              <label class="checkbox">
+                <input type="checkbox" v-model="showConfiguredLoggersOnly">
+                configured
+              </label>
+            </div>
+          </div>
+        </div>
+      </template>
+      <table v-if="loggerConfig" class="table is-hoverable is-fullwidth">
+        <tbody>
+          <tr v-for="logger in limitedLoggers" :key="logger.name">
+            <td>
+              <span class="is-breakable" v-text="logger.name"/>
+              <span class="has-text-danger" v-if="logger.name in failed">
+                <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+                <span v-text="`Configuring ${failed[logger.name]} failed.`"/>
+              </span>
+              <sba-logger-control class="is-pulled-right"
+                                  :level-options="levels"
+                                  :effective-level="logger.effectiveLevel"
+                                  :configured-level="logger.configuredLevel"
+                                  :is-loading="loading[logger.name]"
+                                  :has-failed="failed[logger.name]"
+                                  :allow-reset="logger.name !== 'ROOT'"
+                                  @input="level => configureLogger(logger, level)"/>
+            </td>
+          </tr>
+          <tr v-if="limitedLoggers.length === 0">
+            <td class="is-muted" colspan="5">No loggers found.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 </template>
 
 <script>
+  import Instance from '@/services/instance';
   import sbaLoggerControl from './logger-control';
 
   const isPackageName = (name) => {
@@ -108,7 +107,12 @@
     components: {
       sbaLoggerControl
     },
-    props: ['instance'],
+    props: {
+      instance: {
+        type: Instance,
+        required: true
+      }
+    },
     data: () => ({
       hasLoaded: false,
       error: null,
@@ -202,11 +206,6 @@
     },
     beforeDestroy() {
       window.removeEventListener('scroll', this.onScroll);
-    },
-    watch: {
-      instance() {
-        this.fetchLoggers();
-      }
     }
   }
 </script>

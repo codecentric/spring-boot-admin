@@ -15,86 +15,96 @@
   -->
 
 <template>
-    <div class="box">
-        <h1 class="is-size-5">Environment Manager</h1>
-        <datalist id="allPropertyNames">
-            <option v-for="name in allPropertyNames" :key="name" v-text="name"></option>
-        </datalist>
-        <div class="field is-horizontal" v-for="(prop, index) in managedProperties" :key="`managed-${index}`">
-            <div class="field-body">
-                <div class="field">
-                    <div class="control">
-                        <input class="input" type="text" placeholder="Property name" list="allPropertyNames"
-                               v-model="prop.name" @input="handlePropertyNameChange(prop, index)">
-                    </div>
-                    <p class="help is-danger" v-text="prop.validation"></p>
-                </div>
-                <div class="field">
-                    <div class="control has-icons-right" :class="{'is-loading' : prop.status === 'executing'}">
-                        <input class="input" type="text" placeholder="Value" v-model="prop.input"
-                               @input="prop.status = null">
-                        <span class="icon is-right has-text-success" v-if="prop.status === 'completed'">
-                             <font-awesome-icon icon="check"></font-awesome-icon>
-                        </span>
-                        <span class="icon is-right has-text-warning" v-else-if="prop.status === 'failed'">
-                             <font-awesome-icon icon="exclamation-triangle"></font-awesome-icon>
-                        </span>
-                        <span class="icon is-right" v-else-if="prop.input !== prop.value">
-                             <font-awesome-icon icon="pencil-alt"></font-awesome-icon>
-                        </span>
-                    </div>
-                </div>
-            </div>
+  <div class="box">
+    <h1 class="is-size-5">Environment Manager</h1>
+    <datalist id="allPropertyNames">
+      <option v-for="name in allPropertyNames" :key="name" v-text="name"/>
+    </datalist>
+    <div class="field is-horizontal" v-for="(prop, index) in managedProperties" :key="`managed-${index}`">
+      <div class="field-body">
+        <div class="field">
+          <div class="control">
+            <input class="input" type="text" placeholder="Property name" list="allPropertyNames"
+                   v-model="prop.name" @input="handlePropertyNameChange(prop, index)">
+          </div>
+          <p class="help is-danger" v-text="prop.validation"/>
         </div>
-        <div class="field is-horizontal">
-            <div class="field-body" v-if="instance.hasEndpoint('refresh')">
-                <div class="field">
-                    <div class="control">
-                        <sba-confirm-button class="button is-light"
-                                            :class="{'is-loading' : refreshStatus === 'executing', 'is-danger' : refreshStatus === 'failed', 'is-info' : refreshStatus === 'completed'}"
-                                            :disabled="refreshStatus === 'executing'"
-                                            @click="refreshContext">
-                            <span v-if="refreshStatus === 'completed'">Context refreshed</span>
-                            <span v-else-if="refreshStatus === 'failed'">Failed</span>
-                            <span v-else>Refresh Context</span>
-                        </sba-confirm-button>
-                    </div>
-                </div>
-            </div>
-            <div class="field-body">
-                <div class="field is-grouped is-grouped-right">
-                    <div class="control">
-                        <button class="button is-light"
-                                :class="{'is-loading' : resetStatus === 'executing', 'is-danger' : resetStatus === 'failed', 'is-success' : resetStatus === 'completed'}"
-                                :disabled="!hasManagedProperty || resetStatus === 'executing'"
-                                @click="resetEnvironment">
-                            <span v-if="resetStatus === 'completed'">Resetted</span>
-                            <span v-else-if="resetStatus === 'failed'">Failed</span>
-                            <span v-else>Reset</span>
-                        </button>
-                    </div>
-                    <div class="control">
-                        <button class="button is-primary"
-                                :class="{'is-loading' : updateStatus === 'executing', 'is-danger' : updateStatus === 'failed', 'is-success' : updateStatus === 'completed'}"
-                                :disabled="hasErrorProperty || !hasChangedProperty || updateStatus === 'executing'"
-                                @click="updateEnvironment">
-                            <span v-if="updateStatus === 'completed'">Updated</span>
-                            <span v-else-if="updateStatus === 'failed'">Failed</span>
-                            <span v-else>Update</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
+        <div class="field">
+          <div class="control has-icons-right" :class="{'is-loading' : prop.status === 'executing'}">
+            <input class="input" type="text" placeholder="Value" v-model="prop.input"
+                   @input="prop.status = null">
+            <span class="icon is-right has-text-success" v-if="prop.status === 'completed'">
+              <font-awesome-icon icon="check"/>
+            </span>
+            <span class="icon is-right has-text-warning" v-else-if="prop.status === 'failed'">
+              <font-awesome-icon icon="exclamation-triangle"/>
+            </span>
+            <span class="icon is-right" v-else-if="prop.input !== prop.value">
+              <font-awesome-icon icon="pencil-alt"/>
+            </span>
+          </div>
         </div>
+      </div>
     </div>
+    <div class="field is-horizontal">
+      <div class="field-body" v-if="instance.hasEndpoint('refresh')">
+        <div class="field">
+          <div class="control">
+            <sba-confirm-button class="button is-light"
+                                :class="{'is-loading' : refreshStatus === 'executing', 'is-danger' : refreshStatus === 'failed', 'is-info' : refreshStatus === 'completed'}"
+                                :disabled="refreshStatus === 'executing'"
+                                @click="refreshContext">
+              <span v-if="refreshStatus === 'completed'">Context refreshed</span>
+              <span v-else-if="refreshStatus === 'failed'">Failed</span>
+              <span v-else>Refresh Context</span>
+            </sba-confirm-button>
+          </div>
+        </div>
+      </div>
+      <div class="field-body">
+        <div class="field is-grouped is-grouped-right">
+          <div class="control">
+            <button class="button is-light"
+                    :class="{'is-loading' : resetStatus === 'executing', 'is-danger' : resetStatus === 'failed', 'is-success' : resetStatus === 'completed'}"
+                    :disabled="!hasManagedProperty || resetStatus === 'executing'"
+                    @click="resetEnvironment">
+              <span v-if="resetStatus === 'completed'">Resetted</span>
+              <span v-else-if="resetStatus === 'failed'">Failed</span>
+              <span v-else>Reset</span>
+            </button>
+          </div>
+          <div class="control">
+            <button class="button is-primary"
+                    :class="{'is-loading' : updateStatus === 'executing', 'is-danger' : updateStatus === 'failed', 'is-success' : updateStatus === 'completed'}"
+                    :disabled="hasErrorProperty || !hasChangedProperty || updateStatus === 'executing'"
+                    @click="updateEnvironment">
+              <span v-if="updateStatus === 'completed'">Updated</span>
+              <span v-else-if="updateStatus === 'failed'">Failed</span>
+              <span v-else>Update</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
+  import Instance from '@/services/instance';
   import {Observable} from '@/utils/rxjs';
   import _ from 'lodash';
 
   export default {
-    props: ['instance', 'property-sources'],
+    props: {
+      instance: {
+        type: Instance,
+        required: true
+      },
+      propertySources: {
+        type: Array,
+        default: () => []
+      }
+    },
     data: () => ({
       error: null,
       refreshStatus: null,

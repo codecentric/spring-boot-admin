@@ -15,50 +15,60 @@
   -->
 
 <template>
-    <sba-panel :title="`Cache: ${cacheName}`" v-if="hasLoaded">
-        <div>
-            <div v-if="error" class="message is-danger">
-                <div class="message-body">
-                    <strong>
-                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
-                        Fetching cache metrics failed.
-                    </strong>
-                    <p v-text="error.message"></p>
-                </div>
-            </div>
-            <div class="level cache-current" v-if="current">
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading has-bullet has-bullet-info">Hits</p>
-                        <p v-text="current.hit"></p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading has-bullet has-bullet-warning">Total</p>
-                        <p v-text="current.total"></p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Hit ratio</p>
-                        <p v-text="ratio"></p>
-                    </div>
-                </div>
-            </div>
-            <cache-chart v-if="chartData.length > 0" :data="chartData"></cache-chart>
+  <sba-panel :title="`Cache: ${cacheName}`" v-if="hasLoaded">
+    <div>
+      <div v-if="error" class="message is-danger">
+        <div class="message-body">
+          <strong>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            Fetching cache metrics failed.
+          </strong>
+          <p v-text="error.message"/>
         </div>
-    </sba-panel>
+      </div>
+      <div class="level cache-current" v-if="current">
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading has-bullet has-bullet-info">Hits</p>
+            <p v-text="current.hit"/>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading has-bullet has-bullet-warning">Total</p>
+            <p v-text="current.total"/>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Hit ratio</p>
+            <p v-text="ratio"/>
+          </div>
+        </div>
+      </div>
+      <cache-chart v-if="chartData.length > 0" :data="chartData"/>
+    </div>
+  </sba-panel>
 </template>
 
 <script>
   import subscribing from '@/mixins/subscribing';
+  import Instance from '@/services/instance';
   import {Observable} from '@/utils/rxjs';
   import moment from 'moment';
   import cacheChart from './cache-chart';
 
   export default {
-    props: ['instance', 'cacheName'],
+    props: {
+      instance: {
+        type: Instance,
+        required: true
+      },
+      cacheName: {
+        type: String,
+        required: true
+      }
+    },
     mixins: [subscribing],
     components: {cacheChart},
     data: () => ({
@@ -76,9 +86,6 @@
       }
     },
     watch: {
-      instance() {
-        this.subscribe()
-      },
       dataSource() {
         this.current = null;
         this.chartData = [];
@@ -119,7 +126,7 @@
 </script>
 
 <style lang="scss">
-    .datasource-current {
-        margin-bottom: 0 !important;
-    }
+  .datasource-current {
+    margin-bottom: 0 !important;
+  }
 </style>

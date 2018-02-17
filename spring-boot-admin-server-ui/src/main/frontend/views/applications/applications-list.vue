@@ -15,79 +15,82 @@
   -->
 
 <template>
-    <div class="applications-list">
-        <template v-for="application in applications">
-            <div v-if="selected !== application.name" :key="application.name"
-                 @click.stop="select(application.name)"
-                 class="applications-list-item applications-list-item--collapsed">
-                <sba-status :status="application.status"
-                            :date="application.statusTimestamp"
-                            class="applications-list-item__status"></sba-status>
-                <span class="applications-list-item__text">
-                    <span v-text="application.name"></span>
-                    <span class="applications-list-item__secondary">
-                        <a v-if="application.instances.length === 1"
-                           v-text="application.instances[0].registration.serviceUrl || application.instances[0].registration.healthUrl"
-                           :href="application.instances[0].registration.serviceUrl || application.instances[0].registration.healthUrl"></a>
-                        <span v-else
-                              v-text="`${application.instances.length} instances`"></span>
-                    </span>
-                </span>
-                <div class="applications-list-item__text"
-                     v-text="application.version"></div>
-                <div class="applications-list-item__actions">
-                    <sba-icon-button icon="trash"
-                                     v-if="application.isUnregisterable"
-                                     @click.native.stop="unregister(application)">
-                    </sba-icon-button>
-                </div>
+  <div class="applications-list">
+    <template v-for="application in applications">
+      <div v-if="selected !== application.name" :key="application.name"
+           @click.stop="select(application.name)"
+           class="applications-list-item applications-list-item--collapsed">
+        <sba-status :status="application.status"
+                    :date="application.statusTimestamp"
+                    class="applications-list-item__status"/>
+        <span class="applications-list-item__text">
+          <span v-text="application.name"/>
+          <span class="applications-list-item__secondary">
+            <a v-if="application.instances.length === 1"
+               v-text="application.instances[0].registration.serviceUrl || application.instances[0].registration.healthUrl"
+               :href="application.instances[0].registration.serviceUrl || application.instances[0].registration.healthUrl"/>
+            <span v-else
+                  v-text="`${application.instances.length} instances`"/>
+          </span>
+        </span>
+        <div class="applications-list-item__text"
+             v-text="application.version"/>
+        <div class="applications-list-item__actions">
+          <sba-icon-button icon="trash"
+                           v-if="application.isUnregisterable"
+                           @click.native.stop="unregister(application)"/>
+        </div>
+      </div>
+      <div v-else :key="application.name"
+           v-on-clickaway="deselect"
+           class="applications-list-item applications-list-item--detailed">
+        <div class="applications-list-item__header"
+             @click.stop="deselect()">
+          <div class="applications-list-item__header-text" v-text="application.name"/>
+          <div class="applications-list-item__header-actions">
+            <sba-icon-button icon="trash"
+                             v-if="application.isUnregisterable"
+                             @click.native.stop="unregister(application)"/>
+          </div>
+        </div>
+        <ul class="applications-list-item__instance-list">
+          <li v-for="instance in application.instances" :key="instance.id"
+              class="applications-list-item__instance"
+              @click.stop="showDetails(instance)">
+            <sba-status :status="instance.statusInfo.status"
+                        :date="instance.statusTimestamp"
+                        class="applications-list-item__status"/>
+            <span class="applications-list-item__text">
+              <a v-text="instance.registration.serviceUrl || instance.registration.healthUrl"
+                 :href="instance.registration.serviceUrl || instance.registration.healthUrl"
+                 @click.stop/>
+              <span v-text="instance.id"
+                    class="applications-list-item__secondary"/>
+            </span>
+            <span v-text="instance.info.version"
+                  class="applications-list-item__text"/>
+            <div class="applications-list-item__actions">
+              <sba-icon-button icon="trash"
+                               v-if="instance.isUnregisterable"
+                               @click.native.stop="unregister(instance)"/>
             </div>
-            <div v-else :key="application.name"
-                 v-on-clickaway="deselect"
-                 class="applications-list-item applications-list-item--detailed">
-                <div class="applications-list-item__header"
-                     @click.stop="deselect()">
-                    <div class="applications-list-item__header-text" v-text="application.name"></div>
-                    <div class="applications-list-item__header-actions">
-                        <sba-icon-button icon="trash"
-                                         v-if="application.isUnregisterable"
-                                         @click.native.stop="unregister(application)">
-                        </sba-icon-button>
-                    </div>
-                </div>
-                <ul class="applications-list-item__instance-list">
-                    <li v-for="instance in application.instances" :key="instance.id"
-                        class="applications-list-item__instance"
-                        @click.stop="showDetails(instance)">
-                        <sba-status :status="instance.statusInfo.status"
-                                    :date="instance.statusTimestamp"
-                                    class="applications-list-item__status"></sba-status>
-                        <span class="applications-list-item__text">
-                            <a v-text="instance.registration.serviceUrl || instance.registration.healthUrl"
-                               :href="instance.registration.serviceUrl || instance.registration.healthUrl"
-                               @click.stop></a>
-                            <span v-text="instance.id"
-                                  class="applications-list-item__secondary"></span>
-                        </span>
-                        <span v-text="instance.info.version"
-                              class="applications-list-item__text"></span>
-                        <div class="applications-list-item__actions">
-                            <sba-icon-button icon="trash"
-                                             v-if="instance.isUnregisterable"
-                                             @click.native.stop="unregister(instance)">
-                            </sba-icon-button>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </template>
-    </div>
+          </li>
+        </ul>
+      </div>
+    </template>
+  </div>
 </template>
 
 <script>
   import {directive as onClickaway} from 'vue-clickaway';
 
   export default {
+    props: {
+      applications: {
+        type: Array,
+        default: () => []
+      }
+    },
     directives: {onClickaway},
     data: () => ({
       selected: null,
@@ -110,10 +113,6 @@
           this.errors.push(e);
         }
       }
-    },
-
-    props: {
-      'applications': Array
     }
   }
 </script>

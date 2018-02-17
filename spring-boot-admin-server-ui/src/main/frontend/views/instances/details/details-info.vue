@@ -15,35 +15,42 @@
   -->
 
 <template>
-    <sba-panel title="Info" v-if="hasLoaded">
-        <div>
-            <div v-if="error" class="message is-danger">
-                <div class="message-body">
-                    <strong>
-                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
-                        Fetching info failed.
-                    </strong>
-                    <p v-text="error.message"></p>
-                </div>
-            </div>
-            <div class="content info" v-if="info">
-                <table class="table" v-if="!isEmptyInfo">
-                    <tr v-for="(value, key) in info" :key="key">
-                        <td class="info__key" v-text="key"></td>
-                        <td>
-                            <sba-formatted-obj :value="value"></sba-formatted-obj>
-                        </td>
-                    </tr>
-                </table>
-                <p v-else class="is-muted">No info provided.</p>
-            </div>
+  <sba-panel title="Info" v-if="hasLoaded">
+    <div>
+      <div v-if="error" class="message is-danger">
+        <div class="message-body">
+          <strong>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            Fetching info failed.
+          </strong>
+          <p v-text="error.message"/>
         </div>
-    </sba-panel>
+      </div>
+      <div class="content info" v-if="info">
+        <table class="table" v-if="!isEmptyInfo">
+          <tr v-for="(value, key) in info" :key="key">
+            <td class="info__key" v-text="key"/>
+            <td>
+              <sba-formatted-obj :value="value"/>
+            </td>
+          </tr>
+        </table>
+        <p v-else class="is-muted">No info provided.</p>
+      </div>
+    </div>
+  </sba-panel>
 </template>
 
 <script>
+  import Instance from '@/services/instance';
+
   export default {
-    props: ['instance'],
+    props: {
+      instance: {
+        type: Instance,
+        required: true
+      }
+    },
     data: () => ({
       hasLoaded: false,
       error: null,
@@ -56,11 +63,6 @@
     },
     created() {
       this.fetchInfo();
-    },
-    watch: {
-      instance() {
-        this.fetchInfo();
-      }
     },
     methods: {
       async fetchInfo() {
@@ -81,12 +83,12 @@
 </script>
 
 <style lang="scss">
-    .info {
-        overflow: auto;
+  .info {
+    overflow: auto;
 
-        &__key {
-            vertical-align: top;
-        }
+    &__key {
+      vertical-align: top;
     }
+  }
 
 </style>

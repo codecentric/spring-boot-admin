@@ -15,51 +15,56 @@
   -->
 
 <template>
-    <table class="table is-hoverable is-fullwidth">
-        <thead>
-        <tr>
-            <th>Timestamp</th>
-            <th>Method</th>
-            <th>Path</th>
-            <th>Status</th>
-            <th>Content-Type</th>
-            <th>Content-Length</th>
-            <th>Time</th>
-        </tr>
-        </thead>
-        <template v-for="trace in traces">
-            <tr class="is-selectable"
-                :class="{ 'trace--is-detailed' : showDetails[trace.key] }"
-                @click="showDetails[trace.key]  ?  $delete(showDetails, trace.key) : $set(showDetails, trace.key, true)"
-                :key="trace.key">
-                <td v-text="trace.timestamp.format('L HH:mm:ss.SSS')"></td>
-                <td v-text="trace.request.method"></td>
-                <td v-text="trace.request.uri"></td>
-                <td>
-                    <span v-text="trace.response.status" class="tag"
-                          :class="{ 'is-success' : trace.isSuccess(), 'is-warning' : trace.isClientError(), 'is-danger' : trace.isServerError() }"></span>
-                </td>
-                <td v-text="trace.contentType"></td>
-                <td v-text="trace.contentLength ? prettyBytes(trace.contentLength) : ''"></td>
-                <td v-text="trace.timeTaken !== null && typeof trace.timeTaken !== 'undefined' ? `${trace.timeTaken} ms` : ''"></td>
-            </tr>
-            <tr class="trace__detail" :key="`${trace.key}-detail`" v-if="showDetails[trace.key]">
-                <td colspan="7">
-                    <pre v-text="toJson(trace)"></pre>
-                </td>
-            </tr>
-        </template>
-        <tr v-if="traces.length === 0">
-            <td class="is-muted" colspan="7">No traces found.</td>
-        </tr>
-    </table>
+  <table class="table is-hoverable is-fullwidth">
+    <thead>
+      <tr>
+        <th>Timestamp</th>
+        <th>Method</th>
+        <th>Path</th>
+        <th>Status</th>
+        <th>Content-Type</th>
+        <th>Content-Length</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <template v-for="trace in traces">
+      <tr class="is-selectable"
+          :class="{ 'trace--is-detailed' : showDetails[trace.key] }"
+          @click="showDetails[trace.key] ? $delete(showDetails, trace.key) : $set(showDetails, trace.key, true)"
+          :key="trace.key">
+        <td v-text="trace.timestamp.format('L HH:mm:ss.SSS')"/>
+        <td v-text="trace.request.method"/>
+        <td v-text="trace.request.uri"/>
+        <td>
+          <span v-text="trace.response.status" class="tag"
+                :class="{ 'is-success' : trace.isSuccess(), 'is-warning' : trace.isClientError(), 'is-danger' : trace.isServerError() }"/>
+        </td>
+        <td v-text="trace.contentType"/>
+        <td v-text="trace.contentLength ? prettyBytes(trace.contentLength) : ''"/>
+        <td v-text="trace.timeTaken !== null && typeof trace.timeTaken !== 'undefined' ? `${trace.timeTaken} ms` : ''"/>
+      </tr>
+      <tr class="trace__detail" :key="`${trace.key}-detail`" v-if="showDetails[trace.key]">
+        <td colspan="7">
+          <pre v-text="toJson(trace)"/>
+        </td>
+      </tr>
+    </template>
+    <tr v-if="traces.length === 0">
+      <td class="is-muted" colspan="7">No traces found.</td>
+    </tr>
+  </table>
 </template>
 
 <script>
   import prettyBytes from 'pretty-bytes';
 
   export default {
-    props: ['traces'],
+    props: {
+      traces: {
+        type: Array,
+        default: () => []
+      }
+    },
     data: () => ({
       showDetails: {}
     }),

@@ -15,9 +15,9 @@
   -->
 
 <template>
-    <div class="mem-chart">
-        <svg class="mem-chart__svg"></svg>
-    </div>
+  <div class="mem-chart">
+    <svg class="mem-chart__svg"/>
+  </div>
 </template>
 
 <script>
@@ -26,7 +26,12 @@
   import prettyBytes from 'pretty-bytes';
 
   export default {
-    props: ['data'],
+    props: {
+      data: {
+        type: Array,
+        default: () => []
+      }
+    },
     data: () => ({}),
     methods: {
       drawChart(_data) {
@@ -137,31 +142,31 @@
 </script>
 
 <style lang="scss">
-    @import "~@/assets/css/utilities";
+  @import "~@/assets/css/utilities";
 
-    .mem-chart {
-        &__svg {
-            height: 159px;
-            width: 100%;
-        }
-
-        &__area {
-            &--committed {
-                fill: $warning;
-                opacity: 0.8;
-            }
-            &--used {
-                fill: $info;
-                opacity: 0.8;
-            }
-            &--metaspace {
-                fill: $primary;
-                opacity: 0.8;
-            }
-        }
-
-        &__line--max {
-            stroke: $grey;
-        }
+  .mem-chart {
+    &__svg {
+      height: 159px;
+      width: 100%;
     }
+
+    &__area {
+      &--committed {
+        fill: $warning;
+        opacity: 0.8;
+      }
+      &--used {
+        fill: $info;
+        opacity: 0.8;
+      }
+      &--metaspace {
+        fill: $primary;
+        opacity: 0.8;
+      }
+    }
+
+    &__line--max {
+      stroke: $grey;
+    }
+  }
 </style>

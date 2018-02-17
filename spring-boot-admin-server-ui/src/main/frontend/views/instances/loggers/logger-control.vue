@@ -15,25 +15,45 @@
   -->
 
 <template>
-    <div class="field is-grouped logger-control">
-        <div class="control buttons has-addons">
-            <button class="button logger-control__level" :class="cssClass(level)"
-                    v-for="level in levelOptions" :key="level" v-text="level"
-                    @click.stop="selectLevel(level)">
-            </button>
-        </div>
-        <div class="control">
-            <button class="button is-light" :class="{ 'is-loading' : isLoading === null }"
-                    :disabled="!configured || !allowReset" @click.stop="selectLevel(null)">
-                Reset
-            </button>
-        </div>
+  <div class="field is-grouped logger-control">
+    <div class="control buttons has-addons">
+      <button class="button logger-control__level" :class="cssClass(level)"
+              v-for="level in levelOptions" :key="level" v-text="level"
+              @click.stop="selectLevel(level)"/>
     </div>
+    <div class="control">
+      <button class="button is-light" :class="{ 'is-loading' : isLoading === null }"
+              :disabled="!configured || !allowReset" @click.stop="selectLevel(null)">
+        Reset
+      </button>
+    </div>
+  </div>
 </template>
 
 <script>
   export default {
-    props: ['effective-level', 'configured-level', 'level-options', 'allow-reset', 'is-loading'],
+    props: {
+      effectiveLevel: {
+        type: String,
+        required: true
+      },
+      configuredLevel: {
+        type: String,
+        default: null
+      },
+      levelOptions: {
+        type: Array,
+        required: true
+      },
+      allowReset: {
+        type: Boolean,
+        default: true
+      },
+      isLoading: {
+        type: String,
+        default: undefined
+      }
+    },
     computed: {
       level() {
         return this.configuredLevel || this.effectiveLevel;
@@ -63,14 +83,14 @@
 </script>
 
 <style lang="scss">
-    .logger-control {
-        &__level {
-            &--inherited {
-                opacity: 0.5;
-                &:hover {
-                    opacity: 1;
-                }
-            }
+  .logger-control {
+    &__level {
+      &--inherited {
+        opacity: 0.5;
+        &:hover {
+          opacity: 1;
         }
+      }
     }
+  }
 </style>
