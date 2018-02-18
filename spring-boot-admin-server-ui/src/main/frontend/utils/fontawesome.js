@@ -18,6 +18,7 @@ import fontawesome from '@fortawesome/fontawesome';
 import faGithub from '@fortawesome/fontawesome-free-brands/faGithub';
 import faGitter from '@fortawesome/fontawesome-free-brands/faGitter';
 import faStackOverflow from '@fortawesome/fontawesome-free-brands/faStackOverflow';
+import farTimesCircle from '@fortawesome/fontawesome-free-regular/faTimesCircle';
 import faBan from '@fortawesome/fontawesome-free-solid/faBan';
 import faBook from '@fortawesome/fontawesome-free-solid/faBook';
 import faCheck from '@fortawesome/fontawesome-free-solid/faCheck';
@@ -25,6 +26,7 @@ import faDownload from '@fortawesome/fontawesome-free-solid/faDownload';
 import faExclamation from '@fortawesome/fontawesome-free-solid/faExclamation';
 import faExclamationTriangle from '@fortawesome/fontawesome-free-solid/faExclamationTriangle';
 import faMinusCircle from '@fortawesome/fontawesome-free-solid/faMinusCircle';
+import faPencilAlt from '@fortawesome/fontawesome-free-solid/faPencilAlt';
 import faQuestionCircle from '@fortawesome/fontawesome-free-solid/faQuestionCircle';
 import faSignOutAlt from '@fortawesome/fontawesome-free-solid/faSignOutAlt';
 import faStepBackward from '@fortawesome/fontawesome-free-solid/faStepBackward';
@@ -33,7 +35,12 @@ import faTimesCircle from '@fortawesome/fontawesome-free-solid/faTimesCircle';
 import faTrash from '@fortawesome/fontawesome-free-solid/faTrash';
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 
-fontawesome.library.add(faGithub, faStackOverflow, faGitter, faTrash, faDownload, faStepForward, faStepBackward, faCheck, faQuestionCircle, faBan, faTimesCircle, faMinusCircle, faExclamation,
-  faBook, faSignOutAlt, faExclamationTriangle);
+//solid
+fontawesome.library.add(faTrash, faDownload, faStepForward, faStepBackward, faCheck, faQuestionCircle, faBan, faTimesCircle, faMinusCircle, faExclamation,
+  faBook, faSignOutAlt, faExclamationTriangle, faPencilAlt);
+//regular
+fontawesome.library.add(farTimesCircle);
+//brands
+fontawesome.library.add(faGithub, faStackOverflow, faGitter);
 
 export default FontAwesomeIcon;

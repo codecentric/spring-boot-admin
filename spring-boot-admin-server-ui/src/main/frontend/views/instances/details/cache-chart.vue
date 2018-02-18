@@ -15,9 +15,9 @@
   -->
 
 <template>
-    <div class="cache-chart">
-        <svg class="cache-chart__svg"></svg>
-    </div>
+  <div class="cache-chart">
+    <svg class="cache-chart__svg"/>
+  </div>
 </template>
 
 <script>
@@ -25,7 +25,12 @@
   import moment from 'moment';
 
   export default {
-    props: ['data'],
+    props: {
+      data: {
+        type: Array,
+        default: () => []
+      }
+    },
     data: () => ({}),
     methods: {
       drawChart(_data) {
@@ -68,7 +73,7 @@
         //draw axis
         vm.xAxis.call(d3.axisBottom(x)
           .ticks(5)
-          .tickFormat(d => moment(d).format("HH:mm:ss"))
+          .tickFormat(d => moment(d).format('HH:mm:ss'))
         );
 
         vm.yAxis.call(d3.axisLeft(y)

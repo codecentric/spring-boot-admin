@@ -42,6 +42,12 @@
             <artifactId>hazelcast</artifactId>
         </dependency>
         <!-- end::dependency-hazelcast[] -->
+        <!-- Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName>

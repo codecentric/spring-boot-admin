@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
@@ -44,12 +45,12 @@ public class AdminApplicationDiscoveryTest extends AbstractAdminApplicationTest 
     private SimpleDiscoveryProperties simpleDiscovery;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
                                                  .web(WebApplicationType.REACTIVE)
                                                  .run("--server.port=0", "--management.endpoints.web.base-path=/mgmt",
-                                                         "--endpoints.health.enabled=true", "--info.test=foobar",
-                                                         "--eureka.client.enabled=false");
+                                                     "--endpoints.health.enabled=true", "--info.test=foobar",
+                                                     "--eureka.client.enabled=false");
 
         simpleDiscovery = instance.getBean(SimpleDiscoveryProperties.class);
 

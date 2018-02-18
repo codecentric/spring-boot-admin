@@ -35,7 +35,7 @@ public class RegistrationDeserializerTest {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(Registration.class, new RegistrationDeserializer());
         module.setSerializerModifier(
-                new RegistrationBeanSerializerModifier(new SanitizingMapSerializer(new String[]{".*password$"})));
+            new RegistrationBeanSerializerModifier(new SanitizingMapSerializer(new String[]{".*password$"})));
         objectMapper = Jackson2ObjectMapperBuilder.json().modules(module).build();
     }
 

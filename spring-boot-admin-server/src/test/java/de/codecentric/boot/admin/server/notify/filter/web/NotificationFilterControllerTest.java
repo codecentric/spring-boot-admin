@@ -40,8 +40,7 @@ public class NotificationFilterControllerTest {
 
     private final InstanceRepository repository = new EventsourcingInstanceRepository(new InMemoryEventStore());
     private MockMvc mvc = MockMvcBuilders.standaloneSetup(
-            new NotificationFilterController(new FilteringNotifier(new LoggingNotifier(repository), repository)))
-                                         .build();
+        new NotificationFilterController(new FilteringNotifier(new LoggingNotifier(repository), repository))).build();
 
     @Test
     @Ignore("find a way to test reactive driven controllers")
@@ -59,12 +58,12 @@ public class NotificationFilterControllerTest {
     @Test
     @Ignore("find a way to test reactive driven controllers")
     public void test_post_delete() throws Exception {
-       /* String response = mvc.perform(post("/notifications/filters?id=1337&ttl=10000"))
-                             .andExpect(status().isOk())
-                             .andExpect(content().string(not(isEmptyString())))
-                             .andReturn()
-                             .getResponse()
-                             .getContentAsString();*/
+        /* String response = mvc.perform(post("/notifications/filters?id=1337&ttl=10000"))
+                            .andExpect(status().isOk())
+                            .andExpect(content().string(not(isEmptyString())))
+                            .andReturn()
+                            .getResponse()
+                            .getContentAsString();*/
         String response = "";
         String id = extractId(response);
 

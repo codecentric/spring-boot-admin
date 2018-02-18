@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.client.registration;
 
 import de.codecentric.boot.admin.client.config.ClientProperties;
@@ -90,7 +91,7 @@ public class ApplicationRegistrator {
     protected boolean register(Application self, String adminUrl, boolean firstAttempt) {
         try {
             ResponseEntity<Map<String, Object>> response = template.exchange(adminUrl, HttpMethod.POST,
-                    new HttpEntity<>(self, HTTP_HEADERS), RESPONSE_TYPE);
+                new HttpEntity<>(self, HTTP_HEADERS), RESPONSE_TYPE);
 
             if (response.getStatusCode().is2xxSuccessful()) {
                 if (registeredId.compareAndSet(null, response.getBody().get("id").toString())) {
@@ -102,21 +103,21 @@ public class ApplicationRegistrator {
             } else {
                 if (firstAttempt) {
                     LOGGER.warn(
-                            "Application failed to registered itself as {}. Response: {}. Further attempts are logged on DEBUG level",
-                            self, response.toString());
+                        "Application failed to registered itself as {}. Response: {}. Further attempts are logged on DEBUG level",
+                        self, response.toString());
                 } else {
                     LOGGER.debug("Application failed to registered itself as {}. Response: {}", self,
-                            response.toString());
+                        response.toString());
                 }
             }
         } catch (Exception ex) {
             if (firstAttempt) {
                 LOGGER.warn(
-                        "Failed to register application as {} at spring-boot-admin ({}): {}. Further attempts are logged on DEBUG level",
-                        self, client.getAdminUrl(), ex.getMessage());
+                    "Failed to register application as {} at spring-boot-admin ({}): {}. Further attempts are logged on DEBUG level",
+                    self, client.getAdminUrl(), ex.getMessage());
             } else {
                 LOGGER.debug("Failed to register application as {} at spring-boot-admin ({}): {}", self,
-                        client.getAdminUrl(), ex.getMessage());
+                    client.getAdminUrl(), ex.getMessage());
             }
 
         }
@@ -135,7 +136,7 @@ public class ApplicationRegistrator {
                     }
                 } catch (Exception ex) {
                     LOGGER.warn("Failed to deregister application (id={}) at spring-boot-admin ({}): {}", id, adminUrl,
-                            ex.getMessage());
+                        ex.getMessage());
                 }
             }
         }

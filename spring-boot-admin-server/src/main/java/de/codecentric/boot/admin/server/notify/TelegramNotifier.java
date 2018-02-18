@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.notify;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
@@ -74,7 +75,7 @@ public class TelegramNotifier extends AbstractStatusChangeNotifier {
     @Override
     protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
         return Mono.fromRunnable(
-                () -> restTemplate.getForObject(buildUrl(), Void.class, createMessage(event, instance)));
+            () -> restTemplate.getForObject(buildUrl(), Void.class, createMessage(event, instance)));
     }
 
     protected String buildUrl() {

@@ -104,8 +104,7 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
     @Override
     protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
         return Mono.fromRunnable(
-                () -> restTemplate.exchange(buildUrl(event), HttpMethod.POST, createRequest(event, instance),
-                        Void.class));
+            () -> restTemplate.exchange(buildUrl(event), HttpMethod.POST, createRequest(event, instance), Void.class));
     }
 
     protected String buildUrl(InstanceEvent event) {
@@ -169,8 +168,8 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 
     protected String getDescription(InstanceEvent event, Instance instance) {
         return String.format("Instance %s (%s) went from %s to %s", instance.getRegistration().getName(),
-                instance.getId(), getLastStatus(instance.getId()),
-                ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus());
+            instance.getId(), getLastStatus(instance.getId()),
+            ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus());
     }
 
     public void setApiKey(String apiKey) {

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.config;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
@@ -49,7 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class AdminServerNotifierConfigurationTest {
     private static final InstanceEvent APP_DOWN = new InstanceStatusChangedEvent(InstanceId.of("id-2"), 1L,
-            StatusInfo.ofDown());
+        StatusInfo.ofDown());
 
     private AnnotationConfigApplicationContext context;
 

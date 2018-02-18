@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,33 +65,33 @@ public class OpsGenieNotifierTest {
     @Test
     public void test_onApplicationEvent_resolve() {
         StepVerifier.create(notifier.notify(
-                new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 1, StatusInfo.ofDown())))
+            new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 1, StatusInfo.ofDown())))
                     .verifyComplete();
         reset(restTemplate);
         when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE.withStatusInfo(StatusInfo.ofUp())));
 
         StepVerifier.create(notifier.notify(
-                new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, StatusInfo.ofUp())))
+            new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, StatusInfo.ofUp())))
                     .verifyComplete();
 
         verify(restTemplate).exchange(eq("https://api.opsgenie.com/v1/json/alert/close"), eq(HttpMethod.POST),
-                eq(expectedRequest("DOWN", "UP")), eq(Void.class));
+            eq(expectedRequest("DOWN", "UP")), eq(Void.class));
     }
 
     @Test
     public void test_onApplicationEvent_trigger() {
         StepVerifier.create(notifier.notify(
-                new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 1, StatusInfo.ofUp())))
+            new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 1, StatusInfo.ofUp())))
                     .verifyComplete();
         reset(restTemplate);
         when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE.withStatusInfo(StatusInfo.ofDown())));
 
         StepVerifier.create(notifier.notify(
-                new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, StatusInfo.ofDown())))
+            new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, StatusInfo.ofDown())))
                     .verifyComplete();
 
         verify(restTemplate).exchange(eq("https://api.opsgenie.com/v1/json/alert"), eq(HttpMethod.POST),
-                eq(expectedRequest("UP", "DOWN")), eq(Void.class));
+            eq(expectedRequest("UP", "DOWN")), eq(Void.class));
     }
 
 

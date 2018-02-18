@@ -15,19 +15,17 @@
   -->
 
 <template>
-    <button @click="click" class="confirm-button" :class="{ 'is-warning' : confirm }" v-on-clickaway="abort">
-        <slot name="confirm" v-if="confirm">Confirm</slot>
-        <slot v-else></slot>
-    </button>
+  <button @click="click" class="confirm-button" :class="{ 'is-warning' : confirm }" v-on-clickaway="abort">
+    <slot name="confirm" v-if="confirm">Confirm</slot>
+    <slot v-else/>
+  </button>
 </template>
 
 <script>
   import {directive as onClickaway} from 'vue-clickaway';
 
   export default {
-    directives: {
-      onClickaway
-    },
+    directives: {onClickaway},
     data: () => ({
       confirm: false
     }),
@@ -37,11 +35,11 @@
       },
       click(event) {
         if (this.confirm) {
-          event.target.style.width = null;
+          this.$el.style.width = null;
           this.$emit('click', event);
         } else {
-          const width = event.target.getBoundingClientRect().width;
-          event.target.style.width = `${width}px`;
+          const width = this.$el.getBoundingClientRect().width;
+          this.$el.style.width = `${width}px`;
         }
         this.confirm = !this.confirm;
       }
@@ -51,9 +49,9 @@
 
 
 <style lang="scss">
-    @import "~@/assets/css/utilities";
+  @import "~@/assets/css/utilities";
 
-    .confirm-button {
-        transition: all $easing 150ms;
-    }
+  .confirm-button {
+    transition: all $easing 150ms;
+  }
 </style>

@@ -33,8 +33,8 @@ public class ClientServletApplicationTest extends AbstractClientApplicationTest 
         SpringApplication application = new SpringApplication(TestClientApplication.class);
         application.setWebApplicationType(WebApplicationType.SERVLET);
         instance = application.run("--spring.application.name=Test-Client", "--server.port=0",
-                "--management.endpoints.web.base-path=/mgmt", "--endpoints.health.enabled=true",
-                "--spring.boot.admin.client.url=" + wireMock.url("/"));
+            "--management.endpoints.web.base-path=/mgmt", "--endpoints.health.enabled=true",
+            "--spring.boot.admin.client.url=" + wireMock.url("/"));
     }
 
     @After
@@ -54,4 +54,3 @@ public class ClientServletApplicationTest extends AbstractClientApplicationTest 
     }
 
 }
-

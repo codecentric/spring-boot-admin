@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.client.config;
 
 import java.time.Duration;
@@ -83,7 +84,7 @@ public class ClientProperties {
     private boolean enabled = true;
 
     public String[] getAdminUrl() {
-        String adminUrls[] = url.clone();
+        String[] adminUrls = url.clone();
         for (int i = 0; i < adminUrls.length; i++) {
             adminUrls[i] += "/" + apiPath;
         }

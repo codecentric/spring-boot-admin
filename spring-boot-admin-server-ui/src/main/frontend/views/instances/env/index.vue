@@ -15,56 +15,56 @@
   -->
 
 <template>
-    <section class="section" :class="{ 'is-loading' : !hasLoaded }">
-        <div class="container">
-            <div v-if="error" class="message is-danger">
-                <div class="message-body">
-                    <strong>
-                        <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"></font-awesome-icon>
-                        Fetching environment failed.
-                    </strong>
-                </div>
-            </div>
-            <div class="content" v-if="env && env.activeProfiles.length > 0">
-                <div class="field is-grouped is-grouped-multiline">
-                    <div class="control" v-for="profile in env.activeProfiles">
-                        <div class="tags has-addons">
-                            <span class="tag is-medium">Profile</span>
-                            <span class="tag is-medium is-info" v-text="profile"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="content" v-if="env">
-                <div class="field has-addons">
-                    <p class="control is-expanded">
-                        <input class="input" type="text" placeholder="name / value" v-model="filter">
-                    </p>
-                </div>
-            </div>
-            <div class="content" v-if="env">
-                <sba-panel class="property-source"
-                           v-for="propertySource in propertySources" :key="propertySource.name"
-                           :title="propertySource.name">
-                    <table class="table is-fullwidth" slot="text"
-                           v-if="Object.keys(propertySource.properties).length > 0">
-                        <tr v-for="(value, name) in propertySource.properties">
-                            <td>
-                                <span v-text="name"></span><br>
-                                <small class="is-muted" v-if="value.origin" v-text="value.origin"></small>
-                            </td>
-                            <td class="is-breakable" v-text="value.value"></td>
-                        </tr>
-                    </table>
-                    <p class="is-muted" v-else slot="text">No properties set</p>
-                </sba-panel>
-            </div>
+  <section class="section" :class="{ 'is-loading' : !hasLoaded }">
+    <div class="container">
+      <div v-if="error" class="message is-danger">
+        <div class="message-body">
+          <strong>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            Fetching environment failed.
+          </strong>
+          <p v-text="error.message"/>
         </div>
-    </section>
+      </div>
+      <div class="field is-grouped is-grouped-multiline" v-if="env && env.activeProfiles.length > 0">
+        <div class="control" v-for="profile in env.activeProfiles" :key="profile">
+          <div class="tags has-addons">
+            <span class="tag is-medium is-primary">Profile</span>
+            <span class="tag is-medium" v-text="profile"/>
+          </div>
+        </div>
+      </div>
+      <sba-env-manager v-if="env && hasEnvManagerSupport"
+                       :instance="instance" :property-sources="env.propertySources"
+                       @refresh="fetchEnv()" @update="fetchEnv" @reset="fetchEnv()"/>
+      <div class="field has-addons" v-if="env">
+        <p class="control is-expanded">
+          <input class="input" type="search" placeholder="name / value filter" v-model="filter">
+        </p>
+      </div>
+      <sba-panel class="property-source"
+                 v-for="propertySource in propertySources" :key="propertySource.name"
+                 :title="propertySource.name">
+        <table class="table is-fullwidth"
+               v-if="Object.keys(propertySource.properties).length > 0">
+          <tr v-for="(value, name) in propertySource.properties" :key="`${propertySource-name}-${name}`">
+            <td>
+              <span v-text="name"/><br>
+              <small class="is-muted" v-if="value.origin" v-text="value.origin"/>
+            </td>
+            <td class="is-breakable" v-text="value.value"/>
+          </tr>
+        </table>
+        <p class="is-muted" v-else>No properties set</p>
+      </sba-panel>
+    </div>
+  </section>
 </template>
 
 <script>
+  import Instance from '@/services/instance';
   import _ from 'lodash';
+  import sbaEnvManager from './env-manager';
 
   const filterProperty = (needle) => (property, name) => {
     return name.toString().toLowerCase().indexOf(needle) >= 0 || property.value.toString().toLowerCase().indexOf(needle) >= 0;
@@ -81,16 +81,25 @@
   };
 
   export default {
-    props: ['instance'],
-
+    props: {
+      instance: {
+        type: Instance,
+        required: true
+      }
+    },
+    components: {sbaEnvManager},
     data: () => ({
       hasLoaded: false,
       error: null,
       env: null,
-      filter: null
+      filter: null,
+      hasEnvManagerSupport: false
     }),
     computed: {
       propertySources() {
+        if (!this.env) {
+          return [];
+        }
         if (!this.filter) {
           return this.env.propertySources;
         }
@@ -101,11 +110,7 @@
     },
     created() {
       this.fetchEnv();
-    },
-    watch: {
-      instance() {
-        this.fetchEnv();
-      }
+      this.determineEnvManagerSupport();
     },
     methods: {
       async fetchEnv() {
@@ -120,17 +125,27 @@
           }
           this.hasLoaded = true;
         }
+      },
+      async determineEnvManagerSupport() {
+        if (this.instance) {
+          try {
+            this.hasEnvManagerSupport = await this.instance.hasEnvManagerSupport();
+          } catch (error) {
+            console.warn('Determine env manager support failed:', error);
+            this.hasEnvManagerSupport = false;
+          }
+        }
       }
     }
   }
 </script>
 
 <style lang="scss">
-    @import "~@/assets/css/utilities";
+  @import "~@/assets/css/utilities";
 
-    .property-source .card-header {
-        position: sticky;
-        background: $white;
-        top: ($navbar-height-px + $tabs-height-px);
-    }
+  .property-source .card-header {
+    position: sticky;
+    background: $white;
+    top: ($navbar-height-px + $tabs-height-px);
+  }
 </style>

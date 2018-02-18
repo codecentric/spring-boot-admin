@@ -143,6 +143,6 @@ public class LegacyEndpointConvertersTest {
 
     private Flux<DataBuffer> read(String resourceName) {
         return DataBufferUtils.readInputStream(
-                () -> LegacyEndpointConvertersTest.class.getResourceAsStream(resourceName), bufferFactory, 10);
+            () -> LegacyEndpointConvertersTest.class.getResourceAsStream(resourceName), bufferFactory, 10);
     }
 }

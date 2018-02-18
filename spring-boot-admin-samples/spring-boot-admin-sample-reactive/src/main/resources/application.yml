@@ -9,10 +9,11 @@ logging:
 management:
   endpoints:
     web:
-      expose: "*"
+      exposure:
+        include: "*"
   endpoint:
     health:
-      show-details: true
+      show-details: ALWAYS
 
 spring:
   application:

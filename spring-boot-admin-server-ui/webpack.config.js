@@ -58,6 +58,11 @@ const config = {
   module: {
     rules: [
       {
+        test: /\.(js|vue)$/,
+        loader: 'eslint-loader',
+        enforce: 'pre'
+      },
+      {
         test: /\.vue$/,
         loader: 'vue-loader',
         options: {

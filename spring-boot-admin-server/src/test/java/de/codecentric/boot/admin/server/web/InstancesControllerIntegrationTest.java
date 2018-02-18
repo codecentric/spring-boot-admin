@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.web;
 
 import de.codecentric.boot.admin.server.AdminApplicationTest;
@@ -140,26 +141,30 @@ public class InstancesControllerIntegrationTest {
     }
 
     private void assertEvents(String id) {
-        this.client.get().uri("/instances/events")
+        this.client.get()
+                   .uri("/instances/events")
                    .accept(MediaType.APPLICATION_JSON)
                    .exchange()
-                   .expectStatus().isOk()
+                   .expectStatus()
+                   .isOk()
                    .expectHeader()
-                   .contentType(MediaType.APPLICATION_JSON_UTF8).expectBody(String.class).consumeWith(response -> {
-            DocumentContext json = JsonPath.parse(response.getResponseBody());
-            assertThat(json.read("$[0].instance", String.class)).isEqualTo(id);
-            assertThat(json.read("$[0].version", Long.class)).isEqualTo(0L);
-            assertThat(json.read("$[0].type", String.class)).isEqualTo("REGISTERED");
-            assertThat(json.read("$[1].instance", String.class)).isEqualTo(id);
-            assertThat(json.read("$[1].version", Long.class)).isEqualTo(1L);
-            assertThat(json.read("$[1].type", String.class)).isEqualTo("STATUS_CHANGED");
-            assertThat(json.read("$[2].instance", String.class)).isEqualTo(id);
-            assertThat(json.read("$[2].version", Long.class)).isEqualTo(2L);
-            assertThat(json.read("$[2].type", String.class)).isEqualTo("REGISTRATION_UPDATED");
-            assertThat(json.read("$[3].instance", String.class)).isEqualTo(id);
-            assertThat(json.read("$[3].version", Long.class)).isEqualTo(3L);
-            assertThat(json.read("$[3].type", String.class)).isEqualTo("DEREGISTERED");
-        });
+                   .contentType(MediaType.APPLICATION_JSON_UTF8)
+                   .expectBody(String.class)
+                   .consumeWith(response -> {
+                       DocumentContext json = JsonPath.parse(response.getResponseBody());
+                       assertThat(json.read("$[0].instance", String.class)).isEqualTo(id);
+                       assertThat(json.read("$[0].version", Long.class)).isEqualTo(0L);
+                       assertThat(json.read("$[0].type", String.class)).isEqualTo("REGISTERED");
+                       assertThat(json.read("$[1].instance", String.class)).isEqualTo(id);
+                       assertThat(json.read("$[1].version", Long.class)).isEqualTo(1L);
+                       assertThat(json.read("$[1].type", String.class)).isEqualTo("STATUS_CHANGED");
+                       assertThat(json.read("$[2].instance", String.class)).isEqualTo(id);
+                       assertThat(json.read("$[2].version", Long.class)).isEqualTo(2L);
+                       assertThat(json.read("$[2].type", String.class)).isEqualTo("REGISTRATION_UPDATED");
+                       assertThat(json.read("$[3].instance", String.class)).isEqualTo(id);
+                       assertThat(json.read("$[3].version", Long.class)).isEqualTo(3L);
+                       assertThat(json.read("$[3].type", String.class)).isEqualTo("DEREGISTERED");
+                   });
     }
 
     private void assertInstanceNotFound(String id) {
@@ -226,15 +231,15 @@ public class InstancesControllerIntegrationTest {
     private String register() {
         //@formatter:off
         EntityExchangeResult<Map<String, Object>> result = client.post()
-                                                                 .uri("/instances")
-                                                                 .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
-                                                                 .syncBody(register_as_test)
-                                                                 .exchange()
-                                                                 .expectStatus().isCreated()
-                                                                 .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
-                                                                 .expectHeader().valueMatches("location", "http://localhost:" + localPort + "/instances/[0-9a-f]+")
-                                                                 .expectBody(RESPONSE_TYPE)
-                                                                 .returnResult();
+                                                                .uri("/instances")
+                                                                .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+                                                                .syncBody(register_as_test)
+                                                                .exchange()
+                                                                .expectStatus().isCreated()
+                                                                .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+                                                                .expectHeader().valueMatches("location", "http://localhost:" + localPort + "/instances/[0-9a-f]+")
+                                                                .expectBody(RESPONSE_TYPE)
+                                                                .returnResult();
         //@formatter:on
         assertThat(result.getResponseBody()).containsKeys("id");
         return result.getResponseBody().get("id").toString();

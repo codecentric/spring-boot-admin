@@ -70,34 +70,34 @@ public class LetsChatNotifierTest {
     @Test
     public void test_onApplicationEvent_resolve() {
         StepVerifier.create(notifier.notify(
-                new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
+            new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
                     .verifyComplete();
         clearInvocations(restTemplate);
 
-        StepVerifier.create(notifier.notify(
-                new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+        StepVerifier.create(
+            notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
                     .verifyComplete();
 
         HttpEntity<?> expected = expectedMessage(standardMessage("UP"));
         verify(restTemplate).exchange(eq(URI.create(String.format("%s/rooms/%s/messages", host, room))),
-                eq(HttpMethod.POST), eq(expected), eq(Void.class));
+            eq(HttpMethod.POST), eq(expected), eq(Void.class));
     }
 
     @Test
     public void test_onApplicationEvent_resolve_with_custom_message() {
         notifier.setMessage("TEST");
         StepVerifier.create(notifier.notify(
-                new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
+            new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
                     .verifyComplete();
         clearInvocations(restTemplate);
 
-        StepVerifier.create(notifier.notify(
-                new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+        StepVerifier.create(
+            notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
                     .verifyComplete();
 
         HttpEntity<?> expected = expectedMessage("TEST");
         verify(restTemplate).exchange(eq(URI.create(String.format("%s/rooms/%s/messages", host, room))),
-                eq(HttpMethod.POST), eq(expected), eq(Void.class));
+            eq(HttpMethod.POST), eq(expected), eq(Void.class));
     }
 
     private HttpEntity<?> expectedMessage(String message) {

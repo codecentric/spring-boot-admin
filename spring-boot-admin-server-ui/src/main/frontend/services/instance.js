@@ -52,6 +52,7 @@ class Instance {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
+
   async fetchMetric(metric, tags) {
     const params = tags ? {tag: _.entries(tags).map(([name, value]) => `${name}:${value}`).join(',')} : {};
     return axios.get(`instances/${this.id}/actuator/metrics/${metric}`, {
@@ -67,78 +68,89 @@ class Instance {
   }
 
   async fetchEnv(name) {
-    return await axios.get(`instances/${this.id}/actuator/env${name ? `/${name}` : '' }`, {
+    return axios.get(`instances/${this.id}/actuator/env${name ? `/${name}` : '' }`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
+  async hasEnvManagerSupport() {
+    const response = await axios.options(`instances/${this.id}/actuator/env`);
+    return response.headers['allow'] && response.headers['allow'].indexOf('POST') >= 0;
+  }
+
+  async resetEnv() {
+    return axios.delete(`instances/${this.id}/actuator/env`);
+  }
+
+  async setEnv(name, value) {
+    return axios.post(`instances/${this.id}/actuator/env`, {name, value}, {
+      headers: {'Content-Type': 'application/json'}
+    });
+  }
+
+  async refreshContext() {
+    return axios.post(`instances/${this.id}/actuator/refresh`);
+  }
+
   async fetchLiquibase() {
-    return await axios.get(`instances/${this.id}/actuator/liquibase`, {
+    return axios.get(`instances/${this.id}/actuator/liquibase`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async fetchFlyway() {
-    return await axios.get(`instances/${this.id}/actuator/flyway`, {
+    return axios.get(`instances/${this.id}/actuator/flyway`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async fetchLoggers() {
-    return await axios.get(`instances/${this.id}/actuator/loggers`, {
-      headers: {
-        'Accept': actuatorMimeTypes
-      },
+    return axios.get(`instances/${this.id}/actuator/loggers`, {
+      headers: {'Accept': actuatorMimeTypes},
       transformResponse: Instance._toLoggers
     });
   }
 
   async configureLogger(name, level) {
-    return await axios.post(`instances/${this.id}/actuator/loggers/${name}`, {configuredLevel: level}, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
+    return axios.post(`instances/${this.id}/actuator/loggers/${name}`, {configuredLevel: level}, {
+      headers: {'Content-Type': 'application/json'}
     });
   }
 
   async fetchHttptrace() {
-    return await axios.get(`instances/${this.id}/actuator/httptrace`, {
+    return axios.get(`instances/${this.id}/actuator/httptrace`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async fetchThreaddump() {
-    return await axios.get(`instances/${this.id}/actuator/threaddump`, {
+    return axios.get(`instances/${this.id}/actuator/threaddump`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async fetchAuditevents(after) {
-    return await axios.get(`instances/${this.id}/actuator/auditevents`, {
+    return axios.get(`instances/${this.id}/actuator/auditevents`, {
       headers: {'Accept': actuatorMimeTypes},
-      params: {
-        after: after.toISOString()
-      }
+      params: {after: after.toISOString()}
     });
   }
 
   async fetchSessions(username) {
-    return await axios.get(`instances/${this.id}/actuator/sessions`, {
+    return axios.get(`instances/${this.id}/actuator/sessions`, {
       headers: {'Accept': actuatorMimeTypes},
-      params: {
-        username
-      }
+      params: {username}
     });
   }
 
   async fetchSession(sessionId) {
-    return await axios.get(`instances/${this.id}/actuator/sessions/${sessionId}`, {
+    return axios.get(`instances/${this.id}/actuator/sessions/${sessionId}`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async deleteSession(sessionId) {
-    return await axios.delete(`instances/${this.id}/actuator/sessions/${sessionId}`, {
+    return axios.delete(`instances/${this.id}/actuator/sessions/${sessionId}`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
@@ -147,8 +159,51 @@ class Instance {
     return logtail(`instances/${this.id}/actuator/logfile`, interval);
   }
 
+  async listMBeans() {
+    return axios.get(`instances/${this.id}/actuator/jolokia/list`, {
+      headers: {'Accept': 'application/json'},
+      params: {canonicalNaming: false},
+      transformResponse: Instance._toMBeans
+    });
+  }
+
+  async readMBeanAttributes(domain, mBean) {
+    const body = {
+      type: 'read',
+      mbean: `${domain}:${mBean}`,
+      config: {ignoreErrors: true}
+    };
+    return axios.post(`instances/${this.id}/actuator/jolokia`, body, {
+      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    });
+  }
+
+  async writeMBeanAttribute(domain, mBean, attribute, value) {
+    const body = {
+      type: 'write',
+      mbean: `${domain}:${mBean}`,
+      attribute,
+      value
+    };
+    return axios.post(`instances/${this.id}/actuator/jolokia`, body, {
+      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    });
+  }
+
+  async invokeMBeanOperation(domain, mBean, operation, args) {
+    const body = {
+      type: 'exec',
+      mbean: `${domain}:${mBean}`,
+      operation,
+      'arguments': args
+    };
+    return axios.post(`instances/${this.id}/actuator/jolokia`, body, {
+      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    });
+  }
+
   static async fetchEvents() {
-    return await axios.get(`instances/events`);
+    return axios.get('instances/events');
   }
 
   static getEventStream() {
@@ -166,7 +221,7 @@ class Instance {
   }
 
   static async get(id) {
-    return await axios.get(`instances/${id}`, {
+    return axios.get(`instances/${id}`, {
       transformResponse: Instance._toInstance
     });
   }
@@ -190,6 +245,19 @@ class Instance {
     return {levels: raw.levels, loggers};
   }
 
+  static _toMBeans(data) {
+    if (!data) {
+      return data;
+    }
+    const raw = JSON.parse(data);
+    return _.entries(raw.value).map(([domain, mBeans]) => ({
+      domain,
+      mBeans: _.entries(mBeans).map(([descriptor, mBean]) => ({
+        descriptor: descriptor,
+        ...mBean
+      }))
+    }))
+  }
 }
 
 export default Instance;

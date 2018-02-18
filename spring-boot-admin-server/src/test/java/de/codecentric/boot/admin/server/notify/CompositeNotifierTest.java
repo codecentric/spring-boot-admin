@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CompositeNotifierTest {
     private static final InstanceEvent APP_DOWN = new InstanceStatusChangedEvent(InstanceId.of("-"), 0L,
-            StatusInfo.ofDown());
+        StatusInfo.ofDown());
 
     @Test(expected = IllegalArgumentException.class)
     public void test_ctor_assert() {
@@ -37,7 +37,7 @@ public class CompositeNotifierTest {
     }
 
     @Test
-    public void test_all_notifiers_get_notified() throws Exception {
+    public void test_all_notifiers_get_notified() {
         TestNotifier notifier1 = new TestNotifier();
         TestNotifier notifier2 = new TestNotifier();
         CompositeNotifier compositeNotifier = new CompositeNotifier(Arrays.asList(notifier1, notifier2));

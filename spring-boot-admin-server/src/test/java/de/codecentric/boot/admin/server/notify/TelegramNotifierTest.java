@@ -66,41 +66,42 @@ public class TelegramNotifierTest {
     @Test
     public void test_onApplicationEvent_resolve() {
         StepVerifier.create(notifier.notify(
-                new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
+            new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
                     .verifyComplete();
         clearInvocations(restTemplate);
 
-        StepVerifier.create(notifier.notify(
-                new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+        StepVerifier.create(
+            notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
                     .verifyComplete();
 
         verify(restTemplate).getForObject(
-                eq("https://telegram.com/bot--token-/sendmessage?chat_id={chat_id}&text={text}" +
-                   "&parse_mode={parse_mode}&disable_notification={disable_notification}"), eq(Void.class),
-                eq(getParameters("UP")));
+            eq("https://telegram.com/bot--token-/sendmessage?chat_id={chat_id}&text={text}" +
+               "&parse_mode={parse_mode}&disable_notification={disable_notification}"), eq(Void.class),
+            eq(getParameters("UP")));
     }
 
     @Test
     public void test_onApplicationEvent_trigger() {
         StatusInfo infoDown = StatusInfo.ofDown();
 
-        @SuppressWarnings("unchecked") ArgumentCaptor<HttpEntity<Map<String, Object>>> httpRequest = ArgumentCaptor.forClass(
-                (Class<HttpEntity<Map<String, Object>>>) (Class<?>) HttpEntity.class);
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<HttpEntity<Map<String, Object>>> httpRequest = ArgumentCaptor.forClass(
+            (Class<HttpEntity<Map<String, Object>>>) (Class<?>) HttpEntity.class);
 
         when(restTemplate.postForEntity(isA(String.class), httpRequest.capture(), eq(Void.class))).thenReturn(
-                ResponseEntity.ok().build());
+            ResponseEntity.ok().build());
 
-        StepVerifier.create(notifier.notify(
-                new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+        StepVerifier.create(
+            notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
                     .verifyComplete();
         StepVerifier.create(
-                notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), infoDown)))
+            notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), infoDown)))
                     .verifyComplete();
 
         verify(restTemplate).getForObject(
-                eq("https://telegram.com/bot--token-/sendmessage?chat_id={chat_id}&text={text}" +
-                   "&parse_mode={parse_mode}&disable_notification={disable_notification}"), eq(Void.class),
-                eq(getParameters("DOWN")));
+            eq("https://telegram.com/bot--token-/sendmessage?chat_id={chat_id}&text={text}" +
+               "&parse_mode={parse_mode}&disable_notification={disable_notification}"), eq(Void.class),
+            eq(getParameters("DOWN")));
     }
 
     private Map<String, Object> getParameters(String status) {

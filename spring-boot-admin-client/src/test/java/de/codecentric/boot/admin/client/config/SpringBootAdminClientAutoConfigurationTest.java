@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,14 +59,14 @@ public class SpringBootAdminClientAutoConfigurationTest {
     @Test
     public void nonWebEnvironment() {
         load("spring.main.admin.url:http://localhost:8081", "spring.boot.admin.client.enabled:true",
-                "spring.main.web-application-type:none");
+            "spring.main.web-application-type:none");
         assertThat(context.getBeansOfType(ApplicationRegistrator.class).isEmpty());
     }
 
     private void load(final String... environment) {
         SpringApplication springApplication = new SpringApplication(TestClientApplication.class);
         springApplication.addInitializers(
-                applicationContext -> TestPropertyValues.of(environment).applyTo(applicationContext));
+            applicationContext -> TestPropertyValues.of(environment).applyTo(applicationContext));
         this.context = springApplication.run("--server.port=0");
     }
 

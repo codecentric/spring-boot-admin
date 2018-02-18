@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.domain.values;
 
 import java.io.Serializable;
@@ -40,7 +41,7 @@ public class StatusInfo implements Serializable {
     public static final String STATUS_OFFLINE = "OFFLINE";
     public static final String STATUS_RESTRICTED = "RESTRICTED";
     private static final List<String> STATUS_ORDER = asList(STATUS_DOWN, STATUS_OUT_OF_SERVICE, STATUS_OFFLINE,
-            STATUS_UNKNOWN, STATUS_RESTRICTED, STATUS_UP);
+        STATUS_UNKNOWN, STATUS_RESTRICTED, STATUS_UP);
 
     private final String status;
     private final Map<String, Object> details;

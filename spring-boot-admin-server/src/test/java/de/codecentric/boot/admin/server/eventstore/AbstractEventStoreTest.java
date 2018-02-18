@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.eventstore;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
@@ -111,10 +112,10 @@ public abstract class AbstractEventStoreTest {
                                         .buffer(2)
                                         .flatMap(events -> store.append(events)
                                                                 .onErrorResume(OptimisticLockingException.class,
-                                                                        (ex) -> {
-                                                                            log.info("skipped {}", ex.getMessage());
-                                                                            return Mono.empty();
-                                                                        })
+                                                                    (ex) -> {
+                                                                        log.info("skipped {}", ex.getMessage());
+                                                                        return Mono.empty();
+                                                                    })
                                                                 .delayElement(Duration.ofMillis(5L)));
 
         StepVerifier.create(eventgenerator.subscribeOn(Schedulers.newSingle("a"))

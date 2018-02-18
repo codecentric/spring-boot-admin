@@ -18,8 +18,12 @@
 @import "~bulma/sass/utilities/functions";
 
 $turquoise: rgb(66, 211, 165);
+
+// overrides
 $primary: $turquoise;
 $primary-invert: $white;
+
+$link: $primary;
 
 $navbar-background-color: $black;
 $navbar-item-color: $grey;
@@ -28,7 +32,8 @@ $navbar-item-hover-background-color: $navbar-background-color;
 $navbar-item-active-color: $white;
 $navbar-item-active-background-color: $navbar-background-color;
 
-$badge-border-size: 0;
+$modal-card-head-background-color: $white;
+$modal-content-width: calc(100vh - 40px);
 
 // for calculations / originally rem
 $navbar-height-px: 52px;

@@ -15,30 +15,31 @@
   -->
 
 <template>
-    <div>
-        <details-cache v-for="cache in caches" :key="cache"
-                       :instance="instance" :cache-name="cache"></details-cache>
-    </div>
+  <div>
+    <details-cache v-for="cache in caches" :key="cache"
+                   :instance="instance" :cache-name="cache"/>
+  </div>
 </template>
 
 <script>
   import subscribing from '@/mixins/subscribing';
+  import Instance from '@/services/instance';
   import {Observable} from '@/utils/rxjs';
   import _ from 'lodash';
   import detailsCache from './details-cache';
 
   export default {
-    props: ['instance', 'type'],
+    props: {
+      instance: {
+        type: Instance,
+        required: true
+      }
+    },
     mixins: [subscribing],
     components: {detailsCache},
     data: () => ({
       caches: [],
     }),
-    watch: {
-      instance() {
-        this.subscribe();
-      }
-    },
     methods: {
       async fetchcaches() {
         if (this.instance) {

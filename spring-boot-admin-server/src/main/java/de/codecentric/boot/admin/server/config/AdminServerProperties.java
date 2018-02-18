@@ -44,7 +44,7 @@ public class AdminServerProperties {
      * The metadata keys which should be sanitized when serializing to json
      */
     private String[] metadataKeysToSanitize = new String[]{".*password$", ".*secret$", ".*key$", ".*$token$",
-            ".*credentials.*", ".*vcap_services$"};
+        ".*credentials.*", ".*vcap_services$"};
 
     /**
      * For Spring Boot 2.x applications the endpoints should be discovered automatically using the actuator links.
@@ -52,8 +52,7 @@ public class AdminServerProperties {
      * If the path differs from the id you can specify this as id:path (e.g. health:ping).
      */
     private String[] probedEndpoints = {"health", "env", "metrics", "httptrace:trace", "threaddump:dump", "jolokia",
-            "info",
-            "logfile", "refresh", "flyway", "liquibase", "heapdump", "loggers", "auditevents"};
+        "info", "logfile", "refresh", "flyway", "liquibase", "heapdump", "loggers", "auditevents"};
 
     public void setContextPath(String contextPath) {
         this.contextPath = PathUtils.normalizePath(contextPath);
@@ -112,7 +111,7 @@ public class AdminServerProperties {
          * read timeout when querying the instances' status and info.
          */
         @DefaultDurationUnit(ChronoUnit.MILLIS)
-        private Duration readTimeout = Duration.ofMillis(5_000);
+        private Duration readTimeout = Duration.ofMillis(20_000);
 
     }
 

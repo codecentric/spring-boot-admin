@@ -17,6 +17,7 @@
 
 const components = [];
 
+// eslint-disable-next-line no-undef
 const context = require.context('.', false, /^(?:(?!.*\.spec\.(js|vue)$).)*\.(js|vue)$/);
 context.keys().forEach(function (key) {
   const name = /^(.\/)+(.*)\.(vue|js)$/.exec(key)[2];

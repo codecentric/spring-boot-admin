@@ -74,7 +74,7 @@ public class InfoUpdaterTest {
         StepVerifier.create(repository.save(instance)).expectNextCount(1).verifyComplete();
         String body = "{ \"foo\": \"bar\" }";
         wireMock.stubFor(
-                get("/info").willReturn(okJson(body).withHeader("Content-Length", Integer.toString(body.length()))));
+            get("/info").willReturn(okJson(body).withHeader("Content-Length", Integer.toString(body.length()))));
 
         Instance noInfo = Instance.create(InstanceId.of("noinfo"))
                                   .register(registration)
@@ -141,7 +141,7 @@ public class InfoUpdaterTest {
     @Test
     public void should_clear_info_on_exception() {
         updater = new InfoUpdater(repository,
-                new InstanceWebClient(instance -> HttpHeaders.EMPTY, Duration.ofMillis(250), Duration.ofMillis(250)));
+            new InstanceWebClient(instance -> HttpHeaders.EMPTY, Duration.ofMillis(250), Duration.ofMillis(250)));
 
         //given
         Instance instance = Instance.create(InstanceId.of("onl"))

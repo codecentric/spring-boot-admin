@@ -52,15 +52,15 @@ public class StatusUpdateTrigger extends ResubscribingEventHandler<InstanceRegis
     public void start() {
         super.start();
         intervalSubscription = Flux.interval(updateInterval)
-                                   .doOnSubscribe(subscription -> log.debug("Scheduled status update every {}",
-                                           updateInterval))
+                                   .doOnSubscribe(
+                                       subscription -> log.debug("Scheduled status update every {}", updateInterval))
                                    .log(log.getName(), Level.FINEST)
                                    .subscribeOn(Schedulers.newSingle("status-monitor"))
                                    .flatMap((i) -> this.updateStatusForAllInstances())
                                    .retryWhen(Retry.any()
                                                    .retryMax(Integer.MAX_VALUE)
                                                    .doOnRetry(ctx -> log.error("Resubscribing after uncaught error",
-                                                           ctx.exception())))
+                                                       ctx.exception())))
                                    .subscribe();
     }
 
@@ -81,7 +81,8 @@ public class StatusUpdateTrigger extends ResubscribingEventHandler<InstanceRegis
     protected Mono<Void> updateStatusForAllInstances() {
         log.debug("Updating status for all instances");
         Instant expiryInstant = Instant.now().minus(statusLifetime);
-        return Flux.fromIterable(lastQueried.entrySet()).filter(e -> e.getValue().isBefore(expiryInstant))
+        return Flux.fromIterable(lastQueried.entrySet())
+                   .filter(e -> e.getValue().isBefore(expiryInstant))
                    .map(Map.Entry::getKey)
                    .flatMap(this::updateStatus)
                    .then();

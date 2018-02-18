@@ -226,10 +226,10 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 
     @EventListener
     public void onWebServerInitialized(WebServerInitializedEvent event) {
-        if ("server".equals(event.getServerId())) {
+        String name = event.getApplicationContext().getServerNamespace();
+        if ("server".equals(name) || !StringUtils.hasText(name)) {
             localServerPort = event.getWebServer().getPort();
-        }
-        if ("management".equals(event.getServerId())) {
+        } else if ("management".equals(name)) {
             localManagementPort = event.getWebServer().getPort();
         }
     }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.domain.events;
 
 import de.codecentric.boot.admin.server.domain.values.InstanceId;

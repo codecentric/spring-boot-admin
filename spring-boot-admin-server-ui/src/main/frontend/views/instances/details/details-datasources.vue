@@ -15,29 +15,30 @@
   -->
 
 <template>
-    <div>
-        <details-datasource v-for="dataSource in dataSources" :key="dataSource"
-                            :instance="instance" :data-source="dataSource"></details-datasource>
-    </div>
+  <div>
+    <details-datasource v-for="dataSource in dataSources" :key="dataSource"
+                        :instance="instance" :data-source="dataSource"/>
+  </div>
 </template>
 
 <script>
   import subscribing from '@/mixins/subscribing';
+  import Instance from '@/services/instance';
   import {Observable} from '@/utils/rxjs';
   import detailsDatasource from './details-datasource';
 
   export default {
-    props: ['instance', 'type'],
+    props: {
+      instance: {
+        type: Instance,
+        required: true
+      }
+    },
     mixins: [subscribing],
     components: {detailsDatasource},
     data: () => ({
       dataSources: [],
     }),
-    watch: {
-      instance() {
-        this.subscribe();
-      }
-    },
     methods: {
       async fetchDataSources() {
         if (this.instance) {

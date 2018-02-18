@@ -43,9 +43,9 @@ public class RemindingNotifierTest {
                                                .register(Registration.create("App", "http://health").build())
                                                .withStatusInfo(StatusInfo.ofDown());
     private final InstanceEvent appDown = new InstanceStatusChangedEvent(instance1.getId(), instance1.getVersion(),
-            StatusInfo.ofDown());
+        StatusInfo.ofDown());
     private final InstanceEvent appUp = new InstanceStatusChangedEvent(instance1.getId(), instance1.getVersion(),
-            StatusInfo.ofUp());
+        StatusInfo.ofUp());
     private final InstanceEvent otherAppUp = new InstanceStatusChangedEvent(instance2.getId(), 0L, StatusInfo.ofUp());
     private InstanceRepository repository;
 

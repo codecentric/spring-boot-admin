@@ -15,36 +15,43 @@
   -->
 
 <template>
-    <section class="hero is-primary instance-header" id="instance-menu">
-        <div class="hero-body">
-            <div class="container">
-                <div class="columns">
-                    <div class="column is-narrow">
-                        <h1 class="title" v-if="instance" v-text="instance.registration.name"></h1>
-                        <h2 class="subtitle" v-if="instance" v-text="instance.id"></h2>
-                    </div>
-                    <div class="column">
-                        <sba-status v-if="instance" :status="instance.statusInfo.status"
-                                    :date="instance.statusTimestamp"></sba-status>
-                    </div>
-                    <div class="column is-narrow is-hidden-mobile">
-                        <h2 class="subtitle is-6" v-if="instance">
-                            <a v-text="instance.registration.serviceUrl"
-                               :href="instance.registration.serviceUrl"></a><br>
-                            <a v-text="instance.registration.managementUrl"
-                               :href="instance.registration.managementUrl"></a><br>
-                            <a v-text="instance.registration.healthUrl"
-                               :href="instance.registration.healthUrl"></a>
-                        </h2>
-                    </div>
-                </div>
-            </div>
+  <section class="hero is-primary instance-header" id="instance-menu">
+    <div class="hero-body">
+      <div class="container">
+        <div class="columns">
+          <div class="column is-narrow">
+            <h1 class="title" v-if="instance" v-text="instance.registration.name"/>
+            <h2 class="subtitle" v-if="instance" v-text="instance.id"/>
+          </div>
+          <div class="column">
+            <sba-status v-if="instance" :status="instance.statusInfo.status"
+                        :date="instance.statusTimestamp"/>
+          </div>
+          <div class="column is-narrow is-hidden-mobile">
+            <h2 class="subtitle is-6" v-if="instance">
+              <a v-text="instance.registration.serviceUrl"
+                 :href="instance.registration.serviceUrl"/><br>
+              <a v-text="instance.registration.managementUrl"
+                 :href="instance.registration.managementUrl"/><br>
+              <a v-text="instance.registration.healthUrl"
+                 :href="instance.registration.healthUrl"/>
+            </h2>
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script>
+  import Instance from '@/services/instance';
+
   export default {
-    props: ['instance']
+    props: {
+      instance: {
+        type: Instance,
+        default: null
+      }
+    }
   }
 </script>

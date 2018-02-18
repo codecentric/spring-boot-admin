@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.config;
 
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
@@ -94,7 +95,7 @@ public class AdminServerAutoConfiguration {
     public EndpointDetector endpointDetector(InstanceRepository instanceRepository,
                                              InstanceWebClient instanceWebClient) {
         ChainingStrategy strategy = new ChainingStrategy(new QueryIndexEndpointStrategy(instanceWebClient),
-                new ProbeEndpointsStrategy(instanceWebClient, adminServerProperties.getProbedEndpoints()));
+            new ProbeEndpointsStrategy(instanceWebClient, adminServerProperties.getProbedEndpoints()));
         return new EndpointDetector(instanceRepository, strategy);
     }
 

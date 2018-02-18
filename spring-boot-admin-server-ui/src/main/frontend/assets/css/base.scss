@@ -16,7 +16,7 @@
 @import "utilities";
 // Import the rest of Bulma
 @import "~bulma/bulma";
-@import "~bulma-badge/badge";
+@import "~bulma-badge/dist/bulma-badge";
 
 .is-breakable {
   word-break: break-all;
@@ -42,7 +42,16 @@
   }
 }
 
-.is-loading {
+//Badge
+.badge.has-black-background {
+  &[data-badge]::after {
+    box-shadow: 0 0 0 $badge-border-size $black;
+  }
+}
+
+//Loading spinner
+.section.is-loading,
+.content.is-loading {
   &::after {
     @include loader;
     height: 5rem;
@@ -50,6 +59,29 @@
     left: calc(50% - 2.5em);
     top: calc(50% - 2.5em);
     border-width: 0.5rem;
+  }
+}
+
+//hero as card-header
+.card .hero {
+  padding: 0.75rem;
+}
+
+
+//Bullets
+.has-bullet::before {
+  background: currentColor;
+  content: '';
+  width: 0.75em;
+  height: 0.75em;
+  display: inline-block;
+  margin-right: 0.25em;
+}
+
+@each $name, $pair in $colors {
+  .has-bullet.has-bullet-#{$name}::before {
+    $color: nth($pair, 1);
+    background-color: $color;
   }
 }
 
@@ -66,20 +98,4 @@
 
 path.domain {
   stroke: currentColor;
-}
-
-.has-bullet::before {
-  background: currentColor;
-  content: '';
-  width: 0.75em;
-  height: 0.75em;
-  display: inline-block;
-  margin-right: 0.25em;
-}
-
-@each $name, $pair in $colors {
-  .has-bullet.has-bullet-#{$name}::before {
-    $color: nth($pair, 1);
-    background-color: $color;
-  }
 }

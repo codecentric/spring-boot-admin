@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.domain.entities;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
@@ -67,7 +68,8 @@ public class Instance implements Serializable {
                      long version,
                      Registration registration,
                      boolean registered,
-                     StatusInfo statusInfo, Instant statusTimestamp,
+                     StatusInfo statusInfo,
+                     Instant statusTimestamp,
                      Info info,
                      Endpoints endpoints,
                      List<InstanceEvent> unsavedEvents) {
@@ -129,9 +131,8 @@ public class Instance implements Serializable {
 
     public Instance withEndpoints(Endpoints endpoints) {
         Assert.notNull(endpoints, "'endpoints' must not be null");
-        if (Objects.equals(this.endpoints, this.registered ?
-                endpoints.withEndpoint(Endpoint.HEALTH, this.registration.getHealthUrl()) :
-                endpoints)) {
+        if (Objects.equals(this.endpoints,
+            this.registered ? endpoints.withEndpoint(Endpoint.HEALTH, this.registration.getHealthUrl()) : endpoints)) {
             return this;
         }
         return this.apply(new InstanceEndpointsDetectedEvent(this.id, this.nextVersion(), endpoints), true);
@@ -148,7 +149,7 @@ public class Instance implements Serializable {
 
     Instance clearUnsavedEvents() {
         return new Instance(this.id, this.version, this.registration, this.registered, this.statusInfo,
-                this.statusTimestamp, info, this.endpoints, emptyList());
+            this.statusTimestamp, info, this.endpoints, emptyList());
     }
 
     Instance apply(Collection<InstanceEvent> events) {
@@ -174,31 +175,31 @@ public class Instance implements Serializable {
         if (event instanceof InstanceRegisteredEvent) {
             Registration registration = ((InstanceRegisteredEvent) event).getRegistration();
             return new Instance(this.id, event.getVersion(), registration, true, StatusInfo.ofUnknown(),
-                    event.getTimestamp(), Info.empty(), Endpoints.empty(), unsavedEvents);
+                event.getTimestamp(), Info.empty(), Endpoints.empty(), unsavedEvents);
 
         } else if (event instanceof InstanceRegistrationUpdatedEvent) {
             Registration registration = ((InstanceRegistrationUpdatedEvent) event).getRegistration();
             return new Instance(this.id, event.getVersion(), registration, this.registered, this.statusInfo,
-                    this.statusTimestamp, this.info, this.endpoints, unsavedEvents);
+                this.statusTimestamp, this.info, this.endpoints, unsavedEvents);
 
         } else if (event instanceof InstanceStatusChangedEvent) {
             StatusInfo statusInfo = ((InstanceStatusChangedEvent) event).getStatusInfo();
             return new Instance(this.id, event.getVersion(), this.registration, this.registered, statusInfo,
-                    event.getTimestamp(), this.info, this.endpoints, unsavedEvents);
+                event.getTimestamp(), this.info, this.endpoints, unsavedEvents);
 
         } else if (event instanceof InstanceEndpointsDetectedEvent) {
             Endpoints endpoints = ((InstanceEndpointsDetectedEvent) event).getEndpoints();
             return new Instance(this.id, event.getVersion(), this.registration, this.registered, this.statusInfo,
-                    this.statusTimestamp, this.info, endpoints, unsavedEvents);
+                this.statusTimestamp, this.info, endpoints, unsavedEvents);
 
         } else if (event instanceof InstanceInfoChangedEvent) {
             Info info = ((InstanceInfoChangedEvent) event).getInfo();
             return new Instance(this.id, event.getVersion(), this.registration, this.registered, this.statusInfo,
-                    this.statusTimestamp, info, this.endpoints, unsavedEvents);
+                this.statusTimestamp, info, this.endpoints, unsavedEvents);
 
         } else if (event instanceof InstanceDeregisteredEvent) {
             return new Instance(this.id, event.getVersion(), this.registration, false, StatusInfo.ofUnknown(),
-                    event.getTimestamp(), Info.empty(), Endpoints.empty(), unsavedEvents);
+                event.getTimestamp(), Info.empty(), Endpoints.empty(), unsavedEvents);
         }
 
         return this;

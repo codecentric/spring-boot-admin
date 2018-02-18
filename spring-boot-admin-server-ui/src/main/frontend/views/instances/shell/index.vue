@@ -15,11 +15,11 @@
   -->
 
 <template>
-    <div>
-        <sba-instance-header :instance="instance"></sba-instance-header>
-        <sba-instance-tabs :views="instanceViews" :instance="instance"></sba-instance-tabs>
-        <router-view :instance="instance"></router-view>
-    </div>
+  <div>
+    <sba-instance-header :instance="instance"/>
+    <sba-instance-tabs :views="instanceViews" :instance="instance"/>
+    <router-view v-if="instance" :instance="instance"/>
+  </div>
 </template>
 
 <script>
@@ -29,7 +29,12 @@
 
   export default {
     components: {sbaInstanceHeader, sbaInstanceTabs},
-    props: ['instanceId'],
+    props: {
+      instanceId: {
+        type: String,
+        required: true
+      }
+    },
     data: () => ({
       instance: null
     }),

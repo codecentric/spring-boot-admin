@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.eventstore;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
@@ -40,8 +41,7 @@ import static java.util.stream.Collectors.reducing;
 public abstract class ConcurrentMapEventStore extends InstanceEventPublisher implements InstanceEventStore {
     private static final Logger log = LoggerFactory.getLogger(ConcurrentMapEventStore.class);
     private static final Comparator<InstanceEvent> byTimestampAndIdAndVersion = comparing(
-            InstanceEvent::getTimestamp).thenComparing(InstanceEvent::getInstance)
-                                        .thenComparing(InstanceEvent::getVersion);
+        InstanceEvent::getTimestamp).thenComparing(InstanceEvent::getInstance).thenComparing(InstanceEvent::getVersion);
     private final int maxLogSizePerAggregate;
 
     private ConcurrentMap<InstanceId, List<InstanceEvent>> eventLog;
@@ -86,7 +86,7 @@ public abstract class ConcurrentMapEventStore extends InstanceEventPublisher imp
         }
 
         List<InstanceEvent> oldEvents = eventLog.computeIfAbsent(id,
-                (key) -> new ArrayList<>(maxLogSizePerAggregate + 1));
+            (key) -> new ArrayList<>(maxLogSizePerAggregate + 1));
 
         long lastVersion = getLastVersion(oldEvents);
         if (lastVersion >= events.get(0).getVersion()) {
@@ -112,13 +112,13 @@ public abstract class ConcurrentMapEventStore extends InstanceEventPublisher imp
         BinaryOperator<InstanceEvent> latestEvent = (e1, e2) -> e1.getVersion() > e2.getVersion() ? e1 : e2;
         Map<Class<?>, Optional<InstanceEvent>> latestPerType = events.stream()
                                                                      .collect(groupingBy(InstanceEvent::getClass,
-                                                                             reducing(latestEvent)));
+                                                                         reducing(latestEvent)));
         events.removeIf((e) -> !Objects.equals(e, latestPerType.get(e.getClass()).orElse(null)));
     }
 
     private OptimisticLockingException createOptimisticLockException(InstanceEvent event, long lastVersion) {
         return new OptimisticLockingException(
-                "Verison " + event.getVersion() + " was overtaken by " + lastVersion + " for " + event.getInstance());
+            "Verison " + event.getVersion() + " was overtaken by " + lastVersion + " for " + event.getInstance());
     }
 
     protected static long getLastVersion(List<InstanceEvent> events) {

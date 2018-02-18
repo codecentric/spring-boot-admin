@@ -107,7 +107,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
         } else if (event instanceof InstanceStatusChangedEvent) {
             InstanceStatusChangedEvent statusChangedEvent = (InstanceStatusChangedEvent) event;
             message = getStatusChangedMessage(instance, statusChangedEvent.getStatusInfo().getStatus(),
-                    getLastStatus(event.getInstance()));
+                getLastStatus(event.getInstance()));
         } else {
             return Mono.empty();
         }
@@ -124,19 +124,19 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 
     protected Message getDeregisteredMessage(Instance instance) {
         String activitySubtitle = this.safeFormat(deregisterActivitySubtitlePattern,
-                instance.getRegistration().getName(), instance.getId());
+            instance.getRegistration().getName(), instance.getId());
         return createMessage(instance, deRegisteredTitle, activitySubtitle);
     }
 
     protected Message getRegisteredMessage(Instance instance) {
         String activitySubtitle = this.safeFormat(registerActivitySubtitlePattern, instance.getRegistration().getName(),
-                instance.getId());
+            instance.getId());
         return createMessage(instance, registeredTitle, activitySubtitle);
     }
 
     protected Message getStatusChangedMessage(Instance instance, String statusFrom, String statusTo) {
         String activitySubtitle = this.safeFormat(statusActivitySubtitlePattern, instance.getRegistration().getName(),
-                instance.getId(), statusFrom, statusTo);
+            instance.getId(), statusFrom, statusTo);
         return createMessage(instance, statusChangedTitle, activitySubtitle);
     }
 

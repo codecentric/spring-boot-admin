@@ -30,18 +30,18 @@ public class RegistrationTest {
 
         assertThatThrownBy(() -> Registration.create("test", null).build()).isInstanceOf(IllegalArgumentException.class)
                                                                            .hasMessage(
-                                                                                   "'healthUrl' must not be empty.");
+                                                                               "'healthUrl' must not be empty.");
 
         assertThatThrownBy(() -> Registration.create("test", "invalid").build()).isInstanceOf(
-                IllegalArgumentException.class).hasMessage("'healthUrl' is not valid: invalid");
+            IllegalArgumentException.class).hasMessage("'healthUrl' is not valid: invalid");
 
         assertThatThrownBy(
-                () -> Registration.create("test", "http://example.com").managementUrl("invalid").build()).isInstanceOf(
-                IllegalArgumentException.class).hasMessage("'managementUrl' is not valid: invalid");
+            () -> Registration.create("test", "http://example.com").managementUrl("invalid").build()).isInstanceOf(
+            IllegalArgumentException.class).hasMessage("'managementUrl' is not valid: invalid");
 
         assertThatThrownBy(
-                () -> Registration.create("test", "http://example.com").serviceUrl("invalid").build()).isInstanceOf(
-                IllegalArgumentException.class).hasMessage("'serviceUrl' is not valid: invalid");
+            () -> Registration.create("test", "http://example.com").serviceUrl("invalid").build()).isInstanceOf(
+            IllegalArgumentException.class).hasMessage("'serviceUrl' is not valid: invalid");
     }
 
 }

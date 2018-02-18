@@ -75,7 +75,7 @@ public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
                 return new EndpointDefinition(idWithPath, idWithPath);
             } else {
                 return new EndpointDefinition(idWithPath.substring(0, idxDelimiter),
-                        idWithPath.substring(idxDelimiter + 1));
+                    idWithPath.substring(idxDelimiter + 1));
             }
         }
     }

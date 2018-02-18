@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.codecentric.boot.admin.server.services;
 
 import de.codecentric.boot.admin.server.domain.entities.EventsourcingInstanceRepository;
@@ -62,14 +63,14 @@ public class StatusUpdaterTest {
         StepVerifier.create(repository.save(instance)).expectNextCount(1).verifyComplete();
 
         updater = new StatusUpdater(repository,
-                new InstanceWebClient(instance -> HttpHeaders.EMPTY, Duration.ofSeconds(5), Duration.ofSeconds(20)));
+            new InstanceWebClient(instance -> HttpHeaders.EMPTY, Duration.ofSeconds(5), Duration.ofSeconds(20)));
     }
 
     @Test
     public void test_update_statusChanged() {
         String body = "{ \"status\" : \"UP\" }";
         wireMock.stubFor(
-                get("/health").willReturn(okJson(body).withHeader("Content-Length", Integer.toString(body.length()))));
+            get("/health").willReturn(okJson(body).withHeader("Content-Length", Integer.toString(body.length()))));
 
         StepVerifier.create(eventStore)
                     .expectSubscription()
@@ -92,7 +93,7 @@ public class StatusUpdaterTest {
     public void test_update_statusUnchanged() {
         String body = "{ \"status\" : \"UNKNOWN\" }";
         wireMock.stubFor(
-                get("/health").willReturn(okJson(body).withHeader("Content-Type", Integer.toString(body.length()))));
+            get("/health").willReturn(okJson(body).withHeader("Content-Type", Integer.toString(body.length()))));
 
 
         StepVerifier.create(eventStore)
@@ -123,9 +124,9 @@ public class StatusUpdaterTest {
     public void test_update_down() {
         String body = "{ \"foo\" : \"bar\" }";
         wireMock.stubFor(get("/health").willReturn(
-                status(503).withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                           .withHeader("Content-Length", Integer.toString(body.length()))
-                           .withBody(body)));
+            status(503).withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                       .withHeader("Content-Length", Integer.toString(body.length()))
+                       .withBody(body)));
 
         StepVerifier.create(eventStore)
                     .expectSubscription()
