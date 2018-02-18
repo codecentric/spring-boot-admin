@@ -35,11 +35,19 @@ public class BasicAuthHttpHeaderProvider implements HttpHeadersProvider {
     public HttpHeaders getHeaders(Instance instance) {
         String username = instance.getRegistration().getMetadata().get("user.name");
         String password = instance.getRegistration().getMetadata().get("user.password");
+        String cfApplicationGuid = instance.getRegistration().getMetadata().get("cf_application_guid");
+        String cfInstanceIndex = instance.getRegistration().getMetadata().get("cf_instance_index");
 
         HttpHeaders headers = new HttpHeaders();
 
         if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
             headers.set(HttpHeaders.AUTHORIZATION, encode(username, password));
+        }
+
+        // CloudFoundry instance set HttpHeader X-CF-APP-INSTANCE as cfApplicationGuid:cfInstanceIndex
+        // https://github.com/codecentric/spring-boot-admin/issues/434
+        if (StringUtils.hasText(cfApplicationGuid) && StringUtils.hasText(cfInstanceIndex)) {
+            headers.set("X-CF-APP-INSTANCE", cfApplicationGuid + ":" + cfInstanceIndex);
         }
 
         return headers;
