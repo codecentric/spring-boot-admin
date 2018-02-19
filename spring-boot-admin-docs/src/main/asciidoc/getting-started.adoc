@@ -4,20 +4,22 @@
 [[set-up-admin-server]]
 === Setting up Spring Boot Admin Server ===
 
-First you need to setup your server. To do this just setup a simple boot project (using http://start.spring.io).
+First you need to setup your server. To do this just setup a simple boot project (using http://start.spring.io). As Spring Boot Admin Server is capable of running as servlet or webflux application, you need to decide on this and add the according Spring Boot Starter. In this example we're using the servlet web starter.
 
 . Add Spring Boot Admin Server starter to your dependencies:
 +
 [source,xml,subs="verbatim,attributes"]
 .pom.xml
 ----
-<dependencies>
-    <dependency>
-        <groupId>de.codecentric</groupId>
-        <artifactId>spring-boot-admin-starter-server</artifactId>
-        <version>{project-version}</version>
-    </dependency>
-</dependencies>
+<dependency>
+    <groupId>de.codecentric</groupId>
+    <artifactId>spring-boot-admin-starter-server</artifactId>
+    <version>{project-version}</version>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
 ----
 
 . Pull in the Spring Boot Admin Server configuration via adding `@EnableAdminServer` to your configuration:
@@ -36,7 +38,7 @@ public class SpringBootAdminApplication {
 
 NOTE: If you want to setup the Spring Boot Admin Server via war-deployment in a servlet-container, please have a look at the https://github.com/codecentric/spring-boot-admin/blob/master/spring-boot-admin-samples/spring-boot-admin-sample-war/[spring-boot-admin-sample-war].
 
-See also the https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample/[spring-boot-admin-sample] project, which also adds security.
+See also the https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-servlet/[spring-boot-admin-sample-servlet] project, which also adds security.
 
 [[register-client-applications]]
 === Registering client applications ===
@@ -46,7 +48,7 @@ To register your application at the SBA Server you can either include the SBA Cl
 [[register-clients-via-spring-boot-admin]]
 ==== Spring Boot Admin Client ====
 
-Each application that wants to register has to include the Spring Boot Admin Client.
+Each application that wants to register has to include the Spring Boot Admin Client. In order to secure the endpoints also add the `spring-boot-starter-security`.
 
 . Add spring-boot-admin-starter-client to your dependencies:
 +
@@ -58,6 +60,10 @@ Each application that wants to register has to include the Spring Boot Admin Cli
     <artifactId>spring-boot-admin-starter-client</artifactId>
     <version>{project-version}</version>
 </dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
 ----
 
 . Enable the SBA Client by configuring the URL of the Spring Boot Admin Server:
@@ -65,18 +71,34 @@ Each application that wants to register has to include the Spring Boot Admin Cli
 [source,yml]
 .application.yml
 ----
-spring.boot.admin.client.url: http://localhost:8080  #<1>
-management.security.enabled: false  #<2>
+spring.boot.admin.client.url: "http://localhost:8080"  #<1>
+management.endpoints.web.exposure.include: "*"  #<2>
 ----
 <1> The URL of the Spring Boot Admin Server to register at.
-<2> Since Spring Boot 1.5.x all endpoints are secured by default. For the sake of brevity we're disabling the security for now. Have a look at the <<securing-spring-boot-admin,security section>> on how to deal with secured endpoints.
+<2> As with Spring Boot 2 most of the endpoints aren't exposed via http by default, we expose all of them. For production you should carefully choose which endpoints to expose.
+
+. Make the actuator endpoints accessible:
++
+[source,java]
+----
+    @Configuration
+    public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.authorizeRequests().anyRequest().permitAll()  //<1>
+                .and().csrf().disable();
+        }
+    }
+----
+<1> For the sake of brevity we're disabling the security for now. Have a look at the <<securing-spring-boot-admin,security section>> on how to deal with secured endpoints.
+
 
 [[discover-clients-via-spring-cloud-discovery]]
 ==== Spring Cloud Discovery ====
 
-If you already use Spring Cloud Discovery for your applications you don't need the SBA Client. Just make the Spring Boot Admin Server a DiscoveryClient, the rest is done by our AutoConfiguration.
+If you already use Spring Cloud Discovery for your applications you don't need the SBA Client. Just add a DiscoveryClient to Spring Boot Admin Server, the rest is done by our AutoConfiguration.
 
-The following steps are for using Eureka, but other Spring Cloud Discovery implementations are supported as well. There are examples using https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-consul/[Consul] and https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-zookeeper/[Zookeeper].
+The following steps uses Eureka, but other Spring Cloud Discovery implementations are supported as well. There are examples using https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-consul/[Consul] and https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-zookeeper/[Zookeeper].
 
 Also have a look at the http://projects.spring.io/spring-cloud/spring-cloud.html[Spring Cloud documentation].
 
@@ -94,6 +116,8 @@ include::{samples-dir}/spring-boot-admin-sample-eureka/pom.xml[tags=dependency-e
 ----
 include::{samples-dir}/spring-boot-admin-sample-eureka/src/main/java/de/codecentric/boot/admin/SpringBootAdminApplication.java[tags=application-eureka]
 ----
+<1> For the sake of brevity we're disabling the security for now. Have a look at the <<securing-spring-boot-admin,security section>> on how to deal with secured endpoints.
+
 
 . Tell the Eureka client where to find the service registry:
 +
@@ -103,7 +127,7 @@ include::{samples-dir}/spring-boot-admin-sample-eureka/src/main/java/de/codecent
 include::{samples-dir}/spring-boot-admin-sample-eureka/src/main/resources/application.yml[tags=configuration-eureka]
 ----
 <1> Configuration section for the Eureka client
-<2> Since Spring Boot 1.5.x all endpoints are secured by default. For the sake of brevity we're disabling the security for now. Have a look at the <<securing-spring-boot-admin,security section>> on how to deal with secured endpoints.
+<2> As with Spring Boot 2 most of the endpoints aren't exposed via http by default, we expose all of them. For production you should carefully choose which endpoints to expose.
 
 See also https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-eureka/[spring-boot-admin-sample-eureka].
 

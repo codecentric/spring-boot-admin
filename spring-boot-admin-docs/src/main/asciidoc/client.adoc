@@ -29,7 +29,8 @@ To have the version show up in the application list you can use the `build-info`
 [[jmx-bean-management]]
 === JMX-bean management ===
 
-To interact with JMX-beans in the admin UI you have to include https://jolokia.org/[Jolokia] in your application. In case you are using the `spring-boot-admin-starter-client` it will be pulled in for you, if not add Jolokia to your dependencies:
+To interact with JMX-beans in the admin UI you have to include https://jolokia.org/[Jolokia] in your application. As Jolokia is servlet based there is no support for reactive applications.
+In case you are using the `spring-boot-admin-starter-client` it will be pulled in for you, if not add Jolokia to your dependencies:
 
 [source,xml]
 .pom.xml
@@ -39,23 +40,6 @@ To interact with JMX-beans in the admin UI you have to include https://jolokia.o
     <artifactId>jolokia-core</artifactId>
 </dependency>
 ----
-
-[[loglevel-management]]
-=== Loglevel management ===
-For applications using Spring Boot 1.5.x (or later) you can manage loglevels out-of-the-box.
-For applications using older versions of Spring Boot the loglevel management is only available for http://logback.qos.ch/[Logback]. It is accessed via JMX so <<jmx-bean-management, include Jolokia>> in your application. In addition you have configure Logback's `JMXConfigurator`:
-
-[source,xml]
-.logback-spring.xml
-----
-<?xml version="1.0" encoding="UTF-8"?>
-<configuration>
-	<include resource="org/springframework/boot/logging/logback/base.xml"/>
-	<jmxConfigurator/>
-</configuration>
-----
-
-NOTE: In case you are deploying multiple applications to the same JVM and multiple Logback-JMX-beans are present, the UI will select the JMXConfigurator with the context-name equals to your applications name. In this case you need to set the `contextName` in your logback-configuration.
 
 [[spring-boot-admin-client]]
 === Spring Boot Admin Client ===
@@ -78,7 +62,7 @@ TIP: There are plenty of properties to influence the way how the SBA Client regi
 
 | spring.boot.admin.client.api-path
 | Http-path of registration endpoint at your admin server.
-| `"api/applications"`
+| `"instances"`
 
 | spring.boot.admin.client.username +
 spring.boot.admin.client.password
@@ -89,15 +73,15 @@ spring.boot.admin.client.password
 | Interval for repeating the registration (in ms).
 | `10,000`
 
-| spring.boot.admin.connect-timeout
+| spring.boot.admin.client.connect-timeout
 | Connect timeout for the registration (in ms).
 | `5,000`
 
-| spring.boot.admin.read-timeout
+| spring.boot.admin.client.read-timeout
 | Read timeout for the registration (in ms).
 | `5,000`
 
-| spring.boot.admin.auto-registration
+| spring.boot.admin.client.auto-registration
 | If set to true the periodic task to register the application is automatically scheduled after the application is ready.
 | `true`
 

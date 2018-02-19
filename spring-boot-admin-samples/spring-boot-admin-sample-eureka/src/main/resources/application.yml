@@ -3,20 +3,20 @@ spring:
     name: eureka-example
 
 # tag::configuration-eureka[]
-eureka:
+eureka:   #1
   instance:
     leaseRenewalIntervalInSeconds: 10
   client:
     registryFetchIntervalSeconds: 5
     serviceUrl:
       defaultZone: ${EUREKA_SERVICE_URL:http://localhost:8761}/eureka/
-# end::configuration-eureka[]
 
 management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: "*"  #2
+# end::configuration-eureka[]
   endpoint:
     health:
       show-details: ALWAYS

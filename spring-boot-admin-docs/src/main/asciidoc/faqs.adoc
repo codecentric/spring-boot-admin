@@ -4,6 +4,3 @@
 Can I include spring-boot-admin into my business application?::
   *tl;dr* You can, but you shouldn't. +
   You can set `spring.boot.admin.context-path` to alter the path where the UI and REST-API is served, but depending on the complexity of your application you might get in trouble. On the other hand in my opinion it makes no sense for an application to monitor itself. In case your application goes down your monitoring tool also does.
-
-How do I customize the UI?::
-  You can only customize the UI by copying and modifying the source of `spring-boot-admin-ui` and adding your own module to your classpath.

@@ -1,9 +1,41 @@
-* Raised minimum required Java version to 1.8
+[[monitoring-spring-boot-1.5.x]]
+== Monitoring Spring Boot Applciations 1.5.x ==
 
-* Updade to Spring Boot 2.x
+It is possible to monitor Spring Boot 1.5.x applications with Spring Boot Admin 2.x. The old Spring Boot Admin Client is
+able to register at a newer server. Since the API has slight changes for you need to set the following property:
 
-* All client properties from `spring.boot.admin.client.*` have been renamed to `sbadmin.client.instance` 
+. Add reconfigure the api path for Spring Boot Admin Client 1.5.x:
++
+[source,yml]
+.application.yml
+----
+spring.boot.admin.api-path: instances
+----
 
-* All client properties under `spring.boot.admin.*` have been renamed to `sbadmin.client`.
+As some of the actuator endpoints changed with the Spring Boot 2 release not all options might be available
+(e.g. `/metrics` endpoint); for some of the endpoints we provide legacy converters.
 
-* All server properties under `spring.boot.admin.*` have been renamed to `sbadmin.*`.
+== Changes with 2.x ==
+
+=== UI
+* Rewritten ui using vue.js
+* Integrated ui-login module into the main ui module
+* Removed ui-activiti module, as it was only used rarely
+* Added support for the session endpoint
+* Added display of the registered metadata
+* Added option to reset loglevels
+
+=== Backend
+* Moved all classes to the `spring.boot.admin.server` package
+* Added stable automatic-module-name
+* Redesigned backend based on event sourcing principles
+* Moved endpoint detection to the backend by querying the `/actuator`-index
+* Added the concept of applications (consisting of 1 to n instances) to the backend
+* Removed Zuul
+* Removed dependency on spring-cloud-starter
+
+=== Client
+* Moved all properties to `spring.boot.admin.client.*` and `spring.boot.admin.client.instance.*`
+* Moved all classes to the `spring.boot.admin.client` package
+* Added stable automatic-module-name
+* Supports webflux and servlet based applications

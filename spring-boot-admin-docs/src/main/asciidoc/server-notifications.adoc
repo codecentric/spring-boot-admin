@@ -38,9 +38,9 @@ public class NotifierConfiguration {
 ==== Filtering notifications ====
 The `FilteringNotifier` allows you to filter certain notification based on rules you can add/remove at runtime. It delegates the sending of notifications to another notifier.
 
-If you add a `FilteringNotifier` to your `ApplicationContext` a RESTful interface on `api/notifications/filter` gets available. When this happens the ui shows options to manage the filters.
+If you add a `FilteringNotifier` to your `ApplicationContext` a RESTful interface on `api/notifications/filter` gets available.
 
-This notifier is useful if you don't want recieve notifications when deploying your applications. Before stopping the application you can add an (expiring) filter either via a `POST` request or the ui.
+This notifier is useful if you don't want recieve notifications when deploying your applications. Before stopping the application you can add an (expiring) filter either via a `POST` request.
 
 .How to configure filtering
 [source,java]

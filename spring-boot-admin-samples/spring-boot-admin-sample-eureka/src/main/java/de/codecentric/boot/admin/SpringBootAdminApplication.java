@@ -39,7 +39,7 @@ public class SpringBootAdminApplication {
     public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http.authorizeRequests().anyRequest().permitAll()//
+            http.authorizeRequests().anyRequest().permitAll() //<1>
                 .and().csrf().disable();
         }
     }

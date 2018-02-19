@@ -6,7 +6,16 @@ The Spring Boot Admin Server can use Spring Clouds `DiscoveryClient` to discover
 [[spring-cloud-discovery-static-config]]
 ==== SimpleDiscoveryClient configuration ====
 
-Spring Boot Admin ships with the `SimpleDiscoveryClient` included. This allows you to specify client applications via configuration, without adding the SBA Client or a DiscoveryClient implementation to your monitored applications:
+Spring Cloud provides a `SimpleDiscoveryClient`. It allows you to specify client applications via static configuration:
+
+[source,xml]
+.pom.xml
+----
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter</artifactId>
+</dependency>
+----
 
 [source,yml]
 .application.yml

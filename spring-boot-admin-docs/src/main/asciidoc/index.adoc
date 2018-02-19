@@ -27,4 +27,6 @@ include::server.adoc[]
 
 include::security.adoc[]
 
+include::changes-2.x.adoc[]
+
 include::faqs.adoc[]

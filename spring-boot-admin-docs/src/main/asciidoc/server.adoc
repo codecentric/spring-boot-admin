@@ -23,15 +23,20 @@
 
 | spring.boot.admin.monitor.read-timeout
 | Read timeout in ms when querying the applications' status and info.
-| 5,000
-
-| spring.boot.admin.routes.endpoints
-| The enpoints which will be available via spring boot admin zuul proxy. If you write ui modules using other endpoints you need to add them.
-| `"env", "metrics", "trace", "dump", "jolokia", "info", "configprops", "activiti", "logfile", "refresh", "flyway", "liquibase", "loggers"`
+| 20,000
 
 | spring.boot.admin.metadata-keys-to-sanitize
 | Metadata values for the keys matching these regex patterns will be sanitized in all json output.
 | `".*password$", ".*secret$", ".*key$", ".*$token$", ".*credentials.*", ".*vcap_services$"`
+
+| spring.boot.admin.probed-endpoints
+| For Spring Boot 1.x client applications SBA probes for the specified endpoints using an OPTIONS request.
+  If the path differs from the id you can specify this as id:path (e.g. health:ping)..
+| `"health", "env", "metrics", "httptrace:trace", "threaddump:dump", "jolokia", "info", "logfile", "refresh", "flyway", "liquibase", "heapdump", "loggers", "auditevents"`
+
+| spring.boot.admin.instance-proxy.ignored-headers
+|  Headers not to be forwarded when making requests to clients.
+| `"Cookie", "Set-Cookie", "Authorization"
 
 |===
 
@@ -40,5 +45,3 @@ include::server-discovery.adoc[]
 include::server-clustering.adoc[]
 
 include::server-notifications.adoc[]
-
-include::server-ui-modules.adoc[]
