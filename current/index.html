@@ -546,8 +546,7 @@ table.CodeRay td.code>pre{padding:0}
 <ul class="sectlevel2">
 <li><a href="#show-version-in-application-list">3.1. Show version in application list</a></li>
 <li><a href="#jmx-bean-management">3.2. JMX-bean management</a></li>
-<li><a href="#loglevel-management">3.3. Loglevel management</a></li>
-<li><a href="#spring-boot-admin-client">3.4. Spring Boot Admin Client</a></li>
+<li><a href="#spring-boot-admin-client">3.3. Spring Boot Admin Client</a></li>
 </ul>
 </li>
 <li><a href="#spring-boot-admin-server">4. Spring Boot Admin Server</a>
@@ -574,14 +573,6 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_telegram_notifications">Telegram notifications</a></li>
 </ul>
 </li>
-<li><a href="#_ui_modules">4.4. UI Modules</a>
-<ul class="sectlevel3">
-<li><a href="#_hystrix_ui_module">4.4.1. Hystrix UI Module</a></li>
-<li><a href="#_turbine_ui_module">4.4.2. Turbine UI Module</a></li>
-<li><a href="#_activiti_ui_module">4.4.3. Activiti UI Module</a></li>
-<li><a href="#_login_ui_module">4.4.4. Login UI Module</a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li><a href="#securing-spring-boot-admin">5. Security</a>
@@ -590,7 +581,15 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_securing_client_actuator_endpoints">5.2. Securing Client Actuator Endpoints</a></li>
 </ul>
 </li>
-<li><a href="#faqs">6. FAQs</a></li>
+<li><a href="#monitoring-spring-boot-1.5.x">6. Monitoring Spring Boot Applciations 1.5.x</a></li>
+<li><a href="#_changes_with_2_x">7. Changes with 2.x</a>
+<ul class="sectlevel2">
+<li><a href="#_ui">7.1. UI</a></li>
+<li><a href="#_backend">7.2. Backend</a></li>
+<li><a href="#_client">7.3. Client</a></li>
+</ul>
+</li>
+<li><a href="#faqs">8. FAQs</a></li>
 </ul>
 </div>
 </div>
@@ -611,7 +610,7 @@ The UI is just an AngularJs application on top of the Spring Boot Actuator endpo
 <div class="sect2">
 <h3 id="set-up-admin-server"><a class="anchor" href="#set-up-admin-server"></a><a class="link" href="#set-up-admin-server">2.1. Setting up Spring Boot Admin Server</a></h3>
 <div class="paragraph">
-<p>First you need to setup your server. To do this just setup a simple boot project (using <a href="http://start.spring.io" class="bare">start.spring.io</a>).</p>
+<p>First you need to setup your server. To do this just setup a simple boot project (using <a href="http://start.spring.io" class="bare">start.spring.io</a>). As Spring Boot Admin Server is capable of running as servlet or webflux application, you need to decide on this and add the according Spring Boot Starter. In this example we&#8217;re using the servlet web starter.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -620,13 +619,15 @@ The UI is just an AngularJs application on top of the Spring Boot Actuator endpo
 <div class="listingblock">
 <div class="title">pom.xml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependencies&gt;</span>
-    <span class="tag">&lt;dependency&gt;</span>
-        <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
-        <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-starter-server<span class="tag">&lt;/artifactId&gt;</span>
-        <span class="tag">&lt;version&gt;</span>2.0.0-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
-    <span class="tag">&lt;/dependency&gt;</span>
-<span class="tag">&lt;/dependencies&gt;</span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-starter-server<span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;version&gt;</span>2.0.0-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span>
+<span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>org.springframework.boot<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>spring-boot-starter-web<span class="tag">&lt;/artifactId&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
 </li>
@@ -660,7 +661,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 </table>
 </div>
 <div class="paragraph">
-<p>See also the <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample/">spring-boot-admin-sample</a> project, which also adds security.</p>
+<p>See also the <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-servlet/">spring-boot-admin-sample-servlet</a> project, which also adds security.</p>
 </div>
 </div>
 <div class="sect2">
@@ -671,7 +672,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <div class="sect3">
 <h4 id="register-clients-via-spring-boot-admin"><a class="anchor" href="#register-clients-via-spring-boot-admin"></a><a class="link" href="#register-clients-via-spring-boot-admin">2.2.1. Spring Boot Admin Client</a></h4>
 <div class="paragraph">
-<p>Each application that wants to register has to include the Spring Boot Admin Client.</p>
+<p>Each application that wants to register has to include the Spring Boot Admin Client. In order to secure the endpoints also add the <code>spring-boot-starter-security</code>.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -684,6 +685,10 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
     <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
     <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-starter-client<span class="tag">&lt;/artifactId&gt;</span>
     <span class="tag">&lt;version&gt;</span>2.0.0-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span>
+<span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>org.springframework.boot<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>spring-boot-starter-security<span class="tag">&lt;/artifactId&gt;</span>
 <span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
@@ -693,8 +698,8 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.client.url</span>: <span class="string"><span class="content">http://localhost:8080  </span></span><i class="conum" data-value="1"></i><b>(1)</b>
-<span class="key">management.security.enabled</span>: <span class="string"><span class="content">false  </span></span><i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.client.url</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:8080</span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="key">management.endpoints.web.exposure.include</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">*</span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -705,7 +710,30 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Since Spring Boot 1.5.x all endpoints are secured by default. For the sake of brevity we&#8217;re disabling the security for now. Have a look at the <a href="#securing-spring-boot-admin">security section</a> on how to deal with secured endpoints.</td>
+<td>As with Spring Boot 2 most of the endpoints aren&#8217;t exposed via http by default, we expose all of them. For production you should carefully choose which endpoints to expose.</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Make the actuator endpoints accessible:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">    <span class="annotation">@Configuration</span>
+    <span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SecurityPermitAllConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
+        <span class="annotation">@Override</span>
+        <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
+            http.authorizeRequests().anyRequest().permitAll()  <i class="conum" data-value="1"></i><b>(1)</b>
+                .and().csrf().disable();
+        }
+    }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>For the sake of brevity we&#8217;re disabling the security for now. Have a look at the <a href="#securing-spring-boot-admin">security section</a> on how to deal with secured endpoints.</td>
 </tr>
 </table>
 </div>
@@ -716,10 +744,10 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <div class="sect3">
 <h4 id="discover-clients-via-spring-cloud-discovery"><a class="anchor" href="#discover-clients-via-spring-cloud-discovery"></a><a class="link" href="#discover-clients-via-spring-cloud-discovery">2.2.2. Spring Cloud Discovery</a></h4>
 <div class="paragraph">
-<p>If you already use Spring Cloud Discovery for your applications you don&#8217;t need the SBA Client. Just make the Spring Boot Admin Server a DiscoveryClient, the rest is done by our AutoConfiguration.</p>
+<p>If you already use Spring Cloud Discovery for your applications you don&#8217;t need the SBA Client. Just add a DiscoveryClient to Spring Boot Admin Server, the rest is done by our AutoConfiguration.</p>
 </div>
 <div class="paragraph">
-<p>The following steps are for using Eureka, but other Spring Cloud Discovery implementations are supported as well. There are examples using <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-consul/">Consul</a> and <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-zookeeper/">Zookeeper</a>.</p>
+<p>The following steps uses Eureka, but other Spring Cloud Discovery implementations are supported as well. There are examples using <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-consul/">Consul</a> and <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-zookeeper/">Zookeeper</a>.</p>
 </div>
 <div class="paragraph">
 <p>Also have a look at the <a href="http://projects.spring.io/spring-cloud/spring-cloud.html">Spring Cloud documentation</a>.</p>
@@ -755,7 +783,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
     <span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SecurityPermitAllConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
         <span class="annotation">@Override</span>
         <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
-            http.authorizeRequests().anyRequest().permitAll()<span class="comment">//</span>
+            http.authorizeRequests().anyRequest().permitAll() <i class="conum" data-value="1"></i><b>(1)</b>
                 .and().csrf().disable();
         }
     }
@@ -763,19 +791,33 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 }</code></pre>
 </div>
 </div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>For the sake of brevity we&#8217;re disabling the security for now. Have a look at the <a href="#securing-spring-boot-admin">security section</a> on how to deal with secured endpoints.</td>
+</tr>
+</table>
+</div>
 </li>
 <li>
 <p>Tell the Eureka client where to find the service registry:</p>
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">eureka</span>:
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">eureka</span>:   <span class="comment">#1</span>
   <span class="key">instance</span>:
     <span class="key">leaseRenewalIntervalInSeconds</span>: <span class="string"><span class="content">10</span></span>
   <span class="key">client</span>:
     <span class="key">registryFetchIntervalSeconds</span>: <span class="string"><span class="content">5</span></span>
     <span class="key">serviceUrl</span>:
-      <span class="key">defaultZone</span>: <span class="string"><span class="content">${EUREKA_SERVICE_URL:http://localhost:8761}/eureka/</span></span></code></pre>
+      <span class="key">defaultZone</span>: <span class="string"><span class="content">${EUREKA_SERVICE_URL:http://localhost:8761}/eureka/</span></span>
+
+<span class="key">management</span>:
+  <span class="key">endpoints</span>:
+    <span class="key">web</span>:
+      <span class="key">exposure</span>:
+        <span class="key">include</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">*</span><span class="delimiter">&quot;</span></span>  <span class="comment">#2</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -786,7 +828,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Since Spring Boot 1.5.x all endpoints are secured by default. For the sake of brevity we&#8217;re disabling the security for now. Have a look at the <a href="#securing-spring-boot-admin">security section</a> on how to deal with secured endpoints.</td>
+<td>As with Spring Boot 2 most of the endpoints aren&#8217;t exposed via http by default, we expose all of them. For production you should carefully choose which endpoints to expose.</td>
 </tr>
 </table>
 </div>
@@ -844,7 +886,8 @@ You can include the Spring Boot Admin Server to your Eureka server. Setup everyt
 <div class="sect2">
 <h3 id="jmx-bean-management"><a class="anchor" href="#jmx-bean-management"></a><a class="link" href="#jmx-bean-management">3.2. JMX-bean management</a></h3>
 <div class="paragraph">
-<p>To interact with JMX-beans in the admin UI you have to include <a href="https://jolokia.org/">Jolokia</a> in your application. In case you are using the <code>spring-boot-admin-starter-client</code> it will be pulled in for you, if not add Jolokia to your dependencies:</p>
+<p>To interact with JMX-beans in the admin UI you have to include <a href="https://jolokia.org/">Jolokia</a> in your application. As Jolokia is servlet based there is no support for reactive applications.
+In case you are using the <code>spring-boot-admin-starter-client</code> it will be pulled in for you, if not add Jolokia to your dependencies:</p>
 </div>
 <div class="listingblock">
 <div class="title">pom.xml</div>
@@ -857,36 +900,7 @@ You can include the Spring Boot Admin Server to your Eureka server. Setup everyt
 </div>
 </div>
 <div class="sect2">
-<h3 id="loglevel-management"><a class="anchor" href="#loglevel-management"></a><a class="link" href="#loglevel-management">3.3. Loglevel management</a></h3>
-<div class="paragraph">
-<p>For applications using Spring Boot 1.5.x (or later) you can manage loglevels out-of-the-box.
-For applications using older versions of Spring Boot the loglevel management is only available for <a href="http://logback.qos.ch/">Logback</a>. It is accessed via JMX so <a href="#jmx-bean-management">include Jolokia</a> in your application. In addition you have configure Logback&#8217;s <code>JMXConfigurator</code>:</p>
-</div>
-<div class="listingblock">
-<div class="title">logback-spring.xml</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="xml"><span class="preprocessor">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
-<span class="tag">&lt;configuration&gt;</span>
-  <span class="tag">&lt;include</span> <span class="attribute-name">resource</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">org/springframework/boot/logging/logback/base.xml</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
-  <span class="tag">&lt;jmxConfigurator</span><span class="tag">/&gt;</span>
-<span class="tag">&lt;/configuration&gt;</span></code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-In case you are deploying multiple applications to the same JVM and multiple Logback-JMX-beans are present, the UI will select the JMXConfigurator with the context-name equals to your applications name. In this case you need to set the <code>contextName</code> in your logback-configuration.
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="spring-boot-admin-client"><a class="anchor" href="#spring-boot-admin-client"></a><a class="link" href="#spring-boot-admin-client">3.4. Spring Boot Admin Client</a></h3>
+<h3 id="spring-boot-admin-client"><a class="anchor" href="#spring-boot-admin-client"></a><a class="link" href="#spring-boot-admin-client">3.3. Spring Boot Admin Client</a></h3>
 <div class="paragraph">
 <p>The Spring Boot Admin Client registers the application at the admin server. This is done by periodically doing a HTTP post request to the SBA Server providing information about the application. It also adds Jolokia to your application, so that JMX-beans are accessible via HTTP.</p>
 </div>
@@ -930,7 +944,7 @@ There are plenty of properties to influence the way how the SBA Client registers
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.api-path</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Http-path of registration endpoint at your admin server.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"api/applications"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"instances"</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.username<br>
@@ -944,17 +958,17 @@ spring.boot.admin.client.password</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>10,000</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.connect-timeout</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.connect-timeout</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Connect timeout for the registration (in ms).</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>5,000</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.read-timeout</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.read-timeout</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Read timeout for the registration (in ms).</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>5,000</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.auto-registration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.auto-registration</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">If set to true the periodic task to register the application is automatically scheduled after the application is ready.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
 </tr>
@@ -1077,17 +1091,23 @@ user.password</p></td>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.monitor.read-timeout</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Read timeout in ms when querying the applications' status and info.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">5,000</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.routes.endpoints</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The enpoints which will be available via spring boot admin zuul proxy. If you write ui modules using other endpoints you need to add them.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"env", "metrics", "trace", "dump", "jolokia", "info", "configprops", "activiti", "logfile", "refresh", "flyway", "liquibase", "loggers"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">20,000</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.metadata-keys-to-sanitize</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Metadata values for the keys matching these regex patterns will be sanitized in all json output.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>".<strong>password$", ".*secret$", ".*key$", ".</strong>$token$", ".<strong>credentials.</strong>", ".*vcap_services$"</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.probed-endpoints</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">For Spring Boot 1.x client applications SBA probes for the specified endpoints using an OPTIONS request.
+  If the path differs from the id you can specify this as id:path (e.g. health:ping)..</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"health", "env", "metrics", "httptrace:trace", "threaddump:dump", "jolokia", "info", "logfile", "refresh", "flyway", "liquibase", "heapdump", "loggers", "auditevents"</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.instance-proxy.ignored-headers</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Headers not to be forwarded when making requests to clients.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">`"Cookie", "Set-Cookie", "Authorization"</p></td>
 </tr>
 </tbody>
 </table>
@@ -1099,7 +1119,16 @@ user.password</p></td>
 <div class="sect3">
 <h4 id="spring-cloud-discovery-static-config"><a class="anchor" href="#spring-cloud-discovery-static-config"></a><a class="link" href="#spring-cloud-discovery-static-config">4.1.1. SimpleDiscoveryClient configuration</a></h4>
 <div class="paragraph">
-<p>Spring Boot Admin ships with the <code>SimpleDiscoveryClient</code> included. This allows you to specify client applications via configuration, without adding the SBA Client or a DiscoveryClient implementation to your monitored applications:</p>
+<p>Spring Cloud provides a <code>SimpleDiscoveryClient</code>. It allows you to specify client applications via static configuration:</p>
+</div>
+<div class="listingblock">
+<div class="title">pom.xml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>org.springframework.cloud<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>spring-cloud-starter<span class="tag">&lt;/artifactId&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span></code></pre>
+</div>
 </div>
 <div class="listingblock">
 <div class="title">application.yml</div>
@@ -1369,10 +1398,10 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <p>The <code>FilteringNotifier</code> allows you to filter certain notification based on rules you can add/remove at runtime. It delegates the sending of notifications to another notifier.</p>
 </div>
 <div class="paragraph">
-<p>If you add a <code>FilteringNotifier</code> to your <code>ApplicationContext</code> a RESTful interface on <code>api/notifications/filter</code> gets available. When this happens the ui shows options to manage the filters.</p>
+<p>If you add a <code>FilteringNotifier</code> to your <code>ApplicationContext</code> a RESTful interface on <code>api/notifications/filter</code> gets available.</p>
 </div>
 <div class="paragraph">
-<p>This notifier is useful if you don&#8217;t want recieve notifications when deploying your applications. Before stopping the application you can add an (expiring) filter either via a <code>POST</code> request or the ui.</p>
+<p>This notifier is useful if you don&#8217;t want recieve notifications when deploying your applications. Before stopping the application you can add an (expiring) filter either via a <code>POST</code> request.</p>
 </div>
 <div class="listingblock">
 <div class="title">How to configure filtering</div>
@@ -1905,184 +1934,6 @@ account and configure it appropriately.</p>
 </table>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_ui_modules"><a class="anchor" href="#_ui_modules"></a><a class="link" href="#_ui_modules">4.4. UI Modules</a></h3>
-<div class="paragraph">
-<p>Additional to the core UI there are following modules which can be included by adding the jar-file to the classpath:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>spring-boot-admin-server-ui-activiti</p>
-</li>
-<li>
-<p>spring-boot-admin-server-ui-hystrix</p>
-</li>
-<li>
-<p>spring-boot-admin-server-ui-turbine</p>
-</li>
-</ul>
-</div>
-<div class="sect3">
-<h4 id="_hystrix_ui_module"><a class="anchor" href="#_hystrix_ui_module"></a><a class="link" href="#_hystrix_ui_module">4.4.1. Hystrix UI Module</a></h4>
-<div class="paragraph">
-<p>The Hystrix module uses the hystrix-dashboard to display the metrics from Hystrix streams.</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Add the ui module to your classpath:</p>
-<div class="listingblock">
-<div class="title">pom.xml</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
-    <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
-    <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-server-ui-hystrix<span class="tag">&lt;/artifactId&gt;</span>
-    <span class="tag">&lt;version&gt;</span>2.0.0-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
-<span class="tag">&lt;/dependency&gt;</span></code></pre>
-</div>
-</div>
-</li>
-<li>
-<p>Add the <code>/hystrix.stream</code> to the proxified endpoints:</p>
-<div class="listingblock">
-<div class="title">application.yml</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yml"></code></pre>
-</div>
-</div>
-</li>
-</ol>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_turbine_ui_module"><a class="anchor" href="#_turbine_ui_module"></a><a class="link" href="#_turbine_ui_module">4.4.2. Turbine UI Module</a></h4>
-<div class="paragraph">
-<p>The Turbine module uses the hystrix-dashboard to display the metrics from a Turbine stream. The UI module does not configure Turbine for you. Either you run Turbine as a separate application or integrate it into your Spring Boot Admin application. Please see <a href="http://cloud.spring.io/spring-cloud-static/Finchley.BUILD-SNAPSHOT/#_turbine">Spring Cloud Reference</a> on setting up Turbine.</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Add the ui module to your classpath:</p>
-<div class="listingblock">
-<div class="title">pom.xml</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
-    <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
-    <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-server-ui-turbine<span class="tag">&lt;/artifactId&gt;</span>
-    <span class="tag">&lt;version&gt;</span>2.0.0-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
-<span class="tag">&lt;/dependency&gt;</span></code></pre>
-</div>
-</div>
-</li>
-<li>
-<p>Configure the Turbine server and clusters</p>
-<div class="listingblock">
-<div class="title">application.yml</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yml"></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Configures the service with id <code>turbine</code> as Turbine server. URLs are also allowed.</td>
-</tr>
-</table>
-</div>
-</li>
-</ol>
-</div>
-<table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 15. Turbine UI Module configuration options</caption>
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Property name</th>
-<th class="tableblock halign-left valign-top">Description</th>
-<th class="tableblock halign-left valign-top">Default value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.turbine.enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enable the Spring Boot Admin backend configuration for Turbine.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.turbine.location</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ServiceId or URL (without the <code>/turbine.stream</code> path) for the Turbine server. Must be reachable from admin server.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"turbine"</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.turbine.clusters</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">List of available Turbine clusters.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"default"</code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect3">
-<h4 id="_activiti_ui_module"><a class="anchor" href="#_activiti_ui_module"></a><a class="link" href="#_activiti_ui_module">4.4.3. Activiti UI Module</a></h4>
-<div class="paragraph">
-<p>The Activiti module shows information from the <code>/activiti</code> endpoint.</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Add the ui module to your classpath:</p>
-<div class="listingblock">
-<div class="title">pom.xml</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
-    <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
-    <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-server-ui-activiti<span class="tag">&lt;/artifactId&gt;</span>
-    <span class="tag">&lt;version&gt;</span>2.0.0-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
-<span class="tag">&lt;/dependency&gt;</span></code></pre>
-</div>
-</div>
-</li>
-<li>
-<p>Add the <code>/activiti</code> to the proxified endpoints:</p>
-<div class="listingblock">
-<div class="title">application.yml</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.routes.endpoints</span>: <span class="string"><span class="content">env,metrics,dump,jolokia,info,configprops,trace,logfile,refresh,flyway,liquibase,heapdump,activiti</span></span></code></pre>
-</div>
-</div>
-</li>
-</ol>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_login_ui_module"><a class="anchor" href="#_login_ui_module"></a><a class="link" href="#_login_ui_module">4.4.4. Login UI Module</a></h4>
-<div class="paragraph">
-<p>The Login module just provides you a login page and a logout button.</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Add the ui module to your classpath:</p>
-<div class="listingblock">
-<div class="title">pom.xml</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
-    <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
-    <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-server-ui-login<span class="tag">&lt;/artifactId&gt;</span>
-    <span class="tag">&lt;version&gt;</span>2.0.0-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
-<span class="tag">&lt;/dependency&gt;</span></code></pre>
-</div>
-</div>
-</li>
-</ol>
-</div>
-</div>
-</div>
 </div>
 </div>
 <div class="sect1">
@@ -2214,7 +2065,110 @@ When using this approach the SBA Server decides whether or not the user can acce
 </div>
 </div>
 <div class="sect1">
-<h2 id="faqs"><a class="anchor" href="#faqs"></a><a class="link" href="#faqs">6. FAQs</a></h2>
+<h2 id="monitoring-spring-boot-1.5.x"><a class="anchor" href="#monitoring-spring-boot-1.5.x"></a><a class="link" href="#monitoring-spring-boot-1.5.x">6. Monitoring Spring Boot Applciations 1.5.x</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>It is possible to monitor Spring Boot 1.5.x applications with Spring Boot Admin 2.x. The old Spring Boot Admin Client is
+able to register at a newer server. Since the API has slight changes for you need to set the following property:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Add reconfigure the api path for Spring Boot Admin Client 1.5.x:</p>
+<div class="listingblock">
+<div class="title">application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.api-path</span>: <span class="string"><span class="content">instances</span></span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>As some of the actuator endpoints changed with the Spring Boot 2 release not all options might be available
+(e.g. <code>/metrics</code> endpoint); for some of the endpoints we provide legacy converters.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_changes_with_2_x"><a class="anchor" href="#_changes_with_2_x"></a><a class="link" href="#_changes_with_2_x">7. Changes with 2.x</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_ui"><a class="anchor" href="#_ui"></a><a class="link" href="#_ui">7.1. UI</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Rewritten ui using vue.js</p>
+</li>
+<li>
+<p>Integrated ui-login module into the main ui module</p>
+</li>
+<li>
+<p>Removed ui-activiti module, as it was only used rarely</p>
+</li>
+<li>
+<p>Added support for the session endpoint</p>
+</li>
+<li>
+<p>Added display of the registered metadata</p>
+</li>
+<li>
+<p>Added option to reset loglevels</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_backend"><a class="anchor" href="#_backend"></a><a class="link" href="#_backend">7.2. Backend</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Moved all classes to the <code>spring.boot.admin.server</code> package</p>
+</li>
+<li>
+<p>Added stable automatic-module-name</p>
+</li>
+<li>
+<p>Redesigned backend based on event sourcing principles</p>
+</li>
+<li>
+<p>Moved endpoint detection to the backend by querying the <code>/actuator</code>-index</p>
+</li>
+<li>
+<p>Added the concept of applications (consisting of 1 to n instances) to the backend</p>
+</li>
+<li>
+<p>Removed Zuul</p>
+</li>
+<li>
+<p>Removed dependency on spring-cloud-starter</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_client"><a class="anchor" href="#_client"></a><a class="link" href="#_client">7.3. Client</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Moved all properties to <code>spring.boot.admin.client.<strong></code> and <code>spring.boot.admin.client.instance.</strong></code></p>
+</li>
+<li>
+<p>Moved all classes to the <code>spring.boot.admin.client</code> package</p>
+</li>
+<li>
+<p>Added stable automatic-module-name</p>
+</li>
+<li>
+<p>Supports webflux and servlet based applications</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="faqs"><a class="anchor" href="#faqs"></a><a class="link" href="#faqs">8. FAQs</a></h2>
 <div class="sectionbody">
 <div class="dlist q-and-a">
 <dl>
@@ -2222,10 +2176,6 @@ When using this approach the SBA Server decides whether or not the user can acce
 <dd>
 <p><strong>tl;dr</strong> You can, but you shouldn&#8217;t.<br>
 You can set <code>spring.boot.admin.context-path</code> to alter the path where the UI and REST-API is served, but depending on the complexity of your application you might get in trouble. On the other hand in my opinion it makes no sense for an application to monitor itself. In case your application goes down your monitoring tool also does.</p>
-</dd>
-<dt>How do I customize the UI?</dt>
-<dd>
-<p>You can only customize the UI by copying and modifying the source of <code>spring-boot-admin-ui</code> and adding your own module to your classpath.</p>
 </dd>
 </dl>
 </div>
