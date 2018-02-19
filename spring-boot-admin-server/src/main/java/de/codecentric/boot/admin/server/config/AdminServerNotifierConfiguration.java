@@ -26,6 +26,7 @@ import de.codecentric.boot.admin.server.notify.MicrosoftTeamsNotifier;
 import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
 import de.codecentric.boot.admin.server.notify.OpsGenieNotifier;
+import de.codecentric.boot.admin.server.notify.PagerdutyNotifier;
 import de.codecentric.boot.admin.server.notify.SlackNotifier;
 import de.codecentric.boot.admin.server.notify.TelegramNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
@@ -144,6 +145,18 @@ public class AdminServerNotifierConfiguration {
         @ConfigurationProperties("spring.boot.admin.notify.letschat")
         public LetsChatNotifier letsChatNotifier(InstanceRepository repository) {
             return new LetsChatNotifier(repository);
+        }
+    }
+
+    @Configuration
+    @ConditionalOnProperty(prefix = "spring.boot.admin.notify.pagerduty", name = "service-key")
+    @AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
+    public static class PagerdutyNotifierConfiguration {
+        @Bean
+        @ConditionalOnMissingBean
+        @ConfigurationProperties("spring.boot.admin.notify.pagerduty")
+        public PagerdutyNotifier pagerdutyNotifier(InstanceRepository repository) {
+            return new PagerdutyNotifier(repository);
         }
     }
 

@@ -29,6 +29,7 @@ import de.codecentric.boot.admin.server.notify.MicrosoftTeamsNotifier;
 import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
 import de.codecentric.boot.admin.server.notify.OpsGenieNotifier;
+import de.codecentric.boot.admin.server.notify.PagerdutyNotifier;
 import de.codecentric.boot.admin.server.notify.SlackNotifier;
 import de.codecentric.boot.admin.server.notify.TelegramNotifier;
 import reactor.core.publisher.Mono;
@@ -105,6 +106,11 @@ public class AdminServerNotifierConfigurationTest {
         assertThat(context.getBean(SlackNotifier.class)).isInstanceOf(SlackNotifier.class);
     }
 
+    @Test
+    public void test_pagerduty() {
+        load(null, "spring.boot.admin.notify.pagerduty.service-key:foo");
+        assertThat(context.getBean(PagerdutyNotifier.class)).isInstanceOf(PagerdutyNotifier.class);
+    }
 
     @Test
     public void test_opsgenie() {
