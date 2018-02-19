@@ -20,7 +20,10 @@ import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.DateTimeException;
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -54,6 +57,8 @@ public class LegacyEndpointConverters {
     };
     private static final Jackson2JsonDecoder DECODER;
     private static final Jackson2JsonEncoder ENCODER;
+    private static final DateTimeFormatter TIMESTAMP_PATTERN = DateTimeFormatter.ofPattern(
+        "yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
     static {
         ObjectMapper om = Jackson2ObjectMapperBuilder.json()
@@ -157,7 +162,7 @@ public class LegacyEndpointConverters {
     @SuppressWarnings("unchecked")
     private static Map<String, Object> convertHttptrace(Map<String, Object> in) {
         Map<String, Object> out = new LinkedHashMap<>();
-        out.put("timestamp", Instant.ofEpochMilli((Long) in.get("timestamp")));
+        out.put("timestamp", getInstant(in.get("timestamp")));
         Map<String, Object> in_info = (Map<String, Object>) in.get("info");
         if (in_info != null) {
             Map<String, Object> request = new LinkedHashMap<>();
@@ -253,5 +258,18 @@ public class LegacyEndpointConverters {
             }
             return converted;
         }).collect(toList());
+    }
+
+    private static Instant getInstant(Object o) {
+        try {
+            if (o instanceof String) {
+                return OffsetDateTime.parse((String) o, TIMESTAMP_PATTERN).toInstant();
+            } else if (o instanceof Long) {
+                return Instant.ofEpochMilli((Long) o);
+            }
+        } catch (DateTimeException | ClassCastException e) {
+            return null;
+        }
+        return null;
     }
 }
