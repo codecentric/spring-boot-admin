@@ -1,0 +1,36 @@
+package de.codecentric.boot.admin.server.web.client;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import org.springframework.http.HttpHeaders;
+import org.springframework.util.StringUtils;
+
+/**
+ * Provides Basic Auth headers for the {@link Instance} using the metadata for "user.name" and "user.password".
+ * Provides CloudFoundry related X-CF-APP-INSTANCE header for the {@link Instance} using the metadata for
+ * "cf_application_guid" and "cf_instance_index".
+ *
+ * @author Tetsushi Awano
+ */
+public class CloudFoundryHttpHeaderProvider extends BasicAuthHttpHeaderProvider {
+
+    @Override
+    public HttpHeaders getHeaders(Instance instance) {
+        String username = instance.getRegistration().getMetadata().get("user.name");
+        String password = instance.getRegistration().getMetadata().get("user.password");
+        String cfApplicationGuid = instance.getRegistration().getMetadata().get("cf_application_guid");
+        String cfInstanceIndex = instance.getRegistration().getMetadata().get("cf_instance_index");
+
+        HttpHeaders headers = new HttpHeaders();
+
+        if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
+            headers.set(HttpHeaders.AUTHORIZATION, encode(username, password));
+        }
+
+        // CloudFoundry instance set HttpHeader X-CF-APP-INSTANCE as cfApplicationGuid:cfInstanceIndex
+        if (StringUtils.hasText(cfApplicationGuid) && StringUtils.hasText(cfInstanceIndex)) {
+            headers.set("X-CF-APP-INSTANCE", cfApplicationGuid + ":" + cfInstanceIndex);
+        }
+
+        return headers;
+    }
+}
