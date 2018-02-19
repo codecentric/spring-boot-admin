@@ -41,7 +41,7 @@ public class HashingInstanceUrlIdGenerator implements InstanceIdGenerator {
         }
     }
 
-    private char[] encodeHex(byte[] bytes, int offset, int length) {
+    protected char[] encodeHex(byte[] bytes, int offset, int length) {
         char[] chars = new char[length];
         for (int i = 0; i < length; i = i + 2) {
             byte b = bytes[offset + (i / 2)];
