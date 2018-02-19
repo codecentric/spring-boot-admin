@@ -24,12 +24,15 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointPr
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.web.server.Ssl;
+import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
 public class ServletApplicationFactory extends DefaultApplicationFactory {
     private final ServletContext servletContext;
-    private final ServerProperties.Servlet servlet;
-    private final ManagementServerProperties.Servlet managementServlet;
+    private final ServerProperties server;
+    private final ManagementServerProperties management;
+    private final InstanceProperties instance;
 
     public ServletApplicationFactory(InstanceProperties instance,
                                      ManagementServerProperties management,
@@ -40,29 +43,58 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
                                      MetadataContributor metadataContributor) {
         super(instance, management, server, pathMappedEndpoints, webEndpoint, metadataContributor);
         this.servletContext = servletContext;
-        this.servlet = server.getServlet();
-        this.managementServlet = management.getServlet();
+        this.server = server;
+        this.management = management;
+        this.instance = instance;
+    }
+
+
+    @Override
+    protected String getServiceUrl() {
+        if (instance.getServiceUrl() != null) {
+            return instance.getServiceUrl();
+        }
+
+        return UriComponentsBuilder.fromUriString(getServiceBaseUrl())
+                                   .path("/")
+                                   .path(getServerContextPath())
+                                   .toUriString();
     }
 
     @Override
     protected String getManagementBaseUrl() {
-        return UriComponentsBuilder.fromHttpUrl(super.getManagementBaseUrl())
-                                   .path("/")
+        String baseUrl = instance.getManagementBaseUrl();
+
+        if (!StringUtils.isEmpty(baseUrl)) {
+            return baseUrl;
+        }
+
+        if (isManagementPortEqual()) {
+            return UriComponentsBuilder.fromHttpUrl(getServiceUrl())
+                                       .path("/")
+                                       .path(getDispatcherServletPrefix())
+                                       .path(getManagementContextPath())
+                                       .toUriString();
+        }
+
+        Ssl ssl = management.getSsl() != null ? management.getSsl() : server.getSsl();
+        return UriComponentsBuilder.newInstance()
+                                   .scheme(getScheme(ssl))
+                                   .host(getManagementHost())
+                                   .port(getLocalManagementPort())
                                    .path(getManagementContextPath())
                                    .toUriString();
     }
 
     protected String getManagementContextPath() {
-        return managementServlet.getContextPath();
+        return management.getServlet().getContextPath();
     }
 
-    @Override
     protected String getServerContextPath() {
         return servletContext.getContextPath();
     }
 
-    @Override
     protected String getDispatcherServletPrefix() {
-        return servlet.getServletPrefix();
+        return server.getServlet().getServletPrefix();
     }
 }

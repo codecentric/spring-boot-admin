@@ -1,1 +1,3 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=de.codecentric.boot.admin.client.config.SpringBootAdminClientAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  de.codecentric.boot.admin.client.config.SpringBootAdminClientAutoConfiguration,\
+  de.codecentric.boot.admin.client.config.SpringBootAdminClientCloudFoundryAutoConfiguration

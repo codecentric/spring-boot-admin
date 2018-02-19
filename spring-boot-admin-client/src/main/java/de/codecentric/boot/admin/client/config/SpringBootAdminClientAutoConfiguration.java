@@ -52,10 +52,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 
 @Configuration
-@EnableConfigurationProperties({ClientProperties.class, InstanceProperties.class})
 @ConditionalOnWebApplication
 @Conditional(SpringBootAdminClientEnabledCondition.class)
 @AutoConfigureAfter(WebMvcEndpointManagementContextConfiguration.class)
+@EnableConfigurationProperties({ClientProperties.class, InstanceProperties.class})
 public class SpringBootAdminClientAutoConfiguration {
 
     @Configuration
@@ -107,18 +107,6 @@ public class SpringBootAdminClientAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean
-    public ApplicationFactory applicationFactory(InstanceProperties instance,
-                                                 ManagementServerProperties management,
-                                                 ServerProperties server,
-                                                 PathMappedEndpoints pathMappedEndpoints,
-                                                 WebEndpointProperties webEndpoint,
-                                                 MetadataContributor metadataContributor) {
-        return new DefaultApplicationFactory(instance, management, server, pathMappedEndpoints, webEndpoint,
-            metadataContributor);
-    }
-
-    @Bean
     @Qualifier("registrationTaskScheduler")
     public TaskScheduler registrationTaskScheduler() {
         ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
@@ -154,3 +142,4 @@ public class SpringBootAdminClientAutoConfiguration {
         return new StartupDateMetadataContributor();
     }
 }
+

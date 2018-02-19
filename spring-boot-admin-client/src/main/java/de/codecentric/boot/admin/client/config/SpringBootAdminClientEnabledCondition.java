@@ -20,8 +20,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
-import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
@@ -57,9 +55,8 @@ public class SpringBootAdminClientEnabledCondition extends SpringBootCondition {
     }
 
     private ClientProperties getClientProperties(ConditionContext context) {
-        Iterable<ConfigurationPropertySource> sources = ConfigurationPropertySources.get(context.getEnvironment());
         ClientProperties clientProperties = new ClientProperties(context.getEnvironment());
-        new Binder(sources).bind("spring.boot.admin.client", Bindable.ofInstance(clientProperties));
+        Binder.get(context.getEnvironment()).bind("spring.boot.admin.client", Bindable.ofInstance(clientProperties));
         return clientProperties;
     }
 }

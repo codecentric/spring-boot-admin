@@ -81,29 +81,28 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 
     protected String getServiceUrl() {
         if (instance.getServiceUrl() != null) {
-            return UriComponentsBuilder.fromUriString(instance.getServiceUrl()).toUriString();
+            return instance.getServiceUrl();
         }
 
+        return UriComponentsBuilder.fromUriString(getServiceBaseUrl()).path("/").toUriString();
+    }
+
+    protected String getServiceBaseUrl() {
         String baseUrl = instance.getServiceBaseUrl();
-        if (getLocalServerPort() == null && StringUtils.isEmpty(baseUrl)) {
+
+        if (!StringUtils.isEmpty(baseUrl)) {
+            return baseUrl;
+        }
+
+        if (getLocalServerPort() == null) {
             throw new IllegalStateException("couldn't determine local port. Please supply service-base-url.");
         }
 
-        UriComponentsBuilder builder;
-        if (!StringUtils.isEmpty(baseUrl)) {
-            builder = UriComponentsBuilder.fromUriString(baseUrl);
-        } else {
-            builder = UriComponentsBuilder.newInstance()
-                                          .scheme(getScheme(server.getSsl()))
-                                          .host(getServiceHost())
-                                          .port(getLocalServerPort());
-        }
-
-        return builder.path("/").path(getServerContextPath()).toUriString();
-    }
-
-    protected String getServerContextPath() {
-        return "";
+        return UriComponentsBuilder.newInstance()
+                                   .scheme(getScheme(server.getSsl()))
+                                   .host(getServiceHost())
+                                   .port(getLocalServerPort())
+                                   .toUriString();
     }
 
     protected String getManagementUrl() {
@@ -125,10 +124,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
         }
 
         if (isManagementPortEqual()) {
-            return UriComponentsBuilder.fromHttpUrl(getServiceUrl())
-                                       .path("/")
-                                       .path(getDispatcherServletPrefix())
-                                       .toUriString();
+            return this.getServiceUrl();
         }
 
         Ssl ssl = management.getSsl() != null ? management.getSsl() : server.getSsl();
@@ -137,10 +133,6 @@ public class DefaultApplicationFactory implements ApplicationFactory {
                                    .host(getManagementHost())
                                    .port(getLocalManagementPort())
                                    .toUriString();
-    }
-
-    protected String getDispatcherServletPrefix() {
-        return "";
     }
 
     protected boolean isManagementPortEqual() {
