@@ -28,7 +28,9 @@ import java.security.NoSuchAlgorithmException;
  * Generates InstanceId "cfApplicationGuid:cfInstanceIndex" for CloudFoundry instance
  * Generates an SHA-1 Hash based on the instance health url for non-CloudFoundry instance
  */
-public class CloudFoundryInstanceIdGenerator extends HashingInstanceUrlIdGenerator {
+public class CloudFoundryInstanceIdGenerator implements InstanceIdGenerator {
+
+    private HashingInstanceUrlIdGenerator hashingInstanceUrlIdGenerator = new HashingInstanceUrlIdGenerator();
 
     @Override
     public InstanceId generateId(Registration registration) {
@@ -41,8 +43,7 @@ public class CloudFoundryInstanceIdGenerator extends HashingInstanceUrlIdGenerat
             if (StringUtils.hasText(cfApplicationGuid) && StringUtils.hasText(cfInstanceIndex)) {
                 return InstanceId.of(String.format("%s:%s", cfApplicationGuid, cfInstanceIndex));
             }
-            byte[] bytes = digest.digest(registration.getHealthUrl().getBytes(StandardCharsets.UTF_8));
-            return InstanceId.of(new String(encodeHex(bytes, 0, 12)));
+            return hashingInstanceUrlIdGenerator.generateId(registration);
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException(e);
         }
