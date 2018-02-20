@@ -43,8 +43,8 @@ public class SpringBootAdminApplication {
         SpringApplication.run(SpringBootAdminApplication.class, args);
     }
 
-    @Configuration
     @Profile("insecure")
+    @Configuration
     public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
@@ -53,8 +53,9 @@ public class SpringBootAdminApplication {
         }
     }
 
-    @Configuration
     @Profile("secure")
+// tag::configuration-spring-security[]
+    @Configuration
     public static class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
         private final String adminContextPath;
 
@@ -80,6 +81,7 @@ public class SpringBootAdminApplication {
             // @formatter:on
         }
     }
+// end::configuration-spring-security[]
 
     @Configuration
     public static class NotifierConfig {
