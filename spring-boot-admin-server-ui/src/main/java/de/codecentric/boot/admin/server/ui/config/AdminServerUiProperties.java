@@ -20,7 +20,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
+import org.springframework.boot.convert.DurationUnit;
 import org.springframework.http.CacheControl;
 
 @lombok.Data
@@ -48,7 +48,7 @@ public class AdminServerUiProperties {
         /**
          * include "max-age" directive in Cache-Control http header.
          */
-        @DefaultDurationUnit(ChronoUnit.SECONDS)
+        @DurationUnit(ChronoUnit.SECONDS)
         private Duration maxAge = Duration.ofSeconds(3600);
 
         /**

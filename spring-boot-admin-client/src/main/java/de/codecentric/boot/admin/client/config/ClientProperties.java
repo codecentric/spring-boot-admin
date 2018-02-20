@@ -19,7 +19,7 @@ package de.codecentric.boot.admin.client.config;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
+import org.springframework.boot.convert.DurationUnit;
 
 @lombok.Data
 @ConfigurationProperties(prefix = "spring.boot.admin.client")
@@ -38,19 +38,19 @@ public class ClientProperties {
     /**
      * Time interval the registration is repeated
      */
-    @DefaultDurationUnit(ChronoUnit.MILLIS)
+    @DurationUnit(ChronoUnit.MILLIS)
     private Duration period = Duration.ofMillis(10_000L);
 
     /**
      * Connect timeout for the registration.
      */
-    @DefaultDurationUnit(ChronoUnit.MILLIS)
+    @DurationUnit(ChronoUnit.MILLIS)
     private Duration connectTimeout = Duration.ofMillis(5_000L);
 
     /**
      * Read timeout (in ms) for the registration.
      */
-    @DefaultDurationUnit(ChronoUnit.MILLIS)
+    @DurationUnit(ChronoUnit.MILLIS)
     private Duration readTimeout = Duration.ofMillis(5_000L);
 
     /**

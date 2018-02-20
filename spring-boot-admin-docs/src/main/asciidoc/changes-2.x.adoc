@@ -33,6 +33,7 @@ As some of the actuator endpoints changed with the Spring Boot 2 release not all
 * Added the concept of applications (consisting of 1 to n instances) to the backend
 * Removed Zuul
 * Removed dependency on spring-cloud-starter
+* Added CompositeHttpHeadersProvider to support multiple HttpHeadersProviders
 
 === Client
 * Moved all properties to `spring.boot.admin.client.*` and `spring.boot.admin.client.instance.*`
