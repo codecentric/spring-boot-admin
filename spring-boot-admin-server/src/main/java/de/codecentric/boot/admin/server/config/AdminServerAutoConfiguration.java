@@ -34,9 +34,11 @@ import de.codecentric.boot.admin.server.services.endpoints.ChainingStrategy;
 import de.codecentric.boot.admin.server.services.endpoints.ProbeEndpointsStrategy;
 import de.codecentric.boot.admin.server.services.endpoints.QueryIndexEndpointStrategy;
 import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider;
+import de.codecentric.boot.admin.server.web.client.CompositeHttpHeadersProvider;
 import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
+import java.util.Collection;
 import org.reactivestreams.Publisher;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -44,6 +46,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.Order;
 
 @Configuration
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
@@ -70,8 +74,16 @@ public class AdminServerAutoConfiguration {
     }
 
     @Bean
+    @Primary
     @ConditionalOnMissingBean
-    public HttpHeadersProvider httpHeadersProvider() {
+    public CompositeHttpHeadersProvider httpHeadersProvider(Collection<HttpHeadersProvider> delegates) {
+        return new CompositeHttpHeadersProvider(delegates);
+    }
+
+    @Bean
+    @Order(0)
+    @ConditionalOnMissingBean
+    public BasicAuthHttpHeaderProvider basicAuthHttpHeadersProvider() {
         return new BasicAuthHttpHeaderProvider();
     }
 
