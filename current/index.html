@@ -554,23 +554,23 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#spring-cloud-discovery-support">4.1. Spring Cloud Discovery</a>
 <ul class="sectlevel3">
 <li><a href="#spring-cloud-discovery-static-config">4.1.1. SimpleDiscoveryClient configuration</a></li>
-<li><a href="#_other_discoveryclient_implementations_eureka_zookeeper_consul">4.1.2. Other DiscoveryClient implementations (Eureka, Zookeeper, Consul, &#8230;&#8203;)</a></li>
-<li><a href="#_converting_serviceinstances_into_monitored_applications">4.1.3. Converting ServiceInstances into monitored applications</a></li>
+<li><a href="#_other_discoveryclients">4.1.2. Other DiscoveryClients</a></li>
+<li><a href="#_converting_serviceinstances">4.1.3. Converting ServiceInstances</a></li>
 </ul>
 </li>
 <li><a href="#clustering-support">4.2. Clustering</a></li>
 <li><a href="#_notifications">4.3. Notifications</a>
 <ul class="sectlevel3">
-<li><a href="#_reminder_notifications">Reminder notifications</a></li>
-<li><a href="#filtering-notifications">4.3.1. Filtering notifications</a></li>
-<li><a href="#mail-notifications">4.3.2. Mail notifications</a></li>
-<li><a href="#pagerduty-notifications">4.3.3. PagerDuty notifications</a></li>
-<li><a href="#opsgenie-notifications">4.3.4. OpsGenie notifications</a></li>
-<li><a href="#_hipchat_notifications">Hipchat notifications</a></li>
-<li><a href="#_slack_notifications">Slack notifications</a></li>
-<li><a href="#_let_s_chat_notifications">Let&#8217;s Chat notifications</a></li>
-<li><a href="#_microsoft_teams_notifications">Microsoft Teams notifications</a></li>
-<li><a href="#_telegram_notifications">Telegram notifications</a></li>
+<li><a href="#reminder-notifications">4.3.1. Reminder notifications</a></li>
+<li><a href="#filtering-notifications">4.3.2. Filtering notifications</a></li>
+<li><a href="#mail-notifications">4.3.3. Mail notifications</a></li>
+<li><a href="#pagerduty-notifications">4.3.4. PagerDuty notifications</a></li>
+<li><a href="#opsgenie-notifications">4.3.5. OpsGenie notifications</a></li>
+<li><a href="#hipchat-notifications">4.3.6. Hipchat notifications</a></li>
+<li><a href="#slack-notifications">4.3.7. Slack notifications</a></li>
+<li><a href="#letschat-notifications">4.3.8. Let&#8217;s Chat notifications</a></li>
+<li><a href="#ms-teams-notifications">4.3.9. Microsoft Teams notifications</a></li>
+<li><a href="#telegram-notifications">4.3.10. Telegram notifications</a></li>
 </ul>
 </li>
 </ul>
@@ -581,7 +581,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_securing_client_actuator_endpoints">5.2. Securing Client Actuator Endpoints</a></li>
 </ul>
 </li>
-<li><a href="#monitoring-spring-boot-1.5.x">6. Monitoring Spring Boot Applciations 1.5.x</a></li>
+<li><a href="#monitoring-spring-boot-1.5.x">6. Monitoring Spring Boot 1.5.x</a></li>
 <li><a href="#_changes_with_2_x">7. Changes with 2.x</a>
 <ul class="sectlevel2">
 <li><a href="#_ui">7.1. UI</a></li>
@@ -805,7 +805,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">eureka</span>:   <span class="comment">#1</span>
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">eureka</span>:   <i class="conum" data-value="1"></i><b>(1)</b>
   <span class="key">instance</span>:
     <span class="key">leaseRenewalIntervalInSeconds</span>: <span class="string"><span class="content">10</span></span>
   <span class="key">client</span>:
@@ -817,7 +817,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
   <span class="key">endpoints</span>:
     <span class="key">web</span>:
       <span class="key">exposure</span>:
-        <span class="key">include</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">*</span><span class="delimiter">&quot;</span></span>  <span class="comment">#2</span></code></pre>
+        <span class="key">include</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">*</span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1150,14 +1150,14 @@ user.password</p></td>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_other_discoveryclient_implementations_eureka_zookeeper_consul"><a class="anchor" href="#_other_discoveryclient_implementations_eureka_zookeeper_consul"></a><a class="link" href="#_other_discoveryclient_implementations_eureka_zookeeper_consul">4.1.2. Other DiscoveryClient implementations (Eureka, Zookeeper, Consul, &#8230;&#8203;)</a></h4>
+<h4 id="_other_discoveryclients"><a class="anchor" href="#_other_discoveryclients"></a><a class="link" href="#_other_discoveryclients">4.1.2. Other DiscoveryClients</a></h4>
 <div class="paragraph">
-<p>Spring Boot Admin supports all other implementation of Spring Cloud&#8217;s <code>DiscoveryClient</code>. You need to add it to the Spring Boot Admin Server and configure it properly.
+<p>Spring Boot Admin supports all other implementations of Spring Cloud&#8217;s <code>DiscoveryClient</code> (Eureka, Zookeeper, Consul, &#8230;&#8203;). You need to add it to the Spring Boot Admin Server and configure it properly.
 An <a href="#discover-clients-via-spring-cloud-discovery">example setup using Eureka</a> is shown above.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_converting_serviceinstances_into_monitored_applications"><a class="anchor" href="#_converting_serviceinstances_into_monitored_applications"></a><a class="link" href="#_converting_serviceinstances_into_monitored_applications">4.1.3. Converting ServiceInstances into monitored applications</a></h4>
+<h4 id="_converting_serviceinstances"><a class="anchor" href="#_converting_serviceinstances"></a><a class="link" href="#_converting_serviceinstances">4.1.3. Converting ServiceInstances</a></h4>
 <div class="paragraph">
 <p>The information from the service registry are converted by the <code>ServiceInstanceConverter</code>. Spring Boot Admin ships with a default and Eureka converter implementation. The correct one is selected by AutoConfiguration.</p>
 </div>
@@ -1345,7 +1345,7 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <div class="sect2">
 <h3 id="_notifications"><a class="anchor" href="#_notifications"></a><a class="link" href="#_notifications">4.3. Notifications</a></h3>
 <div class="sect3">
-<h4 id="_reminder_notifications"><a class="anchor" href="#_reminder_notifications"></a><a class="link" href="#_reminder_notifications">Reminder notifications</a></h4>
+<h4 id="reminder-notifications"><a class="anchor" href="#reminder-notifications"></a><a class="link" href="#reminder-notifications">4.3.1. Reminder notifications</a></h4>
 <div class="paragraph">
 <p>The <code>RemindingNotifier</code> sends reminders for down/offline applications, it delegates the sending of notifications to another notifier.</p>
 </div>
@@ -1393,7 +1393,7 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 </div>
 </div>
 <div class="sect3">
-<h4 id="filtering-notifications"><a class="anchor" href="#filtering-notifications"></a><a class="link" href="#filtering-notifications">4.3.1. Filtering notifications</a></h4>
+<h4 id="filtering-notifications"><a class="anchor" href="#filtering-notifications"></a><a class="link" href="#filtering-notifications">4.3.2. Filtering notifications</a></h4>
 <div class="paragraph">
 <p>The <code>FilteringNotifier</code> allows you to filter certain notification based on rules you can add/remove at runtime. It delegates the sending of notifications to another notifier.</p>
 </div>
@@ -1458,7 +1458,7 @@ This example combines the reminding and filtering notifiers. This allows you to 
 </div>
 </div>
 <div class="sect3">
-<h4 id="mail-notifications"><a class="anchor" href="#mail-notifications"></a><a class="link" href="#mail-notifications">4.3.2. Mail notifications</a></h4>
+<h4 id="mail-notifications"><a class="anchor" href="#mail-notifications"></a><a class="link" href="#mail-notifications">4.3.3. Mail notifications</a></h4>
 <div class="paragraph">
 <p>Configure a <code>JavaMailSender</code> using <code>spring-boot-starter-mail</code> and set a recipient.</p>
 </div>
@@ -1532,7 +1532,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="pagerduty-notifications"><a class="anchor" href="#pagerduty-notifications"></a><a class="link" href="#pagerduty-notifications">4.3.3. PagerDuty notifications</a></h4>
+<h4 id="pagerduty-notifications"><a class="anchor" href="#pagerduty-notifications"></a><a class="link" href="#pagerduty-notifications">4.3.4. PagerDuty notifications</a></h4>
 <div class="paragraph">
 <p>To enable <a href="https://www.pagerduty.com/">PagerDuty</a> notifications you just have to add a generic service to your PagerDuty-account and set <code>spring.boot.admin.notify.pagerduty.service-key</code> to the service-key you received.</p>
 </div>
@@ -1590,7 +1590,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="opsgenie-notifications"><a class="anchor" href="#opsgenie-notifications"></a><a class="link" href="#opsgenie-notifications">4.3.4. OpsGenie notifications</a></h4>
+<h4 id="opsgenie-notifications"><a class="anchor" href="#opsgenie-notifications"></a><a class="link" href="#opsgenie-notifications">4.3.5. OpsGenie notifications</a></h4>
 <div class="paragraph">
 <p>To enable <a href="https://www.opsgenie.com/">OpsGenie</a> notifications you just have to add a new JSON Rest API integration to your OpsGenie account and set <code>spring.boot.admin.notify.opsgenie.api-key</code> to the apiKey you received.</p>
 </div>
@@ -1668,7 +1668,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_hipchat_notifications"><a class="anchor" href="#_hipchat_notifications"></a><a class="link" href="#_hipchat_notifications">Hipchat notifications</a></h4>
+<h4 id="hipchat-notifications"><a class="anchor" href="#hipchat-notifications"></a><a class="link" href="#hipchat-notifications">4.3.6. Hipchat notifications</a></h4>
 <div class="paragraph">
 <p>To enable <a href="https://www.hipchat.com/">Hipchat</a> notifications you need to create an API token from you Hipchat account and set the appropriate configuration properties.</p>
 </div>
@@ -1726,7 +1726,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_slack_notifications"><a class="anchor" href="#_slack_notifications"></a><a class="link" href="#_slack_notifications">Slack notifications</a></h4>
+<h4 id="slack-notifications"><a class="anchor" href="#slack-notifications"></a><a class="link" href="#slack-notifications">4.3.7. Slack notifications</a></h4>
 <div class="paragraph">
 <p>To enable <a href="https://slack.com/">Slack</a> notifications you need to add a incoming Webhook under custom integrations on your Slack
 account and configure it appropriately.</p>
@@ -1785,7 +1785,7 @@ account and configure it appropriately.</p>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_let_s_chat_notifications"><a class="anchor" href="#_let_s_chat_notifications"></a><a class="link" href="#_let_s_chat_notifications">Let&#8217;s Chat notifications</a></h4>
+<h4 id="letschat-notifications"><a class="anchor" href="#letschat-notifications"></a><a class="link" href="#letschat-notifications">4.3.8. Let&#8217;s Chat notifications</a></h4>
 <div class="paragraph">
 <p>To enable <a href="https://sdelements.github.io/lets-chat/">Let&#8217;s Chat</a> notifications you need to add the host url and add the API token and username from Let&#8217;s Chat</p>
 </div>
@@ -1843,7 +1843,7 @@ account and configure it appropriately.</p>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_microsoft_teams_notifications"><a class="anchor" href="#_microsoft_teams_notifications"></a><a class="link" href="#_microsoft_teams_notifications">Microsoft Teams notifications</a></h4>
+<h4 id="ms-teams-notifications"><a class="anchor" href="#ms-teams-notifications"></a><a class="link" href="#ms-teams-notifications">4.3.9. Microsoft Teams notifications</a></h4>
 <div class="paragraph">
 <p>To enable Microsoft Teams notifications you need to setup a connector webhook url and set the appropriate configuration property.</p>
 </div>
@@ -1881,7 +1881,7 @@ account and configure it appropriately.</p>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_telegram_notifications"><a class="anchor" href="#_telegram_notifications"></a><a class="link" href="#_telegram_notifications">Telegram notifications</a></h4>
+<h4 id="telegram-notifications"><a class="anchor" href="#telegram-notifications"></a><a class="link" href="#telegram-notifications">4.3.10. Telegram notifications</a></h4>
 <div class="paragraph">
 <p>To enable <a href="https://telegram.org/">Telegram</a> notifications you need to create and authorize a telegram bot and set the appropriate configuration properties for auth-token and chat-id.</p>
 </div>
@@ -1950,11 +1950,36 @@ If you include the <code>spring-boot-admin-server-ui-login</code> in your depend
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Unresolved directive in security.adoc - include::/home/travis/build/codecentric/spring-boot-admin/spring-boot-admin-docs/../spring-boot-admin-samples<span class="comment">//spring-boot-admin-sample/src/main/java/de/codecentric/boot/admin/SpringBootAdminApplication.java[tags=configuration-spring-security]</span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="java">    <span class="annotation">@Configuration</span>
+    <span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SecuritySecureConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
+        <span class="directive">private</span> <span class="directive">final</span> <span class="predefined-type">String</span> adminContextPath;
+
+        <span class="directive">public</span> SecuritySecureConfig(AdminServerProperties adminServerProperties) {
+            <span class="local-variable">this</span>.adminContextPath = adminServerProperties.getContextPath();
+        }
+
+        <span class="annotation">@Override</span>
+        <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
+            <span class="comment">// @formatter:off</span>
+            SavedRequestAwareAuthenticationSuccessHandler successHandler = <span class="keyword">new</span> SavedRequestAwareAuthenticationSuccessHandler();
+            successHandler.setTargetUrlParameter(<span class="string"><span class="delimiter">&quot;</span><span class="content">redirectTo</span><span class="delimiter">&quot;</span></span>);
+
+            http.authorizeRequests()
+                .antMatchers(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/assets/**</span><span class="delimiter">&quot;</span></span>).permitAll()
+                .antMatchers(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>).permitAll()
+                .anyRequest().authenticated()
+                .and()
+            .formLogin().loginPage(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>).successHandler(successHandler).and()
+            .logout().logoutUrl(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/logout</span><span class="delimiter">&quot;</span></span>).and()
+            .httpBasic().and()
+            .csrf().disable();
+            <span class="comment">// @formatter:on</span>
+        }
+    }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>For a complete sample look at <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample/">spring-boot-admin-sample</a>.</p>
+<p>For a complete sample look at <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-servlet/" class="bare">github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-servlet/</a>[spring-boot-admin-sample-servlet.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -1964,18 +1989,6 @@ If you include the <code>spring-boot-admin-server-ui-login</code> in your depend
 </td>
 <td class="content">
 If you protect the <code>/api/applications</code> endpoint don&#8217;t forget to configure the username and password on your SBA-Client using <code>spring.boot.admin.client.username</code> and <code>spring.boot.admin.instance.password</code>.
-</td>
-</tr>
-</table>
-</div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-There are more samples (e.g. using OAuth2) in <a href="https://github.com/joshiste/spring-boot-admin-samples" target="_blank" rel="noopener">joshiste/spring-boot-admin-samples</a>.
 </td>
 </tr>
 </table>
@@ -1996,8 +2009,8 @@ There are more samples (e.g. using OAuth2) in <a href="https://github.com/joshis
     <span class="key">url</span>: <span class="string"><span class="content">http://localhost:8080</span></span>
     <span class="key">instance</span>:
       <span class="key">metadata</span>:
-        <span class="key">user.name</span>: <span class="string"><span class="content">${security.user.name}</span></span>
-        <span class="key">user.password</span>: <span class="string"><span class="content">${security.user.password}</span></span></code></pre>
+        <span class="key">user.name</span>: <span class="string"><span class="content">${spring.security.user.name}</span></span>
+        <span class="key">user.password</span>: <span class="string"><span class="content">${spring.security.user.password}</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2009,8 +2022,8 @@ There are more samples (e.g. using OAuth2) in <a href="https://github.com/joshis
 <pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">eureka</span>:
   <span class="key">instance</span>:
     <span class="key">metadata-map</span>:
-      <span class="key">user.name</span>: <span class="string"><span class="content">${security.user.name}</span></span>
-      <span class="key">user.password</span>: <span class="string"><span class="content">${security.user.password}</span></span></code></pre>
+      <span class="key">user.name</span>: <span class="string"><span class="content">${spring.security.user.name}</span></span>
+      <span class="key">user.password</span>: <span class="string"><span class="content">${spring.security.user.password}</span></span></code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -2065,7 +2078,7 @@ When using this approach the SBA Server decides whether or not the user can acce
 </div>
 </div>
 <div class="sect1">
-<h2 id="monitoring-spring-boot-1.5.x"><a class="anchor" href="#monitoring-spring-boot-1.5.x"></a><a class="link" href="#monitoring-spring-boot-1.5.x">6. Monitoring Spring Boot Applciations 1.5.x</a></h2>
+<h2 id="monitoring-spring-boot-1.5.x"><a class="anchor" href="#monitoring-spring-boot-1.5.x"></a><a class="link" href="#monitoring-spring-boot-1.5.x">6. Monitoring Spring Boot 1.5.x</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>It is possible to monitor Spring Boot 1.5.x applications with Spring Boot Admin 2.x. The old Spring Boot Admin Client is
