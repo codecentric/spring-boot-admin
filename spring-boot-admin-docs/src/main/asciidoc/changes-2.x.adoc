@@ -2,9 +2,9 @@
 == Monitoring Spring Boot 1.5.x ==
 
 It is possible to monitor Spring Boot 1.5.x applications with Spring Boot Admin 2.x. The old Spring Boot Admin Client is
-able to register at a newer server. Since the API has slight changes for you need to set the following property:
+able to register at a newer server. Since the API has slight changes, you need to set the following property:
 
-. Add reconfigure the api path for Spring Boot Admin Client 1.5.x:
+. Reconfigure the api path for Spring Boot Admin Client 1.5.x:
 +
 [source,yml]
 .application.yml
