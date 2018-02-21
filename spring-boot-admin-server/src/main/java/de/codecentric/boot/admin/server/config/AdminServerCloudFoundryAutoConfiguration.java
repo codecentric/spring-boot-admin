@@ -17,9 +17,7 @@
 package de.codecentric.boot.admin.server.config;
 
 import de.codecentric.boot.admin.server.services.CloudFoundryInstanceIdGenerator;
-import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
 import de.codecentric.boot.admin.server.services.InstanceIdGenerator;
-import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider;
 import de.codecentric.boot.admin.server.web.client.CloudFoundryHttpHeaderProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
