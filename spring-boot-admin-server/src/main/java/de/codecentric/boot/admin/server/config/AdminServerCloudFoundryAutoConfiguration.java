@@ -16,6 +16,7 @@
 
 package de.codecentric.boot.admin.server.config;
 
+import de.codecentric.boot.admin.server.config.AdminServerAutoConfiguration;
 import de.codecentric.boot.admin.server.services.CloudFoundryInstanceIdGenerator;
 import de.codecentric.boot.admin.server.services.InstanceIdGenerator;
 import de.codecentric.boot.admin.server.web.client.CloudFoundryHttpHeaderProvider;
