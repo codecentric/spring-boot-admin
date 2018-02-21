@@ -28,17 +28,6 @@ public class CloudFoundryHttpHeaderProviderTest {
     private CloudFoundryHttpHeaderProvider headersProvider = new CloudFoundryHttpHeaderProvider();
 
     @Test
-    public void test_auth_header() {
-        Registration registration = Registration.create("foo", "http://health")
-            .metadata("user.name", "test")
-            .metadata("user.password", "drowssap")
-            .build();
-        Instance instance = Instance.create(InstanceId.of("id")).register(registration);
-        assertThat(headersProvider.getHeaders(instance).get(HttpHeaders.AUTHORIZATION)).containsOnly(
-            "Basic dGVzdDpkcm93c3NhcA==");
-    }
-
-    @Test
     public void test_cloud_foundry_header() {
         Registration registration = Registration.create("foo", "http://health")
             .metadata("cf_application_guid", "549e64cf-a478-423d-9d6d-02d803a028a8")
