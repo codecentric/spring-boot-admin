@@ -35,19 +35,21 @@
   border-color: transparent;
 }
 
+//navbar color fixes
 .navbar-item .button.is-icon {
   color: $navbar-item-color;
   &:hover {
     color: $navbar-item-hover-color;
   }
+
 }
 
-//Badge
-.badge.has-black-background {
+.navbar .badge {
   &[data-badge]::after {
-    box-shadow: 0 0 0 $badge-border-size $black;
+    box-shadow: 0 0 0 $badge-border-size $navbar-background-color;
   }
 }
+
 
 //Loading spinner
 .section.is-loading,
@@ -66,7 +68,6 @@
 .card .hero {
   padding: 0.75rem;
 }
-
 
 //Bullets
 .has-bullet::before {
@@ -98,4 +99,14 @@
 
 path.domain {
   stroke: currentColor;
+}
+
+//for login.html
+.login {
+  background-color: $black-ter;
+
+  &--logo {
+    margin-left: auto;
+    margin-right: auto;
+  }
 }

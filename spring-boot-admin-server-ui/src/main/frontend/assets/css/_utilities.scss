@@ -23,26 +23,26 @@ $turquoise: rgb(66, 211, 165);
 $primary: $turquoise;
 $primary-invert: $white;
 
-$link: $primary;
-
-$navbar-background-color: $black;
-$navbar-item-color: $grey;
-$navbar-item-hover-color: $white;
-$navbar-item-hover-background-color: $navbar-background-color;
-$navbar-item-active-color: $white;
-$navbar-item-active-background-color: $navbar-background-color;
-
-$modal-card-head-background-color: $white;
-$modal-content-width: calc(100vh - 40px);
-
-// for calculations / originally rem
-$navbar-height-px: 52px;
-$tabs-height-px: 41px;
-
 //  Add new color variables to the color map.
 @import "~bulma/sass/utilities/derived-variables.sass";
 
 $addColors: ();
 $colors: map-merge($colors, $addColors);
 
+$link: $primary;
+
+$modal-card-head-background-color: $white;
+$modal-content-width: calc(100vh - 40px);
+
+$navbar-background-color: $black-ter;
+$navbar-item-color: $grey;
+$navbar-item-hover-color: $white;
+$navbar-item-hover-background-color: $navbar-background-color;
+$navbar-item-active-color: $white;
+$navbar-item-active-background-color: $navbar-background-color;
+
 @import "~bulma/sass/utilities/mixins.sass";
+
+// for calculations / originally rem
+$navbar-height-px: 52px;
+$tabs-height-px: 41px;

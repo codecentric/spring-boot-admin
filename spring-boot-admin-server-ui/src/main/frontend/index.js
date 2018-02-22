@@ -17,6 +17,7 @@
 import '@/assets/css/base.scss';
 import logoDanger from '@/assets/img/favicon-danger.png';
 import logoOk from '@/assets/img/favicon.png';
+import '@/assets/img/icon-spring-boot-admin.svg';
 import moment from 'moment';
 import Vue from 'vue';
 import VueRouter from 'vue-router';

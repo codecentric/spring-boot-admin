@@ -19,7 +19,8 @@
     <div class="container">
       <div class="navbar-brand">
         <router-link class="navbar-item logo" to="/">
-          Spring Boot Admin
+          <img src="assets/img/icon-spring-boot-admin.svg">
+          <span>Spring Boot Admin</span>
         </router-link>
 
         <div class="navbar-burger burger" @click.stop="showMenu = !showMenu">
@@ -49,7 +50,10 @@
 </template>
 
 <script>
+  import iconSpringBootAdmin from '@/assets/img/icon-spring-boot-admin.svg';
+
   export default {
+    components: {iconSpringBootAdmin},
     data: () => ({
       showMenu: false
     }),
@@ -74,11 +78,14 @@
   .logo {
     font-size: 1.5rem;
     font-weight: 600;
-    color: $white;
+    white-space: nowrap;
+    padding: 0;
 
-    & svg {
-      fill: currentColor;
-      padding-right: 0.5rem;
+    & span {
+      margin: 0.5rem 1rem 0.5rem 0.5rem;
+    }
+    & img {
+      max-height: 2.25rem;
     }
   }
 </style>

@@ -1,13 +1,12 @@
 codecentric's Spring Boot Admin
 ===============================
-
-![](./images/logo-spring-boot-admin.png)
-
 [![Apache License 2](https://img.shields.io/badge/license-ASF2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 [![Build Status](https://travis-ci.org/codecentric/spring-boot-admin.svg?branch=master)](https://travis-ci.org/codecentric/spring-boot-admin)
 [![Coverage Status](https://coveralls.io/repos/codecentric/spring-boot-admin/badge.svg)](https://coveralls.io/r/codecentric/spring-boot-admin)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.codecentric/spring-boot-admin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.codecentric/spring-boot-admin/)
 [![Gitter](https://badges.gitter.im/codecentric/spring-boot-admin.svg)](https://gitter.im/codecentric/spring-boot-admin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
+![](./images/logo-spring-boot-admin.png)
 
 This community project provides an admin interface for [Spring Boot <sup>®</sup>](http://projects.spring.io/spring-boot/ "Official Spring-Boot website") applications.
 
@@ -68,37 +67,37 @@ Spring, Spring Boot and Spring Cloud are trademarks of [Pivotal Software, Inc.](
 
 ## Screenshots
 
-![Screenshot application list](/images/screenshot.png?raw=true)
+![Screenshot application list](/images/screenshot.png)
 *Dashboard with desktop notifications*
 
-![Screenshot details](/images/screenshot-details.png?raw=true)
+![Screenshot details](/images/screenshot-details.png)
 *View application health, info and details*
 
-![Screenshot metrics](/images/screenshot-metrics.png?raw=true)
+![Screenshot metrics](/images/screenshot-metrics.png)
 *View metric counters and gauges*
 
-![Screenshot logfile](/images/screenshot-logfile.png?raw=true)
+![Screenshot logfile](/images/screenshot-logfile.png)
 *View logfile (with follow)*
 
-![Screenshot environment](/images/screenshot-environment.png?raw=true)
+![Screenshot environment](/images/screenshot-environment.png)
 *View and change Spring environment (via Spring Cloud)*
 
-![Screenshot logging](/images/screenshot-logging.png?raw=true)
+![Screenshot logging](/images/screenshot-logging.png)
 *Manage Logback logger levels*
 
-![Screenshot jmx](/images/screenshot-jmx.png?raw=true)
+![Screenshot jmx](/images/screenshot-jmx.png)
 *View and use JMX beans via jolokia*
 
-![Screenshot threads](/images/screenshot-threads.png?raw=true)
+![Screenshot threads](/images/screenshot-threads.png)
 *View thread dump*
 
-![Screenshot traces](/images/screenshot-trace.png?raw=true)
+![Screenshot traces](/images/screenshot-trace.png)
 *View http request traces*
 
-![Screenshot hystrix](/images/screenshot-hystrix.png?raw=true)
+![Screenshot hystrix](/images/screenshot-hystrix.png)
 *View Hystrix dashboard*
 
-![Screenshot journal](/images/screenshot-journal.png?raw=true)
+![Screenshot journal](/images/screenshot-journal.png)
 *View history of registered applications*
 
 ## Snapshot builds

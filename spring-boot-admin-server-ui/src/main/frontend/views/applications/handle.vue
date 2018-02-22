@@ -19,7 +19,7 @@
     <span class="has-text-warning" v-if="connectionFailed">
       <font-awesome-icon icon="exclamation-triangle"/>
     </span>
-    <span :class="{ 'badge is-badge-danger has-black-background' : downCount > 0 }" :data-badge="downCount">
+    <span :class="{ 'badge is-badge-danger' : downCount > 0 }" :data-badge="downCount">
       Applications
     </span>
   </span>
