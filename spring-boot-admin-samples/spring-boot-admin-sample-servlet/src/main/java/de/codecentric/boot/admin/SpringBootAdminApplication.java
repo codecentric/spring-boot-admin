@@ -22,14 +22,18 @@ import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.notify.LoggingNotifier;
 import de.codecentric.boot.admin.server.notify.RemindingNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
+import de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunction;
 
 import java.time.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -39,6 +43,9 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 @EnableAutoConfiguration
 @EnableAdminServer
 public class SpringBootAdminApplication {
+
+    private static final Logger log = LoggerFactory.getLogger(SpringBootAdminApplication.class);
+
     public static void main(String[] args) {
         SpringApplication.run(SpringBootAdminApplication.class, args);
     }
@@ -82,6 +89,16 @@ public class SpringBootAdminApplication {
         }
     }
 // end::configuration-spring-security[]
+
+    @Bean
+    public InstanceExchangeFilterFunction auditLog() {
+        return (instance, request, next) -> {
+            if (HttpMethod.DELETE.equals(request.method()) || HttpMethod.POST.equals(request.method())) {
+                log.info("{} for {} on {}", request.method(), instance.getId(), request.url());
+            }
+            return next.exchange(request);
+        };
+    }
 
     @Configuration
     public static class NotifierConfig {
