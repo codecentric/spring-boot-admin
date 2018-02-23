@@ -16,7 +16,7 @@
 
 <template>
   <span>
-    <span class="has-text-warning" v-if="connectionFailed">
+    <span class="has-text-warning" v-if="error">
       <font-awesome-icon icon="exclamation-triangle"/>
     </span>
     <span :class="{ 'badge is-badge-danger' : downCount > 0 }" :data-badge="downCount">
@@ -31,8 +31,8 @@
 
   export default {
     computed: {
-      connectionFailed() {
-        return this.$root.connectionFailed;
+      error() {
+        return this.$root.error;
       },
       downCount() {
         return this.$root.applications.reduce((current, next) => {
