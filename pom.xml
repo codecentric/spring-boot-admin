@@ -27,7 +27,7 @@
     <url>https://github.com/codecentric/spring-boot-admin/</url>
     <properties>
         <revision>2.0.0-SNAPSHOT</revision>
-        <spring-boot.version>2.0.0.BUILD-SNAPSHOT</spring-boot.version>
+        <spring-boot.version>2.0.0.RC2</spring-boot.version>
         <spring-cloud.version>Finchley.BUILD-SNAPSHOT</spring-cloud.version>
         <hazelcast-tests.version>3.9.2</hazelcast-tests.version>
         <java.version>1.8</java.version>

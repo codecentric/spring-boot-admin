@@ -35,14 +35,20 @@
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading has-bullet has-bullet-warning">Total</p>
-            <p v-text="current.total"/>
+            <p class="heading has-bullet has-bullet-warning">Misses</p>
+            <p v-text="current.miss"/>
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
             <p class="heading">Hit ratio</p>
             <p v-text="ratio"/>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Size</p>
+            <p v-text="current.size"/>
           </div>
         </div>
       </div>
@@ -93,14 +99,17 @@
     },
     methods: {
       async fetchMetrics() {
-        const responseHit = this.instance.fetchMetric('cache.requests', {name: this.cacheName, result: 'hit'});
-        const responseMiss = this.instance.fetchMetric('cache.requests', {name: this.cacheName, result: 'miss'});
+        const responseHit = this.instance.fetchMetric('cache.gets', {name: this.cacheName, result: 'hit'});
+        const responseMiss = this.instance.fetchMetric('cache.gets', {name: this.cacheName, result: 'miss'});
+        const responsSize = this.instance.fetchMetric('cache.size', {name: this.cacheName});
         const hit = (await responseHit).data.measurements[0].value;
         const miss = (await responseMiss).data.measurements[0].value;
+        const size = (await responsSize).data.measurements[0].value;
         return {
           hit,
           miss,
-          total: hit + miss
+          total: hit + miss,
+          size
         };
       },
       createSubscription() {
@@ -110,6 +119,7 @@
             .concatMap(vm.fetchMetrics)
             .subscribe({
               next: data => {
+                vm.hasLoaded = true;
                 vm.current = data;
                 vm.chartData.push({...data, timestamp: moment.now().valueOf()});
               },
