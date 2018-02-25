@@ -24,13 +24,14 @@
           This is an administration UI for Spring Boot applications.
         </p>
         <p>
-          To monitor applications, they must be registered at this server. This is either done by including
-          the <a
-          href="https://codecentric.github.io/spring-boot-admin/@project.version@/#register-clients-via-spring-boot-admin">Spring
-          Boot Admin Client</a>
-          or using a <a
-          href="https://codecentric.github.io/spring-boot-admin/@project.version@/#discover-clients-via-spring-cloud-discovery">Spring
-          Cloud Discovery Client</a> implementation.
+          To monitor applications, they must be registered at this server. This is either done by including the
+          <a href="https://codecentric.github.io/spring-boot-admin/@project.version@/#register-clients-via-spring-boot-admin">
+            Spring Boot Admin Client
+          </a>
+          or using a
+          <a href="https://codecentric.github.io/spring-boot-admin/@project.version@/#discover-clients-via-spring-cloud-discovery">
+            Spring Cloud Discovery Client
+          </a> implementation.
         </p>
         <p>
           If you have any question please consult the
@@ -93,40 +94,40 @@
 </script>
 
 <style lang="scss">
-    .about-links {
-        display: flex;
-        align-items: center;
+  .about-links {
+    display: flex;
+    align-items: center;
 
-        & > * {
-            margin-right: 0.5rem;
-        }
+    & > * {
+      margin-right: 0.5rem;
     }
+  }
 
-    $stackoverflow: #f48024;
-    .button.is-stackoverflow.is-outlined {
-        background-color: transparent;
-        border-color: $stackoverflow;
-        color: $stackoverflow;
+  $stackoverflow: #f48024;
+  .button.is-stackoverflow.is-outlined {
+    background-color: transparent;
+    border-color: $stackoverflow;
+    color: $stackoverflow;
 
-        &:hover,
-        &:focus {
-            background-color: $stackoverflow;
-            border-color: $stackoverflow;
-            color: white;
-        }
+    &:hover,
+    &:focus {
+      background-color: $stackoverflow;
+      border-color: $stackoverflow;
+      color: white;
     }
+  }
 
-    $gitter: #ed1965;
-    .button.is-gitter.is-outlined {
-        background-color: transparent;
-        border-color: $gitter;
-        color: $gitter;
+  $gitter: #ed1965;
+  .button.is-gitter.is-outlined {
+    background-color: transparent;
+    border-color: $gitter;
+    color: $gitter;
 
-        &:hover,
-        &:focus {
-            background-color: $gitter;
-            border-color: $gitter;
-            color: white;
-        }
+    &:hover,
+    &:focus {
+      background-color: $gitter;
+      border-color: $gitter;
+      color: white;
     }
+  }
 </style>
