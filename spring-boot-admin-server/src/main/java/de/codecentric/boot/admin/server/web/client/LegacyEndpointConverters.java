@@ -208,11 +208,14 @@ public class LegacyEndpointConverters {
 
     @SuppressWarnings("unchecked")
     private static Map<String, Object> convertLiquibase(List<Map<String, Object>> reports) {
-        return reports.stream()
-                      .sequential()
-                      .collect(toMap(r -> (String) r.get("name"), r -> singletonMap("changeSets",
-                          LegacyEndpointConverters.convertLiquibaseChangesets(
-                              (List<Map<String, Object>>) r.get("changeLogs")))));
+        Map<String, Object> liquibaseBeans = reports.stream()
+                                                    .sequential()
+                                                    .collect(toMap(r -> (String) r.get("name"),
+                                                        r -> singletonMap("changeSets",
+                                                            LegacyEndpointConverters.convertLiquibaseChangesets(
+                                                                (List<Map<String, Object>>) r.get("changeLogs")))));
+
+        return singletonMap("contexts", singletonMap("application", singletonMap("liquibaseBeans", liquibaseBeans)));
     }
 
     private static List<Map<String, Object>> convertLiquibaseChangesets(List<Map<String, Object>> changeSets) {
@@ -243,11 +246,13 @@ public class LegacyEndpointConverters {
 
     @SuppressWarnings("unchecked")
     private static Map<String, Object> convertFlyway(List<Map<String, Object>> reports) {
-        return reports.stream()
-                      .sequential()
-                      .collect(toMap(r -> (String) r.get("name"), r -> singletonMap("migrations",
-                          LegacyEndpointConverters.convertFlywayMigrations(
-                              (List<Map<String, Object>>) r.get("migrations")))));
+        Map<String, Object> flywayBeans = reports.stream()
+                                                 .sequential()
+                                                 .collect(toMap(r -> (String) r.get("name"),
+                                                     r -> singletonMap("migrations",
+                                                         LegacyEndpointConverters.convertFlywayMigrations(
+                                                             (List<Map<String, Object>>) r.get("migrations")))));
+        return singletonMap("contexts", singletonMap("application", singletonMap("flywayBeans", flywayBeans)));
     }
 
     private static List<Map<String, Object>> convertFlywayMigrations(List<Map<String, Object>> migrations) {
