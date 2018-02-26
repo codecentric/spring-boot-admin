@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.client.registration;
 
 import de.codecentric.boot.admin.client.config.InstanceProperties;
+import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
 
 import javax.servlet.ServletContext;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -35,8 +36,9 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
                                      ServerProperties server,
                                      ServletContext servletContext,
                                      PathMappedEndpoints pathMappedEndpoints,
-                                     WebEndpointProperties webEndpoint) {
-        super(instance, management, server, pathMappedEndpoints, webEndpoint);
+                                     WebEndpointProperties webEndpoint,
+                                     MetadataContributor metadataContributor) {
+        super(instance, management, server, pathMappedEndpoints, webEndpoint, metadataContributor);
         this.servletContext = servletContext;
         this.servlet = server.getServlet();
         this.managementServlet = management.getServlet();

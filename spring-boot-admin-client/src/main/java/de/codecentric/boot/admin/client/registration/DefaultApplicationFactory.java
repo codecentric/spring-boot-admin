@@ -17,11 +17,10 @@
 package de.codecentric.boot.admin.client.registration;
 
 import de.codecentric.boot.admin.client.config.InstanceProperties;
+import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -47,7 +46,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
     private final ManagementServerProperties management;
     private final PathMappedEndpoints pathMappedEndpoints;
     private final WebEndpointProperties webEndpoint;
-    private final OffsetDateTime timestamp;
+    private final MetadataContributor metadataContributor;
     private Integer localServerPort;
     private Integer localManagementPort;
 
@@ -56,13 +55,14 @@ public class DefaultApplicationFactory implements ApplicationFactory {
                                      ManagementServerProperties management,
                                      ServerProperties server,
                                      PathMappedEndpoints pathMappedEndpoints,
-                                     WebEndpointProperties webEndpoint) {
+                                     WebEndpointProperties webEndpoint,
+                                     MetadataContributor metadataContributor) {
         this.instance = instance;
         this.management = management;
         this.server = server;
         this.pathMappedEndpoints = pathMappedEndpoints;
         this.webEndpoint = webEndpoint;
-        this.timestamp = OffsetDateTime.now();
+        this.metadataContributor = metadataContributor;
     }
 
     @Override
@@ -162,14 +162,10 @@ public class DefaultApplicationFactory implements ApplicationFactory {
     }
 
     protected Map<String, String> getMetadata() {
-        if (instance.getMetadata().containsKey("startup")) {
-            return instance.getMetadata();
-        } else {
-            Map<String, String> metadata = new LinkedHashMap<>();
-            metadata.put("startup", this.timestamp.format(DateTimeFormatter.ISO_DATE_TIME));
-            metadata.putAll(instance.getMetadata());
-            return metadata;
-        }
+        Map<String, String> metadata = new LinkedHashMap<>();
+        metadata.putAll(metadataContributor.getMetadata());
+        metadata.putAll(instance.getMetadata());
+        return metadata;
     }
 
     protected String getServiceHost() {
