@@ -27,8 +27,8 @@ public class CloudFoundryInstanceIdGeneratorTest {
     @Test
     public void test_cloud_foundry_instance_id() {
         Registration registration = Registration.create("foo", "http://health")
-            .metadata("cf_application_guid", "549e64cf-a478-423d-9d6d-02d803a028a8")
-            .metadata("cf_instance_index", "0")
+            .metadata("applicationId", "549e64cf-a478-423d-9d6d-02d803a028a8")
+            .metadata("instanceId", "0")
             .build();
         assertThat(instance.generateId(registration).toString()).containsOnlyOnce("549e64cf-a478-423d-9d6d-02d803a028a8:0");
     }

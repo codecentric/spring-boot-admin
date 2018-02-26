@@ -21,6 +21,7 @@ import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
 import de.codecentric.boot.admin.client.registration.DefaultApplicationFactory;
 import de.codecentric.boot.admin.client.registration.RegistrationApplicationListener;
 import de.codecentric.boot.admin.client.registration.ServletApplicationFactory;
+import de.codecentric.boot.admin.client.registration.metadata.CloudFoundryMetadataContributor;
 import de.codecentric.boot.admin.client.registration.metadata.CompositeMetadataContributor;
 import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
 import de.codecentric.boot.admin.client.registration.metadata.StartupDateMetadataContributor;
@@ -35,9 +36,11 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMv
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -153,4 +156,12 @@ public class SpringBootAdminClientAutoConfiguration {
     public StartupDateMetadataContributor startupDateMetadataContributor() {
         return new StartupDateMetadataContributor();
     }
+
+    @Bean
+    @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
+    @ConditionalOnMissingBean
+    public CloudFoundryMetadataContributor cloudFoundryMetadataContributor() {
+        return new CloudFoundryMetadataContributor();
+    }
+
 }

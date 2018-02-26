@@ -35,12 +35,12 @@ public class CloudFoundryInstanceIdGenerator implements InstanceIdGenerator {
     public InstanceId generateId(Registration registration) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-1");
-            String cfApplicationGuid = registration.getMetadata().get("cf_application_guid");
-            String cfInstanceIndex = registration.getMetadata().get("cf_instance_index");
+            String applicationId = registration.getMetadata().get("applicationId");
+            String instanceId = registration.getMetadata().get("instanceId");
 
             // CloudFoundry instance set InstanceId as "{cfApplicationGuid}:{cfInstanceIndex}"
-            if (StringUtils.hasText(cfApplicationGuid) && StringUtils.hasText(cfInstanceIndex)) {
-                return InstanceId.of(String.format("%s:%s", cfApplicationGuid, cfInstanceIndex));
+            if (StringUtils.hasText(applicationId) && StringUtils.hasText(instanceId)) {
+                return InstanceId.of(String.format("%s:%s", applicationId, instanceId));
             }
             return hashingInstanceUrlIdGenerator.generateId(registration);
         } catch (NoSuchAlgorithmException e) {

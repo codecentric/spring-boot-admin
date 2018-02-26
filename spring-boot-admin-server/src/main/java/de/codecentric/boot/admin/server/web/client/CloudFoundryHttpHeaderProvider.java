@@ -22,7 +22,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Provides CloudFoundry related X-CF-APP-INSTANCE header for the {@link Instance} using the metadata for
- * "cf_application_guid" and "cf_instance_index".
+ * "applicationId" and "instanceId".
  *
  * @author Tetsushi Awano
  */
@@ -30,14 +30,14 @@ public class CloudFoundryHttpHeaderProvider implements HttpHeadersProvider {
 
     @Override
     public HttpHeaders getHeaders(Instance instance) {
-        String cfApplicationGuid = instance.getRegistration().getMetadata().get("cf_application_guid");
-        String cfInstanceIndex = instance.getRegistration().getMetadata().get("cf_instance_index");
+        String applicationId = instance.getRegistration().getMetadata().get("applicationId");
+        String instanceId = instance.getRegistration().getMetadata().get("instanceId");
 
         HttpHeaders headers = new HttpHeaders();
 
         // CloudFoundry instance set HttpHeader X-CF-APP-INSTANCE as cfApplicationGuid:cfInstanceIndex
-        if (StringUtils.hasText(cfApplicationGuid) && StringUtils.hasText(cfInstanceIndex)) {
-            headers.set("X-CF-APP-INSTANCE", cfApplicationGuid + ":" + cfInstanceIndex);
+        if (StringUtils.hasText(applicationId) && StringUtils.hasText(instanceId)) {
+            headers.set("X-CF-APP-INSTANCE", applicationId + ":" + instanceId);
         }
 
         return headers;
