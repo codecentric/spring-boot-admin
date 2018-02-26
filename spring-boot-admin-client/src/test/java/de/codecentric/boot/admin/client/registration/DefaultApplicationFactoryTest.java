@@ -31,8 +31,10 @@ import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
 
+import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -44,7 +46,7 @@ public class DefaultApplicationFactoryTest {
     private WebEndpointProperties webEndpoint = new WebEndpointProperties();
 
     private DefaultApplicationFactory factory = new DefaultApplicationFactory(instanceProperties, management, server,
-        pathMappedEndpoints, webEndpoint);
+        pathMappedEndpoints, webEndpoint, () -> singletonMap("contributor", "test"));
 
     @Before
     public void setup() {
@@ -65,6 +67,7 @@ public class DefaultApplicationFactoryTest {
 
     @Test
     public void test_default() {
+        instanceProperties.setMetadata(singletonMap("instance", "test"));
         when(pathMappedEndpoints.getPath("health")).thenReturn("/actuator/health");
         publishApplicationReadyEvent(factory, 8080, null);
 
@@ -72,6 +75,8 @@ public class DefaultApplicationFactoryTest {
         assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":8080/actuator");
         assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":8080/actuator/health");
         assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":8080/");
+
+        assertThat(app.getMetadata()).containsExactly(entry("contributor", "test"), entry("instance", "test"));
     }
 
     @Test
