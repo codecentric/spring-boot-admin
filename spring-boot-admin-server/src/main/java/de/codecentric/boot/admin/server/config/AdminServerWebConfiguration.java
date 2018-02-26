@@ -25,7 +25,6 @@ import de.codecentric.boot.admin.server.utils.jackson.RegistrationDeserializer;
 import de.codecentric.boot.admin.server.utils.jackson.SanitizingMapSerializer;
 import de.codecentric.boot.admin.server.web.ApplicationsController;
 import de.codecentric.boot.admin.server.web.InstancesController;
-import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 import de.codecentric.boot.admin.server.web.servlet.InstancesProxyController;
 
@@ -59,14 +58,6 @@ public class AdminServerWebConfiguration {
     public InstancesController instancesController(InstanceRegistry instanceRegistry, InstanceEventStore eventStore) {
         return new InstancesController(instanceRegistry, eventStore);
     }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public InstanceWebClient instanceWebClient(HttpHeadersProvider httpHeadersProvider) {
-        return new InstanceWebClient(httpHeadersProvider, adminServerProperties.getMonitor().getConnectTimeout(),
-            adminServerProperties.getMonitor().getReadTimeout());
-    }
-
 
     @Bean
     @ConditionalOnMissingBean

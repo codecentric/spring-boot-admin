@@ -36,13 +36,19 @@ import de.codecentric.boot.admin.server.services.endpoints.QueryIndexEndpointStr
 import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider;
 import de.codecentric.boot.admin.server.web.client.CompositeHttpHeadersProvider;
 import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
+import de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunction;
+import de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunctions;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import org.reactivestreams.Publisher;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -141,4 +147,17 @@ public class AdminServerAutoConfiguration {
     public SnapshottingInstanceRepository instanceRepository(InstanceEventStore eventStore) {
         return new SnapshottingInstanceRepository(eventStore);
     }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public InstanceWebClient instanceWebClient(HttpHeadersProvider httpHeadersProvider,
+                                               ObjectProvider<List<InstanceExchangeFilterFunction>> filtersProvider) {
+        List<InstanceExchangeFilterFunction> filters = filtersProvider.getIfAvailable(Collections::emptyList);
+        WebClientCustomizer customizer = (webClient) -> filters.forEach(instanceFilter -> webClient.filter(
+            InstanceExchangeFilterFunctions.toExchangeFilterFunction(instanceFilter)));
+
+        return new InstanceWebClient(httpHeadersProvider, adminServerProperties.getMonitor().getConnectTimeout(),
+            adminServerProperties.getMonitor().getReadTimeout(), customizer);
+    }
+
 }

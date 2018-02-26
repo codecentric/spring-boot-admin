@@ -101,7 +101,7 @@
     }),
     computed: {
       hasCaches() {
-        return this.metrics.indexOf('cache.requests') >= 0;
+        return this.metrics.indexOf('cache.gets') >= 0;
       },
       hasDatasources() {
         return this.metrics.indexOf('data.source.active.connections') >= 0;

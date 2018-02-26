@@ -43,7 +43,7 @@
     methods: {
       async fetchcaches() {
         if (this.instance) {
-          const response = await this.instance.fetchMetric('cache.requests');
+          const response = await this.instance.fetchMetric('cache.gets');
           return _.uniq(response.data.availableTags.filter(tag => tag.tag === 'name')[0].values);
         }
       },

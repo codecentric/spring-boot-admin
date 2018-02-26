@@ -26,12 +26,68 @@
           <p v-text="error.message"/>
         </div>
       </div>
-      <template v-for="(report, name) in reports">
-        <h4 class="title" v-text="name" :key="name"/>
-        <sba-panel v-for="changeSet in report.changeSets" :key="`${name}-${changeSet.id}`"
-                   :title="`${changeSet.id}: ${changeSet.description}`" class="change-set">
-          <change-set :change-set="changeSet"/>
-        </sba-panel>
+      <template v-for="(context, ctxName) in contexts">
+        <h3 class="title" v-text="ctxName" :key="ctxName"/>
+        <template v-for="(report, name) in context.liquibaseBeans">
+          <sba-panel :key="`${ctxName}-${name}`" :title="`name`" class="change-set">
+            <table class="table is-hoverable is-fullwidth">
+              <thead>
+                <tr>
+                  <th>Id</th>
+                  <th>Execution</th>
+                  <th>Description</th>
+                  <th>Tag</th>
+                  <th>Contexts</th>
+                  <th>Labels</th>
+                </tr>
+              </thead>
+              <tbody>
+                <template v-for="changeSet in report.changeSets">
+                  <tr :key="`${ctxName}-${name}-${changeSet.id}`" class="is-selectable"
+                      @click="showDetails[changeSet.checksum] ? $delete(showDetails, changeSet.checksum) : $set(showDetails, changeSet.checksum, true)">
+                    <td v-text="changeSet.id"/>
+                    <td>
+                      <span v-text="changeSet.execType" class="tag" :class="execClass(execType)"/>
+                    </td>
+                    <td v-text="changeSet.description"/>
+                    <td v-text="changeSet.tag"/>
+                    <td v-text="changeSet.contexts.join(', ')"/>
+                    <td>
+                      <span v-for="label in changeSet.labels" :key="`${ctxName}-${name}-${changeSet.id}-${label}`"
+                            class="tag is-info" v-text="label"/>
+                    </td>
+                  </tr>
+                  <tr v-if="showDetails[changeSet.checksum]" :key="`${ctxName}-${name}-${changeSet.id}-details`">
+                    <td colspan="6">
+                      <table class="table is-fullwidth">
+                        <tr>
+                          <th>Changelog</th>
+                          <td colspan="3" v-text="changeSet.changeLog"/>
+                          <th>Author</th>
+                          <td v-text="changeSet.author"/>
+                        </tr>
+                        <tr>
+                          <th>Checksum</th>
+                          <td v-text="changeSet.checksum"/>
+                          <th>Comments</th>
+                          <td colspan="3" v-text="changeSet.comments"/>
+                        </tr>
+                        <tr>
+                          <th>Execution Order</th>
+                          <td v-text="changeSet.orderExecuted"/>
+                          <th>ExecutionDate</th>
+                          <td v-text="changeSet.dateExecuted"/>
+                          <th>DeploymentId</th>
+                          <td v-text="changeSet.deploymentId"/>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </sba-panel>
+        </template>
       </template>
     </div>
   </section>
@@ -39,7 +95,6 @@
 
 <script>
   import Instance from '@/services/instance';
-  import changeSet from './change-set';
 
   export default {
     props: {
@@ -48,13 +103,11 @@
         required: true
       }
     },
-    components: {
-      changeSet
-    },
     data: () => ({
       hasLoaded: false,
       error: null,
-      reports: []
+      contexts: null,
+      showDetails: {}
     }),
     computed: {},
     created() {
@@ -66,12 +119,27 @@
           this.error = null;
           try {
             const res = await this.instance.fetchLiquibase();
-            this.reports = res.data;
+            this.contexts = res.data.contexts;
           } catch (error) {
-            console.warn('Fetching Liquibase migrations failed:', error);
+            console.warn('Fetching Liquibase changeSets failed:', error);
             this.error = error;
           }
           this.hasLoaded = true;
+        }
+      },
+      execClass(execType) {
+        switch (execType) {
+          case 'EXECUTED':
+            return 'is-success';
+          case 'FAILED':
+            return 'is-danger';
+          case 'SKIPPED':
+            return 'is-light';
+          case 'RERAN':
+          case 'MARK_RAN':
+            return 'is-warning';
+          default:
+            return 'is-info';
         }
       }
     }

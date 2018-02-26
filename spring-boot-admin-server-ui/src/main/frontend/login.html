@@ -26,21 +26,24 @@
     <link href="assets/css/sba-core.css" rel="stylesheet">
     <title>Spring Boot Admin - Login</title>
 </head>
-<body>
+<body class="login">
 
 <section class="hero is-fullheight">
     <div class="hero-body">
         <div class="container has-text-centered">
             <div class="column is-4 is-offset-4">
                 <div class="box">
-                    <h1 class="title">Spring Boot Admin</h1>
+                    <figure class="image is-128x128 login--logo">
+                        <img src="assets/img/icon-spring-boot-admin.svg">
+                    </figure>
+                    <h1 class="title has-text-primary">Spring Boot Admin</h1>
                     <form method="post">
                         <div class="field">
                             <p class="is-medium has-text-danger" th:unless="${param.error == null}">
-                                Invalid username or password!
+                                Invalid username or password
                             </p>
-                            <p class="is-medium has-text-success" th:unless="${param.logout == null}">
-                                Logout successful!
+                            <p class="is-medium" th:unless="${param.logout == null}">
+                                Logout successful
                             </p>
                         </div>
                         <div class="field">

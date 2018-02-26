@@ -59,7 +59,7 @@ const config = {
     rules: [
       {
         test: /\.(js|vue)$/,
-        loader: 'eslint-loader',
+        use: 'eslint-loader',
         enforce: 'pre'
       },
       {
@@ -117,23 +117,40 @@ const config = {
           loader: 'html-loader',
           options: {
             root: resolve(__dirname, 'src/main/frontend'),
-            attrs: ['img:src']
+            attrs: []
           }
         }]
       },
       {
         test: /\.svg$/,
-        loader: 'vue-svg-loader',
+        oneOf: [
+          {
+            issuer: /\.vue$/,
+            loader: 'vue-svg-loader',
+            options: {
+              svgo: {
+                plugins: [
+                  {inlineStyles: false}
+                ]
+              }
+            },
+          },
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 1000,
+              name: 'assets/img/[name].[ext]'
+            }
+          }
+        ]
       },
       {
-        test: /\.(png|jpg|jpeg|gif|eot|ttf|woff|woff2|svgz)(\?.+)?$/,
-        use: [{
-          loader: 'url-loader',
-          options: {
-            limit: 1000,
-            name: 'assets/img/[name].[ext]'
-          }
-        }]
+        test: /\.(png|jpg|jpeg|gif|eot|ttf|woff|woff2)(\?.+)?$/,
+        loader: 'url-loader',
+        options: {
+          limit: 1000,
+          name: 'assets/img/[name].[ext]'
+        }
       }
     ]
   },

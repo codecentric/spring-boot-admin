@@ -26,39 +26,43 @@
           <p v-text="error.message"/>
         </div>
       </div>
-      <sba-panel v-for="(report, name) in reports" :key="name" :title="name" class="migration">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Type</th>
-              <th>Checksum</th>
-              <th>Version</th>
-              <th>Description</th>
-              <th>Script</th>
-              <th>State</th>
-              <th>Installed by</th>
-              <th>Installed on</th>
-              <th>Installed rank</th>
-              <th>Execution Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="migration in report.migrations" :key="migration.checksum">
-              <td v-text="migration.type"/>
-              <td v-text="migration.checksum"/>
-              <td v-text="migration.version"/>
-              <td v-text="migration.description"/>
-              <td v-text="migration.script"/>
-              <td><span v-text="migration.state" class="tag"
-                        :class="stateClass(migration.state)"/></td>
-              <td v-text="migration.installedBy"/>
-              <td v-text="migration.installedOn"/>
-              <td v-text="migration.installedRank"/>
-              <td v-text="`${migration.executionTime}ms`"/>
-            </tr>
-          </tbody>
-        </table>
-      </sba-panel>
+      <template v-for="(context, ctxName) in contexts">
+        <h3 class="title" v-text="ctxName" :key="ctxName"/>
+        <sba-panel v-for="(report, name) in context.flywayBeans" :key="`${ctxName}-${name}`" :title="name"
+                   class="migration">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Checksum</th>
+                <th>Version</th>
+                <th>Description</th>
+                <th>Script</th>
+                <th>State</th>
+                <th>Installed by</th>
+                <th>Installed on</th>
+                <th>Installed rank</th>
+                <th>Execution Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="migration in report.migrations" :key="migration.checksum">
+                <td v-text="migration.type"/>
+                <td v-text="migration.checksum"/>
+                <td v-text="migration.version"/>
+                <td v-text="migration.description"/>
+                <td v-text="migration.script"/>
+                <td><span v-text="migration.state" class="tag"
+                          :class="stateClass(migration.state)"/></td>
+                <td v-text="migration.installedBy"/>
+                <td v-text="migration.installedOn"/>
+                <td v-text="migration.installedRank"/>
+                <td v-text="`${migration.executionTime}ms`"/>
+              </tr>
+            </tbody>
+          </table>
+        </sba-panel>
+      </template>
     </div>
   </section>
 </template>
@@ -76,7 +80,7 @@
     data: () => ({
       hasLoaded: false,
       error: null,
-      reports: []
+      contexts: null
     }),
     computed: {},
     created() {
@@ -88,7 +92,7 @@
           this.error = null;
           try {
             const res = await this.instance.fetchFlyway();
-            this.reports = res.data;
+            this.contexts = res.data.contexts;
           } catch (error) {
             console.warn('Fetching flyway reports failed:', error);
             this.error = error;

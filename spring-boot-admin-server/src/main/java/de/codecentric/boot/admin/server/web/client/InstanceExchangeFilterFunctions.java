@@ -48,13 +48,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import static java.util.Collections.singletonList;
 
-public final class InstanceFilterFunctions {
-    private static final String ATTRIBUTE_INSTANCE = "instance";
-    private static final String ATTRIBUTE_ENDPOINT = "endpointId";
+public final class InstanceExchangeFilterFunctions {
+    public static final String ATTRIBUTE_INSTANCE = "instance";
+    public static final String ATTRIBUTE_ENDPOINT = "endpointId";
     private static final MediaType ACTUATOR_V1_MEDIATYPE = MediaType.parseMediaType(ActuatorMediaType.V1_JSON);
     private static final MediaType ACTUATOR_V2_MEDIATYPE = MediaType.parseMediaType(ActuatorMediaType.V2_JSON);
 
-    private InstanceFilterFunctions() {
+    private InstanceExchangeFilterFunctions() {
     }
 
     public static ExchangeFilterFunction setInstance(Instance instance) {
@@ -71,7 +71,7 @@ public final class InstanceFilterFunctions {
     }
 
     public static ExchangeFilterFunction addHeaders(HttpHeadersProvider httpHeadersProvider) {
-        return withInstance((instance, request, next) -> {
+        return toExchangeFilterFunction((instance, request, next) -> {
             ClientRequest newRequest = ClientRequest.from(request)
                                                     .headers(headers -> headers.addAll(
                                                         httpHeadersProvider.getHeaders(instance)))
@@ -80,7 +80,7 @@ public final class InstanceFilterFunctions {
         });
     }
 
-    public static ExchangeFilterFunction withInstance(InstanceExchangeFilterFunction delegate) {
+    public static ExchangeFilterFunction toExchangeFilterFunction(InstanceExchangeFilterFunction delegate) {
         return (request, next) -> {
             Optional<?> instance = request.attribute(ATTRIBUTE_INSTANCE);
             if (instance.isPresent() && instance.get() instanceof Instance) {
@@ -90,13 +90,8 @@ public final class InstanceFilterFunctions {
         };
     }
 
-    @FunctionalInterface
-    public interface InstanceExchangeFilterFunction {
-        Mono<ClientResponse> exchange(Instance instance, ClientRequest request, ExchangeFunction next);
-    }
-
     public static ExchangeFilterFunction rewriteEndpointUrl() {
-        return withInstance((instance, request, next) -> {
+        return toExchangeFilterFunction((instance, request, next) -> {
             if (request.url().isAbsolute()) {
                 return next.exchange(request);
             }

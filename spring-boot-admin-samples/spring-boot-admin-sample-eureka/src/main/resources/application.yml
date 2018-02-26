@@ -3,7 +3,7 @@ spring:
     name: eureka-example
 
 # tag::configuration-eureka[]
-eureka:   #1
+eureka:   #<1>
   instance:
     leaseRenewalIntervalInSeconds: 10
   client:
@@ -15,7 +15,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"  #2
+        include: "*"  #<2>
 # end::configuration-eureka[]
   endpoint:
     health:

@@ -35,11 +35,11 @@ spring:
                   management.context-path: /actuator
 ----
 
-==== Other DiscoveryClient implementations (Eureka, Zookeeper, Consul, ...) ====
-Spring Boot Admin supports all other implementation of Spring Cloud's `DiscoveryClient`. You need to add it to the Spring Boot Admin Server and configure it properly.
+==== Other DiscoveryClients ====
+Spring Boot Admin supports all other implementations of Spring Cloud's `DiscoveryClient` (Eureka, Zookeeper, Consul, ...). You need to add it to the Spring Boot Admin Server and configure it properly.
 An <<discover-clients-via-spring-cloud-discovery,example setup using Eureka>> is shown above.
 
-==== Converting ServiceInstances into monitored applications ====
+==== Converting ServiceInstances ====
 
 The information from the service registry are converted by the `ServiceInstanceConverter`. Spring Boot Admin ships with a default and Eureka converter implementation. The correct one is selected by AutoConfiguration.
 
