@@ -80,7 +80,7 @@
       statusGroups() {
         const byStatus = _.groupBy(this.applications, application => application.status);
         const list = _.transform(byStatus, (result, value, key) => {
-          result.push({status: key, applications: value})
+          result.push({status: key, applications: _.sortBy(value, [application => application.name])})
         }, []);
         return _.sortBy(list, [item => item.status]);
       },

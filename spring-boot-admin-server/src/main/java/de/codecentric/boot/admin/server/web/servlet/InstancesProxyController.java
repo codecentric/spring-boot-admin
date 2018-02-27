@@ -93,7 +93,7 @@ public class InstancesProxyController extends AbstractInstancesProxyController {
 
         try {
             return DataBufferUtils.write(clientResponse.body(BodyExtractors.toDataBuffers()), response.getBody())
-                                  .doOnNext(DataBufferUtils::release)
+                                  .map(DataBufferUtils::release)
                                   .then();
         } catch (IOException ex) {
             return Mono.error(new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, null, ex));
