@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.services;
 
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
+import org.springframework.util.StringUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -34,7 +35,19 @@ public class HashingInstanceUrlIdGenerator implements InstanceIdGenerator {
     public InstanceId generateId(Registration registration) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-1");
-            byte[] bytes = digest.digest(registration.getHealthUrl().getBytes(StandardCharsets.UTF_8));
+            String digestString = null;
+            String cfApplicationGuid = registration.getMetadata().get("cf_application_guid");
+            String cfInstanceIndex = registration.getMetadata().get("cf_instance_index");
+
+            // CloudFoundry instance set digestString as cfApplicationGuid:cfInstanceIndex
+            // https://github.com/codecentric/spring-boot-admin/issues/434
+            if (StringUtils.hasText(cfApplicationGuid) && StringUtils.hasText(cfInstanceIndex)) {
+                digestString = cfApplicationGuid + ":" + cfInstanceIndex;
+            } else {
+                digestString = registration.getHealthUrl();
+            }
+
+            byte[] bytes = digest.digest(digestString.getBytes(StandardCharsets.UTF_8));
             return InstanceId.of(new String(encodeHex(bytes, 0, 12)));
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException(e);
