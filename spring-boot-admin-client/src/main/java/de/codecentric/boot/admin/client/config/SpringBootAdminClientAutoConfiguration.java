@@ -21,7 +21,6 @@ import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
 import de.codecentric.boot.admin.client.registration.DefaultApplicationFactory;
 import de.codecentric.boot.admin.client.registration.RegistrationApplicationListener;
 import de.codecentric.boot.admin.client.registration.ServletApplicationFactory;
-import de.codecentric.boot.admin.client.registration.metadata.CloudFoundryMetadataContributor;
 import de.codecentric.boot.admin.client.registration.metadata.CompositeMetadataContributor;
 import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
 import de.codecentric.boot.admin.client.registration.metadata.StartupDateMetadataContributor;
@@ -36,12 +35,9 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMv
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.cloud.CloudPlatform;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -55,7 +51,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 
 @Configuration
-@EnableConfigurationProperties({ClientProperties.class, InstanceProperties.class})
 @ConditionalOnWebApplication
 @Conditional(SpringBootAdminClientEnabledCondition.class)
 @AutoConfigureAfter(WebMvcEndpointManagementContextConfiguration.class)
@@ -158,10 +153,14 @@ public class SpringBootAdminClientAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
     @ConditionalOnMissingBean
-    public CloudFoundryMetadataContributor cloudFoundryMetadataContributor() {
-        return new CloudFoundryMetadataContributor();
+    public InstanceProperties instanceProperies() {
+        return new InstanceProperties();
     }
 
+    @Bean
+    @ConditionalOnMissingBean
+    public ClientProperties clientProperties() {
+        return new ClientProperties();
+    }
 }

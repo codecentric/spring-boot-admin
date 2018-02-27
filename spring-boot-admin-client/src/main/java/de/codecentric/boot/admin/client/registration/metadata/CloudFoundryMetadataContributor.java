@@ -42,12 +42,6 @@ public class CloudFoundryMetadataContributor implements MetadataContributor {
         if (StringUtils.hasText(applicationId) && StringUtils.hasText(instanceId) && StringUtils.hasText(serviceBaseUrl)) {
             map.put("applicationId", applicationId);
             map.put("instanceId", instanceId);
-
-            // Connecting to CloudFoundry instance requires to set the CloudFoundry routes as access URL.
-            map.put("service-base-url", serviceBaseUrl);
-
-            // CloudFoundry is Ephemeral Environment thus it should unregister itself when shutdown.
-            map.put("auto-deregistration", "true");
         }
         return map;
     }
