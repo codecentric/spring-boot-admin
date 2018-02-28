@@ -17,7 +17,6 @@
 package de.codecentric.boot.admin.client.config;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -26,14 +25,15 @@ import org.springframework.core.env.MapPropertySource;
 import java.util.HashMap;
 import java.util.Map;
 
-@ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
 public class CloudFoundryEnvironmentPostProcessor implements EnvironmentPostProcessor {
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("spring.boot.admin.client.auto-deregistration", true);
-        MapPropertySource propertySource = new MapPropertySource(
-            "cloudConfigPropertySource", map);
-        environment.getPropertySources().addFirst(propertySource);
+        if (CloudPlatform.CLOUD_FOUNDRY.isActive(environment)) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("spring.boot.admin.client.auto-deregistration", true);
+            MapPropertySource propertySource = new MapPropertySource(
+                "cloudConfigPropertySource", map);
+            environment.getPropertySources().addFirst(propertySource);
+        }
     }
 }
