@@ -30,7 +30,7 @@ public class CloudFoundryEnvironmentPostProcessor implements EnvironmentPostProc
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
         if (CloudPlatform.CLOUD_FOUNDRY.isActive(environment)) {
             Map<String, Object> map = new HashMap<>();
-            map.put("spring.boot.admin.client.auto-deregistration", true);
+            map.put("spring.boot.admin.client.auto-deregistration", "true");
             MapPropertySource propertySource = new MapPropertySource(
                 "cloudConfigPropertySource", map);
             environment.getPropertySources().addFirst(propertySource);
