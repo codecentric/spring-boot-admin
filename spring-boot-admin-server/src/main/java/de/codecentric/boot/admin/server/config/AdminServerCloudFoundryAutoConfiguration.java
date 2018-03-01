@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.config;
 
 import de.codecentric.boot.admin.server.services.CloudFoundryInstanceIdGenerator;
+import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
 import de.codecentric.boot.admin.server.services.InstanceIdGenerator;
 import de.codecentric.boot.admin.server.web.client.CloudFoundryHttpHeaderProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -33,8 +34,14 @@ public class AdminServerCloudFoundryAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public InstanceIdGenerator instanceIdGenerator() {
-        return new CloudFoundryInstanceIdGenerator();
+    public InstanceIdGenerator instanceIdGenerator(HashingInstanceUrlIdGenerator hashingInstanceUrlIdGenerator) {
+        return new CloudFoundryInstanceIdGenerator(hashingInstanceUrlIdGenerator);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public HashingInstanceUrlIdGenerator hashingInstanceUrlIdGenerator() {
+        return new HashingInstanceUrlIdGenerator();
     }
 
     @Bean

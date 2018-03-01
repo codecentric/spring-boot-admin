@@ -24,12 +24,15 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * Generates InstanceId "cfApplicationGuid:cfInstanceIndex" for CloudFoundry instance
+ * Generates CF instance uniqueId "applicationId:instanceId" for CloudFoundry instance
  * Generates an SHA-1 Hash based on the instance health url for non-CloudFoundry instance
  */
 public class CloudFoundryInstanceIdGenerator implements InstanceIdGenerator {
+    private final HashingInstanceUrlIdGenerator hashingInstanceUrlIdGenerator;
 
-    private HashingInstanceUrlIdGenerator hashingInstanceUrlIdGenerator = new HashingInstanceUrlIdGenerator();
+    public CloudFoundryInstanceIdGenerator(HashingInstanceUrlIdGenerator hashingInstanceUrlIdGenerator) {
+        this.hashingInstanceUrlIdGenerator = hashingInstanceUrlIdGenerator;
+    }
 
     @Override
     public InstanceId generateId(Registration registration) {
@@ -38,7 +41,6 @@ public class CloudFoundryInstanceIdGenerator implements InstanceIdGenerator {
             String applicationId = registration.getMetadata().get("applicationId");
             String instanceId = registration.getMetadata().get("instanceId");
 
-            // CloudFoundry instance set InstanceId as "{cfApplicationGuid}:{cfInstanceIndex}"
             if (StringUtils.hasText(applicationId) && StringUtils.hasText(instanceId)) {
                 return InstanceId.of(String.format("%s:%s", applicationId, instanceId));
             }

@@ -22,7 +22,8 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CloudFoundryInstanceIdGeneratorTest {
-    private CloudFoundryInstanceIdGenerator instance = new CloudFoundryInstanceIdGenerator();
+    private HashingInstanceUrlIdGenerator hashingInstanceUrlIdGenerator = new HashingInstanceUrlIdGenerator();
+    private CloudFoundryInstanceIdGenerator instance = new CloudFoundryInstanceIdGenerator(hashingInstanceUrlIdGenerator);
 
     @Test
     public void test_cloud_foundry_instance_id() {
