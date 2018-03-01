@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.client.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.StringUtils;
 
 @lombok.Data
 @ConfigurationProperties(prefix = "spring.boot.admin.client.instance")
@@ -25,6 +26,13 @@ public class CloudFoundryInstanceProperties extends InstanceProperties {
     /**
      * Base url for computing the service-url to register with. The path is inferred at runtime, and appended to the base url.
      */
-    @Value("http://${vcap.application.uris[0]}")
     private String serviceBaseUrl;
+
+    @Override
+    @Value("${vcap.application.uris[0]:}")
+    public void setServiceBaseUrl(String serviceBaseUrl) {
+        if (!StringUtils.isEmpty(serviceBaseUrl)) {
+            this.serviceBaseUrl = "http://" + serviceBaseUrl;
+        }
+    }
 }
