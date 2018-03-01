@@ -34,8 +34,7 @@ public class CloudFoundryHttpHeaderProvider implements HttpHeadersProvider {
         String instanceId = instance.getRegistration().getMetadata().get("instanceId");
 
         HttpHeaders headers = new HttpHeaders();
-
-        // CloudFoundry instance set HttpHeader X-CF-APP-INSTANCE as cfApplicationGuid:cfInstanceIndex
+        
         if (StringUtils.hasText(applicationId) && StringUtils.hasText(instanceId)) {
             headers.set("X-CF-APP-INSTANCE", applicationId + ":" + instanceId);
         }
