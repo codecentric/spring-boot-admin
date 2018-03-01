@@ -32,7 +32,7 @@ public class CloudFoundryEnvironmentPostProcessor implements EnvironmentPostProc
             Map<String, Object> map = new HashMap<>();
             map.put("spring.boot.admin.client.auto-deregistration", "true");
             MapPropertySource propertySource = new MapPropertySource(
-                "cloudConfigPropertySource", map);
+                "springBootAdminClientCloudFoundryProperties", map);
             environment.getPropertySources().addFirst(propertySource);
         }
     }
