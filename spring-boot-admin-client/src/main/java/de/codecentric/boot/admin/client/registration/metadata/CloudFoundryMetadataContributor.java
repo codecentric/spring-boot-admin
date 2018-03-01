@@ -30,18 +30,12 @@ public class CloudFoundryMetadataContributor implements MetadataContributor {
     @Value("${vcap.application.instance_index}")
     private String instanceId;
 
-    @Value("${vcap.application.uris[0]}")
-    private String serviceBaseUrl;
-
     @Override
     public Map<String, String> getMetadata() {
         Map<String, String> map = new HashMap<>();
-        String applicationId = this.applicationId;
-        String instanceId = this.instanceId;
-        String serviceBaseUrl = this.serviceBaseUrl;
-        if (StringUtils.hasText(applicationId) && StringUtils.hasText(instanceId) && StringUtils.hasText(serviceBaseUrl)) {
-            map.put("applicationId", applicationId);
-            map.put("instanceId", instanceId);
+        if (StringUtils.hasText(this.applicationId) && StringUtils.hasText(this.instanceId)) {
+            map.put("applicationId", this.applicationId);
+            map.put("instanceId", this.instanceId);
         }
         return map;
     }
