@@ -19,7 +19,6 @@ package de.codecentric.boot.admin;
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -33,15 +32,6 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 @EnableAutoConfiguration
 @EnableAdminServer
 public class SpringBootAdminApplication extends SpringBootServletInitializer {
-
-    @Configuration
-    public static class SecurityConfig extends WebSecurityConfigurerAdapter {
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http.authorizeRequests().anyRequest().permitAll()//
-                .and().csrf().disable();
-        }
-    }
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
@@ -84,10 +74,6 @@ public class SpringBootAdminApplication extends SpringBootServletInitializer {
             .csrf().disable();
             // @formatter:on
         }
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(SpringBootAdminApplication.class, args);
     }
 
 }
