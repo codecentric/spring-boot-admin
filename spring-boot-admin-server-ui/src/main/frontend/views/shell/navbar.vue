@@ -33,7 +33,7 @@
         <div class="navbar-start"/>
         <div class="navbar-end">
           <router-link class="navbar-item" v-for="view in views" :to="{name: view.name}" :key="view.name">
-            <component :is="view.handle"/>
+            <component :is="view.handle" :applications="applications" :error="error"/>
           </router-link>
 
           <div class="navbar-item">
@@ -61,6 +61,14 @@
       views: {
         type: Array,
         default: () => []
+      },
+      applications: {
+        type: Array,
+        default: () => [],
+      },
+      error: {
+        type: Object,
+        default: null
       }
     },
     mounted() {

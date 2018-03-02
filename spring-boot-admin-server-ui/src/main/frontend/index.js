@@ -59,7 +59,12 @@ new Vue({
   router,
   el: '#app',
   render(h) {
-    return h(sbaShell);
+    return h(sbaShell, {
+      props: {
+        applications: this.applications,
+        error: this.error
+      }
+    });
   },
   data: {
     views: createViews(router),

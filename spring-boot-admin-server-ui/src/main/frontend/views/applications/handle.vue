@@ -30,12 +30,19 @@
   import logoOk from '@/assets/img/favicon.png';
 
   export default {
-    computed: {
-      error() {
-        return this.$root.error;
+    props: {
+      applications: {
+        type: Array,
+        default: () => [],
       },
+      error: {
+        type: Object,
+        default: null
+      }
+    },
+    computed: {
       downCount() {
-        return this.$root.applications.reduce((current, next) => {
+        return this.applications.reduce((current, next) => {
           return current + (next.instances.filter(instance => instance.statusInfo.status !== 'UP').length);
         }, 0);
       }

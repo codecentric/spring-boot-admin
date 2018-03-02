@@ -21,7 +21,9 @@
         <div class="columns">
           <div class="column is-narrow">
             <h1 class="title" v-if="instance" v-text="instance.registration.name"/>
-            <h2 class="subtitle" v-if="instance" v-text="instance.id"/>
+            <h2 class="subtitle" v-if="instance">
+              Instance <strong v-text="instance.id"/> (of <span v-text="application.instances.length"/>)
+            </h2>
           </div>
           <div class="column">
             <sba-status v-if="instance" :status="instance.statusInfo.status"
@@ -44,12 +46,17 @@
 </template>
 
 <script>
+  import Application from '@/services/application';
   import Instance from '@/services/instance';
 
   export default {
     props: {
       instance: {
         type: Instance,
+        default: null
+      },
+      application: {
+        type: Application,
         default: null
       }
     }

@@ -16,8 +16,8 @@
 
 <template>
   <div id="app">
-    <sba-navbar :views="mainViews"/>
-    <router-view/>
+    <sba-navbar :views="mainViews" :applications="applications" :error="error"/>
+    <router-view :applications="applications" :error="error"/>
   </div>
 </template>
 
@@ -25,6 +25,16 @@
   import sbaNavbar from './navbar';
 
   export default {
+    props: {
+      applications: {
+        type: Array,
+        default: () => [],
+      },
+      error: {
+        type: Object,
+        default: null
+      }
+    },
     components: {sbaNavbar},
     computed: {
       mainViews() {

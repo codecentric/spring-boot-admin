@@ -67,16 +67,20 @@
   import handle from './handle';
 
   const component = {
+    props: {
+      applications: {
+        type: Array,
+        default: () => [],
+      },
+      error: {
+        type: Object,
+        default: null
+      }
+    },
     components: {
       applicationsList,
     },
     computed: {
-      applications() {
-        return this.$root.applications;
-      },
-      error() {
-        return this.$root.error;
-      },
       statusGroups() {
         const byStatus = _.groupBy(this.applications, application => application.status);
         const list = _.transform(byStatus, (result, value, key) => {

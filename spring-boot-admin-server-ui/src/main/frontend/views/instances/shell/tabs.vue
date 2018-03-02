@@ -23,7 +23,8 @@
             <div class="instance-tabs__name"
                  :class="{ 'is-active' : isStuck }">
               <h1 class="title is-5" v-if="instance" v-text="instance.registration.name"/>
-              <h1 class="subtitle is-6" v-if="instance" v-text="instance.id"/>
+              <h1 class="subtitle is-6" v-if="instance"><strong v-text="instance.id"/> (of <span
+                v-text="application.instances.length"/>)</h1>
             </div>
           </div>
           <div class="level-right">
@@ -50,17 +51,22 @@
 </template>
 
 <script>
+  import Application from '@/services/application';
   import Instance from '@/services/instance';
 
   export default {
     props: {
+      views: {
+        type: Array,
+        default: () => []
+      },
       instance: {
         type: Instance,
         default: null
       },
-      views: {
-        type: Array,
-        default: () => []
+      application: {
+        type: Application,
+        default: null
       }
     },
     data: () => ({

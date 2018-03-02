@@ -26,6 +26,10 @@ class Application {
     this.name = name;
   }
 
+  findInstance(instanceId) {
+    return this.instances.find(instance => instance.id === instanceId);
+  }
+
   get isUnregisterable() {
     return this.instances.findIndex(i => i.isUnregisterable) >= 0;
   }

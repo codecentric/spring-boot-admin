@@ -19,15 +19,27 @@ import {Observable} from '@/utils/rxjs';
 export default class {
   constructor() {
     this.applications = [];
+    this.applications.findInstance = (instanceId) => {
+      for (let application of this.applications) {
+        const instance = application.findInstance(instanceId);
+        if (instance) {
+          return instance;
+        }
+      }
+      return undefined;
+    };
+    this.applications.findApplicationForInstance = (instanceId) => {
+      return this.applications.find(application => !!application.findInstance(instanceId));
+    };
+    this.applications.indexOfApplication = (name) => {
+      return this.applications.findIndex(application => application.name === name);
+    };
+
     this._listeners = {
       added: [],
       updated: [],
       removed: []
     };
-  }
-
-  indexOf(name) {
-    return this.applications.findIndex(application => application.name === name);
   }
 
   addEventListener(type, listener) {
@@ -68,7 +80,7 @@ export default class {
         .delay(5000)
       ).subscribe({
         next: application => {
-          const idx = this.indexOf(application.name);
+          const idx = this.applications.indexOfApplication(application.name);
           if (idx >= 0) {
             const oldApplication = this.applications[idx];
             if (application.instances.length > 0) {

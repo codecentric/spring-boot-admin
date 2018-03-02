@@ -16,14 +16,13 @@
 
 <template>
   <div>
-    <sba-instance-header :instance="instance"/>
-    <sba-instance-tabs :views="instanceViews" :instance="instance"/>
+    <sba-instance-header :instance="instance" :application="application"/>
+    <sba-instance-tabs :views="instanceViews" :instance="instance" :application="application"/>
     <router-view v-if="instance" :instance="instance"/>
   </div>
 </template>
 
 <script>
-  import instance from '@/services/instance'
   import sbaInstanceHeader from './header';
   import sbaInstanceTabs from './tabs';
 
@@ -33,19 +32,26 @@
       instanceId: {
         type: String,
         required: true
+      },
+      applications: {
+        type: Array,
+        default: () => [],
+      },
+      error: {
+        type: Object,
+        default: null
       }
     },
-    data: () => ({
-      instance: null
-    }),
     computed: {
+      instance() {
+        return this.applications.findInstance(this.instanceId);
+      },
+      application() {
+        return this.applications.findApplicationForInstance(this.instanceId);
+      },
       instanceViews() {
         return this.$root.views.filter(view => view.name.lastIndexOf('instance/') === 0);
       }
-    },
-    async created() {
-      const res = await instance.get(this.instanceId);
-      this.instance = res.data;
     }
   }
 </script>
