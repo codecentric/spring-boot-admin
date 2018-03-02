@@ -10,7 +10,35 @@ spring:
         metadata:
           management.context-path: /foo
           health.path: /ping
+          user.name: user
+          user.password: password
+  profiles:
+    active:
+      - secure
 
-management.context-path: /foo
-endpoints.health.path: /ping
+management:
+  server:
+    servlet:
+      context-path: /foo
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      path-mapping:
+        health: /ping
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+---
+spring:
+  profiles: insecure
+
+---
+spring:
+  profiles: secure
+  security:
+    user:
+      name: "user"
+      password: "password"
 
