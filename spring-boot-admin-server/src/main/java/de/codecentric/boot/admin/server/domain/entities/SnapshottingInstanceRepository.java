@@ -64,7 +64,11 @@ public class SnapshottingInstanceRepository extends EventsourcingInstanceReposit
     }
 
     public void start() {
-        this.subscription = Flux.from(getEventStore()).doOnNext(this::updateSnapshot).retryWhen(retryOnAny).subscribe();
+        this.subscription = getEventStore().findAll()
+                                           .concatWith(getEventStore())
+                                           .doOnNext(this::updateSnapshot)
+                                           .retryWhen(retryOnAny)
+                                           .subscribe();
     }
 
     public void stop() {

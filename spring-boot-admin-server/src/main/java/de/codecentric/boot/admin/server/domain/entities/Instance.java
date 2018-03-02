@@ -168,7 +168,8 @@ public class Instance implements Serializable {
     private Instance apply(InstanceEvent event, boolean isNewEvent) {
         Assert.notNull(event, "'event' must not be null");
         Assert.isTrue(this.id.equals(event.getInstance()), "'event' must refer the same instance");
-        Assert.isTrue(this.nextVersion() == event.getVersion(), "expected event version doesn't match");
+        Assert.isTrue(this.nextVersion() == event.getVersion(),
+            () -> "Event " + event.getVersion() + " doesn't match exptected version " + this.nextVersion());
 
         List<InstanceEvent> unsavedEvents = appendToEvents(event, isNewEvent);
 

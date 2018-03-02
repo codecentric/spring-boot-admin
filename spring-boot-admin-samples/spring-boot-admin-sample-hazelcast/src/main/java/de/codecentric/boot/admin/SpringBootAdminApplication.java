@@ -29,7 +29,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.EvictionPolicy;
-import com.hazelcast.config.ListConfig;
+import com.hazelcast.config.InMemoryFormat;
 import com.hazelcast.config.MapConfig;
 
 // tag::application-hazelcast[]
@@ -39,12 +39,10 @@ import com.hazelcast.config.MapConfig;
 public class SpringBootAdminApplication {
     @Bean
     public Config hazelcastConfig() {
-        return new Config().setProperty("hazelcast.jmx", "true")
-                           .addMapConfig(new MapConfig("spring-boot-admin-application-eventstore").setBackupCount(1)
-                                                                                                  .setEvictionPolicy(
-                                                                                                      EvictionPolicy.NONE))
-                           .addListConfig(
-                               new ListConfig("spring-boot-admin-event-eventstore").setBackupCount(1).setMaxSize(1000));
+        MapConfig mapConfig = new MapConfig("spring-boot-admin-event-store").setInMemoryFormat(InMemoryFormat.OBJECT)
+                                                                            .setBackupCount(1)
+                                                                            .setEvictionPolicy(EvictionPolicy.NONE);
+        return new Config().setProperty("hazelcast.jmx", "true").addMapConfig(mapConfig);
     }
 
     @Profile("insecure")

@@ -135,7 +135,7 @@ public class InstanceTest {
             IllegalArgumentException.class).hasMessage("'event' must refer the same instance");
 
         assertThatThrownBy(() -> instance.apply(new InstanceDeregisteredEvent(InstanceId.of("id"), 1L))).isInstanceOf(
-            IllegalArgumentException.class).hasMessage("expected event version doesn't match");
+            IllegalArgumentException.class).hasMessage("Event 1 doesn't match exptected version 0");
     }
 
 }

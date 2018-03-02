@@ -19,6 +19,7 @@ package de.codecentric.boot.admin;
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -74,6 +75,10 @@ public class SpringBootAdminApplication extends SpringBootServletInitializer {
             .csrf().disable();
             // @formatter:on
         }
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(SpringBootAdminApplication.class, args);
     }
 
 }

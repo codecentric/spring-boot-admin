@@ -50,7 +50,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AdminServerNotifierConfigurationTest {
-    private static final InstanceEvent APP_DOWN = new InstanceStatusChangedEvent(InstanceId.of("id-2"), 1L,
+    private static final InstanceEvent APP_DOWN = new InstanceStatusChangedEvent(InstanceId.of("id-2"), 0L,
         StatusInfo.ofDown());
 
     private AnnotationConfigApplicationContext context;

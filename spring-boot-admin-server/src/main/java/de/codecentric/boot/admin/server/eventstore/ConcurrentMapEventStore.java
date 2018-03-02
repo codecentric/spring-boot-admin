@@ -102,9 +102,11 @@ public abstract class ConcurrentMapEventStore extends InstanceEventPublisher imp
         }
 
         if (eventLog.replace(id, oldEvents, newEvents)) {
-            log.debug("Events saved {}", events);
+            log.debug("Events appended to log {}", events);
             return true;
         }
+
+        log.debug("Unsuccessful attempot append the events {} ", events);
         return false;
     }
 
