@@ -779,12 +779,41 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
         SpringApplication.run(SpringBootAdminApplication.class, args);
     }
 
+    <span class="annotation">@Profile</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">insecure</span><span class="delimiter">&quot;</span></span>)
     <span class="annotation">@Configuration</span>
     <span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SecurityPermitAllConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
         <span class="annotation">@Override</span>
         <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
-            http.authorizeRequests().anyRequest().permitAll() <i class="conum" data-value="1"></i><b>(1)</b>
+            http.authorizeRequests().anyRequest().permitAll()<span class="comment">//</span>
                 .and().csrf().disable();
+        }
+    }
+
+    <span class="annotation">@Profile</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">secure</span><span class="delimiter">&quot;</span></span>)
+    <span class="annotation">@Configuration</span>
+    <span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SecuritySecureConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
+        <span class="directive">private</span> <span class="directive">final</span> <span class="predefined-type">String</span> adminContextPath;
+
+        <span class="directive">public</span> SecuritySecureConfig(AdminServerProperties adminServerProperties) {
+            <span class="local-variable">this</span>.adminContextPath = adminServerProperties.getContextPath();
+        }
+
+        <span class="annotation">@Override</span>
+        <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
+            <span class="comment">// @formatter:off</span>
+            SavedRequestAwareAuthenticationSuccessHandler successHandler = <span class="keyword">new</span> SavedRequestAwareAuthenticationSuccessHandler();
+            successHandler.setTargetUrlParameter(<span class="string"><span class="delimiter">&quot;</span><span class="content">redirectTo</span><span class="delimiter">&quot;</span></span>);
+
+            http.authorizeRequests()
+                .antMatchers(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/assets/**</span><span class="delimiter">&quot;</span></span>).permitAll()
+                .antMatchers(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>).permitAll()
+                .anyRequest().authenticated()
+                .and()
+            .formLogin().loginPage(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>).successHandler(successHandler).and()
+            .logout().logoutUrl(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/logout</span><span class="delimiter">&quot;</span></span>).and()
+            .httpBasic().and()
+            .csrf().disable();
+            <span class="comment">// @formatter:on</span>
         }
     }
 
@@ -1305,9 +1334,48 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
                                <span class="keyword">new</span> ListConfig(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-boot-admin-event-eventstore</span><span class="delimiter">&quot;</span></span>).setBackupCount(<span class="integer">1</span>).setMaxSize(<span class="integer">1000</span>));
     }
 
+    <span class="annotation">@Profile</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">insecure</span><span class="delimiter">&quot;</span></span>)
+    <span class="annotation">@Configuration</span>
+    <span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SecurityPermitAllConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
+        <span class="annotation">@Override</span>
+        <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
+            http.authorizeRequests().anyRequest().permitAll()<span class="comment">//</span>
+                .and().csrf().disable();
+        }
+    }
+
+    <span class="annotation">@Profile</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">secure</span><span class="delimiter">&quot;</span></span>)
+    <span class="annotation">@Configuration</span>
+    <span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SecuritySecureConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
+        <span class="directive">private</span> <span class="directive">final</span> <span class="predefined-type">String</span> adminContextPath;
+
+        <span class="directive">public</span> SecuritySecureConfig(AdminServerProperties adminServerProperties) {
+            <span class="local-variable">this</span>.adminContextPath = adminServerProperties.getContextPath();
+        }
+
+        <span class="annotation">@Override</span>
+        <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
+            <span class="comment">// @formatter:off</span>
+            SavedRequestAwareAuthenticationSuccessHandler successHandler = <span class="keyword">new</span> SavedRequestAwareAuthenticationSuccessHandler();
+            successHandler.setTargetUrlParameter(<span class="string"><span class="delimiter">&quot;</span><span class="content">redirectTo</span><span class="delimiter">&quot;</span></span>);
+
+            http.authorizeRequests()
+                .antMatchers(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/assets/**</span><span class="delimiter">&quot;</span></span>).permitAll()
+                .antMatchers(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>).permitAll()
+                .anyRequest().authenticated()
+                .and()
+            .formLogin().loginPage(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>).successHandler(successHandler).and()
+            .logout().logoutUrl(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/logout</span><span class="delimiter">&quot;</span></span>).and()
+            .httpBasic().and()
+            .csrf().disable();
+            <span class="comment">// @formatter:on</span>
+        }
+    }
+
     <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
         SpringApplication.run(SpringBootAdminApplication.class, args);
     }
+
 }</code></pre>
 </div>
 </div>
