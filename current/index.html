@@ -1326,12 +1326,10 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <span class="directive">public</span> <span class="type">class</span> <span class="class">SpringBootAdminApplication</span> {
     <span class="annotation">@Bean</span>
     <span class="directive">public</span> Config hazelcastConfig() {
-        <span class="keyword">return</span> <span class="keyword">new</span> Config().setProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">hazelcast.jmx</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>)
-                           .addMapConfig(<span class="keyword">new</span> MapConfig(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-boot-admin-application-eventstore</span><span class="delimiter">&quot;</span></span>).setBackupCount(<span class="integer">1</span>)
-                                                                                                  .setEvictionPolicy(
-                                                                                                      EvictionPolicy.NONE))
-                           .addListConfig(
-                               <span class="keyword">new</span> ListConfig(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-boot-admin-event-eventstore</span><span class="delimiter">&quot;</span></span>).setBackupCount(<span class="integer">1</span>).setMaxSize(<span class="integer">1000</span>));
+        MapConfig mapConfig = <span class="keyword">new</span> MapConfig(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-boot-admin-event-store</span><span class="delimiter">&quot;</span></span>).setInMemoryFormat(InMemoryFormat.OBJECT)
+                                                                            .setBackupCount(<span class="integer">1</span>)
+                                                                            .setEvictionPolicy(EvictionPolicy.NONE);
+        <span class="keyword">return</span> <span class="keyword">new</span> Config().setProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">hazelcast.jmx</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>).addMapConfig(mapConfig);
     }
 
     <span class="annotation">@Profile</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">insecure</span><span class="delimiter">&quot;</span></span>)
