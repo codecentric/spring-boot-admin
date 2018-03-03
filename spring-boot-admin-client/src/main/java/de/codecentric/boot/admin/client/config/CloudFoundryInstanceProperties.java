@@ -32,7 +32,7 @@ public class CloudFoundryInstanceProperties extends InstanceProperties {
     @Value("${vcap.application.uris[0]:}")
     public void setServiceBaseUrl(String serviceBaseUrl) {
         if (!StringUtils.isEmpty(serviceBaseUrl)) {
-            this.serviceBaseUrl = "http://" + serviceBaseUrl;
+            this.serviceBaseUrl = "http://".concat(serviceBaseUrl);
         }
     }
 }
