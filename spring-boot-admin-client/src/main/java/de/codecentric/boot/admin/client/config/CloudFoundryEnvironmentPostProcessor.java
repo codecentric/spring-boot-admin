@@ -28,7 +28,7 @@ import java.util.Map;
 public class CloudFoundryEnvironmentPostProcessor implements EnvironmentPostProcessor {
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-        if (CloudPlatform.CLOUD_FOUNDRY.isActive(environment)) {
+        if (CloudPlatform.CLOUD_FOUNDRY.isActive(environment) && !environment.containsProperty("spring.boot.admin.client.auto-deregistration")) {
             Map<String, Object> map = new HashMap<>();
             map.put("spring.boot.admin.client.auto-deregistration", "true");
             MapPropertySource propertySource = new MapPropertySource(

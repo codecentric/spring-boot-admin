@@ -43,4 +43,14 @@ public class CloudFoundryEnvironmentPostProcessorTest {
             new SpringApplication());
         assertThat(this.environment.getProperty("spring.boot.admin.client.auto-deregistration")).isEqualTo("true");
     }
+
+    @Test
+    public void not_override_when_property_is_set() {
+        this.environment = new MockEnvironment()
+            .withProperty("VCAP_SERVICES", "---")
+            .withProperty("spring.boot.admin.client.auto-deregistration", "false");
+        this.processor.postProcessEnvironment(this.environment,
+            new SpringApplication());
+        assertThat(this.environment.getProperty("spring.boot.admin.client.auto-deregistration")).isEqualTo("false");
+    }
 }
