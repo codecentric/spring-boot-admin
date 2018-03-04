@@ -86,8 +86,8 @@ spring.boot.admin.client.password
 | `true`
 
 | spring.boot.admin.client.auto-deregistration
-| Switch to enable auto-deregistration at Spring Boot Admin server when context is closed.
-| `false`
+| Switch to enable auto-deregistration at Spring Boot Admin server when context is closed. If the value is unset the feature is active if a running CloudPlatform was detected.
+| `null`
 
 | spring.boot.admin.client.register-once
 | If set to true the client will only register against one admin server (in order defined by `spring.boot.admin.instance.url`); if that admin server goes down, will automatically register against the next admin server. If false, will register against all admin servers.

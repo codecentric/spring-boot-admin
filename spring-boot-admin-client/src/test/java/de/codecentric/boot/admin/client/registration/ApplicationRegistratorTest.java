@@ -29,6 +29,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -52,7 +53,7 @@ public class ApplicationRegistratorTest {
     public void setup() {
         restTemplate = mock(RestTemplate.class);
 
-        client = new ClientProperties();
+        client = new ClientProperties(new MockEnvironment());
         client.setUrl(new String[]{"http://sba:8080", "http://sba2:8080"});
 
         ApplicationFactory factory = mock(ApplicationFactory.class);
