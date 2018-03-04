@@ -38,7 +38,6 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -52,7 +51,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 
 @Configuration
-@EnableConfigurationProperties({ClientProperties.class, InstanceProperties.class})
 @ConditionalOnWebApplication
 @Conditional(SpringBootAdminClientEnabledCondition.class)
 @AutoConfigureAfter(WebMvcEndpointManagementContextConfiguration.class)
@@ -152,5 +150,17 @@ public class SpringBootAdminClientAutoConfiguration {
     @ConditionalOnMissingBean
     public StartupDateMetadataContributor startupDateMetadataContributor() {
         return new StartupDateMetadataContributor();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public InstanceProperties instanceProperies() {
+        return new InstanceProperties();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ClientProperties clientProperties() {
+        return new ClientProperties();
     }
 }
