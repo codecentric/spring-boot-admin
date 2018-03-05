@@ -55,6 +55,7 @@ public class SpringBootAdminClientCloudFoundryAutoConfigurationTest {
     @Test
     public void cloudfoundry() {
         String vcap = "VCAP_APPLICATION:{\"application_users\":[]," +
+                      "\"application_id\":\"9958288f-9842-4ddc-93dd-1ea3c90634cd\"," +
                       "\"instance_id\":\"bb7935245adf3e650dfb7c58a06e9ece\"," +
                       "\"instance_index\":0,\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\"," +
                       "\"name\":\"foo\",\"uris\":[\"foo.cfapps.io\"]," +
@@ -70,7 +71,7 @@ public class SpringBootAdminClientCloudFoundryAutoConfigurationTest {
         load("spring.boot.admin.client.url:http://localhost:8081", vcap);
         ApplicationFactory factory = context.getBean(ApplicationFactory.class);
         CloudFoundryMetadataContributor contributor = context.getBean(CloudFoundryMetadataContributor.class);
-        assertThat(contributor.getMetadata()).containsEntry("applicationId", "bb7935245adf3e650dfb7c58a06e9ece")
+        assertThat(contributor.getMetadata()).containsEntry("applicationId", "9958288f-9842-4ddc-93dd-1ea3c90634cd")
                                              .containsEntry("instanceId", "0");
         assertThat(factory).isInstanceOf(CloudFoundryApplicationFactory.class);
         assertThat(factory.createApplication().getServiceUrl()).isEqualTo("http://dsyerenv.cfapps.io/");

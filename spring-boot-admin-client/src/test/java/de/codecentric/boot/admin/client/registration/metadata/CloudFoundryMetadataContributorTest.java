@@ -34,7 +34,7 @@ public class CloudFoundryMetadataContributorTest {
     @Test
     public void should_return_metadata() {
         CloudFoundryApplicationProperties cfApplicationProperties = new CloudFoundryApplicationProperties();
-        cfApplicationProperties.setInstanceId("appId");
+        cfApplicationProperties.setApplicationId("appId");
         cfApplicationProperties.setInstanceIndex("1");
         CloudFoundryMetadataContributor contributor = new CloudFoundryMetadataContributor(cfApplicationProperties);
         assertThat(contributor.getMetadata()).containsEntry("applicationId", "appId").containsEntry("instanceId", "1");
