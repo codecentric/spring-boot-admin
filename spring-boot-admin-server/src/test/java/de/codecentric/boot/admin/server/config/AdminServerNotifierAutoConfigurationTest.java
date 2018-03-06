@@ -49,7 +49,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AdminServerNotifierConfigurationTest {
+public class AdminServerNotifierAutoConfigurationTest {
     private static final InstanceEvent APP_DOWN = new InstanceStatusChangedEvent(InstanceId.of("id-2"), 0L,
         StatusInfo.ofDown());
 
@@ -152,6 +152,7 @@ public class AdminServerNotifierConfigurationTest {
         context.register(RestTemplateAutoConfiguration.class);
         context.register(AdminServerMarkerConfiguration.class);
         context.register(AdminServerAutoConfiguration.class);
+        context.register(AdminServerNotifierAutoConfiguration.class);
 
         TestPropertyValues.of(environment).applyTo(context);
         context.refresh();

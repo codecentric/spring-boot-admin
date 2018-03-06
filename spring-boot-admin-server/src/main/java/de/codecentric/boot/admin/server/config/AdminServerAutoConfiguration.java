@@ -58,7 +58,7 @@ import org.springframework.core.annotation.Order;
 @Configuration
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
 @EnableConfigurationProperties(AdminServerProperties.class)
-@Import({AdminServerWebConfiguration.class, AdminServerNotifierConfiguration.class})
+@Import({AdminServerWebConfiguration.class})
 public class AdminServerAutoConfiguration {
     private final AdminServerProperties adminServerProperties;
 

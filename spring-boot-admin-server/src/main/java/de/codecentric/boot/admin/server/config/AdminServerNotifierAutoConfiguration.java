@@ -50,7 +50,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.mail.MailSender;
 
 @Configuration
-public class AdminServerNotifierConfiguration {
+@AutoConfigureAfter({MailSenderAutoConfiguration.class})
+public class AdminServerNotifierAutoConfiguration {
 
     @Configuration
     @ConditionalOnBean(Notifier.class)
@@ -97,12 +98,12 @@ public class AdminServerNotifierConfiguration {
         public NotificationFilterController notificationFilterController() {
             return new NotificationFilterController(filteringNotifier);
         }
+
     }
 
     @Configuration
-    @ConditionalOnBean(MailSender.class)
-    @AutoConfigureAfter({MailSenderAutoConfiguration.class})
     @AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
+    @ConditionalOnBean(MailSender.class)
     public static class MailNotifierConfiguration {
         @Bean
         @ConditionalOnMissingBean
