@@ -63,7 +63,7 @@ public class AdminServerNotifierAutoConfigurationTest {
     }
 
     @Test
-    public void test_notifierListener() {
+    public void test_notifierListener() throws InterruptedException {
         load(TestSingleNotifierConfig.class);
         InstanceEventStore store = context.getBean(InstanceEventStore.class);
 
@@ -71,9 +71,10 @@ public class AdminServerNotifierAutoConfigurationTest {
                     .expectSubscription()
                     .then(() -> StepVerifier.create(store.append(Collections.singletonList(APP_DOWN))).verifyComplete())
                     .expectNext(APP_DOWN)
-                    .then(() -> assertThat(context.getBean(TestNotifier.class).getEvents()).containsOnly(APP_DOWN))
                     .thenCancel()
                     .verify();
+        Thread.sleep(50); //wait for the notifications in different thread
+        assertThat(context.getBean(TestNotifier.class).getEvents()).containsOnly(APP_DOWN);
     }
 
     @Test
@@ -163,7 +164,6 @@ public class AdminServerNotifierAutoConfigurationTest {
         public Notifier testNotifier() {
             return new TestNotifier();
         }
-
     }
 
     private static class MailSenderConfig {
