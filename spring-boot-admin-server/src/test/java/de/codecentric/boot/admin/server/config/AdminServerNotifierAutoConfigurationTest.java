@@ -32,14 +32,16 @@ import de.codecentric.boot.admin.server.notify.OpsGenieNotifier;
 import de.codecentric.boot.admin.server.notify.PagerdutyNotifier;
 import de.codecentric.boot.admin.server.notify.SlackNotifier;
 import de.codecentric.boot.admin.server.notify.TelegramNotifier;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.UnicastProcessor;
 import reactor.test.StepVerifier;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -63,18 +65,16 @@ public class AdminServerNotifierAutoConfigurationTest {
     }
 
     @Test
-    public void test_notifierListener() throws InterruptedException {
+    public void test_notifierListener() {
         load(TestSingleNotifierConfig.class);
         InstanceEventStore store = context.getBean(InstanceEventStore.class);
 
-        StepVerifier.create(store)
+        StepVerifier.create(context.getBean(TestNotifier.class).getFlux())
                     .expectSubscription()
                     .then(() -> StepVerifier.create(store.append(Collections.singletonList(APP_DOWN))).verifyComplete())
                     .expectNext(APP_DOWN)
                     .thenCancel()
                     .verify();
-        Thread.sleep(100); //wait for the notifications in different thread
-        assertThat(context.getBean(TestNotifier.class).getEvents()).containsOnly(APP_DOWN);
     }
 
     @Test
@@ -161,7 +161,8 @@ public class AdminServerNotifierAutoConfigurationTest {
 
     public static class TestSingleNotifierConfig {
         @Bean
-        public Notifier testNotifier() {
+        @Qualifier("testNotifier")
+        public TestNotifier testNotifier() {
             return new TestNotifier();
         }
     }
@@ -175,12 +176,14 @@ public class AdminServerNotifierAutoConfigurationTest {
 
     private static class TestMultipleNotifierConfig {
         @Bean
-        public Notifier testNotifier1() {
+        @Qualifier("testNotifier1")
+        public TestNotifier testNotifier1() {
             return new TestNotifier();
         }
 
         @Bean
-        public Notifier testNotifier2() {
+        @Qualifier("testNotifier2")
+        public TestNotifier testNotifier2() {
             return new TestNotifier();
         }
     }
@@ -188,27 +191,36 @@ public class AdminServerNotifierAutoConfigurationTest {
     private static class TestMultipleWithPrimaryNotifierConfig {
         @Bean
         @Primary
-        public Notifier testNotifierPrimary() {
+        @Qualifier("testNotifier")
+        public TestNotifier testNotifierPrimary() {
             return new TestNotifier();
         }
 
         @Bean
-        public Notifier testNotifier2() {
+        @Qualifier("testNotifier3")
+        public TestNotifier testNotifier2() {
             return new TestNotifier();
         }
     }
 
     private static class TestNotifier implements Notifier {
-        private List<InstanceEvent> events = new ArrayList<>();
+        private final Flux<InstanceEvent> publishedFlux;
+        private final FluxSink<InstanceEvent> sink;
+
+        private TestNotifier() {
+            UnicastProcessor<InstanceEvent> unicastProcessor = UnicastProcessor.create();
+            this.publishedFlux = unicastProcessor.publish().autoConnect(0);
+            this.sink = unicastProcessor.sink();
+        }
 
         @Override
         public Mono<Void> notify(InstanceEvent event) {
-            this.events.add(event);
-            return null;
+            this.sink.next(event);
+            return Mono.empty();
         }
 
-        public List<InstanceEvent> getEvents() {
-            return events;
+        public Flux<InstanceEvent> getFlux() {
+            return publishedFlux;
         }
     }
 }
