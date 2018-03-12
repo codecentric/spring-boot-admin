@@ -226,7 +226,7 @@ To enable https://www.opsgenie.com/[OpsGenie] notifications you just have to add
 
 [[hipchat-notifications]]
 ==== Hipchat notifications ====
-To enable https://www.hipchat.com/[Hipchat] notifications you need to create an API token from you Hipchat account and set the appropriate configuration properties.
+To enable https://www.hipchat.com/[Hipchat] notifications you need to create an API token on your Hipchat account and set the appropriate configuration properties.
 
 .Hipchat notifications configuration options
 |===

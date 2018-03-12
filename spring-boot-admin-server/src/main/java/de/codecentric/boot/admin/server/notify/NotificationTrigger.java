@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.notify;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.services.ResubscribingEventHandler;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import org.reactivestreams.Publisher;
@@ -33,10 +34,10 @@ public class NotificationTrigger extends ResubscribingEventHandler<InstanceEvent
 
     @Override
     protected Publisher<?> handle(Flux<InstanceEvent> publisher) {
-        return publisher.subscribeOn(Schedulers.newSingle("notifications")).doOnNext(this::sendNotifications);
+        return publisher.subscribeOn(Schedulers.newSingle("notifications")).flatMap(this::sendNotifications);
     }
 
-    protected void sendNotifications(InstanceEvent event) {
-        notifier.notify(event);
+    protected Mono<Void> sendNotifications(InstanceEvent event) {
+        return notifier.notify(event);
     }
 }
