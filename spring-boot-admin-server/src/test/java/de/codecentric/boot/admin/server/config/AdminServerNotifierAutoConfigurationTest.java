@@ -73,7 +73,7 @@ public class AdminServerNotifierAutoConfigurationTest {
                     .expectNext(APP_DOWN)
                     .thenCancel()
                     .verify();
-        Thread.sleep(50); //wait for the notifications in different thread
+        Thread.sleep(100); //wait for the notifications in different thread
         assertThat(context.getBean(TestNotifier.class).getEvents()).containsOnly(APP_DOWN);
     }
 

@@ -34,7 +34,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -108,17 +107,13 @@ public class SpringBootAdminApplication {
             this.repository = repository;
         }
 
-        @Bean
         @Primary
+        @Bean(initMethod = "start", destroyMethod = "stop")
         public RemindingNotifier remindingNotifier() {
             RemindingNotifier notifier = new RemindingNotifier(filteringNotifier(), repository);
             notifier.setReminderPeriod(Duration.ofMinutes(10));
+            notifier.setCheckReminderInverval(Duration.ofSeconds(10));
             return notifier;
-        }
-
-        @Scheduled(fixedRate = 1_000L)
-        public void remind() {
-            remindingNotifier().sendReminders();
         }
 
         @Bean
