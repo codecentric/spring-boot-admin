@@ -27,6 +27,9 @@ describe('application-status', () => {
       propsData: {
         status,
         date
+      },
+      stubs: {
+        'font-awesome-icon': true
       }
     });
     expect(wrapper.vm.$el).toMatchSnapshot();

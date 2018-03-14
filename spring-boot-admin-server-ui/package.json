@@ -30,8 +30,8 @@
     "moment": "^2.21.0",
     "moment-shortformat": "^2.1.0",
     "pretty-bytes": "^4.0.2",
-    "rxjs": "^5.5.6",
-    "vue": "^2.5.15",
+    "rxjs": "^5.5.7",
+    "vue": "^2.5.16",
     "vue-clickaway": "^2.1.0",
     "vue-router": "^3.0.1",
     "yamljs": "^0.3.0"
@@ -63,17 +63,17 @@
     "html-webpack-plugin": "^2.30.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^22.4.2",
-    "jest-vue": "^0.8.2",
     "lodash-webpack-plugin": "^0.11.4",
-    "node-sass": "^4.7.2",
+    "node-sass": "^4.8.2",
     "optimize-css-assets-webpack-plugin": "^3.2.0",
     "postcss-loader": "^2.1.1",
     "sass-loader": "^6.0.7",
     "style-loader": "^0.20.3",
     "url-loader": "^0.6.2",
+    "vue-jest": "^2.1.1",
     "vue-loader": "^14.2.1",
     "vue-svg-loader": "^0.5.0",
-    "vue-template-compiler": "^2.5.15",
+    "vue-template-compiler": "^2.5.16",
     "webpack": "^3.11.0",
     "webpack-bundle-analyzer": "^2.11.1"
   },
@@ -89,12 +89,11 @@
       "vue"
     ],
     "moduleNameMapper": {
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/src/test/frontend/__mocks__/file-mock.js",
-      "\\.(css|scss)$": "<rootDir>/__mocks__/file-mocks.js"
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/src/test/frontend/__mocks__/file-mock.js"
     },
     "transform": {
       "\\.js$": "babel-jest",
-      "\\.vue$": "jest-vue",
+      "\\.vue$": "vue-jest",
       "\\.svg$": "<rootDir>/src/test/frontend/__mocks__/vue-mock-component.js"
     },
     "transformIgnorePatterns": [

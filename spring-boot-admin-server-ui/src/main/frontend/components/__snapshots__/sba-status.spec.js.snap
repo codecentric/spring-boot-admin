@@ -4,9 +4,7 @@ exports[`application-status should match the snapshot with custom status 1`] = `
 <div
   class="application-status"
 >
-  <font-awesome-icon
-    class="application-status__icon application-status__icon--?"
-  />
+  <!---->
    
   <!---->
 </div>
@@ -16,10 +14,7 @@ exports[`application-status should match the snapshot with status DOWN 1`] = `
 <div
   class="application-status"
 >
-  <font-awesome-icon
-    class="application-status__icon application-status__icon--DOWN"
-    icon="times-circle"
-  />
+  <!---->
    
   <!---->
 </div>
@@ -29,10 +24,7 @@ exports[`application-status should match the snapshot with status OFFLINE 1`] = 
 <div
   class="application-status"
 >
-  <font-awesome-icon
-    class="application-status__icon application-status__icon--OFFLINE"
-    icon="minus-circle"
-  />
+  <!---->
    
   <!---->
 </div>
@@ -42,10 +34,7 @@ exports[`application-status should match the snapshot with status OUT_OF_SERVICE
 <div
   class="application-status"
 >
-  <font-awesome-icon
-    class="application-status__icon application-status__icon--OUT_OF_SERVICE"
-    icon="ban"
-  />
+  <!---->
    
   <!---->
 </div>
@@ -55,10 +44,7 @@ exports[`application-status should match the snapshot with status RESTRICTED 1`]
 <div
   class="application-status"
 >
-  <font-awesome-icon
-    class="application-status__icon application-status__icon--RESTRICTED"
-    icon="exclamation"
-  />
+  <!---->
    
   <!---->
 </div>
@@ -68,10 +54,7 @@ exports[`application-status should match the snapshot with status UNKNOWN 1`] = 
 <div
   class="application-status"
 >
-  <font-awesome-icon
-    class="application-status__icon application-status__icon--UNKNOWN"
-    icon="question-circle"
-  />
+  <!---->
    
   <!---->
 </div>
@@ -81,10 +64,7 @@ exports[`application-status should match the snapshot with status UP with Timest
 <div
   class="application-status"
 >
-  <font-awesome-icon
-    class="application-status__icon application-status__icon--UP"
-    icon="check"
-  />
+  <!---->
    
   <small>
     14m
