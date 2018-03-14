@@ -91,6 +91,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
+                            <skip>${skipTests}</skip>
                             <executable>npm</executable>
                             <arguments>
                                 <argument>run</argument>
