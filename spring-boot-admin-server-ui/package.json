@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "watch": "cross-env NODE_ENV=development webpack --watch",
-    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules --bail",
+    "build": "cross-env NODE_ENV=production webpack --bail --hide-modules",
     "test": "jest",
     "test:watch": "jest --watch"
   },
