@@ -23,11 +23,11 @@ import * as shape from 'd3-shape';
 import * as time from 'd3-time';
 
 export default {
-  ...shape,
-  ...scale,
-  ...axis,
   ...array,
+  ...axis,
   ...brush,
-  ...time,
-  ...selection
+  ...scale,
+  ...selection,
+  ...shape,
+  ...time
 }

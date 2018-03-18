@@ -82,7 +82,3 @@
     },
   }
 </script>
-
-<style lang="scss">
-  @import "~@/assets/css/utilities";
-</style>

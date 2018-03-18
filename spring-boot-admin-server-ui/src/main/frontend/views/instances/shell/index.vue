@@ -38,7 +38,7 @@
         default: () => [],
       },
       error: {
-        type: Object,
+        type: null,
         default: null
       }
     },

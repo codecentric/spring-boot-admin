@@ -50,10 +50,7 @@
 </template>
 
 <script>
-  import iconSpringBootAdmin from '@/assets/img/icon-spring-boot-admin.svg';
-
   export default {
-    components: {iconSpringBootAdmin},
     data: () => ({
       showMenu: false
     }),
@@ -67,7 +64,7 @@
         default: () => [],
       },
       error: {
-        type: Object,
+        type: null,
         default: null
       }
     },
