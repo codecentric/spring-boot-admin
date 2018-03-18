@@ -1,0 +1,116 @@
+<!--
+  - Copyright 2014-2018 the original author or authors.
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
+<template>
+  <section class="wallboard section">
+    <hex-mesh :items="applications" :class-for-item="classForApplication" @click="select">
+      <div class="hex__body application" slot="item" slot-scope="application" :key="application.name">
+        <div class="application__header application__time-ago is-muted">
+          <sba-time-ago :date="application.statusTimestamp"/>
+        </div>
+        <div class="application__body">
+          <h1 class="application__name" v-text="application.name"/>
+          <p class="application__instances is-muted"><span v-text="application.instances.length"/> instances</p>
+        </div>
+        <h2 class="application__footer application__version" v-text="application.version"/>
+      </div>
+    </hex-mesh>
+  </section>
+</template>
+
+<script>
+  import hexMesh from './hex-mesh';
+
+  const component = {
+    components: {hexMesh},
+    props: {
+      applications: {
+        type: Array,
+        default: () => [],
+      },
+      error: {
+        type: null,
+        default: null
+      }
+    },
+    methods: {
+      classForApplication(application) {
+        if (application) {
+          return 'is-selectable ' + (application.status === 'UP' ? 'is-primary' : (application.status === 'RESTRICTED' ? 'is-warning' : 'is-danger'));
+        }
+        return null;
+      },
+      select(application) {
+        this.$router.push(`/applications/${application.name}`);
+      },
+    }
+  };
+
+  export default component;
+  export const view = {
+    path: '/wallboard',
+    name: 'wallboard',
+    handle: 'Wallboard',
+    order: -100,
+    component: component
+  };
+</script>
+
+<style lang="scss">
+  @import "~@/assets/css/utilities";
+
+  .wallboard {
+    background-color: $grey-dark;
+    height: calc(100vh - #{$navbar-height-px});
+    width: 100%;
+
+    & .application {
+      color: $white-ter;
+      font-size: 1em;
+      font-weight: $weight-normal;
+      line-height: 1;
+      text-align: center;
+
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+
+      &__name {
+        width: 100%;
+        padding: 2.5%;
+        color: $white;
+        font-size: 2em;
+        font-weight: $weight-semibold;
+        line-height: 1.125;
+      }
+
+      &__version {
+        color: $white-ter;
+        font-size: 1.25em;
+        line-height: 1.25;
+      }
+
+      &__header {
+        width: 90%;
+        margin-bottom: 0.5em;
+      }
+      &__footer {
+        width: 90%;
+        margin-top: 0.5em;
+      }
+    }
+  }
+</style>

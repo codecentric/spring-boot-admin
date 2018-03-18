@@ -18,6 +18,7 @@ import {view as aboutView} from './about';
 import {view as applicationView} from './applications';
 import instanceViews from './instances';
 import {view as journalView} from './journal';
+import {view as wallboardView} from './wallboard';
 
 export default router => {
   const views = [];
@@ -49,7 +50,9 @@ export default router => {
   views.register(applicationView);
   views.register(journalView);
   views.register(aboutView);
+  views.register(wallboardView);
   instanceViews.forEach(views.register);
+  views.sort((a, b) => a.order - b.order);
 
   router.addRoutes([{path: '/', redirect: {name: 'applications'}}]);
 

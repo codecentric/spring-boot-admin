@@ -18,6 +18,24 @@
 @import "~bulma/bulma";
 @import "~bulma-badge/dist/bulma-badge";
 
+html {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+
+  & > div {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
 .is-breakable {
   word-break: break-all;
 }
@@ -49,7 +67,6 @@
     box-shadow: 0 0 0 $badge-border-size $navbar-background-color;
   }
 }
-
 
 //Loading spinner
 .section.is-loading,
