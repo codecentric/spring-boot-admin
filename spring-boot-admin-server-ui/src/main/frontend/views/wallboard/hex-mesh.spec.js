@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as hm from './hex-mesh'
+import * as hm from './hex-mesh';
 
 describe('calcLayout', () => {
 
@@ -24,7 +24,7 @@ describe('calcLayout', () => {
     expect(result).toEqual({
       rows: 3,
       cols: 5,
-      sidelength: 175.8
+      sideLength: 175.8
     });
   });
 
@@ -34,7 +34,7 @@ describe('calcLayout', () => {
     expect(result).toEqual({
       rows: 1,
       cols: 1,
-      sidelength: 50
+      sideLength: 50
     });
   });
 

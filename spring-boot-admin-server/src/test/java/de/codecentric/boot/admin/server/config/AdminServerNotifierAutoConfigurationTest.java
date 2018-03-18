@@ -209,7 +209,7 @@ public class AdminServerNotifierAutoConfigurationTest {
 
         private TestNotifier() {
             UnicastProcessor<InstanceEvent> unicastProcessor = UnicastProcessor.create();
-            this.publishedFlux = unicastProcessor.publish().autoConnect(0);
+            this.publishedFlux = unicastProcessor;
             this.sink = unicastProcessor.sink();
         }
 
