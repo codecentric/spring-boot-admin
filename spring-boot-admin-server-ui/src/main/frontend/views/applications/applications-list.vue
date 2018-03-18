@@ -101,10 +101,13 @@
     }),
     methods: {
       select(name) {
-        this.$router.push({name: 'applications', params: {selected: name}});
+        this.$router.replace({name: 'applications', params: {selected: name}});
       },
-      deselect() {
-        this.$router.push({name: 'applications'});
+      deselect(event) {
+        if (event && event.target instanceof HTMLAnchorElement) {
+          return;
+        }
+        this.$router.replace({name: 'applications'});
       },
       showDetails(instance) {
         this.$router.push({name: 'instance/details', params: {instanceId: instance.id}});
