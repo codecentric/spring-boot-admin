@@ -89,22 +89,25 @@
       applications: {
         type: Array,
         default: () => []
+      },
+      selected: {
+        type: String,
+        default: null
       }
     },
     directives: {onClickaway},
     data: () => ({
-      selected: null,
       errors: []
     }),
     methods: {
       select(name) {
-        this.selected = name;
+        this.$router.push(`/applications/${name}`);
       },
       deselect() {
-        this.selected = null;
+        this.$router.push('/applications');
       },
       showDetails(instance) {
-        this.$router.push(`/instances/${instance.id}`)
+        this.$router.push(`/instances/${instance.id}`);
       },
       async unregister(item) {
         try {
@@ -118,106 +121,106 @@
 </script>
 
 <style lang="scss">
-    @import "~@/assets/css/utilities";
+  @import "~@/assets/css/utilities";
 
-    $list-background-color: $white !default;
-    $list-shadow: 0 2px 3px rgba($black, 0.1), 0 0 0 1px rgba($black, 0.1) !default;
-    $list-color: $text !default;
+  $list-background-color: $white !default;
+  $list-shadow: 0 2px 3px rgba($black, 0.1), 0 0 0 1px rgba($black, 0.1) !default;
+  $list-color: $text !default;
 
-    .applications-list-item {
-        background-color: $list-background-color;
-        box-shadow: $list-shadow;
-        color: $list-color;
-        max-width: 100%;
+  .applications-list-item {
+    background-color: $list-background-color;
+    box-shadow: $list-shadow;
+    color: $list-color;
+    max-width: 100%;
 
-        &--collapsed {
-            display: flex;
-            align-items: center;
-            overflow: hidden;
-            cursor: pointer;
-            &:hover {
-                background-color: $white-bis;
-            }
-        }
-
-        &--detailed {
-            display: flex;
-            flex-direction: column;
-            margin: ($gap / 2) 0;
-        }
-
-        &__status {
-            width: 40px;
-            padding-left: ($gap / 2);
-        }
-
-        &__text {
-            padding-left: ($gap / 2);
-            display: inline-flex;
-            align-items: flex-start;
-            flex-direction: column;
-            flex-grow: 1;
-            flex-basis: 0;
-        }
-
-        &__secondary {
-            color: $grey-light;
-            font-size: $size-6;
-        }
-
-        &__actions {
-            justify-self: end;
-            padding-right: ($gap / 2);
-            opacity: 0;
-            transition: all $easing $speed;
-            will-change: opacity;
-        }
-
-        *:hover > &__actions {
-            opacity: 1;
-        }
-
-        &__header {
-            display: flex;
-            height: 48px;
-            align-items: center;
-            overflow: hidden;
-            cursor: pointer;
-
-            &-text {
-                color: $grey-darker;
-                font-weight: $weight-semibold;
-                padding-left: $gap;
-                flex-grow: 1;
-            }
-
-            &-actions {
-                justify-self: end;
-                padding-right: $gap;
-            }
-        }
-
-        &__instance-list {
-            list-style: none;
-            margin: 0 ($gap / 2) ($gap / 2) ($gap / 2);
-            padding: 0;
-        }
-
-        &__instance {
-            display: flex;
-            height: 48px;
-            overflow: hidden;
-            background-color: #fff;
-            align-items: center;
-            cursor: pointer;
-            &:hover {
-                background-color: $white-bis;
-            }
-
-            & + & {
-                border-top: 1px solid rgba(0, 0, 0, .12);
-                margin-top: 0;
-            }
-        }
+    &--collapsed {
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      cursor: pointer;
+      &:hover {
+        background-color: $white-bis;
+      }
     }
+
+    &--detailed {
+      display: flex;
+      flex-direction: column;
+      margin: ($gap / 2) 0;
+    }
+
+    &__status {
+      width: 40px;
+      padding-left: ($gap / 2);
+    }
+
+    &__text {
+      padding-left: ($gap / 2);
+      display: inline-flex;
+      align-items: flex-start;
+      flex-direction: column;
+      flex-grow: 1;
+      flex-basis: 0;
+    }
+
+    &__secondary {
+      color: $grey-light;
+      font-size: $size-6;
+    }
+
+    &__actions {
+      justify-self: end;
+      padding-right: ($gap / 2);
+      opacity: 0;
+      transition: all $easing $speed;
+      will-change: opacity;
+    }
+
+    *:hover > &__actions {
+      opacity: 1;
+    }
+
+    &__header {
+      display: flex;
+      height: 48px;
+      align-items: center;
+      overflow: hidden;
+      cursor: pointer;
+
+      &-text {
+        color: $grey-darker;
+        font-weight: $weight-semibold;
+        padding-left: $gap;
+        flex-grow: 1;
+      }
+
+      &-actions {
+        justify-self: end;
+        padding-right: $gap;
+      }
+    }
+
+    &__instance-list {
+      list-style: none;
+      margin: 0 ($gap / 2) ($gap / 2) ($gap / 2);
+      padding: 0;
+    }
+
+    &__instance {
+      display: flex;
+      height: 48px;
+      overflow: hidden;
+      background-color: #fff;
+      align-items: center;
+      cursor: pointer;
+      &:hover {
+        background-color: $white-bis;
+      }
+
+      & + & {
+        border-top: 1px solid rgba(0, 0, 0, .12);
+        margin-top: 0;
+      }
+    }
+  }
 </style>

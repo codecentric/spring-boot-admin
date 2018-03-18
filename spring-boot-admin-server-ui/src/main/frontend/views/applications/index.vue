@@ -52,7 +52,7 @@
       </div>
       <div v-for="group in statusGroups" :key="group.status">
         <p class="heading" v-text="group.status"/>
-        <applications-list :applications="group.applications"/>
+        <applications-list :applications="group.applications" :selected="selected"/>
       </div>
       <div v-if="statusGroups.length === 0">
         <p class="is-muted">No applications registered.</p>
@@ -73,7 +73,11 @@
         default: () => [],
       },
       error: {
-        type: Object,
+        type: null,
+        default: null
+      },
+      selected: {
+        type: String,
         default: null
       }
     },
@@ -105,7 +109,8 @@
 
   export default component;
   export const view = {
-    path: '/applications',
+    path: '/applications/:selected?',
+    props: true,
     name: 'applications',
     handle: handle,
     order: 0,
