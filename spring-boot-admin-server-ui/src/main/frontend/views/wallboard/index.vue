@@ -54,7 +54,7 @@
         return null;
       },
       select(application) {
-        this.$router.push(`/applications/${application.name}`);
+        this.$router.push({name: 'applications', params: {selected: application.name}});
       },
     }
   };

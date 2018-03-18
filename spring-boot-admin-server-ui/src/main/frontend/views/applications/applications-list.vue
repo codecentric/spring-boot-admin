@@ -101,13 +101,13 @@
     }),
     methods: {
       select(name) {
-        this.$router.push(`/applications/${name}`);
+        this.$router.push({name: 'applications', params: {selected: name}});
       },
       deselect() {
-        this.$router.push('/applications');
+        this.$router.push({name: 'applications'});
       },
       showDetails(instance) {
-        this.$router.push(`/instances/${instance.id}`);
+        this.$router.push({name: 'instance/details', params: {instanceId: instance.id}});
       },
       async unregister(item) {
         try {
