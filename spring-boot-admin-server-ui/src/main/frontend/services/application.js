@@ -17,6 +17,7 @@
 import axios from '@/utils/axios';
 import waitForPolyfill from '@/utils/eventsource-polyfill';
 import {Observable} from '@/utils/rxjs';
+import uri from '@/utils/uri';
 import * as _ from 'lodash';
 import Instance from './instance';
 
@@ -35,7 +36,7 @@ class Application {
   }
 
   async unregister() {
-    return axios.delete(`applications/${this.name}`)
+    return axios.delete(uri`applications/${this.name}`)
   }
 
   static async list() {

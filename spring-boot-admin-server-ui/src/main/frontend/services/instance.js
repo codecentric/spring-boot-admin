@@ -18,6 +18,7 @@ import axios from '@/utils/axios';
 import waitForPolyfill from '@/utils/eventsource-polyfill';
 import logtail from '@/utils/logtail';
 import {Observable} from '@/utils/rxjs'
+import uri from '@/utils/uri';
 import _ from 'lodash';
 
 const actuatorMimeTypes = ['application/vnd.spring-boot.actuator.v2+json',
@@ -38,129 +39,129 @@ class Instance {
   }
 
   async unregister() {
-    return axios.delete(`instances/${this.id}`);
+    return axios.delete(uri`instances/${this.id}`);
   }
 
   async fetchInfo() {
-    return axios.get(`instances/${this.id}/actuator/info`, {
+    return axios.get(uri`instances/${this.id}/actuator/info`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async fetchMetrics() {
-    return axios.get(`instances/${this.id}/actuator/metrics`, {
+    return axios.get(uri`instances/${this.id}/actuator/metrics`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async fetchMetric(metric, tags) {
     const params = tags ? {tag: _.entries(tags).map(([name, value]) => `${name}:${value}`).join(',')} : {};
-    return axios.get(`instances/${this.id}/actuator/metrics/${metric}`, {
+    return axios.get(uri`instances/${this.id}/actuator/metrics/${metric}`, {
       headers: {'Accept': actuatorMimeTypes},
       params
     });
   }
 
   async fetchHealth() {
-    return axios.get(`instances/${this.id}/actuator/health`, {
+    return axios.get(uri`instances/${this.id}/actuator/health`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async fetchEnv(name) {
-    return axios.get(`instances/${this.id}/actuator/env${name ? `/${name}` : '' }`, {
+    return axios.get(uri`instances/${this.id}/actuator/env${name ? `/${name}` : '' }`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async hasEnvManagerSupport() {
-    const response = await axios.options(`instances/${this.id}/actuator/env`);
+    const response = await axios.options(uri`instances/${this.id}/actuator/env`);
     return response.headers['allow'] && response.headers['allow'].indexOf('POST') >= 0;
   }
 
   async resetEnv() {
-    return axios.delete(`instances/${this.id}/actuator/env`);
+    return axios.delete(uri`instances/${this.id}/actuator/env`);
   }
 
   async setEnv(name, value) {
-    return axios.post(`instances/${this.id}/actuator/env`, {name, value}, {
+    return axios.post(uri`instances/${this.id}/actuator/env`, {name, value}, {
       headers: {'Content-Type': 'application/json'}
     });
   }
 
   async refreshContext() {
-    return axios.post(`instances/${this.id}/actuator/refresh`);
+    return axios.post(uri`instances/${this.id}/actuator/refresh`);
   }
 
   async fetchLiquibase() {
-    return axios.get(`instances/${this.id}/actuator/liquibase`, {
+    return axios.get(uri`instances/${this.id}/actuator/liquibase`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async fetchFlyway() {
-    return axios.get(`instances/${this.id}/actuator/flyway`, {
+    return axios.get(uri`instances/${this.id}/actuator/flyway`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async fetchLoggers() {
-    return axios.get(`instances/${this.id}/actuator/loggers`, {
+    return axios.get(uri`instances/${this.id}/actuator/loggers`, {
       headers: {'Accept': actuatorMimeTypes},
       transformResponse: Instance._toLoggers
     });
   }
 
   async configureLogger(name, level) {
-    return axios.post(`instances/${this.id}/actuator/loggers/${name}`, {configuredLevel: level}, {
+    return axios.post(uri`instances/${this.id}/actuator/loggers/${name}`, {configuredLevel: level}, {
       headers: {'Content-Type': 'application/json'}
     });
   }
 
   async fetchHttptrace() {
-    return axios.get(`instances/${this.id}/actuator/httptrace`, {
+    return axios.get(uri`instances/${this.id}/actuator/httptrace`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async fetchThreaddump() {
-    return axios.get(`instances/${this.id}/actuator/threaddump`, {
+    return axios.get(uri`instances/${this.id}/actuator/threaddump`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async fetchAuditevents(after) {
-    return axios.get(`instances/${this.id}/actuator/auditevents`, {
+    return axios.get(uri`instances/${this.id}/actuator/auditevents`, {
       headers: {'Accept': actuatorMimeTypes},
       params: {after: after.toISOString()}
     });
   }
 
   async fetchSessions(username) {
-    return axios.get(`instances/${this.id}/actuator/sessions`, {
+    return axios.get(uri`instances/${this.id}/actuator/sessions`, {
       headers: {'Accept': actuatorMimeTypes},
       params: {username}
     });
   }
 
   async fetchSession(sessionId) {
-    return axios.get(`instances/${this.id}/actuator/sessions/${sessionId}`, {
+    return axios.get(uri`instances/${this.id}/actuator/sessions/${sessionId}`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async deleteSession(sessionId) {
-    return axios.delete(`instances/${this.id}/actuator/sessions/${sessionId}`, {
+    return axios.delete(uri`instances/${this.id}/actuator/sessions/${sessionId}`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   streamLogfile(interval) {
-    return logtail(`instances/${this.id}/actuator/logfile`, interval);
+    return logtail(uri`instances/${this.id}/actuator/logfile`, interval);
   }
 
   async listMBeans() {
-    return axios.get(`instances/${this.id}/actuator/jolokia/list`, {
+    return axios.get(uri`instances/${this.id}/actuator/jolokia/list`, {
       headers: {'Accept': 'application/json'},
       params: {canonicalNaming: false},
       transformResponse: Instance._toMBeans
@@ -173,7 +174,7 @@ class Instance {
       mbean: `${domain}:${mBean}`,
       config: {ignoreErrors: true}
     };
-    return axios.post(`instances/${this.id}/actuator/jolokia`, body, {
+    return axios.post(uri`instances/${this.id}/actuator/jolokia`, body, {
       headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
     });
   }
@@ -185,7 +186,7 @@ class Instance {
       attribute,
       value
     };
-    return axios.post(`instances/${this.id}/actuator/jolokia`, body, {
+    return axios.post(uri`instances/${this.id}/actuator/jolokia`, body, {
       headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
     });
   }
@@ -197,7 +198,7 @@ class Instance {
       operation,
       'arguments': args
     };
-    return axios.post(`instances/${this.id}/actuator/jolokia`, body, {
+    return axios.post(uri`instances/${this.id}/actuator/jolokia`, body, {
       headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
     });
   }
@@ -221,7 +222,7 @@ class Instance {
   }
 
   static async get(id) {
-    return axios.get(`instances/${id}`, {
+    return axios.get(uri`instances/${id}`, {
       transformResponse: Instance._toInstance
     });
   }
