@@ -27,31 +27,34 @@
         <th>Time</th>
       </tr>
     </thead>
-    <template v-for="trace in traces">
-      <tr class="is-selectable"
-          :class="{ 'trace--is-detailed' : showDetails[trace.key] }"
-          @click="showDetails[trace.key] ? $delete(showDetails, trace.key) : $set(showDetails, trace.key, true)"
-          :key="trace.key">
-        <td v-text="trace.timestamp.format('L HH:mm:ss.SSS')"/>
-        <td v-text="trace.request.method"/>
-        <td v-text="trace.request.uri"/>
-        <td>
-          <span v-text="trace.response.status" class="tag"
-                :class="{ 'is-success' : trace.isSuccess(), 'is-warning' : trace.isClientError(), 'is-danger' : trace.isServerError() }"/>
-        </td>
-        <td v-text="trace.contentType"/>
-        <td v-text="trace.contentLength ? prettyBytes(trace.contentLength) : ''"/>
-        <td v-text="trace.timeTaken !== null && typeof trace.timeTaken !== 'undefined' ? `${trace.timeTaken} ms` : ''"/>
+    <tbdoy>
+      <template v-for="trace in traces">
+        <tr class="is-selectable"
+            :class="{ 'trace--is-detailed' : showDetails[trace.key] }"
+            @click="showDetails[trace.key] ? $delete(showDetails, trace.key) : $set(showDetails, trace.key, true)"
+            :key="trace.key">
+          <td v-text="trace.timestamp.format('L HH:mm:ss.SSS')"/>
+          <td v-text="trace.request.method"/>
+          <td v-text="trace.request.uri"/>
+          <td>
+            <span v-text="trace.response.status" class="tag"
+                  :class="{ 'is-success' : trace.isSuccess(), 'is-warning' : trace.isClientError(), 'is-danger' : trace.isServerError() }"/>
+          </td>
+          <td v-text="trace.contentType"/>
+          <td v-text="trace.contentLength ? prettyBytes(trace.contentLength) : ''"/>
+          <td
+            v-text="trace.timeTaken !== null && typeof trace.timeTaken !== 'undefined' ? `${trace.timeTaken} ms` : ''"/>
+        </tr>
+        <tr class="trace__detail" :key="`${trace.key}-detail`" v-if="showDetails[trace.key]">
+          <td colspan="7">
+            <pre v-text="toJson(trace)"/>
+          </td>
+        </tr>
+      </template>
+      <tr v-if="traces.length === 0">
+        <td class="is-muted" colspan="7">No traces found.</td>
       </tr>
-      <tr class="trace__detail" :key="`${trace.key}-detail`" v-if="showDetails[trace.key]">
-        <td colspan="7">
-          <pre v-text="toJson(trace)"/>
-        </td>
-      </tr>
-    </template>
-    <tr v-if="traces.length === 0">
-      <td class="is-muted" colspan="7">No traces found.</td>
-    </tr>
+    </tbdoy>
   </table>
 </template>
 
@@ -78,14 +81,14 @@
 </script>
 
 <style lang="scss">
-    @import "~@/assets/css/utilities";
+  @import "~@/assets/css/utilities";
 
-    .trace--is-detailed td {
-        border: none !important;
-    }
+  .trace--is-detailed td {
+    border: none !important;
+  }
 
-    .trace__detail td {
-        overflow-x: auto;
-        max-width: 1024px;
-    }
+  .trace__detail td {
+    overflow-x: auto;
+    max-width: 1024px;
+  }
 </style>

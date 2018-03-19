@@ -25,37 +25,39 @@
         <th>Session Id</th>
       </tr>
     </thead>
-    <template v-for="event in events">
-      <tr class="is-selectable"
-          :class="{ 'event--is-detailed' : showDetails[event.key] }"
-          @click="showDetails[event.key] ? $delete(showDetails, event.key) : $set(showDetails, event.key, true)"
-          :key="event.key">
-        <td v-text="event.timestamp.format('L HH:mm:ss.SSS')"/>
-        <td>
-          <span v-text="event.type" class="tag"
-                :class="{ 'is-success' : event.isSuccess(), 'is-danger' : event.isFailure() }"/>
-        </td>
-        <td v-if="hasSessionEndpoint && event.principal">
-          <router-link v-text="event.principal"
-                       :to="{ name: 'instance/sessions', params: { 'instanceId' : instance.id }, query: { username : event.principal} }"/>
-        </td>
-        <td v-else v-text="event.principal"/>
-        <td v-text="event.remoteAddress"/>
-        <td v-if="hasSessionEndpoint && event.sessionId">
-          <router-link v-text="event.sessionId"
-                       :to="{ name: 'instance/sessions', params: { 'instanceId' : instance.id }, query: { sessionId : event.sessionId } }"/>
-        </td>
-        <td v-else v-text="event.sessionId"/>
+    <tbdoy>
+      <template v-for="event in events">
+        <tr class="is-selectable"
+            :class="{ 'event--is-detailed' : showDetails[event.key] }"
+            @click="showDetails[event.key] ? $delete(showDetails, event.key) : $set(showDetails, event.key, true)"
+            :key="event.key">
+          <td v-text="event.timestamp.format('L HH:mm:ss.SSS')"/>
+          <td>
+            <span v-text="event.type" class="tag"
+                  :class="{ 'is-success' : event.isSuccess(), 'is-danger' : event.isFailure() }"/>
+          </td>
+          <td v-if="hasSessionEndpoint && event.principal">
+            <router-link v-text="event.principal"
+                         :to="{ name: 'instance/sessions', params: { 'instanceId' : instance.id }, query: { username : event.principal} }"/>
+          </td>
+          <td v-else v-text="event.principal"/>
+          <td v-text="event.remoteAddress"/>
+          <td v-if="hasSessionEndpoint && event.sessionId">
+            <router-link v-text="event.sessionId"
+                         :to="{ name: 'instance/sessions', params: { 'instanceId' : instance.id }, query: { sessionId : event.sessionId } }"/>
+          </td>
+          <td v-else v-text="event.sessionId"/>
+        </tr>
+        <tr class="event__detail" :key="`${event.key}-detail`" v-if="showDetails[event.key]">
+          <td colspan="5">
+            <pre v-text="toJson(event.data)"/>
+          </td>
+        </tr>
+      </template>
+      <tr v-if="events.length === 0">
+        <td class="is-muted" colspan="5">No auditevents found.</td>
       </tr>
-      <tr class="event__detail" :key="`${event.key}-detail`" v-if="showDetails[event.key]">
-        <td colspan="5">
-          <pre v-text="toJson(event.data)"/>
-        </td>
-      </tr>
-    </template>
-    <tr v-if="events.length === 0">
-      <td class="is-muted" colspan="5">No auditevents found.</td>
-    </tr>
+    </tbdoy>
   </table>
 </template>
 
