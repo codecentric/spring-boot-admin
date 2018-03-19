@@ -25,7 +25,7 @@
         <th>Session Id</th>
       </tr>
     </thead>
-    <tbdoy>
+    <tbody>
       <template v-for="event in events">
         <tr class="is-selectable"
             :class="{ 'event--is-detailed' : showDetails[event.key] }"
@@ -57,7 +57,7 @@
       <tr v-if="events.length === 0">
         <td class="is-muted" colspan="5">No auditevents found.</td>
       </tr>
-    </tbdoy>
+    </tbody>
   </table>
 </template>
 

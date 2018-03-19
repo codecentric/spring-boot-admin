@@ -27,7 +27,7 @@
         <th>Time</th>
       </tr>
     </thead>
-    <tbdoy>
+    <tbody>
       <template v-for="trace in traces">
         <tr class="is-selectable"
             :class="{ 'trace--is-detailed' : showDetails[trace.key] }"
@@ -54,7 +54,7 @@
       <tr v-if="traces.length === 0">
         <td class="is-muted" colspan="7">No traces found.</td>
       </tr>
-    </tbdoy>
+    </tbody>
   </table>
 </template>
 
