@@ -149,8 +149,8 @@ public class InstanceDiscoveryListenerTest {
 
         StepVerifier.create(registry.getInstances()).assertNext(application -> {
             Registration registration = application.getRegistration();
-            assertThat(registration.getHealthUrl()).isEqualTo("http://localhost:80/health");
-            assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80/");
+            assertThat(registration.getHealthUrl()).isEqualTo("http://localhost:80/actuator/health");
+            assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80/actuator");
             assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80/");
             assertThat(registration.getName()).isEqualTo("service");
         }).verifyComplete();

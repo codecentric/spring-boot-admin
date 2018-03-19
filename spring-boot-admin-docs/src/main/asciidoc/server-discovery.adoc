@@ -79,7 +79,7 @@ user.password
 
 | spring.boot.admin.discovery.converter.management-context-path
 | Will be appended to the service-url of the discovered service when the management-url is converted by the `DefaultServiceInstanceConverter`.
-|
+| `/actuator`
 
 | spring.boot.admin.discovery.converter.health-endpoint-path
 | Will be appended to the management-url of the discovered service when the health-url is converted by the `DefaultServiceInstanceConverter`.

@@ -47,7 +47,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
      * Default context-path to be appended to the url of the discovered service for the
      * managment-url.
      */
-    private String managementContextPath = "";
+    private String managementContextPath = "/actuator";
     /**
      * Default path of the health-endpoint to be used for the health-url of the discovered service.
      */
