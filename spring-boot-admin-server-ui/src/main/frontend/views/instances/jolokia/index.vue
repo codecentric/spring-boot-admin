@@ -220,33 +220,33 @@
 </script>
 
 <style lang="scss">
-    @import "~@/assets/css/utilities";
+  @import "~@/assets/css/utilities";
 
-    .domain-list {
-        position: sticky;
-        top: (($gap / 2) + $navbar-height-px + $tabs-height-px);
+  .domain-list {
+    position: sticky;
+    top: (($gap / 2) + $navbar-height-px + $tabs-height-px);
+  }
+
+  .m-bean {
+    transition: all $easing $speed;
+
+    &.is-active {
+      margin: 0.75rem -0.75rem;
+      max-width: unset;
     }
 
-    .m-bean {
-        transition: all $easing $speed;
-
-        &.is-active {
-            margin: 0.75rem -0.75rem;
-            max-width: unset;
-        }
-
-        &.is-active .m-bean--header {
-            padding-bottom: 0;
-        }
-
-        &:not(.is-active) .m-bean--header:hover {
-            background-color: $white-bis;
-        }
-
-        .m-bean--header--close {
-            position: absolute;
-            right: 0.75rem;
-            top: 0.75rem;
-        }
+    &.is-active .m-bean--header {
+      padding-bottom: 0;
     }
+
+    &:not(.is-active) .m-bean--header:hover {
+      background-color: $white-bis;
+    }
+
+    .m-bean--header--close {
+      position: absolute;
+      right: 0.75rem;
+      top: 0.75rem;
+    }
+  }
 </style>

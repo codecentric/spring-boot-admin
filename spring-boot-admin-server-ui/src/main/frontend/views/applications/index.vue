@@ -26,7 +26,7 @@
           <p v-text="error.message"/>
         </div>
       </div>
-      <div class="level">
+      <div class="level applications-stats">
         <div class="level-item has-text-centered">
           <div>
             <p class="heading">Applications</p>
@@ -50,7 +50,7 @@
           </div>
         </div>
       </div>
-      <div v-for="group in statusGroups" :key="group.status">
+      <div class="application-group" v-for="group in statusGroups" :key="group.status">
         <p class="heading" v-text="group.status"/>
         <applications-list :applications="group.applications" :selected="selected"/>
       </div>
@@ -117,3 +117,13 @@
     component: component
   };
 </script>
+
+
+<style lang="scss">
+  @import "~@/assets/css/utilities";
+
+  .application-group {
+    margin: $gap 0;
+  }
+
+</style>
