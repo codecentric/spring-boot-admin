@@ -525,7 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.0.0-SNAPSHOT,</span>
-<span id="revdate">19.03.2018</span>
+<span id="revdate">20.03.2018</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -837,6 +837,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <pre class="CodeRay highlight"><code data-lang="yml"><span class="key">eureka</span>:   <i class="conum" data-value="1"></i><b>(1)</b>
   <span class="key">instance</span>:
     <span class="key">leaseRenewalIntervalInSeconds</span>: <span class="string"><span class="content">10</span></span>
+    <span class="key">health-check-url-path</span>: <span class="string"><span class="content">/actuator/health</span></span>
   <span class="key">client</span>:
     <span class="key">registryFetchIntervalSeconds</span>: <span class="string"><span class="content">5</span></span>
     <span class="key">serviceUrl</span>:
@@ -846,7 +847,10 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
   <span class="key">endpoints</span>:
     <span class="key">web</span>:
       <span class="key">exposure</span>:
-        <span class="key">include</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">*</span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+        <span class="key">include</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">*</span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="2"></i><b>(2)</b>
+  <span class="key">endpoint</span>:
+    <span class="key">health</span>:
+      <span class="key">show-details</span>: <span class="string"><span class="content">ALWAYS</span></span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1275,7 +1279,7 @@ user.password</p></td>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.discovery.converter.management-context-path</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Will be appended to the service-url of the discovered service when the management-url is converted by the <code>DefaultServiceInstanceConverter</code>.</p></td>
-<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/actuator</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.discovery.converter.health-endpoint-path</p></td>
