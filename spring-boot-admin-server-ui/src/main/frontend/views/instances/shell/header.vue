@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <section class="hero is-primary instance-header" id="instance-menu">
+  <section class="hero instance-header" id="instance-menu">
     <div class="hero-body">
       <div class="container">
         <div class="columns">
@@ -25,10 +25,7 @@
               Instance <strong v-text="instance.id"/> (of <span v-text="application.instances.length"/>)
             </h2>
           </div>
-          <div class="column">
-            <sba-status v-if="instance" :status="instance.statusInfo.status"
-                        :date="instance.statusTimestamp"/>
-          </div>
+          <div class="column"/>
           <div class="column is-narrow is-hidden-mobile">
             <h2 class="subtitle is-6" v-if="instance">
               <a v-text="instance.registration.serviceUrl"
@@ -59,6 +56,6 @@
         type: Application,
         default: null
       }
-    }
+    },
   }
 </script>

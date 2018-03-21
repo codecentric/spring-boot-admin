@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <section class="hero is-primary instance-tabs">
+  <section class="hero instance-tabs">
     <div class="hero-foot">
       <div class="container">
         <div class="level">

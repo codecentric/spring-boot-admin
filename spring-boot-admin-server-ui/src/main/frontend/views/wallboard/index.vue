@@ -48,10 +48,25 @@
     },
     methods: {
       classForApplication(application) {
-        if (application) {
-          return 'is-selectable ' + (application.status === 'UP' ? 'is-primary' : (application.status === 'RESTRICTED' ? 'is-warning' : 'is-danger'));
+        if (!application) {
+          return null;
         }
-        return null;
+        if (application.status === 'UP') {
+          return 'is-selectable is-primary';
+        }
+        if (application.status === 'RESTRICTED') {
+          return 'is-selectable is-warning';
+        }
+        if (application.status === 'DOWN') {
+          return 'is-selectable is-danger';
+        }
+        if (application.status === 'OUT_OF_SERVICE') {
+          return 'is-selectable is-danger';
+        }
+        if (application.status === 'OFFLINE') {
+          return 'is-selectable is-light';
+        }
+        return 'is-selectable is-light';
       },
       select(application) {
         this.$router.push({name: 'applications', params: {selected: application.name}});

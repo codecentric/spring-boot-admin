@@ -194,28 +194,15 @@
       transition: all $easing 250ms;
     }
 
-    &.is-primary polygon {
-      fill: $primary;
-      fill-opacity: 0.3;
-      stroke: $primary;
-      stroke-opacity: 0.95;
-      stroke-width: 1.5;
-    }
-
-    &.is-danger polygon {
-      fill: $danger;
-      fill-opacity: 0.3;
-      stroke: $danger;
-      stroke-opacity: 0.95;
-      stroke-width: 1.5;
-    }
-
-    &.is-warning polygon {
-      fill: $warning;
-      fill-opacity: 0.3;
-      stroke: $warning;
-      stroke-opacity: 0.95;
-      stroke-width: 1.5;
+    @each $name, $pair in $colors {
+      &.is-#{$name} polygon {
+        $color: nth($pair, 1);
+        fill: $color;
+        fill-opacity: 0.3;
+        stroke: $color;
+        stroke-opacity: 0.95;
+        stroke-width: 1.5;
+      }
     }
 
     &.is-selectable:hover {

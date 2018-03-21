@@ -126,7 +126,22 @@
         if (this.selected !== application.name) {
           return 'is-selectable';
         }
-        return (application.status === 'UP' ? 'is-primary' : (application.status === 'RESTRICTED' ? 'is-warning' : 'is-danger'));
+        if (application.status === 'UP') {
+          return 'is-primary';
+        }
+        if (application.status === 'RESTRICTED') {
+          return 'is-warning';
+        }
+        if (application.status === 'DOWN') {
+          return 'is-danger';
+        }
+        if (application.status === 'OUT_OF_SERVICE') {
+          return 'is-danger';
+        }
+        if (application.status === 'OFFLINE') {
+          return 'is-light';
+        }
+        return 'is-light';
       },
       async unregister(item) {
         try {
