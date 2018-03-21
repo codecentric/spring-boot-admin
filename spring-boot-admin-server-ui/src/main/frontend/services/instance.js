@@ -69,7 +69,7 @@ class Instance {
   }
 
   async fetchEnv(name) {
-    return axios.get(uri`instances/${this.id}/actuator/env${name ? `/${name}` : '' }`, {
+    return axios.get(uri`instances/${this.id}/actuator/env/${name || '' }`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
