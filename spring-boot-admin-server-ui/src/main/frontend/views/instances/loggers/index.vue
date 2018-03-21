@@ -46,7 +46,7 @@
             <div class="control">
               <label class="checkbox">
                 <input type="checkbox" v-model="showClassLoggersOnly">
-                class
+                class only
               </label>
             </div>
           </div>
@@ -93,10 +93,7 @@
   import Instance from '@/services/instance';
   import sbaLoggerControl from './logger-control';
 
-  const isPackageName = (name) => {
-    const i = name.lastIndexOf('.') + 1;
-    return name.charAt(i) !== name.charAt(i).toUpperCase();
-  };
+  const isClassName = name => /\.[A-Z]/.test(name);
 
   const addToFilter = (oldFilter, addedFilter) =>
     !oldFilter
@@ -118,7 +115,7 @@
       error: null,
       loggerConfig: null,
       filter: '',
-      showClassLoggersOnly: true,
+      showClassLoggersOnly: false,
       showConfiguredLoggersOnly: false,
       visibleLimit: 25,
       loading: {},
@@ -173,9 +170,7 @@
         }
       },
       onScroll() {
-        if (this.loggerConfig
-          && (this.$el.getBoundingClientRect().bottom - 400) <= window.innerHeight
-          && this.visibleLimit < this.filteredLoggers.length) {
+        if (this.loggerConfig && this.$el.getBoundingClientRect().bottom - 400 <= window.innerHeight && this.visibleLimit < this.filteredLoggers.length) {
           this.visibleLimit += 25;
         }
       },
@@ -183,16 +178,16 @@
         let filterFn = null;
 
         if (this.showClassLoggersOnly) {
-          filterFn = addToFilter(filterFn, (logger) => !isPackageName(logger.name));
+          filterFn = addToFilter(filterFn, logger => isClassName(logger.name));
         }
 
         if (this.showConfiguredLoggersOnly) {
-          filterFn = addToFilter(filterFn, (logger) => !!logger.configuredLevel);
+          filterFn = addToFilter(filterFn, logger => !!logger.configuredLevel);
         }
 
         if (this.filter) {
           const normalizedFilter = this.filter.toLowerCase();
-          filterFn = addToFilter(filterFn, (logger) => logger.name.toLowerCase().indexOf(normalizedFilter) >= 0);
+          filterFn = addToFilter(filterFn, logger => logger.name.toLowerCase().indexOf(normalizedFilter) >= 0);
         }
 
         return filterFn;
