@@ -69,7 +69,11 @@
         return 'is-selectable is-light';
       },
       select(application) {
-        this.$router.push({name: 'applications', params: {selected: application.name}});
+        if (application.instances.length === 1) {
+          this.$router.push({name: 'instance/details', params: {instanceId: application.instances[0].id}});
+        } else {
+          this.$router.push({name: 'applications', params: {selected: application.name}});
+        }
       },
     }
   };
