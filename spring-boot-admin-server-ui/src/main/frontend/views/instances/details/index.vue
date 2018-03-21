@@ -101,25 +101,25 @@
     }),
     computed: {
       hasCaches() {
-        return this.metrics.indexOf('cache.gets') >= 0;
+        return this.metrics && this.metrics.indexOf('cache.gets') >= 0;
       },
       hasDatasources() {
-        return this.metrics.indexOf('data.source.active.connections') >= 0;
+        return this.metrics && this.metrics.indexOf('data.source.active.connections') >= 0;
       },
       hasGc() {
-        return this.metrics.indexOf('jvm.gc.pause') >= 0;
+        return this.metrics && this.metrics.indexOf('jvm.gc.pause') >= 0;
       },
       hasInfo() {
         return this.instance && this.instance.hasEndpoint('info');
       },
       hasMemory() {
-        return this.metrics.indexOf('jvm.memory.max') >= 0;
+        return this.metrics && this.metrics.indexOf('jvm.memory.max') >= 0;
       },
       hasProcess() {
-        return this.metrics.indexOf('process.uptime') >= 0;
+        return this.metrics && this.metrics.indexOf('process.uptime') >= 0;
       },
       hasThreads() {
-        return this.metrics.indexOf('jvm.threads.live') >= 0;
+        return this.metrics && this.metrics.indexOf('jvm.threads.live') >= 0;
       },
       hasMetadata() {
         return this.instance && this.instance.registration && this.instance.registration.metadata;
