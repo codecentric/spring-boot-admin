@@ -24,7 +24,6 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
-import java.util.OptionalLong;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -129,12 +128,14 @@ public class InstanceWebClientTest {
 
 
         StepVerifier.create(exchange).assertNext(response -> {
-            assertThat(response.headers().contentLength()).isEqualTo(OptionalLong.of(responseBody.length()));
+            assertThat(response.headers().contentLength()).isEmpty();
             assertThat(response.headers().contentType()).contains(MediaType.parseMediaType(ActuatorMediaType.V2_JSON));
             assertThat(response.headers().header("X-Custom")).containsExactly("1234");
             assertThat(response.headers().header(CONTENT_TYPE)).containsExactly(ActuatorMediaType.V2_JSON);
+            assertThat(response.headers().header(CONTENT_LENGTH)).isEmpty();
             assertThat(response.headers().asHttpHeaders().get("X-Custom")).containsExactly("1234");
             assertThat(response.headers().asHttpHeaders().get(CONTENT_TYPE)).containsExactly(ActuatorMediaType.V2_JSON);
+            assertThat(response.headers().asHttpHeaders().get(CONTENT_LENGTH)).isNull();
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK);
         }).verifyComplete();
 

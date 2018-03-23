@@ -47,6 +47,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V1_MEDIATYPE;
 import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V2_MEDIATYPE;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
 public final class InstanceExchangeFilterFunctions {
@@ -160,7 +161,7 @@ public final class InstanceExchangeFilterFunctions {
             this.headers = new Headers() {
                 @Override
                 public OptionalLong contentLength() {
-                    return response.headers().contentLength();
+                    return OptionalLong.empty();
                 }
 
                 @Override
@@ -173,6 +174,9 @@ public final class InstanceExchangeFilterFunctions {
                     if (headerName.equals(HttpHeaders.CONTENT_TYPE)) {
                         return singletonList(contentType.toString());
                     }
+                    if (headerName.equals(HttpHeaders.CONTENT_LENGTH)) {
+                        return emptyList();
+                    }
                     return response.headers().header(headerName);
                 }
 
@@ -181,6 +185,7 @@ public final class InstanceExchangeFilterFunctions {
                     HttpHeaders newHeaders = new HttpHeaders();
                     newHeaders.putAll(response.headers().asHttpHeaders());
                     newHeaders.replace(HttpHeaders.CONTENT_TYPE, singletonList(contentType.toString()));
+                    newHeaders.remove(HttpHeaders.CONTENT_LENGTH);
                     return HttpHeaders.readOnlyHttpHeaders(newHeaders);
                 }
             };
