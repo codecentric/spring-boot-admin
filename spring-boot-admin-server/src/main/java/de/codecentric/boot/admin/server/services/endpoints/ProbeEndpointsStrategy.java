@@ -27,8 +27,10 @@ import reactor.core.publisher.Mono;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.util.Assert;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.util.UriComponentsBuilder;
 
 public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
@@ -56,15 +58,14 @@ public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
                                       .path(endpoint.getPath())
                                       .build()
                                       .toUri();
-        return instanceWebClient.instance(instance)
-                                .options()
-                                .uri(uri)
-                                .exchange()
-                                .flatMap(response -> response.bodyToMono(Void.class)
-                                                             .then(response.statusCode().is2xxSuccessful() ?
-                                                                 Mono.just(true) :
-                                                                 Mono.empty()))
-                                .map(r -> Endpoint.of(endpoint.getId(), uri.toString()));
+        return instanceWebClient.instance(instance).options().uri(uri).exchange().flatMap(this.convert(endpoint, uri));
+    }
+
+    private Function<ClientResponse, Mono<Endpoint>> convert(EndpointDefinition endpoint, URI uri) {
+        return response -> response.bodyToMono(Void.class)
+                                   .then(response.statusCode().is2xxSuccessful() ?
+                                       Mono.just(Endpoint.of(endpoint.getId(), uri.toString())) :
+                                       Mono.empty());
     }
 
     @Data
