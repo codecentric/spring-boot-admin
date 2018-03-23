@@ -53,6 +53,7 @@ public class InstanceWebClient {
             filters.add(InstanceExchangeFilterFunctions.addHeaders(httpHeadersProvider));
             filters.add(InstanceExchangeFilterFunctions.rewriteEndpointUrl());
             filters.add(InstanceExchangeFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.health()));
+            filters.add(InstanceExchangeFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.info()));
             filters.add(InstanceExchangeFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.env()));
             filters.add(InstanceExchangeFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.httptrace()));
             filters.add(InstanceExchangeFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.threaddump()));

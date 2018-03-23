@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,10 @@ public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
                                 .options()
                                 .uri(uri)
                                 .exchange()
-                                .filter(response -> response.statusCode().is2xxSuccessful())
+                                .flatMap(response -> response.bodyToMono(Void.class)
+                                                             .then(response.statusCode().is2xxSuccessful() ?
+                                                                 Mono.just(true) :
+                                                                 Mono.empty()))
                                 .map(r -> Endpoint.of(endpoint.getId(), uri.toString()));
     }
 

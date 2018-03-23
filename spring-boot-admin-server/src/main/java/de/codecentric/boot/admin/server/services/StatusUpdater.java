@@ -34,6 +34,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.ClientResponse;
 
+import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V2_MEDIATYPE;
 import static java.util.Collections.emptyMap;
 
 /**
@@ -77,7 +78,11 @@ public class StatusUpdater {
     }
 
     protected Mono<StatusInfo> convertStatusInfo(ClientResponse response) {
-        if (response.headers().contentType().map(MediaType.APPLICATION_JSON::includes).orElse(false)) {
+        if (response.headers()
+                    .contentType()
+                    .map(mt -> mt.isCompatibleWith(MediaType.APPLICATION_JSON) ||
+                               mt.isCompatibleWith(ACTUATOR_V2_MEDIATYPE))
+                    .orElse(false)) {
             return response.bodyToMono(RESPONSE_TYPE).map(body -> {
                 if (body.get("status") instanceof String) {
                     return StatusInfo.from(body);
@@ -85,7 +90,7 @@ public class StatusUpdater {
                 return getStatusInfoFromStatus(response, body);
             });
         }
-        return Mono.just(this.getStatusInfoFromStatus(response, emptyMap()));
+        return response.bodyToMono(Void.class).then(Mono.just(this.getStatusInfoFromStatus(response, emptyMap())));
     }
 
     protected StatusInfo getStatusInfoFromStatus(ClientResponse response, Map<String, ?> body) {

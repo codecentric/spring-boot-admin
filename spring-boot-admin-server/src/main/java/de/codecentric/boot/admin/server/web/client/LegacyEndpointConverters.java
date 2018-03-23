@@ -98,6 +98,10 @@ public class LegacyEndpointConverters {
             convertUsing(RESPONSE_TYPE_LIST_MAP, RESPONSE_TYPE_MAP, LegacyEndpointConverters::convertFlyway));
     }
 
+    public static LegacyEndpointConverter info() {
+        return new LegacyEndpointConverter(Endpoint.INFO, flux -> flux);
+    }
+
     @SuppressWarnings("unchecked")
     private static <S, T> Function<Flux<DataBuffer>, Flux<DataBuffer>> convertUsing(ParameterizedTypeReference<S> sourceType,
                                                                                     ParameterizedTypeReference<T> targetType,

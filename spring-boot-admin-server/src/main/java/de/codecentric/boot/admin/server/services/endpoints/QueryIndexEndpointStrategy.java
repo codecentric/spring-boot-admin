@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,12 +50,17 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
                                 .get()
                                 .uri(instance.getRegistration().getManagementUrl())
                                 .exchange()
-                                .filter(response -> response.statusCode().is2xxSuccessful() &&
-                                                    response.headers()
-                                                            .contentType()
-                                                            .map(actuatorMediaType::isCompatibleWith)
-                                                            .orElse(false))
-                                .flatMap(r -> r.bodyToMono(Response.class))
+                                .flatMap(response -> {
+                                    if (response.statusCode().is2xxSuccessful() &&
+                                        response.headers()
+                                                .contentType()
+                                                .map(actuatorMediaType::isCompatibleWith)
+                                                .orElse(false)) {
+                                        return response.bodyToMono(Response.class);
+                                    } else {
+                                        return response.bodyToMono(Void.class).then(Mono.empty());
+                                    }
+                                })
                                 .flatMap(this::convert);
     }
 
