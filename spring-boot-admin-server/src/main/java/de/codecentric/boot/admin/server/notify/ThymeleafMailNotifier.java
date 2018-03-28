@@ -66,7 +66,6 @@ public class ThymeleafMailNotifier extends AbstractStatusChangeNotifier {
      */
     private Expression subject;
 
-
     /**
      * Mail Text. Is prepared via thymeleaf template;
      */
