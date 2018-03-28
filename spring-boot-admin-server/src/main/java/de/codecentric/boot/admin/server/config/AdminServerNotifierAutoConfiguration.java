@@ -32,7 +32,11 @@ import de.codecentric.boot.admin.server.notify.TelegramNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
 import de.codecentric.boot.admin.server.notify.filter.web.NotificationFilterController;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.lang.CharEncoding;
 import org.reactivestreams.Publisher;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -48,6 +52,10 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.mail.MailSender;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 @Configuration
 @AutoConfigureAfter({MailSenderAutoConfiguration.class})
@@ -109,7 +117,26 @@ public class AdminServerNotifierAutoConfiguration {
         @ConditionalOnMissingBean
         @ConfigurationProperties("spring.boot.admin.notify.mail")
         public MailNotifier mailNotifier(MailSender mailSender, InstanceRepository repository) {
-            return new MailNotifier(mailSender, repository);
+            return new MailNotifier(mailSender, repository, mailNotifierTemplateEngine());
+        }
+
+        @Bean
+        public TemplateEngine mailNotifierTemplateEngine() {
+            final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+            templateResolver.setOrder(Integer.valueOf(1));
+            templateResolver.setPrefix("/templates/");
+
+            final Set<String> notificationTemplateNames = new HashSet<>();
+            notificationTemplateNames.add("notification-template-subject.*");
+            notificationTemplateNames.add("notification-template-body.*");
+
+            templateResolver.setResolvablePatterns(notificationTemplateNames);
+            templateResolver.setTemplateMode(TemplateMode.TEXT);
+            templateResolver.setCharacterEncoding(CharEncoding.UTF_8);
+
+            final SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+            templateEngine.addTemplateResolver(templateResolver);
+            return templateEngine;
         }
     }
 
