@@ -32,7 +32,10 @@ import de.codecentric.boot.admin.server.notify.TelegramNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
 import de.codecentric.boot.admin.server.notify.filter.web.NotificationFilterController;
 
+import java.util.Collections;
 import java.util.List;
+
+import org.apache.commons.lang.CharEncoding;
 import org.reactivestreams.Publisher;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -48,6 +51,10 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.mail.MailSender;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 @Configuration
 @AutoConfigureAfter({MailSenderAutoConfiguration.class})
@@ -110,6 +117,25 @@ public class AdminServerNotifierAutoConfiguration {
         @ConfigurationProperties("spring.boot.admin.notify.mail")
         public MailNotifier mailNotifier(MailSender mailSender, InstanceRepository repository) {
             return new MailNotifier(mailSender, repository);
+        }
+
+        // TODO exchange with ThymeleafMailNotifier? or create common parent and switch implementation via configuration?
+        // which params should be configurable?
+
+        @Bean
+        @ConditionalOnBean(MailNotifier.class)
+        public TemplateEngine emailTemplateEngine() {
+            final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+            templateResolver.setOrder(Integer.valueOf(1));
+            templateResolver.setResolvablePatterns(Collections.singleton("*"));
+            templateResolver.setPrefix("/templates/");
+            templateResolver.setSuffix(".html");
+            templateResolver.setTemplateMode(TemplateMode.TEXT);
+            templateResolver.setCharacterEncoding(CharEncoding.UTF_8);
+
+            final SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+            templateEngine.addTemplateResolver(templateResolver);
+            return templateEngine;
         }
     }
 
