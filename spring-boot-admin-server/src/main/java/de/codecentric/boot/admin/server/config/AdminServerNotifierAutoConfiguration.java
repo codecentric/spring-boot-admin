@@ -129,7 +129,7 @@ public class AdminServerNotifierAutoConfiguration {
             templateResolver.setOrder(Integer.valueOf(1));
             templateResolver.setResolvablePatterns(Collections.singleton("*"));
             templateResolver.setPrefix("/templates/");
-            templateResolver.setSuffix(".html");
+            templateResolver.setSuffix(".*");
             templateResolver.setTemplateMode(TemplateMode.TEXT);
             templateResolver.setCharacterEncoding(CharEncoding.UTF_8);
 

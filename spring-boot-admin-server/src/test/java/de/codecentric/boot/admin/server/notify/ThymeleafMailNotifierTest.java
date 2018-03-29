@@ -86,7 +86,7 @@ public class ThymeleafMailNotifierTest {
         expected.setFrom("SBA <no-reply@example.com>");
 
         expected.setText(EXPECTED_MAIL_TEXT);
-        expected.setSubject("-id- is DOWN");
+        expected.setSubject("App (-id-) is DOWN\n");
 
         verify(sender).send(eq(expected));
     }
