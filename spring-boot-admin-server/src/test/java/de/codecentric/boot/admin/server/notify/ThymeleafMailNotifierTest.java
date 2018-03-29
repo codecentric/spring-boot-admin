@@ -46,18 +46,18 @@ public class ThymeleafMailNotifierTest {
     private ThymeleafMailNotifier notifier;
     private InstanceRepository repository;
 
-    private static String EXPECTED_MAIL_TEXT = "<!DOCTYPE html>" + System.lineSeparator() +
-        "<html>" + System.lineSeparator() +
-        "<head>" + System.lineSeparator() +
-        "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />" + System.lineSeparator() +
-        "</head>" + System.lineSeparator() +
-        "<body>" + System.lineSeparator() +
-        "<span>App</span> (<span>-id-</span>)" + System.lineSeparator() +
-        "status changed from <span>UNKNOWN</span> to <span>DOWN</span>" + System.lineSeparator() +
-        "<br />" + System.lineSeparator() +
-        "<span>http://health</span>" + System.lineSeparator() +
-        "</body>" + System.lineSeparator() +
-        "</html>" + System.lineSeparator();
+    private static String EXPECTED_MAIL_TEXT = "<!DOCTYPE html>\n" +
+        "<html>\n" +
+        "<head>\n" +
+        "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n" +
+        "</head>\n" +
+        "<body>\n" +
+        "<span>App</span> (<span>-id-</span>)\n" +
+        "status changed from <span>UNKNOWN</span> to <span>DOWN</span>\n" +
+        "<br />\n" +
+        "<span>http://health</span>\n" +
+        "</body>\n" +
+        "</html>\n";
 
     @Before
     public void setup() {
