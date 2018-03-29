@@ -117,15 +117,11 @@ public class AdminServerNotifierAutoConfiguration {
         @ConditionalOnMissingBean
         @ConfigurationProperties("spring.boot.admin.notify.mail")
         public MailNotifier mailNotifier(MailSender mailSender, InstanceRepository repository) {
-            return new MailNotifier(mailSender, repository);
+            return new MailNotifier(mailSender, repository, mailNotifierTemplateEngine());
         }
 
-        // TODO exchange with ThymeleafMailNotifier? or create common parent and switch implementation via configuration?
-        // which params should be configurable?
-
         @Bean
-        @ConditionalOnBean(MailNotifier.class)
-        public TemplateEngine emailTemplateEngine() {
+        public TemplateEngine mailNotifierTemplateEngine() {
             final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
             templateResolver.setOrder(Integer.valueOf(1));
             templateResolver.setPrefix("/templates/");

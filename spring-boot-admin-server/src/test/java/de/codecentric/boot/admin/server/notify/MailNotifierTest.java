@@ -16,6 +16,7 @@
 
 package de.codecentric.boot.admin.server.notify;
 
+import de.codecentric.boot.admin.server.config.AdminServerNotifierAutoConfiguration;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
@@ -23,6 +24,7 @@ import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
+import org.thymeleaf.TemplateEngine;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -39,19 +41,34 @@ import static org.mockito.Mockito.when;
 
 public class MailNotifierTest {
     private final Instance instance = Instance.create(InstanceId.of("-id-"))
-                                              .register(Registration.create("App", "http://health").build());
+        .register(Registration.create("App", "http://health").build());
     private MailSender sender;
     private MailNotifier notifier;
     private InstanceRepository repository;
 
+    private static final String EXPECTED_SUBJECT = "App (-id-) is DOWN\n";
+    private static final String EXPECTED_BODY = "<!DOCTYPE html>\n" +
+        "<html>\n" +
+        "<head>\n" +
+        "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n" +
+        "</head>\n" +
+        "<body>\n" +
+        "<span>App</span> (<span>-id-</span>)\n" +
+        "status changed from <span>UNKNOWN</span> to <span>DOWN</span>\n" +
+        "<br />\n" +
+        "<span>http://health</span>\n" +
+        "</body>\n" +
+        "</html>\n";
+
     @Before
     public void setup() {
+        final TemplateEngine templateEngine = new AdminServerNotifierAutoConfiguration.MailNotifierConfiguration().mailNotifierTemplateEngine();
         repository = mock(InstanceRepository.class);
         when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 
         sender = mock(MailSender.class);
 
-        notifier = new MailNotifier(sender, repository);
+        notifier = new MailNotifier(sender, repository, templateEngine);
         notifier.setTo(new String[]{"foo@bar.com"});
         notifier.setCc(new String[]{"bar@foo.com"});
         notifier.setFrom("SBA <no-reply@example.com>");
@@ -59,20 +76,18 @@ public class MailNotifierTest {
     }
 
     @Test
-    public void test_onApplicationEvent() {
+    public void test_onApplicationEvent_with_Thymeleaf_template() {
         StepVerifier.create(notifier.notify(
             new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
-                    .verifyComplete();
-        StepVerifier.create(
-            notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
-                    .verifyComplete();
+            .verifyComplete();
 
-        SimpleMailMessage expected = new SimpleMailMessage();
+        final SimpleMailMessage expected = new SimpleMailMessage();
         expected.setTo(new String[]{"foo@bar.com"});
         expected.setCc(new String[]{"bar@foo.com"});
         expected.setFrom("SBA <no-reply@example.com>");
-        expected.setText("App (-id-)\nstatus changed from DOWN to UP\n\nhttp://health");
-        expected.setSubject("-id- is UP");
+
+        expected.setSubject(EXPECTED_SUBJECT);
+        expected.setText(EXPECTED_BODY);
 
         verify(sender).send(eq(expected));
     }
