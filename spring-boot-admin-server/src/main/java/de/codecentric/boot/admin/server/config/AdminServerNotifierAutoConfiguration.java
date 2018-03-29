@@ -32,8 +32,9 @@ import de.codecentric.boot.admin.server.notify.TelegramNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
 import de.codecentric.boot.admin.server.notify.filter.web.NotificationFilterController;
 
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.CharEncoding;
 import org.reactivestreams.Publisher;
@@ -127,9 +128,13 @@ public class AdminServerNotifierAutoConfiguration {
         public TemplateEngine emailTemplateEngine() {
             final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
             templateResolver.setOrder(Integer.valueOf(1));
-            templateResolver.setResolvablePatterns(Collections.singleton("*"));
             templateResolver.setPrefix("/templates/");
-            templateResolver.setSuffix(".*");
+
+            final Set<String> notificationTemplateNames = new HashSet<>();
+            notificationTemplateNames.add("notification-template-subject.*");
+            notificationTemplateNames.add("notification-template-body.*");
+
+            templateResolver.setResolvablePatterns(notificationTemplateNames);
             templateResolver.setTemplateMode(TemplateMode.TEXT);
             templateResolver.setCharacterEncoding(CharEncoding.UTF_8);
 
