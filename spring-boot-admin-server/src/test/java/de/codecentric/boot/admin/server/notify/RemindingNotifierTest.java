@@ -146,7 +146,7 @@ public class RemindingNotifierTest {
                     .expectNext(appDown)
                     .expectNext(appDown)
                     .then(reminder::stop)
-                    .expectNoEvent(Duration.ofMillis(10))
+                    .expectNoEvent(Duration.ofMillis(100))
                     .thenCancel()
                     .verify();
 

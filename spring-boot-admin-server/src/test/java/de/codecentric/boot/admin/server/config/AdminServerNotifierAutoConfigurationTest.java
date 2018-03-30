@@ -16,11 +16,6 @@
 
 package de.codecentric.boot.admin.server.config;
 
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
-import de.codecentric.boot.admin.server.domain.values.StatusInfo;
-import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import de.codecentric.boot.admin.server.notify.CompositeNotifier;
 import de.codecentric.boot.admin.server.notify.HipchatNotifier;
 import de.codecentric.boot.admin.server.notify.LetsChatNotifier;
@@ -32,13 +27,8 @@ import de.codecentric.boot.admin.server.notify.OpsGenieNotifier;
 import de.codecentric.boot.admin.server.notify.PagerdutyNotifier;
 import de.codecentric.boot.admin.server.notify.SlackNotifier;
 import de.codecentric.boot.admin.server.notify.TelegramNotifier;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.UnicastProcessor;
-import reactor.test.StepVerifier;
+import de.codecentric.boot.admin.server.notify.TestNotifier;
 
-import java.util.Collections;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -52,9 +42,6 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AdminServerNotifierAutoConfigurationTest {
-    private static final InstanceEvent APP_DOWN = new InstanceStatusChangedEvent(InstanceId.of("id-2"), 0L,
-        StatusInfo.ofDown());
-
     private AnnotationConfigApplicationContext context;
 
     @After
@@ -67,14 +54,8 @@ public class AdminServerNotifierAutoConfigurationTest {
     @Test
     public void test_notifierListener() {
         load(TestSingleNotifierConfig.class);
-        InstanceEventStore store = context.getBean(InstanceEventStore.class);
-
-        StepVerifier.create(context.getBean(TestNotifier.class).getFlux())
-                    .expectSubscription()
-                    .then(() -> StepVerifier.create(store.append(Collections.singletonList(APP_DOWN))).verifyComplete())
-                    .expectNext(APP_DOWN)
-                    .thenCancel()
-                    .verify();
+        assertThat(context.getBean(Notifier.class)).isInstanceOf(TestNotifier.class);
+        assertThat(context.getBeansOfType(Notifier.class)).hasSize(1);
     }
 
     @Test
@@ -200,27 +181,6 @@ public class AdminServerNotifierAutoConfigurationTest {
         @Qualifier("testNotifier3")
         public TestNotifier testNotifier2() {
             return new TestNotifier();
-        }
-    }
-
-    private static class TestNotifier implements Notifier {
-        private final Flux<InstanceEvent> publishedFlux;
-        private final FluxSink<InstanceEvent> sink;
-
-        private TestNotifier() {
-            UnicastProcessor<InstanceEvent> unicastProcessor = UnicastProcessor.create();
-            this.publishedFlux = unicastProcessor;
-            this.sink = unicastProcessor.sink();
-        }
-
-        @Override
-        public Mono<Void> notify(InstanceEvent event) {
-            this.sink.next(event);
-            return Mono.empty();
-        }
-
-        public Flux<InstanceEvent> getFlux() {
-            return publishedFlux;
         }
     }
 }
