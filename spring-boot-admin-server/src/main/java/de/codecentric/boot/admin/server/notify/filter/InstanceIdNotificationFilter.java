@@ -23,24 +23,24 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import java.time.Instant;
 
 public class InstanceIdNotificationFilter extends ExpiringNotificationFilter {
-    private final InstanceId id;
+    private final InstanceId instanceId;
 
-    public InstanceIdNotificationFilter(InstanceId id, Instant expiry) {
+    public InstanceIdNotificationFilter(InstanceId instanceId, Instant expiry) {
         super(expiry);
-        this.id = id;
+        this.instanceId = instanceId;
     }
 
     @Override
     protected boolean doFilter(InstanceEvent event, Instance instance) {
-        return id.equals(event.getInstance());
+        return instanceId.equals(event.getInstance());
     }
 
-    public InstanceId getId() {
-        return id;
+    public InstanceId getInstanceId() {
+        return instanceId;
     }
 
     @Override
     public String toString() {
-        return "NotificationFilter [id=" + id + ", expiry=" + getExpiry() + "]";
+        return "NotificationFilter [instanceId=" + instanceId + ", expiry=" + getExpiry() + "]";
     }
 }

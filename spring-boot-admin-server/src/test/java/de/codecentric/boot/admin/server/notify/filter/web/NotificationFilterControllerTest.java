@@ -24,52 +24,52 @@ import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
 
 import java.io.IOException;
 import java.util.Map;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class NotificationFilterControllerTest {
 
     private final InstanceRepository repository = new EventsourcingInstanceRepository(new InMemoryEventStore());
-    private MockMvc mvc = MockMvcBuilders.standaloneSetup(
-        new NotificationFilterController(new FilteringNotifier(new LoggingNotifier(repository), repository))).build();
+    private final NotificationFilterController controller = new NotificationFilterController(
+        new FilteringNotifier(new LoggingNotifier(repository), repository));
+    private MockMvc mvc = MockMvcBuilders.standaloneSetup(controller)
+                                         .setCustomHandlerMapping(
+                                             () -> new de.codecentric.boot.admin.server.web.servlet.AdminControllerHandlerMapping(
+                                                 "/"))
+                                         .build();
 
     @Test
-    @Ignore("find a way to test reactive driven controllers")
     public void test_missing_parameters() throws Exception {
         mvc.perform(post("/notifications/filters")).andExpect(status().isBadRequest());
     }
 
     @Test
-    @Ignore("find a way to test reactive driven controllers")
-
     public void test_delete_notfound() throws Exception {
         mvc.perform(delete("/notifications/filters/abcdef")).andExpect(status().isNotFound());
     }
 
     @Test
-    @Ignore("find a way to test reactive driven controllers")
     public void test_post_delete() throws Exception {
-        /* String response = mvc.perform(post("/notifications/filters?id=1337&ttl=10000"))
-                            .andExpect(status().isOk())
-                            .andExpect(content().string(not(isEmptyString())))
-                            .andReturn()
-                            .getResponse()
-                            .getContentAsString();*/
-        String response = "";
+        String response = mvc.perform(post("/notifications/filters?instanceId=1337&ttl=10000"))
+                             .andExpect(status().isOk())
+                             .andExpect(content().string(not(isEmptyString())))
+                             .andReturn()
+                             .getResponse()
+                             .getContentAsString();
         String id = extractId(response);
 
-        mvc.perform(get("/notifications/filters"))
-           .andExpect(status().isOk())
-           .andExpect(jsonPath("$..id").value("1337"));
+        mvc.perform(get("/notifications/filters")).andExpect(status().isOk());
 
         mvc.perform(delete("/notifications/filters/{id}", id)).andExpect(status().isOk());
 
@@ -78,6 +78,6 @@ public class NotificationFilterControllerTest {
 
     private String extractId(String response) throws IOException {
         Map<?, ?> map = new ObjectMapper().readerFor(Map.class).readValue(response);
-        return map.keySet().iterator().next().toString();
+        return map.get("id").toString();
     }
 }

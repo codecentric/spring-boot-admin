@@ -16,10 +16,18 @@
 
 package de.codecentric.boot.admin.server.notify.filter;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import java.util.concurrent.atomic.AtomicLong;
 
-public interface NotificationFilter {
-    String getId();
-    boolean filter(InstanceEvent event, Instance instance);
+public abstract class AbstractNotificationFilter implements NotificationFilter {
+    private static AtomicLong instanceCounter = new AtomicLong(0L);
+    private final String id;
+
+    public AbstractNotificationFilter() {
+        this.id = "F-" + instanceCounter.getAndIncrement();
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
 }

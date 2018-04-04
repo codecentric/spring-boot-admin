@@ -33,11 +33,13 @@ import faStepBackward from '@fortawesome/fontawesome-free-solid/faStepBackward';
 import faStepForward from '@fortawesome/fontawesome-free-solid/faStepForward';
 import faTimesCircle from '@fortawesome/fontawesome-free-solid/faTimesCircle';
 import faTrash from '@fortawesome/fontawesome-free-solid/faTrash';
+import faBell from '@fortawesome/fontawesome-free-solid/faBell';
+import faBellSlash from '@fortawesome/fontawesome-free-solid/faBellSlash';
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 
 //solid
 fontawesome.library.add(faTrash, faDownload, faStepForward, faStepBackward, faCheck, faQuestionCircle, faBan, faTimesCircle, faMinusCircle, faExclamation,
-  faBook, faSignOutAlt, faExclamationTriangle, faPencilAlt);
+  faBook, faSignOutAlt, faExclamationTriangle, faPencilAlt, faBell, faBellSlash);
 //regular
 fontawesome.library.add(farTimesCircle);
 //brands

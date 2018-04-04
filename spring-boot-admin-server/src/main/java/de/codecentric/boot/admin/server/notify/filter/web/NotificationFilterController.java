@@ -23,10 +23,8 @@ import de.codecentric.boot.admin.server.notify.filter.InstanceIdNotificationFilt
 import de.codecentric.boot.admin.server.notify.filter.NotificationFilter;
 import de.codecentric.boot.admin.server.web.AdminController;
 
-import java.time.Duration;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.Map;
+import java.util.Collection;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -53,18 +51,16 @@ public class NotificationFilterController {
     }
 
     @GetMapping(path = "/notifications/filters", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    public Map<String, NotificationFilter> getFilters() {
-        return filteringNotifier.getNotificationFilters();
+    public Collection<NotificationFilter> getFilters() {
+        return filteringNotifier.getNotificationFilters().values();
     }
 
     @PostMapping(path = "/notifications/filters", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> addFilter(@RequestParam(name = "id", required = false) String id,
-                                       @RequestParam(name = "name", required = false) String name,
-                                       @RequestParam(name = "ttl", required = false) Duration ttl) {
-        if (hasText(id) || hasText(name)) {
-            NotificationFilter filter = createFilter(hasText(id) ? InstanceId.of(id) : null, name, ttl);
-            String filterId = filteringNotifier.addFilter(filter);
-            return ResponseEntity.ok(Collections.singletonMap(filterId, filter));
+    public ResponseEntity<?> addFilter(@RequestParam(name = "instanceId", required = false) String instanceId, @RequestParam(name = "applicationName", required = false) String name, @RequestParam(name = "ttl", required = false) Long ttl) {
+        if (hasText(instanceId) || hasText(name)) {
+            NotificationFilter filter = createFilter(hasText(instanceId) ? InstanceId.of(instanceId) : null, name, ttl);
+            filteringNotifier.addFilter(filter);
+            return ResponseEntity.ok(filter);
         } else {
             return ResponseEntity.badRequest().body("Either 'id' or 'name' must be set");
         }
@@ -74,17 +70,18 @@ public class NotificationFilterController {
     public ResponseEntity<?> deleteFilter(@PathVariable("id") String id) {
         NotificationFilter deleted = filteringNotifier.removeFilter(id);
         if (deleted != null) {
-            return ResponseEntity.ok(deleted);
+            return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
-    private NotificationFilter createFilter(InstanceId id, String name, Duration ttl) {
-        Instant expiry = ttl != null ? Instant.now().plus(ttl) : null;
-
-        return id != null ?
-            new InstanceIdNotificationFilter(id, expiry) :
-            new ApplicationNameNotificationFilter(name, expiry);
+    private NotificationFilter createFilter(InstanceId id, String name, Long ttl) {
+        Instant expiry = ttl != null && ttl >= 0 ? Instant.now().plusMillis(ttl) : null;
+        if (id != null) {
+            return new InstanceIdNotificationFilter(id, expiry);
+        } else {
+            return new ApplicationNameNotificationFilter(name, expiry);
+        }
     }
 }

@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -47,7 +46,6 @@ public class FilteringNotifier extends AbstractEventNotifier {
     private final Notifier delegate;
     private Instant lastCleanup = Instant.EPOCH;
     private Duration cleanupInterval = Duration.ofSeconds(10);
-    private AtomicLong counter = new AtomicLong();
 
     public FilteringNotifier(Notifier delegate, InstanceRepository repository) {
         super(repository);
@@ -95,11 +93,9 @@ public class FilteringNotifier extends AbstractEventNotifier {
         }
     }
 
-    public String addFilter(NotificationFilter filter) {
-        String id = "F" + counter.incrementAndGet();
-        LOGGER.debug("Added filter '{}' with id '{}'", filter, id);
-        filters.put(id, filter);
-        return id;
+    public void addFilter(NotificationFilter filter) {
+        LOGGER.debug("Added filter '{}'", filter);
+        filters.put(filter.getId(), filter);
     }
 
     public NotificationFilter removeFilter(String id) {

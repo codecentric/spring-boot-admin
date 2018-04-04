@@ -14,12 +14,34 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin.server.notify.filter;
+import Popper from 'popper.js';
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+const poppers = new WeakMap();
 
-public interface NotificationFilter {
-    String getId();
-    boolean filter(InstanceEvent event, Instance instance);
+const bind = (el, binding) => {
+  const reference = document.getElementById(binding.value);
+  if (reference) {
+    const popper = new Popper(reference, el);
+    poppers.set(el, popper);
+  }
+};
+
+const unbind = (el) => {
+  const popper = poppers.get(el);
+  if (popper) {
+    popper.destroy(el);
+  }
+};
+
+export default {
+  bind,
+  update(el, binding) {
+    if (binding.value === binding.oldValue) {
+      return
+    }
+    bind(el, binding)
+  },
+  unbind
 }
+
+

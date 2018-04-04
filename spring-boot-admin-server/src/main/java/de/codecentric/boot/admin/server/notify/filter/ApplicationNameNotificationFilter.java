@@ -22,24 +22,24 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import java.time.Instant;
 
 public class ApplicationNameNotificationFilter extends ExpiringNotificationFilter {
-    private final String name;
+    private final String applicationName;
 
-    public ApplicationNameNotificationFilter(String name, Instant expiry) {
+    public ApplicationNameNotificationFilter(String applicationName, Instant expiry) {
         super(expiry);
-        this.name = name;
+        this.applicationName = applicationName;
     }
 
     @Override
     protected boolean doFilter(InstanceEvent event, Instance instance) {
-        return name.equals(instance.getRegistration().getName());
+        return applicationName.equals(instance.getRegistration().getName());
     }
 
-    public String getName() {
-        return name;
+    public String getApplicationName() {
+        return applicationName;
     }
 
     @Override
     public String toString() {
-        return "NotificationFilter [name=" + name + ", expiry=" + getExpiry() + "]";
+        return "NotificationFilter [applicationName=" + applicationName + ", expiry=" + getExpiry() + "]";
     }
 }

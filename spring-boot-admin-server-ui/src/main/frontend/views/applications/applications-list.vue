@@ -18,7 +18,7 @@
   <div class="applications-list">
     <div class="application-list__item card" :class="{'is-active': selected === application.name}"
          v-for="application in applications" :key="application.name" :id=" application.name"
-         v-on-clickaway="(event) => selected === application.name && deselect(event)">
+         v-on-clickaway="(event) => deselect(event, application.name)">
       <header class="hero application-list__item__header"
               :class="getHeaderClass(application)"
               @click.stop="select(application.name)">
@@ -37,20 +37,19 @@
             </span>
           </p>
           <p class="application-list__item__header__version" v-text="application.version"/>
-          <div class="application-list__item__header__actions">
-            <sba-icon-button icon="trash"
-                             v-if="application.isUnregisterable"
-                             @click.native.stop="unregister(application)"/>
-          </div>
         </template>
         <template v-else>
           <h1 class="title is-size-5 application-list__item__header__name" v-text="application.name"/>
-          <div class="application-list__item__header__actions">
-            <sba-icon-button icon="trash"
-                             v-if="application.isUnregisterable"
-                             @click.native.stop="unregister(application)"/>
-          </div>
         </template>
+        <div class="application-list__item__header__actions">
+          <sba-icon-button :id="`nf-settings-${application.name}`"
+                           v-if="hasNotificationFiltersSupport"
+                           @click.native.stop="toggleNotificationFilterSettingsFor(application)"
+                           :icon="hasActiveFilter(application) ? 'bell-slash' : 'bell'"/>&nbsp;
+          <sba-icon-button icon="trash"
+                           v-if="application.isUnregisterable"
+                           @click.native.stop="unregister(application)"/>
+        </div>
       </header>
       <div class="card-content" v-if="selected === application.name">
         <table class="table is-hoverable is-selectable is-fullwidth application__instances">
@@ -69,6 +68,10 @@
                 <span v-text="instance.info.version"/>
               </td>
               <td class="instance__actions">
+                <sba-icon-button :id="`nf-settings-${instance.id}`"
+                                 v-if="hasNotificationFiltersSupport"
+                                 @click.native.stop="toggleNotificationFilterSettingsFor(instance)"
+                                 :icon="hasActiveFilter(instance) ? 'bell-slash' : 'bell'"/>
                 <sba-icon-button icon="trash"
                                  v-if="instance.isUnregisterable"
                                  @click.native.stop="unregister(instance)"/>
@@ -78,11 +81,22 @@
         </table>
       </div>
     </div>
+    <notification-filter-settings v-if="showNotificationFilterSettingsObject"
+                                  v-popper="`nf-settings-${showNotificationFilterSettingsObject.id || showNotificationFilterSettingsObject.name}`"
+                                  :notification-filters="notificationFilters"
+                                  :object="showNotificationFilterSettingsObject"
+                                  @filter-added="handleFilterChange"
+                                  @filter-deleted="handleFilterChange"/>
   </div>
 </template>
 
 <script>
+  import Popper from '@/directives/popper';
+  import subscribing from '@/mixins/subscribing';
+  import NotificationFilter from '@/services/notification-filter';
+  import {Observable, Subject} from '@/utils/rxjs';
   import {directive as onClickaway} from 'vue-clickaway';
+  import NotificationFilterSettings from './notification-filter-settings';
 
   export default {
     props: {
@@ -95,19 +109,28 @@
         default: null
       }
     },
-    directives: {onClickaway},
+    directives: {onClickaway, Popper},
+    mixins: [subscribing],
+    components: {NotificationFilterSettings},
     data: () => ({
-      errors: []
+      errors: [],
+      hasNotificationFiltersSupport: false,
+      notificationFilters: [],
+      showNotificationFilterSettingsObject: null
     }),
+    computed: {},
     methods: {
       select(name) {
         this.$router.replace({name: 'applications', params: {selected: name}});
       },
-      deselect(event) {
+      deselect(event, expectedSelected) {
+        this.toggleNotificationFilterSettingsFor(null);
         if (event && event.target instanceof HTMLAnchorElement) {
           return;
         }
-        this.$router.replace({name: 'applications'});
+        if (this.selected === expectedSelected || !expectedSelected) {
+          this.$router.replace({name: 'applications'});
+        }
       },
       showDetails(instance) {
         this.$router.push({name: 'instance/details', params: {instanceId: instance.id}});
@@ -149,14 +172,49 @@
         } catch (e) {
           this.errors.push(e);
         }
+      },
+      createSubscription() {
+        const vm = this;
+        vm.notificationFilterSubject = new Subject();
+        return Observable.timer(0, 60000)
+          .merge(vm.notificationFilterSubject)
+          .concatMap(this.fetchNotificationFilters)
+          .subscribe({
+            next: data => {
+              vm.notificationFilters = data;
+            },
+            error: error => {
+              console.warn('Fetching notification filters failed:', error);
+              vm.errors.push(error);
+            }
+          });
+      },
+      async fetchNotificationFilters() {
+        if (this.hasNotificationFiltersSupport) {
+          const response = await NotificationFilter.getFilters();
+          return response.data;
+        }
+        return [];
+      },
+      handleFilterChange(event) {
+        this.toggleNotificationFilterSettingsFor(null);
+        this.notificationFilterSubject.next(event);
+      },
+      toggleNotificationFilterSettingsFor(obj) {
+        this.showNotificationFilterSettingsObject = obj ? obj : null;
+      },
+      hasActiveFilter(object) {
+        return this.notificationFilters.findIndex(f => f.affects(object)) >= 0;
       }
     },
-    mounted() {
-      return this.scrollIntoView(this.selected, 'instant');
+    async mounted() {
+      this.scrollIntoView(this.selected, 'instant');
+      this.hasNotificationFiltersSupport = await NotificationFilter.isSupported();
+      this.fetchNotificationFilters();
     },
     watch: {
       selected(newVal) {
-        return this.scrollIntoView(newVal);
+        this.scrollIntoView(newVal);
       }
     }
   }
@@ -207,10 +265,16 @@
         transition: all $easing $speed;
         will-change: opacity;
         margin-right: ($gap / 2);
+        display: flex;
 
         *:hover > &,
         *.is-active & {
           opacity: 1;
+        }
+
+        & > * {
+          width: ($gap / 2);
+          height: ($gap / 2);
         }
       }
     }
@@ -235,6 +299,12 @@
       *:hover > & {
         opacity: 1;
       }
+
+      & > * {
+        width: ($gap / 2);
+        height: ($gap / 2);
+      }
+
     }
   }
 

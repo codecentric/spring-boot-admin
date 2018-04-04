@@ -21,7 +21,7 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
 import java.time.Instant;
 
-public abstract class ExpiringNotificationFilter implements NotificationFilter {
+public abstract class ExpiringNotificationFilter extends AbstractNotificationFilter {
     private final Instant expiry;
 
     public ExpiringNotificationFilter(Instant expiry) {

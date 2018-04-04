@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.notify.filter;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
@@ -57,18 +58,20 @@ public class FilteringNotifierTest {
         FilteringNotifier notifier = new FilteringNotifier(new TestNotifier(), repository);
         notifier.setCleanupInterval(Duration.ZERO);
 
-        String id1 = notifier.addFilter(
-            new ApplicationNameNotificationFilter("foo", Instant.now().minus(Duration.ofSeconds(1))));
-        String id2 = notifier.addFilter(new ApplicationNameNotificationFilter("bar", null));
+        ApplicationNameNotificationFilter filter1 = new ApplicationNameNotificationFilter("foo",
+            Instant.now().minus(Duration.ofSeconds(1)));
+        notifier.addFilter(filter1);
+        ApplicationNameNotificationFilter filter2 = new ApplicationNameNotificationFilter("bar", null);
+        notifier.addFilter(filter2);
 
-        assertThat(notifier.getNotificationFilters()).containsKey(id1).containsKey(id2);
+        assertThat(notifier.getNotificationFilters()).containsKey(filter1.getId()).containsKey(filter2.getId());
 
         StepVerifier.create(notifier.notify(event)).verifyComplete();
 
-        assertThat(notifier.getNotificationFilters()).doesNotContainKey(id1).containsKey(id2);
+        assertThat(notifier.getNotificationFilters()).doesNotContainKey(filter1.getId()).containsKey(filter2.getId());
 
-        notifier.removeFilter(id2);
-        assertThat(notifier.getNotificationFilters()).doesNotContainKey(id2);
+        notifier.removeFilter(filter2.getId());
+        assertThat(notifier.getNotificationFilters()).doesNotContainKey(filter2.getId());
     }
 
     @Test
@@ -76,13 +79,19 @@ public class FilteringNotifierTest {
         TestNotifier delegate = new TestNotifier();
         FilteringNotifier notifier = new FilteringNotifier(delegate, repository);
 
-        String idTrue = notifier.addFilter((event, application) -> true);
+        AbstractNotificationFilter trueFilter = new AbstractNotificationFilter() {
+            @Override
+            public boolean filter(InstanceEvent event, Instance instance) {
+                return true;
+            }
+        };
+        notifier.addFilter(trueFilter);
 
         StepVerifier.create(notifier.notify(event)).verifyComplete();
 
         assertThat(delegate.getEvents()).doesNotContain(event);
 
-        notifier.removeFilter(idTrue);
+        notifier.removeFilter(trueFilter.getId());
         StepVerifier.create(notifier.notify(event)).verifyComplete();
 
         assertThat(delegate.getEvents()).contains(event);

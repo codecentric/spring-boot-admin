@@ -27,10 +27,12 @@ import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/ignoreElements';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/merge';
 import 'rxjs/add/operator/retryWhen';
 
 import {Observable} from 'rxjs/Observable';
 import {animationFrame} from 'rxjs/scheduler/animationFrame';
+import {Subject} from 'rxjs/Subject';
 
 Observable.prototype.doOnSubscribe = function (onSubscribe) {
   let source = this;
@@ -72,5 +74,6 @@ Observable.prototype.listen = function (callbackFn) {
 
 export {
   Observable,
+  Subject,
   animationFrame
 };
