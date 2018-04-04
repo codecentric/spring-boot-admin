@@ -19,18 +19,13 @@ package de.codecentric.boot.admin.server.notify;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import org.springframework.context.expression.MapAccessor;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ParserContext;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
-import org.springframework.mail.MailSender;
-import org.springframework.mail.SimpleMailMessage;
 
 /**
  * Notifier sending emails.
@@ -38,10 +33,6 @@ import org.springframework.mail.SimpleMailMessage;
  * @author Johannes Edmeier
  */
 public class MailNotifier extends AbstractStatusChangeNotifier {
-    private static final String DEFAULT_SUBJECT = "#{instance.registration.name} (#{instance.id}) is #{event.statusInfo.status}";
-    private static final String DEFAULT_TEXT = "#{instance.registration.name} (#{instance.id})\nstatus changed from #{lastStatus} to #{event.statusInfo.status}\n\n#{instance.registration.healthUrl}";
-
-    private final SpelExpressionParser parser = new SpelExpressionParser();
     private final MailSender sender;
 
     /**
@@ -60,36 +51,33 @@ public class MailNotifier extends AbstractStatusChangeNotifier {
     private String from = null;
 
     /**
-     * Mail Text. SpEL template using event as root;
-     */
-    private Expression text;
-
-    /**
      * Mail Subject. SpEL template using event as root;
      */
-    private Expression subject;
+    private String subject;
 
-    public MailNotifier(MailSender sender, InstanceRepository repository) {
+    /**
+     * Mail Text. Is prepared via thymeleaf template;
+     */
+    private TemplateEngine templateEngine;
+
+    public MailNotifier(MailSender sender, InstanceRepository repository, TemplateEngine templateEngine) {
         super(repository);
         this.sender = sender;
-        this.subject = parser.parseExpression(DEFAULT_SUBJECT, ParserContext.TEMPLATE_EXPRESSION);
-        this.text = parser.parseExpression(DEFAULT_TEXT, ParserContext.TEMPLATE_EXPRESSION);
+        this.templateEngine = templateEngine;
     }
 
     @Override
     protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
-        Map<String, Object> root = new HashMap<>();
-        root.put("event", event);
-        root.put("instance", instance);
-        root.put("lastStatus", getLastStatus(event.getInstance()));
-        StandardEvaluationContext context = new StandardEvaluationContext(root);
-        context.addPropertyAccessor(new MapAccessor());
+        final Context ctx = new Context();
+        ctx.setVariable("event", event);
+        ctx.setVariable("instance", instance);
+        ctx.setVariable("lastStatus", getLastStatus(event.getInstance()));
 
-        SimpleMailMessage message = new SimpleMailMessage();
+        final SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setFrom(from);
-        message.setSubject(subject.getValue(context, String.class));
-        message.setText(text.getValue(context, String.class));
+        message.setSubject(templateEngine.process("notification-template-subject.txt", ctx));
+        message.setText(templateEngine.process("notification-template-body.html", ctx));
         message.setCc(cc);
 
         return Mono.fromRunnable(() -> sender.send(message));
@@ -120,19 +108,11 @@ public class MailNotifier extends AbstractStatusChangeNotifier {
     }
 
     public void setSubject(String subject) {
-        this.subject = parser.parseExpression(subject, ParserContext.TEMPLATE_EXPRESSION);
+        this.subject = subject;
     }
 
     public String getSubject() {
-        return subject.getExpressionString();
-    }
-
-    public void setText(String text) {
-        this.text = parser.parseExpression(text, ParserContext.TEMPLATE_EXPRESSION);
-    }
-
-    public String getText() {
-        return text.getExpressionString();
+        return subject;
     }
 
 }

@@ -131,6 +131,24 @@ spring.boot.admin.notify.mail.to=admin@example.com
 | `+++"#{application.name} (#{application.id})\nstatus changed from #{from.status} to #{to.status}\n\n#{application.healthUrl}"+++`
 |===
 
+Mail notifications will be delivered as HTML emails composed of multiple https://www.thymeleaf.org/[Thymeleaf] templates.
+
+The default body looks like this:
+....
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<span>some-service-id</span> (<span>a16d130feb17</span>)
+status changed from <span>UP</span> to <span>DOWN</span>
+<br />
+<span>http://some.domain:8081/actuator/health</span>
+</body>
+</html>
+....
+
 
 [[pagerduty-notifications]]
 ==== PagerDuty notifications ====
