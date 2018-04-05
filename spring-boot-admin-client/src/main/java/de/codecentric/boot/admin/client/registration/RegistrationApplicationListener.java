@@ -38,14 +38,28 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 public class RegistrationApplicationListener implements InitializingBean, DisposableBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(RegistrationApplicationListener.class);
     private final ApplicationRegistrator registrator;
-    private ThreadPoolTaskScheduler taskScheduler;
+    private final ThreadPoolTaskScheduler taskScheduler;
     private boolean autoDeregister = false;
     private boolean autoRegister = true;
     private Duration registerPeriod = Duration.ofSeconds(10);
     private volatile ScheduledFuture<?> scheduledTask;
 
     public RegistrationApplicationListener(ApplicationRegistrator registrator) {
+        this(registrator, registrationTaskScheduler());
+    }
+
+    private static ThreadPoolTaskScheduler registrationTaskScheduler() {
+        ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+        taskScheduler.setPoolSize(1);
+        taskScheduler.setRemoveOnCancelPolicy(true);
+        taskScheduler.setThreadNamePrefix("registrationTask");
+
+        return taskScheduler;
+    }
+
+    RegistrationApplicationListener(ApplicationRegistrator registrator, ThreadPoolTaskScheduler taskScheduler) {
         this.registrator = registrator;
+        this.taskScheduler = taskScheduler;
     }
 
     @EventListener
@@ -98,23 +112,11 @@ public class RegistrationApplicationListener implements InitializingBean, Dispos
 
     @Override
     public void afterPropertiesSet() {
-        taskScheduler = registrationTaskScheduler();
-    }
-
-    private ThreadPoolTaskScheduler registrationTaskScheduler() {
-        final ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-        taskScheduler.setPoolSize(1);
-        taskScheduler.setRemoveOnCancelPolicy(true);
-        taskScheduler.setThreadNamePrefix("registrationTask");
-        taskScheduler.initialize();
-
-        return taskScheduler;
+        taskScheduler.afterPropertiesSet();
     }
 
     @Override
     public void destroy() {
-        if (taskScheduler != null) {
-            taskScheduler.destroy();
-        }
+        taskScheduler.destroy();
     }
 }

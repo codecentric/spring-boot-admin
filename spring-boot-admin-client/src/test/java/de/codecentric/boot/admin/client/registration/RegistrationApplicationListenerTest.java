@@ -22,9 +22,7 @@ import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.ContextClosedEvent;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -40,10 +38,8 @@ public class RegistrationApplicationListenerTest {
     @Test
     public void test_register() {
         ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator);
-
-        TaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
-        ReflectionTestUtils.setField(listener, "taskScheduler", scheduler);
+        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
 
         listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
             mock(ConfigurableWebApplicationContext.class)));
@@ -55,11 +51,9 @@ public class RegistrationApplicationListenerTest {
     @Test
     public void test_no_register() {
         ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator);
+        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
         listener.setAutoRegister(false);
-
-        TaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
-        ReflectionTestUtils.setField(listener, "taskScheduler", scheduler);
 
         listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
             mock(ConfigurableWebApplicationContext.class)));
@@ -71,12 +65,10 @@ public class RegistrationApplicationListenerTest {
     @Test
     public void test_no_register_after_close() {
         ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator);
+        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
 
         ScheduledFuture task = mock(ScheduledFuture.class);
-        TaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
-        ReflectionTestUtils.setField(listener, "taskScheduler", scheduler);
-
         when(scheduler.scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)))).thenReturn(task);
 
         listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
@@ -92,12 +84,10 @@ public class RegistrationApplicationListenerTest {
     @Test
     public void test_start_stop() {
         ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator);
+        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
 
         ScheduledFuture task = mock(ScheduledFuture.class);
-        TaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
-        ReflectionTestUtils.setField(listener, "taskScheduler", scheduler);
-
         when(scheduler.scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)))).thenReturn(task);
 
         listener.startRegisterTask();
@@ -110,10 +100,8 @@ public class RegistrationApplicationListenerTest {
     @Test
     public void test_no_deregister() {
         ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator);
-
-        TaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
-        ReflectionTestUtils.setField(listener, "taskScheduler", scheduler);
+        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
 
         listener.onClosedContext(new ContextClosedEvent(mock(WebApplicationContext.class)));
 
@@ -123,11 +111,9 @@ public class RegistrationApplicationListenerTest {
     @Test
     public void test_deregister() {
         ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator);
+        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
         listener.setAutoDeregister(true);
-
-        TaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
-        ReflectionTestUtils.setField(listener, "taskScheduler", scheduler);
 
         listener.onClosedContext(new ContextClosedEvent(mock(WebApplicationContext.class)));
 
