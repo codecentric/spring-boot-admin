@@ -98,12 +98,12 @@ public class RegistrationApplicationListener implements InitializingBean, Dispos
     }
 
     @Override
-    public void destroy() throws Exception {
+    public void destroy() {
         ((ThreadPoolTaskScheduler) this.taskScheduler).shutdown();
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         this.taskScheduler = registrationTaskScheduler();
     }
 
