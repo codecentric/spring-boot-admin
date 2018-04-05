@@ -27,7 +27,6 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 /**
@@ -39,7 +38,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 public class RegistrationApplicationListener implements InitializingBean, DisposableBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(RegistrationApplicationListener.class);
     private final ApplicationRegistrator registrator;
-    private TaskScheduler taskScheduler;
+    private ThreadPoolTaskScheduler taskScheduler;
     private boolean autoDeregister = false;
     private boolean autoRegister = true;
     private Duration registerPeriod = Duration.ofSeconds(10);
@@ -99,15 +98,17 @@ public class RegistrationApplicationListener implements InitializingBean, Dispos
 
     @Override
     public void destroy() {
-        ((ThreadPoolTaskScheduler) this.taskScheduler).shutdown();
+        if (taskScheduler != null) {
+            taskScheduler.destroy();
+        }
     }
 
     @Override
     public void afterPropertiesSet() {
-        this.taskScheduler = registrationTaskScheduler();
+        taskScheduler = registrationTaskScheduler();
     }
 
-    public TaskScheduler registrationTaskScheduler() {
+    public ThreadPoolTaskScheduler registrationTaskScheduler() {
         final ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
         taskScheduler.setPoolSize(1);
         taskScheduler.setRemoveOnCancelPolicy(true);

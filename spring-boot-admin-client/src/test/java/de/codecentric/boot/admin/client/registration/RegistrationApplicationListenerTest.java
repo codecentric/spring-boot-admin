@@ -23,6 +23,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
@@ -41,7 +42,7 @@ public class RegistrationApplicationListenerTest {
         ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator);
 
-        TaskScheduler scheduler = mock(TaskScheduler.class);
+        TaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
         ReflectionTestUtils.setField(listener, "taskScheduler", scheduler);
 
         listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
@@ -57,7 +58,7 @@ public class RegistrationApplicationListenerTest {
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator);
         listener.setAutoRegister(false);
 
-        TaskScheduler scheduler = mock(TaskScheduler.class);
+        TaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
         ReflectionTestUtils.setField(listener, "taskScheduler", scheduler);
 
         listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
@@ -73,7 +74,7 @@ public class RegistrationApplicationListenerTest {
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator);
 
         ScheduledFuture task = mock(ScheduledFuture.class);
-        TaskScheduler scheduler = mock(TaskScheduler.class);
+        TaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
         ReflectionTestUtils.setField(listener, "taskScheduler", scheduler);
 
         when(scheduler.scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)))).thenReturn(task);
@@ -94,7 +95,7 @@ public class RegistrationApplicationListenerTest {
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator);
 
         ScheduledFuture task = mock(ScheduledFuture.class);
-        TaskScheduler scheduler = mock(TaskScheduler.class);
+        TaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
         ReflectionTestUtils.setField(listener, "taskScheduler", scheduler);
 
         when(scheduler.scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)))).thenReturn(task);
