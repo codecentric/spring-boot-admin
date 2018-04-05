@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.ContextClosedEvent;
-import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -30,15 +30,16 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class RegistrationApplicationListenerTest {
 
     @Test
-    public void test_register() {
+    public void should_schedule_register_task() {
         ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-        TaskScheduler scheduler = mock(TaskScheduler.class);
+        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
 
         listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
@@ -48,9 +49,9 @@ public class RegistrationApplicationListenerTest {
     }
 
     @Test
-    public void test_no_register() {
+    public void should_no_schedule_register_task_when_not_autoRegister() {
         ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-        TaskScheduler scheduler = mock(TaskScheduler.class);
+        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
         listener.setAutoRegister(false);
 
@@ -60,34 +61,31 @@ public class RegistrationApplicationListenerTest {
         verify(scheduler, never()).scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)));
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
-    public void test_no_register_after_close() {
+    public void should_cancel_register_task_on_context_close() {
         ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-        TaskScheduler scheduler = mock(TaskScheduler.class);
+        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
 
-        ScheduledFuture task = mock(ScheduledFuture.class);
-        when(scheduler.scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)))).thenReturn(task);
+        ScheduledFuture<?> task = mock(ScheduledFuture.class);
+        when(scheduler.scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)))).then(invocation -> task);
 
         listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
             mock(ConfigurableWebApplicationContext.class)));
-
         verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)));
 
         listener.onClosedContext(new ContextClosedEvent(mock(WebApplicationContext.class)));
         verify(task).cancel(true);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
-    public void test_start_stop() {
+    public void should_start_and_cancel_task_on_request() {
         ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-        TaskScheduler scheduler = mock(TaskScheduler.class);
+        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
 
-        ScheduledFuture task = mock(ScheduledFuture.class);
-        when(scheduler.scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)))).thenReturn(task);
+        ScheduledFuture<?> task = mock(ScheduledFuture.class);
+        when(scheduler.scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)))).then(invocation -> task);
 
         listener.startRegisterTask();
         verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)));
@@ -97,9 +95,9 @@ public class RegistrationApplicationListenerTest {
     }
 
     @Test
-    public void test_no_deregister() {
+    public void should_not_deregister_when_not_autoDeregister() {
         ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-        TaskScheduler scheduler = mock(TaskScheduler.class);
+        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
 
         listener.onClosedContext(new ContextClosedEvent(mock(WebApplicationContext.class)));
@@ -108,14 +106,27 @@ public class RegistrationApplicationListenerTest {
     }
 
     @Test
-    public void test_deregister() {
+    public void should_deregister_when_autoDeregister() {
         ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-        TaskScheduler scheduler = mock(TaskScheduler.class);
+        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
         listener.setAutoDeregister(true);
 
         listener.onClosedContext(new ContextClosedEvent(mock(WebApplicationContext.class)));
 
         verify(registrator).deregister();
+    }
+
+    @Test
+    public void should_init_and_shutdown_taskScheduler() {
+        ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
+        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
+
+        listener.afterPropertiesSet();
+        verify(scheduler, times(1)).afterPropertiesSet();
+
+        listener.destroy();
+        verify(scheduler, times(1)).destroy();
     }
 }

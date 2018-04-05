@@ -20,12 +20,14 @@ import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 /**
  * Listener responsible for starting and stopping the registration task when the application is
@@ -33,16 +35,28 @@ import org.springframework.scheduling.TaskScheduler;
  *
  * @author Johannes Edmeier
  */
-public class RegistrationApplicationListener {
+public class RegistrationApplicationListener implements InitializingBean, DisposableBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(RegistrationApplicationListener.class);
     private final ApplicationRegistrator registrator;
-    private final TaskScheduler taskScheduler;
+    private final ThreadPoolTaskScheduler taskScheduler;
     private boolean autoDeregister = false;
     private boolean autoRegister = true;
     private Duration registerPeriod = Duration.ofSeconds(10);
     private volatile ScheduledFuture<?> scheduledTask;
 
-    public RegistrationApplicationListener(ApplicationRegistrator registrator, TaskScheduler taskScheduler) {
+    public RegistrationApplicationListener(ApplicationRegistrator registrator) {
+        this(registrator, registrationTaskScheduler());
+    }
+
+    private static ThreadPoolTaskScheduler registrationTaskScheduler() {
+        ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+        taskScheduler.setPoolSize(1);
+        taskScheduler.setRemoveOnCancelPolicy(true);
+        taskScheduler.setThreadNamePrefix("registrationTask");
+        return taskScheduler;
+    }
+
+    RegistrationApplicationListener(ApplicationRegistrator registrator, ThreadPoolTaskScheduler taskScheduler) {
         this.registrator = registrator;
         this.taskScheduler = taskScheduler;
     }
@@ -93,5 +107,15 @@ public class RegistrationApplicationListener {
 
     public void setRegisterPeriod(Duration registerPeriod) {
         this.registerPeriod = registerPeriod;
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        taskScheduler.afterPropertiesSet();
+    }
+
+    @Override
+    public void destroy() {
+        taskScheduler.destroy();
     }
 }
