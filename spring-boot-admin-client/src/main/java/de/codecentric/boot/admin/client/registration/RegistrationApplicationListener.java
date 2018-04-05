@@ -108,7 +108,7 @@ public class RegistrationApplicationListener implements InitializingBean, Dispos
         taskScheduler = registrationTaskScheduler();
     }
 
-    public ThreadPoolTaskScheduler registrationTaskScheduler() {
+    private ThreadPoolTaskScheduler registrationTaskScheduler() {
         final ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
         taskScheduler.setPoolSize(1);
         taskScheduler.setRemoveOnCancelPolicy(true);
