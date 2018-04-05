@@ -76,7 +76,7 @@ public abstract class AbstractAdminApplicationTest {
         return webClient.get().uri("/instances/events").accept(MediaType.TEXT_EVENT_STREAM)
                         .exchange()
                         .expectStatus().isOk()
-                        .expectHeader().contentType(MediaType.TEXT_EVENT_STREAM)
+                        .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM)
                         .returnResult(JSONObject.class).getResponseBody();
         //@formatter:on
     }

@@ -20,15 +20,11 @@ import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.notify.LoggingNotifier;
-import de.codecentric.boot.admin.server.notify.RemindingNotifier;
-import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
 
-import java.time.Duration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
@@ -72,31 +68,8 @@ public class SpringBootAdminApplication {
         // @formatter:on
     }
 
-    @Configuration
-    public static class NotifierConfig {
-        private final InstanceRepository repository;
-
-        public NotifierConfig(InstanceRepository repository) {
-            this.repository = repository;
-        }
-
-        @Primary
-        @Bean(initMethod = "start", destroyMethod = "stop")
-        public RemindingNotifier remindingNotifier() {
-            RemindingNotifier notifier = new RemindingNotifier(filteringNotifier(), repository);
-            notifier.setReminderPeriod(Duration.ofMinutes(10));
-            notifier.setCheckReminderInverval(Duration.ofSeconds(10));
-            return notifier;
-        }
-
-        @Bean
-        public FilteringNotifier filteringNotifier() {
-            return new FilteringNotifier(loggerNotifier(), repository);
-        }
-
-        @Bean
-        public LoggingNotifier loggerNotifier() {
-            return new LoggingNotifier(repository);
-        }
+    @Bean
+    public LoggingNotifier loggerNotifier(InstanceRepository repository) {
+        return new LoggingNotifier(repository);
     }
 }

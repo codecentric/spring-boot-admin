@@ -22,22 +22,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
-import java.util.OptionalLong;
 import java.util.function.Function;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.reactive.ClientHttpResponse;
-import org.springframework.http.client.reactive.ClientHttpResponseDecorator;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.reactive.function.BodyExtractor;
-import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
@@ -47,7 +36,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V1_MEDIATYPE;
 import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V2_MEDIATYPE;
-import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
 public final class InstanceExchangeFilterFunctions {
@@ -64,9 +52,8 @@ public final class InstanceExchangeFilterFunctions {
     public static ExchangeFilterFunction setInstance(Mono<Instance> instance) {
         return (request, next) -> instance.map(
             i -> ClientRequest.from(request).attribute(ATTRIBUTE_INSTANCE, i).build())
-                                          .switchIfEmpty(request.url().isAbsolute() ?
-                                              Mono.just(request) :
-                                              Mono.error(new InstanceWebClientException("Instance not found")))
+                                          .switchIfEmpty(request.url().isAbsolute() ? Mono.just(request) : Mono.error(
+                                              new InstanceWebClientException("Instance not found")))
                                           .flatMap(next::exchange);
     }
 
@@ -143,157 +130,13 @@ public final class InstanceExchangeFilterFunctions {
         };
     }
 
-    private static Function<ClientResponse, Mono<ClientResponse>> convertClientResponse(Function<Flux<DataBuffer>, Flux<DataBuffer>> bodConverter,
-                                                                                        MediaType contentType) {
-        return response -> Mono.just(new ConvertedBodyResponse(response, bodConverter, contentType));
-    }
-
-    private static class ConvertedBodyResponse implements ClientResponse {
-        private final ClientResponse response;
-        private final Function<Flux<DataBuffer>, Flux<DataBuffer>> converter;
-        private final Headers headers;
-
-        private ConvertedBodyResponse(ClientResponse response,
-                                      Function<Flux<DataBuffer>, Flux<DataBuffer>> converter,
-                                      MediaType contentType) {
-            this.response = response;
-            this.converter = converter;
-            this.headers = new Headers() {
-                @Override
-                public OptionalLong contentLength() {
-                    return OptionalLong.empty();
-                }
-
-                @Override
-                public Optional<MediaType> contentType() {
-                    return Optional.ofNullable(contentType);
-                }
-
-                @Override
-                public List<String> header(String headerName) {
-                    if (headerName.equals(HttpHeaders.CONTENT_TYPE)) {
-                        return singletonList(contentType.toString());
-                    }
-                    if (headerName.equals(HttpHeaders.CONTENT_LENGTH)) {
-                        return emptyList();
-                    }
-                    return response.headers().header(headerName);
-                }
-
-                @Override
-                public HttpHeaders asHttpHeaders() {
-                    HttpHeaders newHeaders = new HttpHeaders();
-                    newHeaders.putAll(response.headers().asHttpHeaders());
-                    newHeaders.replace(HttpHeaders.CONTENT_TYPE, singletonList(contentType.toString()));
-                    newHeaders.remove(HttpHeaders.CONTENT_LENGTH);
-                    return HttpHeaders.readOnlyHttpHeaders(newHeaders);
-                }
-            };
-        }
-
-        @Override
-        public HttpStatus statusCode() {
-            return response.statusCode();
-        }
-
-        @Override
-        public Headers headers() {
-            return headers;
-        }
-
-        @Override
-        public MultiValueMap<String, ResponseCookie> cookies() {
-            return response.cookies();
-        }
-
-        @Override
-        public <T> T body(BodyExtractor<T, ? super ClientHttpResponse> extractor) {
-            return response.body((inputMessage, context) -> {
-                ClientHttpResponse convertedMessage = new ClientHttpResponseDecorator(inputMessage) {
-                    @Override
-                    public Flux<DataBuffer> getBody() {
-                        return super.getBody().transform(ConvertedBodyResponse.this.converter);
-                    }
-                };
-                return extractor.extract(convertedMessage, context);
-            });
-        }
-
-        @Override
-        public <T> Mono<T> bodyToMono(Class<? extends T> elementClass) {
-            if (Void.class.isAssignableFrom(elementClass)) {
-                return response.bodyToMono(elementClass);
-            } else {
-                return body(BodyExtractors.toMono(elementClass));
-            }
-        }
-
-        @Override
-        public <T> Mono<T> bodyToMono(ParameterizedTypeReference<T> typeReference) {
-            if (Void.class.isAssignableFrom(typeReference.getType().getClass())) {
-                return response.bodyToMono(typeReference);
-            } else {
-                return body(BodyExtractors.toMono(typeReference));
-            }
-        }
-
-        @Override
-        public <T> Flux<T> bodyToFlux(Class<? extends T> elementClass) {
-            if (Void.class.isAssignableFrom(elementClass)) {
-                return response.bodyToFlux(elementClass);
-            } else {
-                return body(BodyExtractors.toFlux(elementClass));
-            }
-        }
-
-        @Override
-        public <T> Flux<T> bodyToFlux(ParameterizedTypeReference<T> typeReference) {
-            if (Void.class.isAssignableFrom(typeReference.getType().getClass())) {
-                return response.bodyToFlux(typeReference);
-            } else {
-                return body(BodyExtractors.toFlux(typeReference));
-            }
-        }
-
-        @Override
-        public <T> Mono<ResponseEntity<T>> toEntity(Class<T> bodyType) {
-            if (Void.class.isAssignableFrom(bodyType)) {
-                return response.toEntity(bodyType);
-            } else {
-                return toEntityInternal(bodyToMono(bodyType));
-            }
-        }
-
-        @Override
-        public <T> Mono<ResponseEntity<T>> toEntity(ParameterizedTypeReference<T> typeReference) {
-            if (Void.class.isAssignableFrom(typeReference.getType().getClass())) {
-                return response.toEntity(typeReference);
-            } else {
-                return toEntityInternal(bodyToMono(typeReference));
-            }
-        }
-
-        private <T> Mono<ResponseEntity<T>> toEntityInternal(Mono<T> bodyMono) {
-            HttpHeaders headers = headers().asHttpHeaders();
-            HttpStatus statusCode = statusCode();
-            return bodyMono.map(body -> new ResponseEntity<>(body, headers, statusCode))
-                           .switchIfEmpty(Mono.defer(() -> Mono.just(new ResponseEntity<>(headers, statusCode))));
-        }
-
-        @Override
-        public <T> Mono<ResponseEntity<List<T>>> toEntityList(Class<T> responseType) {
-            return toEntityListInternal(bodyToFlux(responseType));
-        }
-
-        @Override
-        public <T> Mono<ResponseEntity<List<T>>> toEntityList(ParameterizedTypeReference<T> typeReference) {
-            return toEntityListInternal(bodyToFlux(typeReference));
-        }
-
-        private <T> Mono<ResponseEntity<List<T>>> toEntityListInternal(Flux<T> bodyFlux) {
-            HttpHeaders headers = headers().asHttpHeaders();
-            HttpStatus statusCode = statusCode();
-            return bodyFlux.collectList().map(body -> new ResponseEntity<>(body, headers, statusCode));
-        }
+    private static Function<ClientResponse, Mono<ClientResponse>> convertClientResponse(Function<Flux<DataBuffer>, Flux<DataBuffer>> bodConverter, MediaType contentType) {
+        return response -> {
+            ClientResponse convertedResponse = ClientResponse.from(response).headers(headers -> {
+                headers.replace(HttpHeaders.CONTENT_TYPE, singletonList(contentType.toString()));
+                headers.remove(HttpHeaders.CONTENT_LENGTH);
+            }).body(response.bodyToFlux(DataBuffer.class).transform(bodConverter)).build();
+            return Mono.just(convertedResponse);
+        };
     }
 }

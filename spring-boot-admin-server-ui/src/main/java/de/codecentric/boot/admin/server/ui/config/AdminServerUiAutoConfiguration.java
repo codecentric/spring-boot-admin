@@ -22,6 +22,7 @@ import de.codecentric.boot.admin.server.config.AdminServerWebConfiguration;
 import de.codecentric.boot.admin.server.ui.web.UiController;
 
 import java.nio.charset.StandardCharsets;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -75,14 +76,10 @@ public class AdminServerUiAutoConfiguration {
     @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
     @Configuration
     public static class ReactiveUiConfiguration implements WebFluxConfigurer {
-        private final AdminServerUiProperties uiProperties;
-        private final AdminServerProperties adminServerProperties;
-
-        public ReactiveUiConfiguration(AdminServerUiProperties uiProperties,
-                                       AdminServerProperties adminServerProperties) {
-            this.uiProperties = uiProperties;
-            this.adminServerProperties = adminServerProperties;
-        }
+        @Autowired
+        private AdminServerUiProperties uiProperties;
+        @Autowired
+        private AdminServerProperties adminServerProperties;
 
         @Override
         public void addResourceHandlers(org.springframework.web.reactive.config.ResourceHandlerRegistry registry) {
@@ -95,14 +92,10 @@ public class AdminServerUiAutoConfiguration {
     @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
     @Configuration
     public static class ServletUiConfiguration implements WebMvcConfigurer {
-        private final AdminServerUiProperties uiProperties;
-        private final AdminServerProperties adminServerProperties;
-
-        public ServletUiConfiguration(AdminServerUiProperties uiProperties,
-                                      AdminServerProperties adminServerProperties) {
-            this.uiProperties = uiProperties;
-            this.adminServerProperties = adminServerProperties;
-        }
+        @Autowired
+        private AdminServerUiProperties uiProperties;
+        @Autowired
+        private AdminServerProperties adminServerProperties;
 
         @Override
         public void addResourceHandlers(org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
