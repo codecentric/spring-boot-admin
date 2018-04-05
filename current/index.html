@@ -893,7 +893,10 @@ You can include the Spring Boot Admin Server to your Eureka server. Setup everyt
 <div class="sect2">
 <h3 id="show-version-in-application-list"><a class="anchor" href="#show-version-in-application-list"></a><a class="link" href="#show-version-in-application-list">3.1. Show version in application list</a></h3>
 <div class="paragraph">
-<p>To have the version show up in the application list you can use the <code>build-info</code> goal from the <code>spring-boot-maven-plugin</code>, which generates the <code>META-INF/build-info.properties</code>. See also the <a href="http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#howto-build-info">Spring Boot Reference Guide</a>.</p>
+<p>For <strong>Spring Boot</strong> applications the easiest way to show the version, is to use the <code>build-info</code> goal from the <code>spring-boot-maven-plugin</code>, which generates the <code>META-INF/build-info.properties</code>. See also the <a href="http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#howto-build-info">Spring Boot Reference Guide</a>.</p>
+</div>
+<div class="paragraph">
+<p>For <strong>non-Spring Boot</strong> applications you can either add a <code>version</code> or <code>build.version</code> to the registration metadata and the version will show up in the application list.</p>
 </div>
 <div class="listingblock">
 <div class="title">pom.xml</div>
