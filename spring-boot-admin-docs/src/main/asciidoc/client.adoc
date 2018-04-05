@@ -4,7 +4,9 @@
 [[show-version-in-application-list]]
 === Show version in application list ===
 
-To have the version show up in the application list you can use the `build-info` goal from the `spring-boot-maven-plugin`, which generates the `META-INF/build-info.properties`. See also the http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#howto-build-info[Spring Boot Reference Guide].
+For *Spring Boot* applications the easiest way to show the version, is to use the `build-info` goal from the `spring-boot-maven-plugin`, which generates the `META-INF/build-info.properties`. See also the http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#howto-build-info[Spring Boot Reference Guide].
+
+For *non-Spring Boot* applications you can either add a `version` or `build.version` to the registration metadata and the version will show up in the application list.
 
 [source,xml]
 .pom.xml
