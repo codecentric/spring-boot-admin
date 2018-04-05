@@ -45,22 +45,6 @@ public class Info implements Serializable {
         return EMPTY;
     }
 
-    public String getVersion() {
-        Object build = this.values.get("build");
-        if (build instanceof Map) {
-            Object version = ((Map<?, ?>) build).get("version");
-            if (version instanceof String) {
-                return (String) version;
-            }
-        }
-
-        Object version = this.values.get("version");
-        if (version instanceof String) {
-            return (String) version;
-        }
-        return null;
-    }
-
     @JsonAnyGetter
     public Map<String, Object> getValues() {
         return Collections.unmodifiableMap(values);

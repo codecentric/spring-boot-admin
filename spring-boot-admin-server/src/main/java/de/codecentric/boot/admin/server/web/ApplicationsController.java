@@ -17,10 +17,10 @@
 package de.codecentric.boot.admin.server.web;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.values.BuildVersion;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventPublisher;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
-import de.codecentric.boot.admin.server.utils.ComparableVersion;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
@@ -30,12 +30,12 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.ServerSentEvent;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -87,9 +87,10 @@ public class ApplicationsController {
         return registry.getInstances(name)
                        .flatMap(instance -> registry.deregister(instance.getId()))
                        .collectList()
-                       .map(deregistered -> !deregistered.isEmpty() ?
-                           ResponseEntity.noContent().build() :
-                           ResponseEntity.notFound().build());
+                       .map(
+                           deregistered -> !deregistered.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity
+                               .notFound()
+                               .build());
     }
 
     protected Tuple2<String, Flux<Instance>> getApplicationForInstance(Instance instance) {
@@ -101,7 +102,7 @@ public class ApplicationsController {
         return instances.collectList().map(instanceList -> {
             Application group = new Application(name);
             group.setInstances(instanceList);
-            group.setVersion(getVersion(instanceList));
+            group.setBuildVersion(getBuildVersion(instanceList));
             Tuple2<String, Instant> status = getStatus(instanceList);
             group.setStatus(status.getT1());
             group.setStatusTimestamp(status.getT2());
@@ -109,19 +110,19 @@ public class ApplicationsController {
         });
     }
 
-    protected String getVersion(List<Instance> instances) {
-        List<String> versions = instances.stream()
-                                         .map(instance -> instance.getInfo().getVersion())
-                                         .filter(StringUtils::hasText)
-                                         .distinct()
-                                         .sorted(ComparableVersion.ascending())
-                                         .collect(toList());
+    protected BuildVersion getBuildVersion(List<Instance> instances) {
+        List<BuildVersion> versions = instances.stream()
+                                               .map(Instance::getBuildVersion)
+                                               .filter(Objects::nonNull)
+                                               .distinct()
+                                               .sorted()
+                                               .collect(toList());
         if (versions.isEmpty()) {
-            return "";
+            return null;
         } else if (versions.size() == 1) {
             return versions.get(0);
         } else {
-            return versions.get(0) + " - " + versions.get(versions.size() - 1);
+            return BuildVersion.valueOf(versions.get(0) + " ... " + versions.get(versions.size() - 1));
         }
     }
 
@@ -165,7 +166,7 @@ public class ApplicationsController {
     @lombok.Data
     public static class Application {
         private final String name;
-        private String version;
+        private BuildVersion buildVersion;
         private String status;
         private Instant statusTimestamp;
         private List<Instance> instances;

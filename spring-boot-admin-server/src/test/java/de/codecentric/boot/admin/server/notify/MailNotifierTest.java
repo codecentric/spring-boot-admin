@@ -183,7 +183,6 @@ public class MailNotifierTest {
         ByteArrayOutputStream os = new ByteArrayOutputStream(4096);
         dataHandler.writeTo(os);
         return os.toString(StandardCharsets.UTF_8.name())
-                 .replaceAll("(------=_Part_\\d+)[_.\\d]+", "$1_XXXXXXX")
                  .replaceAll("\\r?\\n", "\n");
     }
 }

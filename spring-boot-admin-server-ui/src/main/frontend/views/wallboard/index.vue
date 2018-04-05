@@ -25,7 +25,7 @@
           <h1 class="application__name" v-text="application.name"/>
           <p class="application__instances is-muted"><span v-text="application.instances.length"/> instances</p>
         </div>
-        <h2 class="application__footer application__version" v-text="application.version"/>
+        <h2 class="application__footer application__version" v-text="application.buildVersion"/>
       </div>
     </hex-mesh>
   </section>

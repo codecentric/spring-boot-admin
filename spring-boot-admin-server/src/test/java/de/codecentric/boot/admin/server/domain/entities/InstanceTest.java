@@ -18,15 +18,16 @@ package de.codecentric.boot.admin.server.domain.entities;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.values.BuildVersion;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.Info;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 
-import java.util.Collections;
 import org.junit.Test;
 
+import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -51,10 +52,10 @@ public class InstanceTest {
     }
 
     @Test
-    public void shoud_track_unsaved_events() {
+    public void should_track_unsaved_events() {
         Registration registration = Registration.create("foo", "http://health").build();
         Registration registration2 = Registration.create("foo2", "http://health").build();
-        Info info = Info.from(Collections.singletonMap("foo", "bar"));
+        Info info = Info.from(singletonMap("foo", "bar"));
         Instance instance = Instance.create(InstanceId.of("id"));
 
         assertThat(instance.isRegistered()).isFalse();
@@ -93,25 +94,27 @@ public class InstanceTest {
 
     @Test
     public void should_yield_same_status_from_replaying() {
-        Registration registration = Registration.create("foo", "http://health").build();
-        Registration registration2 = Registration.create("foo2", "http://health").build();
+        Registration registration = Registration.create("foo-instance", "http://health")
+                                                .metadata("version", "1.0.0")
+                                                .build();
         Instance instance = Instance.create(InstanceId.of("id"))
+                                    .register(registration.toBuilder().clearMetadata().build())
                                     .register(registration)
-                                    .register(registration2)
                                     .withEndpoints(Endpoints.single("info", "info"))
                                     .withStatusInfo(StatusInfo.ofUp())
-                                    .withInfo(Info.from(Collections.singletonMap("foo", "bar")));
+                                    .withInfo(Info.from(singletonMap("foo", "bar")));
 
         Instance loaded = Instance.create(InstanceId.of("id")).apply(instance.getUnsavedEvents());
         assertThat(loaded.getUnsavedEvents()).isEmpty();
-        assertThat(loaded.getRegistration()).isEqualTo(registration2);
+        assertThat(loaded.getRegistration()).isEqualTo(registration);
         assertThat(loaded.isRegistered()).isTrue();
         assertThat(loaded.getStatusInfo()).isEqualTo(StatusInfo.ofUp());
         assertThat(loaded.getStatusTimestamp()).isEqualTo(instance.getStatusTimestamp());
-        assertThat(loaded.getInfo()).isEqualTo(Info.from(Collections.singletonMap("foo", "bar")));
+        assertThat(loaded.getInfo()).isEqualTo(Info.from(singletonMap("foo", "bar")));
         assertThat(loaded.getEndpoints()).isEqualTo(
             Endpoints.single("info", "info").withEndpoint("health", "http://health"));
         assertThat(loaded.getVersion()).isEqualTo(4L);
+        assertThat(loaded.getBuildVersion()).isEqualTo(BuildVersion.valueOf("1.0.0"));
 
         Instance deregisteredInstance = instance.deregister();
         loaded = Instance.create(InstanceId.of("id")).apply(deregisteredInstance.getUnsavedEvents());
@@ -122,6 +125,7 @@ public class InstanceTest {
         assertThat(loaded.getStatusTimestamp()).isEqualTo(deregisteredInstance.getStatusTimestamp());
         assertThat(loaded.getEndpoints()).isEqualTo(Endpoints.empty());
         assertThat(loaded.getVersion()).isEqualTo(5L);
+        assertThat(loaded.getBuildVersion()).isEqualTo(null);
     }
 
     @Test
@@ -136,6 +140,28 @@ public class InstanceTest {
 
         assertThatThrownBy(() -> instance.apply(new InstanceDeregisteredEvent(InstanceId.of("id"), 1L))).isInstanceOf(
             IllegalArgumentException.class).hasMessage("Event 1 doesn't match exptected version 0");
+    }
+
+    @Test
+    public void should_update_buildVersion() {
+        Instance instance = Instance.create(InstanceId.of("id"));
+
+        assertThat(instance.getBuildVersion()).isNull();
+
+        Registration registration = Registration.create("foo-instance", "http://health")
+                                                .metadata("version", "1.0.0")
+                                                .build();
+        instance = instance.register(registration).withInfo(Info.empty());
+        assertThat(instance.getBuildVersion()).isEqualTo(BuildVersion.valueOf("1.0.0"));
+
+        instance = instance.register(registration.toBuilder().clearMetadata().build());
+        assertThat(instance.getBuildVersion()).isNull();
+
+        instance = instance.withInfo(Info.from(singletonMap("build", singletonMap("version", "2.1.1"))));
+        assertThat(instance.getBuildVersion()).isEqualTo(BuildVersion.valueOf("2.1.1"));
+
+        instance = instance.deregister();
+        assertThat(instance.getBuildVersion()).isNull();
     }
 
 }

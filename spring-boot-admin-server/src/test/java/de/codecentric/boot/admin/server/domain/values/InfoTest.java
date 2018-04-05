@@ -33,15 +33,7 @@ public class InfoTest {
     private ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
 
     @Test
-    public void should_return_version() {
-        assertThat(Info.empty().getVersion()).isNull();
-        assertThat(Info.from(singletonMap("version", "1.0.0")).getVersion()).isEqualTo("1.0.0");
-        assertThat(Info.from(singletonMap("build", singletonMap("version", "1.0.0"))).getVersion()).isEqualTo("1.0.0");
-
-    }
-
-    @Test
-    public void test_json_serialize() throws Exception {
+    public void should_serialize_json() throws Exception {
         Map<String, Object> values = new HashMap<>();
         values.put("foo", "bar");
         values.put("build", singletonMap("version", "1.0.0"));
@@ -55,7 +47,7 @@ public class InfoTest {
     }
 
     @Test
-    public void test_retain_order() {
+    public void should_keep_order() {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("z", "1");
         map.put("x", "2");

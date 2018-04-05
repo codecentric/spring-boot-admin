@@ -36,7 +36,7 @@
                     v-text="`${application.instances.length} instances`"/>
             </span>
           </p>
-          <p class="application-list__item__header__version" v-text="application.version"/>
+          <p class="application-list__item__header__version" v-text="application.buildVersion"/>
         </template>
         <template v-else>
           <h1 class="title is-size-5 application-list__item__header__name" v-text="application.name"/>
@@ -65,7 +65,7 @@
                 <span class="is-muted" v-text="instance.id"/>
               </td>
               <td>
-                <span v-text="instance.info.version"/>
+                <span v-text="instance.buildVersion"/>
               </td>
               <td class="instance__actions">
                 <sba-icon-button :id="`nf-settings-${instance.id}`"
