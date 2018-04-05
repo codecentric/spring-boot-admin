@@ -112,6 +112,9 @@ public class RegistrationApplicationListenerTest {
         ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator);
 
+        TaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+        ReflectionTestUtils.setField(listener, "taskScheduler", scheduler);
+
         listener.onClosedContext(new ContextClosedEvent(mock(WebApplicationContext.class)));
 
         verify(registrator, never()).deregister();
@@ -122,6 +125,9 @@ public class RegistrationApplicationListenerTest {
         ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator);
         listener.setAutoDeregister(true);
+
+        TaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+        ReflectionTestUtils.setField(listener, "taskScheduler", scheduler);
 
         listener.onClosedContext(new ContextClosedEvent(mock(WebApplicationContext.class)));
 
