@@ -97,13 +97,6 @@ public class RegistrationApplicationListener implements InitializingBean, Dispos
     }
 
     @Override
-    public void destroy() {
-        if (taskScheduler != null) {
-            taskScheduler.destroy();
-        }
-    }
-
-    @Override
     public void afterPropertiesSet() {
         taskScheduler = registrationTaskScheduler();
     }
@@ -116,5 +109,12 @@ public class RegistrationApplicationListener implements InitializingBean, Dispos
         taskScheduler.initialize();
 
         return taskScheduler;
+    }
+
+    @Override
+    public void destroy() {
+        if (taskScheduler != null) {
+            taskScheduler.destroy();
+        }
     }
 }
