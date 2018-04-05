@@ -44,7 +44,6 @@ public class RegistrationApplicationListenerTest {
         listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
             mock(ConfigurableWebApplicationContext.class)));
 
-
         verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)));
     }
 

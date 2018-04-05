@@ -45,10 +45,10 @@ public class RegistrationApplicationListener implements InitializingBean, Dispos
     private volatile ScheduledFuture<?> scheduledTask;
 
     public RegistrationApplicationListener(ApplicationRegistrator registrator) {
-        this(registrator, registrationTaskScheduler());
+        this(registrator, createRegistrationTaskScheduler());
     }
 
-    private static ThreadPoolTaskScheduler registrationTaskScheduler() {
+    private static ThreadPoolTaskScheduler createRegistrationTaskScheduler() {
         ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
         taskScheduler.setPoolSize(1);
         taskScheduler.setRemoveOnCancelPolicy(true);
