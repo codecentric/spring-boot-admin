@@ -81,8 +81,17 @@ TIP: This example combines the reminding and filtering notifiers. This allows yo
 [[mail-notifications]]
 ==== Mail notifications ====
 
-Configure a `JavaMailSender` using `spring-boot-starter-mail` and set a recipient.
+Mail notifications will be delivered as HTML emails rendered using https://www.thymeleaf.org/[Thymeleaf] templates.
+To enable Mail notifications, configure a `JavaMailSender` using `spring-boot-starter-mail` and set a recipient.
 
+.Sample Mail Notification
+image::mail-notification-sample.png[Sample Mail Notification]
+
+NOTE: To prevent disclosure of sensitive information, the default mail template doesn't show any metadata of
+the instance. If you want to you show some of the metadata you can use a custom template.
+
+. Add spring-boot-starter-mail to your dependencies:
++
 [source,xml]
 .pom.xml
 ----
@@ -92,12 +101,16 @@ Configure a `JavaMailSender` using `spring-boot-starter-mail` and set a recipien
 </dependency>
 ----
 
+. Configure a JavaMailSender
++
 .application.properties
 ----
 spring.mail.host=smtp.example.com
 spring.boot.admin.notify.mail.to=admin@example.com
 ----
 
+. Configure the mail with the options below
++
 .Mail notifications configuration options
 |===
 | Property name |Description |Default value
@@ -110,6 +123,10 @@ spring.boot.admin.notify.mail.to=admin@example.com
 | Comma-delimited list of status changes to be ignored. Format: "<from-status>:<to-status>". Wildcards allowed.
 | `"UNKNOWN:UP"`
 
+| spring.boot.admin.notify.mail.template
+| Resource path to the Thymelef template used for rendering.
+| `"classpath:/META-INF/spring-boot-admin-server/mail/status-changed.html"`
+
 | spring.boot.admin.notify.mail.to
 | Comma-delimited list of mail recipients
 | `"root@localhost"`
@@ -120,35 +137,13 @@ spring.boot.admin.notify.mail.to=admin@example.com
 
 | spring.boot.admin.notify.mail.from
 | Mail sender
+| `"Spring Boot Admin <noreply@localhost>"`
+
+| spring.boot.admin.notify.mail.additional-properties
+| Additional properties which can be accessed from the template
 |
 
-| spring.boot.admin.notify.mail.subject
-| Mail subject. SpEL-expressions are supported
-| `+++"#{application.name} (#{application.id}) is #{to.status}"+++`
-
-| spring.boot.admin.notify.mail.text
-| Mail body. SpEL-expressions are supported
-| `+++"#{application.name} (#{application.id})\nstatus changed from #{from.status} to #{to.status}\n\n#{application.healthUrl}"+++`
 |===
-
-Mail notifications will be delivered as HTML emails composed of multiple https://www.thymeleaf.org/[Thymeleaf] templates.
-
-The default body looks like this:
-....
-<!DOCTYPE html>
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-</head>
-<body>
-<span>some-service-id</span> (<span>a16d130feb17</span>)
-status changed from <span>UP</span> to <span>DOWN</span>
-<br />
-<span>http://some.domain:8081/actuator/health</span>
-</body>
-</html>
-....
-
 
 [[pagerduty-notifications]]
 ==== PagerDuty notifications ====

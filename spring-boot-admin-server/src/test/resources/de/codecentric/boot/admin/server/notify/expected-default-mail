@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright 2014-2018 the original author or authors.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style>
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 400
+        }
+        ul {
+            list-style: none
+        }
+        html {
+            box-sizing: border-box
+        }
+        *, :after, :before {
+            box-sizing: inherit
+        }
+        table {
+            border-collapse: collapse;
+            border-spacing: 0
+        }
+        td, th {
+            text-align: left
+        }
+        body, button {
+            font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Helvetica, Arial, sans-serif
+        }
+        code, pre {
+            -moz-osx-font-smoothing: auto;
+            -webkit-font-smoothing: auto;
+            font-family: monospace
+        }
+    </style>
+</head>
+<body>
+<h1><span>application-name</span> (<span>cafebabe</span>)
+    is <span>DOWN</span>
+</h1>
+<p>
+    Instance <a href="http://localhost:8080/#/instances/cafebabe/"><span>cafebabe</span></a>
+    changed status from <span>UNKNOWN</span> to <span>DOWN</span>
+</p>
+<h2>Status Details</h2>
+<dl>
+        <dt>Complex Value</dt>
+        <dd>
+            <dl>
+        <dt>Nested Simple Value</dt>
+        <dd>99!</dd>
+</dl>
+        </dd>
+        <dt>Simple Value</dt>
+        <dd>1234</dd>
+</dl>
+<h2>Registration</h2>
+<table>
+    <tr>
+        <td>Service Url</td>
+        <td>
+            <a href="http://localhost:8081/">http://localhost:8081/</a>
+        </td>
+    </tr>
+    <tr>
+        <td>Health Url</td>
+        <td>
+            <a href="http://localhost:8081/actuator/health">http://localhost:8081/actuator/health</a>
+        </td>
+    </tr>
+    <tr>
+        <td>Management Url</td>
+        <td>
+            <a href="http://localhost:8081/actuator">http://localhost:8081/actuator</a>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

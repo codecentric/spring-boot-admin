@@ -19,21 +19,29 @@ package de.codecentric.boot.admin.server.notify;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import org.springframework.mail.MailSender;
-import org.springframework.mail.SimpleMailMessage;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 import reactor.core.publisher.Mono;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+
+import static java.util.Collections.singleton;
 
 /**
- * Notifier sending emails.
+ * Notifier sending emails using thymleaf templates.
  *
  * @author Johannes Edmeier
  */
 public class MailNotifier extends AbstractStatusChangeNotifier {
-    private final MailSender sender;
+    private final JavaMailSender mailSender;
+    private final TemplateEngine templateEngine;
 
     /**
      * recipients of the mail
@@ -43,44 +51,65 @@ public class MailNotifier extends AbstractStatusChangeNotifier {
     /**
      * cc-recipients of the mail
      */
-    private String[] cc;
+    private String[] cc = {};
 
     /**
      * sender of the change
      */
-    private String from = null;
+    private String from = "Spring Boot Admin <noreply@localhost>";
 
     /**
-     * Mail Subject. SpEL template using event as root;
+     * Additional properties to be set for the template
      */
-    private String subject;
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     /**
-     * Mail Text. Is prepared via thymeleaf template;
+     * Base-URL used for hyperlinks in mail
      */
-    private TemplateEngine templateEngine;
+    private String baseUrl;
 
-    public MailNotifier(MailSender sender, InstanceRepository repository, TemplateEngine templateEngine) {
+    /**
+     * Thymleaf template for mail
+     */
+    private String template = "classpath:/META-INF/spring-boot-admin-server/mail/status-changed.html";
+
+    public MailNotifier(JavaMailSender mailSender, InstanceRepository repository, TemplateEngine templateEngine) {
         super(repository);
-        this.sender = sender;
+        this.mailSender = mailSender;
         this.templateEngine = templateEngine;
     }
 
     @Override
     protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
-        final Context ctx = new Context();
-        ctx.setVariable("event", event);
-        ctx.setVariable("instance", instance);
-        ctx.setVariable("lastStatus", getLastStatus(event.getInstance()));
+        return Mono.fromRunnable(() -> {
+            Context ctx = new Context();
+            ctx.setVariables(additionalProperties);
+            ctx.setVariable("baseUrl", this.baseUrl);
+            ctx.setVariable("event", event);
+            ctx.setVariable("instance", instance);
+            ctx.setVariable("lastStatus", getLastStatus(event.getInstance()));
 
-        final SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setFrom(from);
-        message.setSubject(templateEngine.process("notification-template-subject.txt", ctx));
-        message.setText(templateEngine.process("notification-template-body.html", ctx));
-        message.setCc(cc);
+            try {
+                MimeMessage mimeMessage = mailSender.createMimeMessage();
+                MimeMessageHelper message = new MimeMessageHelper(mimeMessage, StandardCharsets.UTF_8.name());
+                message.setText(getBody(ctx).replaceAll("\\s+\\n", "\n"), true);
+                message.setSubject(getSubject(ctx));
+                message.setTo(this.to);
+                message.setCc(this.cc);
+                message.setFrom(this.from);
+                mailSender.send(mimeMessage);
+            } catch (MessagingException ex) {
+                throw new RuntimeException("Error sending mail notification", ex);
+            }
+        });
+    }
 
-        return Mono.fromRunnable(() -> sender.send(message));
+    protected String getBody(Context ctx) {
+        return templateEngine.process(this.template, ctx);
+    }
+
+    protected String getSubject(Context ctx) {
+        return templateEngine.process(this.template, singleton("subject"), ctx).trim();
     }
 
     public void setTo(String[] to) {
@@ -107,12 +136,27 @@ public class MailNotifier extends AbstractStatusChangeNotifier {
         return from;
     }
 
-    public void setSubject(String subject) {
-        this.subject = subject;
+    public String getTemplate() {
+        return template;
     }
 
-    public String getSubject() {
-        return subject;
+    public void setTemplate(String template) {
+        this.template = template;
     }
 
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+        this.additionalProperties = additionalProperties;
+    }
 }

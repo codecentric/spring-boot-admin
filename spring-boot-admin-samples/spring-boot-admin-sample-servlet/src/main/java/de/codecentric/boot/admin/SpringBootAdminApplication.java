@@ -19,14 +19,18 @@ package de.codecentric.boot.admin;
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.notify.CompositeNotifier;
 import de.codecentric.boot.admin.server.notify.LoggingNotifier;
+import de.codecentric.boot.admin.server.notify.Notifier;
 import de.codecentric.boot.admin.server.notify.RemindingNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
 import de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunction;
 
 import java.time.Duration;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -99,12 +103,19 @@ public class SpringBootAdminApplication {
         };
     }
 
+    @Bean
+    public LoggingNotifier loggerNotifier(InstanceRepository repository) {
+        return new LoggingNotifier(repository);
+    }
+
     @Configuration
     public static class NotifierConfig {
         private final InstanceRepository repository;
+        private final ObjectProvider<List<Notifier>> otherNotifiers;
 
-        public NotifierConfig(InstanceRepository repository) {
+        public NotifierConfig(InstanceRepository repository, ObjectProvider<List<Notifier>> otherNotifiers) {
             this.repository = repository;
+            this.otherNotifiers = otherNotifiers;
         }
 
         @Primary
@@ -118,12 +129,7 @@ public class SpringBootAdminApplication {
 
         @Bean
         public FilteringNotifier filteringNotifier() {
-            return new FilteringNotifier(loggerNotifier(), repository);
-        }
-
-        @Bean
-        public LoggingNotifier loggerNotifier() {
-            return new LoggingNotifier(repository);
+            return new FilteringNotifier(new CompositeNotifier(otherNotifiers.getObject()), repository);
         }
     }
 }

@@ -1,1 +1,0 @@
-[(${instance.registration.name})] ([(${instance.id})]) is [(${event.statusInfo.status})]

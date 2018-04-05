@@ -21,6 +21,7 @@ import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.AdminServerWebConfiguration;
 import de.codecentric.boot.admin.server.ui.web.UiController;
 
+import java.nio.charset.StandardCharsets;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -32,6 +33,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.templatemode.TemplateMode;
 
 @Configuration
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
@@ -62,8 +64,8 @@ public class AdminServerUiAutoConfiguration {
         resolver.setApplicationContext(this.applicationContext);
         resolver.setPrefix(uiProperties.getTemplateLocation());
         resolver.setSuffix(".html");
-        resolver.setTemplateMode("HTML");
-        resolver.setCharacterEncoding("UTF-8");
+        resolver.setTemplateMode(TemplateMode.HTML);
+        resolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
         resolver.setCacheable(uiProperties.isCacheTemplates());
         resolver.setOrder(10);
         resolver.setCheckExistence(true);

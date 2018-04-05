@@ -61,12 +61,21 @@
                             <sourceDocumentName>index.adoc</sourceDocumentName>
                             <backend>html5</backend>
                             <sourceHighlighter>coderay</sourceHighlighter>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/asciidoc</directory>
+                                    <excludes>
+                                        <exclude>**/*.adoc</exclude>
+                                    </excludes>
+                                </resource>
+                            </resources>
                             <attributes>
                                 <commit-id>${git.commit.id.abbrev}</commit-id>
                                 <commit-time>${git.commit.time}</commit-time>
                                 <project-version>${project.version}</project-version>
                                 <spring-cloud-version>${spring-cloud.version}</spring-cloud-version>
                                 <samples-dir>${basedir}/../spring-boot-admin-samples/</samples-dir>
+                                <main-dir>${basedir}/../</main-dir>
                             </attributes>
                         </configuration>
                     </execution>
