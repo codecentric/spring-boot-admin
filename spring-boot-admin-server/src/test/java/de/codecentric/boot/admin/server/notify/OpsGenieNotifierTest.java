@@ -58,7 +58,6 @@ public class OpsGenieNotifierTest {
 
         notifier = new OpsGenieNotifier(repository);
         notifier.setApiKey("--service--");
-        notifier.setRecipients("--recipients--");
         notifier.setRestTemplate(restTemplate);
     }
 
@@ -74,7 +73,7 @@ public class OpsGenieNotifierTest {
             new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, StatusInfo.ofUp())))
                     .verifyComplete();
 
-        verify(restTemplate).exchange(eq("https://api.opsgenie.com/v1/json/alert/close"), eq(HttpMethod.POST),
+        verify(restTemplate).exchange(eq("https://api.opsgenie.com/v2/alerts/App_-id-/close"), eq(HttpMethod.POST),
             eq(expectedRequest("DOWN", "UP")), eq(Void.class));
     }
 
@@ -90,7 +89,7 @@ public class OpsGenieNotifierTest {
             new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, StatusInfo.ofDown())))
                     .verifyComplete();
 
-        verify(restTemplate).exchange(eq("https://api.opsgenie.com/v1/json/alert"), eq(HttpMethod.POST),
+        verify(restTemplate).exchange(eq("https://api.opsgenie.com/v2/alerts"), eq(HttpMethod.POST),
             eq(expectedRequest("UP", "DOWN")), eq(Void.class));
     }
 
@@ -105,14 +104,12 @@ public class OpsGenieNotifierTest {
 
     private HttpEntity expectedRequest(String expectedOldStatus, String expectedNewStatus) {
         Map<String, Object> expected = new HashMap<>();
-        expected.put("apiKey", "--service--");
         expected.put("message", getMessage(expectedNewStatus));
-        expected.put("alias", "App/-id-");
+        expected.put("alias", "App_-id-");
         expected.put("description", getDescription(expectedOldStatus, expectedNewStatus));
 
         if (!"UP".equals(expectedNewStatus)) {
 
-            expected.put("recipients", "--recipients--");
             Map<String, Object> details = new HashMap<>();
             details.put("type", "link");
             details.put("href", "http://health");
@@ -122,6 +119,7 @@ public class OpsGenieNotifierTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(HttpHeaders.AUTHORIZATION, "GenieKey --service--");
         return new HttpEntity<>(expected, headers);
     }
 }
