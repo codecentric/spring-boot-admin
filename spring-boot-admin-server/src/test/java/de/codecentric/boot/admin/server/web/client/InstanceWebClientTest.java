@@ -19,6 +19,8 @@ package de.codecentric.boot.admin.server.web.client;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
+import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
+import de.codecentric.boot.admin.server.web.client.exception.ResolveInstanceException;
 import io.netty.handler.timeout.ReadTimeoutException;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -151,8 +153,8 @@ public class InstanceWebClientTest {
     public void should_error_on_relative_url_without_instance() {
         Mono<ClientResponse> exchange = instanceWebClient.instance(Mono.empty()).get().uri("health").exchange();
         StepVerifier.create(exchange)
-                    .verifyErrorSatisfies(ex -> assertThat(ex).isInstanceOf(InstanceWebClientException.class)
-                                                              .hasMessageContaining("Instance not found"));
+                    .verifyErrorSatisfies(ex -> assertThat(ex).isInstanceOf(ResolveInstanceException.class)
+                                                              .hasMessageContaining("Could not resolve Instance"));
     }
 
     @Test
@@ -163,7 +165,7 @@ public class InstanceWebClientTest {
         Mono<ClientResponse> exchange = instanceWebClient.instance(instance).get().uri("unknown").exchange();
 
         StepVerifier.create(exchange)
-                    .verifyErrorSatisfies(ex -> assertThat(ex).isInstanceOf(InstanceWebClientException.class)
+                    .verifyErrorSatisfies(ex -> assertThat(ex).isInstanceOf(ResolveEndpointException.class)
                                                               .hasMessageContaining("Endpoint 'unknown' not found"));
     }
 
@@ -175,7 +177,7 @@ public class InstanceWebClientTest {
         Mono<ClientResponse> exchange = instanceWebClient.instance(instance).get().uri("/").exchange();
 
         StepVerifier.create(exchange)
-                    .verifyErrorSatisfies(ex -> assertThat(ex).isInstanceOf(InstanceWebClientException.class)
+                    .verifyErrorSatisfies(ex -> assertThat(ex).isInstanceOf(ResolveEndpointException.class)
                                                               .hasMessageContaining("No endpoint specified"));
     }
 

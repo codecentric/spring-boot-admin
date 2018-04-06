@@ -18,6 +18,8 @@ package de.codecentric.boot.admin.server.web.client;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.Endpoint;
+import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
+import de.codecentric.boot.admin.server.web.client.exception.ResolveInstanceException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -53,7 +55,7 @@ public final class InstanceExchangeFilterFunctions {
         return (request, next) -> instance.map(
             i -> ClientRequest.from(request).attribute(ATTRIBUTE_INSTANCE, i).build())
                                           .switchIfEmpty(request.url().isAbsolute() ? Mono.just(request) : Mono.error(
-                                              new InstanceWebClientException("Instance not found")))
+                                              new ResolveInstanceException("Could not resolve Instance")))
                                           .flatMap(next::exchange);
     }
 
@@ -85,14 +87,14 @@ public final class InstanceExchangeFilterFunctions {
 
             UriComponents oldUrl = UriComponentsBuilder.fromUri(request.url()).build();
             if (oldUrl.getPathSegments().isEmpty()) {
-                return Mono.error(new InstanceWebClientException("No endpoint specified"));
+                return Mono.error(new ResolveEndpointException("No endpoint specified"));
             }
 
             String endpointId = oldUrl.getPathSegments().get(0);
             Optional<Endpoint> endpoint = instance.getEndpoints().get(endpointId);
 
             if (!endpoint.isPresent()) {
-                return Mono.error(new InstanceWebClientException("Endpoint '" + endpointId + "' not found"));
+                return Mono.error(new ResolveEndpointException("Endpoint '" + endpointId + "' not found"));
             }
 
             URI newUrl = rewriteUrl(oldUrl, endpoint.get().getUrl());

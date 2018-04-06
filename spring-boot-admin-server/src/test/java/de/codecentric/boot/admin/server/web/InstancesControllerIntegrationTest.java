@@ -16,7 +16,7 @@
 
 package de.codecentric.boot.admin.server.web;
 
-import de.codecentric.boot.admin.server.AdminApplicationTest;
+import de.codecentric.boot.admin.server.AdminReactiveApplicationTest;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -53,7 +53,7 @@ public class InstancesControllerIntegrationTest {
 
     @Before
     public void setUp() {
-        instance = new SpringApplicationBuilder().sources(AdminApplicationTest.TestAdminApplication.class)
+        instance = new SpringApplicationBuilder().sources(AdminReactiveApplicationTest.TestAdminApplication.class)
                                                  .web(WebApplicationType.REACTIVE)
                                                  .run("--server.port=0", "--eureka.client.enabled=false");
 
@@ -111,8 +111,7 @@ public class InstancesControllerIntegrationTest {
                         } catch (InterruptedException e) {
                             Thread.interrupted();
                         }
-                        assertThat(body).containsEntry("instance", id.get())
-                                        .containsEntry("version", 0)
+                        assertThat(body).containsEntry("instance", id.get()).containsEntry("version", 0)
                                         .containsEntry("type", "REGISTERED");
                     })
                     .then(() -> {

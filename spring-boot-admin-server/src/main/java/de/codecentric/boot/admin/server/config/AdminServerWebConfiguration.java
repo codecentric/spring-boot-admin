@@ -82,7 +82,7 @@ public class AdminServerWebConfiguration {
             InstanceRegistry instanceRegistry, InstanceWebClient instanceWebClient) {
             return new de.codecentric.boot.admin.server.web.reactive.InstancesProxyController(
                 adminServerProperties.getContextPath(), adminServerProperties.getInstanceProxy().getIgnoredHeaders(),
-                instanceRegistry, instanceWebClient);
+                instanceRegistry, instanceWebClient, adminServerProperties.getMonitor().getReadTimeout());
         }
 
         @Bean

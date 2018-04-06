@@ -25,18 +25,17 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
-public class AdminApplicationTest extends AbstractAdminApplicationTest {
+public class AdminServletApplicationTest extends AbstractAdminApplicationTest {
     private ConfigurableApplicationContext instance;
 
     @Before
     public void setUp() {
         instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
-                                                 .web(WebApplicationType.REACTIVE)
+                                                 .web(WebApplicationType.SERVLET)
                                                  .run("--server.port=0", "--management.endpoints.web.base-path=/mgmt",
                                                      "--info.test=foobar", "--eureka.client.enabled=false");
 
@@ -51,15 +50,14 @@ public class AdminApplicationTest extends AbstractAdminApplicationTest {
     @EnableAdminServer
     @EnableAutoConfiguration
     @SpringBootConfiguration
-    @EnableWebFluxSecurity
     public static class TestAdminApplication {
-
-        @Bean
-        public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-            return http.authorizeExchange().anyExchange().permitAll()//
-                       .and().csrf().disable()//
-                       .build();
+        @Configuration
+        public static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+            @Override
+            protected void configure(HttpSecurity http) throws Exception {
+                http.authorizeRequests().anyRequest().permitAll()//
+                    .and().csrf().disable();
+            }
         }
-
     }
 }

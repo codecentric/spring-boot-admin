@@ -74,7 +74,7 @@ public class InstancesController {
         Registration withSource = Registration.copyOf(registration).source("http-api").build();
         LOGGER.debug("Register instance {}", withSource);
         return registry.register(withSource).map(id -> {
-            URI location = builder.path("/{id}").buildAndExpand(id).toUri();
+            URI location = builder.replacePath("/instances/{id}").buildAndExpand(id).toUri();
             return ResponseEntity.created(location).body(Collections.singletonMap("id", id));
         });
     }

@@ -16,14 +16,17 @@
 
 package de.codecentric.boot.admin.server.web;
 
+import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
-import de.codecentric.boot.admin.server.web.client.InstanceWebClientException;
+import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URI;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
@@ -46,25 +49,26 @@ import static java.util.stream.Collectors.toMap;
 
 public class AbstractInstancesProxyController {
     protected static final String REQUEST_MAPPING_PATH = "/instances/{instanceId}/actuator/**";
-    protected static final String[] HOP_BY_HOP_HEADERS = new String[]{"Host", "Connection", "Keep-Alive",
-        "Proxy-Authenticate", "Proxy-Authorization", "TE", "Trailer", "Transfer-Encoding", "Upgrade",
-        "X-Application-Context"};
+    protected static final String[] HOP_BY_HOP_HEADERS = new String[]{"Host", "Connection", "Keep-Alive", "Proxy-Authenticate", "Proxy-Authorization", "TE", "Trailer", "Transfer-Encoding", "Upgrade", "X-Application-Context"};
     private static final Logger log = LoggerFactory.getLogger(AbstractInstancesProxyController.class);
     private final String realRequestMappingPath;
     private final InstanceRegistry registry;
     private final InstanceWebClient instanceWebClient;
     private final Set<String> ignoredHeaders;
+    private final Duration readTimeout;
 
     public AbstractInstancesProxyController(String adminContextPath,
                                             Set<String> ignoredHeaders,
                                             InstanceRegistry registry,
-                                            InstanceWebClient instanceWebClient) {
+                                            InstanceWebClient instanceWebClient,
+                                            Duration readTimeout) {
         this.ignoredHeaders = Stream.concat(ignoredHeaders.stream(), Arrays.stream(HOP_BY_HOP_HEADERS))
                                     .map(String::toLowerCase)
                                     .collect(Collectors.toSet());
         this.registry = registry;
         this.instanceWebClient = instanceWebClient;
         this.realRequestMappingPath = adminContextPath + REQUEST_MAPPING_PATH;
+        this.readTimeout = readTimeout;
     }
 
     protected Mono<ClientResponse> forward(String instanceId,
@@ -74,7 +78,17 @@ public class AbstractInstancesProxyController {
                                            Supplier<BodyInserter<?, ? super ClientHttpRequest>> bodyInserter) {
         log.trace("Proxy-Request for instance {} / {}", instanceId, uri);
 
-        WebClient.RequestBodySpec bodySpec = instanceWebClient.instance(registry.getInstance(InstanceId.of(instanceId)))
+        return registry.getInstance(InstanceId.of(instanceId))
+                       .flatMap(instance -> forward(instance, uri, method, headers, bodyInserter))
+                       .defaultIfEmpty(ClientResponse.create(HttpStatus.SERVICE_UNAVAILABLE).build());
+    }
+
+    private Mono<ClientResponse> forward(Instance instance,
+                                         URI uri,
+                                         HttpMethod method,
+                                         HttpHeaders headers,
+                                         Supplier<BodyInserter<?, ? super ClientHttpRequest>> bodyInserter) {
+        WebClient.RequestBodySpec bodySpec = instanceWebClient.instance(instance)
                                                               .method(method)
                                                               .uri(uri)
                                                               .headers(instanceHeaders -> instanceHeaders.addAll(
@@ -90,10 +104,14 @@ public class AbstractInstancesProxyController {
         }
 
         return headersSpec.exchange()
-                          .onErrorMap(InstanceWebClientException.class,
-                              error -> new ResponseStatusException(HttpStatus.BAD_REQUEST, null, error))
-                          .onErrorMap(ConnectException.class,
-                              error -> new ResponseStatusException(HttpStatus.BAD_GATEWAY, null, error));
+                          .timeout(this.readTimeout,
+                              Mono.just(ClientResponse.create(HttpStatus.GATEWAY_TIMEOUT).build()))
+                          .onErrorMap(ResolveEndpointException.class,
+                              error -> new ResponseStatusException(HttpStatus.NOT_FOUND, null, error))
+                          .onErrorResume(IOException.class,
+                              ex -> Mono.just(ClientResponse.create(HttpStatus.BAD_GATEWAY).build()))
+                          .onErrorResume(ConnectException.class,
+                              ex -> Mono.just(ClientResponse.create(HttpStatus.BAD_GATEWAY).build()));
     }
 
     protected String getEndpointLocalPath(String pathWithinApplication) {

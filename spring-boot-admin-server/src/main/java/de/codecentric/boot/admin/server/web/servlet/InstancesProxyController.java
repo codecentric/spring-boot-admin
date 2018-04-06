@@ -53,20 +53,17 @@ import org.springframework.web.util.UriComponentsBuilder;
 @AdminController
 public class InstancesProxyController extends AbstractInstancesProxyController {
     private final DataBufferFactory bufferFactory = new DefaultDataBufferFactory();
-    private final Duration readTimeout;
 
     public InstancesProxyController(String adminContextPath,
                                     Set<String> ignoredHeaders,
                                     InstanceRegistry registry,
                                     InstanceWebClient instanceWebClient,
                                     Duration readTimeout) {
-        super(adminContextPath, ignoredHeaders, registry, instanceWebClient);
-        this.readTimeout = readTimeout;
+        super(adminContextPath, ignoredHeaders, registry, instanceWebClient, readTimeout);
     }
 
     @ResponseBody
-    @RequestMapping(path = REQUEST_MAPPING_PATH, method = {RequestMethod.GET, RequestMethod.HEAD, RequestMethod.POST,
-        RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS})
+    @RequestMapping(path = REQUEST_MAPPING_PATH, method = {RequestMethod.GET, RequestMethod.HEAD, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS})
     public Mono<Void> endpointProxy(@PathVariable("instanceId") String instanceId,
                                     HttpServletRequest servletRequest,
                                     HttpServletResponse servletResponse) {
@@ -83,10 +80,10 @@ public class InstancesProxyController extends AbstractInstancesProxyController {
                                       .toUri();
 
         //We need to explicitly block until the headers are recieved.
-        // otherwise the FrameworkServlet will add wrong Allow header for OPTIONS request
+        //otherwise the FrameworkServlet will add wrong Allow header for OPTIONS request
         ClientResponse clientResponse = super.forward(instanceId, uri, request.getMethod(), request.getHeaders(),
             () -> BodyInserters.fromDataBuffers(
-                DataBufferUtils.readInputStream(request::getBody, this.bufferFactory, 16384))).block(this.readTimeout);
+                DataBufferUtils.readInputStream(request::getBody, this.bufferFactory, 16384))).block();
 
         response.setStatusCode(clientResponse.statusCode());
         response.getHeaders().addAll(filterHeaders(clientResponse.headers().asHttpHeaders()));
