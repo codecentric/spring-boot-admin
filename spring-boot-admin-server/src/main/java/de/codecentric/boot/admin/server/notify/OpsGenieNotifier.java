@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Fernando Sure
  */
 public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
-    private static final URI DEFAULT_URI = URI.create("https://api.opsgenie.com/v1/json/alert");
+    private static final URI DEFAULT_URI = URI.create("https://api.opsgenie.com/v2/alerts");
     private static final String DEFAULT_MESSAGE = "#{instance.registration.name}/#{instance.id} is #{instance.statusInfo.status}";
     private final SpelExpressionParser parser = new SpelExpressionParser();
     private RestTemplate restTemplate = new RestTemplate();
@@ -58,12 +58,6 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
      * Integration ApiKey
      */
     private String apiKey;
-
-    /**
-     * Comma separated list of users, groups, schedules or escalation names
-     * to calculate which users will receive the notifications of the alert.
-     */
-    private String recipients;
 
     /**
      * Comma separated list of actions that can be executed.
@@ -95,8 +89,8 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
      */
     private Expression description;
 
-    public OpsGenieNotifier(InstanceRepository repositpry) {
-        super(repositpry);
+    public OpsGenieNotifier(InstanceRepository repository) {
+        super(repository);
         this.description = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
     }
 
@@ -104,44 +98,42 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
     @Override
     protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
         return Mono.fromRunnable(
-            () -> restTemplate.exchange(buildUrl(event), HttpMethod.POST, createRequest(event, instance), Void.class));
+            () -> restTemplate.exchange(buildUrl(event, instance), HttpMethod.POST, createRequest(event, instance),
+                Void.class));
     }
 
-    protected String buildUrl(InstanceEvent event) {
+    protected String buildUrl(InstanceEvent event, Instance instance) {
         if ((event instanceof InstanceStatusChangedEvent) &&
             (StatusInfo.STATUS_UP.equals(((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()))) {
-            return String.format("%s/close", url.toString());
+            return String.format("%s/%s/close", url.toString(), generateAlias(instance));
         }
         return url.toString();
     }
 
     protected HttpEntity createRequest(InstanceEvent event, Instance instance) {
         Map<String, Object> body = new HashMap<>();
-        body.put("apiKey", apiKey);
-        body.put("message", getMessage(event, instance));
-        body.put("alias", instance.getRegistration().getName() + "/" + instance.getId());
-        body.put("description", getDescription(event, instance));
+
+        if (user != null) {
+            body.put("user", user);
+        }
+        if (source != null) {
+            body.put("source", source);
+        }
 
         if (event instanceof InstanceStatusChangedEvent &&
             !StatusInfo.STATUS_UP.equals(((InstanceStatusChangedEvent) event).getStatusInfo().getStatus())) {
 
-            if (recipients != null) {
-                body.put("recipients", recipients);
-            }
+            body.put("message", getMessage(event, instance));
+            body.put("alias", generateAlias(instance));
+            body.put("description", getDescription(event, instance));
             if (actions != null) {
                 body.put("actions", actions);
-            }
-            if (source != null) {
-                body.put("source", source);
             }
             if (tags != null) {
                 body.put("tags", tags);
             }
             if (entity != null) {
                 body.put("entity", entity);
-            }
-            if (user != null) {
-                body.put("user", user);
             }
 
             Map<String, Object> details = new HashMap<>();
@@ -153,7 +145,12 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(HttpHeaders.AUTHORIZATION, "GenieKey " + apiKey);
         return new HttpEntity<>(body, headers);
+    }
+
+    protected String generateAlias(Instance instance) {
+        return instance.getRegistration().getName() + "_" + instance.getId();
     }
 
     protected String getMessage(InstanceEvent event, Instance instance) {
@@ -190,14 +187,6 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 
     public void setRestTemplate(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
-    }
-
-    public String getRecipients() {
-        return recipients;
-    }
-
-    public void setRecipients(String recipients) {
-        this.recipients = recipients;
     }
 
     public String getActions() {
