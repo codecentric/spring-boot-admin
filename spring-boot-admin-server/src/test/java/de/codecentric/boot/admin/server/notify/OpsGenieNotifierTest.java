@@ -103,7 +103,7 @@ public class OpsGenieNotifierTest {
         return String.format("Instance App (-id-) went from %s to %s", expectedOldStatus, expectedNewStatus);
     }
 
-    private HttpEntity expectedRequest(String expectedOldStatus, String expectedNewStatus) {
+    private HttpEntity<Map<String, Object>> expectedRequest(String expectedOldStatus, String expectedNewStatus) {
         Map<String, Object> expected = new HashMap<>();
         expected.put("apiKey", "--service--");
         expected.put("message", getMessage(expectedNewStatus));
