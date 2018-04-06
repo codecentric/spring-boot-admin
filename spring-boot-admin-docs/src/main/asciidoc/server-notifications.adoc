@@ -205,15 +205,11 @@ To enable https://www.opsgenie.com/[OpsGenie] notifications you just have to add
 
 | spring.boot.admin.notify.opsgenie.url
 | OpsGenie Alert API url
-| `+++"https://api.opsgenie.com/v1/json/alert"+++`
+| `+++"https://api.opsgenie.com/v2/alerts"+++`
 
 | spring.boot.admin.notify.opsgenie.description
 | Description to use in the event. SpEL-expressions are supported
 | `+++"#{application.name}/#{application.id} is #{to.status}"+++`
-
-| spring.boot.admin.notify.opsgenie.recipients
-| User, group, schedule or escalation names to calculate which users will receive the notifications of the alert.
-|
 
 | spring.boot.admin.notify.opsgenie.actions
 | Comma separated list of actions that can be executed.
