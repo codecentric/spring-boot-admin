@@ -525,7 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.0.0-SNAPSHOT,</span>
-<span id="revdate">06.04.2018</span>
+<span id="revdate">10.04.2018</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -1733,17 +1733,12 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.opsgenie.url</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">OpsGenie Alert API url</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"https://api.opsgenie.com/v1/json/alert"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"https://api.opsgenie.com/v2/alerts"</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.opsgenie.description</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Description to use in the event. SpEL-expressions are supported</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>"#{application.name}/#{application.id} is #{to.status}"</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.opsgenie.recipients</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">User, group, schedule or escalation names to calculate which users will receive the notifications of the alert.</p></td>
-<td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.opsgenie.actions</p></td>
