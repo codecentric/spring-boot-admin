@@ -15,28 +15,30 @@
   -->
 
 <template>
-  <table class="table is-fullwidth">
+  <table class="health-details table is-fullwidth">
     <tr>
-      <td>
-        <sba-status v-if="health.status" :status="health.status"/>
+      <th colspan="2">
         <span v-text="name"/>
-      </td>
+        <span class="health-details__status" :class="`health-details__status--${health.status}`"
+              v-text="health.status"/>
+      </th>
     </tr>
+
     <tr v-if="details && details.length > 0">
-      <td>
-        <table class="table ">
-          <tr v-for="detail in details" :key="detail.name">
+      <td class="health-details__nested" colspan="2">
+        <table class="health-details table is-fullwidth">
+          <tr class="health-details__detail" v-for="detail in details" :key="detail.name">
             <td v-text="detail.name"/>
-            <td v-text="detail.value"/>
+            <td v-if="name === 'diskSpace'" v-text="prettyBytes(detail.value)"/>
+            <td v-else v-text="detail.value"/>
           </tr>
         </table>
       </td>
     </tr>
+
     <tr v-for="child in childHealth" :key="child.name">
-      <td>
-        <health-diskspace v-if="child.name === 'diskSpace'"
-                          :name="child.name" :health="child.value"/>
-        <health-default v-else :name="child.name" :health="child.value"/>
+      <td class="health-details__nested" colspan="2">
+        <health-details :name="child.name" :health="child.value"/>
       </td>
     </tr>
   </table>
@@ -44,15 +46,14 @@
 
 <script>
   import _ from 'lodash';
-  import healthDiskspace from './health-diskspace';
+  import prettyBytes from 'pretty-bytes';
 
   const isChildHealth = (value) => {
-    return value !== null && typeof value === 'object';
+    return value !== null && typeof value === 'object' && value.hasOwnProperty('status');
   };
 
   export default {
-    name: 'HealthDefault',
-    components: {healthDiskspace},
+    name: 'HealthDetails',
     props: {
       name: {
         type: String,
@@ -62,6 +63,9 @@
         type: Object,
         required: true
       }
+    },
+    methods: {
+      prettyBytes
     },
     computed: {
       details() {
@@ -85,4 +89,39 @@
 </script>
 
 <style lang="scss">
+  @import "~@/assets/css/utilities";
+
+  td.health-details__nested {
+    padding: 0 0 0 0.75em;
+  }
+
+  td.health-details__nested {
+    border-bottom: 0;
+  }
+
+  .health-details__nested .table {
+    margin-bottom: 0.5em;
+  }
+
+  .health-details__status {
+    float: right;
+
+    &--UP {
+      color: $success;
+    }
+
+    &--RESTRICTED {
+      color: $warning;
+    }
+
+    &--OUT_OF_SERVICE,
+    &--DOWN {
+      color: $danger;
+    }
+
+    &--UNKNOWN,
+    &--OFFLINE {
+      color: $grey;
+    }
+  }
 </style>
