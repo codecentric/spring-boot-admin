@@ -49,7 +49,7 @@ import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V2_MEDIA
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
-public abstract class AbstractInstancesProxyControllerTest {
+public abstract class AbstractInstancesProxyControllerIntegrationTest {
     private WebTestClient client;
     private ConfigurableApplicationContext context;
     private ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {

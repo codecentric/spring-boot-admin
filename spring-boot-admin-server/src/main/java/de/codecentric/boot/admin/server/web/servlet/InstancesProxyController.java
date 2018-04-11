@@ -67,7 +67,7 @@ public class InstancesProxyController extends AbstractInstancesProxyController {
     @RequestMapping(path = REQUEST_MAPPING_PATH, method = {RequestMethod.GET, RequestMethod.HEAD, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS})
     public Mono<Void> endpointProxy(@PathVariable("instanceId") String instanceId,
                                     HttpServletRequest servletRequest,
-                                    HttpServletResponse servletResponse) {
+                                    HttpServletResponse servletResponse) throws IOException {
         ServerHttpRequest request = new ServletServerHttpRequest(servletRequest);
         ServerHttpResponse response = new ServletServerHttpResponse(servletResponse);
 
@@ -88,6 +88,7 @@ public class InstancesProxyController extends AbstractInstancesProxyController {
 
         response.setStatusCode(clientResponse.statusCode());
         response.getHeaders().addAll(filterHeaders(clientResponse.headers().asHttpHeaders()));
+        response.flush();
 
         return clientResponse.body(BodyExtractors.toDataBuffers()).window(1).flatMap(body -> {
             try {

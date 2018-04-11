@@ -17,13 +17,13 @@
 package de.codecentric.boot.admin.server.web.reactive;
 
 import de.codecentric.boot.admin.server.AdminReactiveApplicationTest;
-import de.codecentric.boot.admin.server.web.AbstractInstancesProxyControllerTest;
+import de.codecentric.boot.admin.server.web.AbstractInstancesProxyControllerIntegrationTest;
 
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
-public class InstancesProxyControllerIntegrationTest extends AbstractInstancesProxyControllerTest {
+public class InstancesProxyControllerIntegrationTest extends AbstractInstancesProxyControllerIntegrationTest {
     @Override
     protected ConfigurableApplicationContext setupContext() {
         return new SpringApplicationBuilder().sources(AdminReactiveApplicationTest.TestAdminApplication.class)
