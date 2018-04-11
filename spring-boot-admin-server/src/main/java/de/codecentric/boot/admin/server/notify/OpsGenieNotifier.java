@@ -110,7 +110,7 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
         return url.toString();
     }
 
-    protected HttpEntity createRequest(InstanceEvent event, Instance instance) {
+    protected HttpEntity<?> createRequest(InstanceEvent event, Instance instance) {
         Map<String, Object> body = new HashMap<>();
 
         if (user != null) {
