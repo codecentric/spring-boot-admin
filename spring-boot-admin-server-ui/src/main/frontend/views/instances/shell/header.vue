@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <section class="hero instance-header" id="instance-menu">
+  <section class="hero">
     <div class="hero-body">
       <div class="container">
         <div class="columns">

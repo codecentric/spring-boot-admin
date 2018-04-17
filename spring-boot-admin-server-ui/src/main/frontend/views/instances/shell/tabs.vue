@@ -117,5 +117,9 @@
         visibility: visible;
       }
     }
+
+    & .level {
+      align-items: flex-end;
+    }
   }
 </style>

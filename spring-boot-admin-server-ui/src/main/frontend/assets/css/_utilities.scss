@@ -35,6 +35,7 @@ $modal-card-head-background-color: $white;
 $modal-content-width: calc(100vh - 40px);
 
 $navbar-background-color: $black-ter;
+$navbar-box-shadow-size: 0;
 $navbar-item-color: $grey;
 $navbar-item-hover-color: $white;
 $navbar-item-hover-background-color: $navbar-background-color;
@@ -45,4 +46,4 @@ $navbar-item-active-background-color: $navbar-background-color;
 
 // for calculations / originally rem
 $navbar-height-px: 52px;
-$tabs-height-px: 41px;
+$tabs-height-px: 46px;
