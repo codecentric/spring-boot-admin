@@ -525,7 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.0.0-SNAPSHOT,</span>
-<span id="revdate">17.04.2018</span>
+<span id="revdate">18.04.2018</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -2183,7 +2183,7 @@ When using this approach the SBA Server decides whether or not the user can acce
 <div class="sectionbody">
 <div class="paragraph">
 <p>It is possible to monitor Spring Boot 1.5.x applications with Spring Boot Admin 2.x. The old Spring Boot Admin Client is
-able to register at a newer server. Since the API has slight changes, you need to set the following property:</p>
+able to register at a newer server. Since the API has slight changes, you need to set the following property on old clients:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -2207,6 +2207,13 @@ able to register at a newer server. Since the API has slight changes, you need t
 <div class="sect1">
 <h2 id="_changes_with_2_x"><a class="anchor" href="#_changes_with_2_x"></a><a class="link" href="#_changes_with_2_x">7. Changes with 2.x</a></h2>
 <div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Added stable automatic-module-name to all jars</p>
+</li>
+</ul>
+</div>
 <div class="sect2">
 <h3 id="_ui"><a class="anchor" href="#_ui"></a><a class="link" href="#_ui">7.1. UI</a></h3>
 <div class="ulist">
@@ -2221,13 +2228,19 @@ able to register at a newer server. Since the API has slight changes, you need t
 <p>Removed ui-activiti module, as it was only used rarely</p>
 </li>
 <li>
+<p>Removed Hystrix-Dashboard integration (subject to change)</p>
+</li>
+<li>
 <p>Added support for the session endpoint</p>
 </li>
 <li>
-<p>Added display of the registered metadata</p>
+<p>Added display of the (sanitized) metadata</p>
 </li>
 <li>
 <p>Added option to reset loglevels</p>
+</li>
+<li>
+<p>Added wallboard view</p>
 </li>
 </ul>
 </div>
@@ -2240,25 +2253,37 @@ able to register at a newer server. Since the API has slight changes, you need t
 <p>Moved all classes to the <code>spring.boot.admin.server</code> package</p>
 </li>
 <li>
-<p>Added stable automatic-module-name</p>
+<p>Redesigned backend using event sourcing principles</p>
 </li>
 <li>
-<p>Redesigned backend based on event sourcing principles</p>
+<p>Added concept of applications (consisting of 1 to n instances)</p>
 </li>
 <li>
-<p>Moved endpoint detection to the backend by querying the <code>/actuator</code>-index</p>
+<p>Moved endpoint detection to the backend by querying the <code>/actuator</code>-index or by probing via OPTIONS request</p>
 </li>
 <li>
-<p>Added the concept of applications (consisting of 1 to n instances) to the backend</p>
-</li>
-<li>
-<p>Removed Zuul</p>
+<p>Replaced Zuul with a custom proxy using the WebClient</p>
 </li>
 <li>
 <p>Removed dependency on spring-cloud-starter</p>
 </li>
 <li>
-<p>Added CompositeHttpHeadersProvider to support multiple HttpHeadersProviders</p>
+<p>Added <code>CompositeHttpHeadersProvider</code> to support multiple <code>HttpHeadersProviders</code> at the same time</p>
+</li>
+<li>
+<p>Added `InstanceExchangeFilterFunction`s which allows to intercept/modify the requests to the monitored instances</p>
+</li>
+<li>
+<p>Added out-of-the-box support for CloudFoundry</p>
+</li>
+<li>
+<p>Added support for Spring Boot 1.5.x actuator endpoints using <code>LegacyEndpointConverters</code></p>
+</li>
+<li>
+<p>Update <code>OpsGenieNotifier</code> to api v2</p>
+</li>
+<li>
+<p>Rewritten the <code>MailNotifier</code> to use Thymeleaf templates</p>
 </li>
 </ul>
 </div>
@@ -2274,10 +2299,10 @@ able to register at a newer server. Since the API has slight changes, you need t
 <p>Moved all classes to the <code>spring.boot.admin.client</code> package</p>
 </li>
 <li>
-<p>Added stable automatic-module-name</p>
+<p>Added support webflux applications</p>
 </li>
 <li>
-<p>Supports webflux and servlet based applications</p>
+<p>Added out-of-the-box support for CloudFoundry</p>
 </li>
 </ul>
 </div>
