@@ -84,7 +84,7 @@ public class InstancesProxyController extends AbstractInstancesProxyController {
         //otherwise the FrameworkServlet will add wrong Allow header for OPTIONS request
         ClientResponse clientResponse = super.forward(instanceId, uri, request.getMethod(), request.getHeaders(),
             () -> BodyInserters.fromDataBuffers(
-                DataBufferUtils.readInputStream(request::getBody, this.bufferFactory, 16384))).block();
+                DataBufferUtils.readInputStream(request::getBody, this.bufferFactory, 4096))).block();
 
         response.setStatusCode(clientResponse.statusCode());
         response.getHeaders().addAll(filterHeaders(clientResponse.headers().asHttpHeaders()));
