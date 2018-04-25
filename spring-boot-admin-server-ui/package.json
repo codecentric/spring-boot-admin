@@ -39,7 +39,7 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "@vue/test-utils": "^1.0.0-beta.14",
+    "@vue/test-utils": "^1.0.0-beta.15",
     "autoprefixer": "^8.3.0",
     "babel-core": "^6.25.0",
     "babel-eslint": "^8.2.3",
@@ -57,7 +57,7 @@
     "eslint": "^4.19.1",
     "eslint-loader": "^1.9.0",
     "eslint-plugin-html": "^4.0.3",
-    "eslint-plugin-vue": "^4.4.0",
+    "eslint-plugin-vue": "^4.5.0",
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^1.1.11",
     "glob": "^7.1.2",
