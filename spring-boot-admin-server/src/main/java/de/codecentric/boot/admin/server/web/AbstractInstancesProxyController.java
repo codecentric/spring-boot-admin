@@ -42,8 +42,8 @@ import org.springframework.http.client.reactive.ClientHttpRequest;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.server.ResponseStatusException;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -56,6 +56,7 @@ public class AbstractInstancesProxyController {
     private final InstanceWebClient instanceWebClient;
     private final Set<String> ignoredHeaders;
     private final Duration readTimeout;
+    private final ExchangeStrategies strategies = ExchangeStrategies.withDefaults();
 
     public AbstractInstancesProxyController(String adminContextPath,
                                             Set<String> ignoredHeaders,
@@ -80,7 +81,8 @@ public class AbstractInstancesProxyController {
 
         return registry.getInstance(InstanceId.of(instanceId))
                        .flatMap(instance -> forward(instance, uri, method, headers, bodyInserter))
-                       .defaultIfEmpty(ClientResponse.create(HttpStatus.SERVICE_UNAVAILABLE).build());
+                       .switchIfEmpty(Mono.fromSupplier(
+                           () -> ClientResponse.create(HttpStatus.SERVICE_UNAVAILABLE, strategies).build()));
     }
 
     private Mono<ClientResponse> forward(Instance instance,
@@ -104,14 +106,14 @@ public class AbstractInstancesProxyController {
         }
 
         return headersSpec.exchange()
-                          .timeout(this.readTimeout,
-                              Mono.just(ClientResponse.create(HttpStatus.GATEWAY_TIMEOUT).build()))
-                          .onErrorMap(ResolveEndpointException.class,
-                              error -> new ResponseStatusException(HttpStatus.NOT_FOUND, null, error))
-                          .onErrorResume(IOException.class,
-                              ex -> Mono.just(ClientResponse.create(HttpStatus.BAD_GATEWAY).build()))
-                          .onErrorResume(ConnectException.class,
-                              ex -> Mono.just(ClientResponse.create(HttpStatus.BAD_GATEWAY).build()));
+                          .timeout(this.readTimeout, Mono.fromSupplier(
+                              () -> ClientResponse.create(HttpStatus.GATEWAY_TIMEOUT, strategies).build()))
+                          .onErrorResume(ResolveEndpointException.class, ex -> Mono.fromSupplier(
+                              () -> ClientResponse.create(HttpStatus.NOT_FOUND, strategies).build()))
+                          .onErrorResume(IOException.class, ex -> Mono.fromSupplier(
+                              () -> ClientResponse.create(HttpStatus.BAD_GATEWAY, strategies).build()))
+                          .onErrorResume(ConnectException.class, ex -> Mono.fromSupplier(
+                              () -> ClientResponse.create(HttpStatus.BAD_GATEWAY, strategies).build()));
     }
 
     protected String getEndpointLocalPath(String pathWithinApplication) {
