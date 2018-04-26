@@ -92,9 +92,7 @@ public class AbstractInstancesProxyController {
                                          Supplier<BodyInserter<?, ? super ClientHttpRequest>> bodyInserter) {
         WebClient.RequestBodySpec bodySpec = instanceWebClient.instance(instance)
                                                               .method(method)
-                                                              .uri(uri)
-                                                              .headers(instanceHeaders -> instanceHeaders.addAll(
-                                                                  filterHeaders(headers)));
+                                                              .uri(uri).headers(h -> h.addAll(filterHeaders(headers)));
 
         WebClient.RequestHeadersSpec<?> headersSpec = bodySpec;
         if (requiresBody(method)) {
@@ -143,5 +141,4 @@ public class AbstractInstancesProxyController {
                 return false;
         }
     }
-
 }

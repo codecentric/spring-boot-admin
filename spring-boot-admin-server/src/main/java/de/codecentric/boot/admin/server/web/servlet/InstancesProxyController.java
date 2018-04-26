@@ -89,6 +89,7 @@ public class InstancesProxyController extends AbstractInstancesProxyController {
         response.setStatusCode(clientResponse.statusCode());
         response.getHeaders().addAll(filterHeaders(clientResponse.headers().asHttpHeaders()));
         OutputStream responseBody = response.getBody();
+        response.flush();
 
         return clientResponse.body(BodyExtractors.toDataBuffers())
                              .window(1)
