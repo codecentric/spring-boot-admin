@@ -122,12 +122,10 @@
           }, {type: null, value: ''});
       }
     },
-    mounted() {
-      this.updateFilter();
-    },
     watch: {
-      '$route.query'() {
-        this.updateFilter();
+      '$route.query': {
+        handler: 'updateFilter',
+        immediate: true
       },
       filter: {
         deep: true,

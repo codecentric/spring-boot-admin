@@ -91,12 +91,6 @@
         return '-';
       }
     },
-    watch: {
-      dataSource() {
-        this.current = null;
-        this.chartData = [];
-      }
-    },
     methods: {
       async fetchMetrics() {
         const responseHit = this.instance.fetchMetric('cache.gets', {name: this.cacheName, result: 'hit'});

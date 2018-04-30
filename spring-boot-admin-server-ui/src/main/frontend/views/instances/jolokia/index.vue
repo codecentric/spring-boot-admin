@@ -158,12 +158,12 @@
       }
     },
     created() {
-      this.updateSelection();
       this.fetchMBeans();
     },
     watch: {
-      '$route.query'() {
-        this.updateSelection();
+      '$route.query': {
+        handler: 'updateSelection',
+        immediate: true
       },
       selected() {
         if (!_.isEqual(this.selected, !this.$route.query)) {

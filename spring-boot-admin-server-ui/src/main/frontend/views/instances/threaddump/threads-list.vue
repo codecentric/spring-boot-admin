@@ -122,15 +122,11 @@
     components: {
       threadTag
     },
-    mounted() {
-      this.drawTimelines(this.threadTimelines);
-    },
     watch: {
       threadTimelines: {
         deep: true,
-        handler(newVal) {
-          this.drawTimelines(newVal);
-        }
+        handler: 'drawTimelines',
+        immediate: true
       }
     },
     methods: {
@@ -193,49 +189,49 @@
   }
 </script>
 <style lang="scss">
-    @import "~@/assets/css/utilities";
+  @import "~@/assets/css/utilities";
 
-    .threads {
-        table-layout: fixed;
+  .threads {
+    table-layout: fixed;
 
-        &__thread-name {
-            width: 250px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        &__timeline {
-            width: auto;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-
-            & svg {
-                display: block; //prevent margin bottom on svg
-            }
-        }
-
-        &__scale {
-            & .domain {
-                display: none;
-            }
-        }
+    &__thread-name {
+      width: 250px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    .thread {
-        &--runnable {
-            fill: $success;
-        }
+    &__timeline {
+      width: auto;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
 
-        &--timed_waiting,
-        &--waiting {
-            fill: $warning;
-        }
-
-        &--blocked {
-            fill: $danger;
-        }
+      & svg {
+        display: block; //prevent margin bottom on svg
+      }
     }
+
+    &__scale {
+      & .domain {
+        display: none;
+      }
+    }
+  }
+
+  .thread {
+    &--runnable {
+      fill: $success;
+    }
+
+    &--timed_waiting,
+    &--waiting {
+      fill: $warning;
+    }
+
+    &--blocked {
+      fill: $danger;
+    }
+  }
 </style>

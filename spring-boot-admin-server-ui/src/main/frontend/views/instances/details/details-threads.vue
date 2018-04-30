@@ -73,12 +73,6 @@
       current: null,
       chartData: [],
     }),
-    watch: {
-      dataSource() {
-        this.current = null;
-        this.chartData = [];
-      }
-    },
     methods: {
       async fetchMetrics() {
         const responseLive = this.instance.fetchMetric('jvm.threads.live');

@@ -155,15 +155,13 @@
         return this.sideLength * (2 + (this.rows - 1) * 1.5);
       }
     },
-    mounted() {
-      this.updateLayout();
-    },
     watch: {
       sideLength(newVal) {
         this.$el.style['font-size'] = `${newVal / 9.5}px`;
       },
-      itemCount() {
-        this.updateLayout();
+      itemCount: {
+        handler: 'updateLayout',
+        immediate: true
       }
     }
   };

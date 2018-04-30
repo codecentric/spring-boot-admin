@@ -182,7 +182,5 @@
     beforeDestroy() {
       document.removeEventListener('keyup', this.keyHandler)
     },
-
-    watch: {}
   }
 </script>

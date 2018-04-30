@@ -38,9 +38,7 @@ export default {
     }
   },
   watch: {
-    value() {
-      this.subscribe();
-    }
+    value: 'subscribe'
   },
   methods: {
     createSubscription() {

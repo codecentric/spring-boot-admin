@@ -59,13 +59,6 @@
       execute(args) {
         return this.instance.invokeMBeanOperation(this.domain, this.mBean.descriptor.raw, this.invocation.name, args);
       }
-    },
-    created() {
-    },
-    watch: {}
+    }
   }
 </script>
-
-<style lang="scss">
-    @import "~@/assets/css/utilities";
-</style>

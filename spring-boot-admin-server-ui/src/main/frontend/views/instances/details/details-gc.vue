@@ -69,11 +69,6 @@
       error: null,
       current: null,
     }),
-    watch: {
-      dataSource() {
-        this.current = null;
-      }
-    },
     methods: {
       async fetchMetrics() {
         const response = await this.instance.fetchMetric('jvm.gc.pause');

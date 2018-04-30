@@ -78,12 +78,6 @@
       current: null,
       chartData: [],
     }),
-    watch: {
-      dataSource() {
-        this.current = null;
-        this.chartData = [];
-      }
-    },
     methods: {
       async fetchMetrics() {
         const responseActive = this.instance.fetchMetric('data.source.active.connections', {name: this.dataSource});

@@ -134,9 +134,7 @@
       this.drawChart(this.data);
     },
     watch: {
-      data(newVal) {
-        this.drawChart(newVal);
-      }
+      data: 'drawChart'
     }
   }
 </script>

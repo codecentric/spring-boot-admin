@@ -214,12 +214,10 @@
         });
       }
     },
-    created() {
-      this.updateManagedProperties(this.managerPropertySource);
-    },
     watch: {
-      managerPropertySource(newVal) {
-        this.updateManagedProperties(newVal);
+      managerPropertySource: {
+        handler: 'updateManagedProperties',
+        immediate: true
       },
       managedProperties: {
         deep: true,

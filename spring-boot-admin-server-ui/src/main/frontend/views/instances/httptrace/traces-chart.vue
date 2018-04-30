@@ -266,9 +266,7 @@
       this.drawChart(this.chartData);
     },
     watch: {
-      chartData(newVal) {
-        this.drawChart(newVal);
-      },
+      chartData: 'drawChart',
       hovered(newVal) {
         if (newVal) {
           this.hover.attr('opacity', 1)
