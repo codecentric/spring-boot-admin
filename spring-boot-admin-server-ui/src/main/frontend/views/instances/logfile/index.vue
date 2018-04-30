@@ -77,33 +77,31 @@
       prettyBytes,
       createSubscription() {
         const vm = this;
-        if (this.instance) {
-          vm.error = null;
-          return this.instance.streamLogfile(1000)
-            .do(chunk => vm.skippedBytes = vm.skippedBytes || chunk.skipped)
-            .concatMap(chunk => _.chunk(chunk.addendum.split(/\r?\n/), 250))
-            .map(lines => Observable.of(lines, animationFrame))
-            .concatAll()
-            .subscribe({
-              next: lines => {
-                vm.hasLoaded = true;
-                lines.forEach(line => {
-                  const child = document.createElement('pre');
-                  child.textContent = line;
-                  vm.$el.appendChild(child);
-                });
+        vm.error = null;
+        return this.instance.streamLogfile(1000)
+          .do(chunk => vm.skippedBytes = vm.skippedBytes || chunk.skipped)
+          .concatMap(chunk => _.chunk(chunk.addendum.split(/\r?\n/), 250))
+          .map(lines => Observable.of(lines, animationFrame))
+          .concatAll()
+          .subscribe({
+            next: lines => {
+              vm.hasLoaded = true;
+              lines.forEach(line => {
+                const child = document.createElement('pre');
+                child.textContent = line;
+                vm.$el.appendChild(child);
+              });
 
-                if (vm.atBottom) {
-                  vm.scrollToBottom();
-                }
-              },
-              error: error => {
-                vm.hasLoaded = true;
-                console.warn('Fetching logfile failed:', error);
-                vm.error = error;
+              if (vm.atBottom) {
+                vm.scrollToBottom();
               }
-            });
-        }
+            },
+            error: error => {
+              vm.hasLoaded = true;
+              console.warn('Fetching logfile failed:', error);
+              vm.error = error;
+            }
+          });
       },
       onScroll() {
         this.atBottom = this.scrollParent.scrollTop >= this.scrollParent.scrollHeight - this.scrollParent.clientHeight;

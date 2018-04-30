@@ -195,23 +195,21 @@
       },
       createSubscription() {
         const vm = this;
-        if (this.instance) {
-          vm.lastTimestamp = moment(0);
-          vm.error = null;
-          return Observable.timer(0, 5000)
-            .concatMap(vm.fetchHttptrace)
-            .subscribe({
-              next: traces => {
-                vm.hasLoaded = true;
-                vm.traces = vm.traces ? traces.concat(vm.traces) : traces;
-              },
-              error: error => {
-                vm.hasLoaded = true;
-                console.warn('Fetching traces failed:', error);
-                vm.error = error;
-              }
-            });
-        }
+        vm.lastTimestamp = moment(0);
+        vm.error = null;
+        return Observable.timer(0, 5000)
+          .concatMap(vm.fetchHttptrace)
+          .subscribe({
+            next: traces => {
+              vm.hasLoaded = true;
+              vm.traces = vm.traces ? traces.concat(vm.traces) : traces;
+            },
+            error: error => {
+              vm.hasLoaded = true;
+              console.warn('Fetching traces failed:', error);
+              vm.error = error;
+            }
+          });
       },
       getFilterFn() {
         let filterFn = null;

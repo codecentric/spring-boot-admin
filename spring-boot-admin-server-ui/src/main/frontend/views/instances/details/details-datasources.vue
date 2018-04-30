@@ -41,25 +41,21 @@
     }),
     methods: {
       async fetchDataSources() {
-        if (this.instance) {
-          const response = await this.instance.fetchMetric('data.source.active.connections');
-          return response.data.availableTags.filter(tag => tag.tag === 'name')[0].values;
-        }
+        const response = await this.instance.fetchMetric('data.source.active.connections');
+        return response.data.availableTags.filter(tag => tag.tag === 'name')[0].values;
       },
       createSubscription() {
         const vm = this;
-        if (this.instance) {
-          return Observable.timer(0, 2500)
-            .concatMap(this.fetchDataSources)
-            .subscribe({
-              next: names => {
-                vm.dataSources = names
-              },
-              error: error => {
-                console.warn('Fetching datasources failed:', error);
-              }
-            });
-        }
+        return Observable.timer(0, 2500)
+          .concatMap(this.fetchDataSources)
+          .subscribe({
+            next: names => {
+              vm.dataSources = names
+            },
+            error: error => {
+              console.warn('Fetching datasources failed:', error);
+            }
+          });
       }
     }
   }

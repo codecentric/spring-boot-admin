@@ -66,7 +66,7 @@
     },
     methods: {
       async fetchInfo() {
-        if (this.instance && this.instance.hasEndpoint('info')) {
+        if (this.instance.hasEndpoint('info')) {
           try {
             this.error = null;
             const res = await this.instance.fetchInfo();

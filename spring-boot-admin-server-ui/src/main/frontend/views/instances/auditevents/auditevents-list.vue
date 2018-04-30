@@ -81,7 +81,7 @@
     }),
     computed: {
       hasSessionEndpoint() {
-        return this.instance && this.instance.hasEndpoint('sessions');
+        return this.instance.hasEndpoint('sessions');
       }
     },
     methods: {

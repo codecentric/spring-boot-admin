@@ -115,17 +115,15 @@
     },
     methods: {
       async fetchLiquibase() {
-        if (this.instance) {
-          this.error = null;
-          try {
-            const res = await this.instance.fetchLiquibase();
-            this.contexts = res.data.contexts;
-          } catch (error) {
-            console.warn('Fetching Liquibase changeSets failed:', error);
-            this.error = error;
-          }
-          this.hasLoaded = true;
+        this.error = null;
+        try {
+          const res = await this.instance.fetchLiquibase();
+          this.contexts = res.data.contexts;
+        } catch (error) {
+          console.warn('Fetching Liquibase changeSets failed:', error);
+          this.error = error;
         }
+        this.hasLoaded = true;
       },
       execClass(execType) {
         switch (execType) {

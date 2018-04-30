@@ -101,36 +101,39 @@
     }),
     computed: {
       hasCaches() {
-        return this.metrics && this.metrics.indexOf('cache.gets') >= 0;
+        return this.hasMetric('cache.gets');
       },
       hasDatasources() {
-        return this.metrics && this.metrics.indexOf('data.source.active.connections') >= 0;
+        return this.hasMetric('data.source.active.connections');
       },
       hasGc() {
-        return this.metrics && this.metrics.indexOf('jvm.gc.pause') >= 0;
+        return this.hasMetric('jvm.gc.pause');
       },
       hasInfo() {
-        return this.instance && this.instance.hasEndpoint('info');
+        return this.instance.hasEndpoint('info');
       },
       hasMemory() {
-        return this.metrics && this.metrics.indexOf('jvm.memory.max') >= 0;
+        return this.hasMetric('jvm.memory.max');
       },
       hasProcess() {
-        return this.metrics && this.metrics.indexOf('process.uptime') >= 0;
+        return this.hasMetric('process.uptime');
       },
       hasThreads() {
-        return this.metrics && this.metrics.indexOf('jvm.threads.live') >= 0;
+        return this.hasMetric('jvm.threads.live');
       },
       hasMetadata() {
-        return this.instance && this.instance.registration && this.instance.registration.metadata;
+        return this.instance.registration && this.instance.registration.metadata;
       }
     },
     created() {
       this.fetchMetricIndex();
     },
     methods: {
+      hasMetric(metric) {
+        return this.metrics.indexOf(metric) >= 0;
+      },
       async fetchMetricIndex() {
-        if (this.instance && this.instance.hasEndpoint('metrics')) {
+        if (this.instance.hasEndpoint('metrics')) {
           this.error = null;
           try {
             const res = await this.instance.fetchMetrics();

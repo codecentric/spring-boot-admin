@@ -91,21 +91,19 @@
       },
       createSubscription() {
         const vm = this;
-        if (this.instance) {
-          return Observable.timer(0, 2500)
-            .concatMap(this.fetchMetrics)
-            .subscribe({
-              next: data => {
-                vm.hasLoaded = true;
-                vm.current = data;
-              },
-              error: error => {
-                vm.hasLoaded = true;
-                console.warn('Fetching GC metrics failed:', error);
-                vm.error = error;
-              }
-            });
-        }
+        return Observable.timer(0, 2500)
+          .concatMap(this.fetchMetrics)
+          .subscribe({
+            next: data => {
+              vm.hasLoaded = true;
+              vm.current = data;
+            },
+            error: error => {
+              vm.hasLoaded = true;
+              console.warn('Fetching GC metrics failed:', error);
+              vm.error = error;
+            }
+          });
       }
     }
   }

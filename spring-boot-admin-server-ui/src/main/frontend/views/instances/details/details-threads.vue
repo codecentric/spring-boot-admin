@@ -93,22 +93,20 @@
       },
       createSubscription() {
         const vm = this;
-        if (this.instance) {
-          return Observable.timer(0, 2500)
-            .concatMap(this.fetchMetrics)
-            .subscribe({
-              next: data => {
-                vm.hasLoaded = true;
-                vm.current = data;
-                vm.chartData.push({...data, timestamp: moment.now().valueOf()});
-              },
-              error: error => {
-                vm.hasLoaded = true;
-                console.warn('Fetching threads metrics failed:', error);
-                vm.error = error;
-              }
-            });
-        }
+        return Observable.timer(0, 2500)
+          .concatMap(this.fetchMetrics)
+          .subscribe({
+            next: data => {
+              vm.hasLoaded = true;
+              vm.current = data;
+              vm.chartData.push({...data, timestamp: moment.now().valueOf()});
+            },
+            error: error => {
+              vm.hasLoaded = true;
+              console.warn('Fetching threads metrics failed:', error);
+              vm.error = error;
+            }
+          });
       }
     }
   }

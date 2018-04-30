@@ -59,14 +59,12 @@
     computed: {},
     methods: {
       async readAttributes() {
-        if (this.instance) {
-          try {
-            const response = await this.instance.readMBeanAttributes(this.domain, this.mBean.descriptor.raw);
-            this.attributeValues = response.data.value;
-          } catch (error) {
-            console.warn('Fetching MBean attributes failed:', error);
-            this.error = error;
-          }
+        try {
+          const response = await this.instance.readMBeanAttributes(this.domain, this.mBean.descriptor.raw);
+          this.attributeValues = response.data.value;
+        } catch (error) {
+          console.warn('Fetching MBean attributes failed:', error);
+          this.error = error;
         }
       },
       async writeAttribute(attribute, value) {

@@ -92,23 +92,21 @@
       },
       createSubscription() {
         const vm = this;
-        if (this.instance) {
-          vm.lastTimestamp = moment(0);
-          vm.error = null;
-          return Observable.timer(0, 5000)
-            .concatMap(this.fetchAuditevents)
-            .subscribe({
-              next: events => {
-                vm.hasLoaded = true;
-                vm.addEvents(events);
-              },
-              error: error => {
-                vm.hasLoaded = true;
-                console.warn('Fetching audit events failed:', error);
-                vm.error = error;
-              }
-            });
-        }
+        vm.lastTimestamp = moment(0);
+        vm.error = null;
+        return Observable.timer(0, 5000)
+          .concatMap(this.fetchAuditevents)
+          .subscribe({
+            next: events => {
+              vm.hasLoaded = true;
+              vm.addEvents(events);
+            },
+            error: error => {
+              vm.hasLoaded = true;
+              console.warn('Fetching audit events failed:', error);
+              vm.error = error;
+            }
+          });
       },
       addEvents(events) {
         this.events = _.uniqBy(this.events ? events.concat(this.events) : events, event => event.key);

@@ -114,26 +114,22 @@
     },
     methods: {
       async fetchEnv() {
-        if (this.instance) {
-          this.error = null;
-          try {
-            const res = await this.instance.fetchEnv();
-            this.env = res.data;
-          } catch (error) {
-            console.warn('Fetching environment failed:', error);
-            this.error = error;
-          }
-          this.hasLoaded = true;
+        this.error = null;
+        try {
+          const res = await this.instance.fetchEnv();
+          this.env = res.data;
+        } catch (error) {
+          console.warn('Fetching environment failed:', error);
+          this.error = error;
         }
+        this.hasLoaded = true;
       },
       async determineEnvManagerSupport() {
-        if (this.instance) {
-          try {
-            this.hasEnvManagerSupport = await this.instance.hasEnvManagerSupport();
-          } catch (error) {
-            console.warn('Determine env manager support failed:', error);
-            this.hasEnvManagerSupport = false;
-          }
+        try {
+          this.hasEnvManagerSupport = await this.instance.hasEnvManagerSupport();
+        } catch (error) {
+          console.warn('Determine env manager support failed:', error);
+          this.hasEnvManagerSupport = false;
         }
       }
     }

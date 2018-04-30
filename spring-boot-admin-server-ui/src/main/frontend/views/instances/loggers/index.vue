@@ -157,17 +157,15 @@
         }
       },
       fetchLoggers: async function () {
-        if (this.instance) {
-          this.error = null;
-          try {
-            const res = await this.instance.fetchLoggers();
-            this.loggerConfig = res.data;
-          } catch (error) {
-            console.warn('Fetching loggers failed:', error);
-            this.error = error;
-          }
-          this.hasLoaded = true;
+        this.error = null;
+        try {
+          const res = await this.instance.fetchLoggers();
+          this.loggerConfig = res.data;
+        } catch (error) {
+          console.warn('Fetching loggers failed:', error);
+          this.error = error;
         }
+        this.hasLoaded = true;
       },
       onScroll() {
         if (this.loggerConfig && this.$el.getBoundingClientRect().bottom - 400 <= window.innerHeight && this.visibleLimit < this.filteredLoggers.length) {

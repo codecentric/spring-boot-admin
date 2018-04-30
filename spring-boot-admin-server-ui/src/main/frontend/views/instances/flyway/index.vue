@@ -88,17 +88,15 @@
     },
     methods: {
       async fetchFlyway() {
-        if (this.instance) {
-          this.error = null;
-          try {
-            const res = await this.instance.fetchFlyway();
-            this.contexts = res.data.contexts;
-          } catch (error) {
-            console.warn('Fetching flyway reports failed:', error);
-            this.error = error;
-          }
-          this.hasLoaded = true;
+        this.error = null;
+        try {
+          const res = await this.instance.fetchFlyway();
+          this.contexts = res.data.contexts;
+        } catch (error) {
+          console.warn('Fetching flyway reports failed:', error);
+          this.error = error;
         }
+        this.hasLoaded = true;
       },
       stateClass(state) {
         switch (state) {

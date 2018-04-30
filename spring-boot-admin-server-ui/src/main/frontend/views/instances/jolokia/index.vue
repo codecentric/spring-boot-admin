@@ -186,24 +186,22 @@
     },
     methods: {
       async fetchMBeans() {
-        if (this.instance) {
-          this.error = null;
-          try {
-            const res = await this.instance.listMBeans();
-            const domains = _.sortBy(res.data, [d => d.domain]);
-            this.domains = domains.map(domain => ({
-              ...domain,
-              mBeans: _.sortBy(domain.mBeans.map(mBean => new MBean(mBean)), [b => b.descriptor.displayName])
-            }));
-            if (!this.selectedDomain && this.domains.length > 0) {
-              this.select(this.domains[0]);
-            }
-          } catch (error) {
-            console.warn('Fetching MBeans failed:', error);
-            this.error = error;
+        this.error = null;
+        try {
+          const res = await this.instance.listMBeans();
+          const domains = _.sortBy(res.data, [d => d.domain]);
+          this.domains = domains.map(domain => ({
+            ...domain,
+            mBeans: _.sortBy(domain.mBeans.map(mBean => new MBean(mBean)), [b => b.descriptor.displayName])
+          }));
+          if (!this.selectedDomain && this.domains.length > 0) {
+            this.select(this.domains[0]);
           }
-          this.hasLoaded = true;
+        } catch (error) {
+          console.warn('Fetching MBeans failed:', error);
+          this.error = error;
         }
+        this.hasLoaded = true;
       },
       select(domain, mBean, view) {
         this.selected = {

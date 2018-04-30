@@ -53,17 +53,15 @@
     },
     methods: {
       async fetchHealth() {
-        if (this.instance) {
-          this.error = null;
-          try {
-            const res = await this.instance.fetchHealth();
-            this.health = res.data;
-          } catch (error) {
-            console.warn('Fetching health failed:', error);
-            this.error = error;
-          }
-          this.hasLoaded = true;
+        this.error = null;
+        try {
+          const res = await this.instance.fetchHealth();
+          this.health = res.data;
+        } catch (error) {
+          console.warn('Fetching health failed:', error);
+          this.error = error;
         }
+        this.hasLoaded = true;
       }
     }
   }

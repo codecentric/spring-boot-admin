@@ -111,21 +111,19 @@
       createSubscription() {
         const vm = this;
         vm.error = null;
-        if (this.instance) {
-          return Observable.timer(0, 1000)
-            .concatMap(vm.fetchThreaddump)
-            .subscribe({
-              next: threads => {
-                vm.hasLoaded = true;
-                vm.updateTimelines(threads);
-              },
-              error: error => {
-                vm.hasLoaded = true;
-                console.warn('Fetching threaddump failed:', error);
-                vm.error = error;
-              }
-            });
-        }
+        return Observable.timer(0, 1000)
+          .concatMap(vm.fetchThreaddump)
+          .subscribe({
+            next: threads => {
+              vm.hasLoaded = true;
+              vm.updateTimelines(threads);
+            },
+            error: error => {
+              vm.hasLoaded = true;
+              console.warn('Fetching threaddump failed:', error);
+              vm.error = error;
+            }
+          });
       }
     }
   }
