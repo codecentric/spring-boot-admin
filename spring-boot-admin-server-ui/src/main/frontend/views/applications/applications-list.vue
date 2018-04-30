@@ -44,11 +44,11 @@
         <div class="application-list__item__header__actions">
           <sba-icon-button :id="`nf-settings-${application.name}`"
                            v-if="hasNotificationFiltersSupport"
-                           @click.native.stop="toggleNotificationFilterSettingsFor(application)"
+                           @click.stop="toggleNotificationFilterSettingsFor(application)"
                            :icon="hasActiveFilter(application) ? 'bell-slash' : 'bell'"/>&nbsp;
           <sba-icon-button icon="trash"
                            v-if="application.isUnregisterable"
-                           @click.native.stop="unregister(application)"/>
+                           @click.stop="unregister(application)"/>
         </div>
       </header>
       <div class="card-content" v-if="selected === application.name">
@@ -70,11 +70,11 @@
               <td class="instance__actions">
                 <sba-icon-button :id="`nf-settings-${instance.id}`"
                                  v-if="hasNotificationFiltersSupport"
-                                 @click.native.stop="toggleNotificationFilterSettingsFor(instance)"
+                                 @click.stop="toggleNotificationFilterSettingsFor(instance)"
                                  :icon="hasActiveFilter(instance) ? 'bell-slash' : 'bell'"/>
                 <sba-icon-button icon="trash"
                                  v-if="instance.isUnregisterable"
-                                 @click.native.stop="unregister(instance)"/>
+                                 @click.stop="unregister(instance)"/>
               </td>
             </tr>
           </tbody>

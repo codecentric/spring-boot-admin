@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <button type="button" class="icon-button" :disabled="disabled">
+  <button type="button" class="icon-button" :disabled="disabled" v-on="$listeners">
     <font-awesome-icon :icon="icon" :size="size" :class="iconClass"/>
   </button>
 </template>

@@ -62,7 +62,7 @@
               </div>
               <sba-icon-button v-if="mBean === selectedMBean" :icon="['far', 'times-circle']"
                                class="m-bean--header--close has-text-white"
-                               @click.native.stop="select(selectedDomain)"/>
+                               @click.stop="select(selectedDomain)"/>
               <div class="hero-foot tabs is-boxed" v-if="mBean === selectedMBean">
                 <ul>
                   <li v-if="mBean.attr" :class="{'is-active' : selected.view === 'attributes' }">

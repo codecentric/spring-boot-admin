@@ -27,9 +27,9 @@
     </div>
     <div class="logfile-view-actions" v-if="hasLoaded">
       <div class="logfile-view-actions__navigation">
-        <sba-icon-button :disabled="atTop" @click.native="scrollToTop" icon="step-backward" size="lg"
+        <sba-icon-button :disabled="atTop" @click="scrollToTop" icon="step-backward" size="lg"
                          icon-class="rotated"/>
-        <sba-icon-button :disabled="atBottom" @click.native="scrollToBottom" icon="step-forward" size="lg"
+        <sba-icon-button :disabled="atBottom" @click="scrollToBottom" icon="step-forward" size="lg"
                          icon-class="rotated"/>
       </div>
       <a class="button" v-if="instance" :href="`instances/${instance.id}/logfile`" target="_blank">
