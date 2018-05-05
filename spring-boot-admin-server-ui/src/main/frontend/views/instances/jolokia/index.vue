@@ -39,7 +39,7 @@
             </ul>
           </nav>
         </div>
-        <div class="column" v-if="selectedDomain">
+        <div class="column is-clipped" v-if="selectedDomain">
           <h1 class="heading">MBeans</h1>
           <div class="m-bean card" :class="{'is-active': mBean === selectedMBean}"
                v-for="mBean in selectedDomain.mBeans" :key="mBean.descriptor.raw" :id="mBean.descriptor.raw"
@@ -48,12 +48,12 @@
             <header class="m-bean--header hero"
                     :class="{'is-primary': mBean === selectedMBean, 'is-selectable' : mBean !== selectedMBean }"
                     @click="select(selectedDomain, mBean)">
-              <div class="level">
+              <div class="level is-clipped">
                 <div class="level-left">
-                  <div class="level-item"
+                  <div class="level-item is-narrow"
                        v-for="attribute in mBean.descriptor.attributes"
                        :key="`mBean-desc-${attribute.name}`">
-                    <div>
+                    <div class="is-clipped" :title="`${attribute.name} ${attribute.value}`">
                       <p class="heading" v-text="attribute.name"/>
                       <p class="title is-size-6" v-text="attribute.value"/>
                     </div>
@@ -241,10 +241,27 @@
       background-color: $white-bis;
     }
 
-    .m-bean--header--close {
-      position: absolute;
-      right: 0.75rem;
-      top: 0.75rem;
+    &--header {
+      & .level .level-left {
+        width: 100%;
+
+        & .level-item {
+          min-width: 0;
+          flex-shrink: 1;
+
+          & p {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+
+      &--close {
+        position: absolute;
+        right: 0.75rem;
+        top: 0.75rem;
+      }
     }
   }
 </style>
