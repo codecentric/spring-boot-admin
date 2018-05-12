@@ -34,7 +34,7 @@
     "resize-observer-polyfill": "^1.5.0",
     "rxjs": "^5.5.10",
     "vue": "^2.5.16",
-    "vue-clickaway": "^2.2.2",
+    "vue-clickaway": "^2.2.1",
     "vue-router": "^3.0.1",
     "yamljs": "^0.3.0"
   },
