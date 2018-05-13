@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import {compareBy} from '@/utils/collections';
 import {view as aboutView} from './about';
 import {view as applicationView} from './applications';
 import instanceViews from './instances';
@@ -52,7 +53,7 @@ export default router => {
   views.register(aboutView);
   views.register(wallboardView);
   instanceViews.forEach(views.register);
-  views.sort((a, b) => a.order - b.order);
+  views.sort(compareBy(v => v.order));
 
   router.addRoutes([{path: '/', redirect: {name: 'applications'}}]);
 

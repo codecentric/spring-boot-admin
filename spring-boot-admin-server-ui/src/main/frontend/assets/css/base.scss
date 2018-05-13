@@ -81,6 +81,14 @@ body {
   }
 }
 
+p.is-loading {
+  &::before {
+    display: inline-block;
+    right: 0.25em;
+    @include loader;
+  }
+}
+
 //hero as card-header
 .card .hero {
   padding: 0.75rem;

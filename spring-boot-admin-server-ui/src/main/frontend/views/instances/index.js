@@ -23,6 +23,7 @@ import sbaInstancesJolokia from './jolokia';
 import sbaInstancesLiquibase from './liquibase';
 import sbaInstancesLogfile from './logfile';
 import sbaInstancesLoggers from './loggers';
+import sbaInstancesMetrics from './metrics';
 import sbaInstancesSessions from './sessions';
 import sbaInstancesShell from './shell';
 import sbaInstancesThreaddump from './threaddump';
@@ -31,6 +32,8 @@ export default [{
   path: '/instances/:instanceId', component: sbaInstancesShell, props: true,
   children: [{
     path: '', component: sbaInstancesDetails, props: true, name: 'instance/details'
+  }, {
+    path: 'metrics', component: sbaInstancesMetrics, props: true, name: 'instance/metrics'
   }, {
     path: 'env', component: sbaInstancesEnv, props: true, name: 'instance/env'
   }, {
@@ -56,6 +59,11 @@ export default [{
   name: 'instance/details',
   handle: 'Details',
   order: 0
+}, {
+  name: 'instance/metrics',
+  handle: 'Metrics',
+  order: 50,
+  isActive: ({instance}) => instance.hasEndpoint('metrics')
 }, {
   name: 'instance/env',
   handle: 'Environment',

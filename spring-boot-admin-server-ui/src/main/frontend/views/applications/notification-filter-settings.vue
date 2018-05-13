@@ -29,8 +29,8 @@
           </span>
         </p>
       </div>
-      <div class="field">
-        <div class="control is-pulled-right">
+      <div class="field is-grouped is-grouped-right">
+        <div class="control">
           <button class="button is-warning" :class="{'is-loading' : actionState === 'executing'}"
                   @click.stop="addFilter"><font-awesome-icon icon="bell-slash"/>&nbsp;Suppress
           </button>
@@ -44,8 +44,8 @@
           <strong v-text="activeFilter.expiry ? activeFilter.expiry.locale('en').fromNow(true) : 'ever' "/>.
         </p>
       </div>
-      <div class="field">
-        <div class="control is-pulled-right">
+      <div class="field is-grouped is-grouped-right">
+        <div class="control">
           <button class="button" :class="{'is-loading' : actionState === 'executing'}" @click.stop="deleteActiveFilter">
             <font-awesome-icon icon="bell"/>&nbsp;Unsuppress
           </button>

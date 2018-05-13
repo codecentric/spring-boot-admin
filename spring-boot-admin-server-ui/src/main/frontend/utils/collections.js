@@ -14,34 +14,9 @@
  * limitations under the License.
  */
 
-import Popper from 'popper.js';
 
-const poppers = new WeakMap();
-
-const bind = (el, binding) => {
-  const reference = typeof binding.value === 'string' ? document.getElementById(binding.value) : binding.value;
-  if (reference) {
-    const popper = new Popper(reference, el);
-    poppers.set(el, popper);
-  }
+export const compareBy = mapper => (a, b) => {
+  const valA = mapper(a);
+  const valB = mapper(b);
+  return valA > valB ? 1 : valA < valB ? -1 : 0;
 };
-
-const unbind = (el) => {
-  const popper = poppers.get(el);
-  if (popper) {
-    popper.destroy(el);
-  }
-};
-
-export default {
-  bind,
-  update(el, binding) {
-    if (binding.value === binding.oldValue) {
-      return
-    }
-    bind(el, binding)
-  },
-  unbind
-}
-
-

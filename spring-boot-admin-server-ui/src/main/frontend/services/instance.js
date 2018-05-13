@@ -55,7 +55,12 @@ class Instance {
   }
 
   async fetchMetric(metric, tags) {
-    const params = tags ? {tag: _.entries(tags).map(([name, value]) => `${name}:${value}`).join(',')} : {};
+    const params = tags ? {
+      tag: _.entries(tags)
+        .filter(([, value]) => typeof value !== 'undefined' && value !== null)
+        .map(([name, value]) => `${name}:${value}`)
+        .join(',')
+    } : {};
     return axios.get(uri`instances/${this.id}/actuator/metrics/${metric}`, {
       headers: {'Accept': actuatorMimeTypes},
       params

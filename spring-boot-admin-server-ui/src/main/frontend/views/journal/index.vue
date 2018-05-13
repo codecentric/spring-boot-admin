@@ -63,6 +63,7 @@
 <script>
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
+  import {compareBy} from '@/utils/collections';
   import _ from 'lodash';
   import moment from 'moment';
 
@@ -120,7 +121,7 @@
       try {
         this.addEvents((await Instance.fetchEvents()).data);
         this.error = null;
-        this.events.sort((a, b) => b.timestamp - a.timestamp)
+        this.events.sort(compareBy(v => v.timestamp));
       } catch (error) {
         console.warn('Fetching events failed:', error);
         this.error = error;

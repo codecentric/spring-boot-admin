@@ -16,8 +16,14 @@
 
 <template>
   <div class="card panel">
-    <header v-if="title" class="card-header">
-      <p v-text="title" class="card-header-title"/>
+    <header v-if="title || $slots['header']" class="card-header">
+      <p class="card-header-title">
+        <span v-text="title"/>
+        <slot name="header"/>
+      </p>
+      <div class="panel__close">
+        <sba-icon-button v-if="closeable" :icon="['far', 'times-circle']" @click.stop="close"/>
+      </div>
     </header>
     <div v-if="$slots['default']" class="card-content">
       <slot/>
@@ -26,18 +32,40 @@
 </template>
 
 <script>
+  import SbaIconButton from './sba-icon-button';
+
   export default {
+    components: {SbaIconButton},
     props: {
       title: {
         type: String,
         required: true
+      },
+      closeable: {
+        type: Boolean,
+        default: false
+      }
+    },
+    methods: {
+      close(event) {
+        this.$emit('close', event);
       }
     }
   }
 </script>
 
 <style lang="scss">
+  @import "~@/assets/css/utilities";
+
   .panel {
     margin-bottom: 1.5rem;
+
+    &__close {
+      margin-right: 0.75em;
+      color: $grey-light;
+      display: flex;
+      align-items: center;
+      justify-self: flex-end;
+    }
   }
 </style>
