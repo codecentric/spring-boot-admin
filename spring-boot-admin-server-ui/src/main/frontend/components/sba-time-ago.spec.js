@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {shallow} from '@vue/test-utils';
+import {shallowMount} from '@vue/test-utils';
 import moment from 'moment';
 import sbaTimeAgo from './sba-time-ago.js';
 
@@ -23,7 +23,7 @@ moment.now = () => +new Date(1318781879406);
 describe('time-ago', () => {
 
   it('should match the snapshot', () => {
-    const wrapper = shallow(sbaTimeAgo, {
+    const wrapper = shallowMount(sbaTimeAgo, {
       propsData: {
         date: moment(1318781000000)
       }

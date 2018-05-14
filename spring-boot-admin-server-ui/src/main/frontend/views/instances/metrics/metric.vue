@@ -15,16 +15,16 @@
   -->
 
 <template>
-  <table class="metrics table is-fullwidth is-bordered is-narrow">
+  <table class="metrics table is-fullwidth">
     <thead>
       <tr>
-        <th v-text="metricName"/>
+        <th class="metrics__label" v-text="metricName"/>
         <th class="metrics__statistic-name"
             v-for="statistic in statistics"
-            :key="`head-${statistic.name}`">
-          <span v-text="statistic.name"/>
+            :key="`head-${statistic}`">
+          <span v-text="statistic"/>
           <div class="select is-small is-pulled-right">
-            <select v-model="statistic.type">
+            <select :value="statisticTypes[statistic]" @input="$emit('type-select', metricName, statistic, $event.target.value)">
               <option :value="undefined">-</option>
               <option value="integer">Integer</option>
               <option value="float">Float</option>
@@ -39,7 +39,7 @@
     </thead>
     <tbody>
       <tr v-for="(tags, idx) in tagSelections" :key="idx">
-        <td>
+        <td class="metrics__label">
           <span v-text="getLabel(tags)"/>
           <span class="has-text-warning" v-if="errors[idx]" :title="errors[idx]">
             <font-awesome-icon icon="exclamation-triangle"/>
@@ -47,10 +47,10 @@
         </td>
         <td class="metrics__statistic-value"
             v-for="statistic in statistics"
-            :key="`value-${idx}-${statistic.name}`"
+            :key="`value-${idx}-${statistic}`"
             v-text="getValue(measurements[idx], statistic)"
         />
-        <td>
+        <td class="metrics__actions">
           <sba-icon-button :icon="'trash'" @click.stop="handleRemove(idx)"/>
         </td>
       </tr>
@@ -90,6 +90,10 @@
       tagSelections: {
         type: Array,
         default: () => [{}]
+      },
+      statisticTypes: {
+        type: Object,
+        default: () => ({})
       }
     },
     data: () => ({
@@ -102,11 +106,11 @@
         this.$emit('remove', this.metricName, idx);
       },
       getValue(measurements, statistic) {
-        const measurement = measurements && measurements.find(m => m.statistic === statistic.name);
+        const measurement = measurements && measurements.find(m => m.statistic === statistic);
         if (!measurement) {
           return undefined;
         }
-        const type = statistic && statistic.type;
+        const type = this.statisticTypes[statistic]
         switch (type) {
           case 'integer':
             return measurement.value.toFixed(0);
@@ -124,8 +128,8 @@
       },
       getLabel(tags) {
         return _.entries(tags).filter(([, value]) => typeof value !== 'undefined')
-          .map(pair => pair.join('='))
-          .join(' ');
+          .map(pair => pair.join(':'))
+          .join('\n') || '(no tags)';
       },
       async fetchMetric(tags, idx) {
         try {
@@ -133,14 +137,11 @@
           this.$set(this.errors, idx, null);
           this.$set(this.measurements, idx, response.data.measurements);
           if (idx === 0) {
-            response.data.measurements.map(m => m.statistic)
-              .filter(s => !this.statistics.some(stat => stat.name === s))
-              .map(s => ({name: s, type: undefined}))
-              .forEach(s => this.statistics.push(s));
+            this.statistics = response.data.measurements.map(m => m.statistic);
           }
         } catch (error) {
           console.warn(`Fetching metric ${this.metricName} failed:`, error);
-          this.errors[idx] = error;
+          this.$set(this.errors, idx, error);
         }
       },
       fetchAllTags() {
@@ -166,17 +167,23 @@
   }
 </script>
 <style lang="scss">
-  table.metrics {
-    table-layout: fixed;
-  }
 
-  .metrics {
+  table .metrics {
+    &__label {
+      width: 300px;
+      white-space: pre-wrap;
+    }
+    &__actions {
+      width: 1px;
+      vertical-align: middle;
+    }
     &__statistic-name * {
       vertical-align: middle;
     }
 
     &__statistic-value {
       text-align: right;
+      vertical-align: middle;
     }
   }
 </style>

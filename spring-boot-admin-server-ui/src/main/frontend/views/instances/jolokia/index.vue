@@ -39,7 +39,7 @@
             </ul>
           </nav>
         </div>
-        <div class="column is-clipped" v-if="selectedDomain">
+        <div class="column" v-if="selectedDomain">
           <h1 class="heading">MBeans</h1>
           <div class="m-bean card" :class="{'is-active': mBean === selectedMBean}"
                v-for="mBean in selectedDomain.mBeans" :key="mBean.descriptor.raw" :id="mBean.descriptor.raw"
@@ -162,8 +162,10 @@
     },
     watch: {
       '$route.query': {
-        handler: 'updateSelection',
-        immediate: true
+        immediate: true,
+        handler() {
+          this.selected = this.$route.query;
+        }
       },
       selected() {
         if (!_.isEqual(this.selected, !this.$route.query)) {
@@ -209,9 +211,6 @@
           mBean: mBean && mBean.descriptor.raw,
           view: view || (mBean ? (mBean.attr ? 'attributes' : (mBean.op ? 'operations' : null)) : null)
         };
-      },
-      updateSelection() {
-        this.selected = this.$route.query;
       }
     }
   }

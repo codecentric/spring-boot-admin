@@ -72,8 +72,10 @@
               :key="metric.name"
               :metric-name="metric.name"
               :tag-selections="metric.tagSelections"
+              :statistic-types="metric.types"
               :instance="instance"
               @remove="removeMetric"
+              @type-select="handleTypeSelect"
       />
     </div>
   </section>
@@ -83,6 +85,21 @@
   import Instance from '@/services/instance';
   import _ from 'lodash';
   import Metric from './metric';
+
+  const stringify = metrics => {
+    return {q: metrics.map(JSON.stringify)};
+  };
+
+  const parse = query => {
+    if (!query.q) {
+      return [];
+    }
+    if (query.q instanceof Array) {
+      return query.q.map(JSON.parse);
+    } else {
+      return JSON.parse(query.q);
+    }
+  };
 
   export default {
     components: {Metric},
@@ -105,11 +122,32 @@
       this.fetchMetricIndex();
     },
     watch: {
-      selectedMetric: 'fetchAvailableTags'
+      selectedMetric: 'fetchAvailableTags',
+      metrics: {
+        deep: true,
+        handler() {
+          this.$router.replace({
+            name: 'instance/metrics',
+            query: stringify(this.metrics)
+          })
+        }
+      },
+      '$route.query': {
+        immediate: true,
+        handler() {
+          this.metrics = parse(this.$route.query);
+        }
+      }
     },
     methods: {
       handleSubmit() {
         this.addMetric(this.selectedMetric, this.selectedTags)
+      },
+      handleTypeSelect(metricName, statistic, type) {
+        const metric = this.metrics.find(m => m.name === metricName);
+        if (metric) {
+          metric.types = {...metric.types, [statistic]: type}
+        }
       },
       removeMetric(metricName, idxTagSelection) {
         const idxMetric = this.metrics.findIndex(m => m.name === metricName);
@@ -131,7 +169,8 @@
           } else {
             this.metrics = _.sortBy([...this.metrics, {
               name: metricName,
-              tagSelections: [{...tagSelection}]
+              tagSelections: [{...tagSelection}],
+              types: {}
             }], [m => m.name]);
           }
         }
