@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <table class="threads table is-fullwidth">
+  <table class="threads table is-fullwidth is-hoverable">
     <thead>
       <tr>
         <th class="threads__thread-name">Name</th>
@@ -39,7 +39,7 @@
         <tr :key="`${thread.threadId}-detail`"
             v-if="showDetails[thread.threadId]">
           <td colspan="2">
-            <table class="table is-narrow">
+            <table class="threads__thread-details table is-narrow is-fullwidth has-background-white-ter">
               <tr>
                 <td>Thread Id</td>
                 <td v-text="thread.threadId"/>
@@ -83,7 +83,7 @@
                 </tr>
                 <tr v-if="thread.details.stackTrace.length > 0">
                   <td colspan="2">Stacktrace
-                    <pre><template
+                    <pre class="threads__thread-stacktrace"><template
                       v-for="(frame, idx) in thread.details.stackTrace"><span
                       :key="`frame-${thread.threadId}-${idx}`"
                       v-text="`${frame.className}.${frame.methodName}(${frame.fileName}:${frame.lineNumber})`"/> <span
@@ -199,6 +199,18 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    &__thread-details {
+      table-layout: fixed;
+
+      & td:first-child:not(.threads__thread-stacktrace) {
+        width: 20%;
+      }
+    }
+    &__thread-stacktrace {
+      overflow: auto;
+      max-height: 300px;
     }
 
     &__timeline {
