@@ -149,7 +149,7 @@ class Instance {
     });
   }
 
-  async fetchSessions(username) {
+  async fetchSessionsByUsername(username) {
     return axios.get(uri`instances/${this.id}/actuator/sessions`, {
       headers: {'Accept': actuatorMimeTypes},
       params: {username}

@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <table class="table is-hoverable is-fullwidth">
+  <table class="auditevents table is-hoverable is-fullwidth">
     <thead>
       <tr>
         <th>Timestamp</th>
@@ -28,7 +28,7 @@
     <tbody>
       <template v-for="event in events">
         <tr class="is-selectable"
-            :class="{ 'event--is-detailed' : showDetails[event.key] }"
+            :class="{ 'auditevents__event--is-detailed' : showDetails[event.key] }"
             @click="showDetails[event.key] ? $delete(showDetails, event.key) : $set(showDetails, event.key, true)"
             :key="event.key">
           <td v-text="event.timestamp.format('L HH:mm:ss.SSS')"/>
@@ -48,9 +48,9 @@
           </td>
           <td v-else v-text="event.sessionId"/>
         </tr>
-        <tr class="event__detail" :key="`${event.key}-detail`" v-if="showDetails[event.key]">
+        <tr :key="`${event.key}-detail`" v-if="showDetails[event.key]">
           <td colspan="5">
-            <pre v-text="toJson(event.data)"/>
+            <pre class="auditevents__event-detail" v-text="toJson(event.data)"/>
           </td>
         </tr>
       </template>
@@ -94,14 +94,19 @@
 </script>
 
 <style lang="scss">
-  @import "~@/assets/css/utilities";
+  .auditevents {
+    table-layout: fixed;
 
-  .event--is-detailed td {
-    border: none !important;
-  }
+    td {
+      vertical-align: middle;
+    }
 
-  .event__detail td {
-    overflow-x: auto;
-    max-width: 1024px;
+    &__event--is-detailed td {
+      border: none !important;
+    }
+
+    &__event-detail {
+      overflow: auto;
+    }
   }
 </style>

@@ -15,13 +15,13 @@
   -->
 
 <template>
-  <table class="table is-fullwidth">
+  <table class="sessions table is-fullwidth">
     <thead>
       <tr>
-        <th/>
         <th>Session Id</th>
         <th>Created at</th>
         <th>Last accessed at</th>
+        <th>Expiry</th>
         <th>Max. inactive<br>interval
         </th>
         <th>Attributes</th>
@@ -39,14 +39,14 @@
     </thead>
     <tr v-for="session in sessions" :key="session.id">
       <td>
-        <span v-if="session.expired" class="tag is-info">Expired</span>
-      </td>
-      <td>
         <router-link v-text="session.id"
                      :to="{ name: 'instance/sessions', params: { 'instanceId' : instance.id}, query: { sessionId : session.id } }"/>
       </td>
       <td v-text="session.creationTime.format('L HH:mm:ss.SSS')"/>
       <td v-text="session.lastAccessedTime.format('L HH:mm:ss.SSS')"/>
+      <td>
+        <span v-if="session.expired" class="tag is-info">Expired</span>
+      </td>
       <td>
         <span v-if="session.maxInactiveInterval >= 0" v-text="`${session.maxInactiveInterval}s`"/>
         <span v-else>unlimited</span>
@@ -66,7 +66,10 @@
       </td>
     </tr>
     <tr v-if="sessions.length === 0">
-      <td class="is-muted" colspan="7 ">No sessions found.</td>
+      <td class="is-muted" colspan="7 ">
+        <p v-if="isLoading" class="is-loading">Loading Sessions...</p>
+        <p v-else>No Sessions found.</p>
+      </td>
     </tr>
   </table>
 </template>
@@ -85,6 +88,10 @@
       instance: {
         type: Instance,
         required: true
+      },
+      isLoading: {
+        type: Boolean,
+        default: false
       }
     },
     data: () => ({
@@ -135,3 +142,10 @@
     }
   }
 </script>
+<style lang="scss">
+  .sessions {
+    & td {
+      vertical-align: middle;
+    }
+  }
+</style>

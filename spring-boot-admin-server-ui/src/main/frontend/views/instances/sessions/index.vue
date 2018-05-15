@@ -27,7 +27,8 @@
           </span>
         </div>
         <div class="control is-expanded">
-          <input class="input" type="text" v-model="filter.value" @keyup.enter="fetchSessions()">
+          <input class="input" type="text" v-model="filter.value"
+                 @keyup.enter="fetchSessionsByUsername()" @paste="handlePaste">
         </div>
       </div>
       <div v-if="error" class="message is-danger">
@@ -39,7 +40,7 @@
           <p v-text="error.message"/>
         </div>
       </div>
-      <sba-sessions-list :instance="instance" :sessions="sessions"
+      <sba-sessions-list :instance="instance" :sessions="sessions" :is-loading="isLoading"
                          @deleted="fetch"/>
     </div>
   </section>
@@ -88,14 +89,13 @@
           if (this.filter.type === 'sessionId') {
             this.sessions = await this.fetchSession()
           } else {
-            this.sessions = await this.fetchSessions()
+            this.sessions = await this.fetchSessionsByUsername()
           }
         } catch (error) {
           console.warn('Fetching sessions failed:', error);
           this.error = error
-        } finally {
-          this.isLoading = false
         }
+        this.isLoading = false
       }, 250),
       async fetchSession() {
         try {
@@ -109,32 +109,33 @@
           }
         }
       },
-      async fetchSessions() {
-        const response = await this.instance.fetchSessions(this.filter.value);
+      async fetchSessionsByUsername() {
+        const response = await this.instance.fetchSessionsByUsername(this.filter.value);
         return response.data.sessions.map(session => new Session(session))
       },
-      updateFilter() {
-        this.filter = _.entries(this.$route.query)
-          .reduce((acc, [name, value]) => {
-            acc.type = name;
-            acc.value = value;
-            return acc;
-          }, {type: null, value: ''});
+      handlePaste(event) {
+        const looksLikeSessionId = event.clipboardData.getData('text').match(regexUuid);
+        if (looksLikeSessionId) {
+          this.filter.type = 'sessionId';
+        }
       }
     },
     watch: {
       '$route.query': {
-        handler: 'updateFilter',
-        immediate: true
+        immediate: true,
+        handler() {
+          this.filter = _.entries(this.$route.query)
+            .reduce((acc, [name, value]) => {
+              acc.type = name;
+              acc.value = value;
+              return acc;
+            }, {type: 'username', value: ''});
+        }
       },
       filter: {
         deep: true,
+        immediate: true,
         handler() {
-          if (this.filter.type === null) {
-            const looksLikeSessionId = this.filter.value.match(regexUuid);
-            this.filter.type = looksLikeSessionId ? 'sessionId' : 'username';
-          }
-
           const query = {[this.filter.type]: this.filter.value};
           if (!_.isEqual(query, !this.$route.query)) {
             this.$router.replace({
@@ -142,7 +143,6 @@
               query: query
             });
           }
-
           this.fetch();
         }
       }
