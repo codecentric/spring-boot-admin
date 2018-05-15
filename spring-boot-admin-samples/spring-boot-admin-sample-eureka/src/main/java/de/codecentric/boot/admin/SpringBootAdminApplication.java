@@ -28,7 +28,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
-// tag::application-eureka[]
 @Configuration
 @EnableAutoConfiguration
 @EnableDiscoveryClient
@@ -77,4 +76,3 @@ public class SpringBootAdminApplication {
     }
 
 }
-// end::application-eureka[]

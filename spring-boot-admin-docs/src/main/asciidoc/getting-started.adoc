@@ -114,7 +114,24 @@ include::{samples-dir}/spring-boot-admin-sample-eureka/pom.xml[tags=dependency-e
 +
 [source,java]
 ----
-include::{samples-dir}/spring-boot-admin-sample-eureka/src/main/java/de/codecentric/boot/admin/SpringBootAdminApplication.java[tags=application-eureka]
+@Configuration
+@EnableAutoConfiguration
+@EnableDiscoveryClient
+@EnableAdminServer
+public class SpringBootAdminApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(SpringBootAdminApplication.class, args);
+    }
+
+    @Configuration
+    public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.authorizeRequests().anyRequest().permitAll()  //<1>
+                .and().csrf().disable();
+        }
+    }
+}
 ----
 <1> For the sake of brevity we're disabling the security for now. Have a look at the <<securing-spring-boot-admin,security section>> on how to deal with secured endpoints.
 
