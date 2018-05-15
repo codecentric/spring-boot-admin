@@ -319,6 +319,17 @@
     </build>
     <profiles>
         <profile>
+            <id>include-cloud</id>
+            <activation>
+                <property>
+                    <name>!excludeSpringCloud</name>
+                </property>
+            </activation>
+            <modules>
+                <module>spring-boot-admin-server-cloud</module>
+            </modules>
+        </profile>
+        <profile>
             <id>sign-artifacts</id>
             <activation>
                 <property>

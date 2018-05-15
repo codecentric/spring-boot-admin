@@ -34,6 +34,10 @@
         </dependency>
         <dependency>
             <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-server-cloud</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-server-ui</artifactId>
         </dependency>
     </dependencies>

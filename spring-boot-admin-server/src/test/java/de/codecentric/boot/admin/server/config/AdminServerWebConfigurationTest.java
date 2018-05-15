@@ -16,7 +16,6 @@
 
 package de.codecentric.boot.admin.server.config;
 
-import de.codecentric.boot.admin.server.discovery.InstanceDiscoveryListener;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.entities.SnapshottingInstanceRepository;
 import de.codecentric.boot.admin.server.eventstore.ConcurrentMapEventStore;
@@ -29,8 +28,6 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration;
-import org.springframework.cloud.commons.util.UtilAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,12 +61,6 @@ public class AdminServerWebConfigurationTest {
         assertThat(context.getBean(InstanceEventStore.class)).isInstanceOf(HazelcastEventStore.class);
     }
 
-    @Test
-    public void discoveryConfig() {
-        load(SimpleDiscoveryClientAutoConfiguration.class);
-        assertThat(context.getBean(InstanceRepository.class)).isInstanceOf(SnapshottingInstanceRepository.class);
-        context.getBean(InstanceDiscoveryListener.class);
-    }
 
     @Configuration
     static class TestHazelcastConfig {
@@ -90,11 +81,9 @@ public class AdminServerWebConfigurationTest {
         }
         applicationContext.register(RestTemplateAutoConfiguration.class);
         applicationContext.register(HazelcastAutoConfiguration.class);
-        applicationContext.register(UtilAutoConfiguration.class);
         applicationContext.register(AdminServerMarkerConfiguration.class);
         applicationContext.register(AdminServerHazelcastAutoConfiguration.class);
         applicationContext.register(AdminServerAutoConfiguration.class);
-        applicationContext.register(AdminServerDiscoveryAutoConfiguration.class);
 
         TestPropertyValues.of(environment).applyTo(applicationContext);
         applicationContext.refresh();

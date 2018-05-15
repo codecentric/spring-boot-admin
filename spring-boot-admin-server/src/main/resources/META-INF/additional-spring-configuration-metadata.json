@@ -13,12 +13,6 @@
       "type": "java.lang.String",
       "description": "Name of backing Hazelcast-Map for storing the instance events",
       "defaultValue": "spring-boot-admin-application-store"
-    },
-    {
-      "name": "spring.boot.admin.discovery.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Enable Spring Cloud Discovery support.",
-      "defaultValue": "true"
     }
   ]
 }

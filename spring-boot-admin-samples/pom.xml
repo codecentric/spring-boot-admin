@@ -32,9 +32,6 @@
         <module>spring-boot-admin-sample-servlet</module>
         <module>spring-boot-admin-sample-reactive</module>
         <module>spring-boot-admin-sample-war</module>
-        <module>spring-boot-admin-sample-eureka</module>
-        <module>spring-boot-admin-sample-consul</module>
-        <module>spring-boot-admin-sample-zookeeper</module>
         <module>spring-boot-admin-sample-hazelcast</module>
     </modules>
     <build>
@@ -58,59 +55,20 @@
                 </excludes>
             </resource>
         </resources>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>${maven-jar-plugin.version}</version>
-                    <configuration>
-                        <archive>
-                            <manifest>
-                                <mainClass>${start-class}</mainClass>
-                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            </manifest>
-                        </archive>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-war-plugin</artifactId>
-                    <version>${maven-war-plugin.version}</version>
-                    <configuration>
-                        <failOnMissingWebXml>false</failOnMissingWebXml>
-                        <archive>
-                            <manifest>
-                                <mainClass>${start-class}</mainClass>
-                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            </manifest>
-                        </archive>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <version>${exec-maven-plugin.version}</version>
-                    <configuration>
-                        <mainClass>${start-class}</mainClass>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-maven-plugin</artifactId>
-                    <version>${spring-boot.version}</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>repackage</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <mainClass>${start-class}</mainClass>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
     </build>
+    <profiles>
+        <profile>
+            <id>include-cloud</id>
+            <activation>
+                <property>
+                    <name>!excludeSpringCloud</name>
+                </property>
+            </activation>
+            <modules>
+                <module>spring-boot-admin-sample-eureka</module>
+                <module>spring-boot-admin-sample-consul</module>
+                <module>spring-boot-admin-sample-zookeeper</module>
+            </modules>
+        </profile>
+    </profiles>
 </project>

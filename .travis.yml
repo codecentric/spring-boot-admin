@@ -11,12 +11,11 @@ cache:
 
 before_install:
   - 'if [[ -n "$DECRYPT_KEYPHRASE" ]]; then openssl aes-256-cbc -d -pass "env:DECRYPT_KEYPHRASE" -in .gnupg.tar.enc | tar xv; fi'
-  - 'if [[ ${TRAVIS_TAG} != "" ]]; then ./mvnw versions:set -DnewVersion="${TRAVIS_TAG}"; fi'
   - 'nvm install ${TRAVIS_NODE_VERSION} && nvm use ${TRAVIS_NODE_VERSION}'
 
-script: ./mvnw verify ${TRAVIS_TAG:+-Drevision=${TRAVIS_TAG}}
+script: ./mvnw verify ${TRAVIS_TAG:+-Drevision=${TRAVIS_TAG} -DexcludeSpringCloud=true -DdisableSpringSnapshots=true}
 
 after_success:
-  - ./mvnw jacoco:report coveralls:report
+  - ./mvnw jacoco:report coveralls:repor
   - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} == '' ]] && ./mvnw deploy -DreposityId=sonatype-nexus-snapshots -DskipTests --settings deploy-settings.xml"
-  - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} != '' ]] && ./mvnw deploy -DreposityId=sonatype-nexus-staging -DskipTests -Drevision=${TRAVIS_TAG} --settings deploy-settings.xml"
+  - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} != '' ]] && ./mvnw deploy -DreposityId=sonatype-nexus-staging -DskipTests -Drevision=${TRAVIS_TAG} -DexcludeSpringCloud=true -DdisableSpringSnapshots=true --settings deploy-settings.xml"

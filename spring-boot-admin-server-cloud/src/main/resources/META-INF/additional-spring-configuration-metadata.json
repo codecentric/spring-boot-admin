@@ -1,0 +1,12 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "spring.boot.admin.discovery.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable Spring Cloud Discovery support.",
+      "defaultValue": "true"
+    }
+  ]
+}

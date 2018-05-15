@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin.server.config;
+package de.codecentric.boot.admin.server.cloud.config;
 
-import de.codecentric.boot.admin.server.discovery.DefaultServiceInstanceConverter;
-import de.codecentric.boot.admin.server.discovery.EurekaServiceInstanceConverter;
-import de.codecentric.boot.admin.server.discovery.ServiceInstanceConverter;
+import de.codecentric.boot.admin.server.cloud.discovery.DefaultServiceInstanceConverter;
+import de.codecentric.boot.admin.server.cloud.discovery.EurekaServiceInstanceConverter;
+import de.codecentric.boot.admin.server.cloud.discovery.ServiceInstanceConverter;
+import de.codecentric.boot.admin.server.config.AdminServerAutoConfiguration;
+import de.codecentric.boot.admin.server.config.AdminServerMarkerConfiguration;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 
 import org.junit.After;
