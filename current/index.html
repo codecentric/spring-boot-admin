@@ -525,7 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.0.0-SNAPSHOT,</span>
-<span id="revdate">14.05.2018</span>
+<span id="revdate">15.05.2018</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -779,44 +779,14 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
         SpringApplication.run(SpringBootAdminApplication.class, args);
     }
 
-    <span class="annotation">@Profile</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">insecure</span><span class="delimiter">&quot;</span></span>)
     <span class="annotation">@Configuration</span>
     <span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SecurityPermitAllConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
         <span class="annotation">@Override</span>
         <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
-            http.authorizeRequests().anyRequest().permitAll()<span class="comment">//</span>
+            http.authorizeRequests().anyRequest().permitAll()  <i class="conum" data-value="1"></i><b>(1)</b>
                 .and().csrf().disable();
         }
     }
-
-    <span class="annotation">@Profile</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">secure</span><span class="delimiter">&quot;</span></span>)
-    <span class="annotation">@Configuration</span>
-    <span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SecuritySecureConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
-        <span class="directive">private</span> <span class="directive">final</span> <span class="predefined-type">String</span> adminContextPath;
-
-        <span class="directive">public</span> SecuritySecureConfig(AdminServerProperties adminServerProperties) {
-            <span class="local-variable">this</span>.adminContextPath = adminServerProperties.getContextPath();
-        }
-
-        <span class="annotation">@Override</span>
-        <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
-            <span class="comment">// @formatter:off</span>
-            SavedRequestAwareAuthenticationSuccessHandler successHandler = <span class="keyword">new</span> SavedRequestAwareAuthenticationSuccessHandler();
-            successHandler.setTargetUrlParameter(<span class="string"><span class="delimiter">&quot;</span><span class="content">redirectTo</span><span class="delimiter">&quot;</span></span>);
-
-            http.authorizeRequests()
-                .antMatchers(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/assets/**</span><span class="delimiter">&quot;</span></span>).permitAll()
-                .antMatchers(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>).permitAll()
-                .anyRequest().authenticated()
-                .and()
-            .formLogin().loginPage(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>).successHandler(successHandler).and()
-            .logout().logoutUrl(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/logout</span><span class="delimiter">&quot;</span></span>).and()
-            .httpBasic().and()
-            .csrf().disable();
-            <span class="comment">// @formatter:on</span>
-        }
-    }
-
 }</code></pre>
 </div>
 </div>
