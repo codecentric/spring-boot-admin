@@ -28,7 +28,7 @@
       </div>
       <div class="columns">
         <div class="column is-narrow">
-          <nav class="menu domain-list">
+          <nav class="menu domain-list" v-sticks-below="['#navigation', '#instance-tabs']">
             <p class="menu-label">domains</p>
             <ul class="menu-list">
               <li>
@@ -94,6 +94,7 @@
   import {directive as onClickaway} from 'vue-clickaway';
   import mBeanAttributes from './m-bean-attributes';
   import mBeanOperations from './m-bean-operations';
+  import sticksBelow from '@/directives/sticks-below';
 
   const getOperationName = (name, descriptor) => {
     const params = descriptor.args.map(arg => arg.type).join(',');
@@ -138,7 +139,7 @@
       }
     },
     components: {mBeanOperations, mBeanAttributes},
-    directives: {onClickaway},
+    directives: {onClickaway, sticksBelow},
     data: () => ({
       hasLoaded: false,
       error: null,
@@ -218,11 +219,6 @@
 
 <style lang="scss">
   @import "~@/assets/css/utilities";
-
-  .domain-list {
-    position: sticky;
-    top: (($gap / 2) + $navbar-height-px + $tabs-height-px);
-  }
 
   .m-bean {
     transition: all $easing $speed;

@@ -42,7 +42,7 @@
           <input class="input" type="search" placeholder="name / value filter" v-model="filter">
         </p>
       </div>
-      <sba-panel class="property-source"
+      <sba-panel class="property-source" :header-sticks-below="['#navigation', '#instance-tabs']"
                  v-for="propertySource in propertySources" :key="propertySource.name"
                  :title="propertySource.name">
         <table class="table is-fullwidth"
@@ -135,13 +135,3 @@
     }
   }
 </script>
-
-<style lang="scss">
-  @import "~@/assets/css/utilities";
-
-  .property-source .card-header {
-    position: sticky;
-    background: $white;
-    top: ($navbar-height-px + $tabs-height-px);
-  }
-</style>

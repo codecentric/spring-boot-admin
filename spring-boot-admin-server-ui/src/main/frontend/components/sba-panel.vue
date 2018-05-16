@@ -16,7 +16,9 @@
 
 <template>
   <div class="card panel">
-    <header v-if="title || $slots['header']" class="card-header">
+    <header v-if="title || $slots['header']" class="card-header"
+            :class="{'panel__header--sticky': headerSticksBelow}"
+            v-sticks-below="headerSticksBelow">
       <p class="card-header-title">
         <span v-text="title"/>
         <slot name="header"/>
@@ -33,9 +35,11 @@
 
 <script>
   import SbaIconButton from './sba-icon-button';
+  import sticksBelow from '@/directives/sticks-below';
 
   export default {
     components: {SbaIconButton},
+    directives: {sticksBelow},
     props: {
       title: {
         type: String,
@@ -44,6 +48,10 @@
       closeable: {
         type: Boolean,
         default: false
+      },
+      headerSticksBelow: {
+        type: Array,
+        default: undefined
       }
     },
     methods: {
@@ -66,6 +74,12 @@
       display: flex;
       align-items: center;
       justify-self: flex-end;
+    }
+
+    &__header--sticky {
+      position: sticky;
+      background: $white;
+      top: ($navbar-height-px + $tabs-height-px);
     }
   }
 </style>

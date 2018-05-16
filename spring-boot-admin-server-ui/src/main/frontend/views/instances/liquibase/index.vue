@@ -29,7 +29,8 @@
       <template v-for="(context, ctxName) in contexts">
         <h3 class="title" v-text="ctxName" :key="ctxName"/>
         <template v-for="(report, name) in context.liquibaseBeans">
-          <sba-panel :key="`${ctxName}-${name}`" :title="`name`" class="change-set">
+          <sba-panel :key="`${ctxName}-${name}`" :title="`name`" class="change-set"
+                     :header-sticks-below="['#navigation', '#instance-tabs']">
             <table class="table is-hoverable is-fullwidth">
               <thead>
                 <tr>
@@ -142,14 +143,4 @@
       }
     }
   }
-</script>
-
-<style lang="scss">
-  @import "~@/assets/css/utilities";
-
-  .change-set .card-header {
-    position: sticky;
-    background: $white;
-    top: ($navbar-height-px + $tabs-height-px);
-  }
-</style>
+</script>å
