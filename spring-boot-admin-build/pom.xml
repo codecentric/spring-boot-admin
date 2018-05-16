@@ -69,6 +69,7 @@
                         <configuration>
                             <updatePomFile>true</updatePomFile>
                             <flattenMode>oss</flattenMode>
+                            <embedBuildProfileDependencies>true</embedBuildProfileDependencies>
                             <pomElements>
                                 <parent>expand</parent>
                                 <distributionManagement>remove</distributionManagement>

@@ -42,11 +42,6 @@
             </dependency>
             <dependency>
                 <groupId>de.codecentric</groupId>
-                <artifactId>spring-boot-admin-server-cloud</artifactId>
-                <version>${revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-client</artifactId>
                 <version>${revision}</version>
             </dependency>
@@ -90,4 +85,23 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>include-cloud</id>
+            <activation>
+                <property>
+                    <name>!excludeSpringCloud</name>
+                </property>
+            </activation>
+            <dependencyManagement>
+                <dependencies>
+                    <dependency>
+                        <groupId>de.codecentric</groupId>
+                        <artifactId>spring-boot-admin-server-cloud</artifactId>
+                        <version>${revision}</version>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
+        </profile>
+    </profiles>
 </project>

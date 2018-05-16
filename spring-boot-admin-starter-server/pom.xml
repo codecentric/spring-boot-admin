@@ -34,11 +34,26 @@
         </dependency>
         <dependency>
             <groupId>de.codecentric</groupId>
-            <artifactId>spring-boot-admin-server-cloud</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-server-ui</artifactId>
         </dependency>
     </dependencies>
+    <profiles>
+        <profile>
+            <id>include-cloud</id>
+            <activation>
+                <property>
+                    <name>!excludeSpringCloud</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>de.codecentric</groupId>
+                    <artifactId>spring-boot-admin-server-cloud</artifactId>
+                    <!--fix for https://github.com/mojohaus/flatten-maven-plugin/issues/70 -->
+                    <version>${revision}</version>
+                    <scope>compile</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 </project>
