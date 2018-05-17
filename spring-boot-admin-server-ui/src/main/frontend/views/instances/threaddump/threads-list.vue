@@ -183,7 +183,7 @@
       },
       isInView(xPos) {
         const scrollable = this.$el;
-        return xPos >= scrollable.scrollLeft && xPos <= scrollable.scrollLeft + scrollable.clientWidth;
+        return scrollable && xPos >= scrollable.scrollLeft && xPos <= (scrollable.scrollLeft + scrollable.clientWidth);
       }
     }
   }
