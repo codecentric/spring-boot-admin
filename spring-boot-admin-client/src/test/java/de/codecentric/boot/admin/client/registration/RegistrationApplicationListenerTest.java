@@ -21,6 +21,7 @@ import java.util.concurrent.ScheduledFuture;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
@@ -112,9 +113,39 @@ public class RegistrationApplicationListenerTest {
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
         listener.setAutoDeregister(true);
 
-        listener.onClosedContext(new ContextClosedEvent(mock(WebApplicationContext.class)));
+        listener.onClosedContext(new ContextClosedEvent(mock(ApplicationContext.class)));
 
         verify(registrator).deregister();
+    }
+
+    @Test
+    public void should_deregister_when_autoDeregister_and_parent_is_bootstrap_contex() {
+        ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
+        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
+        listener.setAutoDeregister(true);
+
+        ApplicationContext parentContext = mock(ApplicationContext.class);
+        when(parentContext.getId()).thenReturn("bootstrap");
+        ApplicationContext mockContext = mock(ApplicationContext.class);
+        when(mockContext.getParent()).thenReturn(parentContext);
+        listener.onClosedContext(new ContextClosedEvent(mockContext));
+
+        verify(registrator).deregister();
+    }
+
+    @Test
+    public void should_not_deregister_when_autoDeregister_and_not_root() {
+        ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
+        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
+        listener.setAutoDeregister(true);
+
+        ApplicationContext mockContext = mock(ApplicationContext.class);
+        when(mockContext.getParent()).thenReturn(mock(ApplicationContext.class));
+        listener.onClosedContext(new ContextClosedEvent(mockContext));
+
+        verify(registrator, never()).deregister();
     }
 
     @Test
