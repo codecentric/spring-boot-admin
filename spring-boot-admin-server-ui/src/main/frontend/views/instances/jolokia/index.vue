@@ -181,8 +181,15 @@
           await this.$nextTick();
           const el = document.getElementById(newVal.descriptor.raw);
           if (el) {
-            const top = el.getBoundingClientRect().top + window.scrollY - 100;
-            window.scroll({top, left: window.scrollX, behavior: 'smooth'});
+            const scrollingEl = document.scrollingElement;
+            const instanceTabs = document.querySelector('#instance-tabs');
+            const navbarOffset = (instanceTabs ? instanceTabs.getBoundingClientRect().bottom : 120) + 10;
+            const top = scrollingEl.scrollTop + el.getBoundingClientRect().top - navbarOffset;
+            if (scrollingEl.scrollTo) {
+              scrollingEl.scrollTo({top, behavior: 'smooth'})
+            } else {
+              scrollingEl.scrollTop = top;
+            }
           }
         }
       }

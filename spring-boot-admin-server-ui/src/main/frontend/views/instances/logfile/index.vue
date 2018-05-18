@@ -100,10 +100,10 @@
           });
       },
       onScroll() {
-        const scrollingElement = document.scrollingElement;
+        const scrollingEl = document.scrollingElement;
         const visibleHeight = document.documentElement.clientHeight;
-        this.atBottom = visibleHeight === scrollingElement.scrollHeight - scrollingElement.scrollTop;
-        this.atTop = scrollingElement.scrollTop <= 0;
+        this.atBottom = visibleHeight === scrollingEl.scrollHeight - scrollingEl.scrollTop;
+        this.atTop = scrollingEl.scrollTop <= 0;
       },
       scrollToTop() {
         document.scrollingElement.scrollTop = 0;
