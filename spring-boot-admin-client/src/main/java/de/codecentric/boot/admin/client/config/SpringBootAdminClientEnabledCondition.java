@@ -25,7 +25,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * This condition checks if the client should be enabled. Two properties are checked:
- * spring.boot.admin.client.enabled and spring.boot.admin.url. The following table shows under which conditions the
+ * spring.boot.admin.client.enabled and spring.boot.admin.client.url. The following table shows under which conditions the
  * client is active.
  * <pre>
  *           | enabled: false | enabled: true (default) |
@@ -48,7 +48,7 @@ public class SpringBootAdminClientEnabledCondition extends SpringBootCondition {
 
         if (clientProperties.getUrl().length == 0) {
             return ConditionOutcome.noMatch(
-                "Spring Boot Client is disabled, because 'spring.boot.admin.url' is empty.");
+                "Spring Boot Client is disabled, because 'spring.boot.admin.client.url' is empty.");
         }
 
         return ConditionOutcome.match();
