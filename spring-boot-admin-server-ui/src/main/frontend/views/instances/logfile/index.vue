@@ -63,11 +63,7 @@
       atTop: false,
       skippedBytes: null
     }),
-    created() {
-      this.scrollParent = null;
-    },
     mounted() {
-      this.scrollParent = document.documentElement;
       window.addEventListener('scroll', this.onScroll);
     },
     beforeDestroy() {
@@ -104,14 +100,16 @@
           });
       },
       onScroll() {
-        this.atBottom = this.scrollParent.scrollTop >= this.scrollParent.scrollHeight - this.scrollParent.clientHeight;
-        this.atTop = this.scrollParent.scrollTop === 0;
+        const scrollingElement = document.scrollingElement;
+        const visibleHeight = document.documentElement.clientHeight;
+        this.atBottom = visibleHeight === scrollingElement.scrollHeight - scrollingElement.scrollTop;
+        this.atTop = scrollingElement.scrollTop <= 0;
       },
       scrollToTop() {
-        this.scrollParent.scrollTo(this.scrollParent.scrollLeft, 0);
+        document.scrollingElement.scrollTop = 0;
       },
       scrollToBottom() {
-        this.scrollParent.scrollTo(this.scrollParent.scrollLeft, (this.scrollParent.scrollHeight - this.scrollParent.clientHeight))
+        document.scrollingElement.scrollTop = document.scrollingElement.scrollHeight;
       }
     }
   }
