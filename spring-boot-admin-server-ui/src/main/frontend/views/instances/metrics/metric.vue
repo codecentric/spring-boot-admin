@@ -24,7 +24,8 @@
             :key="`head-${statistic}`">
           <span v-text="statistic"/>
           <div class="select is-small is-pulled-right">
-            <select :value="statisticTypes[statistic]" @input="$emit('type-select', metricName, statistic, $event.target.value)">
+            <select :value="statisticTypes[statistic]"
+                    @change="$emit('type-select', metricName, statistic, $event.target.value)">
               <option :value="undefined">-</option>
               <option value="integer">Integer</option>
               <option value="float">Float</option>
@@ -110,7 +111,7 @@
         if (!measurement) {
           return undefined;
         }
-        const type = this.statisticTypes[statistic]
+        const type = this.statisticTypes[statistic];
         switch (type) {
           case 'integer':
             return measurement.value.toFixed(0);
