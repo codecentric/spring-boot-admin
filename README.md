@@ -14,26 +14,28 @@ It provides the following features for registered application.
 
 * Show health status
 * Show details, like
- * JVM & memory metrics
- * Counter & gauge metrics
- * Datasource metrics
- * Cache metrics
+  * JVM & memory metrics
+  * micrometer.io metrics
+  * Datasource metrics
+  * Cache metrics
 * Show build-info number
 * Follow and download logfile
 * View jvm system- & environment-properties
 * Support for Spring Cloud's postable /env- &/refresh-endpoint
-* Easy loglevel management (currently for Logback only)
+* Easy loglevel management
 * Interact with JMX-beans
 * View thread dump
-* View traces
-* Hystrix-Dashboard integration
+* View http-traces
+* View auditevents
+* View and delete active sessions (using spring-session)
+* View Flyway / Liquibase database migrations
 * Download heapdump
 * Notification on status change (via e-mail, Slack, Hipchat, ...)
 * Event journal of status changes (non persistent)
 
 ## Getting Started
 
-[A quick guide](http://codecentric.github.io/spring-boot-admin/1.5.7/#getting-started) to get started can be found in our docs.
+[A quick guide](http://codecentric.github.io/spring-boot-admin/2.0.0/#getting-started) to get started can be found in our docs.
 
 There is also a <a href="https://goo.gl/2tRiUi" target="_blank">introductory talk availabe on YouTube</a>:
 
@@ -54,6 +56,8 @@ Having trouble with codecentric's Spring Boot Admin? We’d like to help!
  * Report bugs at http://github.com/codecentric/spring-boot-admin/issues.
 
 ## Reference Guide
+[Version 2.0.0](http://codecentric.github.io/spring-boot-admin/2.0.0/)
+
 [Version 1.5.7](http://codecentric.github.io/spring-boot-admin/1.5.7/)
 
 [Version 1.4.6](http://codecentric.github.io/spring-boot-admin/1.4.6/)
