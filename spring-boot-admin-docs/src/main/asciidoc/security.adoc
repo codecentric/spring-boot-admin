@@ -4,7 +4,7 @@
 === Securing Spring Boot Admin Server ===
 
 Since there are several approaches on solving authentication and authorization in distributed web applications Spring Boot Admin doesn't ship a default one.
-If you include the `spring-boot-admin-server-ui-login` in your dependencies it will provide a login page and a logout button.
+By default `spring-boot-admin-server-ui` provides a login page and a logout button.
 
 A Spring Security configuration could look like this:
 [source,java]
