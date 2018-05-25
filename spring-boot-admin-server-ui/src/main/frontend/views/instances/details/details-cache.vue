@@ -45,7 +45,7 @@
             <p v-text="ratio"/>
           </div>
         </div>
-        <div class="level-item has-text-centered">
+        <div v-if="current.size" class="level-item has-text-centered">
           <div>
             <p class="heading">Size</p>
             <p v-text="current.size"/>
@@ -81,6 +81,7 @@
       hasLoaded: false,
       error: null,
       current: null,
+      disableSize: false,
       chartData: [],
     }),
     computed: {
@@ -95,10 +96,18 @@
       async fetchMetrics() {
         const responseHit = this.instance.fetchMetric('cache.gets', {name: this.cacheName, result: 'hit'});
         const responseMiss = this.instance.fetchMetric('cache.gets', {name: this.cacheName, result: 'miss'});
-        const responsSize = this.instance.fetchMetric('cache.size', {name: this.cacheName});
+        let size = undefined;
+        if (!this.disableSize) {
+          const responsSize = this.instance.fetchMetric('cache.size', {name: this.cacheName});
+          try {
+            size = (await responsSize).data.measurements[0].value;
+          } catch (error) {
+            this.disableSize = true;
+            console.warn('Fetching cache size failed - error is ignored', error)
+          }
+        }
         const hit = (await responseHit).data.measurements[0].value;
         const miss = (await responseMiss).data.measurements[0].value;
-        const size = (await responsSize).data.measurements[0].value;
         return {
           hit,
           miss,
