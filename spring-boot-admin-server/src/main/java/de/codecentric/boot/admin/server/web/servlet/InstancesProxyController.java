@@ -71,8 +71,8 @@ public class InstancesProxyController extends AbstractInstancesProxyController {
         ServerHttpRequest request = new ServletServerHttpRequest(servletRequest);
         ServerHttpResponse response = new ServletServerHttpResponse(servletResponse);
 
-        String pathWithinApplication = servletRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE)
-                                                     .toString();
+        String pathWithinApplication = UriComponentsBuilder.fromPath(
+            servletRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE).toString()).toUriString();
         String endpointLocalPath = getEndpointLocalPath(pathWithinApplication);
 
         URI uri = UriComponentsBuilder.fromPath(endpointLocalPath)

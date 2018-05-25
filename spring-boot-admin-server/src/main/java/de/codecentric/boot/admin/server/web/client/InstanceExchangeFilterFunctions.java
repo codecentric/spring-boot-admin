@@ -26,6 +26,8 @@ import reactor.core.publisher.Mono;
 import java.net.URI;
 import java.util.Optional;
 import java.util.function.Function;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -41,6 +43,7 @@ import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V2_MEDIA
 import static java.util.Collections.singletonList;
 
 public final class InstanceExchangeFilterFunctions {
+    private static final Logger log = LoggerFactory.getLogger(InstanceExchangeFilterFunctions.class);
     public static final String ATTRIBUTE_INSTANCE = "instance";
     public static final String ATTRIBUTE_ENDPOINT = "endpointId";
 
@@ -82,6 +85,7 @@ public final class InstanceExchangeFilterFunctions {
     public static ExchangeFilterFunction rewriteEndpointUrl() {
         return toExchangeFilterFunction((instance, request, next) -> {
             if (request.url().isAbsolute()) {
+                log.trace("Absolute URL '{}' for instance {} not rewritten", request.url(), instance.getId());
                 return next.exchange(request);
             }
 
@@ -98,6 +102,8 @@ public final class InstanceExchangeFilterFunctions {
             }
 
             URI newUrl = rewriteUrl(oldUrl, endpoint.get().getUrl());
+            log.trace("URL '{}' for Endpoint {} of instance {} rewritten to {}", oldUrl, endpoint.get().getId(),
+                instance.getId(), newUrl);
             ClientRequest newRequest = ClientRequest.from(request)
                                                     .attribute(ATTRIBUTE_ENDPOINT, endpoint.get().getId())
                                                     .url(newUrl)
@@ -132,7 +138,8 @@ public final class InstanceExchangeFilterFunctions {
         };
     }
 
-    private static Function<ClientResponse, Mono<ClientResponse>> convertClientResponse(Function<Flux<DataBuffer>, Flux<DataBuffer>> bodConverter, MediaType contentType) {
+    private static Function<ClientResponse, Mono<ClientResponse>> convertClientResponse(Function<Flux<DataBuffer>, Flux<DataBuffer>> bodConverter,
+                                                                                        MediaType contentType) {
         return response -> {
             ClientResponse convertedResponse = ClientResponse.from(response).headers(headers -> {
                 headers.replace(HttpHeaders.CONTENT_TYPE, singletonList(contentType.toString()));

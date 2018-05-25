@@ -40,6 +40,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
@@ -116,6 +117,26 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
               .exchange()
               .expectStatus()
               .isEqualTo(HttpStatus.GATEWAY_TIMEOUT);
+    }
+
+    @Test
+    public void should_forward_requests_with_spaces_in_path() {
+        String instanceId = registerInstance("http://localhost:" + wireMock.port() + "/mgmt");
+
+        wireMock.stubFor(get(urlEqualTo("/mgmt/test/has%20spaces")).willReturn(
+            ok("{ \"foo\" : \"bar\" }").withHeader(CONTENT_TYPE, ActuatorMediaType.V2_JSON + ";charset=UTF-8")));
+
+        client.get()
+              .uri("/instances/{instanceId}/actuator/test/has spaces", instanceId)
+              .accept(ACTUATOR_V2_MEDIATYPE)
+              .exchange()
+              .expectStatus()
+              .isEqualTo(HttpStatus.OK)
+              .expectBody()
+              .jsonPath("$.foo")
+              .isEqualTo("bar");
+
+        wireMock.verify(getRequestedFor(urlEqualTo("/mgmt/test/has%20spaces")));
     }
 
     @Test

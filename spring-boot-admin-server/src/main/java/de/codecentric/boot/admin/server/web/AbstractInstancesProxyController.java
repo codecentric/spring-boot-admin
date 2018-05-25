@@ -77,7 +77,7 @@ public class AbstractInstancesProxyController {
                                            HttpMethod method,
                                            HttpHeaders headers,
                                            Supplier<BodyInserter<?, ? super ClientHttpRequest>> bodyInserter) {
-        log.trace("Proxy-Request for instance {} / {}", instanceId, uri);
+        log.trace("Proxy-Request for instance {} with URL '{}'", instanceId, uri);
 
         return registry.getInstance(InstanceId.of(instanceId))
                        .flatMap(instance -> forward(instance, uri, method, headers, bodyInserter))
@@ -92,7 +92,8 @@ public class AbstractInstancesProxyController {
                                          Supplier<BodyInserter<?, ? super ClientHttpRequest>> bodyInserter) {
         WebClient.RequestBodySpec bodySpec = instanceWebClient.instance(instance)
                                                               .method(method)
-                                                              .uri(uri).headers(h -> h.addAll(filterHeaders(headers)));
+                                                              .uri(uri)
+                                                              .headers(h -> h.addAll(filterHeaders(headers)));
 
         WebClient.RequestHeadersSpec<?> headersSpec = bodySpec;
         if (requiresBody(method)) {
@@ -103,15 +104,19 @@ public class AbstractInstancesProxyController {
             }
         }
 
-        return headersSpec.exchange()
-                          .timeout(this.readTimeout, Mono.fromSupplier(
-                              () -> ClientResponse.create(HttpStatus.GATEWAY_TIMEOUT, strategies).build()))
-                          .onErrorResume(ResolveEndpointException.class, ex -> Mono.fromSupplier(
-                              () -> ClientResponse.create(HttpStatus.NOT_FOUND, strategies).build()))
-                          .onErrorResume(IOException.class, ex -> Mono.fromSupplier(
-                              () -> ClientResponse.create(HttpStatus.BAD_GATEWAY, strategies).build()))
-                          .onErrorResume(ConnectException.class, ex -> Mono.fromSupplier(
-                              () -> ClientResponse.create(HttpStatus.BAD_GATEWAY, strategies).build()));
+        return headersSpec.exchange().timeout(this.readTimeout, Mono.fromSupplier(() -> {
+            log.trace("Timeout for Proxy-Request for instance {} with URL '{}'", instance.getId(), uri);
+            return ClientResponse.create(HttpStatus.GATEWAY_TIMEOUT, strategies).build();
+        })).onErrorResume(ResolveEndpointException.class, ex -> Mono.fromSupplier(() -> {
+            log.trace("No Endpoint found for Proxy-Request for instance {} with URL '{}'", instance.getId(), uri);
+            return ClientResponse.create(HttpStatus.NOT_FOUND, strategies).build();
+        })).onErrorResume(IOException.class, ex -> Mono.fromSupplier(() -> {
+            log.trace("Error for Proxy-Request for instance {} with URL '{}' timed out", instance.getId(), uri, ex);
+            return ClientResponse.create(HttpStatus.BAD_GATEWAY, strategies).build();
+        })).onErrorResume(ConnectException.class, ex -> Mono.fromSupplier(() -> {
+            log.trace("Error for Proxy-Request for instance {} with URL '{}' timed out", instance.getId(), uri, ex);
+            return ClientResponse.create(HttpStatus.BAD_GATEWAY, strategies).build();
+        }));
     }
 
     protected String getEndpointLocalPath(String pathWithinApplication) {
