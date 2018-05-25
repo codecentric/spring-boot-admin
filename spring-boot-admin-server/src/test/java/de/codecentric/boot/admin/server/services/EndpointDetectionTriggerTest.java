@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.services;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdatedEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
@@ -26,6 +27,7 @@ import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import reactor.core.publisher.Mono;
 import reactor.test.publisher.TestPublisher;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -39,28 +41,45 @@ import static org.mockito.Mockito.when;
 public class EndpointDetectionTriggerTest {
     private final Instance instance = Instance.create(InstanceId.of("id-1"))
                                               .register(Registration.create("foo", "http://health-1").build());
+    private TestPublisher<InstanceEvent> events = TestPublisher.create();
+    private EndpointDetector detector = mock(EndpointDetector.class);
+    private EndpointDetectionTrigger trigger;
 
-    @Test
-    public void should_detect_on_event() throws InterruptedException {
-        //given
-        EndpointDetector detector = mock(EndpointDetector.class);
+    @Before
+    public void setUp() throws Exception {
         when(detector.detectEndpoints(any(InstanceId.class))).thenReturn(Mono.empty());
-
-        TestPublisher<InstanceEvent> events = TestPublisher.create();
-        EndpointDetectionTrigger trigger = new EndpointDetectionTrigger(detector, events.flux());
+        trigger = new EndpointDetectionTrigger(detector, events.flux());
         trigger.start();
         Thread.sleep(50L); //wait for subscription
+    }
 
-        //when some non-status-change event is emitted
-        events.next(new InstanceRegisteredEvent(instance.getId(), instance.getVersion(), instance.getRegistration()));
-        //then should not update
-        verify(detector, never()).detectEndpoints(instance.getId());
-
+    @Test
+    public void should_detect_on_status_changed() {
         //when status-change event is emitted
         events.next(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown()));
         //then should update
         verify(detector, times(1)).detectEndpoints(instance.getId());
+    }
 
+    @Test
+    public void should_detect_on_registration_updated() {
+        //when status-change event is emitted
+        events.next(
+            new InstanceRegistrationUpdatedEvent(instance.getId(), instance.getVersion(), instance.getRegistration()));
+        //then should update
+        verify(detector, times(1)).detectEndpoints(instance.getId());
+    }
+
+    @Test
+    public void should_not_detect_on_non_relevant_event() {
+        //when some non-status-change event is emitted
+        events.next(new InstanceRegisteredEvent(instance.getId(), instance.getVersion(), instance.getRegistration()));
+        //then should not update
+        verify(detector, never()).detectEndpoints(instance.getId());
+    }
+
+    @Test
+    public void should_not_detect_on_trigger_stopped() {
         //when registered event is emitted but the trigger has been stopped
         trigger.stop();
         clearInvocations(detector);
@@ -68,5 +87,4 @@ public class EndpointDetectionTriggerTest {
         //then should not update
         verify(detector, never()).detectEndpoints(instance.getId());
     }
-
 }

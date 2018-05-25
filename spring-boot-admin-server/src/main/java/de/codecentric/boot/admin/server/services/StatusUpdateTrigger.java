@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.services;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdatedEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
@@ -34,7 +35,7 @@ import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StatusUpdateTrigger extends ResubscribingEventHandler<InstanceRegisteredEvent> {
+public class StatusUpdateTrigger extends ResubscribingEventHandler<InstanceEvent> {
     private static final Logger log = LoggerFactory.getLogger(StatusUpdateTrigger.class);
     private final StatusUpdater statusUpdater;
     private Map<InstanceId, Instant> lastQueried = new HashMap<>();
@@ -44,7 +45,7 @@ public class StatusUpdateTrigger extends ResubscribingEventHandler<InstanceRegis
 
 
     public StatusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> publisher) {
-        super(publisher, InstanceRegisteredEvent.class);
+        super(publisher, InstanceEvent.class);
         this.statusUpdater = statusUpdater;
     }
 
@@ -65,8 +66,10 @@ public class StatusUpdateTrigger extends ResubscribingEventHandler<InstanceRegis
     }
 
     @Override
-    protected Publisher<?> handle(Flux<InstanceRegisteredEvent> publisher) {
+    protected Publisher<?> handle(Flux<InstanceEvent> publisher) {
         return publisher.subscribeOn(Schedulers.newSingle("status-updater"))
+                        .filter(event -> event instanceof InstanceRegisteredEvent ||
+                                         event instanceof InstanceRegistrationUpdatedEvent)
                         .flatMap(event -> updateStatus(event.getInstance()));
     }
 

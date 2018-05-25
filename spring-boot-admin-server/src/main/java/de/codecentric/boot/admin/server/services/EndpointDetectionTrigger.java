@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.services;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdatedEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -24,20 +25,23 @@ import reactor.core.scheduler.Schedulers;
 
 import org.reactivestreams.Publisher;
 
-public class EndpointDetectionTrigger extends ResubscribingEventHandler<InstanceStatusChangedEvent> {
+public class EndpointDetectionTrigger extends ResubscribingEventHandler<InstanceEvent> {
     private final EndpointDetector endpointDetector;
 
     public EndpointDetectionTrigger(EndpointDetector endpointDetector, Publisher<InstanceEvent> publisher) {
-        super(publisher, InstanceStatusChangedEvent.class);
+        super(publisher, InstanceEvent.class);
         this.endpointDetector = endpointDetector;
     }
 
     @Override
-    protected Publisher<?> handle(Flux<InstanceStatusChangedEvent> publisher) {
-        return publisher.subscribeOn(Schedulers.newSingle("endpoint-detector")).flatMap(this::detectEndpoints);
+    protected Publisher<?> handle(Flux<InstanceEvent> publisher) {
+        return publisher.subscribeOn(Schedulers.newSingle("endpoint-detector"))
+                        .filter(event -> event instanceof InstanceStatusChangedEvent ||
+                                         event instanceof InstanceRegistrationUpdatedEvent)
+                        .flatMap(this::detectEndpoints);
     }
 
-    protected Mono<Void> detectEndpoints(InstanceStatusChangedEvent event) {
+    protected Mono<Void> detectEndpoints(InstanceEvent event) {
         return endpointDetector.detectEndpoints(event.getInstance());
     }
 }
