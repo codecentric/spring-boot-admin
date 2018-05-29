@@ -38,6 +38,16 @@ public class AdminServerUiProperties {
      */
     private String templateLocation = CLASSPATH_RESOURCE_LOCATIONS[0];
 
+    /**
+     * Page-Title to be shown.
+     */
+    private String title = "Spring Boot Admin";
+
+    /**
+     * Brand to be shown in then navbar.
+     */
+    private String brand = "<img src=\"assets/img/icon-spring-boot-admin.svg\"><span>Spring Boot Admin</span>";
+
     private boolean cacheTemplates = true;
 
     private final Cache cache = new Cache();
@@ -55,6 +65,7 @@ public class AdminServerUiProperties {
          * include "no-cache" directive in Cache-Control http header.
          */
         private Boolean noCache = false;
+
         /**
          * include "no-store" directive in Cache-Control http header.
          */
@@ -73,6 +84,5 @@ public class AdminServerUiProperties {
             return CacheControl.empty();
         }
     }
-
 
 }

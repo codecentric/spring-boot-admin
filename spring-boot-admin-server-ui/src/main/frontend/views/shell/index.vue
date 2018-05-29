@@ -17,7 +17,7 @@
 <template>
   <div id="app">
     <sba-navbar :views="mainViews" :applications="applications" :error="error"/>
-    <router-view :applications="applications" :error="error"/>
+    <router-view :views="subViews" :applications="applications" :error="error"/>
   </div>
 </template>
 
@@ -26,6 +26,10 @@
 
   export default {
     props: {
+      views: {
+        type: Array,
+        default: () => []
+      },
       applications: {
         type: Array,
         default: () => [],
@@ -38,7 +42,14 @@
     components: {sbaNavbar},
     computed: {
       mainViews() {
-        return this.$root.views.filter(view => view.name.lastIndexOf('/') < 0);
+        return this.views.filter(view => !view.name.includes('/'))
+      },
+      activeMainViewName() {
+        const idx = this.$route.name.indexOf('/');
+        return idx < 0 ? this.$route.name : this.$route.name.substr(0, idx);
+      },
+      subViews() {
+        return this.views.filter(view => view.name.includes(this.activeMainViewName))
       }
     }
   }

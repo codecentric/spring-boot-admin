@@ -24,12 +24,17 @@
     <meta name="theme-color" content="#42d3a5">
     <link rel="shortcut icon" href="assets/img/favicon.png" type="image/png">
     <link href="assets/css/sba-core.css" rel="stylesheet">
-    <title>Spring Boot Admin</title>
+    <title th:text="${uiSettings.title}">Spring Boot Admin</title>
 </head>
 <body>
 
 <div id="app"></div>
 
+<script th:inline="javascript">
+    var SBA = {
+        uiSettings: /*[[${uiSettings}]]*/ {}
+    }
+</script>
 <script lang="javascript" src="assets/js/vendors.js" defer></script>
 <script lang="javascript" src="assets/js/sba-core.js" defer></script>
 </body>

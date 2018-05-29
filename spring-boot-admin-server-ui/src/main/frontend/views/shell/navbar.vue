@@ -18,10 +18,7 @@
   <nav id="navigation" class="navbar is-fixed-top">
     <div class="container">
       <div class="navbar-brand">
-        <router-link class="navbar-item logo" to="/">
-          <img src="assets/img/icon-spring-boot-admin.svg">
-          <span>Spring Boot Admin</span>
-        </router-link>
+        <router-link class="navbar-item logo" to="/" v-html="brand"/>
 
         <div class="navbar-burger burger" @click.stop="showMenu = !showMenu">
           <span/>
@@ -52,7 +49,8 @@
 <script>
   export default {
     data: () => ({
-      showMenu: false
+      showMenu: false,
+      brand: '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>'
     }),
     props: {
       views: {
@@ -66,6 +64,12 @@
       error: {
         type: null,
         default: null
+      }
+    },
+    created() {
+      /* global SBA */
+      if (SBA && SBA.uiSettings) {
+        this.brand = SBA.uiSettings.brand || this.brand;
       }
     },
     mounted() {

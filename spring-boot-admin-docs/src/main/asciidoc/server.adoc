@@ -38,6 +38,14 @@
 |  Headers not to be forwarded when making requests to clients.
 | `"Cookie", "Set-Cookie", "Authorization"
 
+| spring.boot.admin.ui.brand
+| Brand to be shown in then navbar.
+| `"<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>"`
+
+| spring.boot.admin.ui.title
+| Page-Title to be shown.
+| `"Spring Boot Admin"`
+
 |===
 
 include::server-discovery.adoc[]

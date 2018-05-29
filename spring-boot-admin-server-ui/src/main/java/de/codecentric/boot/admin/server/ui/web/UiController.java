@@ -18,6 +18,8 @@ package de.codecentric.boot.admin.server.ui.web;
 
 import de.codecentric.boot.admin.server.web.AdminController;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -25,14 +27,23 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 @AdminController
 public class UiController {
     private final String adminContextPath;
+    private final Map<String, Object> uiSettings;
 
-    public UiController(String adminContextPath) {
+    public UiController(String adminContextPath, String title, String brand) {
         this.adminContextPath = adminContextPath;
+        this.uiSettings = new HashMap<>();
+        this.uiSettings.put("title", title);
+        this.uiSettings.put("brand", brand);
     }
 
     @ModelAttribute(value = "adminContextPath", binding = false)
     public String getAdminContextPath() {
         return adminContextPath;
+    }
+
+    @ModelAttribute(value = "uiSettings", binding = false)
+    public Map<String, Object> getUiSettings() {
+        return uiSettings;
     }
 
     @GetMapping(path = "/", produces = MediaType.TEXT_HTML_VALUE)
@@ -44,5 +55,4 @@ public class UiController {
     public String login() {
         return "login";
     }
-
 }

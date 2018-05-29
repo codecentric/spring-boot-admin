@@ -17,7 +17,7 @@
 <template>
   <div class="instances">
     <sba-instance-header :instance="instance" :application="application" :class="headerClass"/>
-    <sba-instance-tabs :views="instanceViews" :instance="instance" :application="application" :class="headerClass"/>
+    <sba-instance-tabs :views="views" :instance="instance" :application="application" :class="headerClass"/>
     <router-view v-if="instance" :instance="instance"/>
   </div>
 </template>
@@ -32,6 +32,10 @@
       instanceId: {
         type: String,
         required: true
+      },
+      views: {
+        type: Array,
+        default: () => []
       },
       applications: {
         type: Array,
@@ -48,9 +52,6 @@
       },
       application() {
         return this.applications.findApplicationForInstance(this.instanceId);
-      },
-      instanceViews() {
-        return this.$root.views.filter(view => view.name.lastIndexOf('instance/') === 0);
       },
       headerClass() {
         if (!this.instance) {

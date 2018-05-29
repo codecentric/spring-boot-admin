@@ -56,7 +56,9 @@ public class AdminServerUiAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public UiController homeUiController() {
-        return new UiController(adminServerProperties.getContextPath());
+        return new UiController(adminServerProperties.getContextPath(),
+            uiProperties.getTitle(),
+            uiProperties.getBrand());
     }
 
     @Bean

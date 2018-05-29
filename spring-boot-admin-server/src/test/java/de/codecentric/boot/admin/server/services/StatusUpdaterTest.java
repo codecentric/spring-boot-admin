@@ -171,7 +171,6 @@ public class StatusUpdaterTest {
                     .thenCancel()
                     .verify();
 
-
         StepVerifier.create(repository.find(instance.getId())).assertNext(app -> {
             assertThat(app.getStatusInfo().getStatus()).isEqualTo("DOWN");
             assertThat(app.getStatusInfo().getDetails()).containsEntry("status", 503)

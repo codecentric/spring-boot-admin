@@ -61,6 +61,7 @@ new Vue({
   render(h) {
     return h(sbaShell, {
       props: {
+        views: this.views,
         applications: this.applications,
         error: this.error
       }

@@ -98,9 +98,6 @@ Spring, Spring Boot and Spring Cloud are trademarks of [Pivotal Software, Inc.](
 ![Screenshot traces](/images/screenshot-trace.png)
 *View http request traces*
 
-![Screenshot hystrix](/images/screenshot-hystrix.png)
-*View Hystrix dashboard*
-
 ![Screenshot journal](/images/screenshot-journal.png)
 *View history of registered applications*
 
