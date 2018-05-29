@@ -38,6 +38,10 @@ public class AdminServerUiProperties {
      */
     private String templateLocation = CLASSPATH_RESOURCE_LOCATIONS[0];
 
+    private String customLabel;
+
+    private String customImageSrc;
+
     private boolean cacheTemplates = true;
 
     private final Cache cache = new Cache();
@@ -55,6 +59,7 @@ public class AdminServerUiProperties {
          * include "no-cache" directive in Cache-Control http header.
          */
         private Boolean noCache = false;
+
         /**
          * include "no-store" directive in Cache-Control http header.
          */
@@ -73,6 +78,5 @@ public class AdminServerUiProperties {
             return CacheControl.empty();
         }
     }
-
 
 }

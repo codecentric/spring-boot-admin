@@ -16,23 +16,38 @@
 
 package de.codecentric.boot.admin.server.ui.web;
 
-import de.codecentric.boot.admin.server.web.AdminController;
-
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import de.codecentric.boot.admin.server.web.AdminController;
 
 @AdminController
 public class UiController {
     private final String adminContextPath;
 
-    public UiController(String adminContextPath) {
+    private final String customLabel;
+
+    private final String customImageSrc;
+
+    public UiController(String adminContextPath, String customLabel, String customImageSrc) {
         this.adminContextPath = adminContextPath;
+        this.customLabel = customLabel;
+        this.customImageSrc = customImageSrc;
     }
 
     @ModelAttribute(value = "adminContextPath", binding = false)
     public String getAdminContextPath() {
         return adminContextPath;
+    }
+
+    @ModelAttribute(value = "customLabel", binding = false)
+    public String getCustomLabel() {
+        return customLabel;
+    }
+
+    @ModelAttribute(value = "customImageSrc", binding = false)
+    public String getCustomImageSrc() {
+        return customImageSrc;
     }
 
     @GetMapping(path = "/", produces = MediaType.TEXT_HTML_VALUE)
@@ -43,6 +58,11 @@ public class UiController {
     @GetMapping(path = "/login", produces = MediaType.TEXT_HTML_VALUE)
     public String login() {
         return "login";
+    }
+
+    @GetMapping(path = "/customization", produces = MediaType.TEXT_HTML_VALUE)
+    public String customization() {
+        return "customization";
     }
 
 }
