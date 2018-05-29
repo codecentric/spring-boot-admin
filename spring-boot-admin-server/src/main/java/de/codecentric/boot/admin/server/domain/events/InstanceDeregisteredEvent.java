@@ -20,10 +20,10 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 /**
  * This event gets emitted when an instance is unregistered.
- *
  * @author Johannes Stelzer
  */
-@lombok.Data
+@lombok.Getter
+@lombok.Setter
 @lombok.EqualsAndHashCode(callSuper = true)
 @lombok.ToString(callSuper = true)
 public class InstanceDeregisteredEvent extends InstanceEvent {

@@ -21,10 +21,10 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 /**
  * This event gets emitted when all instance's endpoints are discovered.
- *
  * @author Johannes Stelzer
  */
-@lombok.Data
+@lombok.Getter
+@lombok.Setter
 @lombok.EqualsAndHashCode(callSuper = true)
 @lombok.ToString(callSuper = true)
 public class InstanceEndpointsDetectedEvent extends InstanceEvent {
