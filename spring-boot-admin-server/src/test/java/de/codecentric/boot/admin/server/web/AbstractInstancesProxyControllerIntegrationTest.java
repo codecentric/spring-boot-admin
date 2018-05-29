@@ -19,11 +19,10 @@ package de.codecentric.boot.admin.server.web;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -32,9 +31,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import com.github.tomakehurst.wiremock.core.Options;
 import com.github.tomakehurst.wiremock.http.Fault;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
@@ -46,37 +44,61 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.serverError;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V2_MEDIATYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 public abstract class AbstractInstancesProxyControllerIntegrationTest {
-    private WebTestClient client;
-    private ConfigurableApplicationContext context;
-    private ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
+    private static final String ACTUATOR_CONTENT_TYPE = ActuatorMediaType.V2_JSON + ";charset=UTF-8";
+    private static ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
     };
-    @Rule
-    public WireMockRule wireMock = new WireMockRule(Options.DYNAMIC_PORT);
+    @ClassRule
+    public static WireMockClassRule wireMock = new WireMockClassRule(options().dynamicPort()
+                                                                              .asynchronousResponseEnabled(true)
+                                                                              .asynchronousResponseThreads(10)
+                                                                              .jettyAcceptors(10)
+                                                                              .containerThreads(20));
+    private static WebTestClient client;
+    private static String instanceId;
 
-
-    @Before
-    public void setUp() {
-        context = setupContext();
+    public static void setUpClient(ConfigurableApplicationContext context) {
         int localPort = context.getEnvironment().getProperty("local.server.port", Integer.class, 0);
-        this.client = WebTestClient.bindToServer().baseUrl("http://localhost:" + localPort).build();
-    }
+        client = WebTestClient.bindToServer()
+                              .baseUrl("http://localhost:" + localPort)
+                              .responseTimeout(Duration.ofSeconds(10))
+                              .build();
 
-    protected abstract ConfigurableApplicationContext setupContext();
+        String managementUrl = "http://localhost:" + wireMock.port() + "/mgmt";
+        //@formatter:off
+        String actuatorIndex = "{ \"_links\": { " +
+                               "\"test\": { \"href\": \"" + managementUrl + "/test\", \"templated\": false }," +
+                               "\"invalid\": { \"href\": \"" + managementUrl + "/invalid\", \"templated\": false }," +
+                               "\"timeout\": { \"href\": \"" + managementUrl + "/timeout\", \"templated\": false }" +
+                               " } }";
+        //@formatter:on
+        wireMock.stubFor(get(urlEqualTo("/mgmt/health")).willReturn(
+            ok("{ \"status\" : \"UP\" }").withHeader(CONTENT_TYPE, ActuatorMediaType.V2_JSON)));
+        wireMock.stubFor(
+            get(urlEqualTo("/mgmt/info")).willReturn(ok("{ }").withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
+        wireMock.stubFor(
+            get(urlEqualTo("/mgmt")).willReturn(ok(actuatorIndex).withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
+        wireMock.stubFor(get(urlEqualTo("/mgmt/invalid")).willReturn(aResponse().withFault(Fault.EMPTY_RESPONSE)));
+        wireMock.stubFor(get(urlEqualTo("/mgmt/timeout")).willReturn(ok().withFixedDelay(10000)));
+        wireMock.stubFor(get(urlEqualTo("/mgmt/test")).willReturn(
+            ok("{ \"foo\" : \"bar\" }").withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
+        wireMock.stubFor(post(urlEqualTo("/mgmt/test")).willReturn(ok()));
+        wireMock.stubFor(delete(urlEqualTo("/mgmt/test")).willReturn(
+            serverError().withBody("{\"error\": \"You're doing it wrong!\"}")
+                         .withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
+        wireMock.stubFor(get(urlEqualTo("/mgmt/test/has%20spaces")).willReturn(
+            ok("{ \"foo\" : \"bar-with-spaces\" }").withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
 
-    @After
-    public void shutdown() {
-        context.close();
+        instanceId = registerInstance(managementUrl);
     }
 
     @Test
     public void should_return_status_503_404() {
-        String instanceId = registerInstance("http://localhost:" + wireMock.port() + "/mgmt");
-
         //503 on invalid instance
         client.get()
               .uri("/instances/{instanceId}/actuator/info", "UNKNOWN")
@@ -96,23 +118,15 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 
     @Test
     public void should_return_status_502_504() {
-        String instanceId = registerInstance("http://localhost:" + wireMock.port() + "/mgmt");
-
         //502 on invalid response
-        wireMock.stubFor(get(urlEqualTo("/mgmt/test")).willReturn(aResponse().withFault(Fault.EMPTY_RESPONSE)));
-
-        client.get()
-              .uri("/instances/{instanceId}/actuator/test", instanceId)
+        client.get().uri("/instances/{instanceId}/actuator/invalid", instanceId)
               .accept(ACTUATOR_V2_MEDIATYPE)
               .exchange()
               .expectStatus()
               .isEqualTo(HttpStatus.BAD_GATEWAY);
 
         //504 on read timeout
-        wireMock.stubFor(get(urlEqualTo("/mgmt/test")).willReturn(ok().withFixedDelay(5000)));
-
-        client.get()
-              .uri("/instances/{instanceId}/actuator/test", instanceId)
+        client.get().uri("/instances/{instanceId}/actuator/timeout", instanceId)
               .accept(ACTUATOR_V2_MEDIATYPE)
               .exchange()
               .expectStatus()
@@ -120,43 +134,12 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
     }
 
     @Test
-    public void should_forward_requests_with_spaces_in_path() {
-        String instanceId = registerInstance("http://localhost:" + wireMock.port() + "/mgmt");
-
-        wireMock.stubFor(get(urlEqualTo("/mgmt/test/has%20spaces")).willReturn(
-            ok("{ \"foo\" : \"bar\" }").withHeader(CONTENT_TYPE, ActuatorMediaType.V2_JSON + ";charset=UTF-8")));
-
-        client.get()
-              .uri("/instances/{instanceId}/actuator/test/has spaces", instanceId)
-              .accept(ACTUATOR_V2_MEDIATYPE)
-              .exchange()
-              .expectStatus()
-              .isEqualTo(HttpStatus.OK)
-              .expectBody()
-              .jsonPath("$.foo")
-              .isEqualTo("bar");
-
-        wireMock.verify(getRequestedFor(urlEqualTo("/mgmt/test/has%20spaces")));
-    }
-
-    @Test
     public void should_forward_requests() {
-        String instanceId = registerInstance("http://localhost:" + wireMock.port() + "/mgmt");
-
-        wireMock.stubFor(get(urlEqualTo("/mgmt/test")).willReturn(
-            ok("{ \"foo\" : \"bar\" }").withHeader(CONTENT_TYPE, ActuatorMediaType.V2_JSON + ";charset=UTF-8")));
-
         client.get()
               .uri("/instances/{instanceId}/actuator/test", instanceId)
               .accept(ACTUATOR_V2_MEDIATYPE)
               .exchange()
-              .expectStatus()
-              .isEqualTo(HttpStatus.OK)
-              .expectBody()
-              .jsonPath("$.foo")
-              .isEqualTo("bar");
-
-        wireMock.stubFor(post(urlEqualTo("/mgmt/test")).willReturn(ok()));
+              .expectStatus().isEqualTo(HttpStatus.OK).expectBody(String.class).isEqualTo("{ \"foo\" : \"bar\" }");
 
         client.post()
               .uri("/instances/{instanceId}/actuator/test", instanceId)
@@ -167,36 +150,33 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 
         wireMock.verify(postRequestedFor(urlEqualTo("/mgmt/test")).withRequestBody(equalTo("PAYLOAD")));
 
-        wireMock.stubFor(delete(urlEqualTo("/mgmt/test")).willReturn(
-            serverError().withBody("\"error\": \"You're doing it wrong!\"}")
-                         .withHeader(CONTENT_TYPE, ActuatorMediaType.V2_JSON + ";charset=UTF-8")));
-
         client.delete()
               .uri("/instances/{instanceId}/actuator/test", instanceId)
               .exchange()
               .expectStatus()
               .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-              .expectBody()
-              .jsonPath("$.error", "You're doing it wrong!");
+              .expectBody(String.class)
+              .isEqualTo("{\"error\": \"You're doing it wrong!\"}");
 
         wireMock.verify(postRequestedFor(urlEqualTo("/mgmt/test")).withRequestBody(equalTo("PAYLOAD")));
     }
 
-    private String registerInstance(String managementUrl) {
+    @Test
+    public void should_forward_requests_with_spaces_in_path() {
+        client.get()
+              .uri("/instances/{instanceId}/actuator/test/has spaces", instanceId)
+              .accept(ACTUATOR_V2_MEDIATYPE)
+              .exchange()
+              .expectStatus()
+              .isEqualTo(HttpStatus.OK)
+              .expectBody(String.class)
+              .isEqualTo("{ \"foo\" : \"bar-with-spaces\" }");
+
+        wireMock.verify(getRequestedFor(urlEqualTo("/mgmt/test/has%20spaces")));
+    }
+
+    private static String registerInstance(String managementUrl) {
         AtomicReference<String> instanceId = new AtomicReference<>();
-
-        wireMock.stubFor(get(urlEqualTo("/mgmt/health")).willReturn(
-            ok("{ \"status\" : \"UP\" }").withHeader(CONTENT_TYPE, ActuatorMediaType.V2_JSON)));
-
-        wireMock.stubFor(
-            get(urlEqualTo("/mgmt/info")).willReturn(ok("{ }").withHeader(CONTENT_TYPE, ActuatorMediaType.V2_JSON)));
-
-        String actuatorIndex = "{ \"_links\": { \"test\": { \"href\": \"" +
-                               managementUrl +
-                               "/test\", \"templated\": false } } }";
-        wireMock.stubFor(
-            get(urlEqualTo("/mgmt")).willReturn(ok(actuatorIndex).withHeader(CONTENT_TYPE, ActuatorMediaType.V2_JSON)));
-
         StepVerifier.create(getEventStream())
                     .expectSubscription()
                     .then(() -> instanceId.set(sendRegistration(managementUrl)))
@@ -204,11 +184,10 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
                     .assertNext(event -> assertThat(event).containsEntry("type", "ENDPOINTS_DETECTED"))
                     .thenCancel()
                     .verify();
-
         return instanceId.get();
     }
 
-    private String sendRegistration(String managementUrl) {
+    private static String sendRegistration(String managementUrl) {
         String registration = "{ \"name\": \"test\", \"healthUrl\": \"" +
                               managementUrl +
                               "/health\", \"managementUrl\": \"" +
@@ -228,9 +207,9 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
         return result.getResponseBody().get("id").toString();
     }
 
-    private Flux<Map<String, Object>> getEventStream() {
+    private static Flux<Map<String, Object>> getEventStream() {
         //@formatter:off
-        return this.client.get().uri("/instances/events").accept(MediaType.TEXT_EVENT_STREAM)
+        return client.get().uri("/instances/events").accept(MediaType.TEXT_EVENT_STREAM)
                         .exchange()
                         .expectStatus().isOk()
                         .returnResult(RESPONSE_TYPE).getResponseBody();

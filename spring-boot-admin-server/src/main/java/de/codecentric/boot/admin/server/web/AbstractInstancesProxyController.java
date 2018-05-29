@@ -111,7 +111,7 @@ public class AbstractInstancesProxyController {
             log.trace("No Endpoint found for Proxy-Request for instance {} with URL '{}'", instance.getId(), uri);
             return ClientResponse.create(HttpStatus.NOT_FOUND, strategies).build();
         })).onErrorResume(IOException.class, ex -> Mono.fromSupplier(() -> {
-            log.trace("Error for Proxy-Request for instance {} with URL '{}' timed out", instance.getId(), uri, ex);
+            log.trace("Error for Proxy-Request for instance {} with URL '{}' errored", instance.getId(), uri, ex);
             return ClientResponse.create(HttpStatus.BAD_GATEWAY, strategies).build();
         })).onErrorResume(ConnectException.class, ex -> Mono.fromSupplier(() -> {
             log.trace("Error for Proxy-Request for instance {} with URL '{}' timed out", instance.getId(), uri, ex);
