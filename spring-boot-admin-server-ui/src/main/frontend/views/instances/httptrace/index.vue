@@ -164,11 +164,11 @@
         if (this.instance.registration.managementUrl.indexOf(this.instance.registration.serviceUrl) >= 0) {
           const appendix = this.instance.registration.managementUrl.substring(this.instance.registration.serviceUrl.length);
           if (appendix.length > 0) {
-          	if (appendix.indexOf('/') == 0) {
+            if (appendix.indexOf('/') == 0) {
               return appendix;
-          	} else {
+            } else {
               return `/${appendix}`;
-          	}
+            }
           }
         }
         return null;
