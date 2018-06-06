@@ -25,6 +25,7 @@ import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.eventstore.ConcurrentMapEventStore;
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
@@ -92,6 +93,15 @@ public class StatusUpdaterTest {
 
         StepVerifier.create(repository.find(instance.getId()))
                     .assertNext(app -> assertThat(app.getStatusInfo().getStatus()).isEqualTo("UP"))
+                    .verifyComplete();
+
+        StepVerifier.create(repository.computeIfPresent(instance.getId(), (key, instance) -> Mono.just(instance.deregister())))
+                    .then(() -> StepVerifier.create(updater.updateStatus(instance.getId())).verifyComplete())
+                    .thenCancel()
+                    .verify();
+
+        StepVerifier.create(repository.find(instance.getId()))
+                    .assertNext(app -> assertThat(app.getStatusInfo().getStatus()).isEqualTo("UNKNOWN"))
                     .verifyComplete();
     }
 
