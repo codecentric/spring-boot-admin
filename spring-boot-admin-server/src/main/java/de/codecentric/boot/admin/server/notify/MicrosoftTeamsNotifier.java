@@ -106,8 +106,8 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
             message = getDeregisteredMessage(instance);
         } else if (event instanceof InstanceStatusChangedEvent) {
             InstanceStatusChangedEvent statusChangedEvent = (InstanceStatusChangedEvent) event;
-            message = getStatusChangedMessage(instance, statusChangedEvent.getStatusInfo().getStatus(),
-                getLastStatus(event.getInstance()));
+            message = getStatusChangedMessage(instance, getLastStatus(event.getInstance()),
+                statusChangedEvent.getStatusInfo().getStatus());
         } else {
             return Mono.empty();
         }
