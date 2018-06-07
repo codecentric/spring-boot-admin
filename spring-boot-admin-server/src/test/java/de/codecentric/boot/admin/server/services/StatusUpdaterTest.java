@@ -36,7 +36,9 @@ import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.Options;
+import com.github.tomakehurst.wiremock.http.Fault;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -67,7 +69,7 @@ public class StatusUpdaterTest {
         StepVerifier.create(repository.save(instance)).expectNextCount(1).verifyComplete();
 
         updater = new StatusUpdater(repository,
-            new InstanceWebClient(instance -> HttpHeaders.EMPTY, Duration.ofSeconds(5), Duration.ofSeconds(20)));
+            new InstanceWebClient(instance -> HttpHeaders.EMPTY, Duration.ofSeconds(5), Duration.ofSeconds(10)));
     }
 
     @Test
@@ -178,21 +180,20 @@ public class StatusUpdaterTest {
 
     @Test
     public void test_update_offline() {
-        Instance offlineInstance = Instance.create(InstanceId.of("offline"))
-                                           .register(Registration.create("foo", "http://0.0.0.0/health").build());
-
-        StepVerifier.create(repository.save(offlineInstance)).expectNextCount(1).verifyComplete();
+        wireMock.stubFor(get("/health").willReturn(WireMock.aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER)));
 
         StepVerifier.create(eventStore)
                     .expectSubscription()
-                    .then(() -> StepVerifier.create(updater.updateStatus(offlineInstance.getId())).verifyComplete())
+                    .then(() -> StepVerifier.create(updater.updateStatus(instance.getId())).verifyComplete())
                     .assertNext(event -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class))
                     .thenCancel()
                     .verify();
 
-        StepVerifier.create(repository.find(offlineInstance.getId())).assertNext(app -> {
+        StepVerifier.create(repository.find(instance.getId())).assertNext(app -> {
             assertThat(app.getStatusInfo().getStatus()).isEqualTo("OFFLINE");
             assertThat(app.getStatusInfo().getDetails()).containsKeys("message", "exception");
         }).verifyComplete();
+
+        StepVerifier.create(updater.updateStatus(instance.getId())).verifyComplete();
     }
 }
