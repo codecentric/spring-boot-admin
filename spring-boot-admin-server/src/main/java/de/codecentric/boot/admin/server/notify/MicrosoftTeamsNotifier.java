@@ -65,7 +65,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
      * Message will be used as title of the Activity section of the Teams message when an app
      * registers
      */
-    private String registerActivitySubtitlePattern = "%s with id %s has registered from Spring Boot Admin";
+    private String registerActivitySubtitlePattern = "%s with id %s has registered with Spring Boot Admin";
 
     /**
      * Message will be used as title of the Activity section of the Teams message when an app
