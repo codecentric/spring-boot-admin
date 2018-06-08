@@ -161,7 +161,7 @@
     }),
     computed: {
       actuatorPath() {
-        if (this.instance.registration.managementUrl.indexOf(this.instance.registration.serviceUrl) >= 0) {
+        if (this.instance.registration.managementUrl.includes(this.instance.registration.serviceUrl)) {
           const appendix = this.instance.registration.managementUrl.substring(this.instance.registration.serviceUrl.length);
           if (appendix.length > 0) {
             return `/${appendix}`;
@@ -214,11 +214,11 @@
       getFilterFn() {
         let filterFn = null;
         if (this.actuatorPath !== null && this.excludeActuator) {
-          filterFn = addToFilter(filterFn, (trace) => trace.request.uri.indexOf(this.actuatorPath) < 0);
+          filterFn = addToFilter(filterFn, (trace) => !trace.request.uri.includes(this.actuatorPath));
         }
         if (this.filter) {
           const normalizedFilter = this.filter.toLowerCase();
-          filterFn = addToFilter(filterFn, (trace) => trace.request.uri.toLowerCase().indexOf(normalizedFilter) >= 0);
+          filterFn = addToFilter(filterFn, (trace) => trace.request.uri.toLowerCase().includes(normalizedFilter));
         }
         if (!this.showSuccess) {
           filterFn = addToFilter(filterFn, (trace) => !trace.isSuccess());

@@ -58,11 +58,11 @@
     }
 
     isSuccess() {
-      return this.type.toLowerCase().indexOf('success') >= 0;
+      return this.type.toLowerCase().includes('success');
     }
 
     isFailure() {
-      return this.type.toLowerCase().indexOf('failure') >= 0;
+      return this.type.toLowerCase().includes('failure');
     }
   }
 

@@ -56,7 +56,7 @@ class NotificationFilter {
   static async isSupported() {
     try {
       const response = await axios.options('notifications/filters');
-      return response.headers['allow'] && response.headers['allow'].indexOf('POST') >= 0;
+      return response.headers['allow'] && response.headers['allow'].includes('POST');
     } catch (error) {
       return false;
     }

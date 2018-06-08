@@ -67,7 +67,7 @@
   import sbaEnvManager from './env-manager';
 
   const filterProperty = (needle) => (property, name) => {
-    return name.toString().toLowerCase().indexOf(needle) >= 0 || property.value.toString().toLowerCase().indexOf(needle) >= 0;
+    return name.toString().toLowerCase().includes(needle) || property.value.toString().toLowerCase().includes(needle);
   };
   const filterProperties = (needle, properties) => _.pickBy(properties, filterProperty(needle));
   const filterPropertySource = (needle) => (propertySource) => {
