@@ -93,6 +93,7 @@ public class StatusUpdater {
         return response.bodyToMono(Void.class).then(Mono.just(this.getStatusInfoFromStatus(response, emptyMap())));
     }
 
+    @SuppressWarnings("unchecked")
     protected StatusInfo getStatusInfoFromStatus(ClientResponse response, Map<String, ?> body) {
         if (response.statusCode().is2xxSuccessful()) {
             return StatusInfo.ofUp();
@@ -100,7 +101,11 @@ public class StatusUpdater {
         Map<String, Object> details = new LinkedHashMap<>();
         details.put("status", response.statusCode().value());
         details.put("error", response.statusCode().getReasonPhrase());
-        details.putAll(body);
+        if (body.get("details") instanceof Map) {
+            details.putAll((Map<? extends String, ?>) body.get("details"));
+        } else {
+            details.putAll(body);
+        }
         return StatusInfo.ofDown(details);
     }
 

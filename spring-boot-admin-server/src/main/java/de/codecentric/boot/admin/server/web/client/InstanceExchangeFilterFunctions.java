@@ -41,6 +41,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V1_MEDIATYPE;
 import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V2_MEDIATYPE;
 import static java.util.Collections.singletonList;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 public final class InstanceExchangeFilterFunctions {
     private static final Logger log = LoggerFactory.getLogger(InstanceExchangeFilterFunctions.class);
@@ -128,7 +129,11 @@ public final class InstanceExchangeFilterFunctions {
             Mono<ClientResponse> clientResponse = next.exchange(request);
             if (request.attribute(ATTRIBUTE_ENDPOINT).map(converter::canConvert).orElse(false)) {
                 return clientResponse.flatMap(response -> {
-                    if (response.headers().contentType().map(ACTUATOR_V1_MEDIATYPE::isCompatibleWith).orElse(false)) {
+                    if (response.headers()
+                                .contentType()
+                                .map(t -> ACTUATOR_V1_MEDIATYPE.isCompatibleWith(t) ||
+                                          APPLICATION_JSON.isCompatibleWith(t))
+                                .orElse(false)) {
                         return convertClientResponse(converter::convert, ACTUATOR_V2_MEDIATYPE).apply(response);
                     }
                     return Mono.just(response);
