@@ -26,9 +26,13 @@
           <p v-text="error.message"/>
         </div>
       </div>
-
-      <form @submit.prevent="handleSubmit" class="field">
-        <div class="field" v-if="availableMetrics.length > 0">
+      <div v-if="isOldMetrics" class="message is-warning">
+        <div class="message-body">
+          <p>Metrics are not supported for Spring Boot 1.x applications.</p>
+        </div>
+      </div>
+      <form @submit.prevent="handleSubmit" class="field" v-else-if="availableMetrics.length > 0">
+        <div class="field">
           <div class="control">
             <div class="select">
               <select v-model="selectedMetric">
@@ -116,7 +120,8 @@
       selectedMetric: null,
       stateFetchingTags: null,
       availableTags: null,
-      selectedTags: null
+      selectedTags: null,
+      isOldMetrics: false
     }),
     created() {
       this.fetchMetricIndex();
@@ -179,9 +184,13 @@
         this.error = null;
         try {
           const res = await this.instance.fetchMetrics();
-          this.availableMetrics = res.data.names;
-          this.availableMetrics.sort();
-          this.selectedMetric = this.availableMetrics[0];
+          if (res.headers['content-type'].includes('application/vnd.spring-boot.actuator.v2')) {
+            this.availableMetrics = res.data.names;
+            this.availableMetrics.sort();
+            this.selectedMetric = this.availableMetrics[0];
+          } else {
+            this.isOldMetrics = true;
+          }
         } catch (error) {
           console.warn('Fetching metric index failed:', error);
           this.hasLoaded = true;
