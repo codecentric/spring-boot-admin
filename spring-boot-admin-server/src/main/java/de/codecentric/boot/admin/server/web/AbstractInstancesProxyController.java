@@ -21,12 +21,12 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
+import io.netty.handler.timeout.ReadTimeoutException;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URI;
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
@@ -55,21 +55,17 @@ public class AbstractInstancesProxyController {
     private final InstanceRegistry registry;
     private final InstanceWebClient instanceWebClient;
     private final Set<String> ignoredHeaders;
-    private final Duration readTimeout;
     private final ExchangeStrategies strategies = ExchangeStrategies.withDefaults();
 
     public AbstractInstancesProxyController(String adminContextPath,
                                             Set<String> ignoredHeaders,
-                                            InstanceRegistry registry,
-                                            InstanceWebClient instanceWebClient,
-                                            Duration readTimeout) {
+                                            InstanceRegistry registry, InstanceWebClient instanceWebClient) {
         this.ignoredHeaders = Stream.concat(ignoredHeaders.stream(), Arrays.stream(HOP_BY_HOP_HEADERS))
                                     .map(String::toLowerCase)
                                     .collect(Collectors.toSet());
         this.registry = registry;
         this.instanceWebClient = instanceWebClient;
         this.realRequestMappingPath = adminContextPath + REQUEST_MAPPING_PATH;
-        this.readTimeout = readTimeout;
     }
 
     protected Mono<ClientResponse> forward(String instanceId,
@@ -104,17 +100,17 @@ public class AbstractInstancesProxyController {
             }
         }
 
-        return headersSpec.exchange().timeout(this.readTimeout, Mono.fromSupplier(() -> {
+        return headersSpec.exchange().onErrorResume(ReadTimeoutException.class, ex -> Mono.fromSupplier(() -> {
             log.trace("Timeout for Proxy-Request for instance {} with URL '{}'", instance.getId(), uri);
             return ClientResponse.create(HttpStatus.GATEWAY_TIMEOUT, strategies).build();
         })).onErrorResume(ResolveEndpointException.class, ex -> Mono.fromSupplier(() -> {
             log.trace("No Endpoint found for Proxy-Request for instance {} with URL '{}'", instance.getId(), uri);
             return ClientResponse.create(HttpStatus.NOT_FOUND, strategies).build();
         })).onErrorResume(IOException.class, ex -> Mono.fromSupplier(() -> {
-            log.trace("Error for Proxy-Request for instance {} with URL '{}' errored", instance.getId(), uri, ex);
+            log.trace("Proxy-Request for instance {} with URL '{}' errored", instance.getId(), uri, ex);
             return ClientResponse.create(HttpStatus.BAD_GATEWAY, strategies).build();
         })).onErrorResume(ConnectException.class, ex -> Mono.fromSupplier(() -> {
-            log.trace("Error for Proxy-Request for instance {} with URL '{}' timed out", instance.getId(), uri, ex);
+            log.trace("Connect for Proxy-Request for instance {} with URL '{}' failed", instance.getId(), uri, ex);
             return ClientResponse.create(HttpStatus.BAD_GATEWAY, strategies).build();
         }));
     }

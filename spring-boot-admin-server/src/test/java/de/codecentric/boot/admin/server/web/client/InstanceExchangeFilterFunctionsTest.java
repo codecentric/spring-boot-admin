@@ -34,8 +34,8 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 
 import static de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunctions.ATTRIBUTE_ENDPOINT;
-import static io.netty.handler.codec.http.HttpHeaders.Values.APPLICATION_JSON;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class InstanceExchangeFilterFunctionsTest {
     private static final DefaultDataBufferFactory BUFFER_FACTORY = new DefaultDataBufferFactory();
@@ -72,8 +72,7 @@ public class InstanceExchangeFilterFunctionsTest {
         ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
                                              .attribute(ATTRIBUTE_ENDPOINT, "test")
                                              .build();
-        ClientResponse response = ClientResponse.create(HttpStatus.OK)
-                                                .header(CONTENT_TYPE, APPLICATION_JSON)
+        ClientResponse response = ClientResponse.create(HttpStatus.OK).header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                                                 .body(Flux.just(ORIGINAL))
                                                 .build();
 

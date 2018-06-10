@@ -31,7 +31,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import com.github.tomakehurst.wiremock.common.FileSource;
+import com.github.tomakehurst.wiremock.extension.Parameters;
+import com.github.tomakehurst.wiremock.extension.ResponseTransformer;
 import com.github.tomakehurst.wiremock.http.Fault;
+import com.github.tomakehurst.wiremock.http.HttpHeader;
+import com.github.tomakehurst.wiremock.http.HttpHeaders;
+import com.github.tomakehurst.wiremock.http.Request;
+import com.github.tomakehurst.wiremock.http.Response;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -54,11 +61,8 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
     private static ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
     };
     @ClassRule
-    public static WireMockClassRule wireMock = new WireMockClassRule(options().dynamicPort()
-                                                                              .asynchronousResponseEnabled(true)
-                                                                              .asynchronousResponseThreads(10)
-                                                                              .jettyAcceptors(10)
-                                                                              .containerThreads(20));
+    public static WireMockClassRule wireMock = new WireMockClassRule(
+        options().dynamicPort().extensions(new ConnectionCloseExtension()));
     private static WebTestClient client;
     private static String instanceId;
 
@@ -87,12 +91,12 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
         wireMock.stubFor(get(urlEqualTo("/mgmt/timeout")).willReturn(ok().withFixedDelay(10000)));
         wireMock.stubFor(get(urlEqualTo("/mgmt/test")).willReturn(
             ok("{ \"foo\" : \"bar\" }").withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
+        wireMock.stubFor(get(urlEqualTo("/mgmt/test/has%20spaces")).willReturn(
+            ok("{ \"foo\" : \"bar-with-spaces\" }").withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
         wireMock.stubFor(post(urlEqualTo("/mgmt/test")).willReturn(ok()));
         wireMock.stubFor(delete(urlEqualTo("/mgmt/test")).willReturn(
             serverError().withBody("{\"error\": \"You're doing it wrong!\"}")
                          .withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
-        wireMock.stubFor(get(urlEqualTo("/mgmt/test/has%20spaces")).willReturn(
-            ok("{ \"foo\" : \"bar-with-spaces\" }").withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
 
         instanceId = registerInstance(managementUrl);
     }
@@ -139,7 +143,10 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
               .uri("/instances/{instanceId}/actuator/test", instanceId)
               .accept(ACTUATOR_V2_MEDIATYPE)
               .exchange()
-              .expectStatus().isEqualTo(HttpStatus.OK).expectBody(String.class).isEqualTo("{ \"foo\" : \"bar\" }");
+              .expectStatus()
+              .isEqualTo(HttpStatus.OK)
+              .expectBody(String.class)
+              .isEqualTo("{ \"foo\" : \"bar\" }");
 
         client.post()
               .uri("/instances/{instanceId}/actuator/test", instanceId)
@@ -214,5 +221,22 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
                         .expectStatus().isOk()
                         .returnResult(RESPONSE_TYPE).getResponseBody();
         //@formatter:on
+    }
+}
+
+//Force the connections to be closed...
+//see https://github.com/tomakehurst/wiremock/issues/485
+class ConnectionCloseExtension extends ResponseTransformer {
+    @Override
+    public Response transform(Request request, Response response, FileSource files, Parameters parameters) {
+        return Response.Builder.like(response)
+                               .headers(HttpHeaders.copyOf(response.getHeaders())
+                                                   .plus(new HttpHeader("Connection", "Close")))
+                               .build();
+    }
+
+    @Override
+    public String getName() {
+        return "ConnectionCloseExtension";
     }
 }
