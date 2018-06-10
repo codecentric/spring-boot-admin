@@ -39,8 +39,8 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "@vue/test-utils": "^1.0.0-beta.16",
-    "autoprefixer": "^8.6.1",
+    "@vue/test-utils": "^1.0.0-beta.18",
+    "autoprefixer": "^8.6.2",
     "babel-core": "^6.26.3",
     "babel-eslint": "^8.2.3",
     "babel-jest": "^23.0.1",

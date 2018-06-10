@@ -28,7 +28,7 @@
       </div>
       <div v-if="isOldAuditevents" class="message is-warning">
         <div class="message-body">
-          <p>Audit Log is not supported for Spring Boot 1.x applications.</p>
+          Audit Log is not supported for Spring Boot 1.x applications.
         </div>
       </div>
       <auditevents-list v-if="events" :instance="instance" :events="events"/>

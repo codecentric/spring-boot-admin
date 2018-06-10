@@ -28,7 +28,7 @@
       </div>
       <div v-if="isOldMetrics" class="message is-warning">
         <div class="message-body">
-          <p>Metrics are not supported for Spring Boot 1.x applications.</p>
+          Metrics are not supported for Spring Boot 1.x applications.
         </div>
       </div>
       <form @submit.prevent="handleSubmit" class="field" v-else-if="availableMetrics.length > 0">
