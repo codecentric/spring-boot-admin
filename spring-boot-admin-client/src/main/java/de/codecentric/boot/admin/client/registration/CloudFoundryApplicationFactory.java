@@ -45,7 +45,7 @@ public class CloudFoundryApplicationFactory extends DefaultApplicationFactory {
             return null;
         }
 
-        String uri = cfApplicationProperties.getUris().get(0).toLowerCase();
+        String uri = cfApplicationProperties.getUris().get(0);
         return "http://" + uri;
     }
 }

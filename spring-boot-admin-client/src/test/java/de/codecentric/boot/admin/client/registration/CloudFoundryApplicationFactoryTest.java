@@ -50,13 +50,13 @@ public class CloudFoundryApplicationFactoryTest {
     @Test
     public void should_use_application_uri() {
         when(pathMappedEndpoints.getPath("health")).thenReturn("/actuator/health");
-        cfApplicationProperties.setUris(singletonList("application"));
+        cfApplicationProperties.setUris(singletonList("application/Uppercase"));
 
         Application app = factory.createApplication();
 
-        assertThat(app.getManagementUrl()).isEqualTo("http://application/actuator");
-        assertThat(app.getHealthUrl()).isEqualTo("http://application/actuator/health");
-        assertThat(app.getServiceUrl()).isEqualTo("http://application/");
+        assertThat(app.getManagementUrl()).isEqualTo("http://application/Uppercase/actuator");
+        assertThat(app.getHealthUrl()).isEqualTo("http://application/Uppercase/actuator/health");
+        assertThat(app.getServiceUrl()).isEqualTo("http://application/Uppercase/");
     }
 
 }
