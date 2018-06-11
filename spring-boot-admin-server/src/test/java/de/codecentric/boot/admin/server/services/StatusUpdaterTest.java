@@ -41,6 +41,7 @@ import com.github.tomakehurst.wiremock.core.Options;
 import com.github.tomakehurst.wiremock.http.Fault;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.okForContentType;
@@ -97,7 +98,8 @@ public class StatusUpdaterTest {
                     .assertNext(app -> assertThat(app.getStatusInfo().getStatus()).isEqualTo("UP"))
                     .verifyComplete();
 
-        StepVerifier.create(repository.computeIfPresent(instance.getId(), (key, instance) -> Mono.just(instance.deregister())))
+        StepVerifier.create(
+            repository.computeIfPresent(instance.getId(), (key, instance) -> Mono.just(instance.deregister())))            
                     .then(() -> StepVerifier.create(updater.updateStatus(instance.getId())).verifyComplete())
                     .thenCancel()
                     .verify();
@@ -180,7 +182,7 @@ public class StatusUpdaterTest {
 
     @Test
     public void test_update_offline() {
-        wireMock.stubFor(get("/health").willReturn(WireMock.aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER)));
+        wireMock.stubFor(get("/health").willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER)));
 
         StepVerifier.create(eventStore)
                     .expectSubscription()

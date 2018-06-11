@@ -26,6 +26,11 @@
           <p v-text="error.message"/>
         </div>
       </div>
+      <div v-if="isOldAuditevents" class="message is-warning">
+        <div class="message-body">
+          Audit Log is not supported for Spring Boot 1.x applications.
+        </div>
+      </div>
       <auditevents-list v-if="events" :instance="instance" :events="events"/>
     </div>
   </section>
@@ -58,11 +63,11 @@
     }
 
     isSuccess() {
-      return this.type.toLowerCase().indexOf('success') >= 0;
+      return this.type.toLowerCase().includes('success');
     }
 
     isFailure() {
-      return this.type.toLowerCase().indexOf('failure') >= 0;
+      return this.type.toLowerCase().includes('failure');
     }
   }
 
@@ -79,6 +84,7 @@
       hasLoaded: false,
       error: null,
       events: null,
+      isOldAuditevents: false
     }),
     methods: {
       async fetchAuditevents() {
@@ -104,7 +110,11 @@
             error: error => {
               vm.hasLoaded = true;
               console.warn('Fetching audit events failed:', error);
-              vm.error = error;
+              if (error.response.headers['content-type'].includes('application/vnd.spring-boot.actuator.v2')) {
+                vm.error = error;
+              } else {
+                vm.isOldAuditevents = true;
+              }
             }
           });
       },

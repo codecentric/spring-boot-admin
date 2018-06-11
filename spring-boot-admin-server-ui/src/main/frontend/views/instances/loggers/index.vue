@@ -185,7 +185,7 @@
 
         if (this.filter) {
           const normalizedFilter = this.filter.toLowerCase();
-          filterFn = addToFilter(filterFn, logger => logger.name.toLowerCase().indexOf(normalizedFilter) >= 0);
+          filterFn = addToFilter(filterFn, logger => logger.name.toLowerCase().includes(normalizedFilter));
         }
 
         return filterFn;

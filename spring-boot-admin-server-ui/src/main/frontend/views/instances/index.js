@@ -18,6 +18,7 @@ import sbaInstancesAuditevents from './auditevents';
 import sbaInstancesDetails from './details';
 import sbaInstancesEnv from './env';
 import sbaInstancesFlyway from './flyway';
+import sbaInstancesHeapdump from './heapdump';
 import sbaInstancesTrace from './httptrace';
 import sbaInstancesJolokia from './jolokia';
 import sbaInstancesLiquibase from './liquibase';
@@ -54,6 +55,8 @@ export default [{
     path: 'flyway', component: sbaInstancesFlyway, props: true, name: 'instance/flyway'
   }, {
     path: 'threaddump', component: sbaInstancesThreaddump, props: true, name: 'instance/threaddump'
+  }, {
+    path: 'heapdump', component: sbaInstancesHeapdump, props: true, name: 'instance/heapdump'
   }]
 }, {
   name: 'instance/details',
@@ -106,8 +109,7 @@ export default [{
   isActive: ({instance}) => instance.hasEndpoint('sessions')
 }, {
   name: 'instance/heapdump',
-  href: params => `instances/${params.instanceId}/actuator/heapdump`,
-  handle: 'Heapdump',
+  handle: 'Heap Dump',
   order: 800,
   isActive: ({instance}) => instance.hasEndpoint('heapdump')
 }, {

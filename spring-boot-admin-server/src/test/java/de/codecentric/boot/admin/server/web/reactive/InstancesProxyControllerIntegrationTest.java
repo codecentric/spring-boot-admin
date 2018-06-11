@@ -19,16 +19,28 @@ package de.codecentric.boot.admin.server.web.reactive;
 import de.codecentric.boot.admin.server.AdminReactiveApplicationTest;
 import de.codecentric.boot.admin.server.web.AbstractInstancesProxyControllerIntegrationTest;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
 public class InstancesProxyControllerIntegrationTest extends AbstractInstancesProxyControllerIntegrationTest {
-    @Override
-    protected ConfigurableApplicationContext setupContext() {
-        return new SpringApplicationBuilder().sources(AdminReactiveApplicationTest.TestAdminApplication.class)
-                                             .web(WebApplicationType.REACTIVE)
-                                             .run("--server.port=0", "--eureka.client.enabled=false",
-                                                 "--spring.boot.admin.monitor.read-timeout=3000");
+    private static ConfigurableApplicationContext context;
+
+    @BeforeClass
+    public static void setUpCpntext() {
+        context = new SpringApplicationBuilder().sources(AdminReactiveApplicationTest.TestAdminApplication.class)
+                                                .web(WebApplicationType.REACTIVE)
+                                                .run("--server.port=0", "--eureka.client.enabled=false",
+                                                    "--spring.boot.admin.monitor.read-timeout=5000");
+        AbstractInstancesProxyControllerIntegrationTest.setUpClient(context);
+    }
+
+    @AfterClass
+    public static void tearDownContext() {
+        if (context != null) {
+            context.close();
+        }
     }
 }

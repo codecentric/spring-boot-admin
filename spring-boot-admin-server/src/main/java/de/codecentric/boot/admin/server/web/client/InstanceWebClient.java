@@ -63,14 +63,14 @@ public class InstanceWebClient {
     }
 
     public WebClient instance(Mono<Instance> instance) {
-        return webClient.mutate()//
-                        .filters(filters -> filters.add(0, InstanceExchangeFilterFunctions.setInstance(instance)))//
+        return webClient.mutate()
+                        .filters(filters -> filters.add(0, InstanceExchangeFilterFunctions.setInstance(instance)))
                         .build();
     }
 
     public WebClient instance(Instance instance) {
-        return webClient.mutate()//
-                        .filters(filters -> filters.add(0, InstanceExchangeFilterFunctions.setInstance(instance)))//
+        return webClient.mutate()
+                        .filters(filters -> filters.add(0, InstanceExchangeFilterFunctions.setInstance(instance)))
                         .build();
     }
 
@@ -78,8 +78,8 @@ public class InstanceWebClient {
                                                     Duration readTimeout,
                                                     WebClientCustomizer customizer) {
         ReactorClientHttpConnector connector = new ReactorClientHttpConnector(
-            options -> options.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) connectTimeout.toMillis())//
-                              .compression(true)//
+            options -> options.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) connectTimeout.toMillis())
+                              .compression(true)
                               .afterNettyContextInit(ctx -> {
                                   ctx.addHandlerLast(
                                       new ReadTimeoutHandler(readTimeout.toMillis(), TimeUnit.MILLISECONDS));

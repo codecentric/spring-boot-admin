@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <div>
+  <div class="instances">
     <sba-instance-header :instance="instance" :application="application" :class="headerClass"/>
     <sba-instance-tabs :views="instanceViews" :instance="instance" :application="application" :class="headerClass"/>
     <router-view v-if="instance" :instance="instance"/>
@@ -76,3 +76,11 @@
     }
   }
 </script>
+
+<style lang="scss">
+  .instances {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+</style>

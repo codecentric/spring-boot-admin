@@ -78,11 +78,11 @@ public class AdminServerWebConfiguration {
         @Bean
         @ConditionalOnMissingBean
         public de.codecentric.boot.admin.server.web.reactive.InstancesProxyController instancesProxyController(
-
-            InstanceRegistry instanceRegistry, InstanceWebClient instanceWebClient) {
+            InstanceRegistry instanceRegistry,
+            InstanceWebClient instanceWebClient) {
             return new de.codecentric.boot.admin.server.web.reactive.InstancesProxyController(
                 adminServerProperties.getContextPath(), adminServerProperties.getInstanceProxy().getIgnoredHeaders(),
-                instanceRegistry, instanceWebClient, adminServerProperties.getMonitor().getReadTimeout());
+                instanceRegistry, instanceWebClient);
         }
 
         @Bean
@@ -110,8 +110,7 @@ public class AdminServerWebConfiguration {
         public InstancesProxyController instancesProxyController(InstanceRegistry instanceRegistry,
                                                                  InstanceWebClient instanceWebClient) {
             return new InstancesProxyController(adminServerProperties.getContextPath(),
-                adminServerProperties.getInstanceProxy().getIgnoredHeaders(), instanceRegistry, instanceWebClient,
-                adminServerProperties.getMonitor().getReadTimeout());
+                adminServerProperties.getInstanceProxy().getIgnoredHeaders(), instanceRegistry, instanceWebClient);
         }
 
         @Bean

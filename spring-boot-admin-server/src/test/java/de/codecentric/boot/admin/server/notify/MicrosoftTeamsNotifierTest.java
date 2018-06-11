@@ -25,6 +25,7 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.notify.MicrosoftTeamsNotifier.Message;
+import org.mockito.ArgumentCaptor;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -34,7 +35,6 @@ import org.junit.Test;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -76,8 +76,13 @@ public class MicrosoftTeamsNotifierTest {
 
         StepVerifier.create(notifier.doNotify(event, instance)).verifyComplete();
 
-        verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")), any(Message.class),
+        ArgumentCaptor<Message> messageCaptor = ArgumentCaptor.forClass(Message.class);
+        verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")), messageCaptor.capture(),
             eq(Void.class));
+
+        assertMessage(messageCaptor.getValue(), notifier.getDeRegisteredTitle(), notifier.getMessageSummary(),
+            String.format(notifier.getDeregisterActivitySubtitlePattern(), instance.getRegistration().getName(),
+                instance.getId()));
     }
 
     @Test
@@ -86,8 +91,13 @@ public class MicrosoftTeamsNotifierTest {
 
         StepVerifier.create(notifier.doNotify(event, instance)).verifyComplete();
 
-        verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")), any(Message.class),
+        ArgumentCaptor<Message> messageCaptor = ArgumentCaptor.forClass(Message.class);
+        verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")), messageCaptor.capture(),
             eq(Void.class));
+
+        assertMessage(messageCaptor.getValue(), notifier.getRegisteredTitle(), notifier.getMessageSummary(),
+            String.format(notifier.getRegisterActivitySubtitlePattern(), instance.getRegistration().getName(),
+                instance.getId()));
     }
 
     @Test
@@ -96,8 +106,13 @@ public class MicrosoftTeamsNotifierTest {
 
         StepVerifier.create(notifier.doNotify(event, instance)).verifyComplete();
 
-        verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")), any(Message.class),
+        ArgumentCaptor<Message> messageCaptor = ArgumentCaptor.forClass(Message.class);
+        verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")), messageCaptor.capture(),
             eq(Void.class));
+
+        assertMessage(messageCaptor.getValue(), notifier.getStatusChangedTitle(), notifier.getMessageSummary(),
+            String.format(notifier.getStatusActivitySubtitlePattern(), instance.getRegistration().getName(),
+                instance.getId(), StatusInfo.ofUnknown().getStatus(), StatusInfo.ofUp().getStatus()));
     }
 
     @Test

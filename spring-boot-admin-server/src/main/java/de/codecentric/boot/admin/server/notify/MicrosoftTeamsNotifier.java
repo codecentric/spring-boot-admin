@@ -65,7 +65,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
      * Message will be used as title of the Activity section of the Teams message when an app
      * registers
      */
-    private String registerActivitySubtitlePattern = "%s with id %s has registered from Spring Boot Admin";
+    private String registerActivitySubtitlePattern = "%s with id %s has registered with Spring Boot Admin";
 
     /**
      * Message will be used as title of the Activity section of the Teams message when an app
@@ -106,8 +106,8 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
             message = getDeregisteredMessage(instance);
         } else if (event instanceof InstanceStatusChangedEvent) {
             InstanceStatusChangedEvent statusChangedEvent = (InstanceStatusChangedEvent) event;
-            message = getStatusChangedMessage(instance, statusChangedEvent.getStatusInfo().getStatus(),
-                getLastStatus(event.getInstance()));
+            message = getStatusChangedMessage(instance, getLastStatus(event.getInstance()),
+                statusChangedEvent.getStatusInfo().getStatus());
         } else {
             return Mono.empty();
         }

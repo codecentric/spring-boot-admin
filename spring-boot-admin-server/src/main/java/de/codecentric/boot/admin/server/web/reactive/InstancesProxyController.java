@@ -23,7 +23,6 @@ import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
-import java.time.Duration;
 import java.util.Set;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -41,10 +40,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class InstancesProxyController extends AbstractInstancesProxyController {
     public InstancesProxyController(String adminContextPath,
                                     Set<String> ignoredHeaders,
-                                    InstanceRegistry registry,
-                                    InstanceWebClient instanceWebClient,
-                                    Duration readTimeout) {
-        super(adminContextPath, ignoredHeaders, registry, instanceWebClient, readTimeout);
+                                    InstanceRegistry registry, InstanceWebClient instanceWebClient) {
+        super(adminContextPath, ignoredHeaders, registry, instanceWebClient);
     }
 
     @RequestMapping(path = REQUEST_MAPPING_PATH, method = {RequestMethod.GET, RequestMethod.HEAD, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS})

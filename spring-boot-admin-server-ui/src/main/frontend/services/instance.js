@@ -88,7 +88,7 @@ class Instance {
 
   async hasEnvManagerSupport() {
     const response = await axios.options(uri`instances/${this.id}/actuator/env`);
-    return response.headers['allow'] && response.headers['allow'].indexOf('POST') >= 0;
+    return response.headers['allow'] && response.headers['allow'].includes('POST');
   }
 
   async resetEnv() {
