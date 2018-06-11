@@ -99,7 +99,7 @@ public class StatusUpdaterTest {
                     .verifyComplete();
 
         StepVerifier.create(
-            repository.computeIfPresent(instance.getId(), (key, instance) -> Mono.just(instance.deregister())))            
+            repository.computeIfPresent(instance.getId(), (key, instance) -> Mono.just(instance.deregister())))
                     .then(() -> StepVerifier.create(updater.updateStatus(instance.getId())).verifyComplete())
                     .thenCancel()
                     .verify();
