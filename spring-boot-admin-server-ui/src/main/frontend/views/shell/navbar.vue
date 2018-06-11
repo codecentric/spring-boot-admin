@@ -28,6 +28,8 @@
           <span/>
           <span/>
         </div>
+
+        <div class="navbar-customization" v-html="customization"/>
       </div>
       <div class="navbar-menu" :class="{'is-active' : showMenu}">
         <div class="navbar-start"/>
@@ -50,9 +52,12 @@
 </template>
 
 <script>
+  import Customization from '@/services/customization';
+
   export default {
     data: () => ({
-      showMenu: false
+      showMenu: false,
+      customization: ''
     }),
     props: {
       views: {
@@ -67,6 +72,10 @@
         type: null,
         default: null
       }
+    },
+    async created() {
+      const res = await Customization.fetchCustomization();
+      this.customization = res.data;
     },
     mounted() {
       document.documentElement.classList.add('has-navbar-fixed-top');
@@ -89,6 +98,27 @@
     & span {
       margin: 0.5rem 1rem 0.5rem 0.5rem;
     }
+    & img {
+      max-height: 2.25rem;
+    }
+  }
+  
+  .navbar-customization {
+    margin-left: 4rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  .navbar-custom-label {
+    margin-right: 1rem;
+    display: flex;
+    & span {
+      color: white;
+      font-size: 1.5rem;
+    }
+  }
+  .navbar-custom-image {
+    display: flex;
     & img {
       max-height: 2.25rem;
     }

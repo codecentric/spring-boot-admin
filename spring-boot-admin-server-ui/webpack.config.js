@@ -196,6 +196,12 @@ const config = {
       inject: false,
       hash: process.env.NODE_ENV === 'production',
     }),
+    new HtmlWebpackPlugin({
+      filename: 'customization.html',
+      template: './src/main/frontend/customization.html',
+      inject: false,
+      hash: process.env.NODE_ENV === 'production',
+    }),
     new BundleAnalyzerPlugin({
       analyzerMode: 'static',
       openAnalyzer: false,

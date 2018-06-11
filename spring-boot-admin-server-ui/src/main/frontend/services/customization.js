@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin.server.domain.events;
+import axios from '@/utils/axios';
 
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
+class Customization {
 
-/**
- * This event gets emitted when an instance is unregistered.
- * @author Johannes Stelzer
- */
-@lombok.Getter
-@lombok.Setter
-@lombok.EqualsAndHashCode(callSuper = true)
-@lombok.ToString(callSuper = true)
-public class InstanceDeregisteredEvent extends InstanceEvent {
-    private static final long serialVersionUID = 1L;
+  static async fetchCustomization() {
+    return axios.get('customization');
+  }
 
-    public InstanceDeregisteredEvent(InstanceId instance, long version) {
-        super(instance, version, "DEREGISTERED");
-    }
 }
+
+export default Customization;
