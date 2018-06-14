@@ -73,7 +73,7 @@ public class StatusUpdaterTest {
     }
 
     @Test
-    public void test_update_statusChanged() {
+    public void should_change_status_to_down() {
         String body = "{ \"status\" : \"UP\", \"details\" : { \"foo\" : \"bar\" } }";
         wireMock.stubFor(get("/health").willReturn(
             okForContentType(ActuatorMediaType.V2_JSON, body).withHeader("Content-Length",
@@ -109,7 +109,7 @@ public class StatusUpdaterTest {
     }
 
     @Test
-    public void test_update_statusUnchanged() {
+    public void should_not_change_status() {
         String body = "{ \"status\" : \"UNKNOWN\" }";
         wireMock.stubFor(
             get("/health").willReturn(okJson(body).withHeader("Content-Type", Integer.toString(body.length()))));
@@ -124,7 +124,7 @@ public class StatusUpdaterTest {
     }
 
     @Test
-    public void test_update_up_noBody() {
+    public void should_change_status_to_up() {
         wireMock.stubFor(get("/health").willReturn(ok()));
 
         StepVerifier.create(eventStore)
@@ -140,7 +140,7 @@ public class StatusUpdaterTest {
     }
 
     @Test
-    public void test_update_down() {
+    public void should_change_status_to_down_with_details() {
         String body = "{ \"foo\" : \"bar\" }";
         wireMock.stubFor(get("/health").willReturn(
             status(503).withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -161,7 +161,7 @@ public class StatusUpdaterTest {
     }
 
     @Test
-    public void test_update_down_noBody() {
+    public void should_change_status_to_down_without_details_incompatible_content_type() {
         wireMock.stubFor(get("/health").willReturn(status(503)));
 
         StepVerifier.create(eventStore)
@@ -179,7 +179,26 @@ public class StatusUpdaterTest {
     }
 
     @Test
-    public void test_update_offline() {
+    public void should_change_status_to_down_without_details_no_body() {
+        wireMock.stubFor(
+            get("/health").willReturn(status(503).withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)));
+
+        StepVerifier.create(eventStore)
+                    .expectSubscription()
+                    .then(() -> StepVerifier.create(updater.updateStatus(instance.getId())).verifyComplete())
+                    .assertNext(event -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class))
+                    .thenCancel()
+                    .verify();
+
+        StepVerifier.create(repository.find(instance.getId())).assertNext(app -> {
+            assertThat(app.getStatusInfo().getStatus()).isEqualTo("DOWN");
+            assertThat(app.getStatusInfo().getDetails()).containsEntry("status", 503)
+                                                        .containsEntry("error", "Service Unavailable");
+        }).verifyComplete();
+    }
+
+    @Test
+    public void should_change_status_to_offline() {
         wireMock.stubFor(get("/health").willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER)));
 
         StepVerifier.create(eventStore)
