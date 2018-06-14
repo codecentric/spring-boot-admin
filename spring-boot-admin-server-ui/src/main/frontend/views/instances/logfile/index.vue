@@ -32,7 +32,7 @@
         <sba-icon-button :disabled="atBottom" @click="scrollToBottom" icon="step-forward" size="lg"
                          icon-class="rotated"/>
       </div>
-      <a class="button" :href="`instances/${instance.id}/logfile`" target="_blank">
+      <a class="button" :href="`instances/${instance.id}/actuator/logfile`" target="_blank">
         <font-awesome-icon icon="download"/>&nbsp;Download
       </a>
     </div>
