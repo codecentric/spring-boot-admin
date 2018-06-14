@@ -525,7 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.0.1-SNAPSHOT,</span>
-<span id="revdate">13.06.2018</span>
+<span id="revdate">14.06.2018</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -1412,22 +1412,17 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <div class="title">How to configure reminders</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
-<span class="annotation">@EnableScheduling</span>
 <span class="directive">public</span> <span class="type">class</span> <span class="class">NotifierConfiguration</span> {
     <span class="annotation">@Autowired</span>
     <span class="directive">private</span> Notifier notifier;
 
-    <span class="annotation">@Bean</span>
     <span class="annotation">@Primary</span>
+    <span class="annotation">@Bean</span>(initMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span>, destroyMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">stop</span><span class="delimiter">&quot;</span></span>)
     <span class="directive">public</span> RemindingNotifier remindingNotifier() {
-        RemindingNotifier remindingNotifier = <span class="keyword">new</span> RemindingNotifier(notifier);
-        remindingNotifier.setReminderPeriod(<span class="predefined-type">TimeUnit</span>.MINUTES.toMillis(<span class="integer">5</span>)); <i class="conum" data-value="1"></i><b>(1)</b>
-        <span class="keyword">return</span> remindingNotifier;
-    }
-
-    <span class="annotation">@Scheduled</span>(fixedRate = <span class="integer">60</span>_000L) <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="directive">public</span> <span class="type">void</span> remind() {
-        remindingNotifier().sendReminders();
+        RemindingNotifier notifier = <span class="keyword">new</span> RemindingNotifier(notifier, repository);
+        notifier.setReminderPeriod(<span class="predefined-type">Duration</span>.ofMinutes(<span class="integer">10</span>)); <i class="conum" data-value="1"></i><b>(1)</b>
+        notifier.setCheckReminderInverval(<span class="predefined-type">Duration</span>.ofSeconds(<span class="integer">10</span>)); <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="keyword">return</span> notifier;
     }
 }</code></pre>
 </div>
@@ -1436,11 +1431,11 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The reminders will be sent every 5 minutes.</td>
+<td>The reminders will be sent every 10 minutes.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Schedules sending of due reminders every 60 seconds.</td>
+<td>Schedules sending of due reminders every 10 seconds.</td>
 </tr>
 </table>
 </div>
@@ -1451,7 +1446,7 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <p>The <code>FilteringNotifier</code> allows you to filter certain notification based on rules you can add/remove at runtime. It delegates the sending of notifications to another notifier.</p>
 </div>
 <div class="paragraph">
-<p>If you add a <code>FilteringNotifier</code> to your <code>ApplicationContext</code> a RESTful interface on <code>api/notifications/filter</code> gets available.</p>
+<p>If you add a <code>FilteringNotifier</code> to your <code>ApplicationContext</code> a RESTful interface on <code>notifications/filter</code> gets available.</p>
 </div>
 <div class="paragraph">
 <p>This notifier is useful if you don&#8217;t want recieve notifications when deploying your applications. Before stopping the application you can add an (expiring) filter either via a <code>POST</code> request.</p>
@@ -1459,30 +1454,31 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <div class="listingblock">
 <div class="title">How to configure filtering</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
-<span class="annotation">@EnableScheduling</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">NotifierConfiguration</span> {
-  <span class="annotation">@Autowired</span>
-  <span class="directive">private</span> Notifier delegate;
+<pre class="CodeRay highlight"><code data-lang="java">    <span class="annotation">@Configuration</span>
+    <span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">NotifierConfig</span> {
+        <span class="directive">private</span> <span class="directive">final</span> InstanceRepository repository;
+        <span class="directive">private</span> <span class="directive">final</span> ObjectProvider&lt;<span class="predefined-type">List</span>&lt;Notifier&gt;&gt; otherNotifiers;
 
-  <span class="annotation">@Bean</span>
-  <span class="directive">public</span> FilteringNotifier filteringNotifier() { <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="keyword">return</span> <span class="keyword">new</span> FilteringNotifier(delegate);
-  }
+        <span class="directive">public</span> NotifierConfig(InstanceRepository repository, ObjectProvider&lt;<span class="predefined-type">List</span>&lt;Notifier&gt;&gt; otherNotifiers) {
+            <span class="local-variable">this</span>.repository = repository;
+            <span class="local-variable">this</span>.otherNotifiers = otherNotifiers;
+        }
 
-  <span class="annotation">@Bean</span>
-  <span class="annotation">@Primary</span>
-  <span class="directive">public</span> RemindingNotifier remindingNotifier() { <i class="conum" data-value="2"></i><b>(2)</b>
-    RemindingNotifier notifier = <span class="keyword">new</span> RemindingNotifier(filteringNotifier());
-    notifier.setReminderPeriod(<span class="predefined-type">TimeUnit</span>.SECONDS.toMillis(<span class="integer">10</span>));
-    <span class="keyword">return</span> notifier;
-  }
+        <span class="annotation">@Bean</span>
+        <span class="directive">public</span> FilteringNotifier filteringNotifier() { <i class="conum" data-value="1"></i><b>(1)</b>
+            CompositeNotifier delegate = <span class="keyword">new</span> CompositeNotifier(otherNotifiers.getIfAvailable(<span class="predefined-type">Collections</span>::emptyList));
+            <span class="keyword">return</span> <span class="keyword">new</span> FilteringNotifier(delegate, repository);
+        }
 
-  <span class="annotation">@Scheduled</span>(fixedRate = <span class="integer">1</span>_000L)
-  <span class="directive">public</span> <span class="type">void</span> remind() {
-    remindingNotifier().sendReminders();
-  }
-}</code></pre>
+        <span class="annotation">@Primary</span>
+        <span class="annotation">@Bean</span>(initMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span>, destroyMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">stop</span><span class="delimiter">&quot;</span></span>)
+        <span class="directive">public</span> RemindingNotifier remindingNotifier() { <i class="conum" data-value="2"></i><b>(2)</b>
+            RemindingNotifier notifier = <span class="keyword">new</span> RemindingNotifier(filteringNotifier(), repository);
+            notifier.setReminderPeriod(<span class="predefined-type">Duration</span>.ofMinutes(<span class="integer">10</span>));
+            notifier.setCheckReminderInverval(<span class="predefined-type">Duration</span>.ofSeconds(<span class="integer">10</span>));
+            <span class="keyword">return</span> notifier;
+        }
+    }</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -2069,7 +2065,7 @@ By default <code>spring-boot-admin-server-ui</code> provides a login page and a 
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-If you protect the <code>/api/applications</code> endpoint don&#8217;t forget to configure the username and password on your SBA-Client using <code>spring.boot.admin.client.username</code> and <code>spring.boot.admin.instance.password</code>.
+If you protect the <code>/instances</code> endpoint don&#8217;t forget to configure the username and password on your SBA-Client using <code>spring.boot.admin.client.username</code> and <code>spring.boot.admin.instance.password</code>.
 </td>
 </tr>
 </table>
