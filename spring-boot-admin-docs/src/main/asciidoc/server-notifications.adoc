@@ -13,64 +13,36 @@ By default the reminders are sent every 10 minutes, to change this use `setRemin
 [source,java]
 ----
 @Configuration
-@EnableScheduling
 public class NotifierConfiguration {
     @Autowired
     private Notifier notifier;
 
-    @Bean
     @Primary
+    @Bean(initMethod = "start", destroyMethod = "stop")
     public RemindingNotifier remindingNotifier() {
-        RemindingNotifier remindingNotifier = new RemindingNotifier(notifier);
-        remindingNotifier.setReminderPeriod(TimeUnit.MINUTES.toMillis(5)); // <1>
-        return remindingNotifier;
-    }
-
-    @Scheduled(fixedRate = 60_000L) // <2>
-    public void remind() {
-        remindingNotifier().sendReminders();
+        RemindingNotifier notifier = new RemindingNotifier(notifier, repository);
+        notifier.setReminderPeriod(Duration.ofMinutes(10)); // <1>
+        notifier.setCheckReminderInverval(Duration.ofSeconds(10)); //<2>
+        return notifier;
     }
 }
 ----
-<1> The reminders will be sent every 5 minutes.
-<2> Schedules sending of due reminders every 60 seconds.
+<1> The reminders will be sent every 10 minutes.
+<2> Schedules sending of due reminders every 10 seconds.
 
 
 [[filtering-notifications]]
 ==== Filtering notifications ====
 The `FilteringNotifier` allows you to filter certain notification based on rules you can add/remove at runtime. It delegates the sending of notifications to another notifier.
 
-If you add a `FilteringNotifier` to your `ApplicationContext` a RESTful interface on `api/notifications/filter` gets available.
+If you add a `FilteringNotifier` to your `ApplicationContext` a RESTful interface on `notifications/filter` gets available.
 
 This notifier is useful if you don't want recieve notifications when deploying your applications. Before stopping the application you can add an (expiring) filter either via a `POST` request.
 
 .How to configure filtering
 [source,java]
 ----
-@Configuration
-@EnableScheduling
-public class NotifierConfiguration {
-	@Autowired
-	private Notifier delegate;
-
-	@Bean
-	public FilteringNotifier filteringNotifier() { // <1>
-		return new FilteringNotifier(delegate);
-	}
-
-	@Bean
-	@Primary
-	public RemindingNotifier remindingNotifier() { // <2>
-		RemindingNotifier notifier = new RemindingNotifier(filteringNotifier());
-		notifier.setReminderPeriod(TimeUnit.SECONDS.toMillis(10));
-		return notifier;
-	}
-
-	@Scheduled(fixedRate = 1_000L)
-	public void remind() {
-		remindingNotifier().sendReminders();
-	}
-}
+include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/SpringBootAdminApplication.java[tags=configuration-filtering-notifier]
 ----
 <1> Add the `FilteringNotifier` bean using a delegate (e.g. `MailNotifier` when configured)
 <2> Add the `RemindingNotifier` as primary bean using the `FilteringNotifier` as delegate.

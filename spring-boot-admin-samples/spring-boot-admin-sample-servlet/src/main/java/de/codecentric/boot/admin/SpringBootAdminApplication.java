@@ -27,6 +27,7 @@ import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
 import de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunction;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,6 +109,7 @@ public class SpringBootAdminApplication {
         return new LoggingNotifier(repository);
     }
 
+    // tag::configuration-filtering-notifier[]
     @Configuration
     public static class NotifierConfig {
         private final InstanceRepository repository;
@@ -118,18 +120,20 @@ public class SpringBootAdminApplication {
             this.otherNotifiers = otherNotifiers;
         }
 
+        @Bean
+        public FilteringNotifier filteringNotifier() { // <1>
+            CompositeNotifier delegate = new CompositeNotifier(otherNotifiers.getIfAvailable(Collections::emptyList));
+            return new FilteringNotifier(delegate, repository);
+        }
+
         @Primary
         @Bean(initMethod = "start", destroyMethod = "stop")
-        public RemindingNotifier remindingNotifier() {
+        public RemindingNotifier remindingNotifier() { // <2>
             RemindingNotifier notifier = new RemindingNotifier(filteringNotifier(), repository);
             notifier.setReminderPeriod(Duration.ofMinutes(10));
             notifier.setCheckReminderInverval(Duration.ofSeconds(10));
             return notifier;
         }
-
-        @Bean
-        public FilteringNotifier filteringNotifier() {
-            return new FilteringNotifier(new CompositeNotifier(otherNotifiers.getObject()), repository);
-        }
     }
+// end::configuration-filtering-notifier[]
 }
