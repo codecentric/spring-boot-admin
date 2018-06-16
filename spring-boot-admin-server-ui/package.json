@@ -14,6 +14,7 @@
     "@fortawesome/fontawesome-free-regular": "^5.0.13",
     "@fortawesome/fontawesome-free-solid": "^5.0.13",
     "@fortawesome/vue-fontawesome": "0.0.23",
+    "ansi_up": "^3.0.0",
     "axios": "^0.18.0",
     "bulma": "^0.7.1",
     "bulma-badge": "^1.0.1",

@@ -44,7 +44,9 @@
 <script>
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
+  import linkify from '@/utils/linkify';
   import {animationFrame, Observable} from '@/utils/rxjs';
+  import AnsiUp from 'ansi_up';
   import _ from 'lodash';
   import prettyBytes from 'pretty-bytes';
 
@@ -63,6 +65,9 @@
       atTop: false,
       skippedBytes: null
     }),
+    created() {
+      this.ansiUp = new AnsiUp();
+    },
     mounted() {
       window.addEventListener('scroll', this.onScroll);
     },
@@ -84,7 +89,13 @@
               vm.hasLoaded = true;
               lines.forEach(line => {
                 const child = document.createElement('pre');
-                child.textContent = line;
+                child.innerHTML = this.ansiUp.ansi_to_html(linkify(line, {
+                  validate: {
+                    url(value) {
+                      return /^(http|ftp)s?:\/\//.test(value);
+                    }
+                  }
+                }));
                 vm.$el.appendChild(child);
               });
 

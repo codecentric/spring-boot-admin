@@ -43,6 +43,25 @@ In case you are using the `spring-boot-admin-starter-client` it will be pulled i
 </dependency>
 ----
 
+[[logfile]]
+=== Logfile viewer ===
+
+By default the logfile is not accessible via actuator endpoints and therefore not visible in Spring Boot Admin.
+In order to enable the logfile actuator endpoint you need to configure Spring Boot to write a logfile, either by setting
+`logging.path` or `logging.file`.
+
+Spring Boot Admin will detect everything that looks like an URL and render it as hyperlink.
+
+ANSI color-escapes are also supported. You need to set a custom file log pattern as Spring Boot's default one doesn't use colors.
+
+.application.properties
+----
+logging.file=/var/log/sample-boot-application.log <1>
+logging.pattern.file=%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID}){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx <2>
+----
+<1> Destination the logfile is written to. Enables the logfile actuator endpoint.
+<2> File log pattern using ANSI colors.
+
 [[spring-boot-admin-client]]
 === Spring Boot Admin Client ===
 

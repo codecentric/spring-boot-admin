@@ -43,12 +43,13 @@ const shorten = (value, max) => {
   }
 };
 
-export default (input, maxLength) => linkifyStr(input, {
+export default (input, options) => linkifyStr(input, {
   className: null,
   format(value, type) {
     if (type === 'url') {
-      return shorten(value, maxLength || Number.MAX_VALUE);
+      return shorten(value, options.maxLength || Number.MAX_VALUE);
     }
     return value;
-  }
+  },
+  ...options
 });

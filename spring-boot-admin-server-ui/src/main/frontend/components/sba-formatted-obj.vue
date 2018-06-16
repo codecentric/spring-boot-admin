@@ -31,7 +31,7 @@
     },
     computed: {
       yaml() {
-        return linkify(yaml.stringify(this.value, 2), 50);
+        return linkify(yaml.stringify(this.value, 2), {maxLength: 50});
       }
     }
   }
