@@ -63,7 +63,7 @@
                         <configuration>
                             <executable>npm</executable>
                             <arguments>
-                                <argument>ci</argument>
+                                <argument>install</argument>
                             </arguments>
                         </configuration>
                     </execution>
