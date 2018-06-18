@@ -525,7 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.0.1-SNAPSHOT,</span>
-<span id="revdate">15.06.2018</span>
+<span id="revdate">18.06.2018</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -546,7 +546,8 @@ table.CodeRay td.code>pre{padding:0}
 <ul class="sectlevel2">
 <li><a href="#show-version-in-application-list">3.1. Show version in application list</a></li>
 <li><a href="#jmx-bean-management">3.2. JMX-bean management</a></li>
-<li><a href="#spring-boot-admin-client">3.3. Spring Boot Admin Client</a></li>
+<li><a href="#logfile">3.3. Logfile viewer</a></li>
+<li><a href="#spring-boot-admin-client">3.4. Spring Boot Admin Client</a></li>
 </ul>
 </li>
 <li><a href="#spring-boot-admin-server">4. Spring Boot Admin Server</a>
@@ -906,7 +907,40 @@ In case you are using the <code>spring-boot-admin-starter-client</code> it will 
 </div>
 </div>
 <div class="sect2">
-<h3 id="spring-boot-admin-client"><a class="anchor" href="#spring-boot-admin-client"></a><a class="link" href="#spring-boot-admin-client">3.3. Spring Boot Admin Client</a></h3>
+<h3 id="logfile"><a class="anchor" href="#logfile"></a><a class="link" href="#logfile">3.3. Logfile viewer</a></h3>
+<div class="paragraph">
+<p>By default the logfile is not accessible via actuator endpoints and therefore not visible in Spring Boot Admin.
+In order to enable the logfile actuator endpoint you need to configure Spring Boot to write a logfile, either by setting
+<code>logging.path</code> or <code>logging.file</code>.</p>
+</div>
+<div class="paragraph">
+<p>Spring Boot Admin will detect everything that looks like an URL and render it as hyperlink.</p>
+</div>
+<div class="paragraph">
+<p>ANSI color-escapes are also supported. You need to set a custom file log pattern as Spring Boot&#8217;s default one doesn&#8217;t use colors.</p>
+</div>
+<div class="listingblock">
+<div class="title">application.properties</div>
+<div class="content">
+<pre>logging.file=/var/log/sample-boot-application.log <i class="conum" data-value="1"></i><b>(1)</b>
+logging.pattern.file=%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID}){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx <i class="conum" data-value="2"></i><b>(2)</b></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Destination the logfile is written to. Enables the logfile actuator endpoint.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>File log pattern using ANSI colors.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="spring-boot-admin-client"><a class="anchor" href="#spring-boot-admin-client"></a><a class="link" href="#spring-boot-admin-client">3.4. Spring Boot Admin Client</a></h3>
 <div class="paragraph">
 <p>The Spring Boot Admin Client registers the application at the admin server. This is done by periodically doing a HTTP post request to the SBA Server providing information about the application. It also adds Jolokia to your application, so that JMX-beans are accessible via HTTP.</p>
 </div>
