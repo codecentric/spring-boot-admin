@@ -39,7 +39,7 @@ It provides the following features for registered application.
 
 There is also a <a href="https://goo.gl/2tRiUi" target="_blank">introductory talk availabe on YouTube</a>:
 
-<a href="https://goo.gl/2tRiUi" target="_blank"><img src="https://i.ytimg.com/vi/PWd9Q8_4OFo/maxresdefault.jpg" 
+<a href="https://goo.gl/2tRiUi" target="_blank"><img src="https://i.ytimg.com/vi/PWd9Q8_4OFo/maxresdefault.jpg"
 alt="Spring Boot® Admin - Monitoring and Configuring Spring Boot Applications at Runtime" width="240" height="135" border="10" /></a><br>
 **Spring Boot® Admin - Monitoring and Configuring Spring Boot Applications at Runtime**
 
@@ -48,11 +48,11 @@ alt="Spring Boot® Admin - Monitoring and Configuring Spring Boot Applications a
 Having trouble with codecentric's Spring Boot Admin? We’d like to help!
 
  * Check the [reference documentation](http://codecentric.github.io/spring-boot-admin/current/).
- 
+
  * Ask a question on [stackoverflow.com](http://stackoverflow.com/questions/tagged/spring-boot-admin) - we monitor questions tagged with `spring-boot-admin`.
- 
+
  * Ask for help in our [spring-boot-admin Gitter chat](https://gitter.im/codecentric/spring-boot-admin)
- 
+
  * Report bugs at http://github.com/codecentric/spring-boot-admin/issues.
 
 ## Reference Guide
@@ -118,9 +118,23 @@ You can access snapshot builds from the sonatype snapshot repository by adding t
 ```
 
 ## Build
+
+### Requirements
+
+* [Node.Js](https://nodejs.org/en/download/)
+* Java JDK >= 1.8
+* [Lombok Java](https://projectlombok.org) Library (debian pacakge `liblombok-java`)
+* Maven, with the plugins:
+    * [JavaDoc](https://maven.apache.org/plugins/maven-javadoc-plugin/) (debian package `libmaven-javadoc-plugin-java`)
+
+### Environment Variables
+
+* `PATH` must include Node.js's `npm` binary
+* `JAVA_HOME` is set to location of Java 1.8 (in Ubuntu this is
+  `/usr/lib/jvm/java-1.8.0-openjdk-amd64/`)
+
 In order to build spring-boot-admin you need to have node.js and npm on your `$PATH`.
 
 ```shell
 mvn clean package
 ```
-
