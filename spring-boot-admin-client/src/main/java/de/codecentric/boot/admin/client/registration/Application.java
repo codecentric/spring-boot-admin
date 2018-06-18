@@ -27,6 +27,7 @@ import org.springframework.util.Assert;
  * @author Johannes Edmeier
  */
 @lombok.Data
+@lombok.ToString(exclude = "metadata")
 public class Application {
     private final String name;
     private final String managementUrl;

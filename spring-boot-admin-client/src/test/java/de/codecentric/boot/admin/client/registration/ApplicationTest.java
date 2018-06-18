@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,5 +69,11 @@ public class ApplicationTest {
 
         assertThat(a1).isNotEqualTo(a3);
         assertThat(a2).isNotEqualTo(a3);
+    }
+
+    @Test
+    public void should_not_return_sensitive_data_in_toString() {
+        Application application = Application.create("app").healthUrl("HEALTH").metadata("password", "geheim").build();
+        assertThat(application.toString()).doesNotContain("geheim");
     }
 }
