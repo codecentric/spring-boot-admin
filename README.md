@@ -43,7 +43,7 @@ There are <a href="https://goo.gl/2tRiUi" target="_blank">introductory talks ava
 alt="Monitoring Spring Boot® Applications with Spring Boot Admin @ Spring I/O 2018" width="240" height="135" border="10" /></a><br>
 **Monitoring Spring Boot® Applications with Spring Boot Admin @ Spring I/O 2018**
 
-<a href="https://goo.gl/2tRiUi" target="_blank"><img src="https://i.ytimg.com/vi/PWd9Q8_4OFo/maxresdefault.jpg" 
+<a href="https://goo.gl/2tRiUi" target="_blank"><img src="https://i.ytimg.com/vi/PWd9Q8_4OFo/maxresdefault.jpg"
 alt="Spring Boot® Admin - Monitoring and Configuring Spring Boot Applications at Runtime" width="240" height="135" border="10" /></a><br>
 **Spring Boot® Admin - Monitoring and Configuring Spring Boot Applications at Runtime**
 
@@ -52,11 +52,11 @@ alt="Spring Boot® Admin - Monitoring and Configuring Spring Boot Applications a
 Having trouble with codecentric's Spring Boot Admin? We’d like to help!
 
  * Check the [reference documentation](http://codecentric.github.io/spring-boot-admin/current/).
- 
+
  * Ask a question on [stackoverflow.com](http://stackoverflow.com/questions/tagged/spring-boot-admin) - we monitor questions tagged with `spring-boot-admin`.
- 
+
  * Ask for help in our [spring-boot-admin Gitter chat](https://gitter.im/codecentric/spring-boot-admin)
- 
+
  * Report bugs at http://github.com/codecentric/spring-boot-admin/issues.
 
 ## Reference Guide
@@ -120,9 +120,12 @@ You can access snapshot builds from the sonatype snapshot repository by adding t
 ```
 
 ## Build
-In order to build spring-boot-admin you need to have node.js and npm on your `$PATH`.
+**Requirements:**
+* [Node.js v8.x (LTS)](https://nodejs.org/en/download/)
+* JDK >= 1.8
+
+Please make sure you set `$JAVA_HOME` points to the correct JDK and that the `node` and `npm` commands are on your `$PATH`.
 
 ```shell
 ./mvnw clean package
 ```
-
