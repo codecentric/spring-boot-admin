@@ -121,6 +121,6 @@ You can access snapshot builds from the sonatype snapshot repository by adding t
 In order to build spring-boot-admin you need to have node.js and npm on your `$PATH`.
 
 ```shell
-mvn clean package
+./mvnw clean package
 ```
 
