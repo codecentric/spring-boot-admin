@@ -20,6 +20,8 @@ import faGitter from '@fortawesome/fontawesome-free-brands/faGitter';
 import faStackOverflow from '@fortawesome/fontawesome-free-brands/faStackOverflow';
 import farTimesCircle from '@fortawesome/fontawesome-free-regular/faTimesCircle';
 import faBan from '@fortawesome/fontawesome-free-solid/faBan';
+import faBell from '@fortawesome/fontawesome-free-solid/faBell';
+import faBellSlash from '@fortawesome/fontawesome-free-solid/faBellSlash';
 import faBook from '@fortawesome/fontawesome-free-solid/faBook';
 import faCheck from '@fortawesome/fontawesome-free-solid/faCheck';
 import faDownload from '@fortawesome/fontawesome-free-solid/faDownload';
@@ -33,13 +35,12 @@ import faStepBackward from '@fortawesome/fontawesome-free-solid/faStepBackward';
 import faStepForward from '@fortawesome/fontawesome-free-solid/faStepForward';
 import faTimesCircle from '@fortawesome/fontawesome-free-solid/faTimesCircle';
 import faTrash from '@fortawesome/fontawesome-free-solid/faTrash';
-import faBell from '@fortawesome/fontawesome-free-solid/faBell';
-import faBellSlash from '@fortawesome/fontawesome-free-solid/faBellSlash';
+import faUserCircle from '@fortawesome/fontawesome-free-solid/faUserCircle';
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 
 //solid
 fontawesome.library.add(faTrash, faDownload, faStepForward, faStepBackward, faCheck, faQuestionCircle, faBan, faTimesCircle, faMinusCircle, faExclamation,
-  faBook, faSignOutAlt, faExclamationTriangle, faPencilAlt, faBell, faBellSlash);
+  faBook, faSignOutAlt, faExclamationTriangle, faPencilAlt, faBell, faBellSlash, faUserCircle);
 //regular
 fontawesome.library.add(farTimesCircle);
 //brands

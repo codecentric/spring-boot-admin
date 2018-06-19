@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.ui.web;
 
 import de.codecentric.boot.admin.server.web.AdminController;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.MediaType;
@@ -44,6 +45,11 @@ public class UiController {
     @ModelAttribute(value = "uiSettings", binding = false)
     public Map<String, Object> getUiSettings() {
         return uiSettings;
+    }
+
+    @ModelAttribute(value = "user", binding = false)
+    public Principal getUiSettings(Principal principal) {
+        return principal;
     }
 
     @GetMapping(path = "/", produces = MediaType.TEXT_HTML_VALUE)

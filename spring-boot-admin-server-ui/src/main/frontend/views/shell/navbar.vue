@@ -33,12 +33,19 @@
             <component :is="view.handle" :applications="applications" :error="error"/>
           </router-link>
 
-          <div class="navbar-item">
-            <form action="logout" method="post">
-              <button class="button is-icon" type="submit" value="logout">
-                Logout&nbsp;<font-awesome-icon icon="sign-out-alt" size="lg"/>
-              </button>
-            </form>
+          <div class="navbar-item has-dropdown is-hoverable" v-if="userName">
+            <a class="navbar-link">
+              <font-awesome-icon icon="user-circle" size="lg"/>&nbsp;<span v-text="userName"/>
+            </a>
+            <div class="navbar-dropdown">
+              <a class="navbar-item">
+                <form action="logout" method="post">
+                  <button class="button is-icon" type="submit" value="logout">
+                    <font-awesome-icon icon="sign-out-alt"/>&nbsp;Log out
+                  </button>
+                </form>
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -50,7 +57,8 @@
   export default {
     data: () => ({
       showMenu: false,
-      brand: '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>'
+      brand: '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>',
+      userName: null
     }),
     props: {
       views: {
@@ -68,8 +76,14 @@
     },
     created() {
       /* global SBA */
-      if (SBA && SBA.uiSettings) {
-        this.brand = SBA.uiSettings.brand || this.brand;
+      if (SBA) {
+        if (SBA.uiSettings) {
+          this.brand = SBA.uiSettings.brand || this.brand;
+        }
+
+        if (SBA.user) {
+          this.userName = SBA.user.name;
+        }
       }
     },
     mounted() {

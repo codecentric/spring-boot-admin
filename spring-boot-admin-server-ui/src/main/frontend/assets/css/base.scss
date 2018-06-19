@@ -53,13 +53,8 @@ body {
   border-color: transparent;
 }
 
-//navbar color fixes
-.navbar-item .button.is-icon {
-  color: $navbar-item-color;
-  &:hover {
-    color: $navbar-item-hover-color;
-  }
-
+.navbar-link::after {
+  border-color: currentColor;
 }
 
 .navbar .badge {
