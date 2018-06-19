@@ -1,0 +1,13 @@
+before_install:
+  # Install the latest versions of Node.js and npm. This prevents
+  # `CERT_UNTRUSTED` errors that happen when using the ancient versions
+  # JitPack provides by default.
+  - curl -f -o - https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
+  - . "${HOME}/.nvm/nvm.sh"
+  - nvm install --latest-npm
+  # Make sure `groupdId`s inside `dependencyManagement` sections are also
+  # updated. Drop this once https://github.com/jitpack/jitpack.io/issues/2886
+  # is resolved.
+  - find . -name pom.xml | xargs sed -i "s,\(<groupId>\)de.codecentric\(</groupId>\),\1${GROUP}.${ARTIFACT}\2,g"
+install:
+  - ./mvnw -B clean install -DskipTests -Drevision="${GIT_COMMIT}"
