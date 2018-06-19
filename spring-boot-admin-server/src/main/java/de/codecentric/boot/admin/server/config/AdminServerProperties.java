@@ -58,34 +58,6 @@ public class AdminServerProperties {
         this.contextPath = PathUtils.normalizePath(contextPath);
     }
 
-    public String getContextPath() {
-        return contextPath;
-    }
-
-    public MonitorProperties getMonitor() {
-        return monitor;
-    }
-
-    public String[] getMetadataKeysToSanitize() {
-        return metadataKeysToSanitize;
-    }
-
-    public void setMetadataKeysToSanitize(String[] metadataKeysToSanitize) {
-        this.metadataKeysToSanitize = metadataKeysToSanitize;
-    }
-
-    public String[] getProbedEndpoints() {
-        return probedEndpoints;
-    }
-
-    public void setProbedEndpoints(String[] probedEndpoints) {
-        this.probedEndpoints = probedEndpoints;
-    }
-
-    public InstanceProxyProperties getInstanceProxy() {
-        return instanceProxy;
-    }
-
     @lombok.Data
     public static class MonitorProperties {
         /**
@@ -121,13 +93,5 @@ public class AdminServerProperties {
          * Headers not to be forwarded when making requests to clients.
          */
         private Set<String> ignoredHeaders = new HashSet<>(asList("Cookie", "Set-Cookie", "Authorization"));
-
-        public Set<String> getIgnoredHeaders() {
-            return ignoredHeaders;
-        }
-
-        public void setIgnoredHeaders(Set<String> ignoredHeaders) {
-            this.ignoredHeaders = ignoredHeaders;
-        }
     }
 }

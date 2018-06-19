@@ -61,7 +61,7 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
     private static ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
     };
     @ClassRule
-    public static WireMockClassRule wireMock = new WireMockClassRule(
+    public static final WireMockClassRule wireMock = new WireMockClassRule(
         options().dynamicPort().extensions(new ConnectionCloseExtension()));
     private static WebTestClient client;
     private static String instanceId;

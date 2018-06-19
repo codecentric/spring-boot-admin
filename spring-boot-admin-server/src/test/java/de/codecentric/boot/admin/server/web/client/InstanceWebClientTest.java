@@ -54,7 +54,7 @@ import static org.springframework.http.HttpHeaders.EMPTY;
 
 public class InstanceWebClientTest {
     @ClassRule
-    public static WireMockClassRule wireMockClass = new WireMockClassRule(Options.DYNAMIC_PORT);
+    public static final WireMockClassRule wireMockClass = new WireMockClassRule(Options.DYNAMIC_PORT);
     @Rule
     public WireMockClassRule wireMock = wireMockClass;
 

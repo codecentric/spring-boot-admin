@@ -104,9 +104,7 @@ public class FilteringNotifier extends AbstractEventNotifier {
     }
 
     public Map<String, NotificationFilter> getNotificationFilters() {
-        synchronized (filters) {
-            return Collections.unmodifiableMap(new HashMap<>(filters));
-        }
+        return Collections.unmodifiableMap(new HashMap<>(filters));
     }
 
     public void setCleanupInterval(Duration cleanupInterval) {

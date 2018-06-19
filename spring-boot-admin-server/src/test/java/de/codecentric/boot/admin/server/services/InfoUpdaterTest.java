@@ -46,7 +46,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 public class InfoUpdaterTest {
     @ClassRule
-    public static WireMockClassRule wireMockClassRule = new WireMockClassRule(Options.DYNAMIC_PORT);
+    public static final WireMockClassRule wireMockClassRule = new WireMockClassRule(Options.DYNAMIC_PORT);
 
     @Rule
     public WireMockClassRule wireMock = wireMockClassRule;

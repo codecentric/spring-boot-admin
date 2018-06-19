@@ -26,6 +26,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Before;
@@ -44,11 +45,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class LetsChatNotifierTest {
-    private final String room = "text_room";
-    private final String token = "text_token";
-    private final String user = "api_user";
-    private final String host = "http://localhost";
-    private final Instance instance = Instance.create(InstanceId.of("-id-"))
+    private static final String room = "text_room";
+    private static final String token = "text_token";
+    private static final String user = "api_user";
+    private static final String host = "http://localhost";
+    private static final Instance instance = Instance.create(InstanceId.of("-id-"))
                                               .register(Registration.create("App", "http://health").build());
     private LetsChatNotifier notifier;
     private RestTemplate restTemplate;
@@ -103,7 +104,7 @@ public class LetsChatNotifierTest {
     private HttpEntity<?> expectedMessage(String message) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        String auth = Base64Utils.encodeToString(String.format("%s:%s", token, user).getBytes());
+        String auth = Base64Utils.encodeToString(String.format("%s:%s", token, user).getBytes(StandardCharsets.UTF_8));
         httpHeaders.add(HttpHeaders.AUTHORIZATION, String.format("Basic %s", auth));
         Map<String, Object> messageJson = new HashMap<>();
         messageJson.put("text", message);

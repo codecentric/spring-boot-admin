@@ -51,7 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class StatusUpdaterTest {
     @ClassRule
-    public static WireMockClassRule wireMockClass = new WireMockClassRule(Options.DYNAMIC_PORT);
+    public static final WireMockClassRule wireMockClass = new WireMockClassRule(Options.DYNAMIC_PORT);
     @Rule
     public WireMockClassRule wireMock = wireMockClass;
 
