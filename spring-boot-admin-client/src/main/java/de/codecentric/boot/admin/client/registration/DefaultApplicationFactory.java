@@ -95,7 +95,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
         }
 
         if (getLocalServerPort() == null) {
-            throw new IllegalStateException("couldn't determine local port. Please supply service-base-url.");
+            throw new IllegalStateException("couldn't determine local port. Please set spring.boot.admin.client.instance.service-base-url.");
         }
 
         return UriComponentsBuilder.newInstance()
