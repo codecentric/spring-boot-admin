@@ -14,36 +14,55 @@
  * limitations under the License.
  */
 
-import fontawesome from '@fortawesome/fontawesome';
-import faGithub from '@fortawesome/fontawesome-free-brands/faGithub';
-import faGitter from '@fortawesome/fontawesome-free-brands/faGitter';
-import faStackOverflow from '@fortawesome/fontawesome-free-brands/faStackOverflow';
-import farTimesCircle from '@fortawesome/fontawesome-free-regular/faTimesCircle';
-import faBan from '@fortawesome/fontawesome-free-solid/faBan';
-import faBell from '@fortawesome/fontawesome-free-solid/faBell';
-import faBellSlash from '@fortawesome/fontawesome-free-solid/faBellSlash';
-import faBook from '@fortawesome/fontawesome-free-solid/faBook';
-import faCheck from '@fortawesome/fontawesome-free-solid/faCheck';
-import faDownload from '@fortawesome/fontawesome-free-solid/faDownload';
-import faExclamation from '@fortawesome/fontawesome-free-solid/faExclamation';
-import faExclamationTriangle from '@fortawesome/fontawesome-free-solid/faExclamationTriangle';
-import faMinusCircle from '@fortawesome/fontawesome-free-solid/faMinusCircle';
-import faPencilAlt from '@fortawesome/fontawesome-free-solid/faPencilAlt';
-import faQuestionCircle from '@fortawesome/fontawesome-free-solid/faQuestionCircle';
-import faSignOutAlt from '@fortawesome/fontawesome-free-solid/faSignOutAlt';
-import faStepBackward from '@fortawesome/fontawesome-free-solid/faStepBackward';
-import faStepForward from '@fortawesome/fontawesome-free-solid/faStepForward';
-import faTimesCircle from '@fortawesome/fontawesome-free-solid/faTimesCircle';
-import faTrash from '@fortawesome/fontawesome-free-solid/faTrash';
-import faUserCircle from '@fortawesome/fontawesome-free-solid/faUserCircle';
-import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+import {library} from '@fortawesome/fontawesome-svg-core';
+import {faGithub} from '@fortawesome/free-brands-svg-icons/faGithub';
+import {faGitter} from '@fortawesome/free-brands-svg-icons/faGitter';
+import {faStackOverflow} from '@fortawesome/free-brands-svg-icons/faStackOverflow';
+import {faTimesCircle as farTimesCircle} from '@fortawesome/free-regular-svg-icons/faTimesCircle';
+import {faBan} from '@fortawesome/free-solid-svg-icons/faBan';
+import {faBell} from '@fortawesome/free-solid-svg-icons/faBell';
+import {faBellSlash} from '@fortawesome/free-solid-svg-icons/faBellSlash';
+import {faBook} from '@fortawesome/free-solid-svg-icons/faBook';
+import {faCheck} from '@fortawesome/free-solid-svg-icons/faCheck';
+import {faDownload} from '@fortawesome/free-solid-svg-icons/faDownload';
+import {faExclamation} from '@fortawesome/free-solid-svg-icons/faExclamation';
+import {faExclamationTriangle} from '@fortawesome/free-solid-svg-icons/faExclamationTriangle';
+import {faMinusCircle} from '@fortawesome/free-solid-svg-icons/faMinusCircle';
+import {faPencilAlt} from '@fortawesome/free-solid-svg-icons/faPencilAlt';
+import {faQuestionCircle} from '@fortawesome/free-solid-svg-icons/faQuestionCircle';
+import {faSignOutAlt} from '@fortawesome/free-solid-svg-icons/faSignOutAlt';
+import {faStepBackward} from '@fortawesome/free-solid-svg-icons/faStepBackward';
+import {faStepForward} from '@fortawesome/free-solid-svg-icons/faStepForward';
+import {faTimesCircle} from '@fortawesome/free-solid-svg-icons/faTimesCircle';
+import {faTrash} from '@fortawesome/free-solid-svg-icons/faTrash';
+import {faUserCircle} from '@fortawesome/free-solid-svg-icons/faUserCircle';
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
 
+library.add(
 //solid
-fontawesome.library.add(faTrash, faDownload, faStepForward, faStepBackward, faCheck, faQuestionCircle, faBan, faTimesCircle, faMinusCircle, faExclamation,
-  faBook, faSignOutAlt, faExclamationTriangle, faPencilAlt, faBell, faBellSlash, faUserCircle);
-//regular
-fontawesome.library.add(farTimesCircle);
+  faTrash,
+  faDownload,
+  faStepForward,
+  faStepBackward,
+  faCheck,
+  faQuestionCircle,
+  faBan,
+  faTimesCircle,
+  faMinusCircle,
+  faExclamation,
+  faBook,
+  faSignOutAlt,
+  faExclamationTriangle,
+  faPencilAlt,
+  faBell,
+  faBellSlash,
+  faUserCircle,
+//regular,
+  farTimesCircle,
 //brands
-fontawesome.library.add(faGithub, faStackOverflow, faGitter);
+  faGithub,
+  faStackOverflow,
+  faGitter
+);
 
 export default FontAwesomeIcon;
