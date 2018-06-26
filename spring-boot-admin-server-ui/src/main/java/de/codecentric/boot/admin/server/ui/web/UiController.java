@@ -25,6 +25,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonMap;
+
 @AdminController
 public class UiController {
     private final String adminContextPath;
@@ -48,8 +51,11 @@ public class UiController {
     }
 
     @ModelAttribute(value = "user", binding = false)
-    public Principal getUiSettings(Principal principal) {
-        return principal;
+    public Map<String, Object> getUiSettings(Principal principal) {
+        if (principal != null) {
+            return singletonMap("name", principal.getName());
+        }
+        return emptyMap();
     }
 
     @GetMapping(path = "/", produces = MediaType.TEXT_HTML_VALUE)
