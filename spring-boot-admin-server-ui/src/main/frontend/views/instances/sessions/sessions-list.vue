@@ -40,7 +40,7 @@
     <tr v-for="session in sessions" :key="session.id">
       <td>
         <router-link v-text="session.id"
-                     :to="{ name: 'instance/sessions', params: { 'instanceId' : instance.id}, query: { sessionId : session.id } }"/>
+                     :to="{ name: 'instances/sessions', params: { 'instanceId' : instance.id}, query: { sessionId : session.id } }"/>
       </td>
       <td v-text="session.creationTime.format('L HH:mm:ss.SSS')"/>
       <td v-text="session.lastAccessedTime.format('L HH:mm:ss.SSS')"/>

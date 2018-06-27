@@ -199,6 +199,18 @@
     },
     beforeDestroy() {
       window.removeEventListener('scroll', this.onScroll);
+    },
+    install({viewRegistry}) {
+      viewRegistry.addView({
+        name: 'instances/loggers',
+        parent: 'instances',
+        path: 'loggers',
+        component: this,
+        props: true,
+        handle: 'Loggers',
+        order: 300,
+        isEnabled: ({instance}) => instance.hasEndpoint('loggers')
+      });
     }
   }
 </script>

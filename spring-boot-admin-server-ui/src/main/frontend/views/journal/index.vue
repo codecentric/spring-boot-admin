@@ -81,7 +81,7 @@
     }
   }
 
-  const component = {
+  export default {
     mixins: [subscribing],
     data: () => ({
       events: [],
@@ -126,15 +126,15 @@
         console.warn('Fetching events failed:', error);
         this.error = error;
       }
+    },
+    install({viewRegistry}) {
+      viewRegistry.addView({
+        path: '/journal',
+        name: 'journal',
+        handle: 'Journal',
+        order: 100,
+        component: this
+      });
     }
-  };
-
-  export default component;
-  export const view = {
-    path: '/journal',
-    name: 'journal',
-    handle: 'Journal',
-    order: 100,
-    component: component
   };
 </script>

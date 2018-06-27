@@ -125,6 +125,18 @@
             }
           });
       }
+    },
+    install({viewRegistry}) {
+      viewRegistry.addView({
+        name: 'instances/threaddump',
+        parent: 'instances',
+        path: 'threaddump',
+        component: this,
+        props: true,
+        handle: 'Threads',
+        order: 400,
+        isEnabled: ({instance}) => instance.hasEndpoint('threaddump')
+      });
     }
   }
 </script>

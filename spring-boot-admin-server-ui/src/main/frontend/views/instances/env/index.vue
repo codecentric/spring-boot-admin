@@ -132,6 +132,18 @@
           this.hasEnvManagerSupport = false;
         }
       }
+    },
+    install({viewRegistry}) {
+      viewRegistry.addView({
+        name: 'instances/env',
+        parent: 'instances',
+        path: 'env',
+        component: this,
+        props: true,
+        handle: 'Environment',
+        order: 100,
+        isEnabled: ({instance}) => instance.hasEndpoint('env')
+      });
     }
   }
 </script>

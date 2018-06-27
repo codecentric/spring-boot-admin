@@ -17,7 +17,7 @@
 <template>
   <div id="app">
     <sba-navbar :views="mainViews" :applications="applications" :error="error"/>
-    <router-view :views="subViews" :applications="applications" :error="error"/>
+    <router-view :views="childViews" :applications="applications" :error="error"/>
   </div>
 </template>
 
@@ -42,14 +42,14 @@
     components: {sbaNavbar},
     computed: {
       mainViews() {
-        return this.views.filter(view => !view.name.includes('/'))
+        return this.views.filter(view => !view.parent);
       },
       activeMainViewName() {
-        const idx = this.$route.name.indexOf('/');
-        return idx < 0 ? this.$route.name : this.$route.name.substr(0, idx);
+        const currentView = this.$route.meta.view;
+        return currentView.parent || currentView.name;
       },
-      subViews() {
-        return this.views.filter(view => view.name.includes(this.activeMainViewName))
+      childViews() {
+        return this.views.filter(view => view.parent === this.activeMainViewName);
       }
     }
   }

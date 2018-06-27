@@ -89,12 +89,12 @@
 </template>
 
 <script>
+  import sticksBelow from '@/directives/sticks-below';
   import Instance from '@/services/instance';
   import _ from 'lodash';
   import {directive as onClickaway} from 'vue-clickaway';
   import mBeanAttributes from './m-bean-attributes';
   import mBeanOperations from './m-bean-operations';
-  import sticksBelow from '@/directives/sticks-below';
 
   const getOperationName = (name, descriptor) => {
     const params = descriptor.args.map(arg => arg.type).join(',');
@@ -171,7 +171,7 @@
       selected() {
         if (!_.isEqual(this.selected, !this.$route.query)) {
           this.$router.replace({
-            name: 'instance/jolokia',
+            name: 'instances/jolokia',
             query: this.selected
           });
         }
@@ -220,6 +220,18 @@
           view: view || (mBean ? (mBean.attr ? 'attributes' : (mBean.op ? 'operations' : null)) : null)
         };
       }
+    },
+    install({viewRegistry}) {
+      viewRegistry.addView({
+        name: 'instances/jolokia',
+        parent: 'instances',
+        path: 'jolokia',
+        component: this,
+        props: true,
+        handle: 'JMX',
+        order: 350,
+        isEnabled: ({instance}) => instance.hasEndpoint('jolokia')
+      });
     }
   }
 </script>

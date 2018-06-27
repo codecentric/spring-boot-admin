@@ -34,7 +34,7 @@
 <script>
   import hexMesh from './hex-mesh';
 
-  const component = {
+  export default {
     components: {hexMesh},
     props: {
       applications: {
@@ -70,21 +70,21 @@
       },
       select(application) {
         if (application.instances.length === 1) {
-          this.$router.push({name: 'instance/details', params: {instanceId: application.instances[0].id}});
+          this.$router.push({name: 'instances/details', params: {instanceId: application.instances[0].id}});
         } else {
           this.$router.push({name: 'applications', params: {selected: application.name}});
         }
       },
+    },
+    install({viewRegistry}) {
+      viewRegistry.addView({
+        path: '/wallboard',
+        name: 'wallboard',
+        handle: 'Wallboard',
+        order: -100,
+        component: this
+      });
     }
-  };
-
-  export default component;
-  export const view = {
-    path: '/wallboard',
-    name: 'wallboard',
-    handle: 'Wallboard',
-    order: -100,
-    component: component
   };
 </script>
 

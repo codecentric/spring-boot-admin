@@ -74,6 +74,14 @@
         }
         return 'is-light';
       }
+    },
+    install({viewRegistry}) {
+      viewRegistry.addView({
+        name: 'instances',
+        path: '/instances/:instanceId',
+        component: this,
+        props: true
+      });
     }
   }
 </script>

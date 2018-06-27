@@ -145,6 +145,17 @@
           this.hasLoaded = true;
         }
       }
+    },
+    install({viewRegistry}) {
+      viewRegistry.addView({
+        name: 'instances/details',
+        parent: 'instances',
+        path: '',
+        component: this,
+        props: true,
+        handle: 'Details',
+        order: 0
+      });
     }
   }
 </script>

@@ -19,7 +19,7 @@
     <div>
       <div class="message is-warning">
         <div class="message-body">
-          A heap dump may contain <strong>sensitive data</strong>.<br>Please handle with care.
+          A heap dump may contain <strong>sensitive data</strong>. Please handle with care.
         </div>
       </div>
       <div class="message is-warning">
@@ -43,6 +43,18 @@
         type: Instance,
         required: true
       }
+    },
+    install({viewRegistry}) {
+      viewRegistry.addView({
+        name: 'instances/heapdump',
+        parent: 'instances',
+        path: 'heapdump',
+        component: this,
+        props: true,
+        handle: 'Heap Dump',
+        order: 800,
+        isEnabled: ({instance}) => instance.hasEndpoint('heapdump')
+      });
     }
   }
 </script>

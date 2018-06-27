@@ -38,13 +38,13 @@
           </td>
           <td v-if="hasSessionEndpoint && event.principal">
             <router-link v-text="event.principal"
-                         :to="{ name: 'instance/sessions', params: { 'instanceId' : instance.id }, query: { username : event.principal} }"/>
+                         :to="{ name: 'instances/sessions', params: { 'instanceId' : instance.id }, query: { username : event.principal} }"/>
           </td>
           <td v-else v-text="event.principal"/>
           <td v-text="event.remoteAddress"/>
           <td v-if="hasSessionEndpoint && event.sessionId">
             <router-link v-text="event.sessionId"
-                         :to="{ name: 'instance/sessions', params: { 'instanceId' : instance.id }, query: { sessionId : event.sessionId } }"/>
+                         :to="{ name: 'instances/sessions', params: { 'instanceId' : instance.id }, query: { sessionId : event.sessionId } }"/>
           </td>
           <td v-else v-text="event.sessionId"/>
         </tr>

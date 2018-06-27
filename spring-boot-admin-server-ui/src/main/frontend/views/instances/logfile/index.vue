@@ -122,6 +122,18 @@
       scrollToBottom() {
         document.scrollingElement.scrollTop = document.scrollingElement.scrollHeight;
       }
+    },
+    install({viewRegistry}) {
+      viewRegistry.addView({
+        name: 'instances/logfile',
+        parent: 'instances',
+        path: 'logfile',
+        component: this,
+        props: true,
+        handle: 'Logfile',
+        order: 200,
+        isEnabled: ({instance}) => instance.hasEndpoint('logfile')
+      });
     }
   }
 </script>

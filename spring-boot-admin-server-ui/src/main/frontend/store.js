@@ -60,7 +60,7 @@ export default class {
     }
   }
 
-  dispatchEvent(type, ...args) {
+  _dispatchEvent(type, ...args) {
     if (!(type in this._listeners)) {
       return;
     }
@@ -74,9 +74,9 @@ export default class {
     const listing = Observable.defer(() => Application.list()).concatMap(message => message.data);
     const stream = Application.getStream().map(message => message.data);
     this.subscription = listing.concat(stream)
-      .doFirst(() => this.dispatchEvent('connected'))
+      .doFirst(() => this._dispatchEvent('connected'))
       .retryWhen(errors => errors
-        .do(error => this.dispatchEvent('error', error))
+        .do(error => this._dispatchEvent('error', error))
         .delay(5000)
       ).subscribe({
         next: application => {
@@ -85,14 +85,14 @@ export default class {
             const oldApplication = this.applications[idx];
             if (application.instances.length > 0) {
               this.applications.splice(idx, 1, application);
-              this.dispatchEvent('updated', application, oldApplication);
+              this._dispatchEvent('updated', application, oldApplication);
             } else {
               this.applications.splice(idx, 1);
-              this.dispatchEvent('removed', oldApplication);
+              this._dispatchEvent('removed', oldApplication);
             }
           } else {
             this.applications.push(application);
-            this.dispatchEvent('added', application);
+            this._dispatchEvent('added', application);
           }
         }
       });

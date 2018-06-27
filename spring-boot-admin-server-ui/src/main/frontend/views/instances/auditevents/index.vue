@@ -121,6 +121,18 @@
       addEvents(events) {
         this.events = _.uniqBy(this.events ? events.concat(this.events) : events, event => event.key);
       }
+    },
+    install({viewRegistry}) {
+      viewRegistry.addView({
+        name: 'instances/auditevents',
+        parent: 'instances',
+        path: 'auditevents',
+        component: this,
+        props: true,
+        handle: 'Audit Log',
+        order: 600,
+        isEnabled: ({instance}) => instance.hasEndpoint('auditevents')
+      });
     }
   }
 </script>

@@ -25,11 +25,13 @@
         </p>
         <p>
           To monitor applications, they must be registered at this server. This is either done by including the
-          <a href="https://codecentric.github.io/spring-boot-admin/@project.version@/#register-clients-via-spring-boot-admin">
+          <a
+            href="https://codecentric.github.io/spring-boot-admin/@project.version@/#register-clients-via-spring-boot-admin">
             Spring Boot Admin Client
           </a>
           or using a
-          <a href="https://codecentric.github.io/spring-boot-admin/@project.version@/#discover-clients-via-spring-cloud-discovery">
+          <a
+            href="https://codecentric.github.io/spring-boot-admin/@project.version@/#discover-clients-via-spring-cloud-discovery">
             Spring Cloud Discovery Client
           </a> implementation.
         </p>
@@ -76,20 +78,20 @@
 </template>
 
 <script>
-  const component = {
+  export default {
     data: () => ({
       // eslint-disable-next-line no-undef
       version: __PROJECT_VERSION__
-    })
-  };
-
-  export default component;
-  export const view = {
-    path: '/about',
-    name: 'about',
-    handle: 'About',
-    order: 200,
-    component: component
+    }),
+    install({viewRegistry}) {
+      viewRegistry.addView({
+        path: '/about',
+        name: 'about',
+        handle: 'About',
+        order: 200,
+        component: this
+      });
+    }
   };
 </script>
 

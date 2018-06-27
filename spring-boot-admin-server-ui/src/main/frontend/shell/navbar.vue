@@ -29,7 +29,7 @@
       <div class="navbar-menu" :class="{'is-active' : showMenu}">
         <div class="navbar-start"/>
         <div class="navbar-end">
-          <router-link class="navbar-item" v-for="view in views" :to="{name: view.name}" :key="view.name">
+          <router-link class="navbar-item" v-for="view in enabledViews" :to="{name: view.name}" :key="view.name">
             <component :is="view.handle" :applications="applications" :error="error"/>
           </router-link>
 
@@ -54,6 +54,8 @@
 </template>
 
 <script>
+  import {compareBy} from '@/utils/collections';
+
   export default {
     data: () => ({
       showMenu: false,
@@ -72,6 +74,13 @@
       error: {
         type: null,
         default: null
+      }
+    },
+    computed: {
+      enabledViews() {
+        return [...this.views].filter(
+          view => view.handle && (typeof view.isEnabled === 'undefined' || view.isEnabled())
+        ).sort(compareBy(v => v.order));
       }
     },
     created() {

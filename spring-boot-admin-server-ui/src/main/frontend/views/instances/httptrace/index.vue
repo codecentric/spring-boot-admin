@@ -231,6 +231,18 @@
         }
         return filterFn;
       }
+    },
+    install({viewRegistry}) {
+      viewRegistry.addView({
+        name: 'instances/httptrace',
+        parent: 'instances',
+        path: 'httptrace',
+        component: this,
+        props: true,
+        handle: 'Http Traces',
+        order: 500,
+        isEnabled: ({instance}) => instance.hasEndpoint('httptrace')
+      });
     }
   }
 </script>

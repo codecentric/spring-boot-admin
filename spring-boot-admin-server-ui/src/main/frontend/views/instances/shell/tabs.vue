@@ -28,7 +28,7 @@
 
         <nav class="instance-tabs__tabs tabs is-boxed">
           <ul>
-            <li v-if="instance" v-for="view in activeViews" :key="view.name"
+            <li v-if="instance" v-for="view in enabledViews" :key="view.name"
                 :class="{'is-active' : $route.name === view.name}">
               <a v-if="view.href" :href="view.href({ 'instanceId' : instance.id })"
                  target="_blank">
@@ -49,6 +49,7 @@
 <script>
   import Application from '@/services/application';
   import Instance from '@/services/instance';
+  import {compareBy} from '@/utils/collections';
 
   export default {
     props: {
@@ -69,14 +70,14 @@
       isStuck: false
     }),
     computed: {
-      activeViews() {
-        if (!this.instance || !this.views) {
+      enabledViews() {
+        if (!this.instance) {
           return [];
         }
 
-        return this.views.filter(
-          view => typeof view.isActive === 'undefined' || view.isActive({instance: this.instance})
-        );
+        return [...this.views].filter(
+          view => view.handle && (typeof view.isEnabled === 'undefined' || view.isEnabled({instance: this.instance}))
+        ).sort(compareBy(v => v.order));
       }
     },
     methods: {

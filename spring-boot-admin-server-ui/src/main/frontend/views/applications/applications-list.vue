@@ -133,7 +133,7 @@
         }
       },
       showDetails(instance) {
-        this.$router.push({name: 'instance/details', params: {instanceId: instance.id}});
+        this.$router.push({name: 'instances/details', params: {instanceId: instance.id}});
       },
       async scrollIntoView(id, behavior) {
         if (id) {

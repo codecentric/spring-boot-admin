@@ -15,48 +15,36 @@
  */
 
 import '@/assets/css/base.scss';
-import logoDanger from '@/assets/img/favicon-danger.png';
-import logoOk from '@/assets/img/favicon.png';
 import '@/assets/img/icon-spring-boot-admin.svg';
 import moment from 'moment';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import sbaComponents from './components';
+import components from './components';
+import Notifications from './notifications';
+import sbaShell from './shell';
 import Store from './store';
-import FontAwesomeIcon from './utils/fontawesome';
-import Notifications from './utils/notifications';
-import createViews from './views';
-import sbaShell from './views/shell';
+import ViewRegistry from './viewRegistry';
+import views from './views';
 
 moment.locale(window.navigator.language);
 
-Notifications.requestPermissions();
+const applicationStore = new Store();
+const viewRegistry = new ViewRegistry();
 
-const store = new Store();
+Notifications.install({applicationStore});
+views.forEach(view => view.install({
+  viewRegistry,
+  applicationStore
+}));
 
-store.addEventListener('updated', (newVal, oldVal) => {
-  if (newVal.status !== oldVal.status) {
-    Notifications.notify(`${newVal.name} is now ${newVal.status}`, {
-      tag: `${newVal.name}-${newVal.status}`,
-      lang: 'en',
-      body: `was ${oldVal.status}.`,
-      icon: newVal.status === 'UP' ? logoOk : logoDanger,
-      renotify: true,
-      timeout: 10000
-    })
-  }
-});
-
-Vue.component('font-awesome-icon', FontAwesomeIcon);
 Vue.use(VueRouter);
-Vue.use(sbaComponents);
-
-const router = new VueRouter({
-  linkActiveClass: 'is-active'
-});
+Vue.use(components);
 
 new Vue({
-  router,
+  router: new VueRouter({
+    linkActiveClass: 'is-active',
+    routes: viewRegistry.routes
+  }),
   el: '#app',
   render(h) {
     return h(sbaShell, {
@@ -68,8 +56,8 @@ new Vue({
     });
   },
   data: {
-    views: createViews(router),
-    applications: store.applications,
+    views: viewRegistry.views,
+    applications: applicationStore.applications,
     error: null
   },
   methods: {
@@ -82,13 +70,13 @@ new Vue({
     }
   },
   created() {
-    store.addEventListener('connected', this.onConnected);
-    store.addEventListener('error', this.onError);
-    store.start();
+    applicationStore.addEventListener('connected', this.onConnected);
+    applicationStore.addEventListener('error', this.onError);
+    applicationStore.start();
   },
   beforeDestroy() {
-    store.stop();
-    store.removeEventListener('connected', this.onConnected);
-    store.removeEventListener('error', this.onError)
-  },
+    applicationStore.stop();
+    applicationStore.removeEventListener('connected', this.onConnected);
+    applicationStore.removeEventListener('error', this.onError)
+  }
 });

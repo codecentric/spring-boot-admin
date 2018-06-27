@@ -66,7 +66,7 @@
   import applicationsList from './applications-list';
   import handle from './handle';
 
-  const component = {
+  export default {
     props: {
       applications: {
         type: Array,
@@ -104,17 +104,17 @@
         }, 0);
       }
     },
-    methods: {}
-  };
-
-  export default component;
-  export const view = {
-    path: '/applications/:selected?',
-    props: true,
-    name: 'applications',
-    handle: handle,
-    order: 0,
-    component: component
+    install({viewRegistry}) {
+      viewRegistry.addView({
+        path: '/applications/:selected?',
+        props: true,
+        name: 'applications',
+        handle: handle,
+        order: 0,
+        component: this
+      });
+      viewRegistry.addRedirect('/', 'applications');
+    }
   };
 </script>
 

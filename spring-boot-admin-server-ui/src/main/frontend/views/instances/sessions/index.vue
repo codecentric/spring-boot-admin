@@ -139,13 +139,25 @@
           const query = {[this.filter.type]: this.filter.value};
           if (!_.isEqual(query, !this.$route.query)) {
             this.$router.replace({
-              name: 'instance/sessions',
+              name: 'instances/sessions',
               query: query
             });
           }
           this.fetch();
         }
       }
+    },
+    install({viewRegistry}) {
+      viewRegistry.addView({
+        name: 'instances/sessions',
+        parent: 'instances',
+        path: 'sessions',
+        component: this,
+        props: true,
+        handle: 'Sessions',
+        order: 700,
+        isEnabled: ({instance}) => instance.hasEndpoint('sessions')
+      });
     }
   }
 </script>

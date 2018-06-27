@@ -121,6 +121,18 @@
             return 'is-light';
         }
       }
+    },
+    install({viewRegistry}) {
+      viewRegistry.addView({
+        name: 'instances/flyway',
+        parent: 'instances',
+        path: 'flyway',
+        component: this,
+        props: true,
+        handle: 'Flyway',
+        order: 900,
+        isEnabled: ({instance}) => instance.hasEndpoint('flyway')
+      });
     }
   }
 </script>

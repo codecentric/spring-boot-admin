@@ -132,7 +132,7 @@
         deep: true,
         handler() {
           this.$router.replace({
-            name: 'instance/metrics',
+            name: 'instances/metrics',
             query: stringify(this.metrics)
           })
         }
@@ -211,6 +211,18 @@
           this.stateFetchingTags = 'failed';
         }
       }
+    },
+    install({viewRegistry}) {
+      viewRegistry.addView({
+        name: 'instances/metrics',
+        parent: 'instances',
+        path: 'metrics',
+        component: this,
+        props: true,
+        handle: 'Metrics',
+        order: 50,
+        isEnabled: ({instance}) => instance.hasEndpoint('metrics')
+      });
     }
   }
 </script>
