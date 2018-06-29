@@ -21,9 +21,11 @@ import {Observable} from '@/utils/rxjs'
 import uri from '@/utils/uri';
 import _ from 'lodash';
 
-const actuatorMimeTypes = ['application/vnd.spring-boot.actuator.v2+json',
+const actuatorMimeTypes = [
+  'application/vnd.spring-boot.actuator.v2+json',
   'application/vnd.spring-boot.actuator.v1+json',
-  'application/json'];
+  'application/json'
+];
 
 class Instance {
   constructor(id) {

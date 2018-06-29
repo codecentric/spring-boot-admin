@@ -38,6 +38,10 @@
                     </figure>
                     <h1 class="title has-text-primary">Spring Boot Admin</h1>
                     <form method="post">
+                        <input type="hidden"
+                               th:if="${_csrf}"
+                               th:name="${_csrf.parameterName}"
+                               th:value="${_csrf.token}"/>
                         <div class="field">
                             <p class="is-medium has-text-danger" th:unless="${param.error == null}">
                                 Invalid username or password

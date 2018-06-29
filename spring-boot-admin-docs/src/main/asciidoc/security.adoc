@@ -11,6 +11,13 @@ A Spring Security configuration could look like this:
 ----
 include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/SpringBootAdminApplication.java[tags=configuration-spring-security]
 ----
+<1> Grants public access to all static assets and the login page.
+<2> Every other request must be authenticated.
+<3> Configures login and logout.
+<4> Enables HTTP-Basic support. This is needed for the Spring Boot Admin Client to register.
+<5> Enables CSRF-Protection using Cookies
+<6> Disables CRSF-Protection the endpoint the Spring Boot Admin Client uses to register.
+<7> Disables CRSF-Protection for the actuator endpoints.
 
 For a complete sample look at https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-servlet/[spring-boot-admin-sample-servlet.
 
@@ -50,3 +57,16 @@ WARNING: You should configure HTTPS for your SBA Server or (service registry) wh
 WARNING: When using Spring Cloud Discovery, you must be aware that anybody who can query your service registry can obtain the credentials.
 
 TIP: When using this approach the SBA Server decides whether or not the user can access the registered applications. There are more complex solutions possible (using OAuth2) to let the clients decide if the user can access the endpoints. For that please have a look at the samples in https://github.com/joshiste/spring-boot-admin-samples[joshiste/spring-boot-admin-samples^].
+
+==== CSRF on Actuator Endpoints ====
+
+Some of the actuator endpoints (e.g. `/loggers`) support POST requests. When using Spring Security you need to ignore the actuator endpoints for CSRF-Protection as the Spring Boot Admin Server currently lacks support.
+
+[source,java]
+----
+@Override
+protected void configure(HttpSecurity http) throws Exception {
+    http.csrf()
+        .ignoringAntMatchers("/actuator/**");
+}
+----
