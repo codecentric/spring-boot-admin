@@ -16,16 +16,20 @@
 
 import axios from 'axios';
 
-axios.interceptors.request.use(config => {
+export const addRequestedWithHeader = config => {
   config.headers['X-Requested-With'] = 'XMLHttpRequest';
   return config;
-});
+};
 
-axios.interceptors.response.use(response => response, error => {
-  if (error.response && error.response.status === 401) {
-    window.location = `login?redirectTo=${encodeURIComponent(window.location.href)}`;
+const isInstanceActuatorRequest = url => url.match(/^instances[/][^/]+[/]actuator([/].*)?$/);
+
+export const redirectOn401 = error => {
+  if (error.response && error.response.status === 401 && !isInstanceActuatorRequest(error.config.url)) {
+    window.location.assign(`login?redirectTo=${encodeURIComponent(window.location.href)}`);
   }
   return Promise.reject(error);
-});
+};
 
+axios.interceptors.request.use(addRequestedWithHeader);
+axios.interceptors.response.use(response => response, redirectOn401);
 export default axios;

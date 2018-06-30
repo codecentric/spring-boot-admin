@@ -86,6 +86,7 @@
     "not ie < 11"
   ],
   "jest": {
+    "testURL": "http://example.com",
     "testRegex": "spec.js$",
     "moduleFileExtensions": [
       "js",
