@@ -17,7 +17,7 @@
 import axios from '@/utils/axios';
 import waitForPolyfill from '@/utils/eventsource-polyfill';
 import logtail from '@/utils/logtail';
-import {Observable} from '@/utils/rxjs'
+import {concat, from, ignoreElements, Observable} from '@/utils/rxjs';
 import uri from '@/utils/uri';
 import _ from 'lodash';
 
@@ -222,17 +222,20 @@ class Instance {
   }
 
   static getEventStream() {
-    return Observable.from(waitForPolyfill()).ignoreElements().concat(Observable.create(observer => {
-      const eventSource = new EventSource('instances/events');
-      eventSource.onmessage = message => observer.next({
-        ...message,
-        data: JSON.parse(message.data)
-      });
-      eventSource.onerror = err => observer.error(err);
-      return () => {
-        eventSource.close();
-      };
-    }));
+    return concat(
+      from(waitForPolyfill()).pipe(ignoreElements()),
+      Observable.create(observer => {
+        const eventSource = new EventSource('instances/events');
+        eventSource.onmessage = message => observer.next({
+          ...message,
+          data: JSON.parse(message.data)
+        });
+        eventSource.onerror = err => observer.error(err);
+        return () => {
+          eventSource.close();
+        };
+      })
+    );
   }
 
   static async get(id) {

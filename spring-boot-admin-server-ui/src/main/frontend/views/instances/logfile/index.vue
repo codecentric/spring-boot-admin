@@ -45,7 +45,7 @@
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
   import linkify from '@/utils/linkify';
-  import {animationFrame, Observable} from '@/utils/rxjs';
+  import {animationFrameScheduler, concatAll, concatMap, map, of, tap} from '@/utils/rxjs';
   import AnsiUp from 'ansi_up';
   import _ from 'lodash';
   import prettyBytes from 'pretty-bytes';
@@ -80,10 +80,12 @@
         const vm = this;
         vm.error = null;
         return this.instance.streamLogfile(1000)
-          .do(chunk => vm.skippedBytes = vm.skippedBytes || chunk.skipped)
-          .concatMap(chunk => _.chunk(chunk.addendum.split(/\r?\n/), 250))
-          .map(lines => Observable.of(lines, animationFrame))
-          .concatAll()
+          .pipe(
+            tap(chunk => vm.skippedBytes = vm.skippedBytes || chunk.skipped),
+            concatMap(chunk => _.chunk(chunk.addendum.split(/\r?\n/), 250)),
+            map(lines => of(lines, animationFrameScheduler)),
+            concatAll()
+          )
           .subscribe({
             next: lines => {
               vm.hasLoaded = true;

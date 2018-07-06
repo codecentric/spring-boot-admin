@@ -14,66 +14,67 @@
  * limitations under the License.
  */
 
-import 'rxjs/add/observable/defer';
-import 'rxjs/add/observable/empty';
-import 'rxjs/add/observable/from';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/observable/timer';
-import 'rxjs/add/operator/concat';
-import 'rxjs/add/operator/concatAll';
-import 'rxjs/add/operator/concatMap';
-import 'rxjs/add/operator/delay';
-import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/ignoreElements';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/merge';
-import 'rxjs/add/operator/retryWhen';
+import {defer} from 'rxjs/internal/observable/defer';
+import {tap} from 'rxjs/internal/operators/tap';
 
-import {Observable} from 'rxjs/Observable';
-import {animationFrame} from 'rxjs/scheduler/animationFrame';
-import {Subject} from 'rxjs/Subject';
+export {throwError} from 'rxjs/internal/observable/throwError';
+export {of} from 'rxjs/internal/observable/of';
+export {defer} from 'rxjs/internal/observable/defer';
+export {concat} from 'rxjs/internal/observable/concat';
+export {EMPTY} from 'rxjs/internal/observable/empty';
+export {from} from 'rxjs/internal/observable/from';
+export {timer} from 'rxjs/internal/observable/timer';
+export {Observable} from 'rxjs/internal/Observable';
+export {Subject} from 'rxjs/internal/Subject';
+export {animationFrame as animationFrameScheduler} from 'rxjs/internal/scheduler/animationFrame';
 
-Observable.prototype.doOnSubscribe = function (onSubscribe) {
-  let source = this;
-  return Observable.defer(() => {
-    onSubscribe();
-    return source;
+export {concatMap} from 'rxjs/internal/operators/concatMap';
+export {delay} from 'rxjs/internal/operators/delay';
+export {merge} from 'rxjs/internal/operators/merge';
+export {map} from 'rxjs/internal/operators/map';
+export {retryWhen} from 'rxjs/internal/operators/retryWhen';
+export {tap} from 'rxjs/internal/operators/tap';
+export {filter} from 'rxjs/internal/operators/filter';
+export {concatAll} from 'rxjs/internal/operators/concatAll';
+export {ignoreElements} from 'rxjs/internal/operators/ignoreElements';
+
+
+
+export const doOnSubscribe = cb => source =>
+  defer(() => {
+    cb();
+    return source
   });
-};
 
-Observable.prototype.doFirst = function (doFirst) {
-  let source = this;
-  let triggered = false;
-  return Observable.defer(() => {
+export const doFirst = cb => source => {
+  let triggered;
+  return defer(() => {
     triggered = false;
     return source;
-  }).do(n => {
-    if (!triggered) {
-      triggered = true;
-      doFirst(n);
-    }
-  });
+  }).pipe(
+    tap( v => {
+      if (!triggered) {
+        triggered = true;
+        cb(v);
+      }
+    })
+  );
 };
 
-Observable.prototype.listen = function (callbackFn) {
+export const listen = (cb, execDelay = 150) => source => {
   let handle = null;
-  return this.doOnSubscribe(() => handle = setTimeout(() => callbackFn('executing'), 150))
-    .do({
+  return source.pipe(
+    doOnSubscribe(() => handle = setTimeout(() => cb('executing'), execDelay)),
+    tap({
       complete: () => {
         handle && clearTimeout(handle);
-        callbackFn('completed');
+        cb('completed');
       },
       error: (error) => {
         console.warn('Operation failed:', error);
         handle && clearTimeout(handle);
-        callbackFn('failed');
+        cb('failed');
       }
-    });
-};
-
-export {
-  Observable,
-  Subject,
-  animationFrame
+    })
+  )
 };

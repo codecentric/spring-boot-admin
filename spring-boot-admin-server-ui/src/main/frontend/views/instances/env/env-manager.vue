@@ -91,7 +91,7 @@
 
 <script>
   import Instance from '@/services/instance';
-  import {Observable} from '@/utils/rxjs';
+  import {concatMap, filter, from, listen} from '@/utils/rxjs';
   import _ from 'lodash';
 
   export default {
@@ -151,8 +151,8 @@
       }, 250),
       refreshContext() {
         const vm = this;
-        Observable.from(vm.instance.refreshContext())
-          .listen(status => vm.refreshStatus = status)
+        from(vm.instance.refreshContext())
+          .pipe(listen(status => vm.refreshStatus = status))
           .subscribe({
             complete: () => {
               setTimeout(() => vm.refreshStatus = null, 2500);
@@ -163,11 +163,14 @@
       },
       updateEnvironment() {
         const vm = this;
-        Observable.from(vm.managedProperties)
-          .filter(property => !!property.name && property.input !== property.value)
-          .listen(status => vm.updateStatus = status)
-          .concatMap(property => Observable.from(vm.instance.setEnv(property.name, property.input))
-            .listen(status => property.status = status)
+        from(vm.managedProperties)
+          .pipe(
+            filter(property => !!property.name && property.input !== property.value),
+            listen(status => vm.updateStatus = status),
+            concatMap(
+              property => from(vm.instance.setEnv(property.name, property.input))
+                .pipe(listen(status => property.status = status))
+            )
           )
           .subscribe({
             complete: () => {
@@ -179,8 +182,8 @@
       },
       resetEnvironment() {
         const vm = this;
-        Observable.from(vm.instance.resetEnv())
-          .listen(status => vm.resetStatus = status)
+        from(vm.instance.resetEnv())
+          .pipe(listen(status => vm.resetStatus = status))
           .subscribe({
             complete: () => {
               vm.managedProperties = [{

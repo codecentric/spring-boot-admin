@@ -39,7 +39,7 @@
 <script>
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
-  import {Observable} from '@/utils/rxjs';
+  import {concatMap, timer} from '@/utils/rxjs';
   import AuditeventsList from '@/views/instances/auditevents/auditevents-list';
   import _ from 'lodash';
   import moment from 'moment';
@@ -100,8 +100,10 @@
         const vm = this;
         vm.lastTimestamp = moment(0);
         vm.error = null;
-        return Observable.timer(0, 5000)
-          .concatMap(this.fetchAuditevents)
+        return timer(0, 5000)
+          .pipe(
+            concatMap(this.fetchAuditevents)
+          )
           .subscribe({
             next: events => {
               vm.hasLoaded = true;

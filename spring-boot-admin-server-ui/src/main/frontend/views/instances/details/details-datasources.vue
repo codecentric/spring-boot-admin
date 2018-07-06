@@ -24,7 +24,7 @@
 <script>
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
-  import {Observable} from '@/utils/rxjs';
+  import {concatMap, timer} from '@/utils/rxjs';
   import detailsDatasource from './details-datasource';
 
   export default {
@@ -46,8 +46,8 @@
       },
       createSubscription() {
         const vm = this;
-        return Observable.timer(0, 2500)
-          .concatMap(this.fetchDataSources)
+        return timer(0, 2500)
+          .pipe(concatMap(this.fetchDataSources))
           .subscribe({
             next: names => {
               vm.dataSources = names

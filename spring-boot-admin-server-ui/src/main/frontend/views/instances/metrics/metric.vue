@@ -62,7 +62,7 @@
 <script>
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
-  import {Observable} from '@/utils/rxjs';
+  import {concatMap, from, timer} from '@/utils/rxjs';
   import _ from 'lodash';
   import moment from 'moment';
   import prettyBytes from 'pretty-bytes';
@@ -146,12 +146,12 @@
         }
       },
       fetchAllTags() {
-        return Observable.from(this.tagSelections).concatMap(this.fetchMetric);
+        return from(this.tagSelections).pipe(concatMap(this.fetchMetric));
       },
       createSubscription() {
         const vm = this;
-        return Observable.timer(0, 2500)
-          .concatMap(vm.fetchAllTags)
+        return timer(0, 2500)
+          .pipe(concatMap(vm.fetchAllTags))
           .subscribe({
             next: () => {
             }

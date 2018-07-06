@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import Application from '@/services/application';
-import {Observable} from '@/utils/rxjs';
+import {concat, concatMap, defer, delay, doFirst, map, retryWhen, tap} from '@/utils/rxjs';
 
 export default class {
   constructor() {
@@ -71,13 +71,19 @@ export default class {
   }
 
   start() {
-    const listing = Observable.defer(() => Application.list()).concatMap(message => message.data);
-    const stream = Application.getStream().map(message => message.data);
-    this.subscription = listing.concat(stream)
-      .doFirst(() => this._dispatchEvent('connected'))
-      .retryWhen(errors => errors
-        .do(error => this._dispatchEvent('error', error))
-        .delay(5000)
+    const list = defer(() => Application.list())
+      .pipe(concatMap(message => message.data));
+    const stream = Application.getStream()
+      .pipe(map(message => message.data));
+    this.subscription = concat(list, stream)
+      .pipe(
+        doFirst(() => this._dispatchEvent('connected')),
+        retryWhen(
+          errors => errors.pipe(
+            tap(error => this._dispatchEvent('error', error)),
+            delay(5000)
+          )
+        )
       ).subscribe({
         next: application => {
           const idx = this.applications.indexOfApplication(application.name);

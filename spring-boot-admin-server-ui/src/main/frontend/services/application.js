@@ -16,7 +16,7 @@
 
 import axios from '@/utils/axios';
 import waitForPolyfill from '@/utils/eventsource-polyfill';
-import {Observable} from '@/utils/rxjs';
+import {concat, from, ignoreElements, Observable} from '@/utils/rxjs';
 import uri from '@/utils/uri';
 import * as _ from 'lodash';
 import Instance from './instance';
@@ -46,7 +46,8 @@ class Application {
   }
 
   static getStream() {
-    return Observable.from(waitForPolyfill()).ignoreElements().concat(
+    return concat(
+      from(waitForPolyfill()).pipe(ignoreElements()),
       Observable.create(observer => {
         const eventSource = new EventSource('applications');
         eventSource.onmessage = message => observer.next({
@@ -58,7 +59,8 @@ class Application {
         return () => {
           eventSource.close();
         };
-      }));
+      })
+    );
   }
 
   static _transformResponse(data) {

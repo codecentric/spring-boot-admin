@@ -67,7 +67,7 @@
 <script>
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
-  import {Observable} from '@/utils/rxjs';
+  import {concatMap, timer} from '@/utils/rxjs';
   import processUptime from './process-uptime';
 
   export default {
@@ -124,8 +124,8 @@
       },
       createSubscription() {
         const vm = this;
-        return Observable.timer(0, 2500)
-          .concatMap(this.fetchCpuLoadMetrics)
+        return timer(0, 2500)
+          .pipe(concatMap(this.fetchCpuLoadMetrics))
           .subscribe({
             next: data => {
               vm.processCpuLoad = data.processCpuLoad;

@@ -53,7 +53,7 @@
 <script>
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
-  import {Observable} from '@/utils/rxjs';
+  import {concatMap, timer} from '@/utils/rxjs';
   import moment from 'moment';
 
   export default {
@@ -86,8 +86,8 @@
       },
       createSubscription() {
         const vm = this;
-        return Observable.timer(0, 2500)
-          .concatMap(this.fetchMetrics)
+        return timer(0, 2500)
+          .pipe(concatMap(this.fetchMetrics))
           .subscribe({
             next: data => {
               vm.hasLoaded = true;

@@ -34,7 +34,7 @@
 <script>
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
-  import {Observable} from '@/utils/rxjs';
+  import {concatMap, timer} from '@/utils/rxjs';
   import _ from 'lodash';
   import moment from 'moment-shortformat';
   import threadsList from './threads-list';
@@ -111,8 +111,8 @@
       createSubscription() {
         const vm = this;
         vm.error = null;
-        return Observable.timer(0, 1000)
-          .concatMap(vm.fetchThreaddump)
+        return timer(0, 1000)
+          .pipe(concatMap(vm.fetchThreaddump))
           .subscribe({
             next: threads => {
               vm.hasLoaded = true;

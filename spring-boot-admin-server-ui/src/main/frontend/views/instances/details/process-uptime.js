@@ -15,7 +15,7 @@
  */
 
 import subscribing from '@/mixins/subscribing';
-import {Observable} from '@/utils/rxjs';
+import {timer} from '@/utils/rxjs';
 import moment from 'moment';
 
 export default {
@@ -44,11 +44,11 @@ export default {
     createSubscription() {
       if (this.value) {
         const vm = this;
-        this.startTs = moment.now();
-        this.offset = 0;
-        return Observable.timer(0, 1000).subscribe({
+        vm.startTs = moment.now();
+        vm.offset = 0;
+        return timer(0, 1000).subscribe({
           next: () => {
-            vm.offset = moment.now().valueOf() - this.startTs.valueOf();
+            vm.offset = moment.now().valueOf() - vm.startTs.valueOf();
           }
         })
       }

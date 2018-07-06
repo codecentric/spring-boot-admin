@@ -85,7 +85,7 @@
 <script>
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
-  import {Observable} from '@/utils/rxjs';
+  import {concatMap, timer} from '@/utils/rxjs';
   import moment from 'moment';
   import sbaTracesChart from './traces-chart';
   import sbaTracesList from './traces-list';
@@ -110,6 +110,7 @@
       if (contentLength && /^\d+$/.test(contentLength)) {
         return parseInt(contentLength);
       }
+      return null;
     }
 
     get contentType() {
@@ -118,6 +119,7 @@
         const idx = contentType.indexOf(';');
         return idx >= 0 ? contentType.substring(0, idx) : contentType;
       }
+      return null;
     }
 
     compareTo(other) {
@@ -197,8 +199,8 @@
         const vm = this;
         vm.lastTimestamp = moment(0);
         vm.error = null;
-        return Observable.timer(0, 5000)
-          .concatMap(vm.fetchHttptrace)
+        return timer(0, 5000)
+          .pipe(concatMap(vm.fetchHttptrace))
           .subscribe({
             next: traces => {
               vm.hasLoaded = true;

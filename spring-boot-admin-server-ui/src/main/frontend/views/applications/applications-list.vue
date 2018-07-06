@@ -94,7 +94,7 @@
   import Popper from '@/directives/popper';
   import subscribing from '@/mixins/subscribing';
   import NotificationFilter from '@/services/notification-filter';
-  import {Observable, Subject} from '@/utils/rxjs';
+  import {concatMap, merge, Subject, timer} from '@/utils/rxjs';
   import {directive as onClickaway} from 'vue-clickaway';
   import NotificationFilterSettings from './notification-filter-settings';
 
@@ -176,9 +176,11 @@
       createSubscription() {
         const vm = this;
         vm.notificationFilterSubject = new Subject();
-        return Observable.timer(0, 60000)
-          .merge(vm.notificationFilterSubject)
-          .concatMap(this.fetchNotificationFilters)
+        return timer(0, 60000)
+          .pipe(
+            merge(vm.notificationFilterSubject),
+            concatMap(this.fetchNotificationFilters),
+          )
           .subscribe({
             next: data => {
               vm.notificationFilters = data;

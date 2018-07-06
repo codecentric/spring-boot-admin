@@ -24,7 +24,7 @@
 <script>
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
-  import {Observable} from '@/utils/rxjs';
+  import {concatMap, timer} from '@/utils/rxjs';
   import _ from 'lodash';
   import detailsCache from './details-cache';
 
@@ -41,14 +41,14 @@
       caches: [],
     }),
     methods: {
-      async fetchcaches() {
+      async fetchCaches() {
         const response = await this.instance.fetchMetric('cache.gets');
         return _.uniq(response.data.availableTags.filter(tag => tag.tag === 'name')[0].values);
       },
       createSubscription() {
         const vm = this;
-        return Observable.timer(0, 2500)
-          .concatMap(this.fetchcaches)
+        return timer(0, 2500)
+          .pipe(concatMap(this.fetchCaches))
           .subscribe({
             next: names => {
               vm.caches = names

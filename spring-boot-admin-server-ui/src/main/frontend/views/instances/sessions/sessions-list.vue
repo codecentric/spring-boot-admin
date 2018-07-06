@@ -76,7 +76,7 @@
 
 <script>
   import Instance from '@/services/instance';
-  import {Observable} from '@/utils/rxjs';
+  import {concatMap, from, map, of, tap} from '@/utils/rxjs';
   import prettyBytes from 'pretty-bytes';
 
   export default {
@@ -103,9 +103,11 @@
       deleteAllSessions() {
         const vm = this;
         vm.deletingAll = 'deleting';
-        this.subscription = Observable.from(vm.sessions)
-          .map(session => session.id)
-          .concatMap(vm._deleteSession)
+        vm.subscription = from(vm.sessions)
+          .pipe(
+            map(session => session.id),
+            concatMap(vm._deleteSession)
+          )
           .subscribe({
             complete: () => {
               vm.deletingAll = 'deleted';
@@ -126,18 +128,20 @@
       _deleteSession(sessionId) {
         const vm = this;
         vm.$set(vm.deleting, sessionId, 'deleting');
-        return Observable.of(sessionId)
-          .concatMap(async sessionId => {
-            await vm.instance.deleteSession(sessionId);
-            return sessionId;
-          })
-          .do({
-            next: sessionId => vm.$set(vm.deleting, sessionId, 'deleted'),
-            error: error => {
-              console.warn(`Deleting session ${sessionId} failed:`, error);
-              vm.$set(vm.deleting, sessionId, 'failed');
-            }
-          });
+        return of(sessionId)
+          .pipe(
+            concatMap(async sessionId => {
+              await vm.instance.deleteSession(sessionId);
+              return sessionId;
+            }),
+            tap({
+              next: sessionId => vm.$set(vm.deleting, sessionId, 'deleted'),
+              error: error => {
+                console.warn(`Deleting session ${sessionId} failed:`, error);
+                vm.$set(vm.deleting, sessionId, 'failed');
+              }
+            })
+          );
       }
     }
   }
