@@ -143,7 +143,7 @@ spring.boot.admin.client.password
 | `false`
 
 | spring.boot.admin.client.instance.metadata.*
-| Metadata key-value-pairs to be asscoiated with this instance.
+| Metadata key-value-pairs to be associated with this instance.
 |
 |===
 
