@@ -21,7 +21,7 @@ include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecen
 
 For a complete sample look at https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-servlet/[spring-boot-admin-sample-servlet.
 
-NOTE: If you protect the `/instances` endpoint don't forget to configure the username and password on your SBA-Client using `spring.boot.admin.client.username` and `spring.boot.admin.instance.password`.
+NOTE: If you protect the `/instances` endpoint don't forget to configure the username and password on your SBA-Client using `spring.boot.admin.client.username` and `spring.boot.admin.client.password`.
 
 === Securing Client Actuator Endpoints ===
 
