@@ -119,9 +119,9 @@
     },
     async created() {
       try {
-        this.addEvents((await Instance.fetchEvents()).data);
+        const response = await Instance.fetchEvents();
+        this.addEvents(response.data.sort(compareBy(v => v.timestamp)));
         this.error = null;
-        this.events.sort(compareBy(v => v.timestamp));
       } catch (error) {
         console.warn('Fetching events failed:', error);
         this.error = error;
