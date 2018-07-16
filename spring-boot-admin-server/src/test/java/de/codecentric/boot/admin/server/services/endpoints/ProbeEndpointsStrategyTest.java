@@ -63,12 +63,13 @@ public class ProbeEndpointsStrategyTest {
                                                           .managementUrl(wireMock.url("/mgmt"))
                                                           .build());
 
+        wireMock.stubFor(options(urlEqualTo("/mgmt/metrics")).willReturn(ok()));
         wireMock.stubFor(options(urlEqualTo("/mgmt/stats")).willReturn(ok()));
         wireMock.stubFor(options(urlEqualTo("/mgmt/info")).willReturn(ok()));
         wireMock.stubFor(options(urlEqualTo("/mgmt/non-exist")).willReturn(notFound()));
 
         ProbeEndpointsStrategy strategy = new ProbeEndpointsStrategy(instanceWebClient,
-            new String[]{"metrics:stats", "info", "non-exist"});
+            new String[]{"metrics:stats", "metrics", "info", "non-exist"});
 
         //when
         StepVerifier.create(strategy.detectEndpoints(instance))
