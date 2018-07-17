@@ -1,0 +1,44 @@
+{
+  "name": "spring-boot-admin-sample-custom-ui",
+  "private": true,
+  "scripts": {
+    "build": "vue-cli-service build",
+    "watch": "vue-cli-service build --watch",
+    "lint": "vue-cli-service lint"
+  },
+  "peerDependencies": {
+    "vue": "^2.5.16"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.0.0-rc.5",
+    "@vue/cli-plugin-eslint": "^3.0.0-rc.5",
+    "@vue/cli-service": "^3.0.0-rc.5",
+    "@vue/eslint-config-standard": "^3.0.0-rc.5",
+    "vue-template-compiler": "^2.5.16"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:vue/strongly-recommended"
+    ],
+    "rules": {},
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
+}

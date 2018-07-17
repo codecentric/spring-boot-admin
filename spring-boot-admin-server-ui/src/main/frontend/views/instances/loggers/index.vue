@@ -207,7 +207,7 @@
         path: 'loggers',
         component: this,
         props: true,
-        handle: 'Loggers',
+        label: 'Loggers',
         order: 300,
         isEnabled: ({instance}) => instance.hasEndpoint('loggers')
       });

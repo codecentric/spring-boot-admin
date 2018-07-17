@@ -154,7 +154,7 @@
         path: 'sessions',
         component: this,
         props: true,
-        handle: 'Sessions',
+        label: 'Sessions',
         order: 700,
         isEnabled: ({instance}) => instance.hasEndpoint('sessions')
       });

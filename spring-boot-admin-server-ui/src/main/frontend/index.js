@@ -31,8 +31,14 @@ moment.locale(window.navigator.language);
 const applicationStore = new Store();
 const viewRegistry = new ViewRegistry();
 
-Notifications.install({applicationStore});
-views.forEach(view => view.install({
+const installables = [
+  Notifications,
+  ...views,
+  /* global SBA */
+  ...SBA.extensions
+];
+
+installables.forEach(view => view.install({
   viewRegistry,
   applicationStore
 }));

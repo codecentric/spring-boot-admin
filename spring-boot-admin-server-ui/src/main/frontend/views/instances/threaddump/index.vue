@@ -133,7 +133,7 @@
         path: 'threaddump',
         component: this,
         props: true,
-        handle: 'Threads',
+        label: 'Threads',
         order: 400,
         isEnabled: ({instance}) => instance.hasEndpoint('threaddump')
       });

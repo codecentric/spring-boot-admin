@@ -30,6 +30,9 @@ const actuatorMimeTypes = [
 class Instance {
   constructor(id) {
     this.id = id;
+    this.axios = axios.create({
+      baseURL: uri`instances/${this.id}/`
+    })
   }
 
   hasEndpoint(endpointId) {
@@ -41,17 +44,17 @@ class Instance {
   }
 
   async unregister() {
-    return axios.delete(uri`instances/${this.id}`);
+    return this.axios.delete('');
   }
 
   async fetchInfo() {
-    return axios.get(uri`instances/${this.id}/actuator/info`, {
+    return this.axios.get(uri`actuator/info`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async fetchMetrics() {
-    return axios.get(uri`instances/${this.id}/actuator/metrics`, {
+    return this.axios.get(uri`actuator/metrics`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
@@ -63,7 +66,7 @@ class Instance {
         .map(([name, value]) => `${name}:${value}`)
         .join(',')
     } : {};
-    return axios.get(uri`instances/${this.id}/actuator/metrics/${metric}`, {
+    return this.axios.get(uri`actuator/metrics/${metric}`, {
       headers: {'Accept': actuatorMimeTypes},
       params
     });
@@ -71,7 +74,7 @@ class Instance {
 
   async fetchHealth() {
     try {
-      return await axios.get(uri`instances/${this.id}/actuator/health`, {
+      return await this.axios.get(uri`actuator/health`, {
         headers: {'Accept': actuatorMimeTypes}
       });
     } catch (error) {
@@ -83,99 +86,99 @@ class Instance {
   }
 
   async fetchEnv(name) {
-    return axios.get(uri`instances/${this.id}/actuator/env/${name || '' }`, {
+    return this.axios.get(uri`actuator/env/${name || '' }`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async hasEnvManagerSupport() {
-    const response = await axios.options(uri`instances/${this.id}/actuator/env`);
+    const response = await this.axios.options(uri`actuator/env`);
     return response.headers['allow'] && response.headers['allow'].includes('POST');
   }
 
   async resetEnv() {
-    return axios.delete(uri`instances/${this.id}/actuator/env`);
+    return this.axios.delete(uri`actuator/env`);
   }
 
   async setEnv(name, value) {
-    return axios.post(uri`instances/${this.id}/actuator/env`, {name, value}, {
+    return this.axios.post(uri`actuator/env`, {name, value}, {
       headers: {'Content-Type': 'application/json'}
     });
   }
 
   async refreshContext() {
-    return axios.post(uri`instances/${this.id}/actuator/refresh`);
+    return this.axios.post(uri`actuator/refresh`);
   }
 
   async fetchLiquibase() {
-    return axios.get(uri`instances/${this.id}/actuator/liquibase`, {
+    return this.axios.get(uri`actuator/liquibase`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async fetchFlyway() {
-    return axios.get(uri`instances/${this.id}/actuator/flyway`, {
+    return this.axios.get(uri`actuator/flyway`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async fetchLoggers() {
-    return axios.get(uri`instances/${this.id}/actuator/loggers`, {
+    return this.axios.get(uri`actuator/loggers`, {
       headers: {'Accept': actuatorMimeTypes},
       transformResponse: Instance._toLoggers
     });
   }
 
   async configureLogger(name, level) {
-    return axios.post(uri`instances/${this.id}/actuator/loggers/${name}`, {configuredLevel: level}, {
+    return this.axios.post(uri`actuator/loggers/${name}`, {configuredLevel: level}, {
       headers: {'Content-Type': 'application/json'}
     });
   }
 
   async fetchHttptrace() {
-    return axios.get(uri`instances/${this.id}/actuator/httptrace`, {
+    return this.axios.get(uri`actuator/httptrace`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async fetchThreaddump() {
-    return axios.get(uri`instances/${this.id}/actuator/threaddump`, {
+    return this.axios.get(uri`actuator/threaddump`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async fetchAuditevents(after) {
-    return axios.get(uri`instances/${this.id}/actuator/auditevents`, {
+    return this.axios.get(uri`actuator/auditevents`, {
       headers: {'Accept': actuatorMimeTypes},
       params: {after: after.toISOString()}
     });
   }
 
   async fetchSessionsByUsername(username) {
-    return axios.get(uri`instances/${this.id}/actuator/sessions`, {
+    return this.axios.get(uri`actuator/sessions`, {
       headers: {'Accept': actuatorMimeTypes},
       params: {username}
     });
   }
 
   async fetchSession(sessionId) {
-    return axios.get(uri`instances/${this.id}/actuator/sessions/${sessionId}`, {
+    return this.axios.get(uri`actuator/sessions/${sessionId}`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   async deleteSession(sessionId) {
-    return axios.delete(uri`instances/${this.id}/actuator/sessions/${sessionId}`, {
+    return this.axios.delete(uri`actuator/sessions/${sessionId}`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
   streamLogfile(interval) {
-    return logtail(uri`instances/${this.id}/actuator/logfile`, interval);
+    return logtail(uri`actuator/logfile`, interval);
   }
 
   async listMBeans() {
-    return axios.get(uri`instances/${this.id}/actuator/jolokia/list`, {
+    return this.axios.get(uri`actuator/jolokia/list`, {
       headers: {'Accept': 'application/json'},
       params: {canonicalNaming: false},
       transformResponse: Instance._toMBeans
@@ -188,7 +191,7 @@ class Instance {
       mbean: `${domain}:${mBean}`,
       config: {ignoreErrors: true}
     };
-    return axios.post(uri`instances/${this.id}/actuator/jolokia`, body, {
+    return this.axios.post(uri`actuator/jolokia`, body, {
       headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
     });
   }
@@ -200,7 +203,7 @@ class Instance {
       attribute,
       value
     };
-    return axios.post(uri`instances/${this.id}/actuator/jolokia`, body, {
+    return this.axios.post(uri`actuator/jolokia`, body, {
       headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
     });
   }
@@ -212,7 +215,7 @@ class Instance {
       operation,
       'arguments': args
     };
-    return axios.post(uri`instances/${this.id}/actuator/jolokia`, body, {
+    return this.axios.post(uri`actuator/jolokia`, body, {
       headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
     });
   }

@@ -219,7 +219,7 @@
         path: 'metrics',
         component: this,
         props: true,
-        handle: 'Metrics',
+        label: 'Metrics',
         order: 50,
         isEnabled: ({instance}) => instance.hasEndpoint('metrics')
       });

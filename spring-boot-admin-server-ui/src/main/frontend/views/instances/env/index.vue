@@ -140,7 +140,7 @@
         path: 'env',
         component: this,
         props: true,
-        handle: 'Environment',
+        label: 'Environment',
         order: 100,
         isEnabled: ({instance}) => instance.hasEndpoint('env')
       });

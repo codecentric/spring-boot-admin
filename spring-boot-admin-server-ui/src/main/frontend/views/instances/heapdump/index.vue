@@ -51,7 +51,7 @@
         path: 'heapdump',
         component: this,
         props: true,
-        handle: 'Heap Dump',
+        label: 'Heap Dump',
         order: 800,
         isEnabled: ({instance}) => instance.hasEndpoint('heapdump')
       });

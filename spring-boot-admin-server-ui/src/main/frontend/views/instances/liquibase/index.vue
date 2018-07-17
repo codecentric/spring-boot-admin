@@ -149,7 +149,7 @@
         path: 'liquibase',
         component: this,
         props: true,
-        handle: 'Liquibase',
+        label: 'Liquibase',
         order: 900,
         isEnabled: ({instance}) => instance.hasEndpoint('liquibase')
       });

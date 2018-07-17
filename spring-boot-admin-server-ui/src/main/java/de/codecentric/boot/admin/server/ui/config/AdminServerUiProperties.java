@@ -27,11 +27,17 @@ import org.springframework.http.CacheControl;
 @ConfigurationProperties("spring.boot.admin.ui")
 public class AdminServerUiProperties {
     private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {"classpath:/META-INF/spring-boot-admin-server-ui/"};
+    private static final String[] CLASSPATH_EXTENSION_RESOURCE_LOCATIONS = {"classpath:/META-INF/spring-boot-admin-server-ui/extensions/"};
 
     /**
      * Locations of SBA ui resources.
      */
     private String[] resourceLocations = CLASSPATH_RESOURCE_LOCATIONS;
+
+    /**
+     * Locations of SBA ui exentsion resources.
+     */
+    private String[] extensionResourceLocations = CLASSPATH_EXTENSION_RESOURCE_LOCATIONS;
 
     /**
      * Locations of SBA ui template.

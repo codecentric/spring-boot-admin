@@ -18,40 +18,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>spring-boot-admin-server-ui</artifactId>
-    <name>Spring Boot Admin Server UI</name>
-    <description>Spring Boot Admin Server UI</description>
+    <artifactId>spring-boot-admin-sample-custom-ui</artifactId>
+    <name>Spring Boot Admin Server custom UI</name>
+    <description>Spring Boot Admin Server custom UI</description>
     <parent>
         <groupId>de.codecentric</groupId>
-        <artifactId>spring-boot-admin-build</artifactId>
+        <artifactId>spring-boot-admin-samples</artifactId>
         <version>${revision}</version>
-        <relativePath>../spring-boot-admin-build</relativePath>
+        <relativePath>..</relativePath>
     </parent>
     <dependencies>
-        <dependency>
-            <groupId>de.codecentric</groupId>
-            <artifactId>spring-boot-admin-server</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure-processor</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -89,47 +65,17 @@
                             </environmentVariables>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>npm-test</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <skip>${skipTests}</skip>
-                            <executable>npm</executable>
-                            <arguments>
-                                <argument>run</argument>
-                                <argument>test</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <configuration>
-                    <nonFilteredFileExtensions>
-                        <nonFilteredFileExtension>woff</nonFilteredFileExtension>
-                        <nonFilteredFileExtension>ttf</nonFilteredFileExtension>
-                        <nonFilteredFileExtension>woff2</nonFilteredFileExtension>
-                        <nonFilteredFileExtension>eot</nonFilteredFileExtension>
-                        <nonFilteredFileExtension>swf</nonFilteredFileExtension>
-                        <nonFilteredFileExtension>ico</nonFilteredFileExtension>
-                        <nonFilteredFileExtension>png</nonFilteredFileExtension>
-                    </nonFilteredFileExtensions>
-                    <includeEmptyDirs>true</includeEmptyDirs>
-                </configuration>
             </plugin>
         </plugins>
         <resources>
             <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-            <resource>
                 <directory>target/dist</directory>
-                <targetPath>META-INF/spring-boot-admin-server-ui</targetPath>
+                <targetPath>META-INF/spring-boot-admin-server-ui/extensions/custom</targetPath>
                 <filtering>false</filtering>
             </resource>
         </resources>

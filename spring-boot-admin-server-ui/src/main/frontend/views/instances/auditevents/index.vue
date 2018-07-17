@@ -131,7 +131,7 @@
         path: 'auditevents',
         component: this,
         props: true,
-        handle: 'Audit Log',
+        label: 'Audit Log',
         order: 600,
         isEnabled: ({instance}) => instance.hasEndpoint('auditevents')
       });

@@ -129,7 +129,7 @@
         path: 'flyway',
         component: this,
         props: true,
-        handle: 'Flyway',
+        label: 'Flyway',
         order: 900,
         isEnabled: ({instance}) => instance.hasEndpoint('flyway')
       });

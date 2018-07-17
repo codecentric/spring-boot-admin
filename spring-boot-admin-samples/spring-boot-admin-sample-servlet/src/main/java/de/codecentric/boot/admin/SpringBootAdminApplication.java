@@ -48,7 +48,6 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 @EnableAutoConfiguration
 @EnableAdminServer
 public class SpringBootAdminApplication {
-
     private static final Logger log = LoggerFactory.getLogger(SpringBootAdminApplication.class);
 
     public static void main(String[] args) {
@@ -71,7 +70,7 @@ public class SpringBootAdminApplication {
     }
 
     @Profile("secure")
-// tag::configuration-spring-security[]
+    // tag::configuration-spring-security[]
     @Configuration
     public static class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
         private final String adminContextPath;
@@ -104,7 +103,7 @@ public class SpringBootAdminApplication {
             // @formatter:on
         }
     }
-// end::configuration-spring-security[]
+    // end::configuration-spring-security[]
 
     @Bean
     public InstanceExchangeFilterFunction auditLog() {
@@ -119,6 +118,11 @@ public class SpringBootAdminApplication {
     @Bean
     public LoggingNotifier loggerNotifier(InstanceRepository repository) {
         return new LoggingNotifier(repository);
+    }
+
+    @Bean
+    public CustomEndpoint customEndpoint() {
+        return new CustomEndpoint();
     }
 
     // tag::configuration-filtering-notifier[]
@@ -147,5 +151,5 @@ public class SpringBootAdminApplication {
             return notifier;
         }
     }
-// end::configuration-filtering-notifier[]
+    // end::configuration-filtering-notifier[]
 }

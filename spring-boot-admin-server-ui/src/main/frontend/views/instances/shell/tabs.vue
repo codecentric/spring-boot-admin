@@ -30,13 +30,8 @@
           <ul>
             <li v-if="instance" v-for="view in enabledViews" :key="view.name"
                 :class="{'is-active' : $route.name === view.name}">
-              <a v-if="view.href" :href="view.href({ 'instanceId' : instance.id })"
-                 target="_blank">
-                <component :is="view.handle"/>
-              </a>
-              <router-link v-else
-                           :to="{ name: view.name, params: { 'instanceId' : instance.id } }">
-                <component :is="view.handle"/>
+              <router-link :to="{ name: view.name, params: { 'instanceId' : instance.id } }">
+                <component :is="view.label"/>
               </router-link>
             </li>
           </ul>
@@ -76,7 +71,7 @@
         }
 
         return [...this.views].filter(
-          view => view.handle && (typeof view.isEnabled === 'undefined' || view.isEnabled({instance: this.instance}))
+          view => view.label && (typeof view.isEnabled === 'undefined' || view.isEnabled({instance: this.instance}))
         ).sort(compareBy(v => v.order));
       }
     },

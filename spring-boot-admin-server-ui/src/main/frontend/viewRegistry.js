@@ -51,8 +51,8 @@ export default class ViewRegistry {
   }
 
   _addView(view) {
-    if (view.handle) {
-      view.handle = createVNodeIfNecessary(view.handle);
+    if (view.label) {
+      view.label = createVNodeIfNecessary(view.label);
     }
     this._views.push(view);
   }

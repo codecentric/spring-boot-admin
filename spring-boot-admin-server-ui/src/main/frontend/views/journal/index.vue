@@ -131,7 +131,7 @@
       viewRegistry.addView({
         path: '/journal',
         name: 'journal',
-        handle: 'Journal',
+        label: 'Journal',
         order: 100,
         component: this
       });

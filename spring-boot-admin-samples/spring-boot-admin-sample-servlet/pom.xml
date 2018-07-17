@@ -30,6 +30,10 @@
     <dependencies>
         <dependency>
             <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-sample-custom-ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-starter-server</artifactId>
         </dependency>
         <dependency>

@@ -16,11 +16,14 @@
 
 package de.codecentric.boot.admin.server.ui.web;
 
+import de.codecentric.boot.admin.server.ui.extensions.UiExtension;
 import de.codecentric.boot.admin.server.web.AdminController;
 
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -31,13 +34,21 @@ import static java.util.Collections.singletonMap;
 @AdminController
 public class UiController {
     private final String adminContextPath;
+    private final List<UiExtension> cssExtensions;
+    private final List<UiExtension> jsExtensions;
     private final Map<String, Object> uiSettings;
 
-    public UiController(String adminContextPath, String title, String brand) {
+    public UiController(String adminContextPath, String title, String brand, List<UiExtension> uiExtensions) {
         this.adminContextPath = adminContextPath;
         this.uiSettings = new HashMap<>();
         this.uiSettings.put("title", title);
         this.uiSettings.put("brand", brand);
+        this.cssExtensions = uiExtensions.stream()
+                                         .filter(e -> e.getResourcePath().endsWith(".css"))
+                                         .collect(Collectors.toList());
+        this.jsExtensions = uiExtensions.stream()
+                                        .filter(e -> e.getResourcePath().endsWith(".js"))
+                                        .collect(Collectors.toList());
     }
 
     @ModelAttribute(value = "adminContextPath", binding = false)
@@ -48,6 +59,16 @@ public class UiController {
     @ModelAttribute(value = "uiSettings", binding = false)
     public Map<String, Object> getUiSettings() {
         return uiSettings;
+    }
+
+    @ModelAttribute(value = "cssExtensions", binding = false)
+    public List<UiExtension> getCssExtensions() {
+        return cssExtensions;
+    }
+
+    @ModelAttribute(value = "jsExtensions", binding = false)
+    public List<UiExtension> getJsExtensions() {
+        return jsExtensions;
     }
 
     @ModelAttribute(value = "user", binding = false)

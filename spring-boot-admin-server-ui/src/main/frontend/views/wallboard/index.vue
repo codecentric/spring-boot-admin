@@ -80,7 +80,7 @@
       viewRegistry.addView({
         path: '/wallboard',
         name: 'wallboard',
-        handle: 'Wallboard',
+        label: 'Wallboard',
         order: -100,
         component: this
       });

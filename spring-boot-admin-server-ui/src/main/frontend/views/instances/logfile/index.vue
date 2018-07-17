@@ -132,7 +132,7 @@
         path: 'logfile',
         component: this,
         props: true,
-        handle: 'Logfile',
+        label: 'Logfile',
         order: 200,
         isEnabled: ({instance}) => instance.hasEndpoint('logfile')
       });

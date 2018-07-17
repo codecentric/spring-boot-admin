@@ -33,7 +33,17 @@
         <module>spring-boot-admin-sample-reactive</module>
         <module>spring-boot-admin-sample-war</module>
         <module>spring-boot-admin-sample-hazelcast</module>
+        <module>spring-boot-admin-sample-custom-ui</module>
     </modules>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-sample-custom-ui</artifactId>
+                <version>${revision}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <build>
         <!-- Turn on filtering by default for application properties -->
         <resources>

@@ -153,7 +153,7 @@
         path: '',
         component: this,
         props: true,
-        handle: 'Details',
+        label: 'Details',
         order: 0
       });
     }

@@ -25,6 +25,9 @@ class Application {
 
   constructor(name) {
     this.name = name;
+    this.axios = axios.create({
+      baseURL: uri`applications/${this.name}/`
+    })
   }
 
   findInstance(instanceId) {
@@ -36,7 +39,7 @@ class Application {
   }
 
   async unregister() {
-    return axios.delete(uri`applications/${this.name}`)
+    return this.axios.delete('')
   }
 
   static async list() {

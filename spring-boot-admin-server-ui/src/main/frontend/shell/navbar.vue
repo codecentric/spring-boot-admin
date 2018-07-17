@@ -30,7 +30,7 @@
         <div class="navbar-start"/>
         <div class="navbar-end">
           <router-link class="navbar-item" v-for="view in enabledViews" :to="{name: view.name}" :key="view.name">
-            <component :is="view.handle" :applications="applications" :error="error"/>
+            <component :is="view.label" :applications="applications" :error="error"/>
           </router-link>
 
           <div class="navbar-item has-dropdown is-hoverable" v-if="userName">
@@ -79,7 +79,7 @@
     computed: {
       enabledViews() {
         return [...this.views].filter(
-          view => view.handle && (typeof view.isEnabled === 'undefined' || view.isEnabled())
+          view => view.label && (typeof view.isEnabled === 'undefined' || view.isEnabled())
         ).sort(compareBy(v => v.order));
       }
     },

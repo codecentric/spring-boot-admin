@@ -19,9 +19,15 @@ package de.codecentric.boot.admin.server.ui.config;
 import de.codecentric.boot.admin.server.config.AdminServerMarkerConfiguration;
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.AdminServerWebConfiguration;
+import de.codecentric.boot.admin.server.ui.extensions.UiExtension;
+import de.codecentric.boot.admin.server.ui.extensions.UiExtensionsScanner;
 import de.codecentric.boot.admin.server.ui.web.UiController;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -41,6 +47,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 @AutoConfigureAfter(AdminServerWebConfiguration.class)
 @EnableConfigurationProperties(AdminServerUiProperties.class)
 public class AdminServerUiAutoConfiguration {
+    private static final Logger log = LoggerFactory.getLogger(AdminServerUiAutoConfiguration.class);
     private final AdminServerUiProperties uiProperties;
     private final AdminServerProperties adminServerProperties;
     private final ApplicationContext applicationContext;
@@ -55,10 +62,20 @@ public class AdminServerUiAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public UiController homeUiController() {
-        return new UiController(adminServerProperties.getContextPath(),
-            uiProperties.getTitle(),
-            uiProperties.getBrand());
+    public UiController homeUiController() throws IOException {
+        return new UiController(
+            this.adminServerProperties.getContextPath(),
+            this.uiProperties.getTitle(),
+            this.uiProperties.getBrand(),
+            this.uiExtensions()
+        );
+    }
+
+    private List<UiExtension> uiExtensions() throws IOException {
+        UiExtensionsScanner scanner = new UiExtensionsScanner(this.applicationContext);
+        List<UiExtension> uiExtensions = scanner.scan(this.uiProperties.getExtensionResourceLocations());
+        uiExtensions.forEach(e -> log.info("Loaded Spring Boot Admin UI Extension: " + e));
+        return uiExtensions;
     }
 
     @Bean
@@ -87,6 +104,7 @@ public class AdminServerUiAutoConfiguration {
         public void addResourceHandlers(org.springframework.web.reactive.config.ResourceHandlerRegistry registry) {
             registry.addResourceHandler(adminServerProperties.getContextPath() + "/**")
                     .addResourceLocations(uiProperties.getResourceLocations())
+                    .addResourceLocations(uiProperties.getExtensionResourceLocations())
                     .setCacheControl(uiProperties.getCache().toCacheControl());
         }
     }
@@ -103,6 +121,7 @@ public class AdminServerUiAutoConfiguration {
         public void addResourceHandlers(org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
             registry.addResourceHandler(adminServerProperties.getContextPath() + "/**")
                     .addResourceLocations(uiProperties.getResourceLocations())
+                    .addResourceLocations(uiProperties.getExtensionResourceLocations())
                     .setCacheControl(uiProperties.getCache().toCacheControl());
         }
     }
