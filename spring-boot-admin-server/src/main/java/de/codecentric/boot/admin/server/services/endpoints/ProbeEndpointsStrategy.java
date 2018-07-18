@@ -26,7 +26,6 @@ import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -37,11 +36,12 @@ import org.springframework.util.Assert;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.groupingBy;
 
 public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
     private static final Logger log = LoggerFactory.getLogger(ProbeEndpointsStrategy.class);
-    private final Collection<EndpointDefinition> endpoints;
+    private final List<EndpointDefinition> endpoints;
     private final InstanceWebClient instanceWebClient;
 
     public ProbeEndpointsStrategy(InstanceWebClient instanceWebClient, String[] endpoints) {
@@ -59,7 +59,7 @@ public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
                    .flatMap(this::convert);
     }
 
-    private Mono<Endpoint> detectEndpoint(Instance instance, EndpointDefinition endpoint) {
+    private Mono<DetectedEndpoint> detectEndpoint(Instance instance, EndpointDefinition endpoint) {
         URI uri = UriComponentsBuilder.fromUriString(instance.getRegistration().getManagementUrl())
                                       .path("/")
                                       .path(endpoint.getPath())
@@ -68,31 +68,46 @@ public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
         return instanceWebClient.instance(instance).options().uri(uri).exchange().flatMap(this.convert(endpoint, uri));
     }
 
-    private Function<ClientResponse, Mono<Endpoint>> convert(EndpointDefinition endpoint, URI uri) {
-        return response -> response.bodyToMono(Void.class)
-                                   .then(response.statusCode()
-                                                 .is2xxSuccessful() ? Mono.just(Endpoint.of(endpoint.getId(),
-                                       uri.toString()
-                                   )) : Mono.empty());
+    private Function<ClientResponse, Mono<DetectedEndpoint>> convert(EndpointDefinition endpointDefinition, URI uri) {
+        return response -> {
+            Mono<DetectedEndpoint> endpoint = Mono.empty();
+            if (response.statusCode().is2xxSuccessful()) {
+                endpoint = Mono.just(DetectedEndpoint.of(endpointDefinition, uri.toString()));
+            }
+            return response.bodyToMono(Void.class).then(endpoint);
+        };
     }
 
 
-    private Mono<Endpoints> convert(List<Endpoint> endpoints) {
+    private Mono<Endpoints> convert(List<DetectedEndpoint> endpoints) {
         if (endpoints.isEmpty()) {
             return Mono.empty();
         }
 
-        Map<String, List<Endpoint>> endpointsById = endpoints.stream().collect(groupingBy(Endpoint::getId));
+        Map<String, List<DetectedEndpoint>> endpointsById = endpoints.stream()
+                                                                     .collect(groupingBy(e -> e.getDefinition()
+                                                                                               .getId()));
         List<Endpoint> result = endpointsById.values().stream().map(endpointList -> {
+            endpointList.sort(comparingInt(e -> this.endpoints.indexOf(e.getDefinition())));
             if (endpointList.size() > 1) {
                 log.warn("Duplicate endpoints for id '{}' detected. Omitting: {}",
-                    endpointList.get(0).getId(),
+                    endpointList.get(0).getDefinition().getId(),
                     endpointList.subList(1, endpointList.size())
                 );
             }
-            return endpointList.get(0);
+            return endpointList.get(0).getEndpoint();
         }).collect(Collectors.toList());
         return Mono.just(Endpoints.of(result));
+    }
+
+    @Data
+    private static class DetectedEndpoint {
+        private final EndpointDefinition definition;
+        private final Endpoint endpoint;
+
+        private static DetectedEndpoint of(EndpointDefinition endpointDefinition, String url) {
+            return new DetectedEndpoint(endpointDefinition, Endpoint.of(endpointDefinition.getId(), url));
+        }
     }
 
     @Data
