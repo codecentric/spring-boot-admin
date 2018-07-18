@@ -43,7 +43,7 @@ const shorten = (value, max) => {
   }
 };
 
-export default (input, options) => linkifyStr(input, {
+export default (input, options = {}) => linkifyStr(input, {
   className: null,
   format(value, type) {
     if (type === 'url') {
