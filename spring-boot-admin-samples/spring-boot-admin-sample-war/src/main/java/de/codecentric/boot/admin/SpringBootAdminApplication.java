@@ -69,6 +69,7 @@ public class SpringBootAdminApplication extends SpringBootServletInitializer {
             // @formatter:off
             SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
             successHandler.setTargetUrlParameter("redirectTo");
+            successHandler.setDefaultTargetUrl(adminContextPath + "/");
 
             http.authorizeRequests()
                 .antMatchers(adminContextPath + "/assets/**").permitAll()
