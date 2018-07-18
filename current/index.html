@@ -1386,6 +1386,7 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
             <span class="comment">// @formatter:off</span>
             SavedRequestAwareAuthenticationSuccessHandler successHandler = <span class="keyword">new</span> SavedRequestAwareAuthenticationSuccessHandler();
             successHandler.setTargetUrlParameter(<span class="string"><span class="delimiter">&quot;</span><span class="content">redirectTo</span><span class="delimiter">&quot;</span></span>);
+            successHandler.setDefaultTargetUrl(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>);
 
             http.authorizeRequests()
                 .antMatchers(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/assets/**</span><span class="delimiter">&quot;</span></span>).permitAll()
@@ -2085,6 +2086,7 @@ By default <code>spring-boot-admin-server-ui</code> provides a login page and a 
             <span class="comment">// @formatter:off</span>
             SavedRequestAwareAuthenticationSuccessHandler successHandler = <span class="keyword">new</span> SavedRequestAwareAuthenticationSuccessHandler();
             successHandler.setTargetUrlParameter(<span class="string"><span class="delimiter">&quot;</span><span class="content">redirectTo</span><span class="delimiter">&quot;</span></span>);
+            successHandler.setDefaultTargetUrl(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>);
 
             http.authorizeRequests()
                 .antMatchers(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/assets/**</span><span class="delimiter">&quot;</span></span>).permitAll() <i class="conum" data-value="1"></i><b>(1)</b>
