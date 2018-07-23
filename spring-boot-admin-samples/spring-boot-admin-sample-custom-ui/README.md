@@ -1,4 +1,4 @@
-spring-boot-admin-server-ui
+spring-boot-admin-sample-custom-ui
 ================================
 
 ### Building this module
@@ -15,11 +15,10 @@ npm run watch
 2. Run a Spring Boot Admin Server instances with the template-location and resource-location pointing to the build output and disable caching:
 ```
 spring.boot.admin.ui.cache.no-cache: true
-spring.boot.admin.ui.resource-locations: file://@project.basedir@/../../spring-boot-admin-server-ui/target/dist/
-spring.boot.admin.ui.template-location: file://@project.basedir@/../../spring-boot-admin-server-ui/target/dist/
+spring.boot.admin.ui.extension-resource-locations: file:@project.basedir@/../spring-boot-admin-sample-custom-ui/target/dist/
 spring.boot.admin.ui.cache-templates: false
 ```
-Or just start the [spring-boot-admin-sample-servlet](../spring-boot-admin-samples/spring-boot-admin-sample-servlet) project using the `dev` profile.
+Or just start the [spring-boot-admin-sample-servlet](../spring-boot-admin-sample-servlet) project using the `dev` profile.
 
 ### Build
 ```shell
@@ -30,14 +29,4 @@ npm run build
 Repeated build with watching the files:
 ```shell
 npm run watch
-```
-
-## Run tests
-```shell
-npm run test
-```
-
-Repeated tests with watching the files:
-```shell
-npm run watch:test
 ```
