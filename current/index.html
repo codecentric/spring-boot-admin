@@ -1659,7 +1659,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.pagerduty.description</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Description to use in the event. SpEL-expressions are supported</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"#{application.name}/#{application.id} is #{to.status}"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"#{instance.registration.name}/#{instance.id} is #{instance.statusInfo.status}"</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.pagerduty.client</p></td>
@@ -1717,7 +1717,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.opsgenie.description</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Description to use in the event. SpEL-expressions are supported</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"#{application.name}/#{application.id} is #{to.status}"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"#{instance.registration.name}/#{instance.id} is #{instance.statusInfo.status}"</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.opsgenie.actions</p></td>
@@ -1800,7 +1800,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.hipchat.description</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Description to use in the event. SpEL-expressions are supported</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"&lt;strong&gt;#{application.name}&lt;/strong&gt;/#{application.id} is &lt;strong&gt;#{to.status}&lt;/strong&gt;"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"&lt;strong&gt;#{instance.registration.name}&lt;/strong&gt;/#{instance.id} is &lt;strong&gt;#{event.statusInfo.status}&lt;/strong&gt;"</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -1859,7 +1859,7 @@ account and configure it appropriately.</p>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.slack.message</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Message to use in the event. SpEL-expressions and Slack markups are supported</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"*#{application.name}* (#{application.id}) is *#{to.status}*"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*"</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -1917,7 +1917,7 @@ account and configure it appropriately.</p>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.letschat.message</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Message to use in the event. SpEL-expressions are supported</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"*#{application.name}* (#{application.id}) is *#{to.status}*"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*"</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -2008,7 +2008,7 @@ account and configure it appropriately.</p>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.telegram.message</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Text to send. SpEL-expressions are supported.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"<strong>#{application.name}</strong>/#{application.id} is <strong>#{to.status}</strong>"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"&lt;strong&gt;#{instance.registration.name}&lt;/strong&gt;/#{instance.id} is &lt;strong&gt;#{event.statusInfo.status}&lt;/strong&gt;"</code></p></td>
 </tr>
 </tbody>
 </table>
