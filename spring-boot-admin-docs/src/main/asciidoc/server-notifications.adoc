@@ -143,7 +143,7 @@ To enable https://www.pagerduty.com/[PagerDuty] notifications you just have to a
 
 | spring.boot.admin.notify.pagerduty.description
 | Description to use in the event. SpEL-expressions are supported
-| `+++"#{application.name}/#{application.id} is #{to.status}"+++`
+| `+++"#{instance.registration.name}/#{instance.id} is #{instance.statusInfo.status}"+++`
 
 | spring.boot.admin.notify.pagerduty.client
 | Client-name to use in the event
@@ -181,7 +181,7 @@ To enable https://www.opsgenie.com/[OpsGenie] notifications you just have to add
 
 | spring.boot.admin.notify.opsgenie.description
 | Description to use in the event. SpEL-expressions are supported
-| `+++"#{application.name}/#{application.id} is #{to.status}"+++`
+| `+++"#{instance.registration.name}/#{instance.id} is #{instance.statusInfo.status}"+++`
 
 | spring.boot.admin.notify.opsgenie.actions
 | Comma separated list of actions that can be executed.
@@ -239,7 +239,7 @@ To enable https://www.hipchat.com/[Hipchat] notifications you need to create an 
 
 | spring.boot.admin.notify.hipchat.description
 | Description to use in the event. SpEL-expressions are supported
-| `+++"&lt;strong&gt;#{application.name}&lt;/strong&gt;/#{application.id} is &lt;strong&gt;#{to.status}&lt;/strong&gt;"+++`
+| `+++"&lt;strong&gt;#{instance.registration.name}&lt;/strong&gt;/#{instance.id} is &lt;strong&gt;#{event.statusInfo.status}&lt;/strong&gt;"+++`
 |
 |===
 
@@ -279,7 +279,7 @@ account and configure it appropriately.
 
 | spring.boot.admin.notify.slack.message
 | Message to use in the event. SpEL-expressions and Slack markups are supported
-| `+++"*#{application.name}* (#{application.id}) is *#{to.status}*"+++`
+| `+++"*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*"+++`
 |
 |===
 
@@ -318,7 +318,7 @@ To enable https://sdelements.github.io/lets-chat/[Let's Chat] notifications you 
 
 | spring.boot.admin.notify.letschat.message
 | Message to use in the event. SpEL-expressions are supported
-| `+++"*#{application.name}* (#{application.id}) is *#{to.status}*"+++`
+| `+++"*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*"+++`
 |
 |===
 
@@ -375,5 +375,5 @@ To enable https://telegram.org/[Telegram] notifications you need to create and a
 
 | spring.boot.admin.notify.telegram.message
 | Text to send. SpEL-expressions are supported.
-| `+++"<strong>#{application.name}</strong>/#{application.id} is <strong>#{to.status}</strong>"+++`
+| `+++"&lt;strong&gt;#{instance.registration.name}&lt;/strong&gt;/#{instance.id} is &lt;strong&gt;#{event.statusInfo.status}&lt;/strong&gt;"+++`
 |===
