@@ -525,7 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.0.2-SNAPSHOT,</span>
-<span id="revdate">19.07.2018</span>
+<span id="revdate">23.07.2018</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -586,15 +586,28 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 </ul>
 </li>
-<li><a href="#monitoring-spring-boot-1.5.x">6. Monitoring Spring Boot 1.5.x</a></li>
-<li><a href="#_changes_with_2_x">7. Changes with 2.x</a>
+<li><a href="#customizing">6. Customizing</a>
 <ul class="sectlevel2">
-<li><a href="#_ui">7.1. UI</a></li>
-<li><a href="#_backend">7.2. Backend</a></li>
-<li><a href="#_client">7.3. Client</a></li>
+<li><a href="#customizing-notifiers">6.1. Custom Notifiers</a></li>
+<li><a href="#customizing-headers">6.2. Injecting Custom HTTP Headers</a></li>
+<li><a href="#customizing-instance-filter">6.3. Intercepting Requests And Responses</a></li>
+<li><a href="#customizing-custom-views">6.4. Custom Views</a>
+<ul class="sectlevel3">
+<li><a href="#customizing-custom-views-top-level">6.4.1. Adding a Top-Level View</a></li>
+<li><a href="#customizing-custom-views-instance">6.4.2. Visualizing a Custom Endpoint</a></li>
 </ul>
 </li>
-<li><a href="#faqs">8. FAQs</a></li>
+</ul>
+</li>
+<li><a href="#monitoring-spring-boot-1.5.x">7. Monitoring Spring Boot 1.5.x</a></li>
+<li><a href="#_changes_with_2_x">8. Changes with 2.x</a>
+<ul class="sectlevel2">
+<li><a href="#_ui">8.1. UI</a></li>
+<li><a href="#_backend">8.2. Backend</a></li>
+<li><a href="#_client">8.3. Client</a></li>
+</ul>
+</li>
+<li><a href="#faqs">9. FAQs</a></li>
 </ul>
 </div>
 </div>
@@ -660,7 +673,7 @@ The UI is just an AngularJs application on top of the Spring Boot Actuator endpo
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-If you want to setup the Spring Boot Admin Server via war-deployment in a servlet-container, please have a look at the <a href="https://github.com/codecentric/spring-boot-admin/blob/master/spring-boot-admin-samples/spring-boot-admin-sample-war/">spring-boot-admin-sample-war</a>.
+If you want to setup the Spring Boot Admin Server via war-deployment in a servlet-container, please have a look at the <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-war/">spring-boot-admin-sample-war</a>.
 </td>
 </tr>
 </table>
@@ -724,14 +737,14 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <p>Make the actuator endpoints accessible:</p>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">    <span class="annotation">@Configuration</span>
-    <span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SecurityPermitAllConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
-        <span class="annotation">@Override</span>
-        <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
-            http.authorizeRequests().anyRequest().permitAll()  <i class="conum" data-value="1"></i><b>(1)</b>
-                .and().csrf().disable();
-        }
-    }</code></pre>
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
+<span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SecurityPermitAllConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
+    <span class="annotation">@Override</span>
+    <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
+        http.authorizeRequests().anyRequest().permitAll()  <i class="conum" data-value="1"></i><b>(1)</b>
+            .and().csrf().disable();
+    }
+}</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1345,68 +1358,12 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <p>Instantiate a HazelcastConfig:</p>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
-<span class="annotation">@EnableAutoConfiguration</span>
-<span class="annotation">@EnableAdminServer</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">SpringBootAdminApplication</span> {
-    <span class="annotation">@Bean</span>
-    <span class="directive">public</span> Config hazelcastConfig() {
-        MapConfig mapConfig = <span class="keyword">new</span> MapConfig(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-boot-admin-event-store</span><span class="delimiter">&quot;</span></span>).setInMemoryFormat(InMemoryFormat.OBJECT)
-                                                                            .setBackupCount(<span class="integer">1</span>)
-                                                                            .setEvictionPolicy(EvictionPolicy.NONE);
-        <span class="keyword">return</span> <span class="keyword">new</span> Config().setProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">hazelcast.jmx</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>).addMapConfig(mapConfig);
-    }
-
-    <span class="annotation">@Profile</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">insecure</span><span class="delimiter">&quot;</span></span>)
-    <span class="annotation">@Configuration</span>
-    <span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SecurityPermitAllConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
-        <span class="annotation">@Override</span>
-        <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
-            http.authorizeRequests()
-                .anyRequest()
-                .permitAll()
-                .and()
-                .csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringAntMatchers(<span class="string"><span class="delimiter">&quot;</span><span class="content">/instances</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">/actuator/**</span><span class="delimiter">&quot;</span></span>);
-        }
-    }
-
-    <span class="annotation">@Profile</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">secure</span><span class="delimiter">&quot;</span></span>)
-    <span class="annotation">@Configuration</span>
-    <span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SecuritySecureConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
-        <span class="directive">private</span> <span class="directive">final</span> <span class="predefined-type">String</span> adminContextPath;
-
-        <span class="directive">public</span> SecuritySecureConfig(AdminServerProperties adminServerProperties) {
-            <span class="local-variable">this</span>.adminContextPath = adminServerProperties.getContextPath();
-        }
-
-        <span class="annotation">@Override</span>
-        <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
-            <span class="comment">// @formatter:off</span>
-            SavedRequestAwareAuthenticationSuccessHandler successHandler = <span class="keyword">new</span> SavedRequestAwareAuthenticationSuccessHandler();
-            successHandler.setTargetUrlParameter(<span class="string"><span class="delimiter">&quot;</span><span class="content">redirectTo</span><span class="delimiter">&quot;</span></span>);
-            successHandler.setDefaultTargetUrl(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>);
-
-            http.authorizeRequests()
-                .antMatchers(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/assets/**</span><span class="delimiter">&quot;</span></span>).permitAll()
-                .antMatchers(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>).permitAll()
-                .anyRequest().authenticated()
-                .and()
-            .formLogin().loginPage(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>).successHandler(successHandler).and()
-            .logout().logoutUrl(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/logout</span><span class="delimiter">&quot;</span></span>).and()
-            .httpBasic().and()
-            .csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringAntMatchers(<span class="string"><span class="delimiter">&quot;</span><span class="content">/instances</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">/actuator/**</span><span class="delimiter">&quot;</span></span>);
-            <span class="comment">// @formatter:on</span>
-        }
-    }
-
-    <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
-        SpringApplication.run(SpringBootAdminApplication.class, args);
-    }
-
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Bean</span>
+<span class="directive">public</span> Config hazelcastConfig() {
+    MapConfig mapConfig = <span class="keyword">new</span> MapConfig(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-boot-admin-event-store</span><span class="delimiter">&quot;</span></span>).setInMemoryFormat(InMemoryFormat.OBJECT)
+                                                                        .setBackupCount(<span class="integer">1</span>)
+                                                                        .setEvictionPolicy(EvictionPolicy.NONE);
+    <span class="keyword">return</span> <span class="keyword">new</span> Config().setProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">hazelcast.jmx</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>).addMapConfig(mapConfig);
 }</code></pre>
 </div>
 </div>
@@ -1500,31 +1457,31 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <div class="listingblock">
 <div class="title">How to configure filtering</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">    <span class="annotation">@Configuration</span>
-    <span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">NotifierConfig</span> {
-        <span class="directive">private</span> <span class="directive">final</span> InstanceRepository repository;
-        <span class="directive">private</span> <span class="directive">final</span> ObjectProvider&lt;<span class="predefined-type">List</span>&lt;Notifier&gt;&gt; otherNotifiers;
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
+<span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">NotifierConfig</span> {
+    <span class="directive">private</span> <span class="directive">final</span> InstanceRepository repository;
+    <span class="directive">private</span> <span class="directive">final</span> ObjectProvider&lt;<span class="predefined-type">List</span>&lt;Notifier&gt;&gt; otherNotifiers;
 
-        <span class="directive">public</span> NotifierConfig(InstanceRepository repository, ObjectProvider&lt;<span class="predefined-type">List</span>&lt;Notifier&gt;&gt; otherNotifiers) {
-            <span class="local-variable">this</span>.repository = repository;
-            <span class="local-variable">this</span>.otherNotifiers = otherNotifiers;
-        }
+    <span class="directive">public</span> NotifierConfig(InstanceRepository repository, ObjectProvider&lt;<span class="predefined-type">List</span>&lt;Notifier&gt;&gt; otherNotifiers) {
+        <span class="local-variable">this</span>.repository = repository;
+        <span class="local-variable">this</span>.otherNotifiers = otherNotifiers;
+    }
 
-        <span class="annotation">@Bean</span>
-        <span class="directive">public</span> FilteringNotifier filteringNotifier() { <i class="conum" data-value="1"></i><b>(1)</b>
-            CompositeNotifier delegate = <span class="keyword">new</span> CompositeNotifier(otherNotifiers.getIfAvailable(<span class="predefined-type">Collections</span>::emptyList));
-            <span class="keyword">return</span> <span class="keyword">new</span> FilteringNotifier(delegate, repository);
-        }
+    <span class="annotation">@Bean</span>
+    <span class="directive">public</span> FilteringNotifier filteringNotifier() { <i class="conum" data-value="1"></i><b>(1)</b>
+        CompositeNotifier delegate = <span class="keyword">new</span> CompositeNotifier(otherNotifiers.getIfAvailable(<span class="predefined-type">Collections</span>::emptyList));
+        <span class="keyword">return</span> <span class="keyword">new</span> FilteringNotifier(delegate, repository);
+    }
 
-        <span class="annotation">@Primary</span>
-        <span class="annotation">@Bean</span>(initMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span>, destroyMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">stop</span><span class="delimiter">&quot;</span></span>)
-        <span class="directive">public</span> RemindingNotifier remindingNotifier() { <i class="conum" data-value="2"></i><b>(2)</b>
-            RemindingNotifier notifier = <span class="keyword">new</span> RemindingNotifier(filteringNotifier(), repository);
-            notifier.setReminderPeriod(<span class="predefined-type">Duration</span>.ofMinutes(<span class="integer">10</span>));
-            notifier.setCheckReminderInverval(<span class="predefined-type">Duration</span>.ofSeconds(<span class="integer">10</span>));
-            <span class="keyword">return</span> notifier;
-        }
-    }</code></pre>
+    <span class="annotation">@Primary</span>
+    <span class="annotation">@Bean</span>(initMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span>, destroyMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">stop</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">public</span> RemindingNotifier remindingNotifier() { <i class="conum" data-value="2"></i><b>(2)</b>
+        RemindingNotifier notifier = <span class="keyword">new</span> RemindingNotifier(filteringNotifier(), repository);
+        notifier.setReminderPeriod(<span class="predefined-type">Duration</span>.ofMinutes(<span class="integer">10</span>));
+        notifier.setCheckReminderInverval(<span class="predefined-type">Duration</span>.ofSeconds(<span class="integer">10</span>));
+        <span class="keyword">return</span> notifier;
+    }
+}</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -2073,38 +2030,38 @@ By default <code>spring-boot-admin-server-ui</code> provides a login page and a 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">    <span class="annotation">@Configuration</span>
-    <span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SecuritySecureConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
-        <span class="directive">private</span> <span class="directive">final</span> <span class="predefined-type">String</span> adminContextPath;
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
+<span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SecuritySecureConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
+    <span class="directive">private</span> <span class="directive">final</span> <span class="predefined-type">String</span> adminContextPath;
 
-        <span class="directive">public</span> SecuritySecureConfig(AdminServerProperties adminServerProperties) {
-            <span class="local-variable">this</span>.adminContextPath = adminServerProperties.getContextPath();
-        }
+    <span class="directive">public</span> SecuritySecureConfig(AdminServerProperties adminServerProperties) {
+        <span class="local-variable">this</span>.adminContextPath = adminServerProperties.getContextPath();
+    }
 
-        <span class="annotation">@Override</span>
-        <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
-            <span class="comment">// @formatter:off</span>
-            SavedRequestAwareAuthenticationSuccessHandler successHandler = <span class="keyword">new</span> SavedRequestAwareAuthenticationSuccessHandler();
-            successHandler.setTargetUrlParameter(<span class="string"><span class="delimiter">&quot;</span><span class="content">redirectTo</span><span class="delimiter">&quot;</span></span>);
-            successHandler.setDefaultTargetUrl(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>);
+    <span class="annotation">@Override</span>
+    <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
+        <span class="comment">// @formatter:off</span>
+        SavedRequestAwareAuthenticationSuccessHandler successHandler = <span class="keyword">new</span> SavedRequestAwareAuthenticationSuccessHandler();
+        successHandler.setTargetUrlParameter(<span class="string"><span class="delimiter">&quot;</span><span class="content">redirectTo</span><span class="delimiter">&quot;</span></span>);
+        successHandler.setDefaultTargetUrl(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>);
 
-            http.authorizeRequests()
-                .antMatchers(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/assets/**</span><span class="delimiter">&quot;</span></span>).permitAll() <i class="conum" data-value="1"></i><b>(1)</b>
-                .antMatchers(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>).permitAll()
-                .anyRequest().authenticated() <i class="conum" data-value="2"></i><b>(2)</b>
-                .and()
-            .formLogin().loginPage(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>).successHandler(successHandler).and() <i class="conum" data-value="3"></i><b>(3)</b>
-            .logout().logoutUrl(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/logout</span><span class="delimiter">&quot;</span></span>).and()
-            .httpBasic().and() <i class="conum" data-value="4"></i><b>(4)</b>
-            .csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())  <i class="conum" data-value="5"></i><b>(5)</b>
-                .ignoringAntMatchers(
-                    <span class="string"><span class="delimiter">&quot;</span><span class="content">/instances</span><span class="delimiter">&quot;</span></span>,   <i class="conum" data-value="6"></i><b>(6)</b>
-                    <span class="string"><span class="delimiter">&quot;</span><span class="content">/actuator/**</span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="7"></i><b>(7)</b>
-                );
-            <span class="comment">// @formatter:on</span>
-        }
-    }</code></pre>
+        http.authorizeRequests()
+            .antMatchers(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/assets/**</span><span class="delimiter">&quot;</span></span>).permitAll() <i class="conum" data-value="1"></i><b>(1)</b>
+            .antMatchers(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>).permitAll()
+            .anyRequest().authenticated() <i class="conum" data-value="2"></i><b>(2)</b>
+            .and()
+        .formLogin().loginPage(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>).successHandler(successHandler).and() <i class="conum" data-value="3"></i><b>(3)</b>
+        .logout().logoutUrl(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/logout</span><span class="delimiter">&quot;</span></span>).and()
+        .httpBasic().and() <i class="conum" data-value="4"></i><b>(4)</b>
+        .csrf()
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())  <i class="conum" data-value="5"></i><b>(5)</b>
+            .ignoringAntMatchers(
+                <span class="string"><span class="delimiter">&quot;</span><span class="content">/instances</span><span class="delimiter">&quot;</span></span>,   <i class="conum" data-value="6"></i><b>(6)</b>
+                <span class="string"><span class="delimiter">&quot;</span><span class="content">/actuator/**</span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="7"></i><b>(7)</b>
+            );
+        <span class="comment">// @formatter:on</span>
+    }
+}</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -2140,7 +2097,7 @@ By default <code>spring-boot-admin-server-ui</code> provides a login page and a 
 </table>
 </div>
 <div class="paragraph">
-<p>For a complete sample look at <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-servlet/" class="bare">github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-servlet/</a>[spring-boot-admin-sample-servlet.</p>
+<p>For a complete sample look at <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-servlet/">spring-boot-admin-sample-servlet</a>.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -2254,7 +2211,269 @@ When using this approach the SBA Server decides whether or not the user can acce
 </div>
 </div>
 <div class="sect1">
-<h2 id="monitoring-spring-boot-1.5.x"><a class="anchor" href="#monitoring-spring-boot-1.5.x"></a><a class="link" href="#monitoring-spring-boot-1.5.x">6. Monitoring Spring Boot 1.5.x</a></h2>
+<h2 id="customizing"><a class="anchor" href="#customizing"></a><a class="link" href="#customizing">6. Customizing</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="customizing-notifiers"><a class="anchor" href="#customizing-notifiers"></a><a class="link" href="#customizing-notifiers">6.1. Custom Notifiers</a></h3>
+<div class="paragraph">
+<p>You can add your own Notifiers by adding Spring Beans which implement the <code>Notifier</code> interface, at best by extending
+<code>AbstractEventNotifier</code> or <code>AbstractStatusChangeNotifier</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">class</span> <span class="class">CustomNotifier</span>  <span class="directive">extends</span> AbstractEventNotifier {
+    <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">Logger</span> LOGGER = LoggerFactory.getLogger(LoggingNotifier.class);
+
+    <span class="directive">public</span> CustomNotifier(InstanceRepository repository) {
+        <span class="local-variable">super</span>(repository);
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="directive">protected</span> Mono&lt;<span class="predefined-type">Void</span>&gt; doNotify(InstanceEvent event, Instance instance) {
+        <span class="keyword">return</span> Mono.fromRunnable(() -&gt; {
+            <span class="keyword">if</span> (event <span class="keyword">instanceof</span> InstanceStatusChangedEvent) {
+                LOGGER.info(<span class="string"><span class="delimiter">&quot;</span><span class="content">Instance {} ({}) is {}</span><span class="delimiter">&quot;</span></span>, instance.getRegistration().getName(), event.getInstance(),
+                    ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus());
+            } <span class="keyword">else</span> {
+                LOGGER.info(<span class="string"><span class="delimiter">&quot;</span><span class="content">Instance {} ({}) {}</span><span class="delimiter">&quot;</span></span>, instance.getRegistration().getName(), event.getInstance(),
+                    event.getType());
+            }
+        });
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="customizing-headers"><a class="anchor" href="#customizing-headers"></a><a class="link" href="#customizing-headers">6.2. Injecting Custom HTTP Headers</a></h3>
+<div class="paragraph">
+<p>In case you need to inject custom HTTP headers into the requests made to the monitored application&#8217;s actuator endpoints you can easily add a <code>HttpHeadersProvider</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Bean</span>
+<span class="directive">public</span> HttpHeadersProvider customHttpHeadersProvider() {
+    <span class="keyword">return</span>  instance -&gt; {
+        HttpHeaders httpHeaders = <span class="keyword">new</span> HttpHeaders();
+        httpHeaders.add(<span class="string"><span class="delimiter">&quot;</span><span class="content">X-CUSTOM</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">My Custom Value</span><span class="delimiter">&quot;</span></span>);
+        <span class="keyword">return</span> httpHeaders;
+    };
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="customizing-instance-filter"><a class="anchor" href="#customizing-instance-filter"></a><a class="link" href="#customizing-instance-filter">6.3. Intercepting Requests And Responses</a></h3>
+<div class="paragraph">
+<p>You can intercept and modify requests and responses made to the monitored application&#8217;s actuator endpoints by implementing the <code>InstanceExchangeFilterFunction</code> interface.
+This can be useful for auditing or adding some extra security checks.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Bean</span>
+<span class="directive">public</span> InstanceExchangeFilterFunction auditLog() {
+    <span class="keyword">return</span> (instance, request, next) -&gt; {
+        <span class="keyword">if</span> (HttpMethod.DELETE.equals(request.method()) || HttpMethod.POST.equals(request.method())) {
+            log.info(<span class="string"><span class="delimiter">&quot;</span><span class="content">{} for {} on {}</span><span class="delimiter">&quot;</span></span>, request.method(), instance.getId(), request.url());
+        }
+        <span class="keyword">return</span> next.exchange(request);
+    };
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="customizing-custom-views"><a class="anchor" href="#customizing-custom-views"></a><a class="link" href="#customizing-custom-views">6.4. Custom Views</a></h3>
+<div class="paragraph">
+<p>It is possible to add custom views to the ui. The views must be implemented as <a href="https://vuejs.org/">Vue.js</a> components.</p>
+</div>
+<div class="paragraph">
+<p>The Javascript-Bundle and Css-Stlysheet must be placed on the classpath at <code>/META-INF/spring-boot-admin-server-ui/extensions/{name}/</code> so the server can pick them up.
+The <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-custom-ui/">spring-boot-admin-sample-custom-ui</a> module contains a sample which has the necessary maven setup to build such a module.</p>
+</div>
+<div class="paragraph">
+<p>The custom extension registers itself by calling <code>SBA.use()</code> and need to expose a <code>install()</code> function, which is called by the ui when setting up the routes.
+The <code>install()</code> function receives a parameter object referencing the <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-server-ui/src/main/frontend/viewRegistry.js">viewRegistry</a> and the <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-server-ui/src/main/frontend/store.js">applicationStore</a> in order to register views and/or callbacks.</p>
+</div>
+<div class="sect3">
+<h4 id="customizing-custom-views-top-level"><a class="anchor" href="#customizing-custom-views-top-level"></a><a class="link" href="#customizing-custom-views-top-level">6.4.1. Adding a Top-Level View</a></h4>
+<div class="paragraph">
+<p>Here is a simple top level view just listing all registered applications:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html"><span class="tag">&lt;template&gt;</span>
+  <span class="tag">&lt;pre</span> <span class="attribute-name">v-text</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">stringify(applications, null, 4)</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+
+<span class="tag">&lt;script&gt;</span>
+<span class="inline"><span class="reserved">export</span> <span class="keyword">default</span> {
+  <span class="key">props</span>: {
+    <span class="key">applications</span>: { <i class="conum" data-value="1"></i><b>(1)</b>
+      <span class="key">type</span>: Array,
+      <span class="key">required</span>: <span class="predefined-constant">true</span>
+    }
+  },
+  <span class="key">methods</span>: {
+    <span class="key">stringify</span>: JSON.stringify
+  }
+};</span>
+<span class="tag">&lt;/script&gt;</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>If you define a <code>applications</code> prop the component will receive all registered applications.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+There are some helpful methods on the application and instances object available. Have a look at <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-server-ui/src/main/frontend/services/application.js">application.js</a> and <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-server-ui/src/main/frontend/services/instance.js">instance.js</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>And this is how you register the top-level view.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">SBA.use({
+  install({viewRegistry}) {
+    viewRegistry.addView({
+      <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">custom</span><span class="delimiter">'</span></span>,  <i class="conum" data-value="1"></i><b>(1)</b>
+      <span class="key">path</span>: <span class="string"><span class="delimiter">'</span><span class="content">/custom</span><span class="delimiter">'</span></span>, <i class="conum" data-value="2"></i><b>(2)</b>
+      <span class="key">component</span>: custom, <i class="conum" data-value="3"></i><b>(3)</b>
+      <span class="key">label</span>: <span class="string"><span class="delimiter">'</span><span class="content">Custom</span><span class="delimiter">'</span></span>, <i class="conum" data-value="4"></i><b>(4)</b>
+      <span class="key">order</span>: <span class="integer">1000</span>, <i class="conum" data-value="5"></i><b>(5)</b>
+    });
+  }
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Name of the view and the route to the view</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Path where the view will be accessible</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The imported custom component, which will be rendered on the route.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The label for the custom view to be shown in the top navigation bar.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Order for the view. Views in the top navigation bar are sorted by ascending order.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="customizing-custom-views-instance"><a class="anchor" href="#customizing-custom-views-instance"></a><a class="link" href="#customizing-custom-views-instance">6.4.2. Visualizing a Custom Endpoint</a></h4>
+<div class="paragraph">
+<p>Here is a view to show a custom endpoint:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html"><span class="tag">&lt;template&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">custom</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+    Instance: <span class="tag">&lt;span</span> <span class="attribute-name">v-text</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">instance.id</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
+    Output: <span class="tag">&lt;span</span> <span class="attribute-name">v-text</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">text</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+
+<span class="tag">&lt;script&gt;</span>
+<span class="inline"><span class="reserved">export</span> <span class="keyword">default</span> {
+  <span class="key">props</span>: {
+    <span class="key">instance</span>: { <i class="conum" data-value="1"></i><b>(1)</b>
+      <span class="key">type</span>: Object,
+      <span class="key">required</span>: <span class="predefined-constant">true</span>
+    }
+  },
+  <span class="key">data</span>: () =&gt; ({
+    <span class="key">text</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+  }),
+  async created() {
+    const response = await <span class="local-variable">this</span>.instance.axios.get(<span class="string"><span class="delimiter">'</span><span class="content">actuator/custom</span><span class="delimiter">'</span></span>); <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="local-variable">this</span>.text = response.data;
+  }
+};</span>
+<span class="tag">&lt;/script&gt;</span>
+
+<span class="tag">&lt;style&gt;</span>
+<span class="inline">  <span class="class">.custom</span> {
+    <span class="key">font-size</span>: <span class="float">20px</span>;
+    <span class="key">width</span>: <span class="float">80%</span>;
+  }</span>
+<span class="tag">&lt;/style&gt;</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>If you define a <code>instance</code> prop the component will receive the instance the view should be rendered for.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Each instance has a preconfigured <a href="https://github.com/axios/axios">axios</a> instance to access the endpoints with the correct path and headers.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Registering the instance view works like for the top-level view with some additional properties:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">SBA.use({
+  install({viewRegistry}) {
+    viewRegistry.addView({
+      <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">instances/custom</span><span class="delimiter">'</span></span>,
+      <span class="key">parent</span>: <span class="string"><span class="delimiter">'</span><span class="content">instances</span><span class="delimiter">'</span></span>, <i class="conum" data-value="1"></i><b>(1)</b>
+      <span class="key">path</span>: <span class="string"><span class="delimiter">'</span><span class="content">custom</span><span class="delimiter">'</span></span>,
+      <span class="key">component</span>: customEndpoint,
+      <span class="key">label</span>: <span class="string"><span class="delimiter">'</span><span class="content">Custom</span><span class="delimiter">'</span></span>,
+      <span class="key">order</span>: <span class="integer">1000</span>,
+      <span class="key">isEnabled</span>: ({instance}) =&gt; instance.hasEndpoint(<span class="string"><span class="delimiter">'</span><span class="content">custom</span><span class="delimiter">'</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    });
+  }
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The parent must be 'instances' in order to render the new custom view for a single instance.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>If you add a <code>isEnabled</code> callback you can figure out dynamically if the view should be show for the particular instance.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="monitoring-spring-boot-1.5.x"><a class="anchor" href="#monitoring-spring-boot-1.5.x"></a><a class="link" href="#monitoring-spring-boot-1.5.x">7. Monitoring Spring Boot 1.5.x</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>It is possible to monitor Spring Boot 1.5.x applications with Spring Boot Admin 2.x. The old Spring Boot Admin Client is
@@ -2280,7 +2499,7 @@ able to register at a newer server. Since the API has slight changes, you need t
 </div>
 </div>
 <div class="sect1">
-<h2 id="_changes_with_2_x"><a class="anchor" href="#_changes_with_2_x"></a><a class="link" href="#_changes_with_2_x">7. Changes with 2.x</a></h2>
+<h2 id="_changes_with_2_x"><a class="anchor" href="#_changes_with_2_x"></a><a class="link" href="#_changes_with_2_x">8. Changes with 2.x</a></h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
@@ -2290,7 +2509,7 @@ able to register at a newer server. Since the API has slight changes, you need t
 </ul>
 </div>
 <div class="sect2">
-<h3 id="_ui"><a class="anchor" href="#_ui"></a><a class="link" href="#_ui">7.1. UI</a></h3>
+<h3 id="_ui"><a class="anchor" href="#_ui"></a><a class="link" href="#_ui">8.1. UI</a></h3>
 <div class="ulist">
 <ul>
 <li>
@@ -2321,7 +2540,7 @@ able to register at a newer server. Since the API has slight changes, you need t
 </div>
 </div>
 <div class="sect2">
-<h3 id="_backend"><a class="anchor" href="#_backend"></a><a class="link" href="#_backend">7.2. Backend</a></h3>
+<h3 id="_backend"><a class="anchor" href="#_backend"></a><a class="link" href="#_backend">8.2. Backend</a></h3>
 <div class="ulist">
 <ul>
 <li>
@@ -2364,7 +2583,7 @@ able to register at a newer server. Since the API has slight changes, you need t
 </div>
 </div>
 <div class="sect2">
-<h3 id="_client"><a class="anchor" href="#_client"></a><a class="link" href="#_client">7.3. Client</a></h3>
+<h3 id="_client"><a class="anchor" href="#_client"></a><a class="link" href="#_client">8.3. Client</a></h3>
 <div class="ulist">
 <ul>
 <li>
@@ -2385,7 +2604,7 @@ able to register at a newer server. Since the API has slight changes, you need t
 </div>
 </div>
 <div class="sect1">
-<h2 id="faqs"><a class="anchor" href="#faqs"></a><a class="link" href="#faqs">8. FAQs</a></h2>
+<h2 id="faqs"><a class="anchor" href="#faqs"></a><a class="link" href="#faqs">9. FAQs</a></h2>
 <div class="sectionbody">
 <div class="dlist q-and-a">
 <dl>
