@@ -116,6 +116,12 @@ class Instance {
     });
   }
 
+  async fetchScheduledTasks() {
+    return this.axios.get(uri`actuator/scheduledtasks`, {
+      headers: {'Accept': actuatorMimeTypes}
+    });
+  }
+
   async fetchFlyway() {
     return this.axios.get(uri`actuator/flyway`, {
       headers: {'Accept': actuatorMimeTypes}
