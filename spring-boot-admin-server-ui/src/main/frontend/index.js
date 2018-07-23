@@ -27,6 +27,8 @@ import ViewRegistry from './viewRegistry';
 import views from './views';
 
 moment.locale(window.navigator.language);
+Vue.use(VueRouter);
+Vue.use(components);
 
 const applicationStore = new Store();
 const viewRegistry = new ViewRegistry();
@@ -40,11 +42,9 @@ const installables = [
 
 installables.forEach(view => view.install({
   viewRegistry,
-  applicationStore
+  applicationStore,
+  vue: Vue
 }));
-
-Vue.use(VueRouter);
-Vue.use(components);
 
 new Vue({
   router: new VueRouter({

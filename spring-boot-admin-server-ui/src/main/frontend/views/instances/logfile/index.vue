@@ -131,7 +131,6 @@
         parent: 'instances',
         path: 'logfile',
         component: this,
-        props: true,
         label: 'Logfile',
         order: 200,
         isEnabled: ({instance}) => instance.hasEndpoint('logfile')

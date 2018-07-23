@@ -40,7 +40,7 @@ If you add a `FilteringNotifier` to your `ApplicationContext` a RESTful interfac
 This notifier is useful if you don't want recieve notifications when deploying your applications. Before stopping the application you can add an (expiring) filter either via a `POST` request.
 
 .How to configure filtering
-[source,java]
+[source,java,indent=0]
 ----
 include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/SpringBootAdminApplication.java[tags=configuration-filtering-notifier]
 ----

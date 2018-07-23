@@ -227,7 +227,6 @@
         parent: 'instances',
         path: 'jolokia',
         component: this,
-        props: true,
         label: 'JMX',
         order: 350,
         isEnabled: ({instance}) => instance.hasEndpoint('jolokia')

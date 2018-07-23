@@ -33,11 +33,11 @@ import com.hazelcast.config.EvictionPolicy;
 import com.hazelcast.config.InMemoryFormat;
 import com.hazelcast.config.MapConfig;
 
-// tag::application-hazelcast[]
 @Configuration
 @EnableAutoConfiguration
 @EnableAdminServer
 public class SpringBootAdminApplication {
+    // tag::application-hazelcast[]
     @Bean
     public Config hazelcastConfig() {
         MapConfig mapConfig = new MapConfig("spring-boot-admin-event-store").setInMemoryFormat(InMemoryFormat.OBJECT)
@@ -45,6 +45,7 @@ public class SpringBootAdminApplication {
                                                                             .setEvictionPolicy(EvictionPolicy.NONE);
         return new Config().setProperty("hazelcast.jmx", "true").addMapConfig(mapConfig);
     }
+    // end::application-hazelcast[]
 
     @Profile("insecure")
     @Configuration
@@ -97,4 +98,3 @@ public class SpringBootAdminApplication {
     }
 
 }
-// end::application-hazelcast[]

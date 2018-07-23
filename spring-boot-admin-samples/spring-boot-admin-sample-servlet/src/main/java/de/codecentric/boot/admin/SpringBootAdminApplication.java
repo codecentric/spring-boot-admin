@@ -20,10 +20,10 @@ import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.notify.CompositeNotifier;
-import de.codecentric.boot.admin.server.notify.LoggingNotifier;
 import de.codecentric.boot.admin.server.notify.Notifier;
 import de.codecentric.boot.admin.server.notify.RemindingNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
+import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
 import de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunction;
 
 import java.time.Duration;
@@ -38,6 +38,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -105,6 +106,7 @@ public class SpringBootAdminApplication {
     }
     // end::configuration-spring-security[]
 
+    // tag::customization-instance-exchange-filter-function[]
     @Bean
     public InstanceExchangeFilterFunction auditLog() {
         return (instance, request, next) -> {
@@ -114,16 +116,29 @@ public class SpringBootAdminApplication {
             return next.exchange(request);
         };
     }
+    // end::customization-instance-exchange-filter-function[]
 
     @Bean
-    public LoggingNotifier loggerNotifier(InstanceRepository repository) {
-        return new LoggingNotifier(repository);
+    public CustomNotifier customNotifier(InstanceRepository repository) {
+        return new CustomNotifier(repository);
     }
 
     @Bean
     public CustomEndpoint customEndpoint() {
         return new CustomEndpoint();
     }
+
+    // tag::customization-http-headers-providers[]
+    @Bean
+    public HttpHeadersProvider customHttpHeadersProvider() {
+        return  instance -> {
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add("X-CUSTOM", "My Custom Value");
+            return httpHeaders;
+        };
+    }
+    // end::customization-http-headers-providers[]
+
 
     // tag::configuration-filtering-notifier[]
     @Configuration

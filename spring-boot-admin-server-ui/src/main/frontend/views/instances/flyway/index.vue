@@ -128,7 +128,6 @@
         parent: 'instances',
         path: 'flyway',
         component: this,
-        props: true,
         label: 'Flyway',
         order: 900,
         isEnabled: ({instance}) => instance.hasEndpoint('flyway')

@@ -152,7 +152,6 @@
         parent: 'instances',
         path: '',
         component: this,
-        props: true,
         label: 'Details',
         order: 0
       });

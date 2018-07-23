@@ -218,7 +218,6 @@
         parent: 'instances',
         path: 'metrics',
         component: this,
-        props: true,
         label: 'Metrics',
         order: 50,
         isEnabled: ({instance}) => instance.hasEndpoint('metrics')

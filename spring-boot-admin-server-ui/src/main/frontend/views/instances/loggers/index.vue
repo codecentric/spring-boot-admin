@@ -206,7 +206,6 @@
         parent: 'instances',
         path: 'loggers',
         component: this,
-        props: true,
         label: 'Loggers',
         order: 300,
         isEnabled: ({instance}) => instance.hasEndpoint('loggers')

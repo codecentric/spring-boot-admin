@@ -1,0 +1,86 @@
+[[customizing]]
+== Customizing ==
+
+[[customizing-notifiers]]
+=== Custom Notifiers ===
+
+You can add your own Notifiers by adding Spring Beans which implement the `Notifier` interface, at best by extending
+`AbstractEventNotifier` or `AbstractStatusChangeNotifier`
+
+[source,java,indent=0]
+----
+include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/CustomNotifier.java[tags=customization-notifiers]
+----
+
+[[customizing-headers]]
+=== Injecting Custom HTTP Headers ===
+
+In case you need to inject custom HTTP headers into the requests made to the monitored application's actuator endpoints you can easily add a `HttpHeadersProvider`:
+
+[source,java,indent=0]
+----
+include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/SpringBootAdminApplication.java[tags=customization-http-headers-providers]
+----
+
+[[customizing-instance-filter]]
+=== Intercepting Requests And Responses ===
+
+You can intercept and modify requests and responses made to the monitored application's actuator endpoints by implementing the `InstanceExchangeFilterFunction` interface.
+This can be useful for auditing or adding some extra security checks.
+
+[source,java,indent=0]
+----
+include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/SpringBootAdminApplication.java[tags=customization-instance-exchange-filter-function]
+----
+
+[[customizing-custom-views]]
+=== Custom Views ===
+
+It is possible to add custom views to the ui. The views must be implemented as https://vuejs.org/[Vue.js] components.
+
+The Javascript-Bundle and Css-Stlysheet must be placed on the classpath at `/META-INF/spring-boot-admin-server-ui/extensions/{name}/` so the server can pick them up.
+The {github-src}/spring-boot-admin-samples/spring-boot-admin-sample-custom-ui/[spring-boot-admin-sample-custom-ui] module contains a sample which has the necessary maven setup to build such a module.
+
+The custom extension registers itself by calling `SBA.use()` and need to expose a `install()` function, which is called by the ui when setting up the routes.
+The `install()` function receives a parameter object referencing the {github-src}/spring-boot-admin-server-ui/src/main/frontend/viewRegistry.js[viewRegistry] and the {github-src}/spring-boot-admin-server-ui/src/main/frontend/store.js[applicationStore] in order to register views and/or callbacks.
+
+[[customizing-custom-views-top-level]]
+==== Adding a Top-Level View ====
+
+Here is a simple top level view just listing all registered applications:
+[source,html]
+----
+include::{samples-dir}/spring-boot-admin-sample-custom-ui/src/custom.vue[lines=17..-1]
+----
+<1> If you define a `applications` prop the component will receive all registered applications.
+
+TIP: There are some helpful methods on the application and instances object available. Have a look at {github-src}/spring-boot-admin-server-ui/src/main/frontend/services/application.js[application.js] and {github-src}/spring-boot-admin-server-ui/src/main/frontend/services/instance.js[instance.js]
+
+And this is how you register the top-level view.
+[source,javascript]
+----
+include::{samples-dir}/spring-boot-admin-sample-custom-ui/src/index.js[tags=customization-ui-toplevel]
+----
+<1> Name of the view and the route to the view
+<2> Path where the view will be accessible
+<3> The imported custom component, which will be rendered on the route.
+<4> The label for the custom view to be shown in the top navigation bar.
+<5> Order for the view. Views in the top navigation bar are sorted by ascending order.
+
+[[customizing-custom-views-instance]]
+==== Visualizing a Custom Endpoint ====
+Here is a view to show a custom endpoint:
+[source,html]
+----
+include::{samples-dir}/spring-boot-admin-sample-custom-ui/src/custom-endpoint.vue[lines=17..-1]
+----
+<1> If you define a `instance` prop the component will receive the instance the view should be rendered for.
+<2> Each instance has a preconfigured https://github.com/axios/axios[axios] instance to access the endpoints with the correct path and headers.
+
+Registering the instance view works like for the top-level view with some additional properties:
+[source,javascript]
+----
+include::{samples-dir}/spring-boot-admin-sample-custom-ui/src/index.js[tags=customization-ui-endpoint]
+----
+<1> The parent must be 'instances' in order to render the new custom view for a single instance.
+<2> If you add a `isEnabled` callback you can figure out dynamically if the view should be show for the particular instance.

@@ -50,7 +50,6 @@
         parent: 'instances',
         path: 'heapdump',
         component: this,
-        props: true,
         label: 'Heap Dump',
         order: 800,
         isEnabled: ({instance}) => instance.hasEndpoint('heapdump')

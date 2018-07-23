@@ -148,7 +148,6 @@
         parent: 'instances',
         path: 'liquibase',
         component: this,
-        props: true,
         label: 'Liquibase',
         order: 900,
         isEnabled: ({instance}) => instance.hasEndpoint('liquibase')

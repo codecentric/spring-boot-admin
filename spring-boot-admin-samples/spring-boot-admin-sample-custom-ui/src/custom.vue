@@ -21,7 +21,7 @@
 <script>
 export default {
   props: {
-    applications: {
+    applications: { //<1>
       type: Array,
       required: true
     }
@@ -31,6 +31,3 @@ export default {
   }
 };
 </script>
-
-<style>
-</style>

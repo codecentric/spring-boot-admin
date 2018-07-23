@@ -153,7 +153,6 @@
         parent: 'instances',
         path: 'sessions',
         component: this,
-        props: true,
         label: 'Sessions',
         order: 700,
         isEnabled: ({instance}) => instance.hasEndpoint('sessions')

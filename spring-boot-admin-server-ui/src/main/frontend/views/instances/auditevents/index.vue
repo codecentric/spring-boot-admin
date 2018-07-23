@@ -130,7 +130,6 @@
         parent: 'instances',
         path: 'auditevents',
         component: this,
-        props: true,
         label: 'Audit Log',
         order: 600,
         isEnabled: ({instance}) => instance.hasEndpoint('auditevents')

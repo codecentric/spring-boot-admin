@@ -139,7 +139,6 @@
         parent: 'instances',
         path: 'env',
         component: this,
-        props: true,
         label: 'Environment',
         order: 100,
         isEnabled: ({instance}) => instance.hasEndpoint('env')

@@ -240,7 +240,6 @@
         parent: 'instances',
         path: 'httptrace',
         component: this,
-        props: true,
         label: 'Http Traces',
         order: 500,
         isEnabled: ({instance}) => instance.hasEndpoint('httptrace')

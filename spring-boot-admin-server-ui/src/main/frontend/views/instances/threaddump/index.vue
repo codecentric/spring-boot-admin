@@ -132,7 +132,6 @@
         parent: 'instances',
         path: 'threaddump',
         component: this,
-        props: true,
         label: 'Threads',
         order: 400,
         isEnabled: ({instance}) => instance.hasEndpoint('threaddump')

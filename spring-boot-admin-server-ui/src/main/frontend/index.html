@@ -29,9 +29,9 @@
     </th:block>
     <link rel="preload" href="assets/js/vendors.js" as="script">
     <th:block th:each="jsFile : ${jsExtensions}">
-        <link rel="preload" th:src="${jsFile.resourcePath}" as="script">
+        <link rel="preload" th:href="${jsFile.resourcePath}" as="script">
     </th:block>
-    <link rel="preload" src="assets/js/sba-core.js" as="script">
+    <link rel="preload" href="assets/js/sba-core.js" as="script">
 
     <link href="assets/css/sba-core.css" rel="stylesheet">
     <th:block th:each="cssFile : ${cssExtensions}">
@@ -48,7 +48,10 @@
     var SBA = {
         uiSettings: /*[[${uiSettings}]]*/ {},
         user: /*[[${user}]]*/ null,
-        extensions: []
+        extensions: [],
+        use(ext) {
+            this.extensions.push(ext);
+        }
     }
 </script>
 <script lang="javascript" src="assets/js/vendors.js" defer></script>

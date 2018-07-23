@@ -24,7 +24,7 @@
 <script>
 export default {
   props: {
-    instance: {
+    instance: { //<1>
       type: Object,
       required: true
     }
@@ -33,7 +33,7 @@ export default {
     text: ''
   }),
   async created() {
-    const response = await this.instance.axios.get('actuator/custom');
+    const response = await this.instance.axios.get('actuator/custom'); //<2>
     this.text = response.data;
   }
 };

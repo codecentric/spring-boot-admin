@@ -7,7 +7,7 @@ Since there are several approaches on solving authentication and authorization i
 By default `spring-boot-admin-server-ui` provides a login page and a logout button.
 
 A Spring Security configuration could look like this:
-[source,java]
+[source,java,indent=0]
 ----
 include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/SpringBootAdminApplication.java[tags=configuration-spring-security]
 ----
@@ -19,7 +19,7 @@ include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecen
 <6> Disables CRSF-Protection the endpoint the Spring Boot Admin Client uses to register.
 <7> Disables CRSF-Protection for the actuator endpoints.
 
-For a complete sample look at https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-servlet/[spring-boot-admin-sample-servlet.
+For a complete sample look at {github-src}/spring-boot-admin-samples/spring-boot-admin-sample-servlet/[spring-boot-admin-sample-servlet].
 
 NOTE: If you protect the `/instances` endpoint don't forget to configure the username and password on your SBA-Client using `spring.boot.admin.client.username` and `spring.boot.admin.client.password`.
 
