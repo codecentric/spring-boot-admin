@@ -174,7 +174,7 @@ class Instance {
   }
 
   streamLogfile(interval) {
-    return logtail(uri`actuator/logfile`, interval);
+    return logtail(opt => this.axios.get(uri`actuator/logfile`, opt), interval);
   }
 
   async listMBeans() {

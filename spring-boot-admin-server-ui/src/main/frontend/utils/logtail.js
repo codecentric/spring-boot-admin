@@ -15,21 +15,14 @@
  */
 
 import {concatMap, EMPTY, of, timer} from '@/utils/rxjs';
-import axios from './axios';
 
-export default (url, interval, initialSize = 300 * 1024) => {
+export default (getFn, interval, initialSize = 300 * 1024) => {
   let range = `bytes=-${initialSize}`;
   let size = 0;
 
   return timer(0, interval)
     .pipe(
-      concatMap(() =>
-        axios.get(url, {
-          headers: {
-            range
-          }
-        })
-      ),
+      concatMap(() => getFn({headers: {range}})),
       concatMap(response => {
         const initial = size === 0;
         const contentLength = response.data.length;

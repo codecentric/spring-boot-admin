@@ -9,10 +9,10 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.1",
-    "@fortawesome/free-brands-svg-icons": "^5.1.1",
-    "@fortawesome/free-regular-svg-icons": "^5.1.1",
-    "@fortawesome/free-solid-svg-icons": "^5.1.1",
+    "@fortawesome/fontawesome-svg-core": "^1.2.2",
+    "@fortawesome/free-brands-svg-icons": "^5.2.0",
+    "@fortawesome/free-regular-svg-icons": "^5.2.0",
+    "@fortawesome/free-solid-svg-icons": "^5.2.0",
     "@fortawesome/vue-fontawesome": "^0.1.1",
     "ansi_up": "^3.0.0",
     "axios": "^0.18.0",
@@ -40,7 +40,7 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "@vue/test-utils": "^1.0.0-beta.20",
+    "@vue/test-utils": "^1.0.0-beta.21",
     "autoprefixer": "^8.6.5",
     "babel-core": "^6.26.3",
     "babel-eslint": "^8.2.6",
@@ -55,7 +55,7 @@
     "css-hot-loader": "^1.4.0",
     "css-loader": "^0.28.11",
     "eslint": "^4.19.1",
-    "eslint-loader": "^2.0.0",
+    "eslint-loader": "^2.1.0",
     "eslint-plugin-html": "^4.0.5",
     "eslint-plugin-vue": "^4.7.0",
     "extract-text-webpack-plugin": "^3.0.2",
