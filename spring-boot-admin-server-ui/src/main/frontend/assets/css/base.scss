@@ -40,6 +40,10 @@ body {
   word-break: break-all;
 }
 
+.monospaced {
+  font-family: $family-monospace;
+}
+
 .is-muted {
   color: $grey-light;
 }

@@ -220,6 +220,12 @@ class Instance {
     });
   }
 
+  async fetchMappings() {
+    return this.axios.get(uri`actuator/mappings`, {
+      headers: {'Accept': actuatorMimeTypes}
+    });
+  }
+
   static async fetchEvents() {
     return axios.get('instances/events');
   }

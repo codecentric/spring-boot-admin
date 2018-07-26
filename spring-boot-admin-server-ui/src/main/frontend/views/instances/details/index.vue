@@ -130,7 +130,7 @@
     },
     methods: {
       hasMetric(metric) {
-        return this.metrics.includes(metric);
+        return this.metrics && this.metrics.includes(metric);
       },
       async fetchMetricIndex() {
         if (this.instance.hasEndpoint('metrics')) {
