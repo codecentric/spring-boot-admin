@@ -71,6 +71,14 @@ public class ApplicationsController {
                        .flatMap(grouped -> toApplication(grouped.key(), grouped));
     }
 
+
+    @GetMapping(path = "/applications/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<ResponseEntity<Application>> application(@PathVariable("name") String name) {
+        return this.toApplication(name, registry.getInstances(name).filter(Instance::isRegistered))
+                   .map(ResponseEntity::ok)
+                   .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
     @GetMapping(path = "/applications", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<Application>> applicationsStream() {
         return Flux.from(eventPublisher)
@@ -87,10 +95,9 @@ public class ApplicationsController {
         return registry.getInstances(name)
                        .flatMap(instance -> registry.deregister(instance.getId()))
                        .collectList()
-                       .map(
-                           deregistered -> !deregistered.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity
-                               .notFound()
-                               .build());
+                       .map(deregistered -> !deregistered.isEmpty() ? ResponseEntity.noContent()
+                                                                                    .build() : ResponseEntity.notFound()
+                                                                                                             .build());
     }
 
     protected Tuple2<String, Flux<Instance>> getApplicationForInstance(Instance instance) {
@@ -99,7 +106,7 @@ public class ApplicationsController {
     }
 
     protected Mono<Application> toApplication(String name, Flux<Instance> instances) {
-        return instances.collectList().map(instanceList -> {
+        return instances.collectList().filter(instanceList -> !instanceList.isEmpty()).map(instanceList -> {
             Application group = new Application(name);
             group.setInstances(instanceList);
             group.setBuildVersion(getBuildVersion(instanceList));
@@ -130,7 +137,9 @@ public class ApplicationsController {
         //TODO: Correct is just a second readmodel for groups
         Map<String, Instant> statusWithTime = instances.stream()
                                                        .collect(toMap(instance -> instance.getStatusInfo().getStatus(),
-                                                           Instance::getStatusTimestamp, this::getMax));
+                                                           Instance::getStatusTimestamp,
+                                                           this::getMax
+                                                       ));
         if (statusWithTime.size() == 1) {
             Map.Entry<String, Instant> e = statusWithTime.entrySet().iterator().next();
             return Tuples.of(e.getKey(), e.getValue());
