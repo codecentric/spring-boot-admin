@@ -87,19 +87,19 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
 	
 	@Override
 	protected void doNotify(ClientApplicationEvent event) throws Exception {
-		HttpEntity<String> message;
+		HttpEntity<String> httpPayload;
 		if (event instanceof ClientApplicationRegisteredEvent) {
-			message = getRegisteredMessage(event);
+			httpPayload = getRegisteredMessage(event);
 		} else if (event instanceof ClientApplicationDeregisteredEvent) {
-			message = getDeregisteredMessage(event);
+			httpPayload = getDeregisteredMessage(event);
 		} else if (event instanceof ClientApplicationStatusChangedEvent) {
 			ClientApplicationStatusChangedEvent statusChangedEvent = (ClientApplicationStatusChangedEvent) event;
-			message = getStatusChangedMessage(statusChangedEvent);
+			httpPayload = getStatusChangedMessage(statusChangedEvent);
 		} else {
 			return;
 		}
 
-		this.restTemplate.postForEntity(webhookUrl, message, Void.class);
+		this.restTemplate.postForEntity(webhookUrl, httpPayload, Void.class);
 	}
 
 	@Override
