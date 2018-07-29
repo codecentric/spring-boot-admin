@@ -107,28 +107,36 @@ public class MicrosoftTeamsNotifierTest {
 
 	@Test
 	public void test_getDeregisteredMessageForAppReturns_correctContent() {
-		Message message = notifier.getDeregisteredMessage(application);
+		ClientApplicationDeregisteredEvent event = new ClientApplicationDeregisteredEvent(
+				application);
+		
+		notifier.getDeregisteredMessage(event);
 
-		assertMessage(message, notifier.getDeRegisteredTitle(), notifier.getMessageSummary(),
+		assertMessage(notifier.getMessage(), notifier.getDeRegisteredTitle(), notifier.getMessageSummary(),
 				String.format(notifier.getDeregisterActivitySubtitlePattern(),
 						application.getName(), application.getId()));
 	}
 
 	@Test
 	public void test_getRegisteredMessageForAppReturns_correctContent() {
-		Message message = notifier.getRegisteredMessage(application);
+		ClientApplicationRegisteredEvent event = new ClientApplicationRegisteredEvent(
+				application);
+		
+		notifier.getRegisteredMessage(event);
 
-		assertMessage(message, notifier.getRegisteredTitle(), notifier.getMessageSummary(),
+		assertMessage(notifier.getMessage(), notifier.getRegisteredTitle(), notifier.getMessageSummary(),
 				String.format(notifier.getRegisterActivitySubtitlePattern(), application.getName(),
 						application.getId()));
 	}
 
 	@Test
 	public void test_getStatusChangedMessageForAppReturns_correctContent() {
-		Message message = notifier.getStatusChangedMessage(application, StatusInfo.ofUp(),
-				StatusInfo.ofDown());
+		ClientApplicationStatusChangedEvent event = new ClientApplicationStatusChangedEvent(application,
+				StatusInfo.ofUp(), StatusInfo.ofDown());
+		
+		notifier.getStatusChangedMessage(event);
 
-		assertMessage(message, notifier.getStatusChangedTitle(), notifier.getMessageSummary(),
+		assertMessage(notifier.getMessage(), notifier.getStatusChangedTitle(), notifier.getMessageSummary(),
 				String.format(notifier.getStatusActivitySubtitlePattern(), application.getName(),
 						application.getId(), StatusInfo.ofUp().getStatus(),
 						StatusInfo.ofDown().getStatus()));
@@ -136,61 +144,72 @@ public class MicrosoftTeamsNotifierTest {
 
 	@Test
 	public void test_getStatusChangedMessageWithMissingFormatArgumentReturns_activitySubtitlePattern() {
+		ClientApplicationStatusChangedEvent event = new ClientApplicationStatusChangedEvent(application,
+				StatusInfo.ofUp(), StatusInfo.ofDown());
 		String pattern = "STATUS_%s_ACTIVITY%s_PATTERN%s%s%s%s";
 		notifier.setStatusActivitySubtitlePattern(pattern);
-		Message message = notifier.getStatusChangedMessage(application, StatusInfo.ofUp(),
-				StatusInfo.ofDown());
+		
+		notifier.getStatusChangedMessage(event);
 
 		assertEquals("Activity Subtitle doesn't match", pattern,
-				message.getSections().get(0).getActivitySubtitle());
+				notifier.getMessage().getSections().get(0).getActivitySubtitle());
 	}
 
 	@Test
 	public void test_getStatusChangedMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
+		ClientApplicationStatusChangedEvent event = new ClientApplicationStatusChangedEvent(application,
+				StatusInfo.ofUp(), StatusInfo.ofDown());
 		notifier.setStatusActivitySubtitlePattern("STATUS_ACTIVITY_PATTERN_%s");
-		Message message = notifier.getStatusChangedMessage(application, StatusInfo.ofUp(),
-				StatusInfo.ofDown());
+		notifier.getStatusChangedMessage(event);
 
 		assertEquals("Activity Subtitle doesn't match", "STATUS_ACTIVITY_PATTERN_" + appName,
-				message.getSections().get(0).getActivitySubtitle());
+				notifier.getMessage().getSections().get(0).getActivitySubtitle());
 	}
 
 	@Test
 	public void test_getRegisterMessageWithMissingFormatArgumentReturns_activitySubtitlePattern() {
+		ClientApplicationRegisteredEvent event = new ClientApplicationRegisteredEvent(
+				application);
 		String pattern = "REGISTER_%s_ACTIVITY%s_PATTERN%s%s%s%s";
 		notifier.setRegisterActivitySubtitlePattern(pattern);
-		Message message = notifier.getRegisteredMessage(application);
+		notifier.getRegisteredMessage(event);
 
 		assertEquals("Activity Subtitle doesn't match", pattern,
-				message.getSections().get(0).getActivitySubtitle());
+				notifier.getMessage().getSections().get(0).getActivitySubtitle());
 	}
 
 	@Test
 	public void test_getRegisterMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
+		ClientApplicationRegisteredEvent event = new ClientApplicationRegisteredEvent(
+				application);
 		notifier.setRegisterActivitySubtitlePattern("REGISTER_ACTIVITY_PATTERN_%s");
-		Message message = notifier.getRegisteredMessage(application);
+		notifier.getRegisteredMessage(event);
 
 		assertEquals("Activity Subtitle doesn't match", "REGISTER_ACTIVITY_PATTERN_" + appName,
-				message.getSections().get(0).getActivitySubtitle());
+				notifier.getMessage().getSections().get(0).getActivitySubtitle());
 	}
 
 	@Test
 	public void test_getDeRegisterMessageWithMissingFormatArgumentReturns_activitySubtitlePattern() {
+		ClientApplicationDeregisteredEvent event = new ClientApplicationDeregisteredEvent(
+				application);
 		String pattern = "DEREGISTER_%s_ACTIVITY%s_PATTERN%s%s%s%s";
 		notifier.setDeregisterActivitySubtitlePattern(pattern);
-		Message message = notifier.getDeregisteredMessage(application);
+		notifier.getDeregisteredMessage(event);
 
 		assertEquals("Activity Subtitle doesn't match", pattern,
-				message.getSections().get(0).getActivitySubtitle());
+				notifier.getMessage().getSections().get(0).getActivitySubtitle());
 	}
 
 	@Test
 	public void test_getDeRegisterMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
+		ClientApplicationDeregisteredEvent event = new ClientApplicationDeregisteredEvent(
+				application);
 		notifier.setDeregisterActivitySubtitlePattern("DEREGISTER_ACTIVITY_PATTERN_%s");
-		Message message = notifier.getDeregisteredMessage(application);
+		notifier.getDeregisteredMessage(event);
 
 		assertEquals("Activity Subtitle doesn't match", "DEREGISTER_ACTIVITY_PATTERN_" + appName,
-				message.getSections().get(0).getActivitySubtitle());
+				notifier.getMessage().getSections().get(0).getActivitySubtitle());
 	}
 
 	private void assertMessage(Message message, String expectedTitle, String expectedSummary,
