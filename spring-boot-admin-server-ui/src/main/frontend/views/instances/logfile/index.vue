@@ -44,7 +44,7 @@
 <script>
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
-  import linkify from '@/utils/linkify';
+  import autolink from '@/utils/autolink';
   import {animationFrameScheduler, concatAll, concatMap, map, of, tap} from '@/utils/rxjs';
   import AnsiUp from 'ansi_up';
   import _ from 'lodash';
@@ -91,13 +91,7 @@
               vm.hasLoaded = true;
               lines.forEach(line => {
                 const child = document.createElement('pre');
-                child.innerHTML = this.ansiUp.ansi_to_html(linkify(line, {
-                  validate: {
-                    url(value) {
-                      return /^(http|ftp)s?:\/\//.test(value);
-                    }
-                  }
-                }));
+                child.innerHTML = autolink(this.ansiUp.ansi_to_html(line));
                 vm.$el.appendChild(child);
               });
 
