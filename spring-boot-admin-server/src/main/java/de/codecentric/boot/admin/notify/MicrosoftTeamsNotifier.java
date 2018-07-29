@@ -4,9 +4,7 @@ import static java.util.Collections.singletonList;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.MissingFormatArgumentException;
 
 import org.json.JSONArray;
