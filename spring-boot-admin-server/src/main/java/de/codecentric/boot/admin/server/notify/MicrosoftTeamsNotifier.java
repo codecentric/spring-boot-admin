@@ -30,6 +30,9 @@ import java.util.List;
 import java.util.MissingFormatArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
 import static java.util.Collections.singletonList;
@@ -112,7 +115,14 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
             return Mono.empty();
         }
 
-        return Mono.fromRunnable(() -> this.restTemplate.postForEntity(webhookUrl, message, Void.class));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        return Mono.fromRunnable(() -> this.restTemplate.postForEntity(
+            webhookUrl,
+            new HttpEntity<Object>(message, headers),
+            Void.class
+        ));
     }
 
     @Override
