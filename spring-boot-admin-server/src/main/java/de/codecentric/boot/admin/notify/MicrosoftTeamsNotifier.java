@@ -10,6 +10,9 @@ import java.util.MissingFormatArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import de.codecentric.boot.admin.event.ClientApplicationDeregisteredEvent;
 import de.codecentric.boot.admin.event.ClientApplicationEvent;
@@ -91,8 +94,13 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
 		} else {
 			return;
 		}
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		
+		HttpEntity<Object> entity = new HttpEntity<Object>(message, headers);
 
-		this.restTemplate.postForEntity(webhookUrl, message, Void.class);
+		this.restTemplate.postForEntity(webhookUrl, entity, Void.class);
 	}
 
 	@Override
