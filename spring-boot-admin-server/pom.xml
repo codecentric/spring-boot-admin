@@ -78,11 +78,6 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
-        <!-- Optional JSON serialisation for MS Teams Notifications  -->
-        <dependency>
-          <groupId>org.json</groupId>
-          <artifactId>json</artifactId>
-        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

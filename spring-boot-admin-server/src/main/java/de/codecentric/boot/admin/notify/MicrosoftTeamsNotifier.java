@@ -7,16 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.MissingFormatArgumentException;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.event.ClientApplicationDeregisteredEvent;
 import de.codecentric.boot.admin.event.ClientApplicationEvent;
@@ -33,7 +29,6 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
 	private static final String MANAGEMENT_URL_KEY = "Management URL";
 	private static final String SOURCE_KEY = "Source";
 	private RestTemplate restTemplate = new RestTemplate();
-	private Message message = null;
 
 	/**
 	 * Webhook url for Microsoft Teams Channel Webhook connector (i.e.
@@ -84,22 +79,28 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
 	 * Summary section of every Teams message originating from Spring Boot Admin
 	 */
 	private String messageSummary = "Spring Boot Admin Notification";
-	
+
 	@Override
 	protected void doNotify(ClientApplicationEvent event) throws Exception {
-		HttpEntity<String> httpPayload;
+		Message message;
 		if (event instanceof ClientApplicationRegisteredEvent) {
-			httpPayload = getRegisteredMessage(event);
+			message = getRegisteredMessage(event.getApplication());
 		} else if (event instanceof ClientApplicationDeregisteredEvent) {
-			httpPayload = getDeregisteredMessage(event);
+			message = getDeregisteredMessage(event.getApplication());
 		} else if (event instanceof ClientApplicationStatusChangedEvent) {
 			ClientApplicationStatusChangedEvent statusChangedEvent = (ClientApplicationStatusChangedEvent) event;
-			httpPayload = getStatusChangedMessage(statusChangedEvent);
+			message = getStatusChangedMessage(statusChangedEvent.getApplication(),
+					statusChangedEvent.getFrom(), statusChangedEvent.getTo());
 		} else {
 			return;
 		}
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		
+		HttpEntity<Object> entity = new HttpEntity<Object>(message, headers);
 
-		this.restTemplate.postForEntity(webhookUrl, httpPayload, Void.class);
+		this.restTemplate.postForEntity(webhookUrl, entity, Void.class);
 	}
 
 	@Override
@@ -109,24 +110,19 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
 				|| event instanceof ClientApplicationStatusChangedEvent;
 	}
 
-	protected HttpEntity<String> getDeregisteredMessage(ClientApplicationEvent event) {
-		Application app = event.getApplication();
+	protected Message getDeregisteredMessage(Application app) {
 		String activitySubtitle = this.safeFormat(deregisterActivitySubtitlePattern, app.getName(),
 				app.getId());
 		return createMessage(app, deRegisteredTitle, activitySubtitle);
 	}
 
-	protected HttpEntity<String> getRegisteredMessage(ClientApplicationEvent event) {
-		Application app = event.getApplication();
+	protected Message getRegisteredMessage(Application app) {
 		String activitySubtitle = this.safeFormat(registerActivitySubtitlePattern, app.getName(),
 				app.getId());
 		return createMessage(app, registeredTitle, activitySubtitle);
 	}
 
-	protected HttpEntity<String> getStatusChangedMessage(ClientApplicationStatusChangedEvent event) {
-		Application app=event.getApplication();
-		StatusInfo from=event.getFrom();
-		StatusInfo to=event.getTo();
+	protected Message getStatusChangedMessage(Application app, StatusInfo from, StatusInfo to) {
 		String activitySubtitle = this.safeFormat(statusActivitySubtitlePattern, app.getName(),
 				app.getId(), from.getStatus(), to.getStatus());
 		return createMessage(app, statusChangedTitle, activitySubtitle);
@@ -143,12 +139,12 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
 		}
 	}
 
-	protected HttpEntity<String> createMessage(Application app, String registeredTitle,
+	protected Message createMessage(Application app, String registeredTitle,
 			String activitySubtitle) {
-		Message _message = new Message();
-		_message.setTitle(registeredTitle);
-		_message.setSummary(messageSummary);
-		_message.setThemeColor(themeColor);
+		Message message = new Message();
+		message.setTitle(registeredTitle);
+		message.setSummary(messageSummary);
+		message.setThemeColor(themeColor);
 
 		Section section = new Section();
 		section.setActivityTitle(app.getName());
@@ -161,22 +157,8 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
 		facts.add(new Fact(MANAGEMENT_URL_KEY, app.getManagementUrl()));
 		facts.add(new Fact(SOURCE_KEY, app.getSource()));
 		section.setFacts(facts);
-		_message.setSections(singletonList(section));
-		
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		
-		JSONObject messageJson = null;
-		try {
-			messageJson = _message.toJson();
-		} catch (JSONException e) {
-			LOGGER.warn(
-					"Exception while trying to serialize Teams notification. Falling back by using an empty JSONObject.",
-					e);
-			messageJson = new JSONObject();
-		}
-		setMessage(_message);
-		return new HttpEntity<>(messageJson.toString(), headers);
+		message.setSections(singletonList(section));
+		return message;
 	}
 
 	public void setWebhookUrl(URI webhookUrl) {
@@ -247,20 +229,12 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
 		this.restTemplate = restTemplate;
 	}
 
-	public Message getMessage() {
-		return message;
-	}
-
-	public void setMessage(Message message) {
-		this.message = message;
-	}
-
 	public static class Message {
 		private String summary;
 		private String themeColor;
 		private String title;
 		private List<Section> sections = new ArrayList<>();
-		
+
 		public String getSummary() {
 			return summary;
 		}
@@ -292,31 +266,6 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
 		public List<Section> getSections() {
 			return sections;
 		}
-		
-		/*
-		 * Translate Message Object to Json according to MessageCard reference
-		 * https://docs.microsoft.com/en-gb/outlook/actionable-messages/message-card-reference
-		 * TODO: This schema is deprecated. The new schema is AdaptiveCard.
-		 * http://adaptivecards.io/explorer/
-		 */
-		public JSONObject toJson() throws JSONException {
-			
-			JSONObject messageJson=new JSONObject();
-			
-			messageJson.put("@type", "MessageCard");
-			messageJson.put("@context", "http://schema.org/extensions");
-			messageJson.put("themeColor", themeColor);
-			messageJson.put("summary", summary);
-			
-			JSONArray sectionsArray=new JSONArray();
-
-			for (int i = 0; i < sections.size(); i++) {
-				sectionsArray.put(sections.get(i).toJson());
-			}
-			messageJson.put("sections",sectionsArray);
-			
-			return messageJson;
-		}
 	}
 
 	public static class Section {
@@ -347,20 +296,6 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
 		public List<Fact> getFacts() {
 			return facts;
 		}
-		
-		public JSONObject toJson() throws JSONException {
-			JSONObject _sectionJson=new JSONObject();
-			_sectionJson.put("activityTitle", this.activityTitle);
-			_sectionJson.put("activitySubtitle", this.activitySubtitle);
-			
-			JSONArray _factsArray=new JSONArray();
-			for (int i = 0; i < facts.size(); i++) {
-				_factsArray.put(facts.get(i).toJson());
-			}
-			_sectionJson.put("facts",_factsArray);
-			
-			return _sectionJson;
-		}
 	}
 
 	public static class Fact {
@@ -378,13 +313,6 @@ public class MicrosoftTeamsNotifier extends AbstractEventNotifier {
 
 		public String getValue() {
 			return value;
-		}
-		
-		public JSONObject toJson() throws JSONException {
-			JSONObject _factJson=new JSONObject();
-			_factJson.put("name", this.name);
-			_factJson.put("value", this.value);
-			return _factJson;
 		}
 	}
 }
