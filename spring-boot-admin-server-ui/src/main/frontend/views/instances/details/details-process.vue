@@ -37,7 +37,7 @@
           <div>
             <p class="heading">Uptime</p>
             <p>
-              <process-uptime :value="uptime"/>
+              <process-uptime :value="toMillis(uptime.value, uptime.baseUnit)"/>
             </p>
           </div>
         </div>
@@ -68,6 +68,7 @@
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
   import {concatMap, timer} from '@/utils/rxjs';
+  import {toMillis} from '../metrics/metric';
   import processUptime from './process-uptime';
 
   export default {
@@ -83,7 +84,7 @@
       hasLoaded: false,
       error: null,
       pid: null,
-      uptime: null,
+      uptime: {value: null, baseUnit: null},
       systemCpuLoad: null,
       processCpuLoad: null,
       systemCpuCount: null
@@ -94,9 +95,11 @@
       this.fetchCpuCount();
     },
     methods: {
+      toMillis,
       async fetchUptime() {
         try {
-          this.uptime = await this.fetchMetric('process.uptime');
+          const response = await this.fetchMetric('process.uptime');
+          this.uptime = {value: response.measurements[0].value, baseUnit: response.baseUnit};
         } catch (error) {
           this.error = error;
           console.warn('Fetching Uptime failed:', error);
@@ -116,7 +119,7 @@
       },
       async fetchCpuCount() {
         try {
-          this.systemCpuCount = await this.fetchMetric('system.cpu.count');
+          this.systemCpuCount = (await this.fetchMetric('system.cpu.count')).measurements[0].value;
         } catch (error) {
           console.warn('Fetching Cpu Count failed:', error);
         }
@@ -144,12 +147,12 @@
         let processCpuLoad;
         let systemCpuLoad;
         try {
-          processCpuLoad = await fetchProcessCpuLoad
+          processCpuLoad = (await fetchProcessCpuLoad).measurements[0].value
         } catch (error) {
           console.warn('Fetching Process CPU Load failed:', error);
         }
         try {
-          systemCpuLoad = await fetchSystemCpuLoad
+          systemCpuLoad = (await fetchSystemCpuLoad).measurements[0].value
         } catch (error) {
           console.warn('Fetching Sytem CPU Load failed:', error);
         }
@@ -160,7 +163,7 @@
       },
       async fetchMetric(name) {
         const response = await this.instance.fetchMetric(name);
-        return response.data.measurements[0].value;
+        return response.data;
       }
     }
   }

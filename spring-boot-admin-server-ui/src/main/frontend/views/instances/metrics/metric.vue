@@ -18,7 +18,7 @@
   <table class="metrics table is-fullwidth">
     <thead>
       <tr>
-        <th class="metrics__label" v-text="metricName"/>
+        <th class="metrics__label" :title="description" v-text="metricName"/>
         <th class="metrics__statistic-name"
             v-for="statistic in statistics"
             :key="`head-${statistic}`">
@@ -67,13 +67,28 @@
   import moment from 'moment';
   import prettyBytes from 'pretty-bytes';
 
-  const formatDuration = value => {
-    const duration = moment.duration(value * 1000);
+  const formatDuration = (value, baseUnit) => {
+    const duration = moment.duration(toMillis(value, baseUnit));
     return `${Math.floor(duration.asDays())}d ${duration.hours()}h ${duration.minutes()}m ${duration.seconds()}s`;
   };
 
-  const formatMillis = value => {
-    return `${moment.duration(value * 1000).asMilliseconds().toFixed(0)} ms`;
+  const formatMillis = (value, baseUnit) => {
+    const duration = moment.duration(toMillis(value, baseUnit));
+    return `${moment.duration(duration).asMilliseconds().toFixed(0)} ms`;
+  };
+
+  export const toMillis = (value, baseUnit) => {
+    switch (baseUnit) {
+      case 'nanoseconds':
+        return value / 1000000;
+      case 'microseconds':
+        return value / 1000;
+      case 'milliseconds':
+        return value;
+      case 'seconds':
+      default:
+        return value * 1000;
+    }
   };
 
   export default {
@@ -98,6 +113,8 @@
       }
     },
     data: () => ({
+      description: '',
+      baseUnit: undefined,
       measurements: [],
       statistics: [],
       errors: [],
@@ -138,6 +155,8 @@
           this.$set(this.errors, idx, null);
           this.$set(this.measurements, idx, response.data.measurements);
           if (idx === 0) {
+            this.description = response.data.description;
+            this.baseUnit = response.data.baseUnit;
             this.statistics = response.data.measurements.map(m => m.statistic);
           }
         } catch (error) {

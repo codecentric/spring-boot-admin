@@ -55,6 +55,7 @@
   import Instance from '@/services/instance';
   import {concatMap, timer} from '@/utils/rxjs';
   import moment from 'moment';
+  import {toMillis} from '../metrics/metric';
 
   export default {
     props: {
@@ -76,12 +77,13 @@
           (current, measurement) => ({
             ...current,
             [measurement.statistic.toLowerCase()]: measurement.value
-          }), {}
+          }),
+          {}
         );
         return {
           ...measurements,
-          total_time: moment.duration(Math.round(measurements.total_time * 1000)),
-          max: moment.duration(Math.round(measurements.max * 1000)),
+          total_time: moment.duration(toMillis(measurements.total_time, response.baseUnit)),
+          max: moment.duration(toMillis(measurements.max, response.baseUnit)),
         };
       },
       createSubscription() {

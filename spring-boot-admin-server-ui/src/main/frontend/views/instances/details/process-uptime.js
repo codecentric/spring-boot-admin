@@ -33,7 +33,7 @@ export default {
       if (!this.value) {
         return null;
       }
-      const duration = moment.duration(this.value * 1000 + this.offset);
+      const duration = moment.duration(this.value + this.offset);
       return `${Math.floor(duration.asDays())}d ${duration.hours()}h ${duration.minutes()}m ${duration.seconds()}s`;
     }
   },
