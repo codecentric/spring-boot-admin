@@ -27,6 +27,8 @@ It provides the following features for registered application.
 * View thread dump
 * View http-traces
 * View auditevents
+* View Http-Endpoints
+* View Scheduled Tasks
 * View and delete active sessions (using spring-session)
 * View Flyway / Liquibase database migrations
 * Download heapdump
@@ -35,7 +37,7 @@ It provides the following features for registered application.
 
 ## Getting Started
 
-[A quick guide](http://codecentric.github.io/spring-boot-admin/2.0.1/#getting-started) to get started can be found in our docs.
+[A quick guide](http://codecentric.github.io/spring-boot-admin/2.0.2/#getting-started) to get started can be found in our docs.
 
 There are <a href="https://goo.gl/2tRiUi" target="_blank">introductory talks availabe on YouTube</a>:
 
@@ -60,11 +62,9 @@ Having trouble with codecentric's Spring Boot Admin? We’d like to help!
  * Report bugs at http://github.com/codecentric/spring-boot-admin/issues.
 
 ## Reference Guide
-[Version 2.0.1](http://codecentric.github.io/spring-boot-admin/2.0.1/)
+[Version 2.0.2](http://codecentric.github.io/spring-boot-admin/2.0.2/)
 
 [Version 1.5.7](http://codecentric.github.io/spring-boot-admin/1.5.7/)
-
-[Version 1.4.6](http://codecentric.github.io/spring-boot-admin/1.4.6/)
 
 ## Trademarks and licenses
 The source code of codecentric's Spring Boot Admin is licensed under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
