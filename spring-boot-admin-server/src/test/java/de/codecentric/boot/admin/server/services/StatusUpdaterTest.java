@@ -29,8 +29,9 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
+import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
@@ -38,7 +39,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import com.github.tomakehurst.wiremock.core.Options;
 import com.github.tomakehurst.wiremock.http.Fault;
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -50,16 +51,23 @@ import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class StatusUpdaterTest {
-    @ClassRule
-    public static final WireMockClassRule wireMockClass = new WireMockClassRule(Options.DYNAMIC_PORT);
     @Rule
-    public WireMockClassRule wireMock = wireMockClass;
+    public WireMockRule wireMock = new WireMockRule(Options.DYNAMIC_PORT);
 
     private StatusUpdater updater;
     private ConcurrentMapEventStore eventStore;
     private InstanceRepository repository;
     private Instance instance;
 
+    @BeforeClass
+    public static void setUp() {
+        StepVerifier.setDefaultTimeout(Duration.ofSeconds(5));
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        StepVerifier.resetDefaultTimeout();
+    }
     @Before
     public void setup() {
         eventStore = new InMemoryEventStore();
@@ -199,7 +207,7 @@ public class StatusUpdaterTest {
 
     @Test
     public void should_change_status_to_offline() {
-        wireMock.stubFor(get("/health").willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER)));
+        wireMock.stubFor(get("/health").willReturn(aResponse().withFault(Fault.EMPTY_RESPONSE)));
 
         StepVerifier.create(eventStore)
                     .expectSubscription()

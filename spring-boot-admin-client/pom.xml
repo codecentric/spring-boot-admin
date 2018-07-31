@@ -65,14 +65,6 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <!-- Make json-simple non-optional.
-                 It is marked optional in boot-dependencies, but required by jolokia-core.
-                 Without this fix it would be missing when used war-packaging. -->
-            <groupId>com.googlecode.json-simple</groupId>
-            <artifactId>json-simple</artifactId>
-            <optional>false</optional>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>

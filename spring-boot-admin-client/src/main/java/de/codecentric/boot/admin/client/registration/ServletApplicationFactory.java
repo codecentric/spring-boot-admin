@@ -24,6 +24,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointPr
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -33,6 +34,7 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
     private final ServerProperties server;
     private final ManagementServerProperties management;
     private final InstanceProperties instance;
+    private final DispatcherServletPath dispatcherServletPath;
 
     public ServletApplicationFactory(InstanceProperties instance,
                                      ManagementServerProperties management,
@@ -40,12 +42,14 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
                                      ServletContext servletContext,
                                      PathMappedEndpoints pathMappedEndpoints,
                                      WebEndpointProperties webEndpoint,
-                                     MetadataContributor metadataContributor) {
+                                     MetadataContributor metadataContributor,
+                                     DispatcherServletPath dispatcherServletPath) {
         super(instance, management, server, pathMappedEndpoints, webEndpoint, metadataContributor);
         this.servletContext = servletContext;
         this.server = server;
         this.management = management;
         this.instance = instance;
+        this.dispatcherServletPath = dispatcherServletPath;
     }
 
 
@@ -95,6 +99,6 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
     }
 
     protected String getDispatcherServletPrefix() {
-        return server.getServlet().getServletPrefix();
+        return this.dispatcherServletPath.getPrefix();
     }
 }

@@ -37,6 +37,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -66,9 +67,11 @@ public class SpringBootAdminClientAutoConfiguration {
                                                      ServletContext servletContext,
                                                      PathMappedEndpoints pathMappedEndpoints,
                                                      WebEndpointProperties webEndpoint,
-                                                     MetadataContributor metadataContributor) {
+                                                     MetadataContributor metadataContributor,
+                                                     DispatcherServletPath dispatcherServletPath) {
             return new ServletApplicationFactory(instance, management, server, servletContext, pathMappedEndpoints,
-                webEndpoint, metadataContributor);
+                webEndpoint, metadataContributor, dispatcherServletPath
+            );
         }
     }
 
@@ -95,8 +98,8 @@ public class SpringBootAdminClientAutoConfiguration {
                                               RestTemplateBuilder restTemplBuilder) {
         RestTemplateBuilder builder = restTemplBuilder.messageConverters(new MappingJackson2HttpMessageConverter())
                                                       .requestFactory(SimpleClientHttpRequestFactory.class)
-                                                      .setConnectTimeout((int) client.getConnectTimeout().toMillis())
-                                                      .setReadTimeout((int) client.getReadTimeout().toMillis());
+                                                      .setConnectTimeout(client.getConnectTimeout())
+                                                      .setReadTimeout(client.getReadTimeout());
         if (client.getUsername() != null) {
             builder = builder.basicAuthorization(client.getUsername(), client.getPassword());
         }

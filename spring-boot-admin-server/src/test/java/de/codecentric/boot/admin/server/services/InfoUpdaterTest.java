@@ -30,13 +30,14 @@ import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
+import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import com.github.tomakehurst.wiremock.core.Options;
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
@@ -45,11 +46,8 @@ import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 public class InfoUpdaterTest {
-    @ClassRule
-    public static final WireMockClassRule wireMockClassRule = new WireMockClassRule(Options.DYNAMIC_PORT);
-
     @Rule
-    public WireMockClassRule wireMock = wireMockClassRule;
+    public WireMockRule wireMock = new WireMockRule(Options.DYNAMIC_PORT);
 
     private InfoUpdater updater;
     private InMemoryEventStore eventStore;
@@ -62,6 +60,15 @@ public class InfoUpdaterTest {
         updater = new InfoUpdater(repository, new InstanceWebClient(instance -> HttpHeaders.EMPTY));
     }
 
+    @BeforeClass
+    public static void setUp() {
+        StepVerifier.setDefaultTimeout(Duration.ofSeconds(5));
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        StepVerifier.resetDefaultTimeout();
+    }
 
     @Test
     public void should_update_info_for_online_with_info_endpoint_only() {

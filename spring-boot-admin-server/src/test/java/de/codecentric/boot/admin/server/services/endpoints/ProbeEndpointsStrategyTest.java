@@ -24,12 +24,14 @@ import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 import reactor.test.StepVerifier;
 import wiremock.org.eclipse.jetty.http.HttpStatus;
 
-import org.junit.ClassRule;
+import java.time.Duration;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import com.github.tomakehurst.wiremock.core.Options;
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.notFound;
@@ -39,13 +41,20 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ProbeEndpointsStrategyTest {
-    @ClassRule
-    public static final WireMockClassRule wireMockClassRule = new WireMockClassRule(Options.DYNAMIC_PORT);
-
     @Rule
-    public WireMockClassRule wireMock = wireMockClassRule;
+    public WireMockRule wireMock = new WireMockRule(Options.DYNAMIC_PORT);
 
     private InstanceWebClient instanceWebClient = new InstanceWebClient(instance -> HttpHeaders.EMPTY);
+
+    @BeforeClass
+    public static void setUp() {
+        StepVerifier.setDefaultTimeout(Duration.ofSeconds(5));
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        StepVerifier.resetDefaultTimeout();
+    }
 
     @Test
     public void invariants() {

@@ -20,6 +20,8 @@ import de.codecentric.boot.admin.server.domain.entities.Instance;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import reactor.core.publisher.Mono;
+import reactor.netty.ConnectionObserver;
+import reactor.netty.http.client.HttpClient;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
@@ -77,18 +79,27 @@ public class InstanceWebClient {
     private static WebClient createDefaultWebClient(Duration connectTimeout,
                                                     Duration readTimeout,
                                                     WebClientCustomizer customizer) {
-        ReactorClientHttpConnector connector = new ReactorClientHttpConnector(
-            options -> options.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) connectTimeout.toMillis())
-                              .compression(true)
-                              .afterNettyContextInit(ctx -> {
-                                  ctx.addHandlerLast(
-                                      new ReadTimeoutHandler(readTimeout.toMillis(), TimeUnit.MILLISECONDS));
-                              }));
-
+        //@formatter:off
+        HttpClient httpClient = HttpClient.create().compress().tcpConfiguration(
+            tcp -> tcp.bootstrap(
+                bootstrap -> bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) connectTimeout.toMillis())
+            ).observe(
+                (connection, newState) -> {
+                    if (ConnectionObserver.State.CONNECTED.equals(newState)) {
+                        connection.addHandlerLast(new ReadTimeoutHandler(readTimeout.toMillis(), TimeUnit.MILLISECONDS));
+                    }
+                }
+            )
+        );
+        //@formatter:on
+        ReactorClientHttpConnector connector = new ReactorClientHttpConnector(httpClient);
         WebClient.Builder builder = WebClient.builder()
                                              .clientConnector(connector)
-                                             .defaultHeader(HttpHeaders.ACCEPT, ActuatorMediaType.V2_JSON,
-                                                 ActuatorMediaType.V1_JSON, MediaType.APPLICATION_JSON_VALUE);
+                                             .defaultHeader(HttpHeaders.ACCEPT,
+                                                 ActuatorMediaType.V2_JSON,
+                                                 ActuatorMediaType.V1_JSON,
+                                                 MediaType.APPLICATION_JSON_VALUE
+                                             );
         customizer.customize(builder);
         return builder.build();
     }

@@ -27,6 +27,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointPr
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.boot.web.server.WebServer;
@@ -43,12 +44,15 @@ public class ServletApplicationFactoryTest {
     private MockServletContext servletContext = new MockServletContext();
     private PathMappedEndpoints pathMappedEndpoints = mock(PathMappedEndpoints.class);
     private WebEndpointProperties webEndpoint = new WebEndpointProperties();
+    private DispatcherServletPath dispatcherServletPath = mock(DispatcherServletPath.class);
     private ServletApplicationFactory factory = new ServletApplicationFactory(instance, management, server,
-        servletContext, pathMappedEndpoints, webEndpoint, Collections::emptyMap);
+        servletContext, pathMappedEndpoints, webEndpoint, Collections::emptyMap, dispatcherServletPath
+    );
 
     @Before
     public void setup() {
         instance.setName("test");
+        when(dispatcherServletPath.getPrefix()).thenReturn("");
     }
 
     @Test
@@ -91,7 +95,7 @@ public class ServletApplicationFactoryTest {
 
     @Test
     public void test_servletPath() {
-        server.getServlet().setPath("app");
+        when(dispatcherServletPath.getPrefix()).thenReturn("app");
         servletContext.setContextPath("srv");
         when(pathMappedEndpoints.getPath("health")).thenReturn("/actuator/health");
         publishApplicationReadyEvent(factory, 80, null);
