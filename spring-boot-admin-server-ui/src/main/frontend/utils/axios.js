@@ -16,20 +16,6 @@
 
 import axios from 'axios';
 
-export const addRequestedWithHeader = config => {
-  config.headers['X-Requested-With'] = 'XMLHttpRequest';
-  return config;
-};
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-const isInstanceActuatorRequest = url => url.match(/^instances[/][^/]+[/]actuator([/].*)?$/);
-
-export const redirectOn401 = error => {
-  if (error.response && error.response.status === 401 && !isInstanceActuatorRequest(error.config.url)) {
-    window.location.assign(`login?redirectTo=${encodeURIComponent(window.location.href)}`);
-  }
-  return Promise.reject(error);
-};
-
-axios.interceptors.request.use(addRequestedWithHeader);
-axios.interceptors.response.use(response => response, redirectOn401);
 export default axios;

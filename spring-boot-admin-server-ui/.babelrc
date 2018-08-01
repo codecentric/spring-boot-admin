@@ -16,6 +16,9 @@
       "presets": [
         "env",
         "stage-2"
+      ],
+      "plugins": [
+        "babel-plugin-dynamic-import-node"
       ]
     }
   }
