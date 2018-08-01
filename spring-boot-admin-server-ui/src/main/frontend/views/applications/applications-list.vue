@@ -58,11 +58,14 @@
               <td class="instance__status">
                 <sba-status :status="instance.statusInfo.status" :date="instance.statusTimestamp"/>
               </td>
-              <td>
+              <td class="is-narrow">
                 <a v-text="instance.registration.serviceUrl || instance.registration.healthUrl"
                    :href="instance.registration.serviceUrl || instance.registration.healthUrl"
                    @click.stop/><br>
                 <span class="is-muted" v-text="instance.id"/>
+              </td>
+              <td>
+                <sba-instance-tags :instance="instance" :key-color="'is-primary'"/>
               </td>
               <td>
                 <span v-text="instance.buildVersion"/>
