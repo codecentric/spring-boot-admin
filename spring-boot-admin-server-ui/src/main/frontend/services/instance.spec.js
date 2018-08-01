@@ -14,27 +14,7 @@
  * limitations under the License.
  */
 
-import {addRequestedWithHeader, redirectOn401} from './axios';
-
-describe('addRequestedWithHeader', () => {
-  it('should add X-Requested-With header', () => {
-    const config = {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    };
-
-    addRequestedWithHeader(config);
-
-    expect(config).toEqual({
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
-      }
-    });
-  });
-});
-
+import {redirectOn401} from './instance';
 
 describe('redirectOn401', () => {
   it('should not redirect on 500', async () => {
