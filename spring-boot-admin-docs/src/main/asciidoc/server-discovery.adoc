@@ -86,10 +86,26 @@ user.password
 | `"health"`
 
 | spring.boot.admin.discovery.ignored-services
-| This services will be ignored when using discovery and not registered as application. Supports simple patterns (e.g. "foo*", "*bar", "foo*bar*").
+| This services will be ignored when using discovery and not registered as application. Supports simple patterns (e.g. +++"foo*"+++, +++"*bar"+++, +++"foo*bar*"+++).
 |
 
 | spring.boot.admin.discovery.services
-| This services will be included when using discovery and registered as application. Supports simple patterns (e.g. "foo*", "*bar", "foo*bar*").
+| This services will be included when using discovery and registered as application. Supports simple patterns (e.g. +++"foo*"+++, +++"*bar"+++, +++"foo*bar*"+++).
 | `"*"`
 |===
+
+==== CloudFoundry ====
+If you are deploying your applications to CloudFoundry then `vcap.application.application_id` and `vcap.application.instance_index` *_must_* be added to the metadata for proper registration of applications with Spring Boot Admin Server.
+Here is a sample configuration for Eureka:
+
+[source,yml]
+.application.yml
+----
+eureka:
+  instance:
+    hostname: ${vcap.application.uris[0]}
+    nonSecurePort: 80
+    metadata-map:
+      applicationId: ${vcap.application.application_id}
+      instanceId: ${vcap.application.instance_index}
+----
