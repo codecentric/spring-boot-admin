@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import axios from '@/utils/axios';
+import axios, {redirectOn401} from '@/utils/axios';
 import waitForPolyfill from '@/utils/eventsource-polyfill';
 import logtail from '@/utils/logtail';
 import {concat, from, ignoreElements, Observable} from '@/utils/rxjs';
@@ -29,20 +29,16 @@ const actuatorMimeTypes = [
 
 const isInstanceActuatorRequest = url => url.match(/^instances[/][^/]+[/]actuator([/].*)?$/);
 
-export const redirectOn401 = error => {
-  if (error.response && error.response.status === 401 && !isInstanceActuatorRequest(error.config.url)) {
-    window.location.assign(`login?redirectTo=${encodeURIComponent(window.location.href)}`);
-  }
-  return Promise.reject(error);
-};
-
 class Instance {
   constructor(id) {
     this.id = id;
     this.axios = axios.create({
       baseURL: uri`instances/${this.id}/`,
     });
-    this.axios.interceptors.response.use(response => response, redirectOn401);
+    this.axios.interceptors.response.use(
+      response => response,
+      redirectOn401(error => !isInstanceActuatorRequest(error.config.url))
+    );
   }
 
   hasEndpoint(endpointId) {

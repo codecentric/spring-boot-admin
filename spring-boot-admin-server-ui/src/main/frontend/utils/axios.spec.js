@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {redirectOn401} from './instance';
+import {redirectOn401} from './axios';
 
 describe('redirectOn401', () => {
   it('should not redirect on 500', async () => {
@@ -27,7 +27,7 @@ describe('redirectOn401', () => {
     };
 
     try {
-      await redirectOn401(error);
+      await redirectOn401()(error);
     } catch (e) {
       expect(e).toBe(error);
     }
@@ -39,16 +39,13 @@ describe('redirectOn401', () => {
     window.location.assign = jest.fn();
 
     const error = {
-      config: {
-        url: 'instances/a973ff14be49'
-      },
       response: {
         status: 401
       }
     };
 
     try {
-      await redirectOn401(error);
+      await redirectOn401()(error);
     } catch (e) {
       expect(e).toBe(error);
     }
@@ -56,20 +53,17 @@ describe('redirectOn401', () => {
     expect(window.location.assign).toBeCalledWith('login?redirectTo=http%3A%2F%2Fexample.com%2F');
   });
 
-  it('should redirect on 401 for /instances/{id}/actuator/**', async () => {
+  it('should not redirect on 401 for predicate yields false', async () => {
     window.location.assign = jest.fn();
 
     const error = {
-      config: {
-        url: 'instances/a973ff14be49/actuator/health'
-      },
       response: {
         status: 401
       }
     };
 
     try {
-      await redirectOn401(error);
+      await redirectOn401(() => false)(error);
     } catch (e) {
       expect(e).toBe(error);
     }

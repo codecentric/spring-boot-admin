@@ -18,4 +18,17 @@ import axios from 'axios';
 
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-export default axios;
+
+export const redirectOn401 = (predicate = () => true) => error => {
+  if (error.response && error.response.status === 401 && predicate(error)) {
+    window.location.assign(`login?redirectTo=${encodeURIComponent(window.location.href)}`);
+  }
+  return Promise.reject(error);
+
+};
+
+const instance = axios.create();
+instance.interceptors.response.use(response => response, redirectOn401());
+instance.create = axios.create;
+
+export default instance;
