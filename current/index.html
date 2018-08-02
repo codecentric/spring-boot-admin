@@ -557,6 +557,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#spring-cloud-discovery-static-config">4.1.1. SimpleDiscoveryClient configuration</a></li>
 <li><a href="#_other_discoveryclients">4.1.2. Other DiscoveryClients</a></li>
 <li><a href="#_converting_serviceinstances">4.1.3. Converting ServiceInstances</a></li>
+<li><a href="#_cloudfoundry">4.1.4. CloudFoundry</a></li>
 </ul>
 </li>
 <li><a href="#clustering-support">4.2. Clustering</a></li>
@@ -1322,16 +1323,35 @@ user.password</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.discovery.ignored-services</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">This services will be ignored when using discovery and not registered as application. Supports simple patterns (e.g. "foo*", "<strong>bar", "foo*bar</strong>").</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">This services will be ignored when using discovery and not registered as application. Supports simple patterns (e.g. "foo*", "*bar", "foo*bar*").</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.discovery.services</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">This services will be included when using discovery and registered as application. Supports simple patterns (e.g. "foo*", "<strong>bar", "foo*bar</strong>").</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">This services will be included when using discovery and registered as application. Supports simple patterns (e.g. "foo*", "*bar", "foo*bar*").</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>"*"</code></p></td>
 </tr>
 </tbody>
 </table>
+</div>
+<div class="sect3">
+<h4 id="_cloudfoundry"><a class="anchor" href="#_cloudfoundry"></a><a class="link" href="#_cloudfoundry">4.1.4. CloudFoundry</a></h4>
+<div class="paragraph">
+<p>If you are deploying your applications to CloudFoundry then <code>vcap.application.application_id</code> and <code>vcap.application.instance_index</code> <strong><em>must</em></strong> be added to the metadata for proper registration of applications with Spring Boot Admin Server.
+Here is a sample configuration for Eureka:</p>
+</div>
+<div class="listingblock">
+<div class="title">application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">eureka</span>:
+  <span class="key">instance</span>:
+    <span class="key">hostname</span>: <span class="string"><span class="content">${vcap.application.uris[0]}</span></span>
+    <span class="key">nonSecurePort</span>: <span class="string"><span class="content">80</span></span>
+    <span class="key">metadata-map</span>:
+      <span class="key">applicationId</span>: <span class="string"><span class="content">${vcap.application.application_id}</span></span>
+      <span class="key">instanceId</span>: <span class="string"><span class="content">${vcap.application.instance_index}</span></span></code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">
