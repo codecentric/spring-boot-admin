@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import axios from '@/utils/axios';
+import axios, {redirectOn401} from '@/utils/axios';
 import waitForPolyfill from '@/utils/eventsource-polyfill';
 import {concat, from, ignoreElements, Observable} from '@/utils/rxjs';
 import uri from '@/utils/uri';
@@ -27,7 +27,11 @@ class Application {
     this.name = name;
     this.axios = axios.create({
       baseURL: uri`applications/${this.name}/`
-    })
+    });
+    this.axios.interceptors.response.use(
+      response => response,
+      redirectOn401()
+    );
   }
 
   findInstance(instanceId) {
