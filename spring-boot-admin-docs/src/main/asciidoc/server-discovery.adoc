@@ -93,3 +93,31 @@ user.password
 | This services will be included when using discovery and registered as application. Supports simple patterns (e.g. "foo*", "*bar", "foo*bar*").
 | `"*"`
 |===
+
+==== CloudFoundry Discovery ====
+If you are deploying your applications to cloud foundry then `vcap.application.application_id` and `vcap.application.instance_index` *_must_* be sent as metadata to Eureka for proper registration of applications with Spring Boot Admin Server. This metadata can be sent as below:
+
+```
+@SpringBootApplication
+@EnableDiscoveryClient
+public class SpringBootAdminClientApp {
+
+    @Autowired
+    private ApplicationInfoManager aim;
+
+    @Autowired
+    private Environment env;
+
+    @PostConstruct
+    public void init() {
+        Map<String, String> metadata = aim.getInfo().getMetadata();
+        metadata.put("applicationId", env.getProperty("vcap.application.application_id"));
+        metadata.put("instanceId", env.getProperty("vcap.application.instance_index"));
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(SpringBootAdminClientApp.class, args);
+    }
+
+}
+```
