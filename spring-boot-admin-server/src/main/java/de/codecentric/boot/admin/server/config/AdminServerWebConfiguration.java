@@ -103,10 +103,11 @@ public class AdminServerWebConfiguration {
 
     @Configuration
     @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-    public static class ServletRestApiConfirguation {
+    public static class ServletRestApiConfiguration {
+
         private final AdminServerProperties adminServerProperties;
 
-        public ServletRestApiConfirguation(AdminServerProperties adminServerProperties) {
+        public ServletRestApiConfiguration(AdminServerProperties adminServerProperties) {
             this.adminServerProperties = adminServerProperties;
         }
 
@@ -123,11 +124,11 @@ public class AdminServerWebConfiguration {
         }
 
         @Bean
-        public WebMvcConfigurer adminWebMvcConfigurer() {
+        public WebMvcConfigurer adminWebMvcConfigurer(AsyncTaskExecutor asyncTaskExecutor) {
             return new WebMvcConfigurer() {
                 @Override
                 public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
-                    configurer.setTaskExecutor(webMvcAsyncTaskExecutor());
+                    configurer.setTaskExecutor(asyncTaskExecutor);
                 }
             };
         }
