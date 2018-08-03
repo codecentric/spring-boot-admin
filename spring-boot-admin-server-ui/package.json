@@ -85,6 +85,9 @@
     "not ie < 11"
   ],
   "jest": {
+    "setupFiles": [
+      "<rootDir>/src/test/frontend/globals.js"
+    ],
     "testURL": "http://example.com",
     "testRegex": "spec.js$",
     "moduleFileExtensions": [

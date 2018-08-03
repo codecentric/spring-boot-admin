@@ -40,6 +40,7 @@
             <div class="navbar-dropdown">
               <a class="navbar-item">
                 <form action="logout" method="post">
+                  <input v-if="csrfToken" type="hidden" :name="csrfParameterName" :value="csrfToken">
                   <button class="button is-icon" type="submit" value="logout">
                     <font-awesome-icon icon="sign-out-alt"/>&nbsp;Log out
                   </button>
@@ -56,11 +57,18 @@
 <script>
   import {compareBy} from '@/utils/collections';
 
+  const readCookie = (name) => {
+    const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
+    return (match ? decodeURIComponent(match[3]) : null);
+  };
+
   export default {
     data: () => ({
       showMenu: false,
       brand: '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>',
-      userName: null
+      userName: null,
+      csrfToken: null,
+      csrfParameterName: null
     }),
     props: {
       views: {
@@ -94,6 +102,9 @@
           this.userName = SBA.user.name;
         }
       }
+      this.csrfToken = readCookie('XSRF-TOKEN');
+      /* global SBA */
+      this.csrfParameterName = (SBA && SBA.csrf && SBA.csrf.parameterName) || '_csrf';
     },
     mounted() {
       document.documentElement.classList.add('has-navbar-fixed-top');

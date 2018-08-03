@@ -17,7 +17,10 @@
 import axios from 'axios';
 
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-
+/* global SBA */
+if (SBA && SBA.csrf && SBA.csrf.headerName) {
+  axios.defaults.xsrfHeaderName = SBA.csrf.headerName;
+}
 
 export const redirectOn401 = (predicate = () => true) => error => {
   if (error.response && error.response.status === 401 && predicate(error)) {
