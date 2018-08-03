@@ -35,7 +35,7 @@ import com.hazelcast.config.Config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AdminServerWebConfigurationTest {
+public class AdminServerAutoConfigurationTest {
 
     private AnnotationConfigApplicationContext context;
 
@@ -60,7 +60,6 @@ public class AdminServerWebConfigurationTest {
         load(TestHazelcastConfig.class);
         assertThat(context.getBean(InstanceEventStore.class)).isInstanceOf(HazelcastEventStore.class);
     }
-
 
     @Configuration
     static class TestHazelcastConfig {

@@ -45,7 +45,8 @@ public class UiExtensionsScanner {
     }
 
     private String toPattern(String location) {
-        return location + "**";
+        //replace the classpath pattern to search all locations and not just the first
+        return location.replace("classpath:", "classpath*:") + "**";
     }
 
     private boolean isExtension(Resource resource) {
