@@ -53,8 +53,8 @@ public class AdminServerWebConfiguration {
     public SimpleModule adminJacksonModule() {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(Registration.class, new RegistrationDeserializer());
-        module.setSerializerModifier(new RegistrationBeanSerializerModifier(
-            new SanitizingMapSerializer(adminServerProperties.getMetadataKeysToSanitize())));
+        module.setSerializerModifier(new RegistrationBeanSerializerModifier(new SanitizingMapSerializer(
+            adminServerProperties.getMetadataKeysToSanitize())));
         return module;
     }
 
@@ -86,8 +86,11 @@ public class AdminServerWebConfiguration {
             InstanceRegistry instanceRegistry,
             InstanceWebClient instanceWebClient) {
             return new de.codecentric.boot.admin.server.web.reactive.InstancesProxyController(
-                adminServerProperties.getContextPath(), adminServerProperties.getInstanceProxy().getIgnoredHeaders(),
-                instanceRegistry, instanceWebClient);
+                adminServerProperties.getContextPath(),
+                adminServerProperties.getInstanceProxy().getIgnoredHeaders(),
+                instanceRegistry,
+                instanceWebClient
+            );
         }
 
         @Bean
@@ -111,7 +114,7 @@ public class AdminServerWebConfiguration {
         }
 
         @Bean
-        @ConditionalOnMissingBean
+        @ConditionalOnMissingBean(name = "webMvcAsyncTaskExecutor")
         public AsyncTaskExecutor webMvcAsyncTaskExecutor() {
             final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
             executor.setCorePoolSize(5);
@@ -123,7 +126,8 @@ public class AdminServerWebConfiguration {
         }
 
         @Bean
-        public WebMvcConfigurer adminWebMvcConfigurer() {
+        @ConditionalOnMissingBean(name = "webMvcConfigurer")
+        public WebMvcConfigurer webMvcConfigurer() {
             return new WebMvcConfigurer() {
                 @Override
                 public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
@@ -136,8 +140,12 @@ public class AdminServerWebConfiguration {
         @ConditionalOnMissingBean
         public InstancesProxyController instancesProxyController(InstanceRegistry instanceRegistry,
                                                                  InstanceWebClient instanceWebClient) {
-            return new InstancesProxyController(adminServerProperties.getContextPath(),
-                adminServerProperties.getInstanceProxy().getIgnoredHeaders(), instanceRegistry, instanceWebClient);
+            return new InstancesProxyController(
+                adminServerProperties.getContextPath(),
+                adminServerProperties.getInstanceProxy().getIgnoredHeaders(),
+                instanceRegistry,
+                instanceWebClient
+            );
         }
 
         @Bean
