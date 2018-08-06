@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.cloud.discovery;
 
 import de.codecentric.boot.admin.server.domain.entities.EventsourcingInstanceRepository;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
 import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
@@ -40,7 +41,11 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class InstanceDiscoveryListenerTest {
@@ -52,7 +57,7 @@ public class InstanceDiscoveryListenerTest {
     public void setup() {
         discovery = mock(DiscoveryClient.class);
         InstanceRepository repository = new EventsourcingInstanceRepository(new InMemoryEventStore());
-        registry = new InstanceRegistry(repository, new HashingInstanceUrlIdGenerator());
+        registry = spy(new InstanceRegistry(repository, new HashingInstanceUrlIdGenerator()));
         listener = new InstanceDiscoveryListener(discovery, registry, repository);
     }
 
@@ -213,6 +218,7 @@ public class InstanceDiscoveryListenerTest {
         instances.remove(0);
 
         listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
+
         StepVerifier.create(registry.getInstances("service"))
                     .assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service"))
                     .verifyComplete();
@@ -224,6 +230,9 @@ public class InstanceDiscoveryListenerTest {
         StepVerifier.create(registry.getInstances("different-source"))
                     .assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("different-source"))
                     .verifyComplete();
-    }
 
+        //shouldn't deregister a second time
+        listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
+        verify(registry, times(1)).deregister(any(InstanceId.class));
+    }
 }

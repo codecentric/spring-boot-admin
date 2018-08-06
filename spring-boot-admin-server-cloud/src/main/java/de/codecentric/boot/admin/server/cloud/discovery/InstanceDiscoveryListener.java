@@ -112,6 +112,7 @@ public class InstanceDiscoveryListener {
 
     protected Mono<Void> removeStaleInstances(Set<InstanceId> registeredInstanceIds) {
         return repository.findAll()
+                         .filter(Instance::isRegistered)
                          .filter(instance -> SOURCE.equals(instance.getRegistration().getSource()))
                          .map(Instance::getId)
                          .filter(id -> !registeredInstanceIds.contains(id))
