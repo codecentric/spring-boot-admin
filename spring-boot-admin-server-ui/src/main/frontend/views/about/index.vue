@@ -26,18 +26,18 @@
         <p>
           To monitor applications, they must be registered at this server. This is either done by including the
           <a
-            href="https://codecentric.github.io/spring-boot-admin/@project.version@/#register-clients-via-spring-boot-admin">
+            :href="`${documentationBaseUrl}/#register-clients-via-spring-boot-admin`">
             Spring Boot Admin Client
           </a>
           or using a
           <a
-            href="https://codecentric.github.io/spring-boot-admin/@project.version@/#discover-clients-via-spring-cloud-discovery">
+            :href="`${documentationBaseUrl}/#discover-clients-via-spring-cloud-discovery`">
             Spring Cloud Discovery Client
           </a> implementation.
         </p>
         <p>
           If you have any question please consult the
-          <a href="https://codecentric.github.io/spring-boot-admin/@project.version@">Reference Guide</a>, ask
+          <a :href="`${documentationBaseUrl}`">Reference Guide</a>, ask
           on <a href="https://stackoverflow.com/questions/tagged/spring-boot-admin"> Stack Overflow</a> or
           have a chat on the <a href="https://gitter.im/codecentric/spring-boot-admin">Gitter</a> channel.
         </p>
@@ -47,7 +47,7 @@
         </p>
         <div class="about-links">
           <a class="button is-primary is-outlined"
-             :href="`https://codecentric.github.io/spring-boot-admin/${version}`">
+             :href="`${documentationBaseUrl}`">
             <font-awesome-icon size="lg" icon="book"/>&nbsp;Reference Guide
           </a>
           <a class="button is-black is-outlined" href="https://github.com/codecentric/spring-boot-admin">
@@ -83,6 +83,11 @@
       // eslint-disable-next-line no-undef
       version: __PROJECT_VERSION__
     }),
+    computed: {
+      documentationBaseUrl() {
+        return `https://codecentric.github.io/spring-boot-admin/${this.version || 'current'}`;
+      }
+    },
     install({viewRegistry}) {
       viewRegistry.addView({
         path: '/about',
