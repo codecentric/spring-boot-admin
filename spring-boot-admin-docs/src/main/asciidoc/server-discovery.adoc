@@ -56,8 +56,9 @@ user.password
 | Credentials being used to access the endpoints.
 |
 
-| management.port
-| The port is substituted in the service URL and will be used for accessing the actuator endpoints.
+| management.port +
+management.address
+| The address and port are substituted in the service URL and will be used for accessing the actuator endpoints.
 |
 
 | management.context-path
