@@ -41,6 +41,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultServiceInstanceConverter.class);
     private static final String KEY_MANAGEMENT_PORT = "management.port";
     private static final String KEY_MANAGEMENT_PATH = "management.context-path";
+    private static final String KEY_MANAGEMENT_ADDRESS = "management.address";
     private static final String KEY_HEALTH_PATH = "health.path";
 
     /**
@@ -99,12 +100,18 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
             managamentPort = String.valueOf(serviceUrl.getPort());
         }
 
-        return UriComponentsBuilder.fromUri(serviceUrl)
-                                   .port(managamentPort)
-                                   .path("/")
-                                   .path(managamentPath)
-                                   .build()
-                                   .toUri();
+        final URI uri = UriComponentsBuilder.fromUri(serviceUrl)
+            .port(managamentPort)
+            .path("/")
+            .path(managamentPath)
+            .build()
+            .toUri();
+
+        String managementServerAddress = instance.getMetadata().get(KEY_MANAGEMENT_ADDRESS);
+        if (!isEmpty(managementServerAddress)) {
+            return UriComponentsBuilder.fromUri(uri).host(managementServerAddress).build().toUri();
+        }
+        return uri;
     }
 
     protected URI getServiceUrl(ServiceInstance instance) {
