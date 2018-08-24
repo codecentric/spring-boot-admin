@@ -67,6 +67,7 @@ public class AdminServerUiAutoConfiguration {
             this.adminServerProperties.getContextPath(),
             this.uiProperties.getTitle(),
             this.uiProperties.getBrand(),
+            this.uiProperties.getRouterOptions(),
             this.uiExtensions()
         );
     }

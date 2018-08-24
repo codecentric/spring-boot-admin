@@ -111,6 +111,7 @@
         name: 'applications',
         label,
         order: 0,
+        default: true,
         component: this
       });
       viewRegistry.addRedirect('/', 'applications');

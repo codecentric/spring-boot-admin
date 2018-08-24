@@ -16,6 +16,7 @@
 
 package de.codecentric.boot.admin.server.ui.web;
 
+import de.codecentric.boot.admin.server.ui.config.AdminServerUiProperties;
 import de.codecentric.boot.admin.server.ui.extensions.UiExtension;
 import de.codecentric.boot.admin.server.web.AdminController;
 
@@ -37,8 +38,13 @@ public class UiController {
     private final List<UiExtension> cssExtensions;
     private final List<UiExtension> jsExtensions;
     private final Map<String, Object> uiSettings;
+    private final AdminServerUiProperties.RouterOptions routerOptions;
 
-    public UiController(String adminContextPath, String title, String brand, List<UiExtension> uiExtensions) {
+    public UiController(String adminContextPath,
+                        String title,
+                        String brand,
+                        AdminServerUiProperties.RouterOptions routerOptions,
+                        List<UiExtension> uiExtensions) {
         this.adminContextPath = adminContextPath;
         this.uiSettings = new HashMap<>();
         this.uiSettings.put("title", title);
@@ -49,6 +55,7 @@ public class UiController {
         this.jsExtensions = uiExtensions.stream()
                                         .filter(e -> e.getResourcePath().endsWith(".js"))
                                         .collect(Collectors.toList());
+        this.routerOptions = routerOptions;
     }
 
     @ModelAttribute(value = "adminContextPath", binding = false)
@@ -69,6 +76,11 @@ public class UiController {
     @ModelAttribute(value = "jsExtensions", binding = false)
     public List<UiExtension> getJsExtensions() {
         return jsExtensions;
+    }
+
+    @ModelAttribute(value = "routerOptions", binding = false)
+    public AdminServerUiProperties.RouterOptions routerOptions() {
+        return routerOptions;
     }
 
     @ModelAttribute(value = "user", binding = false)

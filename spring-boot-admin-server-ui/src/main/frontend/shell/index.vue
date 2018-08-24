@@ -45,7 +45,7 @@
         return this.views.filter(view => !view.parent);
       },
       activeMainViewName() {
-        const currentView = this.$route.meta.view;
+        const currentView = this.$route.meta.view || this.views.find(view => view.default);
         return currentView.parent || currentView.name;
       },
       childViews() {
