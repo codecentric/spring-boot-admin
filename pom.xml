@@ -39,7 +39,7 @@
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
-        <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
         <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
         <maven-site-plugin.version>3.7.1</maven-site-plugin.version>
         <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
@@ -129,6 +129,7 @@
                         <goals>
                             <goal>jar</goal>
                         </goals>
+                        <inherited>true</inherited>
                     </execution>
                 </executions>
             </plugin>
