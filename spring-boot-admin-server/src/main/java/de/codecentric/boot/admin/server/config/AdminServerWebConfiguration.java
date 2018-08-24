@@ -16,6 +16,7 @@
 
 package de.codecentric.boot.admin.server.config;
 
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventPublisher;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
@@ -24,19 +25,25 @@ import de.codecentric.boot.admin.server.utils.jackson.RegistrationBeanSerializer
 import de.codecentric.boot.admin.server.utils.jackson.RegistrationDeserializer;
 import de.codecentric.boot.admin.server.utils.jackson.SanitizingMapSerializer;
 import de.codecentric.boot.admin.server.web.ApplicationsController;
+import de.codecentric.boot.admin.server.web.HomepageForwardingMatcher;
 import de.codecentric.boot.admin.server.web.InstancesController;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
+import de.codecentric.boot.admin.server.web.reactive.HomepageForwardingWebFilter;
+import de.codecentric.boot.admin.server.web.servlet.HomepageForwardingFilter;
 import de.codecentric.boot.admin.server.web.servlet.InstancesProxyController;
-
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.web.server.ErrorPage;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+
 
 @Configuration
 public class AdminServerWebConfiguration {
@@ -66,6 +73,12 @@ public class AdminServerWebConfiguration {
     public ApplicationsController applicationsController(InstanceRegistry instanceRegistry,
                                                          InstanceEventPublisher eventPublisher) {
         return new ApplicationsController(instanceRegistry, eventPublisher);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public HomepageForwardingMatcher homepageForwardingMatcher() {
+        return new HomepageForwardingMatcher(adminServerProperties.getContextPath());
     }
 
     @Configuration
@@ -99,15 +112,21 @@ public class AdminServerWebConfiguration {
             mapping.setContentTypeResolver(webFluxContentTypeResolver);
             return mapping;
         }
+
+        @Bean
+        @ConditionalOnMissingBean
+        public HomepageForwardingWebFilter homepageForwardingWebFilter(HomepageForwardingMatcher homepageForwardingMatcher) {
+            return new HomepageForwardingWebFilter(homepageForwardingMatcher);
+        }
     }
 
     @Configuration
     @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
     @AutoConfigureAfter(WebMvcAutoConfiguration.class)
-    public static class ServletRestApiConfirguation {
+    public static class ServletRestApiConfiguration {
         private final AdminServerProperties adminServerProperties;
 
-        public ServletRestApiConfirguation(AdminServerProperties adminServerProperties) {
+        public ServletRestApiConfiguration(AdminServerProperties adminServerProperties) {
             this.adminServerProperties = adminServerProperties;
         }
 
@@ -132,6 +151,16 @@ public class AdminServerWebConfiguration {
             mapping.setContentNegotiationManager(contentNegotiationManager);
             return mapping;
         }
-    }
 
+        @Bean
+        public WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> webServerCustomizer(HomepageForwardingMatcher homepageForwardingMatcher) {
+            return container -> container.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, homepageForwardingMatcher.getHomepagePath()));
+        }
+
+        @Bean
+        @ConditionalOnMissingBean
+        public HomepageForwardingFilter homepageForwardingFilter(HomepageForwardingMatcher homepageForwardingMatcher) {
+            return new HomepageForwardingFilter(homepageForwardingMatcher);
+        }
+    }
 }

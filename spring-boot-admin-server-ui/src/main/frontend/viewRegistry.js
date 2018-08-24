@@ -35,7 +35,8 @@ export default class ViewRegistry {
   get routes() {
     return [
       ...this._toRoutes(this._views, v => !v.parent),
-      ...this._redirects
+      ...this._redirects,
+      { path: '*', redirect: '/' }
     ]
   }
 
