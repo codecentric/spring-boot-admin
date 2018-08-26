@@ -48,11 +48,9 @@ installables.forEach(view => view.install({
 
 new Vue({
   router: new VueRouter({
+    mode: 'history',
     linkActiveClass: 'is-active',
     routes: viewRegistry.routes,
-    mode: SBA.routerOptions.mode,
-    fallback: SBA.routerOptions.fallback,
-    base: SBA.routerOptions.base
   }),
   el: '#app',
   render(h) {

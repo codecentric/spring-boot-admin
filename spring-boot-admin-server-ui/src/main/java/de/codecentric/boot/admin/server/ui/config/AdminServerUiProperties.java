@@ -58,8 +58,6 @@ public class AdminServerUiProperties {
 
     private final Cache cache = new Cache();
 
-    private final RouterOptions routerOptions = new RouterOptions();
-
     @lombok.Data
     public static class Cache {
 
@@ -93,27 +91,4 @@ public class AdminServerUiProperties {
         }
     }
 
-    /**
-     * Options to configure the VueJS router.
-     * @see <a href="https://router.vuejs.org/api/#router-construction-options">Router construction options</a>
-     */
-    @lombok.Data
-    public static class RouterOptions {
-
-        /**
-         * Configure the router mode, i.e. "hash" | "history" | "abstract"
-         */
-        private String mode = "hash";
-
-        /**
-         * Controls whether the router should fallback to hash mode when the browser does not support
-         * history.pushState but mode is set to history.
-         */
-        private boolean fallback = true;
-
-        /**
-         * The base URL of the app.
-         */
-        private String base = "/";
-    }
 }
