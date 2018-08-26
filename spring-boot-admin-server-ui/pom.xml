@@ -79,6 +79,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
+                            <skip>${skipNpmBuild}</skip>
                             <executable>npm</executable>
                             <arguments>
                                 <argument>run</argument>
