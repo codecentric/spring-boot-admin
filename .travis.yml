@@ -13,6 +13,8 @@ before_install:
   - 'if [[ -n "$DECRYPT_KEYPHRASE" ]]; then openssl aes-256-cbc -d -pass "env:DECRYPT_KEYPHRASE" -in .gnupg.tar.enc | tar xv; fi'
   - 'nvm install ${TRAVIS_NODE_VERSION} && nvm use ${TRAVIS_NODE_VERSION}'
 
+install: ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -DskipNpmBuild=true -B -V
+
 script: ./mvnw verify ${TRAVIS_TAG:+-Drevision=${TRAVIS_TAG} -DdisableSpringSnapshots=true}
 
 after_success:
