@@ -19,13 +19,13 @@
     <div class="hero-body">
       <div class="container">
         <div class="columns">
-          <div class="column is-narrow">
+          <div class="column">
             <h1 class="title" v-if="instance" v-text="instance.registration.name"/>
             <h2 class="subtitle" v-if="instance">
               Instance <strong v-text="instance.id"/> (of <span v-text="application.instances.length"/>)
             </h2>
+            <sba-instance-tags :instance="instance"/>
           </div>
-          <div class="column"/>
           <div class="column is-narrow is-hidden-mobile">
             <h2 class="subtitle is-6" v-if="instance">
               <a v-text="instance.registration.serviceUrl"

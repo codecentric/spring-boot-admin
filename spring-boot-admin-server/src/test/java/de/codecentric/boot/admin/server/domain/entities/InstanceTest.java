@@ -25,6 +25,7 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 
+import de.codecentric.boot.admin.server.domain.values.Tag;
 import org.junit.Test;
 
 import static java.util.Collections.singletonMap;
@@ -164,4 +165,25 @@ public class InstanceTest {
         assertThat(instance.getBuildVersion()).isNull();
     }
 
+    @Test
+    public void should_extract_tags() {
+        Instance instance = Instance.create(InstanceId.of("id"));
+
+        assertThat(instance.getTags()).isEmpty();
+
+        Registration registration = Registration.create("foo-instance", "http://health")
+                                                .metadata("tags.environment", "test")
+                                                .build();
+
+        instance = instance.register(registration);
+        assertThat(instance.getTags()).hasSize(1);
+        assertThat(instance.getTags().get(0)).isEqualTo(Tag.of("environment", "test"));
+
+        instance = instance.register(registration.toBuilder().clearMetadata().build());
+        assertThat(instance.getTags()).isEmpty();
+
+        instance = instance.register(registration);
+        instance = instance.deregister();
+        assertThat(instance.getTags()).isEmpty();
+    }
 }

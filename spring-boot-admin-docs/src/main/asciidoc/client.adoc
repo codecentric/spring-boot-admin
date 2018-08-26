@@ -62,6 +62,18 @@ logging.pattern.file=%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${P
 <1> Destination the logfile is written to. Enables the logfile actuator endpoint.
 <2> File log pattern using ANSI colors.
 
+[[show-instance-tags]]
+=== Show tags per instance ===
+
+`Tags` are a way to add visual markers per instanace, they will appear in the application list as well as in the instance view.
+By default no tags are added to instances, and it's up to the client to specify the desired tags by adding the information to the metadata.
+
+i.e.
+.application.properties
+----
+spring.boot.admin.client.instance.metadata.tags.environment=test
+----
+
 [[spring-boot-admin-client]]
 === Spring Boot Admin Client ===
 
@@ -144,6 +156,10 @@ spring.boot.admin.client.password
 
 | spring.boot.admin.client.instance.metadata.*
 | Metadata key-value-pairs to be associated with this instance.
+|
+
+| spring.boot.admin.client.instance.metadata.tags.*
+| Tags as key-value-pairs to be associated with this instance.
 |
 |===
 
