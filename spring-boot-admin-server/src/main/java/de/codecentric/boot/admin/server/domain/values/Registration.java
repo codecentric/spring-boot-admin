@@ -22,7 +22,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -61,7 +61,7 @@ public class Registration implements Serializable {
         this.healthUrl = healthUrl;
         this.serviceUrl = serviceUrl;
         this.source = source;
-        this.metadata = new HashMap<>(metadata);
+        this.metadata = new LinkedHashMap<>(metadata);
     }
 
     public static Registration.Builder create(String name, String healthUrl) {

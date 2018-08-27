@@ -30,10 +30,12 @@ import de.codecentric.boot.admin.server.domain.values.Info;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
+import de.codecentric.boot.admin.server.domain.values.Tags;
 
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -62,13 +64,16 @@ public class Instance implements Serializable {
     private final List<InstanceEvent> unsavedEvents;
     private final Endpoints endpoints;
     private final BuildVersion buildVersion;
+    private final Tags tags;
 
     private Instance(InstanceId id) {
-        this(id, -1L, null, false, StatusInfo.ofUnknown(), Instant.EPOCH, Info.empty(), Endpoints.empty(), null,
-            emptyList());
+        this(id, -1L, null, false, StatusInfo.ofUnknown(), Instant.EPOCH, Info.empty(),
+            Endpoints.empty(), null, Tags.empty(), emptyList());
     }
 
-    private Instance(InstanceId id, long version, Registration registration, boolean registered, StatusInfo statusInfo, Instant statusTimestamp, Info info, Endpoints endpoints, BuildVersion buildVersion, List<InstanceEvent> unsavedEvents) {
+    private Instance(InstanceId id, long version, Registration registration, boolean registered, StatusInfo statusInfo,
+                     Instant statusTimestamp, Info info, Endpoints endpoints, BuildVersion buildVersion, Tags tags,
+                     List<InstanceEvent> unsavedEvents) {
         Assert.notNull(id, "'id' must not be null");
         Assert.notNull(endpoints, "'endpoints' must not be null");
         Assert.notNull(info, "'info' must not be null");
@@ -83,6 +88,7 @@ public class Instance implements Serializable {
         this.endpoints = registered ? endpoints.withEndpoint(Endpoint.HEALTH, registration.getHealthUrl()) : endpoints;
         this.unsavedEvents = unsavedEvents;
         this.buildVersion = buildVersion;
+        this.tags = tags;
     }
 
     public static Instance create(InstanceId id) {
@@ -145,7 +151,7 @@ public class Instance implements Serializable {
 
     Instance clearUnsavedEvents() {
         return new Instance(this.id, this.version, this.registration, this.registered, this.statusInfo,
-            this.statusTimestamp, info, this.endpoints, this.buildVersion, emptyList());
+            this.statusTimestamp, info, this.endpoints, this.buildVersion, this.tags, emptyList());
     }
 
     Instance apply(Collection<InstanceEvent> events) {
@@ -172,34 +178,37 @@ public class Instance implements Serializable {
         if (event instanceof InstanceRegisteredEvent) {
             Registration registration = ((InstanceRegisteredEvent) event).getRegistration();
             return new Instance(this.id, event.getVersion(), registration, true, StatusInfo.ofUnknown(),
-                event.getTimestamp(), Info.empty(), Endpoints.empty(), updateBuildVersion(registration.getMetadata()),
-                unsavedEvents);
+                event.getTimestamp(), Info.empty(), Endpoints.empty(),
+                updateBuildVersion(registration.getMetadata()),
+                updateTags(registration.getMetadata()), unsavedEvents);
 
         } else if (event instanceof InstanceRegistrationUpdatedEvent) {
             Registration registration = ((InstanceRegistrationUpdatedEvent) event).getRegistration();
             return new Instance(this.id, event.getVersion(), registration, this.registered, this.statusInfo,
                 this.statusTimestamp, this.info, this.endpoints,
-                updateBuildVersion(registration.getMetadata(), this.info.getValues()), unsavedEvents);
+                updateBuildVersion(registration.getMetadata(), this.info.getValues()),
+                updateTags(registration.getMetadata(), this.info.getValues()), unsavedEvents);
 
         } else if (event instanceof InstanceStatusChangedEvent) {
             StatusInfo statusInfo = ((InstanceStatusChangedEvent) event).getStatusInfo();
             return new Instance(this.id, event.getVersion(), this.registration, this.registered, statusInfo,
-                event.getTimestamp(), this.info, this.endpoints, this.buildVersion, unsavedEvents);
+                event.getTimestamp(), this.info, this.endpoints, this.buildVersion, this.tags, unsavedEvents);
 
         } else if (event instanceof InstanceEndpointsDetectedEvent) {
             Endpoints endpoints = ((InstanceEndpointsDetectedEvent) event).getEndpoints();
             return new Instance(this.id, event.getVersion(), this.registration, this.registered, this.statusInfo,
-                this.statusTimestamp, this.info, endpoints, this.buildVersion, unsavedEvents);
+                this.statusTimestamp, this.info, endpoints, this.buildVersion, this.tags, unsavedEvents);
 
         } else if (event instanceof InstanceInfoChangedEvent) {
             Info info = ((InstanceInfoChangedEvent) event).getInfo();
             return new Instance(this.id, event.getVersion(), this.registration, this.registered, this.statusInfo,
                 this.statusTimestamp, info, this.endpoints,
-                updateBuildVersion(this.registration.getMetadata(), info.getValues()), unsavedEvents);
+                updateBuildVersion(this.registration.getMetadata(), info.getValues()),
+                updateTags(registration.getMetadata(), info.getValues()), unsavedEvents);
 
         } else if (event instanceof InstanceDeregisteredEvent) {
             return new Instance(this.id, event.getVersion(), this.registration, false, StatusInfo.ofUnknown(),
-                event.getTimestamp(), Info.empty(), Endpoints.empty(), null, unsavedEvents);
+                event.getTimestamp(), Info.empty(), Endpoints.empty(), null, Tags.empty(), unsavedEvents);
         }
 
         return this;
@@ -221,12 +230,17 @@ public class Instance implements Serializable {
 
     @SafeVarargs
     private final BuildVersion updateBuildVersion(Map<String, ?>... sources) {
-        for (Map<String, ?> source : sources) {
-            BuildVersion newBuildVersion = BuildVersion.from(source);
-            if (newBuildVersion != null) {
-                return newBuildVersion;
-            }
-        }
-        return null;
+        return Arrays.stream(sources)
+                     .map(BuildVersion::from)
+                     .filter(Objects::nonNull)
+                     .findFirst()
+                     .orElse(null);
+    }
+
+    @SafeVarargs
+    private final Tags updateTags(Map<String, ?>... sources) {
+        return Arrays.stream(sources)
+                     .map(source -> Tags.from(source, "tags"))
+                     .reduce(Tags.empty(), Tags::append);
     }
 }

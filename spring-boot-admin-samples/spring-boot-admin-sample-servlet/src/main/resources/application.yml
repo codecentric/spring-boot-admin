@@ -24,6 +24,10 @@ spring:
     admin:
       client:
         url: http://localhost:8080
+        instance:
+          metadata:
+            tags:
+              environment: test
   profiles:
     active:
       - secure
@@ -45,6 +49,8 @@ spring:
 spring:
   profiles: insecure
 
+info.tags.security: insecure
+
 ---
 spring:
   profiles: secure
@@ -62,4 +68,5 @@ spring:
             user.name: "user"         #These two are needed so that the server
             user.password: "password" #can access the protected client endpoints
 
+info.tags.security: secured
 

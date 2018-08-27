@@ -31,7 +31,7 @@ public class Endpoint implements Serializable {
     private final String id;
     private final String url;
 
-    public Endpoint(String id, String url) {
+    private Endpoint(String id, String url) {
         Assert.hasText(id, "'id' must not be empty.");
         Assert.hasText(url, "'url' must not be empty.");
         this.id = id;

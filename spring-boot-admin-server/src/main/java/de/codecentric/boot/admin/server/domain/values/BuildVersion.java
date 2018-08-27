@@ -36,6 +36,10 @@ public class BuildVersion implements Serializable, Comparable<BuildVersion> {
     }
 
     public static BuildVersion from(Map<String, ?> map) {
+        if (map.isEmpty()) {
+            return null;
+        }
+
         Object build = map.get("build");
         if (build instanceof Map) {
             Object version = ((Map<?, ?>) build).get("version");
@@ -68,27 +72,27 @@ public class BuildVersion implements Serializable, Comparable<BuildVersion> {
 
     @Override
     public int compareTo(BuildVersion other) {
-        Scanner s1 = new Scanner(this.value);
-        Scanner s2 = new Scanner(other.value);
-        s1.useDelimiter("[.\\-+]");
-        s2.useDelimiter("[.\\-+]");
+        try (Scanner s1 = new Scanner(this.value); Scanner s2 = new Scanner(other.value)) {
+            s1.useDelimiter("[.\\-+]");
+            s2.useDelimiter("[.\\-+]");
 
-        while (s1.hasNext() && s2.hasNext()) {
-            int c;
-            if (s1.hasNextInt() && s2.hasNextInt()) {
-                c = Integer.compare(s1.nextInt(), s2.nextInt());
-            } else {
-                c = s1.next().compareTo(s2.next());
+            while (s1.hasNext() && s2.hasNext()) {
+                int c;
+                if (s1.hasNextInt() && s2.hasNextInt()) {
+                    c = Integer.compare(s1.nextInt(), s2.nextInt());
+                } else {
+                    c = s1.next().compareTo(s2.next());
+                }
+                if (c != 0) {
+                    return c;
+                }
             }
-            if (c != 0) {
-                return c;
-            }
-        }
 
-        if (s1.hasNext()) {
-            return 1;
-        } else if (s2.hasNext()) {
-            return -1;
+            if (s1.hasNext()) {
+                return 1;
+            } else if (s2.hasNext()) {
+                return -1;
+            }
         }
         return 0;
     }

@@ -29,15 +29,22 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
  */
 @lombok.Data
 public class Info implements Serializable {
-    private static final Info EMPTY = new Info(null);
+    private static final Info EMPTY = new Info(Collections.emptyMap());
 
     private final Map<String, Object> values;
 
     private Info(Map<String, Object> values) {
-        this.values = values != null ? new LinkedHashMap<>(values) : Collections.emptyMap();
+        if (values.isEmpty()) {
+            this.values = Collections.emptyMap();
+        } else {
+            this.values = Collections.unmodifiableMap(new LinkedHashMap<>(values));
+        }
     }
 
     public static Info from(Map<String, Object> values) {
+        if (values == null || values.isEmpty()) {
+            return empty();
+        }
         return new Info(values);
     }
 
@@ -47,6 +54,6 @@ public class Info implements Serializable {
 
     @JsonAnyGetter
     public Map<String, Object> getValues() {
-        return Collections.unmodifiableMap(values);
+        return this.values;
     }
 }
