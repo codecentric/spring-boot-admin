@@ -32,7 +32,7 @@ import static org.springframework.util.StringUtils.isEmpty;
  * Converts any {@link ServiceInstance}s to {@link Instance}s. To customize the health- or
  * management-url for all instances you can set healthEndpointPath or managementContextPath
  * respectively. If you want to influence the url per service you can add
- * <code>management.context-path</code> or <code>management.port</code> or <code>health.path</code>
+ * <code>management.context-path</code>, <code>management.port</code>, <code>management.address</code> or <code>health.path</code>
  * to the instances metadata.
  *
  * @author Johannes Edmeier
@@ -41,6 +41,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultServiceInstanceConverter.class);
     private static final String KEY_MANAGEMENT_PORT = "management.port";
     private static final String KEY_MANAGEMENT_PATH = "management.context-path";
+    private static final String KEY_MANAGEMENT_ADDRESS = "management.address";
     private static final String KEY_HEALTH_PATH = "health.path";
 
     /**
@@ -99,12 +100,22 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
             managamentPort = String.valueOf(serviceUrl.getPort());
         }
 
-        return UriComponentsBuilder.fromUri(serviceUrl)
-                                   .port(managamentPort)
-                                   .path("/")
-                                   .path(managamentPath)
-                                   .build()
-                                   .toUri();
+        final URI uri = UriComponentsBuilder.fromUri(serviceUrl)
+            .port(managamentPort)
+            .path("/")
+            .path(managamentPath)
+            .build()
+            .toUri();
+
+        String managementServerAddress = instance.getMetadata().get(KEY_MANAGEMENT_ADDRESS);
+        if (!isEmpty(managementServerAddress)) {
+            return UriComponentsBuilder
+                .fromUri(uri)
+                .host(managementServerAddress)
+                .build()
+                .toUri();
+        }
+        return uri;
     }
 
     protected URI getServiceUrl(ServiceInstance instance) {
