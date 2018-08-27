@@ -61,14 +61,15 @@ public class DefaultServiceInstanceConverterTest {
         metadata.put("health.path", "ping");
         metadata.put("management.context-path", "mgmt");
         metadata.put("management.port", "1234");
+        metadata.put("management.address", "127.0.0.1");
         service.getMetadata().putAll(metadata);
 
         Registration registration = new DefaultServiceInstanceConverter().convert(service);
 
         assertThat(registration.getName()).isEqualTo("test");
         assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80/");
-        assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:1234/mgmt");
-        assertThat(registration.getHealthUrl()).isEqualTo("http://localhost:1234/mgmt/ping");
+        assertThat(registration.getManagementUrl()).isEqualTo("http://127.0.0.1:1234/mgmt");
+        assertThat(registration.getHealthUrl()).isEqualTo("http://127.0.0.1:1234/mgmt/ping");
         assertThat(registration.getMetadata()).isEqualTo(metadata);
     }
 
