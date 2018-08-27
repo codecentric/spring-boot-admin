@@ -525,7 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.0.3-SNAPSHOT,</span>
-<span id="revdate">26.08.2018</span>
+<span id="revdate">27.08.2018</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -547,7 +547,8 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#show-version-in-application-list">3.1. Show version in application list</a></li>
 <li><a href="#jmx-bean-management">3.2. JMX-bean management</a></li>
 <li><a href="#logfile">3.3. Logfile viewer</a></li>
-<li><a href="#spring-boot-admin-client">3.4. Spring Boot Admin Client</a></li>
+<li><a href="#show-instance-tags">3.4. Show tags per instance</a></li>
+<li><a href="#spring-boot-admin-client">3.5. Spring Boot Admin Client</a></li>
 </ul>
 </li>
 <li><a href="#spring-boot-admin-server">4. Spring Boot Admin Server</a>
@@ -958,7 +959,24 @@ logging.pattern.file=%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${P
 </div>
 </div>
 <div class="sect2">
-<h3 id="spring-boot-admin-client"><a class="anchor" href="#spring-boot-admin-client"></a><a class="link" href="#spring-boot-admin-client">3.4. Spring Boot Admin Client</a></h3>
+<h3 id="show-instance-tags"><a class="anchor" href="#show-instance-tags"></a><a class="link" href="#show-instance-tags">3.4. Show tags per instance</a></h3>
+<div class="paragraph">
+<p><code>Tags</code> are a way to add visual markers per instanace, they will appear in the application list as well as in the instance view.
+By default no tags are added to instances, and it&#8217;s up to the client to specify the desired tags by adding the information to the metadata or info endpoint.</p>
+</div>
+<div class="listingblock">
+<div class="title">application.properties</div>
+<div class="content">
+<pre>#using the metadata
+spring.boot.admin.client.instance.metadata.tags.environment=test
+
+#using the info endpoint
+info.tags.environment=test</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="spring-boot-admin-client"><a class="anchor" href="#spring-boot-admin-client"></a><a class="link" href="#spring-boot-admin-client">3.5. Spring Boot Admin Client</a></h3>
 <div class="paragraph">
 <p>The Spring Boot Admin Client registers the application at the admin server. This is done by periodically doing a HTTP post request to the SBA Server providing information about the application. It also adds Jolokia to your application, so that JMX-beans are accessible via HTTP.</p>
 </div>
@@ -1078,6 +1096,11 @@ spring.boot.admin.client.password</p></td>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.instance.metadata.*</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Metadata key-value-pairs to be associated with this instance.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.instance.metadata.tags.*</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tags as key-value-pairs to be associated with this instance.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 </tbody>
