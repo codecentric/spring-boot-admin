@@ -24,7 +24,7 @@
             <h2 class="subtitle" v-if="instance">
               Instance <strong v-text="instance.id"/> (of <span v-text="application.instances.length"/>)
             </h2>
-            <sba-instance-tags :instance="instance"/>
+            <sba-tags :tags="instance.tags"/>
           </div>
           <div class="column is-narrow is-hidden-mobile">
             <h2 class="subtitle is-6" v-if="instance">

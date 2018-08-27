@@ -66,12 +66,15 @@ logging.pattern.file=%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${P
 === Show tags per instance ===
 
 `Tags` are a way to add visual markers per instanace, they will appear in the application list as well as in the instance view.
-By default no tags are added to instances, and it's up to the client to specify the desired tags by adding the information to the metadata.
+By default no tags are added to instances, and it's up to the client to specify the desired tags by adding the information to the metadata or info endpoint.
 
-i.e.
 .application.properties
 ----
+#using the metadata
 spring.boot.admin.client.instance.metadata.tags.environment=test
+
+#using the info endpoint
+info.tags.environment=test
 ----
 
 [[spring-boot-admin-client]]

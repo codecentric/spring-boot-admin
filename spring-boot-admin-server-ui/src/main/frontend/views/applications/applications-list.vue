@@ -65,7 +65,7 @@
                 <span class="is-muted" v-text="instance.id"/>
               </td>
               <td>
-                <sba-instance-tags :instance="instance" :key-color="'is-primary'"/>
+                <sba-tags :tags="instance.tags"/>
               </td>
               <td>
                 <span v-text="instance.buildVersion"/>

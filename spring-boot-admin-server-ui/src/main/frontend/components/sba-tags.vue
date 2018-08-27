@@ -16,36 +16,26 @@
 
 <template>
   <div class="field is-grouped is-grouped-multiline" v-if="hasTags">
-    <div class="control" v-for="tag in instance.tags" :key="tag.key">
+    <div class="control" v-for="(key, value) in tags" :key="key">
       <div class="tags has-addons">
-        <span class="tag" :class="keyColor" v-text="tag.key"/>
-        <span class="tag" :class="valueColor" v-text="tag.value"/>
+        <span class="tag is-dark" v-text="key"/>
+        <span class="tag is-light" v-text="value"/>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-  import Instance from '@/services/instance';
-  
   export default {
     props: {
-      instance: {
-        type: Instance,
-        default: null,
-      },
-      keyColor: {
-        type: String,
-        default: "is-dark"
-      },
-      valueColor: {
-        type: String,
-        default: "is-light"
+      tags: {
+        type: Object,
+        required: true
       }
     },
-    methods: {
+    computed: {
       hasTags() {
-        return this.instance && Array.isArray(this.instance.tags) && this.instance.tags.length > 0;
+        return Object.keys(this.tags).length > 0;
       }
     }
   }
