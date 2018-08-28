@@ -22,7 +22,7 @@ export default (getFn, interval, initialSize = 300 * 1024) => {
 
   return timer(0, interval)
     .pipe(
-      concatMap(() => getFn({headers: {range}})),
+      concatMap(() => getFn({headers: {range, 'Accept': 'text/plain, */*'}})),
       concatMap(response => {
         const initial = size === 0;
         const contentLength = response.data.length;

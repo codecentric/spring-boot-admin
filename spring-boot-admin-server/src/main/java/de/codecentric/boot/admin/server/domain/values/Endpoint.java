@@ -23,6 +23,7 @@ import org.springframework.util.Assert;
 public class Endpoint implements Serializable {
     public static final String INFO = "info";
     public static final String HEALTH = "health";
+    public static final String LOGFILE = "logfile";
     public static final String ENV = "env";
     public static final String HTTPTRACE = "httptrace";
     public static final String THREADDUMP = "threaddump";

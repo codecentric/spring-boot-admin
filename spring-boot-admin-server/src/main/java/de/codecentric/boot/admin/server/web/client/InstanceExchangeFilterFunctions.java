@@ -24,10 +24,12 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -40,6 +42,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V1_MEDIATYPE;
 import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V2_MEDIATYPE;
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
@@ -47,6 +50,13 @@ public final class InstanceExchangeFilterFunctions {
     private static final Logger log = LoggerFactory.getLogger(InstanceExchangeFilterFunctions.class);
     public static final String ATTRIBUTE_INSTANCE = "instance";
     public static final String ATTRIBUTE_ENDPOINT = "endpointId";
+    private static final List<MediaType> DEFAULT_ACCEPT_MEDIATYPES = asList(MediaType.parseMediaType(ActuatorMediaType.V2_JSON),
+        MediaType.parseMediaType(ActuatorMediaType.V1_JSON),
+        MediaType.APPLICATION_JSON
+    );
+    private static final List<MediaType> DEFAULT_LOGFILE_ACCEPT_MEDIATYPES = asList(MediaType.TEXT_PLAIN,
+        MediaType.ALL
+    );
 
     private InstanceExchangeFilterFunctions() {
     }
@@ -56,8 +66,9 @@ public final class InstanceExchangeFilterFunctions {
     }
 
     public static ExchangeFilterFunction setInstance(Mono<Instance> instance) {
-        return (request, next) -> instance.map(
-            i -> ClientRequest.from(request).attribute(ATTRIBUTE_INSTANCE, i).build())
+        return (request, next) -> instance.map(i -> ClientRequest.from(request)
+                                                                 .attribute(ATTRIBUTE_INSTANCE, i)
+                                                                 .build())
                                           .switchIfEmpty(request.url().isAbsolute() ? Mono.just(request) : Mono.error(
                                               new ResolveInstanceException("Could not resolve Instance")))
                                           .flatMap(next::exchange);
@@ -66,8 +77,8 @@ public final class InstanceExchangeFilterFunctions {
     public static ExchangeFilterFunction addHeaders(HttpHeadersProvider httpHeadersProvider) {
         return toExchangeFilterFunction((instance, request, next) -> {
             ClientRequest newRequest = ClientRequest.from(request)
-                                                    .headers(headers -> headers.addAll(
-                                                        httpHeadersProvider.getHeaders(instance)))
+                                                    .headers(headers -> headers.addAll(httpHeadersProvider.getHeaders(
+                                                        instance)))
                                                     .build();
             return next.exchange(newRequest);
         });
@@ -103,8 +114,12 @@ public final class InstanceExchangeFilterFunctions {
             }
 
             URI newUrl = rewriteUrl(oldUrl, endpoint.get().getUrl());
-            log.trace("URL '{}' for Endpoint {} of instance {} rewritten to {}", oldUrl, endpoint.get().getId(),
-                instance.getId(), newUrl);
+            log.trace("URL '{}' for Endpoint {} of instance {} rewritten to {}",
+                oldUrl,
+                endpoint.get().getId(),
+                instance.getId(),
+                newUrl
+            );
             ClientRequest newRequest = ClientRequest.from(request)
                                                     .attribute(ATTRIBUTE_ENDPOINT, endpoint.get().getId())
                                                     .url(newUrl)
@@ -152,5 +167,20 @@ public final class InstanceExchangeFilterFunctions {
             }).body(response.bodyToFlux(DataBuffer.class).transform(bodConverter)).build();
             return Mono.just(convertedResponse);
         };
+    }
+
+    public static ExchangeFilterFunction setDefaultAcceptHeader() {
+        return toExchangeFilterFunction((instance, request, next) -> {
+            if (request.headers().getAccept().isEmpty()) {
+                Boolean isRequestForLogfile = request.attribute(ATTRIBUTE_ENDPOINT)
+                                                     .map(Endpoint.LOGFILE::equals)
+                                                     .orElse(false);
+                List<MediaType> acceptedHeaders = isRequestForLogfile ? DEFAULT_LOGFILE_ACCEPT_MEDIATYPES : DEFAULT_ACCEPT_MEDIATYPES;
+                return next.exchange(ClientRequest.from(request)
+                                                  .headers(headers -> headers.setAccept(acceptedHeaders))
+                                                  .build());
+            }
+            return next.exchange(request);
+        });
     }
 }

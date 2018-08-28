@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.web.client;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
@@ -38,6 +39,7 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import com.github.tomakehurst.wiremock.core.Options;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
@@ -47,11 +49,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_LENGTH;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpHeaders.EMPTY;
+import static wiremock.org.apache.http.HttpHeaders.ACCEPT;
 
 public class InstanceWebClientTest {
     @Rule
@@ -79,11 +81,7 @@ public class InstanceWebClientTest {
         Mono<ClientResponse> exchange = instanceWebClient.instance(instance).get().uri("health").exchange();
 
         StepVerifier.create(exchange).expectNextCount(1).verifyComplete();
-        wireMock.verify(1,
-            getRequestedFor(urlEqualTo("/status")).withHeader(ACCEPT, equalTo(MediaType.APPLICATION_JSON_VALUE))
-                                                  .withHeader(ACCEPT, equalTo(ActuatorMediaType.V1_JSON))
-                                                  .withHeader(ACCEPT, equalTo(ActuatorMediaType.V2_JSON))
-        );
+        wireMock.verify(1, getRequestedFor(urlEqualTo("/status")));
     }
 
     @Test
@@ -114,7 +112,7 @@ public class InstanceWebClientTest {
     }
 
     @Test
-    public void should_add_headers() {
+    public void should_add_headers_from_provider() {
         Instance instance = Instance.create(InstanceId.of("id"))
                                     .register(Registration.create("test", wireMock.url("/status")).build());
         wireMock.stubFor(get("/status").willReturn(ok()));
@@ -124,6 +122,56 @@ public class InstanceWebClientTest {
 
         StepVerifier.create(exchange).expectNextCount(1).verifyComplete();
         wireMock.verify(1, getRequestedFor(urlEqualTo("/status")).withHeader(AUTHORIZATION, equalTo("streng:geheim")));
+    }
+
+    @Test
+    public void should_add_default_accept_headers() {
+        Instance instance = Instance.create(InstanceId.of("id"))
+                                    .register(Registration.create("test", wireMock.url("/status")).build());
+        wireMock.stubFor(get("/status").willReturn(ok()));
+
+        Mono<ClientResponse> exchange = instanceWebClient.instance(instance).get().uri("health").exchange();
+
+        StepVerifier.create(exchange).expectNextCount(1).verifyComplete();
+        wireMock.verify(1,
+            getRequestedFor(urlEqualTo("/status")).withHeader(ACCEPT, containing(MediaType.APPLICATION_JSON_VALUE))
+                                                  .withHeader(ACCEPT, containing(ActuatorMediaType.V1_JSON))
+                                                  .withHeader(ACCEPT, containing(ActuatorMediaType.V2_JSON))
+        );
+    }
+
+    @Test
+    public void should_not_add_default_accept_headers() {
+        Instance instance = Instance.create(InstanceId.of("id"))
+                                    .register(Registration.create("test", wireMock.url("/status")).build());
+        wireMock.stubFor(get("/status").willReturn(ok()));
+
+        Mono<ClientResponse> exchange = instanceWebClient.instance(instance)
+                                                         .get()
+                                                         .uri("health")
+                                                         .header(ACCEPT, MediaType.TEXT_XML_VALUE)
+                                                         .exchange();
+
+        StepVerifier.create(exchange).expectNextCount(1).verifyComplete();
+        wireMock.verify(1,
+            getRequestedFor(urlEqualTo("/status")).withHeader(ACCEPT, equalTo(MediaType.TEXT_XML_VALUE))
+        );
+    }
+
+    @Test
+    public void should_add_default_logfile_accept_headers() {
+        Instance instance = Instance.create(InstanceId.of("id"))
+                                    .register(Registration.create("test", wireMock.url("/status")).build())
+                                    .withEndpoints(Endpoints.single("logfile", wireMock.url("/log")));
+        wireMock.stubFor(get("/log").willReturn(ok()));
+
+        Mono<ClientResponse> exchange = instanceWebClient.instance(instance).get().uri("logfile").exchange();
+
+        StepVerifier.create(exchange).expectNextCount(1).verifyComplete();
+        wireMock.verify(1,
+            getRequestedFor(urlEqualTo("/log")).withHeader(ACCEPT, containing(MediaType.TEXT_PLAIN_VALUE))
+                                                  .withHeader(ACCEPT, containing(MediaType.ALL_VALUE))
+        );
     }
 
     @Test

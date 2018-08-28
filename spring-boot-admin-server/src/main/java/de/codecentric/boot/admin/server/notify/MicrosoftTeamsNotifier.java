@@ -109,8 +109,10 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
             message = getDeregisteredMessage(instance);
         } else if (event instanceof InstanceStatusChangedEvent) {
             InstanceStatusChangedEvent statusChangedEvent = (InstanceStatusChangedEvent) event;
-            message = getStatusChangedMessage(instance, getLastStatus(event.getInstance()),
-                statusChangedEvent.getStatusInfo().getStatus());
+            message = getStatusChangedMessage(instance,
+                getLastStatus(event.getInstance()),
+                statusChangedEvent.getStatusInfo().getStatus()
+            );
         } else {
             return Mono.empty();
         }
@@ -118,8 +120,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        return Mono.fromRunnable(() -> this.restTemplate.postForEntity(
-            webhookUrl,
+        return Mono.fromRunnable(() -> this.restTemplate.postForEntity(webhookUrl,
             new HttpEntity<Object>(message, headers),
             Void.class
         ));
@@ -134,19 +135,27 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 
     protected Message getDeregisteredMessage(Instance instance) {
         String activitySubtitle = this.safeFormat(deregisterActivitySubtitlePattern,
-            instance.getRegistration().getName(), instance.getId());
+            instance.getRegistration().getName(),
+            instance.getId()
+        );
         return createMessage(instance, deRegisteredTitle, activitySubtitle);
     }
 
     protected Message getRegisteredMessage(Instance instance) {
-        String activitySubtitle = this.safeFormat(registerActivitySubtitlePattern, instance.getRegistration().getName(),
-            instance.getId());
+        String activitySubtitle = this.safeFormat(registerActivitySubtitlePattern,
+            instance.getRegistration().getName(),
+            instance.getId()
+        );
         return createMessage(instance, registeredTitle, activitySubtitle);
     }
 
     protected Message getStatusChangedMessage(Instance instance, String statusFrom, String statusTo) {
-        String activitySubtitle = this.safeFormat(statusActivitySubtitlePattern, instance.getRegistration().getName(),
-            instance.getId(), statusFrom, statusTo);
+        String activitySubtitle = this.safeFormat(statusActivitySubtitlePattern,
+            instance.getRegistration().getName(),
+            instance.getId(),
+            statusFrom,
+            statusTo
+        );
         return createMessage(instance, statusChangedTitle, activitySubtitle);
     }
 
@@ -184,8 +193,16 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
         this.webhookUrl = webhookUrl;
     }
 
+    public URI getWebhookUrl() {
+        return webhookUrl;
+    }
+
     public void setThemeColor(String themeColor) {
         this.themeColor = themeColor;
+    }
+
+    public String getThemeColor() {
+        return themeColor;
     }
 
     public String getDeregisterActivitySubtitlePattern() {
@@ -211,6 +228,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
     public void setStatusActivitySubtitlePattern(String statusActivitySubtitlePattern) {
         this.statusActivitySubtitlePattern = statusActivitySubtitlePattern;
     }
+
 
     public String getDeRegisteredTitle() {
         return deRegisteredTitle;
