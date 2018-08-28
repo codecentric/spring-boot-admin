@@ -23,10 +23,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
-import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -52,6 +49,7 @@ public class InstanceWebClient {
         this.webClient = webClient.mutate().filters(filters -> {
             filters.add(InstanceExchangeFilterFunctions.addHeaders(httpHeadersProvider));
             filters.add(InstanceExchangeFilterFunctions.rewriteEndpointUrl());
+            filters.add(InstanceExchangeFilterFunctions.setDefaultAcceptHeader());
             filters.add(InstanceExchangeFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.health()));
             filters.add(InstanceExchangeFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.info()));
             filters.add(InstanceExchangeFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.env()));
@@ -85,10 +83,7 @@ public class InstanceWebClient {
                                       new ReadTimeoutHandler(readTimeout.toMillis(), TimeUnit.MILLISECONDS));
                               }));
 
-        WebClient.Builder builder = WebClient.builder()
-                                             .clientConnector(connector)
-                                             .defaultHeader(HttpHeaders.ACCEPT, ActuatorMediaType.V2_JSON,
-                                                 ActuatorMediaType.V1_JSON, MediaType.APPLICATION_JSON_VALUE);
+        WebClient.Builder builder = WebClient.builder().clientConnector(connector);
         customizer.customize(builder);
         return builder.build();
     }
