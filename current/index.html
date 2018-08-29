@@ -525,7 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.1.0-SNAPSHOT,</span>
-<span id="revdate">27.08.2018</span>
+<span id="revdate">29.08.2018</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -599,6 +599,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#customizing-custom-views-instance">6.4.2. Visualizing a Custom Endpoint</a></li>
 </ul>
 </li>
+<li><a href="#_customizing_header_logo_and_title">6.5. Customizing Header Logo and Title</a></li>
 </ul>
 </li>
 <li><a href="#monitoring-spring-boot-1.5.x">7. Monitoring Spring Boot 1.5.x</a></li>
@@ -2516,6 +2517,26 @@ There are some helpful methods on the application and instances object available
 </tr>
 </table>
 </div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_customizing_header_logo_and_title"><a class="anchor" href="#_customizing_header_logo_and_title"></a><a class="link" href="#_customizing_header_logo_and_title">6.5. Customizing Header Logo and Title</a></h3>
+<div class="paragraph">
+<p>You can set custom information in the header (i.e. displaying staging information or company name) by using following configuration properties:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>spring.boot.admin.ui.brand</strong>: This HTML snippet is rendered in navigation header and defaults to <code>&lt;img src="assets/img/icon-spring-boot-admin.svg"&gt;&lt;span&gt;Spring Boot Admin&lt;/span&gt;</code>.
+By default it shows the SBA logo followed by it&#8217;s name.
+If you want to show a custom logo you can set: <code>spring.boot.admin.ui.brand=&lt;img src="custom/custom-icon.png"&gt;</code>.
+Either you just add the image to your jar-file in <code>/META-INF/spring-boot-admin-server-ui/</code> (SBA registers a <code>ResourceHandler</code> for this location by default),
+or you must ensure yourself that the image gets served correctly (e.g. by registering your own <code>ResourceHandler</code>)</p>
+</li>
+<li>
+<p><strong>spring.boot.admin.ui.title</strong>: Use this option to customize the browsers window title.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
