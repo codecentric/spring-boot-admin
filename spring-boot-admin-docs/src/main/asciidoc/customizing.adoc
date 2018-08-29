@@ -84,3 +84,14 @@ include::{samples-dir}/spring-boot-admin-sample-custom-ui/src/index.js[tags=cust
 ----
 <1> The parent must be 'instances' in order to render the new custom view for a single instance.
 <2> If you add a `isEnabled` callback you can figure out dynamically if the view should be show for the particular instance.
+
+=== Customizing Header Logo and Title ===
+You can set custom information in the header (i.e. displaying staging information or company name) by using following configuration properties:
+
+- **spring.boot.admin.ui.brand**: This HTML snippet is rendered in navigation header and defaults to `<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>`.
+By default it shows the SBA logo followed by it's name.
+If you want to show a custom logo you can set: `spring.boot.admin.ui.brand=<img src="custom/custom-icon.png">`.
+Either you just add the image to your jar-file in `/META-INF/spring-boot-admin-server-ui/` (SBA registers a `ResourceHandler` for this location by default),
+or you must ensure yourself that the image gets served correctly (e.g. by registering your own `ResourceHandler`)
+
+- **spring.boot.admin.ui.title**: Use this option to customize the browsers window title.
