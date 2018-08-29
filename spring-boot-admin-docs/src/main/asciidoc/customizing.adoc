@@ -84,3 +84,24 @@ include::{samples-dir}/spring-boot-admin-sample-custom-ui/src/index.js[tags=cust
 ----
 <1> The parent must be 'instances' in order to render the new custom view for a single instance.
 <2> If you add a `isEnabled` callback you can figure out dynamically if the view should be show for the particular instance.
+
+=== Add Custom Header ===
+If you need to have custom header information (i.e. displaying staging information or company name) you have the posibility to set properties to enable this.
+
+- **spring.boot.admin.ui.brand**: This should be a HTML snippet that will be put in die navigation header of SBA. The default is `<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>` which displays the SBA icon followed by it's name. You can customize this part. If you decide just to show a custom icon you can do something like this: `spring.boot.admin.ui.brand=<img src="custom/custom-icon.png">`. Remember to deliver the image by providing a ResourceHandler.
+
++
+[source,java]
+----
+@Configuration
+public class ResourcesConfig implements WebMvcConfigurer {
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/custom/**").addResourceLocations("classpath:/path/in/classpath/to/image/");
+    }
+}
+----
+Another possibiliy is to place the image in `META-INF/spring-boot-admin-server-ui`. SBA already registers a resource handler for that location.
+
+- **spring.boot.admin.ui.title**: This is the page title shown in the browser tab.
+
