@@ -16,7 +16,7 @@
 
 <template>
   <section class="section" :class="{ 'is-loading' : !hasLoaded }">
-    <div class="container" v-if="hasLoaded">
+    <template v-if="hasLoaded">
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
@@ -27,7 +27,7 @@
         </div>
       </div>
       <threads-list v-if="threads" :thread-timelines="threads"/>
-    </div>
+    </template>
   </section>
 </template>
 
@@ -133,6 +133,7 @@
         path: 'threaddump',
         component: this,
         label: 'Threads',
+        group: 'JVM',
         order: 400,
         isEnabled: ({instance}) => instance.hasEndpoint('threaddump')
       });

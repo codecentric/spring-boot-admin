@@ -46,7 +46,7 @@
       },
       activeMainViewName() {
         const currentView = this.$route.meta.view;
-        return currentView.parent || currentView.name;
+        return currentView && (currentView.parent || currentView.name);
       },
       childViews() {
         return this.views.filter(view => view.parent === this.activeMainViewName);

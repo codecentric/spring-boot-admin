@@ -16,7 +16,7 @@
 
 <template>
   <section class="section" :class="{ 'is-loading' : !hasLoaded}">
-    <div class="container" v-if="hasLoaded">
+    <template v-if="hasLoaded">
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
@@ -78,7 +78,7 @@
         <sba-traces-chart :traces="filteredTraces" @selected="(d) => selection = d"/>
         <sba-traces-list :traces="selectedTraces"/>
       </template>
-    </div>
+    </template>
   </section>
 </template>
 
@@ -241,6 +241,7 @@
         path: 'httptrace',
         component: this,
         label: 'Http Traces',
+        group: 'Web',
         order: 500,
         isEnabled: ({instance}) => instance.hasEndpoint('httptrace')
       });

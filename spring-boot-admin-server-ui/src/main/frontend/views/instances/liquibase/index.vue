@@ -16,7 +16,7 @@
 
 <template>
   <section class="section" :class="{ 'is-loading' : !hasLoaded }">
-    <div class="container" v-if="hasLoaded">
+    <template v-if="hasLoaded">
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
@@ -30,7 +30,7 @@
         <h3 class="title" v-text="ctxName" :key="ctxName"/>
         <template v-for="(report, name) in context.liquibaseBeans">
           <sba-panel :key="`${ctxName}-${name}`" :title="`name`" class="change-set"
-                     :header-sticks-below="['#navigation', '#instance-tabs']">
+                     :header-sticks-below="['#navigation']">
             <table class="table is-hoverable is-fullwidth">
               <thead>
                 <tr>
@@ -90,7 +90,7 @@
           </sba-panel>
         </template>
       </template>
-    </div>
+    </template>
   </section>
 </template>
 
@@ -149,6 +149,7 @@
         path: 'liquibase',
         component: this,
         label: 'Liquibase',
+        group: 'Data',
         order: 900,
         isEnabled: ({instance}) => instance.hasEndpoint('liquibase')
       });

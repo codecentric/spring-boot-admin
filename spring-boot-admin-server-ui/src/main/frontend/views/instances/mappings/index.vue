@@ -16,7 +16,7 @@
 
 <template>
   <section class="section" :class="{ 'is-loading' : !hasLoaded }">
-    <div class="container" v-if="hasLoaded">
+    <template v-if="hasLoaded">
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
@@ -48,7 +48,7 @@
         <ServletFilterMappings :key="`${ctxName}_servletFilters`"
                                :servlet-filters="context.mappings.servletFilters"/>
       </template>
-    </div>
+    </template>
   </section>
 </template>
 
@@ -100,6 +100,7 @@
         name: 'instances/mappings',
         parent: 'instances',
         path: 'mappings',
+        group: 'Web',
         component: this,
         label: 'Mappings',
         order: 450,

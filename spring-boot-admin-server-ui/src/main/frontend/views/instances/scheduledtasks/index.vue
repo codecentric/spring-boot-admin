@@ -16,7 +16,7 @@
 
 <template>
   <section class="section" :class="{ 'is-loading' : !hasLoaded }">
-    <div class="container" v-if="hasLoaded">
+    <template v-if="hasLoaded">
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
@@ -88,7 +88,7 @@
         </table>
       </template>
 
-    </div>
+    </template>
   </section>
 </template>
 
@@ -148,6 +148,7 @@
         path: 'scheduledtasks',
         component: this,
         label: 'Scheduled Tasks',
+        group: 'Insights',
         order: 950,
         isEnabled: ({instance}) => instance.hasEndpoint('scheduledtasks')
       });

@@ -16,35 +16,33 @@
 
 <template>
   <section class="section" :class="{ 'is-loading' : !hasLoaded }">
-    <div class="container">
-      <div v-if="error" class="message is-danger">
-        <div class="message-body">
-          <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
-            Fetching configuration properties failed.
-          </strong>
-          <p v-text="error.message"/>
-        </div>
+    <div v-if="error" class="message is-danger">
+      <div class="message-body">
+        <strong>
+          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+          Fetching configuration properties failed.
+        </strong>
+        <p v-text="error.message"/>
       </div>
-      <div class="field has-addons" v-if="configprops">
-        <p class="control is-expanded">
-          <input class="input" type="search" placeholder="name / value filter" v-model="filter">
-        </p>
-      </div>
-      <sba-panel :header-sticks-below="['#navigation', '#instance-tabs']"
-                 v-for="bean in configurationPropertiesBeans"
-                 :key="bean.name"
-                 :title=" bean.name">
-        <table class="table is-fullwidth"
-               v-if="Object.keys(bean.properties).length > 0">
-          <tr v-for="(value, name) in bean.properties" :key="`${bean.name}-${name}`">
-            <td v-text="name"/>
-            <td class="is-breakable" v-text="value"/>
-          </tr>
-        </table>
-        <p class="is-muted" v-else>No properties set</p>
-      </sba-panel>
     </div>
+    <div class="field has-addons" v-if="configprops">
+      <p class="control is-expanded">
+        <input class="input" type="search" placeholder="name / value filter" v-model="filter">
+      </p>
+    </div>
+    <sba-panel :header-sticks-below="['#navigation']"
+               v-for="bean in configurationPropertiesBeans"
+               :key="bean.name"
+               :title=" bean.name">
+      <table class="table is-fullwidth"
+             v-if="Object.keys(bean.properties).length > 0">
+        <tr v-for="(value, name) in bean.properties" :key="`${bean.name}-${name}`">
+          <td v-text="name"/>
+          <td class="is-breakable" v-text="value"/>
+        </tr>
+      </table>
+      <p class="is-muted" v-else>No properties set</p>
+    </sba-panel>
   </section>
 </template>
 
@@ -162,7 +160,8 @@
         path: 'configprops',
         component: this,
         label: 'Configuration Properties',
-        order: 100,
+        group: 'Insights',
+        order: 110,
         isEnabled: ({instance}) => instance.hasEndpoint('configprops')
       });
     }
