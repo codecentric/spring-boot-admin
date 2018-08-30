@@ -16,6 +16,8 @@
 
 package de.codecentric.boot.admin.server.domain.events;
 
+import java.time.Instant;
+
 import de.codecentric.boot.admin.server.domain.values.Info;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
@@ -33,6 +35,11 @@ public class InstanceInfoChangedEvent extends InstanceEvent {
 
     public InstanceInfoChangedEvent(InstanceId instance, long version, Info info) {
         super(instance, version, "INFO_CHANGED");
+        this.info = info;
+    }
+
+    public InstanceInfoChangedEvent(InstanceId instance, long version, Instant timestamp, Info info) {
+        super(instance, version, "INFO_CHANGED", timestamp);
         this.info = info;
     }
 }
