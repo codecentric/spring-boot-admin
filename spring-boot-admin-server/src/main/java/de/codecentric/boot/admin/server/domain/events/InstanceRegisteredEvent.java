@@ -16,6 +16,8 @@
 
 package de.codecentric.boot.admin.server.domain.events;
 
+import java.time.Instant;
+
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 
@@ -33,6 +35,11 @@ public class InstanceRegisteredEvent extends InstanceEvent {
 
     public InstanceRegisteredEvent(InstanceId instance, long version, Registration registration) {
         super(instance, version, "REGISTERED");
+        this.registration = registration;
+    }
+
+    public InstanceRegisteredEvent(InstanceId instance, long version, Instant timestamp, Registration registration) {
+        super(instance, version, "REGISTERED", timestamp);
         this.registration = registration;
     }
 }
