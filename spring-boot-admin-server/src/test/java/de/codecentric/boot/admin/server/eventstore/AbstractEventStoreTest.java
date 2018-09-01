@@ -29,6 +29,7 @@ import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.LongStream;
@@ -49,15 +50,19 @@ public abstract class AbstractEventStoreTest {
     protected abstract InstanceEventStore createStore(int maxLogSizePerAggregate);
 
     @Test
-    public void should_store_events() throws InterruptedException {
+    public void should_store_events() {
         InstanceEventStore store = createStore(100);
         StepVerifier.create(store.findAll()).verifyComplete();
 
-        InstanceEvent event1 = new InstanceRegisteredEvent(id, 0L, registration);
-        Thread.sleep(10L); // instance later timestamp
-        InstanceEvent eventOther = new InstanceRegisteredEvent(InstanceId.of("other"), 0L, registration);
-        Thread.sleep(10L); // instance later timestamp
-        InstanceEvent event2 = new InstanceDeregisteredEvent(id, 1L);
+        Instant now = Instant.now();
+        InstanceEvent event1 = new InstanceRegisteredEvent(id, 0L, now, registration);
+        InstanceEvent eventOther = new InstanceRegisteredEvent(
+            InstanceId.of("other"),
+            0L,
+            now.plusMillis(10),
+            registration
+        );
+        InstanceEvent event2 = new InstanceDeregisteredEvent(id, 1L, now.plusMillis(20));
 
         StepVerifier.create(store)
                     .expectSubscription()
@@ -115,7 +120,8 @@ public abstract class AbstractEventStoreTest {
                                                                     (ex) -> {
                                                                         log.info("skipped {}", ex.getMessage());
                                                                         return Mono.empty();
-                                                                    })
+                                                                    }
+                                                                )
                                                                 .delayElement(Duration.ofMillis(5L)));
 
         StepVerifier.create(eventgenerator.subscribeOn(Schedulers.newSingle("a"))

@@ -16,15 +16,15 @@
 
 package de.codecentric.boot.admin.server.domain.events;
 
-import java.time.Instant;
-
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
+
+import java.time.Instant;
 
 /**
  * This event gets emitted when an instance is registered.
  *
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
  */
 @lombok.Data
 @lombok.EqualsAndHashCode(callSuper = true)
@@ -34,8 +34,7 @@ public class InstanceRegisteredEvent extends InstanceEvent {
     private final Registration registration;
 
     public InstanceRegisteredEvent(InstanceId instance, long version, Registration registration) {
-        super(instance, version, "REGISTERED");
-        this.registration = registration;
+        this(instance, version, Instant.now(), registration);
     }
 
     public InstanceRegisteredEvent(InstanceId instance, long version, Instant timestamp, Registration registration) {

@@ -16,15 +16,15 @@
 
 package de.codecentric.boot.admin.server.domain.events;
 
-import java.time.Instant;
-
 import de.codecentric.boot.admin.server.domain.values.Info;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
+import java.time.Instant;
+
 /**
- * This event gets emitted when an instance is registered.
+ * This event gets emitted when an instance information changes.
  *
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
  */
 @lombok.Data
 @lombok.EqualsAndHashCode(callSuper = true)
@@ -34,8 +34,7 @@ public class InstanceInfoChangedEvent extends InstanceEvent {
     private final Info info;
 
     public InstanceInfoChangedEvent(InstanceId instance, long version, Info info) {
-        super(instance, version, "INFO_CHANGED");
-        this.info = info;
+        this(instance, version, Instant.now(), info);
     }
 
     public InstanceInfoChangedEvent(InstanceId instance, long version, Instant timestamp, Info info) {

@@ -16,14 +16,14 @@
 
 package de.codecentric.boot.admin.server.domain.events;
 
-import java.time.Instant;
-
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
+
+import java.time.Instant;
 
 /**
  * This event gets emitted when an instance is unregistered.
  *
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
  */
 @lombok.Data
 @lombok.EqualsAndHashCode(callSuper = true)
@@ -32,7 +32,7 @@ public class InstanceDeregisteredEvent extends InstanceEvent {
     private static final long serialVersionUID = 1L;
 
     public InstanceDeregisteredEvent(InstanceId instance, long version) {
-        super(instance, version, "DEREGISTERED");
+        this(instance, version, Instant.now());
     }
 
     public InstanceDeregisteredEvent(InstanceId instance, long version, Instant timestamp) {
