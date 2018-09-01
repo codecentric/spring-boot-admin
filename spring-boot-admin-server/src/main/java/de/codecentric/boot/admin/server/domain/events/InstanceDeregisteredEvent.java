@@ -16,6 +16,8 @@
 
 package de.codecentric.boot.admin.server.domain.events;
 
+import java.time.Instant;
+
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 /**
@@ -31,5 +33,9 @@ public class InstanceDeregisteredEvent extends InstanceEvent {
 
     public InstanceDeregisteredEvent(InstanceId instance, long version) {
         super(instance, version, "DEREGISTERED");
+    }
+
+    public InstanceDeregisteredEvent(InstanceId instance, long version, Instant timestamp) {
+        super(instance, version, "DEREGISTERED", timestamp);
     }
 }

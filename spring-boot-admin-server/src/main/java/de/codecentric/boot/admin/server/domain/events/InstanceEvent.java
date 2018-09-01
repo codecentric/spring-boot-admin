@@ -16,10 +16,11 @@
 
 package de.codecentric.boot.admin.server.domain.events;
 
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
-
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Optional;
+
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 /**
  * Abstract Event regarding registered instances
@@ -35,9 +36,13 @@ public abstract class InstanceEvent implements Serializable {
     private final String type;
 
     protected InstanceEvent(InstanceId instance, long version, String type) {
+        this(instance, version, type, Instant.now());
+    }
+
+    protected InstanceEvent(InstanceId instance, long version, String type, Instant timestamp) {
         this.instance = instance;
         this.version = version;
-        this.timestamp = Instant.now();
+        this.timestamp = Optional.ofNullable(timestamp).orElseGet(Instant::now);
         this.type = type;
     }
 }

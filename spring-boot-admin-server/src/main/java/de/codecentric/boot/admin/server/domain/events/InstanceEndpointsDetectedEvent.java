@@ -16,6 +16,8 @@
 
 package de.codecentric.boot.admin.server.domain.events;
 
+import java.time.Instant;
+
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
@@ -30,6 +32,11 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 public class InstanceEndpointsDetectedEvent extends InstanceEvent {
     private static final long serialVersionUID = 1L;
     private final Endpoints endpoints;
+
+    public InstanceEndpointsDetectedEvent(InstanceId instance, long version, Instant timestamp, Endpoints endpoints) {
+        super(instance, version, "ENDPOINTS_DETECTED", timestamp);
+        this.endpoints = endpoints;
+    }
 
     public InstanceEndpointsDetectedEvent(InstanceId instance, long version, Endpoints endpoints) {
         super(instance, version, "ENDPOINTS_DETECTED");
