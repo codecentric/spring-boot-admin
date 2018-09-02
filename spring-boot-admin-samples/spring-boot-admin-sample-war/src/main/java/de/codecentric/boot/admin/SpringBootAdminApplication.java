@@ -43,6 +43,12 @@ public class SpringBootAdminApplication extends SpringBootServletInitializer {
     @Profile("insecure")
     @Configuration
     public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
+        private final String adminContextPath;
+
+        public SecurityPermitAllConfig(AdminServerProperties adminServerProperties) {
+            this.adminContextPath = adminServerProperties.getContextPath();
+        }
+
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.authorizeRequests()
@@ -51,7 +57,7 @@ public class SpringBootAdminApplication extends SpringBootServletInitializer {
                 .and()
                 .csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringAntMatchers("/instances", "/actuator/**");
+                .ignoringAntMatchers(adminContextPath + "/instances", adminContextPath + "/actuator/**");
         }
     }
 
@@ -81,7 +87,7 @@ public class SpringBootAdminApplication extends SpringBootServletInitializer {
             .httpBasic().and()
             .csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringAntMatchers("/instances", "/actuator/**");
+                .ignoringAntMatchers(adminContextPath + "/instances", adminContextPath + "/actuator/**");
             // @formatter:on
         }
     }
