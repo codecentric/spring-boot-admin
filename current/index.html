@@ -525,7 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.1.0-SNAPSHOT,</span>
-<span id="revdate">01.09.2018</span>
+<span id="revdate">02.09.2018</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -2105,8 +2105,8 @@ By default <code>spring-boot-admin-server-ui</code> provides a login page and a 
         .csrf()
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())  <i class="conum" data-value="5"></i><b>(5)</b>
             .ignoringAntMatchers(
-                <span class="string"><span class="delimiter">&quot;</span><span class="content">/instances</span><span class="delimiter">&quot;</span></span>,   <i class="conum" data-value="6"></i><b>(6)</b>
-                <span class="string"><span class="delimiter">&quot;</span><span class="content">/actuator/**</span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="7"></i><b>(7)</b>
+                adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/instances</span><span class="delimiter">&quot;</span></span>,   <i class="conum" data-value="6"></i><b>(6)</b>
+                adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/actuator/**</span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="7"></i><b>(7)</b>
             );
         <span class="comment">// @formatter:on</span>
     }
