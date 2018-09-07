@@ -53,7 +53,7 @@ public class AdminServerProperties {
      */
     private String[] probedEndpoints = {"health", "env", "metrics", "httptrace:trace", "httptrace", "threaddump:dump",
         "threaddump", "jolokia", "info", "logfile", "refresh", "flyway", "liquibase", "heapdump", "loggers",
-        "auditevents", "mappings", "scheduledtasks", "configprops"};
+        "auditevents", "mappings", "scheduledtasks", "configprops", "caches"};
 
     public void setContextPath(String contextPath) {
         this.contextPath = PathUtils.normalizePath(contextPath);
