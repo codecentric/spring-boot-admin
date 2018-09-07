@@ -134,6 +134,25 @@ class Instance {
     });
   }
 
+  async fetchCaches() {
+    return this.axios.get(uri`actuator/caches`, {
+      headers: {'Accept': actuatorMimeTypes}
+    });
+  }
+
+  async clearCaches() {
+    return this.axios.delete(uri`actuator/caches`, {
+      headers: {'Accept': actuatorMimeTypes}
+    });
+  }
+
+  async clearCache(name, cacheManager) {
+    return this.axios.delete(uri`actuator/caches/${name}` , {
+      params: {'cacheManager': cacheManager},
+      headers: {'Accept': actuatorMimeTypes}
+    });
+  }
+
   async fetchFlyway() {
     return this.axios.get(uri`actuator/flyway`, {
       headers: {'Accept': actuatorMimeTypes}
