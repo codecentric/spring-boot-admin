@@ -15,36 +15,38 @@
   -->
 
 <template>
-  <table class="table is-fullwidth" v-if="servletFilters.length">
-    <thead>
-      <tr>
-        <th>Url Pattern</th>
-        <th>Servlet Name</th>
-        <th>Filter Name</th>
-        <th>Class</th>
-      </tr>
-    </thead>
-    <tbody>
-      <template v-for="servletFilterMapping in servletFilters">
-        <tr :key="`${servletFilterMapping.name}`">
-          <td>
-            <div v-for="mapping in servletFilterMapping.urlPatternMappings"
-                 :key="`${servletFilterMapping.name}_${mapping}`">
-              <code v-text="mapping"/>
-            </div>
-          </td>
-          <td>
-            <div v-for="mapping in servletFilterMapping.servletNameMappings"
-                 :key="`${servletFilterMapping.name}_${mapping}`">
-              <pre v-text="mapping"/>
-            </div>
-          </td>
-          <td v-text="servletFilterMapping.name"/>
-          <td v-text="servletFilterMapping.className"/>
+  <div class="table-container">
+    <table class="table is-fullwidth" v-if="servletFilters.length">
+      <thead>
+        <tr>
+          <th>Url Pattern</th>
+          <th>Servlet Name</th>
+          <th>Filter Name</th>
+          <th>Class</th>
         </tr>
-      </template>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <template v-for="servletFilterMapping in servletFilters">
+          <tr :key="`${servletFilterMapping.name}`">
+            <td>
+              <div v-for="mapping in servletFilterMapping.urlPatternMappings"
+                   :key="`${servletFilterMapping.name}_${mapping}`">
+                <code v-text="mapping"/>
+              </div>
+            </td>
+            <td>
+              <div v-for="mapping in servletFilterMapping.servletNameMappings"
+                   :key="`${servletFilterMapping.name}_${mapping}`"
+                   v-text="mapping"
+                   class="is-breakable"/>
+            </td>
+            <td class="is-breakable" v-text="servletFilterMapping.name"/>
+            <td class="is-breakable" v-text="servletFilterMapping.className"/>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
 </template>
 <script>
   export default {
