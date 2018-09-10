@@ -15,29 +15,31 @@
   -->
 
 <template>
-  <table class="table is-fullwidth" v-if="servlets.length">
-    <thead>
-      <tr>
-        <th>Url Pattern</th>
-        <th>Servlet Name</th>
-        <th>Class</th>
-      </tr>
-    </thead>
-    <tbody>
-      <template v-for="servletMapping in servlets">
-        <tr :key="`${servletMapping.name}`">
-          <td>
-            <div v-for="mapping in servletMapping.mappings"
-                 :key="`${servletMapping.name}_${mapping}`">
-              <code v-text="mapping"/>
-            </div>
-          </td>
-          <td v-text="servletMapping.name"/>
-          <td v-text="servletMapping.className"/>
+  <div class="table-container">
+    <table class="table is-fullwidth" v-if="servlets.length">
+      <thead>
+        <tr>
+          <th>Url Pattern</th>
+          <th>Servlet Name</th>
+          <th>Class</th>
         </tr>
-      </template>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <template v-for="servletMapping in servlets">
+          <tr :key="`${servletMapping.name}`">
+            <td>
+              <div v-for="mapping in servletMapping.mappings"
+                   :key="`${servletMapping.name}_${mapping}`">
+                <code v-text="mapping"/>
+              </div>
+            </td>
+            <td class="is-breakable" v-text="servletMapping.name"/>
+            <td class="is-breakable" v-text="servletMapping.className"/>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
 </template>
 <script>
   export default {
