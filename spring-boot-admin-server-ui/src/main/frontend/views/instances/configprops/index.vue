@@ -31,12 +31,13 @@
           <input class="input" type="search" placeholder="name / value filter" v-model="filter">
         </p>
       </div>
-      <sba-panel class="property-source" :header-sticks-below="['#navigation', '#instance-tabs']"
-                 v-for="propertySource in propertySources" :key="propertySource.name"
-                 :title="propertySource.name">
+      <sba-panel :header-sticks-below="['#navigation', '#instance-tabs']"
+                 v-for="bean in configurationPropertiesBeans"
+                 :key="bean.name"
+                 :title=" bean.name">
         <table class="table is-fullwidth"
-               v-if="Object.keys(propertySource.properties).length > 0">
-          <tr v-for="(value, name) in propertySource.properties" :key="`${propertySource-name}-${name}`">
+               v-if="Object.keys(bean.properties).length > 0">
+          <tr v-for="(value, name) in bean.properties" :key="`${bean.name}-${name}`">
             <td v-text="name"/>
             <td class="is-breakable" v-text="value"/>
           </tr>
@@ -55,7 +56,7 @@
     return name.toString().toLowerCase().includes(needle) || value.toString().toLowerCase().includes(needle);
   };
   const filterProperties = (needle, properties) => _.pickBy(properties, filterProperty(needle));
-  const filterPropertySource = (needle) => (propertySource) => {
+  const filterConfigurationProperties = (needle) => (propertySource) => {
     if (!propertySource || !propertySource.properties) {
       return null;
     }
@@ -64,55 +65,53 @@
       properties: filterProperties(needle, propertySource.properties)
     };
   };
-  const flatten = (data) => {
-    var result = {};
-    function recurse(cur, prop) {
-      if (Object(cur) !== cur) {
-        result[prop] = cur;
-      } else if (Array.isArray(cur)) {
-        for (var i = 0, l = cur.length; i < l; i++) {
-          recurse(cur[i], prop + "[" + i + "]");
-        }
-        if (l == 0) {
-          result[prop] = [];
-        }
+
+
+  function flattenBean(obj, prefix = '') {
+    if (Object(obj) !== obj) {
+      return {[prefix]: obj};
+    }
+
+    if (Array.isArray(obj)) {
+      if (obj.length === 0) {
+        return {[prefix]: []};
       } else {
-        var isEmpty = true;
-        for (var p in cur) {
-          isEmpty = false;
-          recurse(cur[p], prop ? prop + "." + p : p);
-        }
-        if (isEmpty && prop) {
-          result[prop] = {};
-        }
+        return obj.map(
+          (value, idx) => flattenBean(value, `${prefix}[${idx}]`)
+        ).reduce((c, n) => ({...c, ...n}), {});
+      }
+    } else {
+      if (_.isEmpty(obj)) {
+        return {[prefix]: {}};
+      } else {
+        return _.toPairs(obj).map(
+          ([name, value]) => flattenBean(value, prefix ? `${prefix}.${name}` : name)
+        ).reduce((c, n) => ({...c, ...n}), {});
       }
     }
-    recurse(data, "");
-    return result;
   }
-  const createPropertySources = (configprops) => {
-    var propertySources = [];
-    var contextNames = Object.keys(configprops.contexts);
-    for (var i = 0; i < contextNames.length; i += 1) {
-      var contextName = contextNames[i];
-      var context = configprops.contexts[contextName];
-      var beanNames = Object.keys(context.beans);
-      for (var j = 0; j < beanNames.length; j += 1) {
-        var beanName = beanNames[j];
-        var prefix = context.beans[beanName].prefix;
-        var flattenedProperties = flatten(context.beans[beanName].properties);
-        flattenedProperties = _.mapKeys(flattenedProperties, (value, key) => {
-          return prefix + "." + key;
-        });
+
+  const flattenConfigurationPropertiesBeans = (configprops) => {
+    const propertySources = [];
+    const contextNames = Object.keys(configprops.contexts);
+
+    for (const contextName of contextNames) {
+      const context = configprops.contexts[contextName];
+      const beanNames = Object.keys(context.beans);
+
+      for (const beanName of beanNames) {
+        const bean = context.beans[beanName];
+        const properties = _.mapKeys(flattenBean(bean.properties), (value, key) => `${bean.prefix}.${key}`);
         propertySources.push({
-          name: contextName + "-" + beanName,
-          properties: flattenedProperties
+          name: contextNames.length > 1 ? `${contextName}: ${beanName}` : beanName,
+          properties
         });
       }
     }
+
     return propertySources;
   };
-  
+
   export default {
     props: {
       instance: {
@@ -127,16 +126,16 @@
       filter: null
     }),
     computed: {
-      propertySources() {
+      configurationPropertiesBeans() {
         if (!this.configprops) {
           return [];
         }
-        const propertySources = createPropertySources(this.configprops);
+        const configurationProperties = flattenConfigurationPropertiesBeans(this.configprops);
         if (!this.filter) {
-          return propertySources;
+          return configurationProperties;
         }
-        return propertySources
-          .map(filterPropertySource(this.filter.toLowerCase()))
+        return configurationProperties
+          .map(filterConfigurationProperties(this.filter.toLowerCase()))
           .filter(ps => ps && Object.keys(ps.properties).length > 0);
       }
     },

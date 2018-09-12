@@ -42,12 +42,12 @@
           <input class="input" type="search" placeholder="name / value filter" v-model="filter">
         </p>
       </div>
-      <sba-panel class="property-source" :header-sticks-below="['#navigation', '#instance-tabs']"
+      <sba-panel :header-sticks-below="['#navigation', '#instance-tabs']"
                  v-for="propertySource in propertySources" :key="propertySource.name"
                  :title="propertySource.name">
         <table class="table is-fullwidth"
                v-if="Object.keys(propertySource.properties).length > 0">
-          <tr v-for="(value, name) in propertySource.properties" :key="`${propertySource-name}-${name}`">
+          <tr v-for="(value, name) in propertySource.properties" :key="`${propertySource.name}-${name}`">
             <td>
               <span v-text="name"/><br>
               <small class="is-muted" v-if="value.origin" v-text="value.origin"/>
