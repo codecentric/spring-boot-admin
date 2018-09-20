@@ -20,6 +20,7 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.Arrays;
@@ -28,16 +29,18 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CompositeNotifierTest {
-    private static final InstanceEvent APP_DOWN = new InstanceStatusChangedEvent(InstanceId.of("-"), 0L,
-        StatusInfo.ofDown());
+    private static final InstanceEvent APP_DOWN = new InstanceStatusChangedEvent(InstanceId.of("-"),
+        0L,
+        StatusInfo.ofDown()
+    );
 
     @Test(expected = IllegalArgumentException.class)
-    public void test_ctor_assert() {
+    public void should_throw_for_invariants() {
         new CompositeNotifier(null);
     }
 
     @Test
-    public void test_all_notifiers_get_notified() {
+    public void should_trigger_all_notifiers() {
         TestNotifier notifier1 = new TestNotifier();
         TestNotifier notifier2 = new TestNotifier();
         CompositeNotifier compositeNotifier = new CompositeNotifier(Arrays.asList(notifier1, notifier2));
@@ -45,6 +48,17 @@ public class CompositeNotifierTest {
         StepVerifier.create(compositeNotifier.notify(APP_DOWN)).verifyComplete();
 
         assertThat(notifier1.getEvents()).containsOnly(APP_DOWN);
+        assertThat(notifier2.getEvents()).containsOnly(APP_DOWN);
+    }
+
+    @Test
+    public void should_continue_on_exception() {
+        Notifier notifier1 = ev -> Mono.error(new IllegalStateException("Test"));
+        TestNotifier notifier2 = new TestNotifier();
+        CompositeNotifier compositeNotifier = new CompositeNotifier(Arrays.asList(notifier1, notifier2));
+
+        StepVerifier.create(compositeNotifier.notify(APP_DOWN)).verifyComplete();
+
         assertThat(notifier2.getEvents()).containsOnly(APP_DOWN);
     }
 }
