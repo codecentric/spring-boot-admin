@@ -51,6 +51,7 @@
         path: 'heapdump',
         component: this,
         label: 'Heap Dump',
+        group: 'JVM',
         order: 800,
         isEnabled: ({instance}) => instance.hasEndpoint('heapdump')
       });

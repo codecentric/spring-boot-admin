@@ -16,7 +16,7 @@
 
 <template>
   <section class="section" :class="{ 'is-loading' : !hasLoaded }">
-    <div class="container" v-if="hasLoaded">
+    <template v-if="hasLoaded">
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
@@ -85,7 +85,7 @@
           </tr>
         </tbody>
       </table>
-    </div>
+    </template>
   </section>
 </template>
 
@@ -207,6 +207,7 @@
         path: 'loggers',
         component: this,
         label: 'Loggers',
+        group: 'Logging',
         order: 300,
         isEnabled: ({instance}) => instance.hasEndpoint('loggers')
       });

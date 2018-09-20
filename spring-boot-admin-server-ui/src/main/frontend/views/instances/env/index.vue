@@ -16,48 +16,46 @@
 
 <template>
   <section class="section" :class="{ 'is-loading' : !hasLoaded }">
-    <div class="container">
-      <div v-if="error" class="message is-danger">
-        <div class="message-body">
-          <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
-            Fetching environment failed.
-          </strong>
-          <p v-text="error.message"/>
-        </div>
+    <div v-if="error" class="message is-danger">
+      <div class="message-body">
+        <strong>
+          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+          Fetching environment failed.
+        </strong>
+        <p v-text="error.message"/>
       </div>
-      <div class="field is-grouped is-grouped-multiline" v-if="env && env.activeProfiles.length > 0">
-        <div class="control" v-for="profile in env.activeProfiles" :key="profile">
-          <div class="tags has-addons">
-            <span class="tag is-medium is-primary">Profile</span>
-            <span class="tag is-medium" v-text="profile"/>
-          </div>
-        </div>
-      </div>
-      <sba-env-manager v-if="env && hasEnvManagerSupport"
-                       :instance="instance" :property-sources="env.propertySources"
-                       @refresh="fetchEnv()" @update="fetchEnv" @reset="fetchEnv()"/>
-      <div class="field has-addons" v-if="env">
-        <p class="control is-expanded">
-          <input class="input" type="search" placeholder="name / value filter" v-model="filter">
-        </p>
-      </div>
-      <sba-panel :header-sticks-below="['#navigation', '#instance-tabs']"
-                 v-for="propertySource in propertySources" :key="propertySource.name"
-                 :title="propertySource.name">
-        <table class="table is-fullwidth"
-               v-if="Object.keys(propertySource.properties).length > 0">
-          <tr v-for="(value, name) in propertySource.properties" :key="`${propertySource.name}-${name}`">
-            <td>
-              <span v-text="name"/><br>
-              <small class="is-muted" v-if="value.origin" v-text="value.origin"/>
-            </td>
-            <td class="is-breakable" v-text="value.value"/>
-          </tr>
-        </table>
-        <p class="is-muted" v-else>No properties set</p>
-      </sba-panel>
     </div>
+    <div class="field is-grouped is-grouped-multiline" v-if="env && env.activeProfiles.length > 0">
+      <div class="control" v-for="profile in env.activeProfiles" :key="profile">
+        <div class="tags has-addons">
+          <span class="tag is-medium is-primary">Profile</span>
+          <span class="tag is-medium" v-text="profile"/>
+        </div>
+      </div>
+    </div>
+    <sba-env-manager v-if="env && hasEnvManagerSupport"
+                     :instance="instance" :property-sources="env.propertySources"
+                     @refresh="fetchEnv()" @update="fetchEnv" @reset="fetchEnv()"/>
+    <div class="field has-addons" v-if="env">
+      <p class="control is-expanded">
+        <input class="input" type="search" placeholder="name / value filter" v-model="filter">
+      </p>
+    </div>
+    <sba-panel :header-sticks-below="['#navigation']"
+               v-for="propertySource in propertySources" :key="propertySource.name"
+               :title="propertySource.name">
+      <table class="table is-fullwidth"
+             v-if="Object.keys(propertySource.properties).length > 0">
+        <tr v-for="(value, name) in propertySource.properties" :key="`${propertySource.name}-${name}`">
+          <td>
+            <span v-text="name"/><br>
+            <small class="is-muted" v-if="value.origin" v-text="value.origin"/>
+          </td>
+          <td class="is-breakable" v-text="value.value"/>
+        </tr>
+      </table>
+      <p class="is-muted" v-else>No properties set</p>
+    </sba-panel>
   </section>
 </template>
 
@@ -140,6 +138,7 @@
         path: 'env',
         component: this,
         label: 'Environment',
+        group: 'Insights',
         order: 100,
         isEnabled: ({instance}) => instance.hasEndpoint('env')
       });

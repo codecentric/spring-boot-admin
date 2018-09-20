@@ -16,7 +16,7 @@
 
 <template>
   <section class="section" :class="{ 'is-loading' : !hasLoaded }">
-    <div class="container" v-if="hasLoaded">
+    <template v-if="hasLoaded">
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
@@ -29,7 +29,7 @@
       <template v-for="(context, ctxName) in contexts">
         <h3 class="title" v-text="ctxName" :key="ctxName"/>
         <sba-panel v-for="(report, name) in context.flywayBeans" :key="`${ctxName}-${name}`" :title="name"
-                   :header-sticks-below="['#navigation', '#instance-tabs']"
+                   :header-sticks-below="['#navigation']"
                    class="migration">
           <table class="table">
             <thead>
@@ -64,7 +64,7 @@
           </table>
         </sba-panel>
       </template>
-    </div>
+    </template>
   </section>
 </template>
 
@@ -129,6 +129,7 @@
         path: 'flyway',
         component: this,
         label: 'Flyway',
+        group: 'Data',
         order: 900,
         isEnabled: ({instance}) => instance.hasEndpoint('flyway')
       });

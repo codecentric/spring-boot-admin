@@ -16,33 +16,31 @@
 
 <template>
   <section class="section">
-    <div class="container">
-      <div class="field has-addons">
-        <div class="control">
-          <span class="select">
-            <select v-model="filter.type">
-              <option value="username">Username</option>
-              <option value="sessionId">SessionId</option>
-            </select>
-          </span>
-        </div>
-        <div class="control is-expanded">
-          <input class="input" type="text" v-model="filter.value"
-                 @keyup.enter="fetchSessionsByUsername()" @paste="handlePaste">
-        </div>
+    <div class="field has-addons">
+      <div class="control">
+        <span class="select">
+          <select v-model="filter.type">
+            <option value="username">Username</option>
+            <option value="sessionId">SessionId</option>
+          </select>
+        </span>
       </div>
-      <div v-if="error" class="message is-danger">
-        <div class="message-body">
-          <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
-            Fetching sessions failed.
-          </strong>
-          <p v-text="error.message"/>
-        </div>
+      <div class="control is-expanded">
+        <input class="input" type="text" v-model="filter.value"
+               @keyup.enter="fetchSessionsByUsername()" @paste="handlePaste">
       </div>
-      <sba-sessions-list :instance="instance" :sessions="sessions" :is-loading="isLoading"
-                         @deleted="fetch"/>
     </div>
+    <div v-if="error" class="message is-danger">
+      <div class="message-body">
+        <strong>
+          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+          Fetching sessions failed.
+        </strong>
+        <p v-text="error.message"/>
+      </div>
+    </div>
+    <sba-sessions-list :instance="instance" :sessions="sessions" :is-loading="isLoading"
+                       @deleted="fetch"/>
   </section>
 </template>
 
@@ -154,6 +152,7 @@
         path: 'sessions',
         component: this,
         label: 'Sessions',
+        group: 'Security',
         order: 700,
         isEnabled: ({instance}) => instance.hasEndpoint('sessions')
       });

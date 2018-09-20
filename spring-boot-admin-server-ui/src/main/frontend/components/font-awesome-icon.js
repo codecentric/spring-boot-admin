@@ -27,6 +27,8 @@ import {faCheck} from '@fortawesome/free-solid-svg-icons/faCheck';
 import {faDownload} from '@fortawesome/free-solid-svg-icons/faDownload';
 import {faExclamation} from '@fortawesome/free-solid-svg-icons/faExclamation';
 import {faExclamationTriangle} from '@fortawesome/free-solid-svg-icons/faExclamationTriangle';
+import {faHeartbeat} from '@fortawesome/free-solid-svg-icons/faHeartbeat';
+import {faHome} from '@fortawesome/free-solid-svg-icons/faHome';
 import {faMinusCircle} from '@fortawesome/free-solid-svg-icons/faMinusCircle';
 import {faPencilAlt} from '@fortawesome/free-solid-svg-icons/faPencilAlt';
 import {faQuestionCircle} from '@fortawesome/free-solid-svg-icons/faQuestionCircle';
@@ -36,6 +38,7 @@ import {faStepForward} from '@fortawesome/free-solid-svg-icons/faStepForward';
 import {faTimesCircle} from '@fortawesome/free-solid-svg-icons/faTimesCircle';
 import {faTrash} from '@fortawesome/free-solid-svg-icons/faTrash';
 import {faUserCircle} from '@fortawesome/free-solid-svg-icons/faUserCircle';
+import {faWrench} from '@fortawesome/free-solid-svg-icons/faWrench';
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
 
 library.add(
@@ -57,6 +60,9 @@ library.add(
   faBell,
   faBellSlash,
   faUserCircle,
+  faHeartbeat,
+  faHome,
+  faWrench,
 //regular,
   farTimesCircle,
 //brands

@@ -16,7 +16,7 @@
 
 <template>
   <section class="section" :class="{ 'is-loading' : !hasLoaded}">
-    <div class="container" v-if="hasLoaded">
+    <template v-if="hasLoaded">
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
@@ -32,7 +32,7 @@
         </div>
       </div>
       <auditevents-list v-if="events" :instance="instance" :events="events"/>
-    </div>
+    </template>
   </section>
 </template>
 
@@ -131,6 +131,7 @@
         path: 'auditevents',
         component: this,
         label: 'Audit Log',
+        group: 'Security',
         order: 600,
         isEnabled: ({instance}) => instance.hasEndpoint('auditevents')
       });

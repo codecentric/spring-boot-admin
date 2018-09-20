@@ -126,6 +126,7 @@
         path: 'logfile',
         component: this,
         label: 'Logfile',
+        group: 'Logging',
         order: 200,
         isEnabled: ({instance}) => instance.hasEndpoint('logfile')
       });
@@ -137,6 +138,8 @@
   @import "~@/assets/css/utilities";
 
   .logfile-view {
+    padding: 1.5em;
+
     pre {
       word-break: break-all;
       padding: 0;
@@ -149,7 +152,7 @@
     }
 
     &-actions {
-      top: (($gap / 2) + $navbar-height-px + $tabs-height-px);
+      top: (($gap / 2) + $navbar-height-px);
       right: ($gap /2);
       display: flex;
       align-items: center;

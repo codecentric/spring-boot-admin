@@ -16,18 +16,26 @@
 
 <template>
   <div class="instances">
-    <sba-instance-header :instance="instance" :application="application" :class="headerClass"/>
-    <sba-instance-tabs :views="views" :instance="instance" :application="application" :class="headerClass"/>
-    <router-view v-if="instance" :instance="instance"/>
+    <div class="instances__body">
+      <div class="instances__sidebar">
+        <instance-sidebar
+          :views="views"
+          :instance="instance"
+          :application="application"
+        />
+      </div>
+      <div class="instances__view">
+        <router-view v-if="instance" :instance="instance" :application="application"/>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-  import sbaInstanceHeader from './header';
-  import sbaInstanceTabs from './tabs';
+  import InstanceSidebar from './sidebar';
 
   export default {
-    components: {sbaInstanceHeader, sbaInstanceTabs},
+    components: {InstanceSidebar},
     props: {
       instanceId: {
         type: String,
@@ -52,27 +60,6 @@
       },
       application() {
         return this.applications.findApplicationForInstance(this.instanceId);
-      },
-      headerClass() {
-        if (!this.instance) {
-          return '';
-        }
-        if (this.instance.statusInfo.status === 'UP') {
-          return 'is-primary';
-        }
-        if (this.instance.statusInfo.status === 'RESTRICTED') {
-          return 'is-warning';
-        }
-        if (this.instance.statusInfo.status === 'DOWN') {
-          return 'is-danger';
-        }
-        if (this.instance.statusInfo.status === 'OUT_OF_SERVICE') {
-          return 'is-danger';
-        }
-        if (this.instance.statusInfo.status === 'OFFLINE') {
-          return 'is-light';
-        }
-        return 'is-light';
       }
     },
     install({viewRegistry}) {
@@ -88,8 +75,27 @@
 
 <style lang="scss">
   .instances {
-    flex-grow: 1;
     display: flex;
+    flex-grow: 1;
     flex-direction: column;
+
+    &__body {
+      display: flex;
+      flex-grow: 1;
+    }
+
+    &__view,
+    &__sidebar {
+      position: relative;
+    }
+
+    &__sidebar {
+      z-index: 20;
+    }
+    &__view {
+      flex-grow: 1;
+      flex-shrink: 1;
+      z-index: 10;
+    }
   }
 </style>

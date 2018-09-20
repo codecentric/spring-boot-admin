@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-const createVNodeIfNecessary = handle => {
-  if (typeof handle === 'string') {
-    return {
-      render() {
-        return this._v(handle)
-      }
+const createTextVNode = label => {
+  return {
+    render() {
+      return this._v(label)
     }
   }
-  return handle;
 };
 
 export default class ViewRegistry {
@@ -51,8 +48,8 @@ export default class ViewRegistry {
   }
 
   _addView(view) {
-    if (view.label) {
-      view.label = createVNodeIfNecessary(view.label);
+    if (view.label && !view.handle) {
+      view.handle = createTextVNode(view.label);
     }
     this._views.push(view);
   }

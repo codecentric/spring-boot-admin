@@ -64,7 +64,7 @@
 <script>
   import * as _ from 'lodash';
   import applicationsList from './applications-list';
-  import label from './label';
+  import handle from './handle';
 
   export default {
     props: {
@@ -109,7 +109,8 @@
         path: '/applications/:selected?',
         props: true,
         name: 'applications',
-        label,
+        label: 'Applications',
+        handle,
         order: 0,
         component: this
       });

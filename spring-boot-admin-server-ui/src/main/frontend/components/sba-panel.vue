@@ -34,8 +34,8 @@
 </template>
 
 <script>
-  import SbaIconButton from './sba-icon-button';
   import sticksBelow from '@/directives/sticks-below';
+  import SbaIconButton from './sba-icon-button';
 
   export default {
     components: {SbaIconButton},
@@ -78,8 +78,7 @@
 
     &__header--sticky {
       position: sticky;
-      background: $white;
-      top: ($navbar-height-px + $tabs-height-px);
+      background-color: $white;
     }
   }
 </style>

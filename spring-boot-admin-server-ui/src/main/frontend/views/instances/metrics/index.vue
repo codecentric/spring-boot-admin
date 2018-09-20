@@ -16,72 +16,70 @@
 
 <template>
   <section class="section">
-    <div class="container">
-      <div v-if="error" class="message is-danger">
-        <div class="message-body">
-          <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
-            Fetching metrics failed.
-          </strong>
-          <p v-text="error.message"/>
-        </div>
+    <div v-if="error" class="message is-danger">
+      <div class="message-body">
+        <strong>
+          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+          Fetching metrics failed.
+        </strong>
+        <p v-text="error.message"/>
       </div>
-      <div v-if="isOldMetrics" class="message is-warning">
-        <div class="message-body">
-          Metrics are not supported for Spring Boot 1.x applications.
-        </div>
+    </div>
+    <div v-if="isOldMetrics" class="message is-warning">
+      <div class="message-body">
+        Metrics are not supported for Spring Boot 1.x applications.
       </div>
-      <form @submit.prevent="handleSubmit" class="field" v-else-if="availableMetrics.length > 0">
-        <div class="field">
-          <div class="control">
-            <div class="select">
-              <select v-model="selectedMetric">
-                <option v-for="metric in availableMetrics" v-text="metric" :key="metric"/>
-              </select>
-            </div>
+    </div>
+    <form @submit.prevent="handleSubmit" class="field" v-else-if="availableMetrics.length > 0">
+      <div class="field">
+        <div class="control">
+          <div class="select">
+            <select v-model="selectedMetric">
+              <option v-for="metric in availableMetrics" v-text="metric" :key="metric"/>
+            </select>
           </div>
         </div>
-        <div>
-          <p v-if="stateFetchingTags === 'executing'" class="is-loading">Fetching available tags</p>
+      </div>
+      <div>
+        <p v-if="stateFetchingTags === 'executing'" class="is-loading">Fetching available tags</p>
 
-          <div class="box" v-if="availableTags">
-            <div class="field is-horizontal" v-for="tag in availableTags" :key="tag.tag">
-              <div class="field-label">
-                <label class="label" v-text="tag.tag"/>
-              </div>
-              <div class="field-body">
-                <div class="control">
-                  <div class="select">
-                    <select v-model="selectedTags[tag.tag]">
-                      <option :value="undefined">-</option>
-                      <option v-for="value in tag.values" :key="value" :value="value" v-text="value"/>
-                    </select>
-                  </div>
+        <div class="box" v-if="availableTags">
+          <div class="field is-horizontal" v-for="tag in availableTags" :key="tag.tag">
+            <div class="field-label">
+              <label class="label" v-text="tag.tag"/>
+            </div>
+            <div class="field-body">
+              <div class="control">
+                <div class="select">
+                  <select v-model="selectedTags[tag.tag]">
+                    <option :value="undefined">-</option>
+                    <option v-for="value in tag.values" :key="value" :value="value" v-text="value"/>
+                  </select>
                 </div>
               </div>
             </div>
-            <p v-if="availableTags && availableTags.length === 0">
-              No tags available.
-            </p>
-            <div class="field is-grouped is-grouped-right">
-              <div class="control">
-                <button type="submit" class="button is-primary">Add Metric</button>
-              </div>
+          </div>
+          <p v-if="availableTags && availableTags.length === 0">
+            No tags available.
+          </p>
+          <div class="field is-grouped is-grouped-right">
+            <div class="control">
+              <button type="submit" class="button is-primary">Add Metric</button>
             </div>
           </div>
         </div>
-      </form>
+      </div>
+    </form>
 
-      <metric v-for="metric in metrics"
-              :key="metric.name"
-              :metric-name="metric.name"
-              :tag-selections="metric.tagSelections"
-              :statistic-types="metric.types"
-              :instance="instance"
-              @remove="removeMetric"
-              @type-select="handleTypeSelect"
-      />
-    </div>
+    <metric v-for="metric in metrics"
+            :key="metric.name"
+            :metric-name="metric.name"
+            :tag-selections="metric.tagSelections"
+            :statistic-types="metric.types"
+            :instance="instance"
+            @remove="removeMetric"
+            @type-select="handleTypeSelect"
+    />
   </section>
 </template>
 
@@ -219,6 +217,7 @@
         path: 'metrics',
         component: this,
         label: 'Metrics',
+        group: 'Insights',
         order: 50,
         isEnabled: ({instance}) => instance.hasEndpoint('metrics')
       });
