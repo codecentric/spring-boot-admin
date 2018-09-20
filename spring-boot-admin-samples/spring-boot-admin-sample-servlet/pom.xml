@@ -70,11 +70,13 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- removed due to NPE in AbstractMessageConverterMethodProcessor#formatValue should be fixed with 2.1.0.M4
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional>
         </dependency>
+        -->
     </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName>
