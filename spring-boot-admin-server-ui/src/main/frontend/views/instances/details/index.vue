@@ -21,21 +21,21 @@
       <h2 class="subtitle is-5" v-if="instance">Id: <span v-text="instance.id"/></h2>
       <sba-tags v-if="instance" :tags="instance.tags"/>
       <div class="details-header__urls">
-          <a class="button is-small " :href="instance.registration.serviceUrl">
-            <font-awesome-icon icon="home"/>&nbsp;
-            <span v-text="instance.registration.serviceUrl"/>
-          </a>
-          <a class="button is-small " :href="instance.registration.managementUrl">
-            <font-awesome-icon icon="wrench"/>&nbsp;
-            <span v-text="instance.registration.managementUrl"/>
-          </a>
-          <a class="button is-small " :href="instance.registration.healthUrl">
-            <font-awesome-icon icon="heartbeat"/>&nbsp;
-            <span v-text="instance.registration.healthUrl"/>
-          </a>
+        <a class="button is-small " :href="instance.registration.serviceUrl">
+          <font-awesome-icon icon="home"/>&nbsp;
+          <span v-text="instance.registration.serviceUrl"/>
+        </a>
+        <a class="button is-small " :href="instance.registration.managementUrl">
+          <font-awesome-icon icon="wrench"/>&nbsp;
+          <span v-text="instance.registration.managementUrl"/>
+        </a>
+        <a class="button is-small " :href="instance.registration.healthUrl">
+          <font-awesome-icon icon="heartbeat"/>&nbsp;
+          <span v-text="instance.registration.healthUrl"/>
+        </a>
       </div>
     </div>
-    <hr/>
+    <hr>
     <div v-if="error" class="message is-danger">
       <div class="message-body">
         <strong>
