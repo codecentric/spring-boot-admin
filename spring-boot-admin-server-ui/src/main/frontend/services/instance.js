@@ -79,16 +79,9 @@ class Instance {
   }
 
   async fetchHealth() {
-    try {
-      return await this.axios.get(uri`actuator/health`, {
-        headers: {'Accept': actuatorMimeTypes}
-      });
-    } catch (error) {
-      if (error.response) {
-        return error.response;
-      }
-      throw error;
-    }
+    return await this.axios.get(uri`actuator/health`, {
+      headers: {'Accept': actuatorMimeTypes}
+    });
   }
 
   async fetchEnv(name) {

@@ -17,16 +17,16 @@
 <template>
   <sba-panel title="Health">
     <div>
-      <div v-if="error" class="message is-danger">
+      <div v-if="error" class="message is-warning">
         <div class="message-body">
           <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
-            Fetching health failed.
+            <font-awesome-icon class="has-text-warning" icon="exclamation-triangle"/>
+            Fetching live health status failed. This is the last known information.
           </strong>
           <p v-text="error.message"/>
         </div>
       </div>
-      <health-details v-if="health" name="Instance" :health="health"/>
+      <health-details name="Instance" :health="health"/>
     </div>
   </sba-panel>
 </template>
@@ -44,24 +44,27 @@
       }
     },
     data: () => ({
-      hasLoaded: false,
       error: null,
-      health: null,
+      liveHealth: null,
     }),
     created() {
       this.fetchHealth();
+    },
+    computed: {
+      health() {
+        return this.liveHealth || this.instance.statusInfo;
+      }
     },
     methods: {
       async fetchHealth() {
         this.error = null;
         try {
           const res = await this.instance.fetchHealth();
-          this.health = res.data;
+          this.liveHealth = res.data;
         } catch (error) {
-          console.warn('Fetching health failed:', error);
+          console.warn('Fetching live health failed:', error);
           this.error = error;
         }
-        this.hasLoaded = true;
       }
     }
   }
