@@ -15,18 +15,18 @@
   -->
 
 <template>
-  <sba-panel title="Info" v-if="hasLoaded">
+  <sba-panel title="Info">
     <div>
-      <div v-if="error" class="message is-danger">
+      <div v-if="error" class="message is-warning">
         <div class="message-body">
           <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
-            Fetching info failed.
+            <font-awesome-icon class="has-text-warning" icon="exclamation-triangle"/>
+            Fetching live info failed. This is the last known information.
           </strong>
           <p v-text="error.message"/>
         </div>
       </div>
-      <div class="content info" v-if="info">
+      <div class="content info">
         <table class="table" v-if="!isEmptyInfo">
           <tr v-for="(value, key) in info" :key="key">
             <td class="info__key" v-text="key"/>
@@ -52,11 +52,13 @@
       }
     },
     data: () => ({
-      hasLoaded: false,
       error: null,
-      info: null
+      liveInfo: null
     }),
     computed: {
+      info() {
+        return this.liveInfo || this.instance.info
+      },
       isEmptyInfo() {
         return Object.keys(this.info).length <= 0;
       }
@@ -70,12 +72,11 @@
           try {
             this.error = null;
             const res = await this.instance.fetchInfo();
-            this.info = res.data;
+            this.liveInfo = res.data;
           } catch (error) {
             this.error = error;
             console.warn('Fetching info failed:', error);
           }
-          this.hasLoaded = true;
         }
       }
     }
