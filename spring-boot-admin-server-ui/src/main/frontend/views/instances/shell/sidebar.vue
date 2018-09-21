@@ -38,7 +38,7 @@
           @mouseleave="hasMultipleViews(group) && !isActiveGroup(group) && hideFlyout($event)">
           <router-link
             :to="{ name: group.views[0].name, params: { 'instanceId' : instance.id } }"
-            v-text="group.name"
+            v-text="hasMultipleViews(group) ? group.name : group.views[0].label"
             active-class=""
             exact-active-class=""
             :class="{'is-active' : isActiveGroup(group) }"/>
@@ -164,7 +164,7 @@
       text-align: center;
 
       &:hover {
-        background-color: rgba($primary, 0.96);
+        background-color: rgba($grey, 0.90);
       }
 
       &__name {
@@ -179,17 +179,26 @@
       &--UP {
         color: $primary-invert;
         background-color: $primary;
+        &:hover {
+          background-color: rgba($primary, 0.90);
+        }
       }
 
       &--RESTRICTED {
         color: $warning-invert;
         background-color: $warning;
+        &:hover {
+          background-color: rgba($warning, 0.90);
+        }
       }
 
       &--OUT_OF_SERVICE,
       &--DOWN {
         color: $danger-invert;
         background-color: $danger;
+        &:hover {
+          background-color: rgba($danger, 0.90);
+        }
       }
     }
 
