@@ -75,6 +75,7 @@ public class ApplicationsController {
     @GetMapping(path = "/applications/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<ResponseEntity<Application>> application(@PathVariable("name") String name) {
         return this.toApplication(name, registry.getInstances(name).filter(Instance::isRegistered))
+                   .filter(a -> !a.getInstances().isEmpty())
                    .map(ResponseEntity::ok)
                    .defaultIfEmpty(ResponseEntity.notFound().build());
     }
@@ -106,7 +107,7 @@ public class ApplicationsController {
     }
 
     protected Mono<Application> toApplication(String name, Flux<Instance> instances) {
-        return instances.collectList().filter(instanceList -> !instanceList.isEmpty()).map(instanceList -> {
+        return instances.collectList().map(instanceList -> {
             Application group = new Application(name);
             group.setInstances(instanceList);
             group.setBuildVersion(getBuildVersion(instanceList));
