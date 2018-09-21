@@ -22,15 +22,14 @@
         <th>Created at</th>
         <th>Last accessed at</th>
         <th>Expiry</th>
-        <th>Max. inactive<br>interval
-        </th>
+        <th>Max. inactive<br>interval</th>
         <th>Attributes</th>
         <th>
           <sba-confirm-button class="button"
-                              :class="{ 'is-loading' : deletingAll === 'deleting', 'is-danger' : deletingAll === 'failed' }"
+                              :class="{ 'is-loading' : deletingAll === 'executing', 'is-info' : deletingAll === 'completed', 'is-danger' : deletingAll === 'failed' }"
                               :disabled="deletingAll !== null"
                               v-if="sessions.length > 1" @click="deleteAllSessions()">
-            <span v-if="deletingAll === 'deleted'">Deleted</span>
+            <span v-if="deletingAll === 'completed'">Deleted</span>
             <span v-else-if="deletingAll === 'failed'">Failed</span>
             <span v-else><font-awesome-icon icon="trash"/>&nbsp;Delete</span>
           </sba-confirm-button>
@@ -57,9 +56,9 @@
       </td>
       <td>
         <button class="button"
-                :class="{ 'is-loading' : deleting[session.id] === 'deleting', 'is-info' : deleting[session.id] === 'deleted', 'is-danger' : deleting[session.id] === 'failed' }"
+                :class="{ 'is-loading' : deleting[session.id] === 'executing', 'is-info' : deleting[session.id] === 'completed', 'is-danger' : deleting[session.id] === 'failed' }"
                 :disabled="session.id in deleting" @click="deleteSession(session.id)">
-          <span v-if="deleting[session.id] === 'deleted'">Deleted</span>
+          <span v-if="deleting[session.id] === 'completed'">Deleted</span>
           <span v-else-if="deleting[session.id] === 'failed'">Failed</span>
           <span v-else><font-awesome-icon icon="trash"/>&nbsp;Delete</span>
         </button>
@@ -76,7 +75,7 @@
 
 <script>
   import Instance from '@/services/instance';
-  import {concatMap, from, map, of, tap} from '@/utils/rxjs';
+  import {concatMap, from, listen, map, of, tap} from '@/utils/rxjs';
   import prettyBytes from 'pretty-bytes';
 
   export default {
@@ -102,32 +101,28 @@
       prettyBytes,
       deleteAllSessions() {
         const vm = this;
-        vm.deletingAll = 'deleting';
         vm.subscription = from(vm.sessions)
           .pipe(
             map(session => session.id),
-            concatMap(vm._deleteSession)
+            concatMap(vm._deleteSession),
+            listen(status => vm.deletingAll = status)
           )
           .subscribe({
             complete: () => {
-              vm.deletingAll = 'deleted';
               vm.$emit('deleted', '*');
-            },
-            error: () => {
-              vm.deletingAll = 'failed';
-            },
+            }
           });
       },
       deleteSession(sessionId) {
         const vm = this;
         vm._deleteSession(sessionId)
+          .pipe(listen(status => vm.$set(vm.deleting, sessionId, status)))
           .subscribe({
             complete: () => vm.$emit('deleted', sessionId),
           });
       },
       _deleteSession(sessionId) {
         const vm = this;
-        vm.$set(vm.deleting, sessionId, 'deleting');
         return of(sessionId)
           .pipe(
             concatMap(async sessionId => {
@@ -135,10 +130,8 @@
               return sessionId;
             }),
             tap({
-              next: sessionId => vm.$set(vm.deleting, sessionId, 'deleted'),
               error: error => {
                 console.warn(`Deleting session ${sessionId} failed:`, error);
-                vm.$set(vm.deleting, sessionId, 'failed');
               }
             })
           );
@@ -148,7 +141,7 @@
 </script>
 <style lang="scss">
   .sessions {
-    & td {
+    td, th {
       vertical-align: middle;
     }
   }
