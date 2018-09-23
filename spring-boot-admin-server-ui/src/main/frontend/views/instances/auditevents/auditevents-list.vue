@@ -54,8 +54,11 @@
           </td>
         </tr>
       </template>
-      <tr v-if="events.length === 0">
+      <tr v-if="events.length === 0 && hasLoaded">
         <td class="is-muted" colspan="5">No auditevents found.</td>
+      </tr>
+      <tr v-if="!hasLoaded">
+        <td class="is-muted is-loading" colspan="5">Loading audit events.</td>
       </tr>
     </tbody>
   </table>
@@ -74,6 +77,10 @@
       instance: {
         type: Instance,
         required: true
+      },
+      hasLoaded: {
+        type: Boolean,
+        default: false
       }
     },
     data: () => ({
