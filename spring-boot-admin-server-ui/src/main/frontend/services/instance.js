@@ -158,10 +158,14 @@ class Instance {
     });
   }
 
-  async fetchAuditevents(after) {
+  async fetchAuditevents({lastTimestamp, type, principal}) {
     return this.axios.get(uri`actuator/auditevents`, {
       headers: {'Accept': actuatorMimeTypes},
-      params: {after: after.toISOString()}
+      params: {
+        after: lastTimestamp.toISOString(),
+        type: type ? type : undefined,
+        principal: principal ? principal : undefined
+      }
     });
   }
 
