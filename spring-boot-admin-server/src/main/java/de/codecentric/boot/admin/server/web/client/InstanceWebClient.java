@@ -78,7 +78,7 @@ public class InstanceWebClient {
                                                     Duration readTimeout,
                                                     WebClientCustomizer customizer) {
         //@formatter:off
-        HttpClient httpClient = HttpClient.create().compress().tcpConfiguration(
+        HttpClient httpClient = HttpClient.create().compress(true).tcpConfiguration(
             tcp -> tcp.bootstrap(
                 bootstrap -> bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) connectTimeout.toMillis())
             ).observe(
