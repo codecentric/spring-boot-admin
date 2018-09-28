@@ -24,20 +24,17 @@
     <meta name="format-detection" content="telephone=no,email=no">
     <meta name="theme-color" content="#42d3a5">
 
-    <link rel="preload" href="assets/css/sba-core.css" as="style">
+    <!-- include extensions -->
     <th:block th:each="cssFile : ${cssExtensions}">
         <link rel="preload" th:href="${cssFile.resourcePath}" as="style">
     </th:block>
-    <link rel="preload" href="assets/js/vendors.js" as="script">
     <th:block th:each="jsFile : ${jsExtensions}">
         <link rel="preload" th:href="${jsFile.resourcePath}" as="script">
     </th:block>
-    <link rel="preload" href="assets/js/sba-core.js" as="script">
-
-    <link href="assets/css/sba-core.css" rel="stylesheet">
     <th:block th:each="cssFile : ${cssExtensions}">
         <link th:href="${cssFile.resourcePath}" rel="stylesheet">
     </th:block>
+
     <link rel="shortcut icon" href="assets/img/favicon.png" type="image/png">
     <title th:text="${uiSettings.title}">Spring Boot Admin</title>
 </head>
@@ -61,10 +58,9 @@
         }
     }
 </script>
-<script lang="javascript" src="assets/js/vendors.js" defer></script>
+<!-- include extensions -->
 <th:block th:each="jsFile : ${jsExtensions}">
-    <script lang="javascript" th:src="${jsFile.resourcePath}" defer></script>
+    <script lang="javascript" th:src="${jsFile.resourcePath}"></script>
 </th:block>
-<script lang="javascript" src="assets/js/sba-core.js" defer></script>
 </body>
 </html>

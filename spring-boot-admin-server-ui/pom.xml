@@ -101,7 +101,7 @@
                             <executable>npm</executable>
                             <arguments>
                                 <argument>run</argument>
-                                <argument>test</argument>
+                                <argument>test:unit</argument>
                             </arguments>
                         </configuration>
                     </execution>

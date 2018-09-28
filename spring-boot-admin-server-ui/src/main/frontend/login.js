@@ -14,15 +14,4 @@
  * limitations under the License.
  */
 
-const path = require('path');
-
-module.exports = {
-  process(_, filename, config) {
-    const relative = path.relative(config.rootDir, filename);
-    return `
-      module.exports = { 
-        render() { return this._v('${relative}'); } 
-      };
-    `;
-  }
-};
+import '@/assets/css/base.scss';

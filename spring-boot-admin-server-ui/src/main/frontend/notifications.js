@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import logoDanger from '@/assets/img/favicon-danger.png';
-import logoOk from '@/assets/img/favicon.png';
-
 let granted = false;
 
 const requestPermissions = () => {
@@ -52,7 +49,7 @@ export default {
           tag: `${newVal.name}-${newVal.status}`,
           lang: 'en',
           body: `was ${oldVal.status}.`,
-          icon: newVal.status === 'UP' ? logoOk : logoDanger,
+          icon: newVal.status === 'UP' ? 'assets/img/favicon.png' : 'assets/img/favicon-danger.png',
           renotify: true,
           timeout: 10000
         })

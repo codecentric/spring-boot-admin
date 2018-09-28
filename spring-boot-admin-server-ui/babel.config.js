@@ -14,4 +14,11 @@
  * limitations under the License.
  */
 
-module.exports = 'file-mock';
+module.exports = {
+  presets: [
+    '@vue/app'
+  ],
+  plugins: [
+    'lodash'
+  ]
+};

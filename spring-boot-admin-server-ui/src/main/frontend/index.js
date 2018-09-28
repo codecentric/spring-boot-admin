@@ -15,7 +15,6 @@
  */
 
 import '@/assets/css/base.scss';
-import '@/assets/img/icon-spring-boot-admin.svg';
 import moment from 'moment';
 import Vue from 'vue';
 import VueRouter from 'vue-router';

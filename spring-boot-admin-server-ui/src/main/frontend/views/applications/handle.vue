@@ -26,9 +26,6 @@
 </template>
 
 <script>
-  import logoDanger from '@/assets/img/favicon-danger.png';
-  import logoOk from '@/assets/img/favicon.png';
-
   export default {
     props: {
       applications: {
@@ -56,7 +53,7 @@
     },
     methods: {
       updateFavicon(up) {
-        document.querySelector('link[rel*="icon"]').href = up ? logoOk : logoDanger;
+        document.querySelector('link[rel*="icon"]').href = up ? 'assets/img/favicon.png' : 'assets/img/favicon-danger.png';
       }
     }
   };
