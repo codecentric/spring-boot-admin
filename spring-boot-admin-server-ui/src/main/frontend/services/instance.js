@@ -158,13 +158,13 @@ class Instance {
     });
   }
 
-  async fetchAuditevents({lastTimestamp, type, principal}) {
+  async fetchAuditevents({after, type, principal}) {
     return this.axios.get(uri`actuator/auditevents`, {
       headers: {'Accept': actuatorMimeTypes},
       params: {
-        after: lastTimestamp.toISOString(),
-        type: type ? type : undefined,
-        principal: principal ? principal : undefined
+        after: after.toISOString(),
+        type: type || undefined,
+        principal: principal || undefined
       }
     });
   }
@@ -172,7 +172,9 @@ class Instance {
   async fetchSessionsByUsername(username) {
     return this.axios.get(uri`actuator/sessions`, {
       headers: {'Accept': actuatorMimeTypes},
-      params: {username}
+      params: {
+        username: username || undefined
+      }
     });
   }
 

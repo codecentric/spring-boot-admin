@@ -54,11 +54,11 @@
           </td>
         </tr>
       </template>
-      <tr v-if="events.length === 0 && hasLoaded">
-        <td class="is-muted" colspan="5">No auditevents found.</td>
-      </tr>
-      <tr v-if="!hasLoaded">
-        <td class="is-muted is-loading" colspan="5">Loading audit events.</td>
+      <tr v-if="events.length === 0">
+        <td class="is-muted" colspan="5">
+          <p v-if="isLoading" class="is-loading">Loading Audit Events...</p>
+          <p v-else>No Audit Events found.</p>
+        </td>
       </tr>
     </tbody>
   </table>
@@ -78,7 +78,7 @@
         type: Instance,
         required: true
       },
-      hasLoaded: {
+      isLoading: {
         type: Boolean,
         default: false
       }

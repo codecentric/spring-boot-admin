@@ -27,9 +27,9 @@ export {timer} from 'rxjs/internal/observable/timer';
 export {Observable} from 'rxjs/internal/Observable';
 export {Subject} from 'rxjs/internal/Subject';
 export {animationFrame as animationFrameScheduler} from 'rxjs/internal/scheduler/animationFrame';
-
 export {concatMap} from 'rxjs/internal/operators/concatMap';
 export {delay} from 'rxjs/internal/operators/delay';
+export {debounceTime} from 'rxjs/internal/operators/debounceTime';
 export {merge} from 'rxjs/internal/operators/merge';
 export {map} from 'rxjs/internal/operators/map';
 export {retryWhen} from 'rxjs/internal/operators/retryWhen';
@@ -37,8 +37,6 @@ export {tap} from 'rxjs/internal/operators/tap';
 export {filter} from 'rxjs/internal/operators/filter';
 export {concatAll} from 'rxjs/internal/operators/concatAll';
 export {ignoreElements} from 'rxjs/internal/operators/ignoreElements';
-
-
 
 export const doOnSubscribe = cb => source =>
   defer(() => {
@@ -52,7 +50,7 @@ export const doFirst = cb => source => {
     triggered = false;
     return source;
   }).pipe(
-    tap( v => {
+    tap(v => {
       if (!triggered) {
         triggered = true;
         cb(v);
