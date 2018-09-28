@@ -15,23 +15,70 @@
   -->
 
 <template>
-  <section class="section" :class="{ 'is-loading' : !hasLoaded}">
-    <template v-if="hasLoaded">
+  <section class="section">
+    <div class="field is-horizontal">
+      <div class="field-body">
+        <div class="field">
+          <p class="control is-expanded">
+            <input
+              class="input"
+              type="search"
+              placeholder="Principal"
+              v-model.trim="filter.principal">
+          </p>
+        </div>
+        <div class="field">
+          <p class="control is-expanded">
+            <input
+              list="auditevent-type"
+              class="input"
+              type="search"
+              placeholder="Type"
+              v-model="filter.type">
+            <datalist id="auditevent-type">
+              <option value="AUTHENTICATION_FAILURE"/>
+              <option value="AUTHENTICATION_SUCCESS"/>
+              <option value="AUTHENTICATION_SWITCH"/>
+              <option value="AUTHORIZATION_FAILURE"/>
+            </datalist>
+          </p>
+        </div>
+        <div class="field">
+          <p class="control is-expanded">
+            <input
+              class="input"
+              type="datetime-local"
+              placeholder="Date"
+              :value="formatDate(filter.after)"
+              @input="filter.after = parseDate($event.target.value)"
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+    <template>
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            <font-awesome-icon
+              class="has-text-danger"
+              icon="exclamation-triangle"/>
             Fetching audit events failed.
           </strong>
           <p v-text="error.message"/>
         </div>
       </div>
-      <div v-if="isOldAuditevents" class="message is-warning">
+      <div
+        v-if="isOldAuditevents"
+        class="message is-warning">
         <div class="message-body">
           Audit Log is not supported for Spring Boot 1.x applications.
         </div>
       </div>
-      <auditevents-list v-if="events" :instance="instance" :events="events"/>
+      <auditevents-list
+        :instance="instance"
+        :events="events"
+        :is-loading="isLoading"/>
     </template>
   </section>
 </template>
@@ -39,7 +86,7 @@
 <script>
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
-  import {concatMap, timer} from '@/utils/rxjs';
+  import {concatMap, debounceTime, merge, Subject, tap, timer} from '@/utils/rxjs';
   import AuditeventsList from '@/views/instances/auditevents/auditevents-list';
   import _ from 'lodash';
   import moment from 'moment';
@@ -81,36 +128,58 @@
     mixins: [subscribing],
     components: {AuditeventsList},
     data: () => ({
-      hasLoaded: false,
+      isLoading: false,
       error: null,
-      events: null,
+      events: [],
+      filter: {
+        after: moment().startOf('day'),
+        type: null,
+        principal: null
+      },
       isOldAuditevents: false
     }),
+    watch: {
+      filter: {
+        deep: true,
+        handler() {
+          this.filterChanged.next();
+        }
+      }
+    },
     methods: {
+      formatDate(value) {
+        return value.format(moment.HTML5_FMT.DATETIME_LOCAL);
+      },
+      parseDate(value) {
+        return moment(value, moment.HTML5_FMT.DATETIME_LOCAL, true);
+      },
       async fetchAuditevents() {
-        const response = await this.instance.fetchAuditevents(this.lastTimestamp);
+        this.isLoading = true;
+        const response = await this.instance.fetchAuditevents(this.filter);
         const converted = response.data.events.map(event => new Auditevent(event));
         converted.reverse();
-        if (converted.length > 0) {
-          this.lastTimestamp = converted[0].timestamp;
-        }
+        this.isLoading = false;
         return converted;
       },
       createSubscription() {
         const vm = this;
-        vm.lastTimestamp = moment(0);
+        vm.filterChanged = new Subject();
         vm.error = null;
         return timer(0, 5000)
           .pipe(
+            merge(vm.filterChanged.pipe(
+              debounceTime(250),
+              tap({
+                next: () => vm.events = []
+              })
+            )),
             concatMap(this.fetchAuditevents)
           )
           .subscribe({
             next: events => {
-              vm.hasLoaded = true;
               vm.addEvents(events);
             },
             error: error => {
-              vm.hasLoaded = true;
               console.warn('Fetching audit events failed:', error);
               if (error.response.headers['content-type'].includes('application/vnd.spring-boot.actuator.v2')) {
                 vm.error = error;

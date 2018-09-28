@@ -177,17 +177,23 @@ class Instance {
     });
   }
 
-  async fetchAuditevents(after) {
+  async fetchAuditevents({after, type, principal}) {
     return this.axios.get(uri`actuator/auditevents`, {
       headers: {'Accept': actuatorMimeTypes},
-      params: {after: after.toISOString()}
+      params: {
+        after: after.toISOString(),
+        type: type || undefined,
+        principal: principal || undefined
+      }
     });
   }
 
   async fetchSessionsByUsername(username) {
     return this.axios.get(uri`actuator/sessions`, {
       headers: {'Accept': actuatorMimeTypes},
-      params: {username}
+      params: {
+        username: username || undefined
+      }
     });
   }
 
