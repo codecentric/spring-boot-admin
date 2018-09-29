@@ -21,14 +21,15 @@ It provides the following features for registered application.
 * Show build-info number
 * Follow and download logfile
 * View jvm system- & environment-properties
+* View Spring Boot Configuration Properties
 * Support for Spring Cloud's postable /env- &/refresh-endpoint
 * Easy loglevel management
 * Interact with JMX-beans
 * View thread dump
 * View http-traces
 * View auditevents
-* View Http-Endpoints
-* View Scheduled Tasks
+* View http-endpoints
+* View scheduled tasks
 * View and delete active sessions (using spring-session)
 * View Flyway / Liquibase database migrations
 * Download heapdump
@@ -37,7 +38,7 @@ It provides the following features for registered application.
 
 ## Getting Started
 
-[A quick guide](http://codecentric.github.io/spring-boot-admin/2.0.2/#getting-started) to get started can be found in our docs.
+[A quick guide](http://codecentric.github.io/spring-boot-admin/2.0.3/#getting-started) to get started can be found in our docs.
 
 There are <a href="https://goo.gl/2tRiUi" target="_blank">introductory talks availabe on YouTube</a>:
 
@@ -62,7 +63,7 @@ Having trouble with codecentric's Spring Boot Admin? We’d like to help!
  * Report bugs at http://github.com/codecentric/spring-boot-admin/issues.
 
 ## Reference Guide
-[Version 2.0.2](http://codecentric.github.io/spring-boot-admin/2.0.2/)
+[Version 2.0.3](http://codecentric.github.io/spring-boot-admin/2.0.3/)
 
 [Version 1.5.7](http://codecentric.github.io/spring-boot-admin/1.5.7/)
 
