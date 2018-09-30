@@ -24,42 +24,22 @@ import reactor.netty.ConnectionObserver;
 import reactor.netty.http.client.HttpClient;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 
 public class InstanceWebClient {
     private final WebClient webClient;
 
-    public InstanceWebClient(HttpHeadersProvider httpHeadersProvider) {
-        this(httpHeadersProvider, Duration.ofSeconds(2), Duration.ofSeconds(5));
-    }
-
-    public InstanceWebClient(HttpHeadersProvider httpHeadersProvider, Duration connectTimeout, Duration readTimeout) {
-        this(httpHeadersProvider, connectTimeout, readTimeout, builder -> { });
-    }
-
-    public InstanceWebClient(HttpHeadersProvider httpHeadersProvider,
-                             Duration connectTimeout,
-                             Duration readTimeout,
-                             WebClientCustomizer customizer) {
-        this(createDefaultWebClient(connectTimeout, readTimeout, customizer), httpHeadersProvider);
-    }
-
-    public InstanceWebClient(WebClient webClient, HttpHeadersProvider httpHeadersProvider) {
-        this.webClient = webClient.mutate().filters(filters -> {
-            filters.add(InstanceExchangeFilterFunctions.addHeaders(httpHeadersProvider));
-            filters.add(InstanceExchangeFilterFunctions.rewriteEndpointUrl());
-            filters.add(InstanceExchangeFilterFunctions.setDefaultAcceptHeader());
-            filters.add(InstanceExchangeFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.health()));
-            filters.add(InstanceExchangeFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.info()));
-            filters.add(InstanceExchangeFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.env()));
-            filters.add(InstanceExchangeFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.httptrace()));
-            filters.add(InstanceExchangeFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.threaddump()));
-            filters.add(InstanceExchangeFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.liquibase()));
-            filters.add(InstanceExchangeFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.flyway()));
-        }).build();
+    private InstanceWebClient(WebClient webClient) {
+        this.webClient = webClient;
     }
 
     public WebClient instance(Mono<Instance> instance) {
@@ -74,25 +54,109 @@ public class InstanceWebClient {
                         .build();
     }
 
-    private static WebClient createDefaultWebClient(Duration connectTimeout,
-                                                    Duration readTimeout,
-                                                    WebClientCustomizer customizer) {
-        //@formatter:off
-        HttpClient httpClient = HttpClient.create().compress(true).tcpConfiguration(
-            tcp -> tcp.bootstrap(
-                bootstrap -> bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) connectTimeout.toMillis())
-            ).observe(
-                (connection, newState) -> {
-                    if (ConnectionObserver.State.CONNECTED.equals(newState)) {
-                        connection.addHandlerLast(new ReadTimeoutHandler(readTimeout.toMillis(), TimeUnit.MILLISECONDS));
-                    }
-                }
-            )
-        );
-        //@formatter:on
-        ReactorClientHttpConnector connector = new ReactorClientHttpConnector(httpClient);
-        WebClient.Builder builder = WebClient.builder().clientConnector(connector);
-        customizer.customize(builder);
-        return builder.build();
+    public static InstanceWebClient.Builder builder() {
+        return new InstanceWebClient.Builder();
+    }
+
+    public static class Builder {
+        private Duration connectTimeout = Duration.ofSeconds(2);
+        private Duration readTimeout = Duration.ofSeconds(5);
+        private WebClientCustomizer webClientCustomizer = builder -> { };
+        private int defaultRetries = 0;
+        private Map<String, Integer> retriesPerEndpoint = Collections.emptyMap();
+        private HttpHeadersProvider httpHeadersProvider = instance -> HttpHeaders.EMPTY;
+        private List<InstanceExchangeFilterFunction> filters = new ArrayList<>();
+        private WebClient webClient = null;
+
+        public Builder webClientCustomizer(WebClientCustomizer webClientCustomizer) {
+            this.webClientCustomizer = webClientCustomizer;
+            return this;
+        }
+
+        public Builder webClient(WebClient webClient) {
+            this.webClient = webClient;
+            return this;
+        }
+
+        public Builder readTimeout(Duration readTimeout) {
+            this.readTimeout = readTimeout;
+            return this;
+        }
+
+        public Builder connectTimeout(Duration connectTimeout) {
+            this.connectTimeout = connectTimeout;
+            return this;
+        }
+
+        public Builder defaultRetries(int defaultRetry) {
+            this.defaultRetries = defaultRetry;
+            return this;
+        }
+
+        public Builder retries(Map<String, Integer> retryPerEndpoint) {
+            this.retriesPerEndpoint = retryPerEndpoint;
+            return this;
+        }
+
+        public Builder httpHeadersProvider(HttpHeadersProvider httpHeadersProvider) {
+            this.httpHeadersProvider = httpHeadersProvider;
+            return this;
+        }
+
+        public Builder filter(InstanceExchangeFilterFunction filter) {
+            this.filters.add(filter);
+            return this;
+        }
+
+        public Builder filters(Consumer<List<InstanceExchangeFilterFunction>> filtersConsumer) {
+            filtersConsumer.accept(this.filters);
+            return this;
+        }
+
+        public InstanceWebClient build() {
+            WebClient.Builder webClientBuilder;
+            if (this.webClient == null) {
+                webClientBuilder = createDefaultWebClient(this.connectTimeout, this.readTimeout);
+            } else {
+                webClientBuilder = this.webClient.mutate();
+            }
+
+            webClientBuilder.filters(webClientFilters -> {
+                webClientFilters.add(InstanceExchangeFilterFunctions.addHeaders(this.httpHeadersProvider));
+                webClientFilters.add(InstanceExchangeFilterFunctions.rewriteEndpointUrl());
+                webClientFilters.add(InstanceExchangeFilterFunctions.setDefaultAcceptHeader());
+                webClientFilters.add(InstanceExchangeFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.health()));
+                webClientFilters.add(InstanceExchangeFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.info()));
+                webClientFilters.add(InstanceExchangeFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.env()));
+                webClientFilters.add(InstanceExchangeFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.httptrace()));
+                webClientFilters.add(InstanceExchangeFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.threaddump()));
+                webClientFilters.add(InstanceExchangeFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.liquibase()));
+                webClientFilters.add(InstanceExchangeFilterFunctions.convertLegacyEndpoint(LegacyEndpointConverters.flyway()));
+                webClientFilters.add(InstanceExchangeFilterFunctions.retry(this.defaultRetries, this.retriesPerEndpoint));
+                this.filters.forEach(filter -> webClientFilters.add(InstanceExchangeFilterFunctions.toExchangeFilterFunction(
+                    filter)));
+            });
+
+            webClientCustomizer.customize(webClientBuilder);
+            return new InstanceWebClient(webClientBuilder.build());
+        }
+
+
+        private static WebClient.Builder createDefaultWebClient(Duration connectTimeout, Duration readTimeout) {
+            HttpClient httpClient = HttpClient.create()
+                                              .compress(true)
+                                              .tcpConfiguration(tcp -> tcp.bootstrap(bootstrap -> bootstrap.option(
+                                                  ChannelOption.CONNECT_TIMEOUT_MILLIS,
+                                                  (int) connectTimeout.toMillis()
+                                              )).observe((connection, newState) -> {
+                                                  if (ConnectionObserver.State.CONNECTED.equals(newState)) {
+                                                      connection.addHandlerLast(new ReadTimeoutHandler(readTimeout.toMillis(),
+                                                          TimeUnit.MILLISECONDS
+                                                      ));
+                                                  }
+                                              }));
+            ReactorClientHttpConnector connector = new ReactorClientHttpConnector(httpClient);
+            return WebClient.builder().clientConnector(connector);
+        }
     }
 }

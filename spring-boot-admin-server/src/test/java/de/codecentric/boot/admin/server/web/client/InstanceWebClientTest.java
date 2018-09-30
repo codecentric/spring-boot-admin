@@ -52,15 +52,19 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_LENGTH;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.HttpHeaders.EMPTY;
 import static wiremock.org.apache.http.HttpHeaders.ACCEPT;
 
 public class InstanceWebClientTest {
     @Rule
     public WireMockRule wireMock = new WireMockRule(Options.DYNAMIC_PORT);
 
-    private final HttpHeadersProvider headersProvider = mock(HttpHeadersProvider.class, invocation -> EMPTY);
-    private final InstanceWebClient instanceWebClient = new InstanceWebClient(headersProvider);
+    private final HttpHeadersProvider headersProvider = mock(
+        HttpHeadersProvider.class,
+        invocation -> HttpHeaders.EMPTY
+    );
+    private final InstanceWebClient instanceWebClient = InstanceWebClient.builder()
+                                                                         .httpHeadersProvider(headersProvider)
+                                                                         .build();
 
     @BeforeClass
     public static void setUp() {
@@ -170,7 +174,7 @@ public class InstanceWebClientTest {
         StepVerifier.create(exchange).expectNextCount(1).verifyComplete();
         wireMock.verify(1,
             getRequestedFor(urlEqualTo("/log")).withHeader(ACCEPT, containing(MediaType.TEXT_PLAIN_VALUE))
-                                                  .withHeader(ACCEPT, containing(MediaType.ALL_VALUE))
+                                               .withHeader(ACCEPT, containing(MediaType.ALL_VALUE))
         );
     }
 
@@ -241,10 +245,10 @@ public class InstanceWebClientTest {
 
     @Test
     public void should_error_on_timeout() {
-        InstanceWebClient fastTimeoutClient = new InstanceWebClient(headersProvider,
-            Duration.ofMillis(10),
-            Duration.ofMillis(10)
-        );
+        InstanceWebClient fastTimeoutClient = InstanceWebClient.builder()
+                                                               .connectTimeout(Duration.ofMillis(10L))
+                                                               .readTimeout(Duration.ofMillis(10L))
+                                                               .build();
 
         wireMock.stubFor(get("/foo").willReturn(ok().withFixedDelay(100)));
 

@@ -20,6 +20,7 @@ import de.codecentric.boot.admin.server.domain.entities.EventsourcingInstanceRep
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.eventstore.ConcurrentMapEventStore;
@@ -35,7 +36,6 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import com.github.tomakehurst.wiremock.core.Options;
 import com.github.tomakehurst.wiremock.http.Fault;
@@ -47,6 +47,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.okForContentType;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
+import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -68,6 +69,7 @@ public class StatusUpdaterTest {
     public static void tearDown() {
         StepVerifier.resetDefaultTimeout();
     }
+
     @Before
     public void setup() {
         eventStore = new InMemoryEventStore();
@@ -77,15 +79,20 @@ public class StatusUpdaterTest {
         StepVerifier.create(repository.save(instance)).expectNextCount(1).verifyComplete();
 
         updater = new StatusUpdater(repository,
-            new InstanceWebClient(instance -> HttpHeaders.EMPTY, Duration.ofSeconds(5), Duration.ofSeconds(10)));
+            InstanceWebClient.builder()
+                             .connectTimeout(Duration.ofSeconds(2))
+                             .readTimeout(Duration.ofSeconds(2))
+                             .retries(singletonMap(Endpoint.HEALTH, 1))
+                             .build()
+        );
     }
 
     @Test
     public void should_change_status_to_down() {
         String body = "{ \"status\" : \"UP\", \"details\" : { \"foo\" : \"bar\" } }";
-        wireMock.stubFor(get("/health").willReturn(
-            okForContentType(ActuatorMediaType.V2_JSON, body).withHeader("Content-Length",
-                Integer.toString(body.length()))));
+        wireMock.stubFor(get("/health").willReturn(okForContentType(ActuatorMediaType.V2_JSON, body).withHeader("Content-Length",
+            Integer.toString(body.length())
+        )));
 
         StepVerifier.create(eventStore)
                     .expectSubscription()
@@ -95,8 +102,9 @@ public class StatusUpdaterTest {
                         assertThat(event.getInstance()).isEqualTo(instance.getId());
                         InstanceStatusChangedEvent statusChangedEvent = (InstanceStatusChangedEvent) event;
                         assertThat(statusChangedEvent.getStatusInfo().getStatus()).isEqualTo("UP");
-                        assertThat(statusChangedEvent.getStatusInfo().getDetails()).isEqualTo(
-                            singletonMap("foo", "bar"));
+                        assertThat(statusChangedEvent.getStatusInfo().getDetails()).isEqualTo(singletonMap("foo",
+                            "bar"
+                        ));
                     })
                     .thenCancel()
                     .verify();
@@ -105,8 +113,9 @@ public class StatusUpdaterTest {
                     .assertNext(app -> assertThat(app.getStatusInfo().getStatus()).isEqualTo("UP"))
                     .verifyComplete();
 
-        StepVerifier.create(
-            repository.computeIfPresent(instance.getId(), (key, instance) -> Mono.just(instance.deregister())))
+        StepVerifier.create(repository.computeIfPresent(instance.getId(),
+            (key, instance) -> Mono.just(instance.deregister())
+        ))
                     .then(() -> StepVerifier.create(updater.updateStatus(instance.getId())).verifyComplete())
                     .thenCancel()
                     .verify();
@@ -119,8 +128,9 @@ public class StatusUpdaterTest {
     @Test
     public void should_not_change_status() {
         String body = "{ \"status\" : \"UNKNOWN\" }";
-        wireMock.stubFor(
-            get("/health").willReturn(okJson(body).withHeader("Content-Type", Integer.toString(body.length()))));
+        wireMock.stubFor(get("/health").willReturn(okJson(body).withHeader("Content-Type",
+            Integer.toString(body.length())
+        )));
 
 
         StepVerifier.create(eventStore)
@@ -150,10 +160,14 @@ public class StatusUpdaterTest {
     @Test
     public void should_change_status_to_down_with_details() {
         String body = "{ \"foo\" : \"bar\" }";
-        wireMock.stubFor(get("/health").willReturn(
-            status(503).withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                       .withHeader("Content-Length", Integer.toString(body.length()))
-                       .withBody(body)));
+        wireMock.stubFor(get("/health").willReturn(status(503).withHeader("Content-Type",
+            MediaType.APPLICATION_JSON_VALUE
+        )
+                                                              .withHeader(
+                                                                  "Content-Length",
+                                                                  Integer.toString(body.length())
+                                                              )
+                                                              .withBody(body)));
 
         StepVerifier.create(eventStore)
                     .expectSubscription()
@@ -188,8 +202,9 @@ public class StatusUpdaterTest {
 
     @Test
     public void should_change_status_to_down_without_details_no_body() {
-        wireMock.stubFor(
-            get("/health").willReturn(status(503).withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)));
+        wireMock.stubFor(get("/health").willReturn(status(503).withHeader("Content-Type",
+            MediaType.APPLICATION_JSON_VALUE
+        )));
 
         StepVerifier.create(eventStore)
                     .expectSubscription()
@@ -222,5 +237,26 @@ public class StatusUpdaterTest {
         }).verifyComplete();
 
         StepVerifier.create(updater.updateStatus(instance.getId())).verifyComplete();
+    }
+
+    @Test
+    public void should_retry() {
+        wireMock.stubFor(get("/health").inScenario("retry")
+                                       .whenScenarioStateIs(STARTED)
+                                       .willReturn(aResponse().withFixedDelay(5000))
+                                       .willSetStateTo("recovered"));
+        wireMock.stubFor(get("/health").inScenario("retry").whenScenarioStateIs("recovered").willReturn(ok()));
+
+
+        StepVerifier.create(eventStore)
+                    .expectSubscription()
+                    .then(() -> StepVerifier.create(updater.updateStatus(instance.getId())).verifyComplete())
+                    .assertNext(event -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class))
+                    .thenCancel()
+                    .verify();
+
+        StepVerifier.create(repository.find(instance.getId()))
+                    .assertNext(app -> assertThat(app.getStatusInfo().getStatus()).isEqualTo("UP"))
+                    .verifyComplete();
     }
 }

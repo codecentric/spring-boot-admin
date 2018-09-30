@@ -20,7 +20,9 @@ import de.codecentric.boot.admin.server.web.PathUtils;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
@@ -43,17 +45,14 @@ public class AdminServerProperties {
     /**
      * The metadata keys which should be sanitized when serializing to json
      */
-    private String[] metadataKeysToSanitize = new String[]{".*password$", ".*secret$", ".*key$", ".*$token$",
-        ".*credentials.*", ".*vcap_services$"};
+    private String[] metadataKeysToSanitize = new String[]{".*password$", ".*secret$", ".*key$", ".*$token$", ".*credentials.*", ".*vcap_services$"};
 
     /**
      * For Spring Boot 2.x applications the endpoints should be discovered automatically using the actuator links.
      * For Spring Boot 1.x applications SBA probes for the specified endpoints using an OPTIONS request.
      * If the path differs from the id you can specify this as id:path (e.g. health:ping).
      */
-    private String[] probedEndpoints = {"health", "env", "metrics", "httptrace:trace", "httptrace", "threaddump:dump",
-        "threaddump", "jolokia", "info", "logfile", "refresh", "flyway", "liquibase", "heapdump", "loggers",
-        "auditevents", "mappings", "scheduledtasks", "configprops", "caches"};
+    private String[] probedEndpoints = {"health", "env", "metrics", "httptrace:trace", "httptrace", "threaddump:dump", "threaddump", "jolokia", "info", "logfile", "refresh", "flyway", "liquibase", "heapdump", "loggers", "auditevents", "mappings", "scheduledtasks", "configprops", "caches"};
 
     public void setContextPath(String contextPath) {
         this.contextPath = PathUtils.normalizePath(contextPath);
@@ -78,14 +77,23 @@ public class AdminServerProperties {
          * Connect timeout when querying the instances' status and info.
          */
         @DurationUnit(ChronoUnit.MILLIS)
-        private Duration connectTimeout = Duration.ofMillis(2_000);
+        private Duration connectTimeout = Duration.ofMillis(2_000L);
 
         /**
          * read timeout when querying the instances' status and info.
          */
         @DurationUnit(ChronoUnit.MILLIS)
-        private Duration readTimeout = Duration.ofMillis(20_000);
+        private Duration readTimeout = Duration.ofMillis(10_000L);
 
+        /**
+         * Default number of retries for failed requests.
+         */
+        private int defaultRetries = 0;
+
+        /**
+         * Number of retries per endpointId. Defaults to default-retry.
+         */
+        private Map<String, Integer> retries = new HashMap<>();
     }
 
     @lombok.Data

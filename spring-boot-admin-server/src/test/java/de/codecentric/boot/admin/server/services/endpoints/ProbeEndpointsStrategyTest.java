@@ -29,7 +29,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.http.HttpHeaders;
 import com.github.tomakehurst.wiremock.core.Options;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
@@ -38,13 +37,18 @@ import static com.github.tomakehurst.wiremock.client.WireMock.notFound;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.options;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ProbeEndpointsStrategyTest {
     @Rule
     public WireMockRule wireMock = new WireMockRule(Options.DYNAMIC_PORT);
 
-    private InstanceWebClient instanceWebClient = new InstanceWebClient(instance -> HttpHeaders.EMPTY);
+    private InstanceWebClient instanceWebClient = InstanceWebClient.builder()
+                                                                   .connectTimeout(Duration.ofSeconds(2))
+                                                                   .readTimeout(Duration.ofSeconds(2))
+                                                                   .defaultRetries(1)
+                                                                   .build();
 
     @BeforeClass
     public static void setUp() {
@@ -78,7 +82,8 @@ public class ProbeEndpointsStrategyTest {
         wireMock.stubFor(options(urlEqualTo("/mgmt/non-exist")).willReturn(notFound()));
 
         ProbeEndpointsStrategy strategy = new ProbeEndpointsStrategy(instanceWebClient,
-            new String[]{"metrics:stats", "metrics", "info", "non-exist"});
+            new String[]{"metrics:stats", "metrics", "info", "non-exist"}
+        );
 
         //when
         StepVerifier.create(strategy.detectEndpoints(instance))
@@ -96,14 +101,45 @@ public class ProbeEndpointsStrategyTest {
                                                           .managementUrl(wireMock.url("/mgmt"))
                                                           .build());
 
-        wireMock.stubFor(
-            options(urlEqualTo("/mgmt/stats")).willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND_404)));
+        wireMock.stubFor(options(urlEqualTo("/mgmt/stats")).willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND_404)));
 
         ProbeEndpointsStrategy strategy = new ProbeEndpointsStrategy(instanceWebClient, new String[]{"metrics:stats"});
 
         //when
         StepVerifier.create(strategy.detectEndpoints(instance))
                     //then
+                    .verifyComplete();
+    }
+
+    @Test
+    public void should_retry() {
+        //given
+        Instance instance = Instance.create(InstanceId.of("id"))
+                                    .register(Registration.create("test", wireMock.url("/mgmt/health"))
+                                                          .managementUrl(wireMock.url("/mgmt"))
+                                                          .build());
+
+        wireMock.stubFor(options(urlEqualTo("/mgmt/metrics")).inScenario("retry")
+                                                             .whenScenarioStateIs(STARTED)
+                                                             .willReturn(aResponse().withFixedDelay(5000))
+                                                             .willSetStateTo("recovered"));
+
+        wireMock.stubFor(options(urlEqualTo("/mgmt/metrics")).inScenario("retry")
+                                                             .whenScenarioStateIs("recovered")
+                                                             .willReturn(ok()));
+        wireMock.stubFor(options(urlEqualTo("/mgmt/stats")).willReturn(ok()));
+        wireMock.stubFor(options(urlEqualTo("/mgmt/info")).willReturn(ok()));
+        wireMock.stubFor(options(urlEqualTo("/mgmt/non-exist")).willReturn(notFound()));
+
+        ProbeEndpointsStrategy strategy = new ProbeEndpointsStrategy(instanceWebClient,
+            new String[]{"metrics:stats", "metrics", "info", "non-exist"}
+        );
+
+        //when
+        StepVerifier.create(strategy.detectEndpoints(instance))
+                    //then
+                    .expectNext(Endpoints.single("metrics", wireMock.url("/mgmt/stats"))
+                                         .withEndpoint("info", wireMock.url("/mgmt/info")))//
                     .verifyComplete();
     }
 }
