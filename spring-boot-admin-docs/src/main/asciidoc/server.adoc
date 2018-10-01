@@ -30,7 +30,7 @@
 | 0
 
 | spring.boot.admin.monitor.retries.*
-| Key-Value-Pais with the number of retries per endpointId. Defaults to default-retries. Modyfing requests (`PUT`, `POST`, `PATCH`, `DELETE`) are never retried.
+| Key-Value-Pairs with the number of retries per endpointId. Defaults to default-retries. Modyfing requests (`PUT`, `POST`, `PATCH`, `DELETE`) are never retried.
 |
 
 | spring.boot.admin.metadata-keys-to-sanitize

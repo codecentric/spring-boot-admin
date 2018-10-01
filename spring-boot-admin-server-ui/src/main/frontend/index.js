@@ -35,8 +35,7 @@ const viewRegistry = new ViewRegistry();
 const installables = [
   Notifications,
   ...views,
-  /* global SBA */
-  ...SBA.extensions
+  ...global.SBA.extensions
 ];
 
 installables.forEach(view => view.install({

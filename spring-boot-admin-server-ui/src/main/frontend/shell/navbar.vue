@@ -91,19 +91,17 @@
       }
     },
     created() {
-      /* global SBA */
-      if (SBA) {
-        if (SBA.uiSettings) {
-          this.brand = SBA.uiSettings.brand || this.brand;
+      if (global.SBA) {
+        if (global.SBA.uiSettings) {
+          this.brand = global.SBA.uiSettings.brand || this.brand;
         }
 
-        if (SBA.user) {
-          this.userName = SBA.user.name;
+        if (global.SBA.user) {
+          this.userName = global.SBA.user.name;
         }
       }
       this.csrfToken = readCookie('XSRF-TOKEN');
-      /* global SBA */
-      this.csrfParameterName = (SBA && SBA.csrf && SBA.csrf.parameterName) || '_csrf';
+      this.csrfParameterName = (global.SBA && global.SBA.csrf && global.SBA.csrf.parameterName) || '_csrf';
     },
     mounted() {
       document.documentElement.classList.add('has-navbar-fixed-top');
