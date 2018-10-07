@@ -88,21 +88,6 @@
   import _ from 'lodash';
   import Metric from './metric';
 
-  const stringify = metrics => {
-    return {q: metrics.map(JSON.stringify)};
-  };
-
-  const parse = query => {
-    if (!query.q) {
-      return [];
-    }
-    if (query.q instanceof Array) {
-      return query.q.map(JSON.parse);
-    } else {
-      return JSON.parse(query.q);
-    }
-  };
-
   export default {
     components: {Metric},
     props: {
@@ -119,26 +104,19 @@
       stateFetchingTags: null,
       availableTags: null,
       selectedTags: null,
-      isOldMetrics: false
+      isOldMetrics: false,
+      localStorageMetricsId: null,
     }),
     created() {
       this.fetchMetricIndex();
+      this.updateMetricFromLocalStorage();
     },
     watch: {
       selectedMetric: 'fetchAvailableTags',
       metrics: {
         deep: true,
         handler() {
-          this.$router.replace({
-            name: 'instances/metrics',
-            query: stringify(this.metrics)
-          })
-        }
-      },
-      '$route.query': {
-        immediate: true,
-        handler() {
-          this.metrics = parse(this.$route.query);
+          this.persistMetricsInLocalStorage();
         }
       }
     },
@@ -177,6 +155,15 @@
             }], [m => m.name]);
           }
         }
+      },
+      updateMetricFromLocalStorage() {
+        this.localStorageMetricsId = 'SBA.metrics.' + this.instance.id;
+        if(localStorage.getItem(this.localStorageMetricsId)) {
+          this.metrics = JSON.parse(localStorage.getItem(this.localStorageMetricsId));
+        }
+      },
+      persistMetricsInLocalStorage() {
+        localStorage.setItem(this.localStorageMetricsId, JSON.stringify(this.metrics));
       },
       async fetchMetricIndex() {
         this.error = null;
