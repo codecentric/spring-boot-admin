@@ -171,6 +171,12 @@ class Instance {
     });
   }
 
+  async fetchBeans() {
+    return this.axios.get(uri`actuator/beans`, {
+      headers: {'Accept': actuatorMimeTypes}
+    });
+  }
+
   async fetchThreaddump() {
     return this.axios.get(uri`actuator/threaddump`, {
       headers: {'Accept': actuatorMimeTypes}
