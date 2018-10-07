@@ -525,7 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.0.3-SNAPSHOT,</span>
-<span id="revdate">28.09.2018</span>
+<span id="revdate">07.10.2018</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -1411,7 +1411,8 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <span class="directive">public</span> Config hazelcastConfig() {
     MapConfig mapConfig = <span class="keyword">new</span> MapConfig(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-boot-admin-event-store</span><span class="delimiter">&quot;</span></span>).setInMemoryFormat(InMemoryFormat.OBJECT)
                                                                         .setBackupCount(<span class="integer">1</span>)
-                                                                        .setEvictionPolicy(EvictionPolicy.NONE);
+                                                                        .setEvictionPolicy(EvictionPolicy.NONE)
+                                                                        .setMergePolicy(PutIfAbsentMapMergePolicy.class.getName());
     <span class="keyword">return</span> <span class="keyword">new</span> Config().setProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">hazelcast.jmx</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>).addMapConfig(mapConfig);
 }</code></pre>
 </div>
