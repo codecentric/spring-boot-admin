@@ -39,59 +39,30 @@
             v-model="filter">
         </p>
       </div>
-      <contexts-list :contexts="contexts" :filter="filter" />
+
+      <template v-for="context in filteredContexts">
+        <h3 class="title" v-text="context.name" :key="context.name"/>
+        <beans-list :beans="context.beans" :key="`${context.name}-beans`"/>
+      </template>
     </div>
   </section>
 </template>
 
 <script>
   import Instance from '@/services/instance';
+  import {compareBy} from '@/utils/collections';
+  import shortenClassname from '@/utils/shortenClassname';
+  import BeansList from '@/views/instances/beans/beans-list';
   import _ from 'lodash';
-  import ContextsList from '@/views/instances/beans/contexts-list';
 
-  const shortenName = (fullName) => {
-
-    const shortenNextPackage = (className, packageIndex) => {
-      const splittedClassName = className.split('.');
-      return splittedClassName
-        .map((packageName, index) => {
-          if(index === packageIndex && !(splittedClassName.length === index+1)) {
-            return packageName.charAt(0);
-          } else {
-            return packageName;
-          }
-        }).join('.');
-    };
-
-    if(!fullName || fullName.length < 60) {
-      return fullName;
-    } else {
-      let shortenedClassname;
-      let tmp = fullName;
-      let i = 0;
-      do  {
-        shortenedClassname = tmp;
-        tmp =  shortenNextPackage(shortenedClassname, i++);
-      } while(shortenedClassname.length > 60 && tmp.length !== shortenedClassname.length);
-      return tmp;
-    }
-  };
   class Bean {
     constructor(name, bean) {
       Object.assign(this, bean);
       this.name = name;
-      this.shortName = shortenName(this.name);
-      this.shortType = shortenName(this.type);
-    }
-
-    filter(filter) {
-      if(!filter || filter === '') {
-        return false;
-      }
-      return !this.name.includes(filter);
+      this.shortName = shortenClassname(this.name, 80);
+      this.shortType = shortenClassname(this.type, 80);
     }
   }
-
 
   const flattenBeans = beans => {
     return Object.keys(beans)
@@ -104,20 +75,16 @@
     if (_.isEmpty(beanData.contexts)) {
       return [];
     }
-    const contexts = beanData.contexts;
-    return Object.keys(contexts)
-      .map((key) => {
-
-        return {
-          beans: flattenBeans(contexts[key].beans),
-          name: key,
-          parent: contexts[key].parentId
-        };
-      });
+    return Object.keys(beanData.contexts)
+      .map((key) => ({
+        beans: flattenBeans(beanData.contexts[key].beans),
+        name: key,
+        parent: beanData.contexts[key].parentId
+      }));
   };
 
   export default {
-    components: {ContextsList},
+    components: {BeansList},
     props: {
       instance: {
         type: Instance,
@@ -130,8 +97,24 @@
       contexts: [],
       filter: '',
     }),
+    computed: {
+      filteredContexts() {
+        const filterFn = this.getFilterFn();
+        return this.contexts.map(ctx => ({
+          ...ctx,
+          beans: ctx.beans.filter(filterFn).sort(compareBy(bean => bean.name))
+        }));
+      }
+    },
     methods: {
-      fetchBeans: async function () {
+      getFilterFn() {
+        if (!this.filter || this.filter === '') {
+          return () => true;
+        }
+        const regex = new RegExp(this.filter, 'i');
+        return bean => (bean.name.match(regex) || bean.aliases.some(alias => alias.match(regex)));
+      },
+      async fetchBeans() {
         this.error = null;
         this.isLoading = true;
         try {

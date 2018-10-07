@@ -156,7 +156,7 @@
           clearTimeout(setLoadingHandle);
         }
       },
-      fetchLoggers: async function () {
+      async fetchLoggers() {
         this.error = null;
         try {
           const res = await this.instance.fetchLoggers();

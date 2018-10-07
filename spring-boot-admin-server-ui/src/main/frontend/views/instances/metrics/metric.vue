@@ -187,7 +187,6 @@
   }
 </script>
 <style lang="scss">
-
   table .metrics {
     &__label {
       width: 300px;

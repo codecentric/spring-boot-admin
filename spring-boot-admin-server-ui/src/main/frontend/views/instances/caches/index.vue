@@ -92,7 +92,7 @@
       }
     },
     methods: {
-      fetchCaches: async function () {
+      async fetchCaches() {
         this.error = null;
         this.isLoading = true;
         try {
