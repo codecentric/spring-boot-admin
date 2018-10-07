@@ -32,6 +32,7 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.EvictionPolicy;
 import com.hazelcast.config.InMemoryFormat;
 import com.hazelcast.config.MapConfig;
+import com.hazelcast.map.merge.PutIfAbsentMapMergePolicy;
 
 @Configuration
 @EnableAutoConfiguration
@@ -42,7 +43,8 @@ public class SpringBootAdminApplication {
     public Config hazelcastConfig() {
         MapConfig mapConfig = new MapConfig("spring-boot-admin-event-store").setInMemoryFormat(InMemoryFormat.OBJECT)
                                                                             .setBackupCount(1)
-                                                                            .setEvictionPolicy(EvictionPolicy.NONE);
+                                                                            .setEvictionPolicy(EvictionPolicy.NONE)
+                                                                            .setMergePolicy(PutIfAbsentMapMergePolicy.class.getName());
         return new Config().setProperty("hazelcast.jmx", "true").addMapConfig(mapConfig);
     }
     // end::application-hazelcast[]

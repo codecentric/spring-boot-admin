@@ -40,6 +40,7 @@ import com.hazelcast.config.EvictionPolicy;
 import com.hazelcast.config.InMemoryFormat;
 import com.hazelcast.config.MapConfig;
 import com.hazelcast.config.TcpIpConfig;
+import com.hazelcast.map.merge.PutIfAbsentMapMergePolicy;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,19 +60,29 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
         System.setProperty("hazelcast.wait.seconds.before.join", "0");
         instance1 = new SpringApplicationBuilder().sources(TestAdminApplication.class)
                                                   .web(WebApplicationType.REACTIVE)
-                                                  .run("--server.port=0", "--management.endpoints.web.base-path=/mgmt",
-                                                      "--endpoints.health.enabled=true", "--info.test=foobar",
-                                                      "--spring.jmx.enabled=false", "--eureka.client.enabled=false");
+                                                  .run(
+                                                      "--server.port=0",
+                                                      "--management.endpoints.web.base-path=/mgmt",
+                                                      "--endpoints.health.enabled=true",
+                                                      "--info.test=foobar",
+                                                      "--spring.jmx.enabled=false",
+                                                      "--eureka.client.enabled=false"
+                                                  );
 
         instance2 = new SpringApplicationBuilder().sources(TestAdminApplication.class)
                                                   .web(WebApplicationType.REACTIVE)
-                                                  .run("--server.port=0", "--management.endpoints.web.base-path=/mgmt",
-                                                      "--endpoints.health.enabled=true", "--info.test=foobar",
-                                                      "--spring.jmx.enabled=false", "--eureka.client.enabled=false");
+                                                  .run(
+                                                      "--server.port=0",
+                                                      "--management.endpoints.web.base-path=/mgmt",
+                                                      "--endpoints.health.enabled=true",
+                                                      "--info.test=foobar",
+                                                      "--spring.jmx.enabled=false",
+                                                      "--eureka.client.enabled=false"
+                                                  );
 
         super.setUp(instance1.getEnvironment().getProperty("local.server.port", Integer.class, 0));
-        this.webClient2 = createWebClient(
-            instance2.getEnvironment().getProperty("local.server.port", Integer.class, 0));
+        this.webClient2 = createWebClient(instance2.getEnvironment()
+                                                   .getProperty("local.server.port", Integer.class, 0));
     }
 
 
@@ -125,11 +136,14 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
 
         @Bean
         public Config hazelcastConfig() {
-            Config config = new Config();
-            config.addMapConfig(new MapConfig("spring-boot-admin-event-store").setInMemoryFormat(InMemoryFormat.OBJECT)
-                                                                              .setBackupCount(1)
-                                                                              .setEvictionPolicy(EvictionPolicy.NONE));
+            MapConfig mapConfig = new MapConfig("spring-boot-admin-event-store").setInMemoryFormat(InMemoryFormat.OBJECT)
+                                                                                .setBackupCount(1)
+                                                                                .setEvictionPolicy(EvictionPolicy.NONE)
+                                                                                .setMergePolicy(
+                                                                                    PutIfAbsentMapMergePolicy.class.getName());
 
+            Config config = new Config();
+            config.addMapConfig(mapConfig);
             config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
             TcpIpConfig tcpIpConfig = config.getNetworkConfig().getJoin().getTcpIpConfig();
             tcpIpConfig.setEnabled(true);
