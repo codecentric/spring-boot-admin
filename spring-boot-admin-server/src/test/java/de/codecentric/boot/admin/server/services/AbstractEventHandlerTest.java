@@ -33,15 +33,20 @@ import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ResubscribingEventHandlerTest {
-    private static final Logger log = LoggerFactory.getLogger(ResubscribingEventHandlerTest.class);
+public class AbstractEventHandlerTest {
+    private static final Logger log = LoggerFactory.getLogger(AbstractEventHandlerTest.class);
     private static final Registration registration = Registration.create("foo", "http://health").build();
-    private static final InstanceRegisteredEvent event = new InstanceRegisteredEvent(InstanceId.of("id"), 0L,
-        registration);
-    private static final InstanceRegisteredEvent errorEvent = new InstanceRegisteredEvent(InstanceId.of("err"), 0L,
-        registration);
+    private static final InstanceRegisteredEvent event = new InstanceRegisteredEvent(InstanceId.of("id"),
+        0L,
+        registration
+    );
+    private static final InstanceRegisteredEvent errorEvent = new InstanceRegisteredEvent(InstanceId.of("err"),
+        0L,
+        registration
+    );
     private static final InstanceDeregisteredEvent ignoredEvent = new InstanceDeregisteredEvent(InstanceId.of("id"),
-        1L);
+        1L
+    );
 
     @Test
     public void should_resubscribe_after_error() {
@@ -81,7 +86,7 @@ public class ResubscribingEventHandlerTest {
     }
 
 
-    private static class TestEventHandler extends ResubscribingEventHandler<InstanceRegisteredEvent> {
+    private static class TestEventHandler extends AbstractEventHandler<InstanceRegisteredEvent> {
         private final FluxSink<InstanceEvent> sink;
         private final Flux<InstanceEvent> flux;
 
@@ -93,7 +98,7 @@ public class ResubscribingEventHandlerTest {
         }
 
         @Override
-        protected Publisher<?> handle(Flux<InstanceRegisteredEvent> publisher) {
+        protected Publisher<Void> handle(Flux<InstanceRegisteredEvent> publisher) {
             return publisher.doOnNext(event -> {
                 if (event.equals(errorEvent)) {
                     throw new IllegalStateException("Error");
@@ -101,7 +106,7 @@ public class ResubscribingEventHandlerTest {
                     log.info("Event {}", event);
                     sink.next(event);
                 }
-            });
+            }).then();
         }
 
         public Flux<InstanceEvent> getFlux() {

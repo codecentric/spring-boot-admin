@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,20 +19,19 @@ package de.codecentric.boot.admin.server.services;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
-import reactor.retry.Retry;
 
 import java.util.logging.Level;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class ResubscribingEventHandler<T extends InstanceEvent> {
+public abstract class AbstractEventHandler<T extends InstanceEvent> {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final Publisher<InstanceEvent> publisher;
     private Disposable subscription;
     private Class<T> eventType;
 
-    protected ResubscribingEventHandler(Publisher<InstanceEvent> publisher, Class<T> eventType) {
+    protected AbstractEventHandler(Publisher<InstanceEvent> publisher, Class<T> eventType) {
         this.publisher = publisher;
         this.eventType = eventType;
     }
@@ -40,18 +39,15 @@ public abstract class ResubscribingEventHandler<T extends InstanceEvent> {
     public void start() {
         subscription = Flux.from(publisher)
                            .log(log.getName(), Level.FINEST)
-                           .doOnSubscribe(subscription -> log.debug("Subscribed to {} events", eventType))
+                           .doOnSubscribe(s -> log.debug("Subscribed to {} events", eventType))
                            .ofType(eventType)
                            .cast(eventType)
                            .compose(this::handle)
-                           .retryWhen(Retry.any()
-                                           .retryMax(Integer.MAX_VALUE)
-                                           .doOnRetry(
-                                               ctx -> log.error("Resubscribing after uncaught error", ctx.exception())))
+                           .onErrorContinue((ex, value) -> log.warn("Unexpected error while handling {}", value, ex))
                            .subscribe();
     }
 
-    protected abstract Publisher<?> handle(Flux<T> publisher);
+    protected abstract Publisher<Void> handle(Flux<T> publisher);
 
     public void stop() {
         if (subscription != null) {

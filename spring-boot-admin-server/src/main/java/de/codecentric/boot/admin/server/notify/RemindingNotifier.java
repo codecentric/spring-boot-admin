@@ -26,7 +26,6 @@ import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
-import reactor.retry.Retry;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -72,13 +71,12 @@ public class RemindingNotifier extends AbstractEventNotifier {
     public void start() {
         this.subscription = Flux.interval(this.checkReminderInverval, Schedulers.newSingle("reminders"))
                                 .log(log.getName(), Level.FINEST)
-                                .doOnSubscribe(subscription -> log.debug("Started reminders"))
+                                .doOnSubscribe(s -> log.debug("Started reminders"))
                                 .flatMap(i -> this.sendReminders())
-                                .retryWhen(Retry.any()
-                                                .retryMax(Integer.MAX_VALUE)
-                                                .doOnRetry(
-                                                    ctx -> log.error("Resubscribing for reminders after uncaught error",
-                                                        ctx.exception())))
+                                .onErrorContinue((ex, value) -> log.warn(
+                                    "Unexpected error while sending reminders",
+                                    ex
+                                ))
                                 .subscribe();
     }
 
