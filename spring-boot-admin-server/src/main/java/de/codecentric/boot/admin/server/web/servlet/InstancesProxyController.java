@@ -56,7 +56,8 @@ public class InstancesProxyController extends AbstractInstancesProxyController {
 
     public InstancesProxyController(String adminContextPath,
                                     Set<String> ignoredHeaders,
-                                    InstanceRegistry registry, InstanceWebClient instanceWebClient) {
+                                    InstanceRegistry registry,
+                                    InstanceWebClient instanceWebClient) {
         super(adminContextPath, ignoredHeaders, registry, instanceWebClient);
     }
 
@@ -66,10 +67,9 @@ public class InstancesProxyController extends AbstractInstancesProxyController {
                                     HttpServletRequest servletRequest,
                                     HttpServletResponse servletResponse) throws IOException {
         ServerHttpRequest request = new ServletServerHttpRequest(servletRequest);
-        ServerHttpResponse response = new ServletServerHttpResponse(servletResponse);
 
-        String pathWithinApplication = UriComponentsBuilder.fromPath(
-            servletRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE).toString()).toUriString();
+        String pathWithinApplication = UriComponentsBuilder.fromPath(servletRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE)
+                                                                                   .toString()).toUriString();
         String endpointLocalPath = getEndpointLocalPath(pathWithinApplication);
 
         URI uri = UriComponentsBuilder.fromPath(endpointLocalPath)
@@ -79,10 +79,17 @@ public class InstancesProxyController extends AbstractInstancesProxyController {
 
         //We need to explicitly block until the headers are recieved and write them before the async dispatch.
         //otherwise the FrameworkServlet will add wrong Allow header for OPTIONS request
-        ClientResponse clientResponse = super.forward(instanceId, uri, request.getMethod(), request.getHeaders(),
-            () -> BodyInserters.fromDataBuffers(
-                DataBufferUtils.readInputStream(request::getBody, this.bufferFactory, 4096))).block();
+        ClientResponse clientResponse = super.forward(instanceId,
+            uri,
+            request.getMethod(),
+            request.getHeaders(),
+            () -> BodyInserters.fromDataBuffers(DataBufferUtils.readInputStream(request::getBody,
+                this.bufferFactory,
+                4096
+            ))
+        ).block();
 
+        ServerHttpResponse response = new ServletServerHttpResponse(servletResponse);
         response.setStatusCode(clientResponse.statusCode());
         response.getHeaders().addAll(filterHeaders(clientResponse.headers().asHttpHeaders()));
         OutputStream responseBody = response.getBody();
@@ -90,7 +97,7 @@ public class InstancesProxyController extends AbstractInstancesProxyController {
 
         return clientResponse.body(BodyExtractors.toDataBuffers())
                              .window(1)
-                             .flatMap(body -> writeAndFlush(body, responseBody))
+                             .concatMap(body -> writeAndFlush(body, responseBody))
                              .then();
     }
 

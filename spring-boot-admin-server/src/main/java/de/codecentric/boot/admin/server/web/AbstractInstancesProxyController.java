@@ -77,8 +77,7 @@ public class AbstractInstancesProxyController {
 
         return registry.getInstance(InstanceId.of(instanceId))
                        .flatMap(instance -> forward(instance, uri, method, headers, bodyInserter))
-                       .switchIfEmpty(Mono.fromSupplier(
-                           () -> ClientResponse.create(HttpStatus.SERVICE_UNAVAILABLE, strategies).build()));
+                       .switchIfEmpty(Mono.fromSupplier(() -> ClientResponse.create(HttpStatus.SERVICE_UNAVAILABLE, strategies).build()));
     }
 
     private Mono<ClientResponse> forward(Instance instance,
