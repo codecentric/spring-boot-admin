@@ -30,7 +30,7 @@
           <tr class="health-details__detail" v-for="detail in details" :key="detail.name">
             <td v-text="detail.name"/>
             <td v-if="name === 'diskSpace'" v-text="prettyBytes(detail.value)"/>
-            <td v-else v-text="detail.value"/>
+            <td class="is-breakable" v-else v-text="detail.value"/>
           </tr>
         </table>
       </td>
