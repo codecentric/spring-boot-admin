@@ -68,11 +68,11 @@ Each application that wants to register has to include the Spring Boot Admin Cli
 
 . Enable the SBA Client by configuring the URL of the Spring Boot Admin Server:
 +
-[source,yml]
-.application.yml
+[source]
+.application.properties
 ----
-spring.boot.admin.client.url: "http://localhost:8080"  #<1>
-management.endpoints.web.exposure.include: "*"  #<2>
+spring.boot.admin.client.url=http://localhost:8080  #<1>
+management.endpoints.web.exposure.include=*  #<2>
 ----
 <1> The URL of the Spring Boot Admin Server to register at.
 <2> As with Spring Boot 2 most of the endpoints aren't exposed via http by default, we expose all of them. For production you should carefully choose which endpoints to expose.
