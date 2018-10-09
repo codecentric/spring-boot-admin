@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import static java.util.Collections.emptyMap;
 import static org.springframework.util.StringUtils.isEmpty;
 
 /**
@@ -56,7 +57,8 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 
     @Override
     public Registration convert(ServiceInstance instance) {
-        LOGGER.debug("Converting service '{}' running at '{}' with metadata {}",
+        LOGGER.debug(
+            "Converting service '{}' running at '{}' with metadata {}",
             instance.getServiceId(),
             instance.getUri(),
             instance.getMetadata()
@@ -123,7 +125,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
     }
 
     protected Map<String, String> getMetadata(ServiceInstance instance) {
-        return instance.getMetadata();
+        return instance.getMetadata() != null ? instance.getMetadata() : emptyMap();
     }
 
 
