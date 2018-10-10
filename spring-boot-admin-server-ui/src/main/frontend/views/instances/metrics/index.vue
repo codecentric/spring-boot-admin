@@ -104,19 +104,18 @@
       stateFetchingTags: null,
       availableTags: null,
       selectedTags: null,
-      isOldMetrics: false,
-      localStorageMetricsId: null,
+      isOldMetrics: false
     }),
     created() {
       this.fetchMetricIndex();
-      this.updateMetricFromLocalStorage();
+      this.metrics = this.loadMetrics();
     },
     watch: {
       selectedMetric: 'fetchAvailableTags',
       metrics: {
         deep: true,
-        handler() {
-          this.persistMetricsInLocalStorage();
+        handler(value) {
+          this.persistMetrics(value);
         }
       }
     },
@@ -156,14 +155,19 @@
           }
         }
       },
-      updateMetricFromLocalStorage() {
-        this.localStorageMetricsId = 'SBA.metrics.' + this.instance.id;
-        if(localStorage.getItem(this.localStorageMetricsId)) {
-          this.metrics = JSON.parse(localStorage.getItem(this.localStorageMetricsId));
+      loadMetrics() {
+        if (window.localStorage) {
+          let persistedMetrics = localStorage.getItem(`applications/${this.instance.registration.name}/metrics`);
+          if (persistedMetrics) {
+            return JSON.parse(persistedMetrics);
+          }
         }
+        return [];
       },
-      persistMetricsInLocalStorage() {
-        localStorage.setItem(this.localStorageMetricsId, JSON.stringify(this.metrics));
+      persistMetrics(value) {
+        if (window.localStorage) {
+          localStorage.setItem(`applications/${this.instance.registration.name}/metrics`, JSON.stringify(value));
+        }
       },
       async fetchMetricIndex() {
         this.error = null;
