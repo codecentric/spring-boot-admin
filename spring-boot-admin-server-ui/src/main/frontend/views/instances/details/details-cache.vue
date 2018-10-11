@@ -123,7 +123,7 @@
             next: data => {
               vm.hasLoaded = true;
               vm.current = data;
-              vm.chartData.push({...data, timestamp: moment.now().valueOf()});
+              vm.chartData.push({...data, timestamp: moment().valueOf()});
             },
             error: error => {
               vm.hasLoaded = true;

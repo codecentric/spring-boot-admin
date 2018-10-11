@@ -22,13 +22,26 @@ moment.now = () => +new Date(1318781879406);
 
 describe('time-ago', () => {
 
-  it('should match the snapshot', () => {
-    const wrapper = shallowMount(sbaTimeAgo, {
-      propsData: {
-        date: moment(1318781000000)
-      }
+  describe('given  a short time passed time', () => {
+    it('should match the snapshot', () => {
+      const wrapper = shallowMount(sbaTimeAgo, {
+        propsData: {
+          date: moment(1318781000000)
+        }
+      });
+      expect(wrapper.vm.$el).toMatchSnapshot();
     });
-    expect(wrapper.vm.$el).toMatchSnapshot();
+  });
+
+  describe('given a long time passed time', () => {
+    it('should match the snapshot', () => {
+      const wrapper = shallowMount(sbaTimeAgo, {
+        propsData: {
+          date: moment(1310000000000)
+        }
+      });
+      expect(wrapper.vm.$el).toMatchSnapshot();
+    });
   });
 
 });
