@@ -74,7 +74,7 @@
           return [];
         }
         const chartData = [];
-        const now = moment.now().valueOf();
+        const now = moment().valueOf();
         let idx = this.traces.length - 1;
         const oldest = this.traces[this.traces.length - 1].timestamp.valueOf();
 
