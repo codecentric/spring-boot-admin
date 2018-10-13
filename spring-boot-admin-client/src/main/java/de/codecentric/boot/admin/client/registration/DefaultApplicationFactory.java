@@ -84,7 +84,13 @@ public class DefaultApplicationFactory implements ApplicationFactory {
             return instance.getServiceUrl();
         }
 
-        return UriComponentsBuilder.fromUriString(getServiceBaseUrl()).path("/").toUriString();
+        return UriComponentsBuilder.fromUriString(getServiceBaseUrl())
+                                   .path(getServerContextPath())
+                                   .toUriString();
+    }
+
+    protected String getServerContextPath() {
+        return server.getServlet().getContextPath();
     }
 
     protected String getServiceBaseUrl() {

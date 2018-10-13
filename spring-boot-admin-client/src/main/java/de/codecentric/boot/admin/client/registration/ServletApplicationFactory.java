@@ -50,18 +50,6 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
 
 
     @Override
-    protected String getServiceUrl() {
-        if (instance.getServiceUrl() != null) {
-            return instance.getServiceUrl();
-        }
-
-        return UriComponentsBuilder.fromUriString(getServiceBaseUrl())
-                                   .path("/")
-                                   .path(getServerContextPath())
-                                   .toUriString();
-    }
-
-    @Override
     protected String getManagementBaseUrl() {
         String baseUrl = instance.getManagementBaseUrl();
 
@@ -90,6 +78,7 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
         return management.getServlet().getContextPath();
     }
 
+    @Override
     protected String getServerContextPath() {
         return servletContext.getContextPath();
     }
