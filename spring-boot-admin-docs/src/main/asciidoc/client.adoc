@@ -146,8 +146,23 @@ spring.boot.admin.client.password
 | Guessed based on hostname, `server.port`.
 
 | spring.boot.admin.client.instance.service-url
-| Service-url to register with. Can be overridden in case the reachable url is different (e.g. Docker).
-| Guessed based on service-base-url and `server.context-path`.
+| Client-service-URL register with. Inferred at runtime, can be overridden in case the reachable URL is different (e.g. Docker).
+| Defaults:
+
+* If no value defined, the  `service-base-url`/`service-path` will be used
+
+* If `service-path` is undefined - the part /`service-path` will be missed
+
+| spring.boot.admin.client.instance.service-path
+| Context path of your service
+| Defaults:
+
+* For `non-reactive` applications the value will use
+  value of the standard spring property: `server.servlet.context-path`,
+  so, in most cases, you don't need to define this parameter manually
+
+* For `reactive (web-flux)` applications you can define it if you are
+  using any custom context-path for your application/service.
 
 | spring.boot.admin.client.instance.name
 | Name to register with.

@@ -18,11 +18,6 @@ package de.codecentric.boot.admin.client.registration;
 
 import de.codecentric.boot.admin.client.config.InstanceProperties;
 import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
@@ -32,6 +27,11 @@ import org.springframework.boot.web.server.Ssl;
 import org.springframework.context.event.EventListener;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Default implementation for creating the {@link Application} instance which gets registered at the
@@ -85,8 +85,17 @@ public class DefaultApplicationFactory implements ApplicationFactory {
         }
 
         return UriComponentsBuilder.fromUriString(getServiceBaseUrl())
-                                   .path(getServerContextPath())
+                                   .path("/")
+                                   .path(getServicePath())
                                    .toUriString();
+    }
+
+    protected String getServicePath() {
+        if (instance.getServicePath() != null) {
+            return instance.getServicePath();
+        }
+
+        return getServerContextPath();
     }
 
     protected String getServerContextPath() {

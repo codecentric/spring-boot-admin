@@ -16,10 +16,11 @@
 
 package de.codecentric.boot.admin.client.config;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @lombok.Data
 @ConfigurationProperties(prefix = "spring.boot.admin.client.instance")
@@ -36,8 +37,12 @@ public class InstanceProperties {
     private String managementBaseUrl;
 
     /**
-     * Client-service-URL register with. Inferred at runtime, can be overridden in case the reachable
-     * URL is different (e.g. Docker).
+     * Client-service-URL register with.
+     * Inferred at runtime, can be overridden in case the reachable URL is different (e.g. Docker).
+     * <ul>
+     *     <li>If no value defined, the  `service-base-url`/`service-path` will be used</li>
+     *     <li>If `service-path` is undefined - the part /`service-path` will be missed</li>
+     * </ul>
      */
     private String serviceUrl;
 
@@ -45,6 +50,19 @@ public class InstanceProperties {
      * Base url for computing the service-url to register with. The path is inferred at runtime, and appended to the base url.
      */
     private String serviceBaseUrl;
+
+    /**
+     * Context path of your service.
+     * <p>Defaults:</p>
+     * <ul>
+     *     <li>For `non-reactive` applications the value will use
+     *         value of the standard spring property: `server.servlet.context-path`,
+     *         so, you don't need to define this parameter manually</li>
+     *     <li>For `reactive (web-flux)` applications you can define it if you are
+     *     using any custom context-path for your application/service.</li>
+     * </ul>
+     */
+    private String servicePath;
 
     /**
      * Client-health-URL to register with. Inferred at runtime, can be overridden in case the
