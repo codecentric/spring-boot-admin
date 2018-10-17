@@ -23,69 +23,47 @@ import de.codecentric.boot.admin.server.eventstore.HazelcastEventStore;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
 
-import org.junit.After;
 import org.junit.Test;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import com.hazelcast.config.Config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AdminServerAutoConfigurationTest {
-
-    private AnnotationConfigApplicationContext context;
-
-    @After
-    public void close() {
-        if (this.context != null) {
-            this.context.close();
-        }
-    }
+    private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
+        AutoConfigurations.of(
+            RestTemplateAutoConfiguration.class,
+            HazelcastAutoConfiguration.class,
+            WebMvcAutoConfiguration.class,
+            AdminServerHazelcastAutoConfiguration.class,
+            AdminServerAutoConfiguration.class
+        )).withUserConfiguration(AdminServerMarkerConfiguration.class);
 
     @Test
     public void simpleConfig() {
-        load();
-
-        assertThat(context.getBean(InstanceRepository.class)).isInstanceOf(SnapshottingInstanceRepository.class);
-        assertThat(context.getBeansOfType(MailNotifier.class)).isEmpty();
-        assertThat(context.getBean(InstanceEventStore.class)).isInstanceOf(ConcurrentMapEventStore.class);
+        contextRunner.run(context -> {
+            assertThat(context).getBean(InstanceRepository.class).isInstanceOf(SnapshottingInstanceRepository.class);
+            assertThat(context).doesNotHaveBean(MailNotifier.class);
+            assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(ConcurrentMapEventStore.class);
+        });
     }
 
     @Test
     public void hazelcastConfig() {
-        load(TestHazelcastConfig.class);
-        assertThat(context.getBean(InstanceEventStore.class)).isInstanceOf(HazelcastEventStore.class);
+        contextRunner.withUserConfiguration(TestHazelcastConfig.class)
+                     .run(context -> assertThat(context).getBean(InstanceEventStore.class)
+                                                        .isInstanceOf(HazelcastEventStore.class));
     }
 
-    @Configuration
     static class TestHazelcastConfig {
         @Bean
         public Config config() {
             return new Config();
         }
-    }
-
-    private void load(String... environment) {
-        load(null, environment);
-    }
-
-    private void load(Class<?> config, String... environment) {
-        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-        if (config != null) {
-            applicationContext.register(config);
-        }
-        applicationContext.register(RestTemplateAutoConfiguration.class);
-        applicationContext.register(HazelcastAutoConfiguration.class);
-        applicationContext.register(AdminServerMarkerConfiguration.class);
-        applicationContext.register(AdminServerHazelcastAutoConfiguration.class);
-        applicationContext.register(AdminServerAutoConfiguration.class);
-
-        TestPropertyValues.of(environment).applyTo(applicationContext);
-        applicationContext.refresh();
-        this.context = applicationContext;
     }
 }

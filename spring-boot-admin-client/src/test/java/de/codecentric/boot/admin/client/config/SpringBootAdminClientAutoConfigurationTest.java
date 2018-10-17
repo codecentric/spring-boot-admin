@@ -18,60 +18,56 @@ package de.codecentric.boot.admin.client.config;
 
 import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
 
-import org.junit.After;
 import org.junit.Test;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SpringBootAdminClientAutoConfigurationTest {
-    private ConfigurableApplicationContext context;
-
-    @After
-    public void close() {
-        if (this.context != null) {
-            this.context.close();
-        }
-    }
+    private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
+        AutoConfigurations.of(
+            EndpointAutoConfiguration.class,
+            WebEndpointAutoConfiguration.class,
+            WebMvcAutoConfiguration.class,
+            DispatcherServletAutoConfiguration.class,
+            RestTemplateAutoConfiguration.class,
+            SpringBootAdminClientAutoConfiguration.class
+        ));
 
     @Test
     public void not_active() {
-        load();
-        assertThat(context.getBeansOfType(ApplicationRegistrator.class)).isEmpty();
+        contextRunner.run(context -> assertThat(context).doesNotHaveBean(ApplicationRegistrator.class));
     }
 
     @Test
     public void active() {
-        load("spring.boot.admin.client.url:http://localhost:8081");
-        context.getBean(ApplicationRegistrator.class);
+        contextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
+                     .run(context -> assertThat(context).hasSingleBean(ApplicationRegistrator.class));
     }
 
     @Test
     public void disabled() {
-        load("spring.boot.admin.client.url:http://localhost:8081", "spring.boot.admin.client.enabled:false");
-        assertThat(context.getBeansOfType(ApplicationRegistrator.class)).isEmpty();
+        contextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081",
+            "spring.boot.admin.client.enabled:false"
+        )
+                     .run(context -> assertThat(context).doesNotHaveBean(ApplicationRegistrator.class));
     }
 
     @Test
     public void nonWebEnvironment() {
-        load("spring.boot.admin.client.url:http://localhost:8081", "spring.boot.admin.client.enabled:true",
-            "spring.main.web-application-type:none");
-        assertThat(context.getBeansOfType(ApplicationRegistrator.class).isEmpty());
-    }
+        ApplicationContextRunner nonWebcontextRunner = new ApplicationContextRunner().withConfiguration(
+            AutoConfigurations.of(SpringBootAdminClientAutoConfiguration.class));
 
-    private void load(final String... environment) {
-        SpringApplication springApplication = new SpringApplication(TestClientApplication.class);
-        springApplication.addInitializers(
-            applicationContext -> TestPropertyValues.of(environment).applyTo(applicationContext));
-        this.context = springApplication.run("--server.port=0");
-    }
-
-    @Configuration
-    @EnableAutoConfiguration
-    static class TestClientApplication {
+        nonWebcontextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081",
+            "spring.boot.admin.client.enabled:true"
+        )
+                           .run(context -> assertThat(context).doesNotHaveBean(ApplicationRegistrator.class));
     }
 }

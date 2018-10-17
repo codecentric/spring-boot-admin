@@ -23,36 +23,36 @@ import de.codecentric.boot.admin.server.web.client.CloudFoundryHttpHeaderProvide
 
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AdminServerCloudFoundryAutoConfigurationTest {
-    private final AutoConfigurations autoConfigurations = AutoConfigurations.of(AdminServerAutoConfiguration.class,
-        AdminServerCloudFoundryAutoConfiguration.class);
-    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
-        autoConfigurations).withUserConfiguration(TestServerApplication.class);
+    private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
+        AutoConfigurations.of(
+            RestTemplateAutoConfiguration.class,
+            HazelcastAutoConfiguration.class,
+            WebMvcAutoConfiguration.class,
+            AdminServerAutoConfiguration.class,
+            AdminServerCloudFoundryAutoConfiguration.class
+        )).withUserConfiguration(AdminServerMarkerConfiguration.class);
 
     @Test
     public void non_cloud_platform() {
         this.contextRunner.run(context -> {
-            assertThat(context.getBeansOfType(CloudFoundryHttpHeaderProvider.class)).isEmpty();
-            assertThat(context.getBean(InstanceIdGenerator.class)).isInstanceOf(HashingInstanceUrlIdGenerator.class);
+            assertThat(context).doesNotHaveBean(CloudFoundryHttpHeaderProvider.class);
+            assertThat(context).getBean(InstanceIdGenerator.class).isInstanceOf(HashingInstanceUrlIdGenerator.class);
         });
     }
 
     @Test
     public void cloudfoundry() {
         this.contextRunner.withPropertyValues("VCAP_APPLICATION:{}").run(context -> {
-            assertThat(context.getBean(CloudFoundryHttpHeaderProvider.class)).isInstanceOf(
-                CloudFoundryHttpHeaderProvider.class);
-            assertThat(context.getBean(InstanceIdGenerator.class)).isInstanceOf(CloudFoundryInstanceIdGenerator.class);
+            assertThat(context).hasSingleBean(CloudFoundryHttpHeaderProvider.class);
+            assertThat(context).getBean(InstanceIdGenerator.class).isInstanceOf(CloudFoundryInstanceIdGenerator.class);
         });
-    }
-
-    @Configuration
-    @EnableAdminServer
-    static class TestServerApplication {
     }
 }

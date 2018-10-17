@@ -29,12 +29,13 @@ import de.codecentric.boot.admin.server.notify.SlackNotifier;
 import de.codecentric.boot.admin.server.notify.TelegramNotifier;
 import de.codecentric.boot.admin.server.notify.TestNotifier;
 
-import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -42,103 +43,93 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AdminServerNotifierAutoConfigurationTest {
-    private AnnotationConfigApplicationContext context;
-
-    @After
-    public void close() {
-        if (this.context != null) {
-            this.context.close();
-        }
-    }
+    private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
+        AutoConfigurations.of(
+            RestTemplateAutoConfiguration.class,
+            HazelcastAutoConfiguration.class,
+            WebMvcAutoConfiguration.class,
+            AdminServerAutoConfiguration.class,
+            AdminServerNotifierAutoConfiguration.class
+        )).withUserConfiguration(AdminServerMarkerConfiguration.class);
 
     @Test
     public void test_notifierListener() {
-        load(TestSingleNotifierConfig.class);
-        assertThat(context.getBean(Notifier.class)).isInstanceOf(TestNotifier.class);
-        assertThat(context.getBeansOfType(Notifier.class)).hasSize(1);
+        contextRunner.withUserConfiguration(TestSingleNotifierConfig.class).run(context -> {
+            assertThat(context).getBean(Notifier.class).isInstanceOf(TestNotifier.class);
+            assertThat(context).getBeans(Notifier.class).hasSize(1);
+        });
     }
 
     @Test
     public void test_no_notifierListener() {
-        load(null);
-        assertThat(context.getBeansOfType(NotificationTrigger.class)).isEmpty();
+        contextRunner.run(context -> assertThat(context).doesNotHaveBean(NotificationTrigger.class));
     }
 
     @Test
     public void test_mail() {
-        load(MailSenderConfig.class);
-        assertThat(context.getBean(MailNotifier.class)).isInstanceOf(MailNotifier.class);
+        contextRunner.withUserConfiguration(MailSenderConfig.class)
+                     .run(context -> assertThat(context).getBean(MailNotifier.class).isInstanceOf(MailNotifier.class));
     }
 
     @Test
     public void test_hipchat() {
-        load(null, "spring.boot.admin.notify.hipchat.url:http://example.com");
-        assertThat(context.getBean(HipchatNotifier.class)).isInstanceOf(HipchatNotifier.class);
+        contextRunner.withPropertyValues("spring.boot.admin.notify.hipchat.url:http://example.com")
+                     .run(context -> assertThat(context).hasSingleBean(HipchatNotifier.class));
     }
 
     @Test
     public void test_letschat() {
-        load(null, "spring.boot.admin.notify.letschat.url:http://example.com");
-        assertThat(context.getBean(LetsChatNotifier.class)).isInstanceOf(LetsChatNotifier.class);
+        contextRunner.withPropertyValues("spring.boot.admin.notify.letschat.url:http://example.com")
+                     .run(context -> assertThat(context).hasSingleBean(LetsChatNotifier.class));
     }
 
     @Test
     public void test_slack() {
-        load(null, "spring.boot.admin.notify.slack.webhook-url:http://example.com");
-        assertThat(context.getBean(SlackNotifier.class)).isInstanceOf(SlackNotifier.class);
+        contextRunner.withPropertyValues("spring.boot.admin.notify.slack.webhook-url:http://example.com")
+                     .run(context -> assertThat(context).hasSingleBean(SlackNotifier.class));
     }
 
     @Test
     public void test_pagerduty() {
-        load(null, "spring.boot.admin.notify.pagerduty.service-key:foo");
-        assertThat(context.getBean(PagerdutyNotifier.class)).isInstanceOf(PagerdutyNotifier.class);
+        contextRunner.withPropertyValues("spring.boot.admin.notify.pagerduty.service-key:foo")
+                     .run(context -> assertThat(context).hasSingleBean(PagerdutyNotifier.class));
     }
 
     @Test
     public void test_opsgenie() {
-        load(null, "spring.boot.admin.notify.opsgenie.api-key:foo");
-        assertThat(context.getBean(OpsGenieNotifier.class)).isInstanceOf(OpsGenieNotifier.class);
+        contextRunner.withPropertyValues("spring.boot.admin.notify.opsgenie.api-key:foo")
+                     .run(context -> assertThat(context).hasSingleBean(OpsGenieNotifier.class));
     }
 
     @Test
     public void test_ms_teams() {
-        load(null, "spring.boot.admin.notify.ms-teams.webhook-url:http://example.com");
-        assertThat(context.getBean(MicrosoftTeamsNotifier.class)).isInstanceOf(MicrosoftTeamsNotifier.class);
+        contextRunner.withPropertyValues("spring.boot.admin.notify.ms-teams.webhook-url:http://example.com")
+                     .run(context -> assertThat(context).hasSingleBean(MicrosoftTeamsNotifier.class));
     }
 
     @Test
     public void test_telegram() {
-        load(null, "spring.boot.admin.notify.telegram.auth-token:123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11");
-        assertThat(context.getBean(Notifier.class)).isInstanceOf(TelegramNotifier.class);
+        contextRunner.withPropertyValues(
+            "spring.boot.admin.notify.telegram.auth-token:123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11")
+                     .run(context -> assertThat(context).hasSingleBean(TelegramNotifier.class));
     }
 
     @Test
     public void test_multipleNotifiers() {
-        load(TestMultipleNotifierConfig.class);
-        assertThat(context.getBean(Notifier.class)).isInstanceOf(CompositeNotifier.class);
-        assertThat(context.getBeansOfType(Notifier.class)).hasSize(3);
+        contextRunner.withUserConfiguration(TestMultipleNotifierConfig.class).run(context -> {
+            assertThat(context.getBean(Notifier.class)).isInstanceOf(CompositeNotifier.class);
+            assertThat(context).getBeans(Notifier.class).hasSize(3);
+        });
     }
 
     @Test
     public void test_multipleNotifiersWithPrimary() {
-        load(TestMultipleWithPrimaryNotifierConfig.class);
-        assertThat(context.getBean(Notifier.class)).isInstanceOf(TestNotifier.class);
-        assertThat(context.getBeansOfType(Notifier.class)).hasSize(2);
+        contextRunner.withUserConfiguration(TestMultipleWithPrimaryNotifierConfig.class).run(context -> {
+            assertThat(context.getBean(Notifier.class)).isInstanceOf(TestNotifier.class);
+            assertThat(context).getBeans(Notifier.class).hasSize(2);
+        });
     }
 
-    private void load(Class<?> config, String... environment) {
-        context = new AnnotationConfigApplicationContext();
-        if (config != null) {
-            context.register(config);
-        }
-        context.register(RestTemplateAutoConfiguration.class);
-        context.register(AdminServerMarkerConfiguration.class);
-        context.register(AdminServerAutoConfiguration.class);
-        context.register(AdminServerNotifierAutoConfiguration.class);
-
-        TestPropertyValues.of(environment).applyTo(context);
-        context.refresh();
-    }
 
     public static class TestSingleNotifierConfig {
         @Bean

@@ -29,14 +29,16 @@ import java.util.Collections;
 import java.util.List;
 import javax.servlet.ServletContext;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -52,12 +54,13 @@ import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebA
 @Configuration
 @ConditionalOnWebApplication
 @Conditional(SpringBootAdminClientEnabledCondition.class)
-@AutoConfigureAfter(WebMvcEndpointManagementContextConfiguration.class)
-@EnableConfigurationProperties({ClientProperties.class, InstanceProperties.class})
+@AutoConfigureAfter({WebEndpointAutoConfiguration.class, RestTemplateAutoConfiguration.class})
+@EnableConfigurationProperties({ClientProperties.class, InstanceProperties.class, ServerProperties.class, ManagementServerProperties.class})
 public class SpringBootAdminClientAutoConfiguration {
 
     @Configuration
     @ConditionalOnWebApplication(type = Type.SERVLET)
+    @AutoConfigureAfter(DispatcherServletAutoConfiguration.class)
     public static class ServletConfiguration {
         @Bean
         @ConditionalOnMissingBean
@@ -69,8 +72,14 @@ public class SpringBootAdminClientAutoConfiguration {
                                                      WebEndpointProperties webEndpoint,
                                                      MetadataContributor metadataContributor,
                                                      DispatcherServletPath dispatcherServletPath) {
-            return new ServletApplicationFactory(instance, management, server, servletContext, pathMappedEndpoints,
-                webEndpoint, metadataContributor, dispatcherServletPath
+            return new ServletApplicationFactory(instance,
+                management,
+                server,
+                servletContext,
+                pathMappedEndpoints,
+                webEndpoint,
+                metadataContributor,
+                dispatcherServletPath
             );
         }
     }
@@ -86,8 +95,13 @@ public class SpringBootAdminClientAutoConfiguration {
                                                      PathMappedEndpoints pathMappedEndpoints,
                                                      WebEndpointProperties webEndpoint,
                                                      MetadataContributor metadataContributor) {
-            return new DefaultApplicationFactory(instance, management, server, pathMappedEndpoints, webEndpoint,
-                metadataContributor);
+            return new DefaultApplicationFactory(instance,
+                management,
+                server,
+                pathMappedEndpoints,
+                webEndpoint,
+                metadataContributor
+            );
         }
     }
 

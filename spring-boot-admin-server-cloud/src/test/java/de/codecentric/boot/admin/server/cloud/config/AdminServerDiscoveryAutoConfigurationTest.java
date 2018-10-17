@@ -23,50 +23,49 @@ import de.codecentric.boot.admin.server.config.AdminServerAutoConfiguration;
 import de.codecentric.boot.admin.server.config.AdminServerMarkerConfiguration;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 
-import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration;
 import org.springframework.cloud.commons.util.UtilAutoConfiguration;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import com.netflix.discovery.EurekaClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AdminServerDiscoveryAutoConfigurationTest {
-    private AnnotationConfigApplicationContext context;
-
-    @After
-    public void close() {
-        if (this.context != null) {
-            this.context.close();
-        }
-    }
+    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
+        AutoConfigurations.of(UtilAutoConfiguration.class,
+            AdminServerAutoConfiguration.class,
+            AdminServerDiscoveryAutoConfiguration.class
+        )).withUserConfiguration(AdminServerMarkerConfiguration.class);
 
     @Test
     public void defaultServiceInstanceConverter() {
-        load(SimpleDiscoveryClientAutoConfiguration.class);
-        assertThat(context.getBean(ServiceInstanceConverter.class)).isInstanceOf(DefaultServiceInstanceConverter.class);
+        contextRunner.withUserConfiguration(SimpleDiscoveryClientAutoConfiguration.class)
+                     .run(context -> assertThat(context.getBean(ServiceInstanceConverter.class)).isInstanceOf(
+                         DefaultServiceInstanceConverter.class));
     }
 
     @Test
     public void eurekaServiceInstanceConverter() {
-        load(EurekaClientConfig.class);
-        assertThat(context.getBean(ServiceInstanceConverter.class)).isInstanceOf(EurekaServiceInstanceConverter.class);
+        contextRunner.withUserConfiguration(EurekaClientConfig.class)
+                     .run(context -> assertThat(context).getBean(ServiceInstanceConverter.class)
+                                                        .isInstanceOf(EurekaServiceInstanceConverter.class));
     }
 
     @Test
     public void customServiceInstanceConverter() {
-        load(SimpleDiscoveryClientAutoConfiguration.class, TestCustomServiceInstanceConverterConfig.class);
-        assertThat(context.getBean(ServiceInstanceConverter.class)).isInstanceOf(CustomServiceInstanceConverter.class);
+        contextRunner.withUserConfiguration(SimpleDiscoveryClientAutoConfiguration.class,
+            TestCustomServiceInstanceConverterConfig.class
+        )
+                     .run(context -> assertThat(context).getBean(ServiceInstanceConverter.class)
+                                                        .isInstanceOf(CustomServiceInstanceConverter.class));
     }
 
-    @Configuration
     static class TestCustomServiceInstanceConverterConfig {
         @Bean
         public CustomServiceInstanceConverter converter() {
@@ -81,8 +80,7 @@ public class AdminServerDiscoveryAutoConfigurationTest {
         }
     }
 
-    @Configuration
-    protected static class EurekaClientConfig {
+    static class EurekaClientConfig {
         @Bean
         public EurekaClient eurekaClient() {
             return Mockito.mock(EurekaClient.class);
@@ -92,20 +90,5 @@ public class AdminServerDiscoveryAutoConfigurationTest {
         public DiscoveryClient discoveryClient() {
             return Mockito.mock(DiscoveryClient.class);
         }
-    }
-
-    private void load(Class<?>... configs) {
-        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-        for (Class<?> config : configs) {
-            applicationContext.register(config);
-        }
-        applicationContext.register(UtilAutoConfiguration.class);
-        applicationContext.register(RestTemplateAutoConfiguration.class);
-        applicationContext.register(AdminServerMarkerConfiguration.class);
-        applicationContext.register(AdminServerAutoConfiguration.class);
-        applicationContext.register(AdminServerDiscoveryAutoConfiguration.class);
-
-        applicationContext.refresh();
-        this.context = applicationContext;
     }
 }
