@@ -26,7 +26,7 @@
     <description>Spring Boot Admin</description>
     <url>https://github.com/codecentric/spring-boot-admin/</url>
     <properties>
-        <revision>2.0.3-SNAPSHOT</revision>
+        <revision>2.0.4-SNAPSHOT</revision>
         <spring-boot.version>2.0.6.RELEASE</spring-boot.version>
         <spring-cloud.version>Finchley.SR1</spring-cloud.version>
         <hazelcast-tests.version>3.9.4</hazelcast-tests.version>
