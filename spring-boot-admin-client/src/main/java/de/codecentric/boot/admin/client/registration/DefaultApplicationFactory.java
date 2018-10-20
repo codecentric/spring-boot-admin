@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
@@ -193,11 +194,11 @@ public class DefaultApplicationFactory implements ApplicationFactory {
     }
 
     protected String getHealthEndpointPath() {
-        String health = pathMappedEndpoints.getPath("health");
+        String health = pathMappedEndpoints.getPath(EndpointId.of("health"));
         if (StringUtils.hasText(health)) {
             return health;
         }
-        String status = pathMappedEndpoints.getPath("status");
+        String status = pathMappedEndpoints.getPath(EndpointId.of("status"));
         if (StringUtils.hasText(status)) {
             return status;
         }
