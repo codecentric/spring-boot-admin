@@ -524,8 +524,8 @@ table.CodeRay td.code>pre{padding:0}
 <div class="details">
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
-<span id="revnumber">version 2.0.3-SNAPSHOT,</span>
-<span id="revdate">17.10.2018</span>
+<span id="revnumber">version 2.0.4-SNAPSHOT,</span>
+<span id="revdate">19.10.2018</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -643,7 +643,7 @@ The UI is just an AngularJs application on top of the Spring Boot Actuator endpo
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
     <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
     <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-starter-server<span class="tag">&lt;/artifactId&gt;</span>
-    <span class="tag">&lt;version&gt;</span>2.0.3-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;version&gt;</span>2.0.4-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
 <span class="tag">&lt;/dependency&gt;</span>
 <span class="tag">&lt;dependency&gt;</span>
     <span class="tag">&lt;groupId&gt;</span>org.springframework.boot<span class="tag">&lt;/groupId&gt;</span>
@@ -705,7 +705,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
     <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
     <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-starter-client<span class="tag">&lt;/artifactId&gt;</span>
-    <span class="tag">&lt;version&gt;</span>2.0.3-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;version&gt;</span>2.0.4-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
 <span class="tag">&lt;/dependency&gt;</span>
 <span class="tag">&lt;dependency&gt;</span>
     <span class="tag">&lt;groupId&gt;</span>org.springframework.boot<span class="tag">&lt;/groupId&gt;</span>
@@ -829,6 +829,8 @@ management.endpoints.web.exposure.include=*  <i class="conum" data-value="2"></i
   <span class="key">instance</span>:
     <span class="key">leaseRenewalIntervalInSeconds</span>: <span class="string"><span class="content">10</span></span>
     <span class="key">health-check-url-path</span>: <span class="string"><span class="content">/actuator/health</span></span>
+    <span class="key">metadata-map</span>:
+      <span class="key">startup</span>: <span class="string"><span class="content">${random.int}</span></span>    <span class="comment">#needed to trigger info and endpoint update after restart</span>
   <span class="key">client</span>:
     <span class="key">registryFetchIntervalSeconds</span>: <span class="string"><span class="content">5</span></span>
     <span class="key">serviceUrl</span>:
@@ -1207,6 +1209,18 @@ user.password</p></td>
 <h3 id="spring-cloud-discovery-support"><a class="anchor" href="#spring-cloud-discovery-support"></a><a class="link" href="#spring-cloud-discovery-support">4.1. Spring Cloud Discovery</a></h3>
 <div class="paragraph">
 <p>The Spring Boot Admin Server can use Spring Clouds <code>DiscoveryClient</code> to discover applications. The advantage is that the clients don&#8217;t have to include the <code>spring-boot-admin-starter-client</code>. You just have to add a <code>DiscoveryClient</code> implementation to your admin server - everything else is done by AutoConfiguration.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Spring Boot Admin will only update the info and available endpoints when a application changes status or when the registration changes. If you want to trigger an update with every new deployment, you can add a key value pair that changes with every restart (e.g. <code>eureka.instance.metadata-map.startup: ${random.int}</code>).
+</td>
+</tr>
+</table>
 </div>
 <div class="sect3">
 <h4 id="spring-cloud-discovery-static-config"><a class="anchor" href="#spring-cloud-discovery-static-config"></a><a class="link" href="#spring-cloud-discovery-static-config">4.1.1. SimpleDiscoveryClient configuration</a></h4>
@@ -2690,7 +2704,7 @@ You can set <code>spring.boot.admin.context-path</code> to alter the path where 
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 2.0.3-SNAPSHOT<br>
+Version 2.0.4-SNAPSHOT<br>
 </div>
 </div>
 </body>
