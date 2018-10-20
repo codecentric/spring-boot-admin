@@ -50,7 +50,7 @@
             </tr>
             <tr :key="`${event.key}-detail`" v-if="showPayload[event.key]">
               <td colspan="4">
-                <pre v-text="toJson(event.payload)"/>
+                <pre class="is-breakable" v-text="toJson(event.payload)"/>
               </td>
             </tr>
           </template>

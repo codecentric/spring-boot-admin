@@ -17,7 +17,7 @@
     "ansi_up": "^3.0.0",
     "autolinker": "^1.7.1",
     "axios": "^0.18.0",
-    "bulma": "^0.7.1",
+    "bulma": "^0.7.2",
     "bulma-badge": "^2.0.0",
     "d3-array": "^1.2.4",
     "d3-axis": "^1.0.12",
@@ -50,10 +50,10 @@
     "babel-plugin-lodash": "^3.3.4",
     "html-loader": "^0.5.5",
     "lodash-webpack-plugin": "^0.11.5",
-    "node-sass": "^4.9.0",
+    "node-sass": "^4.9.4",
     "sass-loader": "^7.0.1",
     "vue-template-compiler": "^2.5.17",
-    "webpack-bundle-analyzer": "^3.0.2"
+    "webpack-bundle-analyzer": "^3.0.3"
   },
   "eslintConfig": {
     "root": true,
