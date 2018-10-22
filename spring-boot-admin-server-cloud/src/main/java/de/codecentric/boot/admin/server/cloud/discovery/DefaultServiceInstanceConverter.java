@@ -94,9 +94,9 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
     }
 
     protected URI getManagementUrl(ServiceInstance instance) {
-        String managamentPath = instance.getMetadata().get(KEY_MANAGEMENT_PATH);
-        if (isEmpty(managamentPath)) {
-            managamentPath = managementContextPath;
+        String managementPath = instance.getMetadata().get(KEY_MANAGEMENT_PATH);
+        if (isEmpty(managementPath)) {
+            managementPath = managementContextPath;
         }
 
         URI serviceUrl = getServiceUrl(instance);
@@ -106,16 +106,16 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
             managementServerAddress = serviceUrl.getHost();
         }
 
-        String managamentPort = instance.getMetadata().get(KEY_MANAGEMENT_PORT);
-        if (isEmpty(managamentPort)) {
-            managamentPort = String.valueOf(serviceUrl.getPort());
+        String managementPort = instance.getMetadata().get(KEY_MANAGEMENT_PORT);
+        if (isEmpty(managementPort)) {
+            managementPort = String.valueOf(serviceUrl.getPort());
         }
 
         return UriComponentsBuilder.fromUri(serviceUrl)
                                    .host(managementServerAddress)
-                                   .port(managamentPort)
+                                   .port(managementPort)
                                    .path("/")
-                                   .path(managamentPath)
+                                   .path(managementPath)
                                    .build()
                                    .toUri();
     }
