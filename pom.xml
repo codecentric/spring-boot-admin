@@ -29,7 +29,7 @@
         <revision>2.1.0-SNAPSHOT</revision>
         <spring-boot.version>2.1.0.BUILD-SNAPSHOT</spring-boot.version>
         <spring-cloud.version>Finchley.SR1</spring-cloud.version>
-        <hazelcast-tests.version>3.9.4</hazelcast-tests.version>
+        <hazelcast-tests.version>3.10.6</hazelcast-tests.version>
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
@@ -55,13 +55,13 @@
         <maven-war-plugin.version>3.2.2</maven-war-plugin.version>
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
         <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
-        <jacoco-maven-plugin.version>0.8.1</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.2</jacoco-maven-plugin.version>
         <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
         <asciidoctor-maven-plugin.version>1.5.6</asciidoctor-maven-plugin.version>
-        <git-commit-id-plugin.version>2.2.4</git-commit-id-plugin.version>
+        <git-commit-id-plugin.version>2.2.5</git-commit-id-plugin.version>
         <flatten-maven-plugin.version>1.0.1</flatten-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>
-        <checkstyle.version>8.8</checkstyle.version>
+        <checkstyle.version>8.14</checkstyle.version>
     </properties>
     <modules>
         <module>spring-boot-admin-server</module>
