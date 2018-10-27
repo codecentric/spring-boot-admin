@@ -354,7 +354,7 @@ To enable https://telegram.org/[Telegram] notifications you need to create and a
 | Property name |Description |Default value
 
 | spring.boot.admin.notify.telegram.enabled
-| Enable Microsoft Teams notifications
+| Enable Telegram notifications
 | `true`
 
 | spring.boot.admin.notify.telegram.auth-token
