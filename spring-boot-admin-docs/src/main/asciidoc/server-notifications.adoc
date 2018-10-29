@@ -349,12 +349,12 @@ To enable Microsoft Teams notifications you need to setup a connector webhook ur
 ==== Telegram notifications ====
 To enable https://telegram.org/[Telegram] notifications you need to create and authorize a telegram bot and set the appropriate configuration properties for auth-token and chat-id.
 
-.Microsoft Teams notifications configuration options
+.Telegram notifications configuration options
 |===
 | Property name |Description |Default value
 
 | spring.boot.admin.notify.telegram.enabled
-| Enable Microsoft Teams notifications
+| Enable Telegram notifications
 | `true`
 
 | spring.boot.admin.notify.telegram.auth-token
