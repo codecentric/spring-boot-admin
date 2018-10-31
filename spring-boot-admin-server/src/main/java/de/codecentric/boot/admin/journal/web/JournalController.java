@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.MediaType;
 import org.springframework.util.MimeTypeUtils;
@@ -49,6 +50,9 @@ import de.codecentric.boot.admin.web.AdminController;
 public class JournalController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JournalController.class);
 
+	@Value("${app.journal.SseEmitterLifeTime}")
+	private long SseEmitterLifeTime;
+
 	private ApplicationEventJournal eventJournal;
 	private final Collection<SseEmitter> emitters = synchronizedCollection(
 			new LinkedList<SseEmitter>());
@@ -64,7 +68,7 @@ public class JournalController {
 
 	@RequestMapping(produces = "text/event-stream")
 	public SseEmitter getJournalEvents() {
-		final SseEmitter emitter = new SseEmitter();
+		final SseEmitter emitter = new SseEmitter(SseEmitterLifeTime);
 		emitter.onCompletion(new Runnable() {
 			@Override
 			public void run() {
