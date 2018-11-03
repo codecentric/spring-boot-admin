@@ -19,7 +19,8 @@ import waitForPolyfill from '@/utils/eventsource-polyfill';
 import logtail from '@/utils/logtail';
 import {concat, from, ignoreElements, Observable} from '@/utils/rxjs';
 import uri from '@/utils/uri';
-import _ from 'lodash';
+import entries from 'lodash/entries';
+import transform from 'lodash/transform';
 
 const actuatorMimeTypes = [
   'application/vnd.spring-boot.actuator.v2+json',
@@ -67,7 +68,7 @@ class Instance {
 
   async fetchMetric(metric, tags) {
     const params = tags ? {
-      tag: _.entries(tags)
+      tag: entries(tags)
         .filter(([, value]) => typeof value !== 'undefined' && value !== null)
         .map(([name, value]) => `${name}:${value}`)
         .join(',')
@@ -308,7 +309,7 @@ class Instance {
       return data;
     }
     const raw = JSON.parse(data);
-    const loggers = _.transform(raw.loggers, (result, value, key) => {
+    const loggers = transform(raw.loggers, (result, value, key) => {
       return result.push({name: key, ...value});
     }, []);
     return {levels: raw.levels, loggers};
@@ -319,9 +320,9 @@ class Instance {
       return data;
     }
     const raw = JSON.parse(data);
-    return _.entries(raw.value).map(([domain, mBeans]) => ({
+    return entries(raw.value).map(([domain, mBeans]) => ({
       domain,
-      mBeans: _.entries(mBeans).map(([descriptor, mBean]) => ({
+      mBeans: entries(mBeans).map(([descriptor, mBean]) => ({
         descriptor: descriptor,
         ...mBean
       }))

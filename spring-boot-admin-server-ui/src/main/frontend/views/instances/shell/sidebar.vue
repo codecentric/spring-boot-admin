@@ -20,13 +20,16 @@
       <router-link
         :to="{name: 'instances/details', params: {instanceId: instance.id}}"
         class="instance-summary"
-        :class="`instance-summary--${instance.statusInfo.status}`">
+        :class="`instance-summary--${instance.statusInfo.status}`"
+      >
         <div
           class="instance-summary__name"
-          v-text="instance.registration.name"/>
+          v-text="instance.registration.name"
+        />
         <div
           class="instance-summary__id"
-          v-text="instance.id"/>
+          v-text="instance.id"
+        />
       </router-link>
       <ul>
         <li
@@ -35,21 +38,25 @@
           class="sidebar-group"
           :class="{'is-active' : isActiveGroup(group)}"
           @mouseenter="hasMultipleViews(group) && !isActiveGroup(group) && showFlyout($event)"
-          @mouseleave="hasMultipleViews(group) && !isActiveGroup(group) && hideFlyout($event)">
+          @mouseleave="hasMultipleViews(group) && !isActiveGroup(group) && hideFlyout($event)"
+        >
           <router-link
             :to="{ name: group.views[0].name, params: { 'instanceId' : instance.id } }"
             v-text="hasMultipleViews(group) ? group.name : group.views[0].label"
             active-class=""
             exact-active-class=""
-            :class="{'is-active' : isActiveGroup(group) }"/>
+            :class="{'is-active' : isActiveGroup(group) }"
+          />
           <ul
             v-if="hasMultipleViews(group)"
-            class="sidebar-group-items">
+            class="sidebar-group-items"
+          >
             <li
               v-for="view in group.views"
-              :key="view.name">
+              :key="view.name"
+            >
               <router-link :to="{ name: view.name, params: { 'instanceId' : instance.id } }">
-                <component :is="view.handle"/>
+                <component :is="view.handle" />
               </router-link>
             </li>
           </ul>

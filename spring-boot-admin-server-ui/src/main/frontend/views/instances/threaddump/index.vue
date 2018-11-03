@@ -20,13 +20,13 @@
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
             Fetching threaddump failed.
           </strong>
-          <p v-text="error.message"/>
+          <p v-text="error.message" />
         </div>
       </div>
-      <threads-list v-if="threads" :thread-timelines="threads"/>
+      <threads-list v-if="threads" :thread-timelines="threads" />
     </template>
   </section>
 </template>
@@ -35,7 +35,8 @@
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
   import {concatMap, timer} from '@/utils/rxjs';
-  import _ from 'lodash';
+  import entries from 'lodash/entries';
+  import remove from 'lodash/remove';
   import moment from 'moment-shortformat';
   import threadsList from './threads-list';
 
@@ -47,9 +48,8 @@
       }
     },
     mixins: [subscribing],
-    components: {
-      threadsList
-    },
+    // eslint-disable-next-line vue/no-unused-components
+    components: {threadsList},
     data: () => ({
       hasLoaded: false,
       error: null,
@@ -62,7 +62,7 @@
         const now = moment().valueOf();
         vm.threads = vm.threads || {};
         //initialize with all known live threads, which will be removed from the list if still alive
-        const terminatedThreads = _.entries(vm.threads)
+        const terminatedThreads = entries(vm.threads)
           .filter(([, value]) => value.threadState !== 'TERMINATED')
           .map(([threadId]) => parseInt(threadId));
 
@@ -94,7 +94,7 @@
                 entry.timeline[entry.timeline.length - 1].end = now;
               }
             }
-            _.remove(terminatedThreads, threadId => threadId === thread.threadId);
+            remove(terminatedThreads, threadId => threadId === thread.threadId);
           });
 
         terminatedThreads.forEach(threadId => {

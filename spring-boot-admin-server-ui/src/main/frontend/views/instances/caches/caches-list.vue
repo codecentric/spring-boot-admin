@@ -25,10 +25,11 @@
             class="button"
             :class="{'is-loading' : clearingAll === 'executing', 'is-info' : clearingAll === 'completed', 'is-danger' : clearingAll === 'failed'}"
             :disabled="clearingAll !== null"
-            @click="clearCaches">
+            @click="clearCaches"
+          >
             <span v-if="clearingAll === 'completed'">Cleared</span>
             <span v-else-if="clearingAll === 'failed'">Failed</span>
-            <span v-else><font-awesome-icon icon="trash"/>&nbsp;Clear</span>
+            <span v-else><font-awesome-icon icon="trash" />&nbsp;Clear</span>
           </sba-confirm-button>
         </th>
       </tr>
@@ -36,24 +37,28 @@
     <tbody>
       <tr
         v-for="cache in caches"
-        :key="cache.key">
+        :key="cache.key"
+      >
         <td>
           <span
             class="is-breakable"
-            v-text="cache.name"/>
+            v-text="cache.name"
+          />
         </td>
         <td>
           <span
             class="is-breakable"
-            v-text="cache.cacheManager"/>
+            v-text="cache.cacheManager"
+          />
         </td>
         <td class="is-narrow">
           <button class="button"
                   :class="{ 'is-loading' : clearing[cache.name] === 'executing', 'is-info' : clearing[cache.name] === 'completed', 'is-danger' : clearing[cache.name] === 'failed' }"
-                  :disabled="cache.name in clearing" @click="clearCache(cache.name)">
+                  :disabled="cache.name in clearing" @click="clearCache(cache.name)"
+          >
             <span v-if="clearing[cache.name] === 'completed'">Cleared</span>
             <span v-else-if="clearing[cache.name] === 'failed'">Failed</span>
-            <span v-else><font-awesome-icon icon="trash"/>&nbsp;Clear</span>
+            <span v-else><font-awesome-icon icon="trash" />&nbsp;Clear</span>
           </button>
         </td>
       </tr>

@@ -19,15 +19,17 @@
     <div class="container">
       <div
         v-if="error"
-        class="message is-danger">
+        class="message is-danger"
+      >
         <div class="message-body">
           <strong>
             <font-awesome-icon
               class="has-text-danger"
-              icon="exclamation-triangle"/>
+              icon="exclamation-triangle"
+            />
             Fetching beans failed.
           </strong>
-          <p v-text="error.message"/>
+          <p v-text="error.message" />
         </div>
       </div>
       <div class="field">
@@ -36,13 +38,14 @@
             class="input"
             type="search"
             placeholder="filter"
-            v-model="filter">
+            v-model="filter"
+          >
         </p>
       </div>
 
       <template v-for="context in filteredContexts">
-        <h3 class="title" v-text="context.name" :key="context.name"/>
-        <beans-list :beans="context.beans" :key="`${context.name}-beans`"/>
+        <h3 class="title" v-text="context.name" :key="context.name" />
+        <beans-list :beans="context.beans" :key="`${context.name}-beans`" />
       </template>
     </div>
   </section>
@@ -53,7 +56,7 @@
   import {compareBy} from '@/utils/collections';
   import shortenClassname from '@/utils/shortenClassname';
   import BeansList from '@/views/instances/beans/beans-list';
-  import _ from 'lodash';
+  import isEmpty from 'lodash/isEmpty';
 
   class Bean {
     constructor(name, bean) {
@@ -72,7 +75,7 @@
   };
 
   const flattenContexts = beanData => {
-    if (_.isEmpty(beanData.contexts)) {
+    if (isEmpty(beanData.contexts)) {
       return [];
     }
     return Object.keys(beanData.contexts)

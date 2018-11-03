@@ -20,18 +20,18 @@
       <div v-if="error" class="message is-warning">
         <div class="message-body">
           <strong>
-            <font-awesome-icon class="has-text-warning" icon="exclamation-triangle"/>
+            <font-awesome-icon class="has-text-warning" icon="exclamation-triangle" />
             Fetching live info failed. This is the last known information.
           </strong>
-          <p v-text="error.message"/>
+          <p v-text="error.message" />
         </div>
       </div>
       <div class="content info">
         <table class="table" v-if="!isEmptyInfo">
           <tr v-for="(value, key) in info" :key="key">
-            <td class="info__key" v-text="key"/>
+            <td class="info__key" v-text="key" />
             <td>
-              <sba-formatted-obj :value="value"/>
+              <sba-formatted-obj :value="value" />
             </td>
           </tr>
         </table>

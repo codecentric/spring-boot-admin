@@ -18,37 +18,44 @@
   <div class="applications-list">
     <div class="application-list__item card" :class="{'is-active': selected === application.name}"
          v-for="application in applications" :key="application.name" :id=" application.name"
-         v-on-clickaway="(event) => deselect(event, application.name)">
+         v-on-clickaway="(event) => deselect(event, application.name)"
+    >
       <header class="hero application-list__item__header"
               :class="getHeaderClass(application)"
-              @click.stop="select(application.name)">
+              @click.stop="select(application.name)"
+      >
         <template v-if="selected !== application.name">
           <sba-status :status="application.status"
                       :date="application.statusTimestamp"
-                      class="application-list__item__header__status"/>
+                      class="application-list__item__header__status"
+          />
           <p class="application-list__item__header__name">
-            <span v-text="application.name"/><br>
+            <span v-text="application.name" /><br>
             <span class="is-muted">
               <a v-if="application.instances.length === 1"
                  v-text="application.instances[0].registration.serviceUrl || application.instances[0].registration.healthUrl"
-                 :href="application.instances[0].registration.serviceUrl || application.instances[0].registration.healthUrl"/>
+                 :href="application.instances[0].registration.serviceUrl || application.instances[0].registration.healthUrl"
+              />
               <span v-else
-                    v-text="`${application.instances.length} instances`"/>
+                    v-text="`${application.instances.length} instances`"
+              />
             </span>
           </p>
-          <p class="application-list__item__header__version" v-text="application.buildVersion"/>
+          <p class="application-list__item__header__version" v-text="application.buildVersion" />
         </template>
         <template v-else>
-          <h1 class="title is-size-5 application-list__item__header__name" v-text="application.name"/>
+          <h1 class="title is-size-5 application-list__item__header__name" v-text="application.name" />
         </template>
         <div class="application-list__item__header__actions">
           <sba-icon-button :id="`nf-settings-${application.name}`"
                            v-if="hasNotificationFiltersSupport"
                            @click.stop="toggleNotificationFilterSettingsFor(application)"
-                           :icon="hasActiveFilter(application) ? 'bell-slash' : 'bell'"/>&nbsp;
+                           :icon="hasActiveFilter(application) ? 'bell-slash' : 'bell'"
+          />&nbsp;
           <sba-icon-button icon="trash"
                            v-if="application.isUnregisterable"
-                           @click.stop="unregister(application)"/>
+                           @click.stop="unregister(application)"
+          />
         </div>
       </header>
       <div class="card-content" v-if="selected === application.name">
@@ -56,28 +63,31 @@
           <tbody>
             <tr v-for="instance in application.instances" :key="instance.id" @click.stop="showDetails(instance)">
               <td class="instance__status">
-                <sba-status :status="instance.statusInfo.status" :date="instance.statusTimestamp"/>
+                <sba-status :status="instance.statusInfo.status" :date="instance.statusTimestamp" />
               </td>
               <td class="is-narrow">
                 <a v-text="instance.registration.serviceUrl || instance.registration.healthUrl"
                    :href="instance.registration.serviceUrl || instance.registration.healthUrl"
-                   @click.stop/><br>
-                <span class="is-muted" v-text="instance.id"/>
+                   @click.stop
+                /><br>
+                <span class="is-muted" v-text="instance.id" />
               </td>
               <td>
-                <sba-tags :tags="instance.tags"/>
+                <sba-tags :tags="instance.tags" />
               </td>
               <td>
-                <span v-text="instance.buildVersion"/>
+                <span v-text="instance.buildVersion" />
               </td>
               <td class="instance__actions">
                 <sba-icon-button :id="`nf-settings-${instance.id}`"
                                  v-if="hasNotificationFiltersSupport"
                                  @click.stop="toggleNotificationFilterSettingsFor(instance)"
-                                 :icon="hasActiveFilter(instance) ? 'bell-slash' : 'bell'"/>
+                                 :icon="hasActiveFilter(instance) ? 'bell-slash' : 'bell'"
+                />
                 <sba-icon-button icon="trash"
                                  v-if="instance.isUnregisterable"
-                                 @click.stop="unregister(instance)"/>
+                                 @click.stop="unregister(instance)"
+                />
               </td>
             </tr>
           </tbody>
@@ -89,7 +99,8 @@
                                   :notification-filters="notificationFilters"
                                   :object="showNotificationFilterSettingsObject"
                                   @filter-added="handleFilterChange"
-                                  @filter-deleted="handleFilterChange"/>
+                                  @filter-deleted="handleFilterChange"
+    />
   </div>
 </template>
 

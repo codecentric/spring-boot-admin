@@ -18,35 +18,36 @@
   <div class="trace-chart">
     <div class="trace-chart__tooltip"
          v-if="tooltipSelection "
-         :class="`trace-chart__tooltip--${this.x(tooltipSelection[0]) > this.width / 2 ? 'left' : 'right'}`">
+         :class="`trace-chart__tooltip--${this.x(tooltipSelection[0]) > this.width / 2 ? 'left' : 'right'}`"
+    >
       <table class="is-narrow is-size-7">
         <tr>
           <th>total requests</th>
-          <td v-text="tooltipContent.totalCount"/>
+          <td v-text="tooltipContent.totalCount" />
         </tr>
         <tr>
           <th>successful</th>
-          <td v-text="tooltipContent.totalSuccess"/>
+          <td v-text="tooltipContent.totalSuccess" />
         </tr>
         <tr>
           <th>status 4xx</th>
-          <td v-text="tooltipContent.totalClientErrors"/>
+          <td v-text="tooltipContent.totalClientErrors" />
         </tr>
         <tr>
           <th>status 5xx</th>
-          <td v-text="tooltipContent.totalServerErrors"/>
+          <td v-text="tooltipContent.totalServerErrors" />
         </tr>
         <tr>
           <th>max duration</th>
-          <td v-text="`${tooltipContent.maxTime}ms`"/>
+          <td v-text="`${tooltipContent.maxTime}ms`" />
         </tr>
         <tr>
           <th>ø duration</th>
-          <td v-text="`${tooltipContent.avgTime}ms`"/>
+          <td v-text="`${tooltipContent.avgTime}ms`" />
         </tr>
       </table>
     </div>
-    <svg class="trace-chart__svg"/>
+    <svg class="trace-chart__svg" />
   </div>
 </template>
 

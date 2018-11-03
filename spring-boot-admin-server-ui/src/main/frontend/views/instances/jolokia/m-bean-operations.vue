@@ -17,9 +17,11 @@
 <template>
   <div>
     <mBeanOperation v-for="(operation, name) in mBean.op" :key="`op-${name}`"
-                    :name="name" :descriptor="operation" @click="invoke(name, operation)"/>
+                    :name="name" :descriptor="operation" @click="invoke(name, operation)"
+    />
     <m-bean-operation-invocation v-if="invocation" :name="invocation.name" :descriptor="invocation.descriptor"
-                                 :on-execute="execute" :on-close="closeInvocation"/>
+                                 :on-execute="execute" :on-close="closeInvocation"
+    />
   </div>
 </template>
 
@@ -44,6 +46,7 @@
         required: true
       }
     },
+    // eslint-disable-next-line vue/no-unused-components
     components: {mBeanOperation, mBeanOperationInvocation},
     data: () => ({
       invocation: null

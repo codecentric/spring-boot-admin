@@ -20,10 +20,10 @@
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
             Fetching scheduled tasks failed.
           </strong>
-          <p v-text="error.message"/>
+          <p v-text="error.message" />
         </div>
       </div>
       <div v-else-if="!hasData" class="message is-warning">
@@ -41,8 +41,8 @@
           </thead>
           <tbody v-for="task in cron" :key="task.runnable.target">
             <tr>
-              <td v-text="task.runnable.target"/>
-              <td class="monospaced" v-text="task.expression"/>
+              <td v-text="task.runnable.target" />
+              <td class="monospaced" v-text="task.expression" />
             </tr>
           </tbody>
         </table>
@@ -60,9 +60,9 @@
           </thead>
           <tbody v-for="task in fixedDelay" :key="task.runnable.target">
             <tr>
-              <td v-text="task.runnable.target"/>
-              <td v-text="task.initialDelay"/>
-              <td v-text="task.interval"/>
+              <td v-text="task.runnable.target" />
+              <td v-text="task.initialDelay" />
+              <td v-text="task.interval" />
             </tr>
           </tbody>
         </table>
@@ -80,9 +80,9 @@
           </thead>
           <tbody v-for="task in fixedRate" :key="task.runnable.target">
             <tr>
-              <td v-text="task.runnable.target"/>
-              <td v-text="task.initialDelay"/>
-              <td v-text="task.interval"/>
+              <td v-text="task.runnable.target" />
+              <td v-text="task.initialDelay" />
+              <td v-text="task.interval" />
             </tr>
           </tbody>
         </table>

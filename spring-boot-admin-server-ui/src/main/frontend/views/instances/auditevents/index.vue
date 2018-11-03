@@ -24,7 +24,8 @@
               class="input"
               type="search"
               placeholder="Principal"
-              v-model.trim="filter.principal">
+              v-model.trim="filter.principal"
+            >
           </p>
         </div>
         <div class="field">
@@ -34,12 +35,13 @@
               class="input"
               type="search"
               placeholder="Type"
-              v-model="filter.type">
+              v-model="filter.type"
+            >
             <datalist id="auditevent-type">
-              <option value="AUTHENTICATION_FAILURE"/>
-              <option value="AUTHENTICATION_SUCCESS"/>
-              <option value="AUTHENTICATION_SWITCH"/>
-              <option value="AUTHORIZATION_FAILURE"/>
+              <option value="AUTHENTICATION_FAILURE" />
+              <option value="AUTHENTICATION_SUCCESS" />
+              <option value="AUTHENTICATION_SWITCH" />
+              <option value="AUTHORIZATION_FAILURE" />
             </datalist>
           </p>
         </div>
@@ -62,15 +64,17 @@
           <strong>
             <font-awesome-icon
               class="has-text-danger"
-              icon="exclamation-triangle"/>
+              icon="exclamation-triangle"
+            />
             Fetching audit events failed.
           </strong>
-          <p v-text="error.message"/>
+          <p v-text="error.message" />
         </div>
       </div>
       <div
         v-if="isOldAuditevents"
-        class="message is-warning">
+        class="message is-warning"
+      >
         <div class="message-body">
           Audit Log is not supported for Spring Boot 1.x applications.
         </div>
@@ -78,7 +82,8 @@
       <auditevents-list
         :instance="instance"
         :events="events"
-        :is-loading="isLoading"/>
+        :is-loading="isLoading"
+      />
     </template>
   </section>
 </template>
@@ -88,7 +93,7 @@
   import Instance from '@/services/instance';
   import {concatMap, debounceTime, merge, Subject, tap, timer} from '@/utils/rxjs';
   import AuditeventsList from '@/views/instances/auditevents/auditevents-list';
-  import _ from 'lodash';
+  import uniqBy from 'lodash/uniqBy';
   import moment from 'moment';
 
   class Auditevent {
@@ -190,7 +195,7 @@
           });
       },
       addEvents(events) {
-        this.events = _.uniqBy(this.events ? events.concat(this.events) : events, event => event.key);
+        this.events = uniqBy(this.events ? events.concat(this.events) : events, event => event.key);
       }
     },
     install({viewRegistry}) {

@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <span class="tag thread-tag" :class="`thread-tag--${threadState.toLowerCase()}`" :title="threadState"/>
+  <span class="tag thread-tag" :class="`thread-tag--${threadState.toLowerCase()}`" :title="threadState" />
 </template>
 
 <script>

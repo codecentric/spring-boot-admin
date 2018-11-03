@@ -20,39 +20,39 @@
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
             Fetching memory metrics failed.
           </strong>
-          <p v-text="error.message"/>
+          <p v-text="error.message" />
         </div>
       </div>
       <div class="level memory-current" v-if="current">
         <div class="level-item has-text-centered" v-if="current.metaspace">
           <div>
             <p class="heading has-bullet has-bullet-primary">Metaspace</p>
-            <p v-text="prettyBytes(current.metaspace)"/>
+            <p v-text="prettyBytes(current.metaspace)" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
             <p class="heading has-bullet has-bullet-info">Used</p>
-            <p v-text="prettyBytes(current.used)"/>
+            <p v-text="prettyBytes(current.used)" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
             <p class="heading has-bullet has-bullet-warning">Size</p>
-            <p v-text="prettyBytes(current.committed)"/>
+            <p v-text="prettyBytes(current.committed)" />
           </div>
         </div>
         <div class="level-item has-text-centered" v-if="current.max >= 0">
           <div>
             <p class="heading">Max</p>
-            <p v-text="prettyBytes(current.max)"/>
+            <p v-text="prettyBytes(current.max)" />
           </div>
         </div>
       </div>
-      <mem-chart v-if="chartData.length > 0" :data="chartData"/>
+      <mem-chart v-if="chartData.length > 0" :data="chartData" />
     </div>
   </sba-panel>
 </template>
@@ -77,6 +77,7 @@
       }
     },
     mixins: [subscribing],
+    // eslint-disable-next-line vue/no-unused-components
     components: {memChart},
     data: () => ({
       hasLoaded: false,

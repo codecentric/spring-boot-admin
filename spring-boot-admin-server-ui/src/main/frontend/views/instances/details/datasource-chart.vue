@@ -16,7 +16,7 @@
 
 <template>
   <div class="datasource-chart">
-    <svg class="datasource-chart__svg"/>
+    <svg class="datasource-chart__svg" />
   </div>
 </template>
 

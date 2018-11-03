@@ -18,8 +18,8 @@
   <div class="field is-grouped is-grouped-multiline" v-if="hasTags">
     <div class="control" v-for="(value, key) in tags" :key="key">
       <div class="tags has-addons">
-        <span class="tag is-dark" v-text="key"/>
-        <span class="tag is-light" v-text="value"/>
+        <span class="tag is-dark" v-text="key" />
+        <span class="tag is-light" v-text="value" />
       </div>
     </div>
   </div>

@@ -19,12 +19,13 @@
     <template v-if="!activeFilter">
       <div class="field">
         <p class="control has-inline-text">
-          Suppress notifications on <code v-text="object.id || object.name"/> for
+          Suppress notifications on <code v-text="object.id || object.name" /> for
           <span class="select">
             <select v-model="ttl" @click.stop>
               <option v-for="option in ttlOptions"
                       :key="`ttl-instance-${option.value}`"
-                      :value="option.value" v-text="option.label"/>
+                      :value="option.value" v-text="option.label"
+              />
             </select>
           </span>
         </p>
@@ -32,7 +33,8 @@
       <div class="field is-grouped is-grouped-right">
         <div class="control">
           <button class="button is-warning" :class="{'is-loading' : actionState === 'executing'}"
-                  @click.stop="addFilter"><font-awesome-icon icon="bell-slash"/>&nbsp;Suppress
+                  @click.stop="addFilter"
+          ><font-awesome-icon icon="bell-slash" />&nbsp;Suppress
           </button>
         </div>
       </div>
@@ -40,14 +42,14 @@
     <template v-else>
       <div class="field">
         <p class="control has-inline-text">
-          Notifications on <code v-text="object.id || object.name"/> are suppressed for
-          <strong v-text="activeFilter.expiry ? activeFilter.expiry.locale('en').fromNow(true) : 'ever' "/>.
+          Notifications on <code v-text="object.id || object.name" /> are suppressed for
+          <strong v-text="activeFilter.expiry ? activeFilter.expiry.locale('en').fromNow(true) : 'ever' " />.
         </p>
       </div>
       <div class="field is-grouped is-grouped-right">
         <div class="control">
           <button class="button" :class="{'is-loading' : actionState === 'executing'}" @click.stop="deleteActiveFilter">
-            <font-awesome-icon icon="bell"/>&nbsp;Unsuppress
+            <font-awesome-icon icon="bell" />&nbsp;Unsuppress
           </button>
         </div>
       </div>

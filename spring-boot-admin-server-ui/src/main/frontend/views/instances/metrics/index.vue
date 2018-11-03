@@ -19,10 +19,10 @@
     <div v-if="error" class="message is-danger">
       <div class="message-body">
         <strong>
-          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
           Fetching metrics failed.
         </strong>
-        <p v-text="error.message"/>
+        <p v-text="error.message" />
       </div>
     </div>
     <div v-if="isOldMetrics" class="message is-warning">
@@ -35,7 +35,7 @@
         <div class="control">
           <div class="select">
             <select v-model="selectedMetric">
-              <option v-for="metric in availableMetrics" v-text="metric" :key="metric"/>
+              <option v-for="metric in availableMetrics" v-text="metric" :key="metric" />
             </select>
           </div>
         </div>
@@ -46,14 +46,14 @@
         <div class="box" v-if="availableTags">
           <div class="field is-horizontal" v-for="tag in availableTags" :key="tag.tag">
             <div class="field-label">
-              <label class="label" v-text="tag.tag"/>
+              <label class="label" v-text="tag.tag" />
             </div>
             <div class="field-body">
               <div class="control">
                 <div class="select">
                   <select v-model="selectedTags[tag.tag]">
                     <option :value="undefined">-</option>
-                    <option v-for="value in tag.values" :key="value" :value="value" v-text="value"/>
+                    <option v-for="value in tag.values" :key="value" :value="value" v-text="value" />
                   </select>
                 </div>
               </div>
@@ -85,7 +85,7 @@
 
 <script>
   import Instance from '@/services/instance';
-  import _ from 'lodash';
+  import sortBy from 'lodash/sortBy';
   import Metric from './metric';
 
   export default {
@@ -147,7 +147,7 @@
           if (metric) {
             metric.tagSelections = [...metric.tagSelections, {...tagSelection}]
           } else {
-            this.metrics = _.sortBy([...this.metrics, {
+            this.metrics = sortBy([...this.metrics, {
               name: metricName,
               tagSelections: [{...tagSelection}],
               types: {}

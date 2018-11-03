@@ -17,7 +17,8 @@
 <template>
   <div>
     <details-datasource v-for="dataSource in dataSources" :key="dataSource"
-                        :instance="instance" :data-source="dataSource"/>
+                        :instance="instance" :data-source="dataSource"
+    />
   </div>
 </template>
 
@@ -35,6 +36,7 @@
       }
     },
     mixins: [subscribing],
+    // eslint-disable-next-line vue/no-unused-components
     components: {detailsDatasource},
     data: () => ({
       dataSources: [],

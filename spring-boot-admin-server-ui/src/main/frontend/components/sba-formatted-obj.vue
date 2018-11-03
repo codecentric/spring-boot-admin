@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <div v-html="formatted" class="formatted"/>
+  <div v-html="formatted" class="formatted" />
 </template>
 
 <script>
@@ -30,6 +30,7 @@
   export default {
     props: {
       value: {
+        // eslint-disable-next-line vue/require-prop-type-constructor
         type: null,
         required: true
       },

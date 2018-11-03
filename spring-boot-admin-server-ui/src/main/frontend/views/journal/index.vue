@@ -21,10 +21,10 @@
       <div v-if="error" class="message is-warning">
         <div class="message-body">
           <strong>
-            <font-awesome-icon class="has-text-warning" icon="exclamation-triangle"/>
+            <font-awesome-icon class="has-text-warning" icon="exclamation-triangle" />
             Server connection failed.
           </strong>
-          <p v-text="error.message"/>
+          <p v-text="error.message" />
         </div>
       </div>
       <table class="table is-fullwidth">
@@ -39,18 +39,20 @@
         <tbody>
           <template v-for="event in events">
             <tr class="is-selectable" :key="event.key"
-                @click="showPayload[event.key] ? $delete(showPayload, event.key) : $set(showPayload, event.key, true)">
-              <td v-text="instanceNames[event.instance] || '?'"/>
-              <td v-text="event.instance"/>
-              <td v-text="event.timestamp.format('L HH:mm:ss.SSS')"/>
+                @click="showPayload[event.key] ? $delete(showPayload, event.key) : $set(showPayload, event.key, true)"
+            >
+              <td v-text="instanceNames[event.instance] || '?'" />
+              <td v-text="event.instance" />
+              <td v-text="event.timestamp.format('L HH:mm:ss.SSS')" />
               <td>
-                <span v-text="event.type"/> <span v-if="event.type === 'STATUS_CHANGED'"
-                                                  v-text="`(${event.payload.statusInfo.status})`"/>
+                <span v-text="event.type" /> <span v-if="event.type === 'STATUS_CHANGED'"
+                                                   v-text="`(${event.payload.statusInfo.status})`"
+                />
               </td>
             </tr>
             <tr :key="`${event.key}-detail`" v-if="showPayload[event.key]">
               <td colspan="4">
-                <pre class="is-breakable" v-text="toJson(event.payload)"/>
+                <pre class="is-breakable" v-text="toJson(event.payload)" />
               </td>
             </tr>
           </template>
@@ -64,7 +66,7 @@
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
   import {compareBy} from '@/utils/collections';
-  import _ from 'lodash';
+  import omit from 'lodash/omit';
   import moment from 'moment';
 
   class Event {
@@ -73,7 +75,7 @@
       this.version = event.version;
       this.type = event.type;
       this.timestamp = moment(event.timestamp);
-      this.payload = _.omit(event, ['instance', 'version', 'timestamp', 'type']);
+      this.payload = omit(event, ['instance', 'version', 'timestamp', 'type']);
     }
 
     get key() {
@@ -102,7 +104,7 @@
           ...names,
           [event.instance]: event.payload.registration.name
         }), {});
-        _.assign(this.instanceNames, newInstanceNames);
+        Object.assign(this.instanceNames, newInstanceNames);
       },
       createSubscription() {
         return Instance.getEventStream().subscribe({

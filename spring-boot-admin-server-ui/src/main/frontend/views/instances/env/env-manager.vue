@@ -18,29 +18,31 @@
   <div class="box">
     <h1 class="is-size-5">Environment Manager</h1>
     <datalist id="allPropertyNames">
-      <option v-for="name in allPropertyNames" :key="name" v-text="name"/>
+      <option v-for="name in allPropertyNames" :key="name" v-text="name" />
     </datalist>
     <div class="field is-horizontal" v-for="(prop, index) in managedProperties" :key="`managed-${index}`">
       <div class="field-body">
         <div class="field">
           <div class="control">
             <input class="input" type="text" placeholder="Property name" list="allPropertyNames"
-                   v-model="prop.name" @input="handlePropertyNameChange(prop, index)">
+                   v-model="prop.name" @input="handlePropertyNameChange(prop, index)"
+            >
           </div>
-          <p class="help is-danger" v-text="prop.validation"/>
+          <p class="help is-danger" v-text="prop.validation" />
         </div>
         <div class="field">
           <div class="control has-icons-right" :class="{'is-loading' : prop.status === 'executing'}">
             <input class="input" type="text" placeholder="Value" v-model="prop.input"
-                   @input="prop.status = null">
+                   @input="prop.status = null"
+            >
             <span class="icon is-right has-text-success" v-if="prop.status === 'completed'">
-              <font-awesome-icon icon="check"/>
+              <font-awesome-icon icon="check" />
             </span>
             <span class="icon is-right has-text-warning" v-else-if="prop.status === 'failed'">
-              <font-awesome-icon icon="exclamation-triangle"/>
+              <font-awesome-icon icon="exclamation-triangle" />
             </span>
             <span class="icon is-right" v-else-if="prop.input !== prop.value">
-              <font-awesome-icon icon="pencil-alt"/>
+              <font-awesome-icon icon="pencil-alt" />
             </span>
           </div>
         </div>
@@ -53,7 +55,8 @@
             <sba-confirm-button class="button is-light"
                                 :class="{'is-loading' : refreshStatus === 'executing', 'is-danger' : refreshStatus === 'failed', 'is-info' : refreshStatus === 'completed'}"
                                 :disabled="refreshStatus === 'executing'"
-                                @click="refreshContext">
+                                @click="refreshContext"
+            >
               <span v-if="refreshStatus === 'completed'">Context refreshed</span>
               <span v-else-if="refreshStatus === 'failed'">Failed</span>
               <span v-else>Refresh Context</span>
@@ -67,7 +70,8 @@
             <button class="button is-light"
                     :class="{'is-loading' : resetStatus === 'executing', 'is-danger' : resetStatus === 'failed', 'is-success' : resetStatus === 'completed'}"
                     :disabled="!hasManagedProperty || resetStatus === 'executing'"
-                    @click="resetEnvironment">
+                    @click="resetEnvironment"
+            >
               <span v-if="resetStatus === 'completed'">Resetted</span>
               <span v-else-if="resetStatus === 'failed'">Failed</span>
               <span v-else>Reset</span>
@@ -77,7 +81,8 @@
             <button class="button is-primary"
                     :class="{'is-loading' : updateStatus === 'executing', 'is-danger' : updateStatus === 'failed', 'is-success' : updateStatus === 'completed'}"
                     :disabled="hasErrorProperty || !hasChangedProperty || updateStatus === 'executing'"
-                    @click="updateEnvironment">
+                    @click="updateEnvironment"
+            >
               <span v-if="updateStatus === 'completed'">Updated</span>
               <span v-else-if="updateStatus === 'failed'">Failed</span>
               <span v-else>Update</span>
@@ -92,7 +97,10 @@
 <script>
   import Instance from '@/services/instance';
   import {concatMap, filter, from, listen} from '@/utils/rxjs';
-  import _ from 'lodash';
+  import debounce from 'lodash/debounce';
+  import entries from 'lodash/entries';
+  import uniq from 'lodash/uniq';
+
 
   export default {
     props: {
@@ -120,7 +128,7 @@
     }),
     computed: {
       allPropertyNames() {
-        return _.uniq(this.propertySources.map(ps => Object.keys(ps.properties))
+        return uniq(this.propertySources.map(ps => Object.keys(ps.properties))
           .reduce((result, names) => result.concat(names))
           .sort());
       },
@@ -138,7 +146,7 @@
       }
     },
     methods: {
-      handlePropertyNameChange: _.debounce(function (prop, idx) {
+      handlePropertyNameChange: debounce(function (prop, idx) {
         if (prop.name && idx === this.managedProperties.length - 1) {
           this.managedProperties.push({
             name: null,
@@ -200,7 +208,7 @@
           });
       },
       updateManagedProperties(manager) {
-        _.entries(manager.properties).forEach(([name, property]) => {
+        entries(manager.properties).forEach(([name, property]) => {
           const managedProperty = this.managedProperties.find(property => property.name === name);
           if (managedProperty) {
             managedProperty.value = property.value

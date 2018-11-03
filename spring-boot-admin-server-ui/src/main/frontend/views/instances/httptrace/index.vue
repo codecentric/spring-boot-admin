@@ -20,10 +20,10 @@
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
             Fetching traces failed.
           </strong>
-          <p v-text="error.message"/>
+          <p v-text="error.message" />
         </div>
       </div>
       <template v-if="traces">
@@ -34,9 +34,9 @@
             </p>
             <p class="control">
               <span class="button is-static">
-                <span v-text="filteredTraces.length"/>
+                <span v-text="filteredTraces.length" />
                 /
-                <span v-text="traces.length"/>
+                <span v-text="traces.length" />
               </span>
             </p>
           </div>
@@ -70,13 +70,13 @@
             <div class="control">
               <label class="checkbox">
                 <input type="checkbox" v-model="excludeActuator">
-                exclude <span v-text="actuatorPath"/>/**
+                exclude <span v-text="actuatorPath" />/**
               </label>
             </div>
           </div>
         </div>
-        <sba-traces-chart :traces="filteredTraces" @selected="(d) => selection = d"/>
-        <sba-traces-list :traces="selectedTraces"/>
+        <sba-traces-chart :traces="filteredTraces" @selected="(d) => selection = d" />
+        <sba-traces-list :traces="selectedTraces" />
       </template>
     </template>
   </section>
@@ -147,9 +147,8 @@
       }
     },
     mixins: [subscribing],
-    components: {
-      sbaTracesList, sbaTracesChart
-    },
+    // eslint-disable-next-line vue/no-unused-components
+    components: {sbaTracesList, sbaTracesChart},
     data: () => ({
       hasLoaded: false,
       error: null,

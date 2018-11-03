@@ -20,13 +20,13 @@
       <div v-if="error" class="message is-warning">
         <div class="message-body">
           <strong>
-            <font-awesome-icon class="has-text-warning" icon="exclamation-triangle"/>
+            <font-awesome-icon class="has-text-warning" icon="exclamation-triangle" />
             Fetching live health status failed. This is the last known information.
           </strong>
-          <p v-text="error.message"/>
+          <p v-text="error.message" />
         </div>
       </div>
-      <health-details name="Instance" :health="health"/>
+      <health-details name="Instance" :health="health" />
     </div>
   </sba-panel>
 </template>
@@ -36,13 +36,14 @@
   import healthDetails from './health-details';
 
   export default {
-    components: {healthDetails},
     props: {
       instance: {
         type: Instance,
         required: true
       }
     },
+    // eslint-disable-next-line vue/no-unused-components
+    components: {healthDetails},
     data: () => ({
       error: null,
       liveHealth: null,

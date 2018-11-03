@@ -25,7 +25,7 @@
         />
       </div>
       <div class="instances__view">
-        <router-view v-if="instance" :instance="instance" :application="application"/>
+        <router-view v-if="instance" :instance="instance" :application="application" />
       </div>
     </div>
   </div>
@@ -50,7 +50,7 @@
         default: () => [],
       },
       error: {
-        type: null,
+        type: Error,
         default: null
       }
     },

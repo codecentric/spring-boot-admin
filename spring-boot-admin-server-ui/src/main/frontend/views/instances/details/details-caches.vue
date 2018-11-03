@@ -17,7 +17,8 @@
 <template>
   <div>
     <details-cache v-for="cache in caches" :key="cache"
-                   :instance="instance" :cache-name="cache"/>
+                   :instance="instance" :cache-name="cache"
+    />
   </div>
 </template>
 
@@ -25,7 +26,7 @@
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
   import {concatMap, timer} from '@/utils/rxjs';
-  import _ from 'lodash';
+  import uniq from 'lodash/uniq';
   import detailsCache from './details-cache';
 
   export default {
@@ -36,6 +37,7 @@
       }
     },
     mixins: [subscribing],
+    // eslint-disable-next-line vue/no-unused-components
     components: {detailsCache},
     data: () => ({
       caches: [],
@@ -43,7 +45,7 @@
     methods: {
       async fetchCaches() {
         const response = await this.instance.fetchMetric('cache.gets');
-        return _.uniq(response.data.availableTags.filter(tag => tag.tag === 'name')[0].values);
+        return uniq(response.data.availableTags.filter(tag => tag.tag === 'name')[0].values);
       },
       createSubscription() {
         const vm = this;

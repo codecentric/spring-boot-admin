@@ -20,7 +20,7 @@
     <svg xmlns="http://www.w3.org/2000/svg" :width="meshWidth" :height="meshHeight">
       <defs>
         <clipPath id="hex-clip">
-          <polygon :points="hexPath"/>
+          <polygon :points="hexPath" />
         </clipPath>
       </defs>
       <template>
@@ -28,11 +28,13 @@
           <g v-for="col in cols + (row % 2 ? 0 : -1)" :key="`${col}-${row}`"
              class="hex" :transform="translate(col, row)"
              :class="classForItem(item(col,row))"
-             @click="click($event,col,row)">
-            <polygon :points="hexPath"/>
+             @click="click($event,col,row)"
+          >
+            <polygon :points="hexPath" />
             <foreignObject v-if="item(col,row)" x="0" y="0" :width="hexWidth" :height="hexHeight"
-                           style="pointer-events: none">
-              <slot name="item" v-bind="item(col,row)"/>
+                           style="pointer-events: none"
+            >
+              <slot name="item" v-bind="item(col,row)" />
             </foreignObject>
           </g>
         </template>

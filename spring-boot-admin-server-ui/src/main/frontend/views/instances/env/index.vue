@@ -19,23 +19,24 @@
     <div v-if="error" class="message is-danger">
       <div class="message-body">
         <strong>
-          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
           Fetching environment failed.
         </strong>
-        <p v-text="error.message"/>
+        <p v-text="error.message" />
       </div>
     </div>
     <div class="field is-grouped is-grouped-multiline" v-if="env && env.activeProfiles.length > 0">
       <div class="control" v-for="profile in env.activeProfiles" :key="profile">
         <div class="tags has-addons">
           <span class="tag is-medium is-primary">Profile</span>
-          <span class="tag is-medium" v-text="profile"/>
+          <span class="tag is-medium" v-text="profile" />
         </div>
       </div>
     </div>
     <sba-env-manager v-if="env && hasEnvManagerSupport"
                      :instance="instance" :property-sources="env.propertySources"
-                     @refresh="fetchEnv()" @update="fetchEnv" @reset="fetchEnv()"/>
+                     @refresh="fetchEnv()" @update="fetchEnv" @reset="fetchEnv()"
+    />
     <div class="field has-addons" v-if="env">
       <p class="control is-expanded">
         <input class="input" type="search" placeholder="name / value filter" v-model="filter">
@@ -43,15 +44,17 @@
     </div>
     <sba-panel :header-sticks-below="['#navigation']"
                v-for="propertySource in propertySources" :key="propertySource.name"
-               :title="propertySource.name">
+               :title="propertySource.name"
+    >
       <table class="table is-fullwidth"
-             v-if="Object.keys(propertySource.properties).length > 0">
+             v-if="Object.keys(propertySource.properties).length > 0"
+      >
         <tr v-for="(value, name) in propertySource.properties" :key="`${propertySource.name}-${name}`">
           <td>
-            <span v-text="name"/><br>
-            <small class="is-muted" v-if="value.origin" v-text="value.origin"/>
+            <span v-text="name" /><br>
+            <small class="is-muted" v-if="value.origin" v-text="value.origin" />
           </td>
-          <td class="is-breakable" v-text="value.value"/>
+          <td class="is-breakable" v-text="value.value" />
         </tr>
       </table>
       <p class="is-muted" v-else>No properties set</p>
@@ -61,13 +64,13 @@
 
 <script>
   import Instance from '@/services/instance';
-  import _ from 'lodash';
+  import pickBy from 'lodash/pickBy';
   import sbaEnvManager from './env-manager';
 
   const filterProperty = (needle) => (property, name) => {
     return name.toString().toLowerCase().includes(needle) || property.value.toString().toLowerCase().includes(needle);
   };
-  const filterProperties = (needle, properties) => _.pickBy(properties, filterProperty(needle));
+  const filterProperties = (needle, properties) => pickBy(properties, filterProperty(needle));
   const filterPropertySource = (needle) => (propertySource) => {
     if (!propertySource || !propertySource.properties) {
       return null;
@@ -85,6 +88,7 @@
         required: true
       }
     },
+    // eslint-disable-next-line vue/no-unused-components
     components: {sbaEnvManager},
     data: () => ({
       hasLoaded: false,

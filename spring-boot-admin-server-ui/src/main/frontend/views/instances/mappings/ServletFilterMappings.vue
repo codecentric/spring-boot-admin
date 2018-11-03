@@ -30,18 +30,20 @@
           <tr :key="`${servletFilterMapping.name}`">
             <td>
               <div v-for="mapping in servletFilterMapping.urlPatternMappings"
-                   :key="`${servletFilterMapping.name}_${mapping}`">
-                <code v-text="mapping"/>
+                   :key="`${servletFilterMapping.name}_${mapping}`"
+              >
+                <code v-text="mapping" />
               </div>
             </td>
             <td>
               <div v-for="mapping in servletFilterMapping.servletNameMappings"
                    :key="`${servletFilterMapping.name}_${mapping}`"
                    v-text="mapping"
-                   class="is-breakable"/>
+                   class="is-breakable"
+              />
             </td>
-            <td class="is-breakable" v-text="servletFilterMapping.name"/>
-            <td class="is-breakable" v-text="servletFilterMapping.className"/>
+            <td class="is-breakable" v-text="servletFilterMapping.name" />
+            <td class="is-breakable" v-text="servletFilterMapping.className" />
           </tr>
         </template>
       </tbody>

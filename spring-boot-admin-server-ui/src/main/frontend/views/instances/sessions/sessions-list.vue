@@ -28,10 +28,11 @@
           <sba-confirm-button class="button"
                               :class="{ 'is-loading' : deletingAll === 'executing', 'is-info' : deletingAll === 'completed', 'is-danger' : deletingAll === 'failed' }"
                               :disabled="deletingAll !== null"
-                              v-if="sessions.length > 1" @click="deleteAllSessions()">
+                              v-if="sessions.length > 1" @click="deleteAllSessions()"
+          >
             <span v-if="deletingAll === 'completed'">Deleted</span>
             <span v-else-if="deletingAll === 'failed'">Failed</span>
-            <span v-else><font-awesome-icon icon="trash"/>&nbsp;Delete</span>
+            <span v-else><font-awesome-icon icon="trash" />&nbsp;Delete</span>
           </sba-confirm-button>
         </th>
       </tr>
@@ -39,28 +40,31 @@
     <tr v-for="session in sessions" :key="session.id">
       <td>
         <router-link v-text="session.id"
-                     :to="{ name: 'instances/sessions', params: { 'instanceId' : instance.id}, query: { sessionId : session.id } }"/>
+                     :to="{ name: 'instances/sessions', params: { 'instanceId' : instance.id}, query: { sessionId : session.id } }"
+        />
       </td>
-      <td v-text="session.creationTime.format('L HH:mm:ss.SSS')"/>
-      <td v-text="session.lastAccessedTime.format('L HH:mm:ss.SSS')"/>
+      <td v-text="session.creationTime.format('L HH:mm:ss.SSS')" />
+      <td v-text="session.lastAccessedTime.format('L HH:mm:ss.SSS')" />
       <td>
         <span v-if="session.expired" class="tag is-info">Expired</span>
       </td>
       <td>
-        <span v-if="session.maxInactiveInterval >= 0" v-text="`${session.maxInactiveInterval}s`"/>
+        <span v-if="session.maxInactiveInterval >= 0" v-text="`${session.maxInactiveInterval}s`" />
         <span v-else>unlimited</span>
       </td>
       <td>
         <span class="tag" v-for="name in session.attributeNames" :key="`${session.id}-${name}`"
-              v-text="name"/>
+              v-text="name"
+        />
       </td>
       <td>
         <button class="button"
                 :class="{ 'is-loading' : deleting[session.id] === 'executing', 'is-info' : deleting[session.id] === 'completed', 'is-danger' : deleting[session.id] === 'failed' }"
-                :disabled="session.id in deleting" @click="deleteSession(session.id)">
+                :disabled="session.id in deleting" @click="deleteSession(session.id)"
+        >
           <span v-if="deleting[session.id] === 'completed'">Deleted</span>
           <span v-else-if="deleting[session.id] === 'failed'">Failed</span>
-          <span v-else><font-awesome-icon icon="trash"/>&nbsp;Delete</span>
+          <span v-else><font-awesome-icon icon="trash" />&nbsp;Delete</span>
         </button>
       </td>
     </tr>

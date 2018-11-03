@@ -20,10 +20,10 @@
       <div v-if="error" class="message is-warning">
         <div class="message-body">
           <strong>
-            <font-awesome-icon class="has-text-warning" icon="exclamation-triangle"/>
+            <font-awesome-icon class="has-text-warning" icon="exclamation-triangle" />
             Server connection failed.
           </strong>
-          <p v-text="error.message"/>
+          <p v-text="error.message" />
         </div>
       </div>
       <div class="level applications-stats">
@@ -46,13 +46,13 @@
           </div>
           <div v-else>
             <p class="heading">instances down</p>
-            <p class="title has-text-danger" v-text="downCount"/>
+            <p class="title has-text-danger" v-text="downCount" />
           </div>
         </div>
       </div>
       <div class="application-group" v-for="group in statusGroups" :key="group.status">
-        <p class="heading" v-text="group.status"/>
-        <applications-list :applications="group.applications" :selected="selected"/>
+        <p class="heading" v-text="group.status" />
+        <applications-list :applications="group.applications" :selected="selected" />
       </div>
       <div v-if="statusGroups.length === 0">
         <p class="is-muted">No applications registered.</p>
@@ -62,7 +62,9 @@
 </template>
 
 <script>
-  import * as _ from 'lodash';
+  import groupBy from 'lodash/groupBy';
+  import sortBy from 'lodash/sortBy';
+  import transform from 'lodash/transform';
   import applicationsList from './applications-list';
   import handle from './handle';
 
@@ -73,7 +75,7 @@
         default: () => [],
       },
       error: {
-        type: null,
+        type: Error,
         default: null
       },
       selected: {
@@ -81,16 +83,15 @@
         default: null
       }
     },
-    components: {
-      applicationsList,
-    },
+    // eslint-disable-next-line vue/no-unused-components
+    components: {applicationsList},
     computed: {
       statusGroups() {
-        const byStatus = _.groupBy(this.applications, application => application.status);
-        const list = _.transform(byStatus, (result, value, key) => {
-          result.push({status: key, applications: _.sortBy(value, [application => application.name])})
+        const byStatus = groupBy(this.applications, application => application.status);
+        const list = transform(byStatus, (result, value, key) => {
+          result.push({status: key, applications: sortBy(value, [application => application.name])})
         }, []);
-        return _.sortBy(list, [item => item.status]);
+        return sortBy(list, [item => item.status]);
       },
       applicationsCount() {
         return this.applications.length;
@@ -126,5 +127,4 @@
   .application-group {
     margin: $gap 0;
   }
-
 </style>

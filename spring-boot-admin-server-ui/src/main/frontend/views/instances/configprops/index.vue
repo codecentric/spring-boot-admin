@@ -19,10 +19,10 @@
     <div v-if="error" class="message is-danger">
       <div class="message-body">
         <strong>
-          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
           Fetching configuration properties failed.
         </strong>
-        <p v-text="error.message"/>
+        <p v-text="error.message" />
       </div>
     </div>
     <div class="field has-addons" v-if="configprops">
@@ -33,12 +33,14 @@
     <sba-panel :header-sticks-below="['#navigation']"
                v-for="bean in configurationPropertiesBeans"
                :key="bean.name"
-               :title=" bean.name">
+               :title=" bean.name"
+    >
       <table class="table is-fullwidth"
-             v-if="Object.keys(bean.properties).length > 0">
+             v-if="Object.keys(bean.properties).length > 0"
+      >
         <tr v-for="(value, name) in bean.properties" :key="`${bean.name}-${name}`">
-          <td v-text="name"/>
-          <td class="is-breakable" v-text="value"/>
+          <td v-text="name" />
+          <td class="is-breakable" v-text="value" />
         </tr>
       </table>
       <p class="is-muted" v-else>No properties set</p>
@@ -48,12 +50,15 @@
 
 <script>
   import Instance from '@/services/instance';
-  import _ from 'lodash';
+  import isEmpty from 'lodash/isEmpty';
+  import mapKeys from 'lodash/mapKeys';
+  import pickBy from 'lodash/pickBy';
+  import toPairs from 'lodash/toPairs';
 
   const filterProperty = (needle) => (value, name) => {
     return name.toString().toLowerCase().includes(needle) || value.toString().toLowerCase().includes(needle);
   };
-  const filterProperties = (needle, properties) => _.pickBy(properties, filterProperty(needle));
+  const filterProperties = (needle, properties) => pickBy(properties, filterProperty(needle));
   const filterConfigurationProperties = (needle) => (propertySource) => {
     if (!propertySource || !propertySource.properties) {
       return null;
@@ -63,7 +68,6 @@
       properties: filterProperties(needle, propertySource.properties)
     };
   };
-
 
   function flattenBean(obj, prefix = '') {
     if (Object(obj) !== obj) {
@@ -79,10 +83,10 @@
         ).reduce((c, n) => ({...c, ...n}), {});
       }
     } else {
-      if (_.isEmpty(obj)) {
+      if (isEmpty(obj)) {
         return {[prefix]: {}};
       } else {
-        return _.toPairs(obj).map(
+        return toPairs(obj).map(
           ([name, value]) => flattenBean(value, prefix ? `${prefix}.${name}` : name)
         ).reduce((c, n) => ({...c, ...n}), {});
       }
@@ -99,7 +103,7 @@
 
       for (const beanName of beanNames) {
         const bean = context.beans[beanName];
-        const properties = _.mapKeys(flattenBean(bean.properties), (value, key) => `${bean.prefix}.${key}`);
+        const properties = mapKeys(flattenBean(bean.properties), (value, key) => `${bean.prefix}.${key}`);
         propertySources.push({
           name: contextNames.length > 1 ? `${contextName}: ${beanName}` : beanName,
           properties

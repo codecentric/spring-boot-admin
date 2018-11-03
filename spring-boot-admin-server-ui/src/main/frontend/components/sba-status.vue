@@ -17,9 +17,10 @@
 <template>
   <div class="application-status">
     <font-awesome-icon :icon="icon" class="application-status__icon"
-                       :class="`application-status__icon--${status}`"/>
+                       :class="`application-status__icon--${status}`"
+    />
     <small v-if="date">
-      <sba-time-ago :date="date"/>
+      <sba-time-ago :date="date" />
     </small>
   </div>
 </template>
@@ -37,16 +38,15 @@
   };
 
   export default {
-    components: {
-      sbaTimeAgo,
-    },
+    // eslint-disable-next-line vue/no-unused-components
+    components: {sbaTimeAgo},
     props: {
       status: {
         type: String,
         default: 'UNKNOWN'
       },
       date: {
-        type: null,
+        type: [String, Date, Number],
         default: null
       },
     },

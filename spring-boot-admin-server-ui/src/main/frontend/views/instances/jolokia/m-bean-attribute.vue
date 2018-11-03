@@ -17,38 +17,40 @@
 <template>
   <div class="field">
     <label class="label">
-      <span v-text="name"/>
-      <small class="is-muted has-text-weight-normal" v-text="descriptor.type"/>
+      <span v-text="name" />
+      <small class="is-muted has-text-weight-normal" v-text="descriptor.type" />
     </label>
     <div class="field-body">
       <div class="field is-expanded">
         <div class="field has-addons">
           <div class="control">
             <button class="button" :disabled="!descriptor.rw" @click="edit">
-              <font-awesome-icon icon="pencil-alt"/>
+              <font-awesome-icon icon="pencil-alt" />
             </button>
           </div>
           <div class="control is-expanded has-icons-right">
             <template v-if="!editing">
               <input v-if="!hasComplexValue" class="input" type="text" readonly :value="value" @dblclick="edit">
-              <textarea v-else class="input m-bean-attribute--text" readonly v-text="jsonValue"/>
+              <textarea v-else class="input m-bean-attribute--text" readonly v-text="jsonValue" />
               <span class="icon is-right has-text-warning" v-if="error">
-                <font-awesome-icon icon="exclamation-triangle"/>
+                <font-awesome-icon icon="exclamation-triangle" />
               </span>
             </template>
             <template v-else>
               <input v-if="!hasComplexValue" class="input" type="text" ref="input"
-                     v-model="input" @keyup.esc="cancel" @keyup.enter="save">
+                     v-model="input" @keyup.esc="cancel" @keyup.enter="save"
+              >
             </template>
           </div>
         </div>
-        <div class="help" v-text="descriptor.desc"/>
+        <div class="help" v-text="descriptor.desc" />
       </div>
     </div>
     <div class="control" v-if="editing">
       <button class="button is-light is-small" @click="cancel">Cancel</button>
       <button class="button is-primary is-small" :class="{'is-loading' : saving}" @click="save"
-              :disabled="value === input">Save
+              :disabled="value === input"
+      >Save
       </button>
     </div>
   </div>
@@ -66,6 +68,7 @@
         required: true
       },
       value: {
+        // eslint-disable-next-line vue/require-prop-type-constructor
         type: null,
         default: null
       },

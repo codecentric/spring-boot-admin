@@ -18,9 +18,10 @@
   <table class="health-details table is-fullwidth">
     <tr>
       <th colspan="2">
-        <span v-text="name"/>
+        <span v-text="name" />
         <span class="health-details__status" :class="`health-details__status--${health.status}`"
-              v-text="health.status"/>
+              v-text="health.status"
+        />
       </th>
     </tr>
 
@@ -28,9 +29,9 @@
       <td class="health-details__nested" colspan="2">
         <table class="health-details table is-fullwidth">
           <tr class="health-details__detail" v-for="detail in details" :key="detail.name">
-            <td v-text="detail.name"/>
-            <td v-if="name === 'diskSpace'" v-text="prettyBytes(detail.value)"/>
-            <td class="is-breakable" v-else v-text="detail.value"/>
+            <td v-text="detail.name" />
+            <td v-if="name === 'diskSpace'" v-text="prettyBytes(detail.value)" />
+            <td class="is-breakable" v-else v-text="detail.value" />
           </tr>
         </table>
       </td>
@@ -38,14 +39,14 @@
 
     <tr v-for="child in childHealth" :key="child.name">
       <td class="health-details__nested" colspan="2">
-        <health-details :name="child.name" :health="child.value"/>
+        <health-details :name="child.name" :health="child.value" />
       </td>
     </tr>
   </table>
 </template>
 
 <script>
-  import _ from 'lodash';
+  import entries from 'lodash/entries';
   import prettyBytes from 'pretty-bytes';
 
   const isChildHealth = (value) => {
@@ -70,7 +71,7 @@
     computed: {
       details() {
         if (this.health.details) {
-          return _.entries(this.health.details)
+          return entries(this.health.details)
             .filter(([, value]) => !isChildHealth(value))
             .map(([name, value]) => ({name, value}));
         }
@@ -78,7 +79,7 @@
       },
       childHealth() {
         if (this.health.details) {
-          return _.entries(this.health.details)
+          return entries(this.health.details)
             .filter(([, value]) => isChildHealth(value))
             .map(([name, value]) => ({name, value}));
         }

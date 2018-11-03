@@ -16,24 +16,24 @@
 
 <template>
   <div class="modal is-active">
-    <div class="modal-background" @click="abort"/>
+    <div class="modal-background" @click="abort" />
     <div class="modal-content">
       <div class="modal-card">
         <header class="modal-card-head">
-          <p class="modal-card-title" v-text="name"/>
+          <p class="modal-card-title" v-text="name" />
         </header>
 
         <template v-if="state === 'input-args'">
           <section class="modal-card-body" @keyup.ctrl.enter="invoke(args)">
             <div class="field" v-for="(arg, idx) in descriptor.args" :key="arg.name">
               <label class="label">
-                <span v-text="arg.name"/>
-                <small class="is-muted has-text-weight-normal" v-text="arg.type"/>
+                <span v-text="arg.name" />
+                <small class="is-muted has-text-weight-normal" v-text="arg.type" />
               </label>
               <div class="control">
                 <input type="text" class="input" v-model="args[idx]">
               </div>
-              <p class="help" v-text="arg.desc"/>
+              <p class="help" v-text="arg.desc" />
             </div>
           </section>
           <footer class="modal-card-foot">
@@ -60,7 +60,7 @@
                 <strong>Execution successful.</strong>
               </div>
             </div>
-            <pre v-text="result"/>
+            <pre v-text="result" />
           </section>
           <footer class="modal-card-foot">
             <div class="field is-grouped is-grouped-right">
@@ -77,16 +77,19 @@
               <div class="message-body">
                 <strong>
                   <font-awesome-icon class="has-text-danger"
-                                     icon="exclamation-triangle"/>
+                                     icon="exclamation-triangle"
+                  />
                   Execution failed.
                 </strong>
-                <p v-text="error.message"/>
+                <p v-text="error.message" />
               </div>
             </div>
             <pre v-if="error.stacktrace"
-                 v-text="error.stacktrace"/>
+                 v-text="error.stacktrace"
+            />
             <pre v-if="error.response && error.response.data"
-                 v-text="error.response.data"/>
+                 v-text="error.response.data"
+            />
           </section>
           <footer class="modal-card-foot">
             <div class="field is-grouped is-grouped-right">
@@ -114,6 +117,7 @@
         required: true
       },
       value: {
+        // eslint-disable-next-line vue/require-prop-type-constructor
         type: null,
         default: null
       },

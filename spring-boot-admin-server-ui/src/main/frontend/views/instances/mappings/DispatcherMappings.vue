@@ -20,7 +20,7 @@
       <template v-for="(handlerMappings, dispatcherName) in this.dispatchers">
         <thead :key="`${dispatcherName}`">
           <tr>
-            <th v-text="dispatcherName" colspan="99"/>
+            <th v-text="dispatcherName" colspan="99" />
           </tr>
         </thead>
         <tbody :key="`${dispatcherName}_mappings`">
@@ -28,67 +28,74 @@
             <template v-if="mapping.details">
               <tr :key="`${dispatcherName}_${idx}_pattern`">
                 <td
-                  :rowspan="2 + countNonEmptyArrays(mapping.details.requestMappingConditions, 'methods', 'consumes', 'produces', 'params', 'headers')">
+                  :rowspan="2 + countNonEmptyArrays(mapping.details.requestMappingConditions, 'methods', 'consumes', 'produces', 'params', 'headers')"
+                >
                   <div v-for="pattern in mapping.details.requestMappingConditions.patterns"
-                       :key="`${dispatcherName}_${idx}_${pattern}`">
-                    <code v-text="pattern"/>
+                       :key="`${dispatcherName}_${idx}_${pattern}`"
+                  >
+                    <code v-text="pattern" />
                   </div>
                 </td>
               </tr>
 
               <tr v-if="mapping.details.requestMappingConditions.methods.length"
-                  :key="`${dispatcherName}_${idx}_methods`">
+                  :key="`${dispatcherName}_${idx}_methods`"
+              >
                 <th class="is-narrow">
                   <small>Methods</small>
                 </th>
-                <td class="monospaced is-breakable" v-text="mapping.details.requestMappingConditions.methods.join(', ')"/>
+                <td class="monospaced is-breakable" v-text="mapping.details.requestMappingConditions.methods.join(', ')" />
               </tr>
 
               <tr v-if="mapping.details.requestMappingConditions.consumes.length"
-                  :key="`${dispatcherName}_${idx}_consumes`">
+                  :key="`${dispatcherName}_${idx}_consumes`"
+              >
                 <th class="is-narrow">
                   <small>Consumes</small>
                 </th>
-                <td class="monospaced is-breakable" v-text="mediaTypePredicates(mapping.details.requestMappingConditions.consumes)"/>
+                <td class="monospaced is-breakable" v-text="mediaTypePredicates(mapping.details.requestMappingConditions.consumes)" />
               </tr>
 
               <tr v-if="mapping.details.requestMappingConditions.produces.length"
-                  :key="`${dispatcherName}_${idx}_produces`">
+                  :key="`${dispatcherName}_${idx}_produces`"
+              >
                 <th class="is-narrow">
                   <small>Produces</small>
                 </th>
-                <td class="monospaced is-breakable" v-text="mediaTypePredicates(mapping.details.requestMappingConditions.produces)"/>
+                <td class="monospaced is-breakable" v-text="mediaTypePredicates(mapping.details.requestMappingConditions.produces)" />
               </tr>
 
               <tr v-if="mapping.details.requestMappingConditions.params.length"
-                  :key="`${dispatcherName}_${idx}_params`">
+                  :key="`${dispatcherName}_${idx}_params`"
+              >
                 <th class="is-narrow">
                   <small>Parameters</small>
                 </th>
-                <td class="monospaced is-breakable" v-text="paramPredicates(mapping.details.requestMappingConditions.params)"/>
+                <td class="monospaced is-breakable" v-text="paramPredicates(mapping.details.requestMappingConditions.params)" />
               </tr>
 
               <tr v-if="mapping.details.requestMappingConditions.headers.length"
-                  :key="`${dispatcherName}_${idx}_headers`">
+                  :key="`${dispatcherName}_${idx}_headers`"
+              >
                 <th class="is-narrow">
                   <small>Headers</small>
                 </th>
-                <td class="monospaced is-breakable" v-text="paramPredicates(mapping.details.requestMappingConditions.headers)"/>
+                <td class="monospaced is-breakable" v-text="paramPredicates(mapping.details.requestMappingConditions.headers)" />
               </tr>
 
               <tr :key="`${dispatcherName}_${idx}_handler`">
                 <th class="is-narrow">
                   <small>Handler</small>
                 </th>
-                <td class="is-breakable" v-text="mapping.handler"/>
+                <td class="is-breakable" v-text="mapping.handler" />
               </tr>
             </template>
             <tr v-else :key="`${dispatcherName}_${idx}`">
-              <td><code v-text="mapping.predicate"/></td>
+              <td><code v-text="mapping.predicate" /></td>
               <th class="is-narrow is-breakable">
                 <small>Handler</small>
               </th>
-              <td v-text="mapping.handler" colspan="4"/>
+              <td v-text="mapping.handler" colspan="4" />
             </tr>
           </template>
         </tbody>

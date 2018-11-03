@@ -17,21 +17,21 @@
 <template>
   <section class="section">
     <div class="details-header">
-      <h1 class="title" v-if="instance" v-text="instance.registration.name"/>
-      <h2 class="subtitle is-5" v-if="instance">Id: <span v-text="instance.id"/></h2>
-      <sba-tags v-if="instance" :tags="instance.tags"/>
+      <h1 class="title" v-if="instance" v-text="instance.registration.name" />
+      <h2 class="subtitle is-5" v-if="instance">Id: <span v-text="instance.id" /></h2>
+      <sba-tags v-if="instance" :tags="instance.tags" />
       <div class="details-header__urls">
         <a class="button is-small " :href="instance.registration.serviceUrl">
-          <font-awesome-icon icon="home"/>&nbsp;
-          <span v-text="instance.registration.serviceUrl"/>
+          <font-awesome-icon icon="home" />&nbsp;
+          <span v-text="instance.registration.serviceUrl" />
         </a>
         <a class="button is-small " :href="instance.registration.managementUrl">
-          <font-awesome-icon icon="wrench"/>&nbsp;
-          <span v-text="instance.registration.managementUrl"/>
+          <font-awesome-icon icon="wrench" />&nbsp;
+          <span v-text="instance.registration.managementUrl" />
         </a>
         <a class="button is-small " :href="instance.registration.healthUrl">
-          <font-awesome-icon icon="heartbeat"/>&nbsp;
-          <span v-text="instance.registration.healthUrl"/>
+          <font-awesome-icon icon="heartbeat" />&nbsp;
+          <span v-text="instance.registration.healthUrl" />
         </a>
       </div>
     </div>
@@ -39,50 +39,51 @@
     <div v-if="error" class="message is-danger">
       <div class="message-body">
         <strong>
-          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
           Fetching metrics index failed.
         </strong>
-        <p v-text="error.message"/>
+        <p v-text="error.message" />
       </div>
     </div>
     <div class="columns is-desktop">
       <div class="column is-half-desktop">
-        <details-info v-if="hasInfo" :instance="instance"/>
-        <details-metadata v-if="hasMetadata" :instance="instance"/>
+        <details-info v-if="hasInfo" :instance="instance" />
+        <details-metadata v-if="hasMetadata" :instance="instance" />
       </div>
       <div class="column is-half-desktop">
-        <details-health :instance="instance"/>
-      </div>
-    </div>
-    <div class="columns is-desktop">
-      <div class="column is-half-desktop">
-        <details-process v-if="hasProcess" :instance="instance"/>
-        <details-gc v-if="hasGc" :instance="instance"/>
-      </div>
-      <div class="column is-half-desktop">
-        <details-threads v-if="hasThreads" :instance="instance"/>
+        <details-health :instance="instance" />
       </div>
     </div>
     <div class="columns is-desktop">
       <div class="column is-half-desktop">
-        <details-memory v-if="hasMemory" :instance="instance" type="heap"/>
+        <details-process v-if="hasProcess" :instance="instance" />
+        <details-gc v-if="hasGc" :instance="instance" />
       </div>
       <div class="column is-half-desktop">
-        <details-memory v-if="hasMemory" :instance="instance" type="nonheap"/>
+        <details-threads v-if="hasThreads" :instance="instance" />
       </div>
     </div>
     <div class="columns is-desktop">
       <div class="column is-half-desktop">
-        <details-datasources v-if="hasDatasources" :instance="instance"/>
+        <details-memory v-if="hasMemory" :instance="instance" type="heap" />
       </div>
       <div class="column is-half-desktop">
-        <details-caches v-if="hasCaches" :instance="instance"/>
+        <details-memory v-if="hasMemory" :instance="instance" type="nonheap" />
+      </div>
+    </div>
+    <div class="columns is-desktop">
+      <div class="column is-half-desktop">
+        <details-datasources v-if="hasDatasources" :instance="instance" />
+      </div>
+      <div class="column is-half-desktop">
+        <details-caches v-if="hasCaches" :instance="instance" />
       </div>
     </div>
   </section>
 </template>
 
 <script>
+
   import Instance from '@/services/instance';
   import detailsCaches from './details-caches';
   import detailsDatasources from './details-datasources';
@@ -95,6 +96,7 @@
   import detailsThreads from './details-threads';
 
   export default {
+    /* eslint-disable vue/no-unused-components */
     components: {
       detailsHealth,
       detailsInfo,

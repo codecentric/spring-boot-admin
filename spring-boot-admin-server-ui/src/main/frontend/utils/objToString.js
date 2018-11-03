@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import _ from 'lodash';
 
-const nonEmptyComplexValue = value => (Array.isArray(value) || _.isObject(value)) && !_.isEmpty(value);
+import isEmpty from 'lodash/isEmpty';
+import isObject from 'lodash/isObject';
+
+const nonEmptyComplexValue = value => (Array.isArray(value) || isObject(value)) && !isEmpty(value);
 
 const objToString = (obj, indent = '') => {
   if (Array.isArray(obj)) {
-    if (_.isEmpty(obj)) {
+    if (isEmpty(obj)) {
       return indent + '[]';
     }
 
@@ -31,8 +33,8 @@ const objToString = (obj, indent = '') => {
     }).join('\n');
   }
 
-  if (_.isObject(obj)) {
-    if (_.isEmpty(obj)) {
+  if (isObject(obj)) {
+    if (isEmpty(obj)) {
       return indent + '{}';
     }
 

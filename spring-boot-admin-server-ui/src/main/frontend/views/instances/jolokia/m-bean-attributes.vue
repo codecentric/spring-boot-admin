@@ -19,15 +19,16 @@
     <div v-if="error" class="message is-danger">
       <div class="message-body">
         <strong>
-          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
           Fetching attributes failed.
         </strong>
-        <p v-text="error.message"/>
+        <p v-text="error.message" />
       </div>
     </div>
     <m-bean-attribute v-for="(attribute, name) in mBean.attr" :key="`attr-${name}`"
                       :name="name" :descriptor="attribute" :value="attributeValues && attributeValues[name]"
-                      :on-save-value="value => writeAttribute(name, value)"/>
+                      :on-save-value="value => writeAttribute(name, value)"
+    />
   </div>
 </template>
 
@@ -51,6 +52,7 @@
         required: true
       }
     },
+    // eslint-disable-next-line vue/no-unused-components
     components: {mBeanAttribute},
     data: () => ({
       attributeValues: null,

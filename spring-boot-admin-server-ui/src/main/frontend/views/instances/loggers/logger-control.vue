@@ -17,13 +17,19 @@
 <template>
   <div class="field is-grouped logger-control">
     <div class="control buttons has-addons">
-      <button class="button logger-control__level" :class="cssClass(level)"
-              v-for="level in levelOptions" :key="level" v-text="level"
-              @click.stop="selectLevel(level)"/>
+      <button
+        v-for="levelOption in levelOptions"
+        :key="levelOption"
+        class="button logger-control__level"
+        :class="cssClass(levelOption)"
+        v-text="levelOption"
+        @click.stop="selectLevel(levelOption)"
+      />
     </div>
     <div class="control">
       <button class="button is-light" :class="{ 'is-loading' : isLoading === null }"
-              :disabled="!configured || !allowReset" @click.stop="selectLevel(null)">
+              :disabled="!configured || !allowReset" @click.stop="selectLevel(null)"
+      >
         Reset
       </button>
     </div>

@@ -19,13 +19,13 @@
     <hex-mesh :items="applications" :class-for-item="classForApplication" @click="select">
       <div class="hex__body application" slot="item" slot-scope="application" :key="application.name">
         <div class="application__header application__time-ago is-muted">
-          <sba-time-ago :date="application.statusTimestamp"/>
+          <sba-time-ago :date="application.statusTimestamp" />
         </div>
         <div class="application__body">
-          <h1 class="application__name" v-text="application.name"/>
-          <p class="application__instances is-muted"><span v-text="application.instances.length"/> instances</p>
+          <h1 class="application__name" v-text="application.name" />
+          <p class="application__instances is-muted"><span v-text="application.instances.length" /> instances</p>
         </div>
-        <h2 class="application__footer application__version" v-text="application.buildVersion"/>
+        <h2 class="application__footer application__version" v-text="application.buildVersion" />
       </div>
     </hex-mesh>
   </section>
@@ -35,6 +35,7 @@
   import hexMesh from './hex-mesh';
 
   export default {
+    // eslint-disable-next-line vue/no-unused-components
     components: {hexMesh},
     props: {
       applications: {
@@ -42,7 +43,7 @@
         default: () => [],
       },
       error: {
-        type: null,
+        type: Error,
         default: null
       }
     },

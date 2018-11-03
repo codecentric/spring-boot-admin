@@ -32,23 +32,27 @@
         <tr class="is-selectable"
             :class="{ 'httptraces__trace---is-detailed' : showDetails[trace.key] }"
             @click="showDetails[trace.key] ? $delete(showDetails, trace.key) : $set(showDetails, trace.key, true)"
-            :key="trace.key">
-          <td class="httptraces__trace-timestamp" v-text="trace.timestamp.format('L HH:mm:ss.SSS')"/>
-          <td class="httptraces__trace-method" v-text="trace.request.method"/>
-          <td class="httptraces__trace-uri" v-text="trace.request.uri"/>
+            :key="trace.key"
+        >
+          <td class="httptraces__trace-timestamp" v-text="trace.timestamp.format('L HH:mm:ss.SSS')" />
+          <td class="httptraces__trace-method" v-text="trace.request.method" />
+          <td class="httptraces__trace-uri" v-text="trace.request.uri" />
           <td class="httptraces__trace-status">
             <span v-text="trace.response.status" class="tag"
-                  :class="{ 'is-success' : trace.isSuccess(), 'is-warning' : trace.isClientError(), 'is-danger' : trace.isServerError() }"/>
+                  :class="{ 'is-success' : trace.isSuccess(), 'is-warning' : trace.isClientError(), 'is-danger' : trace.isServerError() }"
+            />
           </td>
-          <td class="httptraces__trace-contentType" v-text="trace.contentType"/>
+          <td class="httptraces__trace-contentType" v-text="trace.contentType" />
           <td class="httptraces__trace-contentLength"
-              v-text="trace.contentLength ? prettyBytes(trace.contentLength) : ''"/>
+              v-text="trace.contentLength ? prettyBytes(trace.contentLength) : ''"
+          />
           <td class="httptraces__trace-timeTaken"
-              v-text="trace.timeTaken !== null && typeof trace.timeTaken !== 'undefined' ? `${trace.timeTaken} ms` : ''"/>
+              v-text="trace.timeTaken !== null && typeof trace.timeTaken !== 'undefined' ? `${trace.timeTaken} ms` : ''"
+          />
         </tr>
         <tr :key="`${trace.key}-detail`" v-if="showDetails[trace.key]">
           <td colspan="7">
-            <pre class="httptraces__trace-detail" v-text="toJson(trace)"/>
+            <pre class="httptraces__trace-detail" v-text="toJson(trace)" />
           </td>
         </tr>
       </template>

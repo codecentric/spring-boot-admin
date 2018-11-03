@@ -16,7 +16,7 @@
 
 <template>
   <div class="threads-chart">
-    <svg class="threads-chart__svg"/>
+    <svg class="threads-chart__svg" />
   </div>
 </template>
 

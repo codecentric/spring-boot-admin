@@ -16,8 +16,8 @@
 
 <template>
   <div id="app">
-    <sba-navbar :views="mainViews" :applications="applications" :error="error"/>
-    <router-view :views="childViews" :applications="applications" :error="error"/>
+    <sba-navbar :views="mainViews" :applications="applications" :error="error" />
+    <router-view :views="childViews" :applications="applications" :error="error" />
   </div>
 </template>
 
@@ -35,10 +35,11 @@
         default: () => [],
       },
       error: {
-        type: null,
+        type: Error,
         default: null
       }
     },
+    // eslint-disable-next-line vue/no-unused-components
     components: {sbaNavbar},
     computed: {
       mainViews() {

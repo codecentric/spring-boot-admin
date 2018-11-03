@@ -17,7 +17,7 @@
 <template>
   <span>
     <span class="has-text-warning" v-if="error">
-      <font-awesome-icon icon="exclamation-triangle"/>
+      <font-awesome-icon icon="exclamation-triangle" />
     </span>
     <span :class="{ 'badge is-badge-danger' : downCount > 0 }" :data-badge="downCount">
       Applications
@@ -33,7 +33,7 @@
         default: () => [],
       },
       error: {
-        type: null,
+        type: Error,
         default: null
       }
     },

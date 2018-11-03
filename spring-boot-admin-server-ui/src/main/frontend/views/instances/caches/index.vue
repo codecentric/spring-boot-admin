@@ -17,18 +17,21 @@
 <template>
   <section class="section">
     <div
-      class="container">
+      class="container"
+    >
       <div
         v-if="error"
-        class="message is-danger">
+        class="message is-danger"
+      >
         <div class="message-body">
           <strong>
             <font-awesome-icon
               class="has-text-danger"
-              icon="exclamation-triangle"/>
+              icon="exclamation-triangle"
+            />
             Fetching caches failed.
           </strong>
-          <p v-text="error.message"/>
+          <p v-text="error.message" />
         </div>
       </div>
       <div class="field-body">
@@ -38,18 +41,19 @@
               class="input"
               type="search"
               placeholder="name filter"
-              v-model="filter">
+              v-model="filter"
+            >
           </p>
           <p class="control">
             <span class="button is-static">
-              <span v-text="filteredCaches.length"/>
+              <span v-text="filteredCaches.length" />
               /
-              <span v-text="caches.length"/>
+              <span v-text="caches.length" />
             </span>
           </p>
         </div>
       </div>
-      <caches-list :instance="instance" :caches="filteredCaches" :is-loading="isLoading"/>
+      <caches-list :instance="instance" :caches="filteredCaches" :is-loading="isLoading" />
     </div>
   </section>
 </template>
@@ -57,13 +61,14 @@
 <script>
   import Instance from '@/services/instance';
   import CachesList from '@/views/instances/caches/caches-list';
-  import _ from 'lodash';
+  import flatMap from 'lodash/flatMap';
+  import isEmpty from 'lodash/isEmpty';
 
   const flattenCaches = cacheData => {
-    if (_.isEmpty(cacheData.cacheManagers)) {
+    if (isEmpty(cacheData.cacheManagers)) {
       return [];
     }
-    const mappend = _.flatMap(
+    const mappend = flatMap(
       Object.entries(cacheData.cacheManagers),
       ([cacheManagerName, v]) => Object.keys(v.caches)
         .map(cacheName => ({cacheManager: cacheManagerName, name: cacheName, key: `${cacheManagerName}:${cacheName}`}))

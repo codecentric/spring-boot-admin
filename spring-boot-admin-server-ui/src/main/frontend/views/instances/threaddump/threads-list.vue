@@ -20,75 +20,80 @@
       <tr>
         <th class="threads__thread-name">Name</th>
         <th class="threads__timeline">
-          <svg class="threads__scale" height="24px"/>
+          <svg class="threads__scale" height="24px" />
         </th>
       </tr>
     </thead>
     <tbody>
       <template v-for="thread in threadTimelines">
         <tr class="is-selectable" :key="thread.threadId"
-            @click="showDetails[thread.threadId] ? $delete(showDetails, thread.threadId) : $set(showDetails, thread.threadId, true)">
+            @click="showDetails[thread.threadId] ? $delete(showDetails, thread.threadId) : $set(showDetails, thread.threadId, true)"
+        >
           <td class="threads__thread-name">
-            <thread-tag :thread-state="thread.threadState"/>
-            <span v-text="thread.threadName"/>
+            <thread-tag :thread-state="thread.threadState" />
+            <span v-text="thread.threadName" />
           </td>
           <td class="threads__timeline">
-            <svg :id="`thread-${thread.threadId}`" height="26px"/>
+            <svg :id="`thread-${thread.threadId}`" height="26px" />
           </td>
         </tr>
         <tr :key="`${thread.threadId}-detail`"
-            v-if="showDetails[thread.threadId]">
+            v-if="showDetails[thread.threadId]"
+        >
           <td colspan="2">
             <table class="threads__thread-details table is-narrow is-fullwidth has-background-white-ter">
               <tr>
                 <td>Thread Id</td>
-                <td v-text="thread.threadId"/>
+                <td v-text="thread.threadId" />
               </tr>
               <tr>
                 <td>Thread name</td>
-                <td v-text="thread.threadName"/>
+                <td v-text="thread.threadName" />
               </tr>
               <tr>
                 <td>Thread state</td>
-                <td v-text="thread.threadState"/>
+                <td v-text="thread.threadState" />
               </tr>
               <template v-if="thread.details !== null">
                 <tr>
                   <td>Blocked count</td>
-                  <td v-text="thread.details.blockedCount"/>
+                  <td v-text="thread.details.blockedCount" />
                 </tr>
                 <tr>
                   <td>Blocked time</td>
-                  <td v-text="thread.details.blockedTime"/>
+                  <td v-text="thread.details.blockedTime" />
                 </tr>
                 <tr>
                   <td>Waited count</td>
-                  <td v-text="thread.details.waitedCount"/>
+                  <td v-text="thread.details.waitedCount" />
                 </tr>
                 <tr>
                   <td>Waited time</td>
-                  <td v-text="thread.details.waitedTime"/>
+                  <td v-text="thread.details.waitedTime" />
                 </tr>
                 <tr>
                   <td>Lock name</td>
-                  <td v-text="thread.details.lockName"/>
+                  <td v-text="thread.details.lockName" />
                 </tr>
                 <tr>
                   <td>Lock owner id</td>
-                  <td v-text="thread.details.lockOwnerId"/>
+                  <td v-text="thread.details.lockOwnerId" />
                 </tr>
                 <tr>
                   <td>Lock owner name</td>
-                  <td v-text="thread.details.lockOwnerName"/>
+                  <td v-text="thread.details.lockOwnerName" />
                 </tr>
                 <tr v-if="thread.details.stackTrace.length > 0">
                   <td colspan="2">Stacktrace
                     <pre class="threads__thread-stacktrace"><template
-                      v-for="(frame, idx) in thread.details.stackTrace"><span
+                      v-for="(frame, idx) in thread.details.stackTrace"
+                    ><span
                       :key="`frame-${thread.threadId}-${idx}`"
-                      v-text="`${frame.className}.${frame.methodName}(${frame.fileName}:${frame.lineNumber})`"/> <span
+                      v-text="`${frame.className}.${frame.methodName}(${frame.fileName}:${frame.lineNumber})`"
+                    /> <span
                       :key="`frame-${thread.threadId}-${idx}-native`"
-                      class="tag is-dark" v-if="frame.nativeMethod">native</span>
+                      class="tag is-dark" v-if="frame.nativeMethod"
+                    >native</span>
                     </template></pre>
                   </td>
                 </tr>
@@ -102,7 +107,7 @@
 </template>
 <script>
   import d3 from '@/utils/d3';
-  import _ from 'lodash';
+  import entries from 'lodash/entries';
   import moment from 'moment';
   import threadTag from './thread-tag';
 
@@ -119,9 +124,8 @@
       showDetails: {},
       lastEndPosition: 0
     }),
-    components: {
-      threadTag
-    },
+    // eslint-disable-next-line vue/no-unused-components
+    components: {threadTag},
     watch: {
       threadTimelines: {
         deep: true,
@@ -131,7 +135,7 @@
     },
     methods: {
       getTimeExtent(timelines) {
-        return _.entries(timelines).map(([, value]) => value.timeline)
+        return entries(timelines).map(([, value]) => value.timeline)
           .map(timeline => ({
             start: timeline[0].start,
             end: timeline[timeline.length - 1].end
@@ -160,7 +164,7 @@
               .tickFormat(d => moment(d).format('HH:mm:ss'))
             );
 
-          _.entries(timelines).forEach(([threadId, value]) => {
+          entries(timelines).forEach(([threadId, value]) => {
             const svg = d3.select(`#thread-${threadId}`).attr('width', width);
             const d = svg.selectAll('rect').data(value.timeline);
 

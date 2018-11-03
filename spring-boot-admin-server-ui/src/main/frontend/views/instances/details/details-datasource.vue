@@ -20,34 +20,34 @@
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
             Fetching datasource metrics failed.
           </strong>
-          <p v-text="error.message"/>
+          <p v-text="error.message" />
         </div>
       </div>
       <div class="level datasource-current" v-if="current">
         <div class="level-item has-text-centered">
           <div>
             <p class="heading has-bullet has-bullet-info">Active connections</p>
-            <p v-text="current.active"/>
+            <p v-text="current.active" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
             <p class="heading">Min connections</p>
-            <p v-text="current.min"/>
+            <p v-text="current.min" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
             <p class="heading">Max connections</p>
-            <p v-if="current.max >= 0" v-text="current.max"/>
+            <p v-if="current.max >= 0" v-text="current.max" />
             <p v-else>unlimited</p>
           </div>
         </div>
       </div>
-      <datasource-chart v-if="chartData.length > 0" :data="chartData"/>
+      <datasource-chart v-if="chartData.length > 0" :data="chartData" />
     </div>
   </sba-panel>
 </template>
@@ -71,6 +71,7 @@
       }
     },
     mixins: [subscribing],
+    // eslint-disable-next-line vue/no-unused-components
     components: {datasourceChart},
     data: () => ({
       hasLoaded: false,

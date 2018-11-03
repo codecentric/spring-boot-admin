@@ -15,7 +15,6 @@
  */
 
 const {resolve} = require('path');
-const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const CopyPlugin = require('copy-webpack-plugin');
 
@@ -75,7 +74,6 @@ module.exports = {
         toType: 'dir',
         ignore: ['*.scss']
       }]),
-      new LodashModuleReplacementPlugin(),
       new BundleAnalyzerPlugin({
         analyzerMode: 'static',
         openAnalyzer: false,

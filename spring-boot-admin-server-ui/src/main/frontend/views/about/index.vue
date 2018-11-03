@@ -18,7 +18,7 @@
   <div class="section">
     <div class="container">
       <h1 class="title">About Spring Boot Admin</h1>
-      <h2 class="subtitle" v-if="version" v-text="`Version ${version}`"/>
+      <h2 class="subtitle" v-if="version" v-text="`Version ${version}`" />
       <div class="content">
         <p>
           This is an administration UI for Spring Boot applications.
@@ -26,12 +26,14 @@
         <p>
           To monitor applications, they must be registered at this server. This is either done by including the
           <a
-            :href="`${documentationBaseUrl}/#register-clients-via-spring-boot-admin`">
+            :href="`${documentationBaseUrl}/#register-clients-via-spring-boot-admin`"
+          >
             Spring Boot Admin Client
           </a>
           or using a
           <a
-            :href="`${documentationBaseUrl}/#discover-clients-via-spring-cloud-discovery`">
+            :href="`${documentationBaseUrl}/#discover-clients-via-spring-cloud-discovery`"
+          >
             Spring Cloud Discovery Client
           </a> implementation.
         </p>
@@ -47,18 +49,20 @@
         </p>
         <div class="about-links">
           <a class="button is-primary is-outlined"
-             :href="`${documentationBaseUrl}`">
-            <font-awesome-icon size="lg" icon="book"/>&nbsp;Reference Guide
+             :href="`${documentationBaseUrl}`"
+          >
+            <font-awesome-icon size="lg" icon="book" />&nbsp;Reference Guide
           </a>
           <a class="button is-black is-outlined" href="https://github.com/codecentric/spring-boot-admin">
-            <font-awesome-icon size="lg" :icon="['fab', 'github']"/>&nbsp;Sources
+            <font-awesome-icon size="lg" :icon="['fab', 'github']" />&nbsp;Sources
           </a>
           <a class="button is-stackoverflow is-outlined"
-             href="https://stackoverflow.com/questions/tagged/spring-boot-admin">
-            <font-awesome-icon size="lg" :icon="['fab', 'stack-overflow']"/>&nbsp;Stack Overflow
+             href="https://stackoverflow.com/questions/tagged/spring-boot-admin"
+          >
+            <font-awesome-icon size="lg" :icon="['fab', 'stack-overflow']" />&nbsp;Stack Overflow
           </a>
           <a class="button is-gitter is-outlined" href="https://gitter.im/codecentric/spring-boot-admin">
-            <font-awesome-icon size="lg" :icon="['fab', 'gitter']"/>&nbsp;Gitter
+            <font-awesome-icon size="lg" :icon="['fab', 'gitter']" />&nbsp;Gitter
           </a>
         </div>
       </div>
@@ -66,7 +70,8 @@
       <div class="content">
         <p>
           The source code of Spring Boot Admin is licensed under <a
-          href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>.
+            href="https://www.apache.org/licenses/LICENSE-2.0"
+          >Apache License 2.0</a>.
         </p>
         <p>
           Spring, Spring Boot and Spring Cloud are trademarks of <a href="https://pivotal.io/">Pivotal

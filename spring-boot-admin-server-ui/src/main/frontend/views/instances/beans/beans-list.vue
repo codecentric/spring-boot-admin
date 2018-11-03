@@ -21,26 +21,32 @@
         <tr
           class="is-selectable"
           :key="bean.name"
-          @click="showDetails[bean.name] ? $delete(showDetails, bean.name) : $set(showDetails, bean.name, true)">
+          @click="showDetails[bean.name] ? $delete(showDetails, bean.name) : $set(showDetails, bean.name, true)"
+        >
           <td class="is-breakable">
             <span
               v-text="bean.shortName"
-              :title="bean.name"/><br>
+              :title="bean.name"
+            /><br>
             <small
               class="is-muted"
               v-text="bean.shortType"
-              :title="bean.type"/>
+              :title="bean.type"
+            />
           </td>
           <td><span
             v-text="bean.scope"
-            class="tag"/></td>
+            class="tag"
+          /></td>
         </tr>
         <tr
           :key="`${bean.name}-detail`"
-          v-if="showDetails[bean.name]">
+          v-if="showDetails[bean.name]"
+        >
           <td
             colspan="2"
-            class="has-background-white-ter">
+            class="has-background-white-ter"
+          >
             <table class="table is-narrow is-fullwidth beans__bean-detail">
               <tbody>
                 <tr v-if="bean.name !== bean.shortName">
@@ -49,19 +55,23 @@
                   </th>
                   <td
                     class="is-breakable"
-                    v-text="bean.name"/>
+                    v-text="bean.name"
+                  />
                 </tr>
                 <tr
                   v-for="(alias, idx) in bean.aliases"
-                  :key="alias">
+                  :key="alias"
+                >
                   <th
                     v-if="idx === 0"
-                    :rowspan="bean.aliases.length">
+                    :rowspan="bean.aliases.length"
+                  >
                     <small>Aliases</small>
                   </th>
                   <td
                     class="is-breakable"
-                    v-text="alias"/>
+                    v-text="alias"
+                  />
                 </tr>
                 <tr v-if="bean.type !== bean.shortType">
                   <th>
@@ -69,7 +79,8 @@
                   </th>
                   <td
                     class="is-breakable"
-                    v-text="bean.type"/>
+                    v-text="bean.type"
+                  />
                 </tr>
                 <tr v-if="bean.resource">
                   <th>
@@ -77,19 +88,23 @@
                   </th>
                   <td
                     class="is-breakable"
-                    v-text="bean.resource"/>
+                    v-text="bean.resource"
+                  />
                 </tr>
                 <tr
                   v-for="(dependency, idx) in bean.dependencies"
-                  :key="dependency">
+                  :key="dependency"
+                >
                   <th
                     v-if="idx === 0"
-                    :rowspan="bean.dependencies.length">
+                    :rowspan="bean.dependencies.length"
+                  >
                     <small>Dependencies</small>
                   </th>
                   <td
                     class="is-breakable"
-                    v-text="dependency"/>
+                    v-text="dependency"
+                  />
                 </tr>
               </tbody>
             </table>
