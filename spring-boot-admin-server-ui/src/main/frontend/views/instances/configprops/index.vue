@@ -53,7 +53,6 @@
   import isEmpty from 'lodash/isEmpty';
   import mapKeys from 'lodash/mapKeys';
   import pickBy from 'lodash/pickBy';
-  import toPairs from 'lodash/toPairs';
 
   const filterProperty = (needle) => (value, name) => {
     return name.toString().toLowerCase().includes(needle) || value.toString().toLowerCase().includes(needle);
@@ -86,7 +85,7 @@
       if (isEmpty(obj)) {
         return {[prefix]: {}};
       } else {
-        return toPairs(obj).map(
+        return Object.entries(obj).map(
           ([name, value]) => flattenBean(value, prefix ? `${prefix}.${name}` : name)
         ).reduce((c, n) => ({...c, ...n}), {});
       }

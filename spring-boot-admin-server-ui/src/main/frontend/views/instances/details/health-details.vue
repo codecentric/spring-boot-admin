@@ -46,7 +46,6 @@
 </template>
 
 <script>
-  import entries from 'lodash/entries';
   import prettyBytes from 'pretty-bytes';
 
   const isChildHealth = (value) => {
@@ -71,7 +70,7 @@
     computed: {
       details() {
         if (this.health.details) {
-          return entries(this.health.details)
+          return Object.entries(this.health.details)
             .filter(([, value]) => !isChildHealth(value))
             .map(([name, value]) => ({name, value}));
         }
@@ -79,7 +78,7 @@
       },
       childHealth() {
         if (this.health.details) {
-          return entries(this.health.details)
+          return Object.entries(this.health.details)
             .filter(([, value]) => isChildHealth(value))
             .map(([name, value]) => ({name, value}));
         }

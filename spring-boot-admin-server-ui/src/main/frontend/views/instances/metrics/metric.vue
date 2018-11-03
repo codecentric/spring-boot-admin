@@ -65,7 +65,6 @@
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
   import {concatMap, from, timer} from '@/utils/rxjs';
-  import entries from 'lodash/entries';
   import moment from 'moment';
   import prettyBytes from 'pretty-bytes';
 
@@ -147,7 +146,7 @@
         }
       },
       getLabel(tags) {
-        return entries(tags).filter(([, value]) => typeof value !== 'undefined')
+        return Object.entries(tags).filter(([, value]) => typeof value !== 'undefined')
           .map(pair => pair.join(':'))
           .join('\n') || '(no tags)';
       },

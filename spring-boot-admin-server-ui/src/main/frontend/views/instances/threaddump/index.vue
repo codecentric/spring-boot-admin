@@ -35,7 +35,6 @@
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
   import {concatMap, timer} from '@/utils/rxjs';
-  import entries from 'lodash/entries';
   import remove from 'lodash/remove';
   import moment from 'moment-shortformat';
   import threadsList from './threads-list';
@@ -62,7 +61,7 @@
         const now = moment().valueOf();
         vm.threads = vm.threads || {};
         //initialize with all known live threads, which will be removed from the list if still alive
-        const terminatedThreads = entries(vm.threads)
+        const terminatedThreads = Object.entries(vm.threads)
           .filter(([, value]) => value.threadState !== 'TERMINATED')
           .map(([threadId]) => parseInt(threadId));
 

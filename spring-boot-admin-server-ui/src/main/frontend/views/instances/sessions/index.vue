@@ -49,7 +49,6 @@
 <script>
   import Instance from '@/services/instance';
   import debounce from 'lodash/debounce';
-  import entries from 'lodash/entries';
   import isEqual from 'lodash/isEqual';
   import moment from 'moment'
   import sbaSessionsList from './sessions-list'
@@ -127,7 +126,7 @@
       '$route.query': {
         immediate: true,
         handler() {
-          this.filter = entries(this.$route.query)
+          this.filter = Object.entries(this.$route.query)
             .reduce((acc, [name, value]) => {
               acc.type = name;
               acc.value = value;

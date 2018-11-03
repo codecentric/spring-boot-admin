@@ -100,7 +100,6 @@
   import isEmpty from 'lodash/isEmpty';
   import isEqual from 'lodash/isEqual';
   import sortBy from 'lodash/sortBy';
-  import toPairs from 'lodash/toPairs';
   import {directive as onClickaway} from 'vue-clickaway';
   import mBeanAttributes from './m-bean-attributes';
   import mBeanOperations from './m-bean-operations';
@@ -129,7 +128,7 @@
     constructor({descriptor, op, ...mBean}) {
       Object.assign(this, mBean);
       this.descriptor = new MBeanDescriptor(descriptor);
-      const flattenedOps = toPairs(op).flatMap(([name, value]) => {
+      const flattenedOps = Object.entries(op || {}).flatMap(([name, value]) => {
         if (Array.isArray(value)) {
           return value.map(v => [name, v]);
         } else {

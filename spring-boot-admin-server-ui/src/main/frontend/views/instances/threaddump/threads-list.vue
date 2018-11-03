@@ -107,7 +107,6 @@
 </template>
 <script>
   import d3 from '@/utils/d3';
-  import entries from 'lodash/entries';
   import moment from 'moment';
   import threadTag from './thread-tag';
 
@@ -135,7 +134,7 @@
     },
     methods: {
       getTimeExtent(timelines) {
-        return entries(timelines).map(([, value]) => value.timeline)
+        return Object.entries(timelines).map(([, value]) => value.timeline)
           .map(timeline => ({
             start: timeline[0].start,
             end: timeline[timeline.length - 1].end
@@ -164,7 +163,7 @@
               .tickFormat(d => moment(d).format('HH:mm:ss'))
             );
 
-          entries(timelines).forEach(([threadId, value]) => {
+          Object.entries(timelines).forEach(([threadId, value]) => {
             const svg = d3.select(`#thread-${threadId}`).attr('width', width);
             const d = svg.selectAll('rect').data(value.timeline);
 

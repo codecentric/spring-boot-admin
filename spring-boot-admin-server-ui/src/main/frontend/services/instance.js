@@ -19,7 +19,6 @@ import waitForPolyfill from '@/utils/eventsource-polyfill';
 import logtail from '@/utils/logtail';
 import {concat, from, ignoreElements, Observable} from '@/utils/rxjs';
 import uri from '@/utils/uri';
-import entries from 'lodash/entries';
 import transform from 'lodash/transform';
 
 const actuatorMimeTypes = [
@@ -68,7 +67,7 @@ class Instance {
 
   async fetchMetric(metric, tags) {
     const params = tags ? {
-      tag: entries(tags)
+      tag: Object.entries(tags)
         .filter(([, value]) => typeof value !== 'undefined' && value !== null)
         .map(([name, value]) => `${name}:${value}`)
         .join(',')
@@ -320,9 +319,9 @@ class Instance {
       return data;
     }
     const raw = JSON.parse(data);
-    return entries(raw.value).map(([domain, mBeans]) => ({
+    return Object.entries(raw.value).map(([domain, mBeans]) => ({
       domain,
-      mBeans: entries(mBeans).map(([descriptor, mBean]) => ({
+      mBeans: Object.entries(mBeans).map(([descriptor, mBean]) => ({
         descriptor: descriptor,
         ...mBean
       }))

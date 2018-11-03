@@ -98,7 +98,6 @@
   import Instance from '@/services/instance';
   import {concatMap, filter, from, listen} from '@/utils/rxjs';
   import debounce from 'lodash/debounce';
-  import entries from 'lodash/entries';
   import uniq from 'lodash/uniq';
 
 
@@ -133,7 +132,7 @@
           .sort());
       },
       managerPropertySource() {
-        return this.propertySources.find(ps => ps.name === 'manager') || {name: 'manager', properties: []};
+        return this.propertySources.find(ps => ps.name === 'manager') || {name: 'manager', properties: {}};
       },
       hasManagedProperty() {
         return this.managedProperties.findIndex(property => !!property.name) >= 0;
@@ -208,7 +207,7 @@
           });
       },
       updateManagedProperties(manager) {
-        entries(manager.properties).forEach(([name, property]) => {
+        Object.entries(manager.properties).forEach(([name, property]) => {
           const managedProperty = this.managedProperties.find(property => property.name === name);
           if (managedProperty) {
             managedProperty.value = property.value
