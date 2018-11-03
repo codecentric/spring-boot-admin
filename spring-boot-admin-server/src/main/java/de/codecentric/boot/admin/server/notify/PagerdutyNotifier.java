@@ -25,6 +25,7 @@ import reactor.core.publisher.Mono;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
@@ -56,16 +57,19 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
     /**
      * Service-Key for pagerduty-REST-API
      */
+    @Nullable
     private String serviceKey;
 
     /**
      * Client for pagerduty-REST-API
      */
+    @Nullable
     private String client;
 
     /**
      * Client-url for pagerduty-REST-API
      */
+    @Nullable
     private URI clientUrl;
 
     /**
@@ -118,6 +122,7 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
         return result;
     }
 
+    @Nullable
     protected String getDescription(InstanceEvent event, Instance instance) {
         Map<String, Object> root = new HashMap<>();
         root.put("event", event);
@@ -146,26 +151,29 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
         return url;
     }
 
-    public void setClient(String client) {
+    public void setClient(@Nullable String client) {
         this.client = client;
     }
 
+    @Nullable
     public String getClient() {
         return client;
     }
 
-    public void setClientUrl(URI clientUrl) {
+    public void setClientUrl(@Nullable URI clientUrl) {
         this.clientUrl = clientUrl;
     }
 
+    @Nullable
     public URI getClientUrl() {
         return clientUrl;
     }
 
-    public void setServiceKey(String serviceKey) {
+    public void setServiceKey(@Nullable String serviceKey) {
         this.serviceKey = serviceKey;
     }
 
+    @Nullable
     public String getServiceKey() {
         return serviceKey;
     }

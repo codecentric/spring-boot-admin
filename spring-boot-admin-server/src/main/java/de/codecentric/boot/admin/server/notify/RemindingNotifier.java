@@ -32,6 +32,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -48,6 +49,7 @@ public class RemindingNotifier extends AbstractEventNotifier {
     private Duration checkReminderInverval = Duration.ofSeconds(10);
     private Duration reminderPeriod = Duration.ofMinutes(10);
     private String[] reminderStatuses = {"DOWN", "OFFLINE"};
+    @Nullable
     private Disposable subscription;
 
     public RemindingNotifier(Notifier delegate, InstanceRepository repository) {

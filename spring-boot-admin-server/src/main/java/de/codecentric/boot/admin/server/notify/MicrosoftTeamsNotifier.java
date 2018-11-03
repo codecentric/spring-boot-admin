@@ -22,12 +22,15 @@ import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import lombok.Builder;
+import lombok.Data;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.MissingFormatArgumentException;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -50,6 +53,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
      * Webhook url for Microsoft Teams Channel Webhook connector (i.e.
      * https://outlook.office.com/webhook/{webhook-id})
      */
+    @Nullable
     private URI webhookUrl;
 
     /**
@@ -120,6 +124,10 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
+        if (webhookUrl == null) {
+            return Mono.error(new IllegalStateException("'webhookUrl' must not be null."));
+        }
+
         return Mono.fromRunnable(() -> this.restTemplate.postForEntity(webhookUrl,
             new HttpEntity<Object>(message, headers),
             Void.class
@@ -169,30 +177,32 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
     }
 
     protected Message createMessage(Instance instance, String registeredTitle, String activitySubtitle) {
-        Message message = new Message();
-        message.setTitle(registeredTitle);
-        message.setSummary(messageSummary);
-        message.setThemeColor(themeColor);
-
-        Section section = new Section();
-        section.setActivityTitle(instance.getRegistration().getName());
-        section.setActivitySubtitle(activitySubtitle);
-
         List<Fact> facts = new ArrayList<>();
         facts.add(new Fact(STATUS_KEY, instance.getStatusInfo().getStatus()));
         facts.add(new Fact(SERVICE_URL_KEY, instance.getRegistration().getServiceUrl()));
         facts.add(new Fact(HEALTH_URL_KEY, instance.getRegistration().getHealthUrl()));
         facts.add(new Fact(MANAGEMENT_URL_KEY, instance.getRegistration().getManagementUrl()));
         facts.add(new Fact(SOURCE_KEY, instance.getRegistration().getSource()));
-        section.setFacts(facts);
-        message.setSections(singletonList(section));
-        return message;
+
+        Section section = Section.builder()
+                                 .activityTitle(instance.getRegistration().getName())
+                                 .activitySubtitle(activitySubtitle)
+                                 .facts(facts)
+                                 .build();
+
+        return Message.builder()
+                      .title(registeredTitle)
+                      .summary(messageSummary)
+                      .themeColor(themeColor)
+                      .sections(singletonList(section))
+                      .build();
     }
 
-    public void setWebhookUrl(URI webhookUrl) {
+    public void setWebhookUrl(@Nullable URI webhookUrl) {
         this.webhookUrl = webhookUrl;
     }
 
+    @Nullable
     public URI getWebhookUrl() {
         return webhookUrl;
     }
@@ -266,90 +276,29 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
         this.restTemplate = restTemplate;
     }
 
+    @Data
+    @Builder
     public static class Message {
-        private String summary;
-        private String themeColor;
-        private String title;
-        private List<Section> sections = new ArrayList<>();
-
-        public String getSummary() {
-            return summary;
-        }
-
-        public void setSummary(String summary) {
-            this.summary = summary;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public String getThemeColor() {
-            return themeColor;
-        }
-
-        public void setSections(List<Section> sections) {
-            this.sections = sections;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        public void setThemeColor(String themeColor) {
-            this.themeColor = themeColor;
-        }
-
-        public List<Section> getSections() {
-            return sections;
-        }
+        private final String summary;
+        private final String themeColor;
+        private final String title;
+        @Builder.Default
+        private final List<Section> sections = new ArrayList<>();
     }
 
+    @Data
+    @Builder
     public static class Section {
-        private String activityTitle;
-        private String activitySubtitle;
-        private List<Fact> facts = new ArrayList<>();
-
-        public String getActivityTitle() {
-            return activityTitle;
-        }
-
-        public void setActivityTitle(String activityTitle) {
-            this.activityTitle = activityTitle;
-        }
-
-        public String getActivitySubtitle() {
-            return activitySubtitle;
-        }
-
-        public void setActivitySubtitle(String activitySubtitle) {
-            this.activitySubtitle = activitySubtitle;
-        }
-
-        public void setFacts(List<Fact> facts) {
-            this.facts = facts;
-        }
-
-        public List<Fact> getFacts() {
-            return facts;
-        }
+        private final String activityTitle;
+        private final String activitySubtitle;
+        @Builder.Default
+        private final List<Fact> facts = new ArrayList<>();
     }
 
+    @Data
     public static class Fact {
         private final String name;
+        @Nullable
         private final String value;
-
-        public Fact(String name, String value) {
-            this.name = name;
-            this.value = value;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getValue() {
-            return value;
-        }
     }
 }

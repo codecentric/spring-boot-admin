@@ -26,6 +26,7 @@ import reactor.core.publisher.Mono;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
@@ -51,16 +52,19 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
     /**
      * Base URL for HipChat API (i.e. https://ACCOUNT_NAME.hipchat.com/v2
      */
+    @Nullable
     private URI url;
 
     /**
      * API token that has access to notify in the room
      */
+    @Nullable
     private String authToken;
 
     /**
      * Id of the room to notify
      */
+    @Nullable
     private String roomId;
 
     /**
@@ -80,11 +84,16 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
 
     @Override
     protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
-        return Mono.fromRunnable(
-            () -> restTemplate.postForEntity(buildUrl(), createHipChatNotification(event, instance), Void.class));
+        return Mono.fromRunnable(() -> restTemplate.postForEntity(buildUrl(),
+            createHipChatNotification(event, instance),
+            Void.class
+        ));
     }
 
     protected String buildUrl() {
+        if (url == null) {
+            throw new IllegalStateException("'url' must not be null.");
+        }
         return String.format("%s/room/%s/notification?auth_token=%s", url.toString(), roomId, authToken);
     }
 
@@ -104,6 +113,7 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
         return notify;
     }
 
+    @Nullable
     protected String getMessage(InstanceEvent event, Instance instance) {
         Map<String, Object> root = new HashMap<>();
         root.put("event", event);
@@ -116,34 +126,37 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
 
     protected String getColor(InstanceEvent event) {
         if (event instanceof InstanceStatusChangedEvent) {
-            return StatusInfo.STATUS_UP.equals(((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()) ?
-                "green" :
-                "red";
+            return StatusInfo.STATUS_UP.equals(((InstanceStatusChangedEvent) event).getStatusInfo()
+                                                                                   .getStatus()) ? "green" : "red";
         } else {
             return "gray";
         }
     }
 
-    public void setUrl(URI url) {
+    public void setUrl(@Nullable URI url) {
         this.url = url;
     }
 
+
+    @Nullable
     public URI getUrl() {
         return url;
     }
 
-    public void setAuthToken(String authToken) {
+    public void setAuthToken(@Nullable String authToken) {
         this.authToken = authToken;
     }
 
+    @Nullable
     public String getAuthToken() {
         return authToken;
     }
 
-    public void setRoomId(String roomId) {
+    public void setRoomId(@Nullable String roomId) {
         this.roomId = roomId;
     }
 
+    @Nullable
     public String getRoomId() {
         return roomId;
     }

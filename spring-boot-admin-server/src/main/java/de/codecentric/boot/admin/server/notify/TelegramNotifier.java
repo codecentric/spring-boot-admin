@@ -23,7 +23,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import javax.annotation.Nullable;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
@@ -47,18 +47,20 @@ public class TelegramNotifier extends AbstractStatusChangeNotifier {
     /**
      * Unique identifier for the target chat or username of the target channel
      */
+    @Nullable
     private String chatId;
 
     /**
      * The token identifiying und authorizing your Telegram bot (e.g. `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`)
      */
+    @Nullable
     private String authToken;
 
     /**
      * Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width text or
      * inline URLs in your bot's message.
      */
-    private String parse_mode = "HTML";
+    private String parseMode = "HTML";
 
     /**
      * If true users will receive a notification with no sound.
@@ -86,12 +88,13 @@ public class TelegramNotifier extends AbstractStatusChangeNotifier {
     private Map<String, Object> createMessage(InstanceEvent event, Instance instance) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("chat_id", this.chatId);
-        parameters.put("parse_mode", this.parse_mode);
+        parameters.put("parse_mode", this.parseMode);
         parameters.put("disable_notification", this.disableNotify);
         parameters.put("text", getText(event, instance));
         return parameters;
     }
 
+    @Nullable
     protected String getText(InstanceEvent event, Instance instance) {
         Map<String, Object> root = new HashMap<>();
         root.put("event", event);
@@ -106,10 +109,6 @@ public class TelegramNotifier extends AbstractStatusChangeNotifier {
         this.restTemplate = restTemplate;
     }
 
-    public void setRestTemplate(RestTemplateBuilder builder) {
-        this.restTemplate = builder.build();
-    }
-
     public String getApiUrl() {
         return apiUrl;
     }
@@ -118,19 +117,21 @@ public class TelegramNotifier extends AbstractStatusChangeNotifier {
         this.apiUrl = apiUrl;
     }
 
+    @Nullable
     public String getChatId() {
         return chatId;
     }
 
-    public void setChatId(String chatId) {
+    public void setChatId(@Nullable String chatId) {
         this.chatId = chatId;
     }
 
+    @Nullable
     public String getAuthToken() {
         return authToken;
     }
 
-    public void setAuthToken(String authToken) {
+    public void setAuthToken(@Nullable String authToken) {
         this.authToken = authToken;
     }
 
@@ -142,12 +143,12 @@ public class TelegramNotifier extends AbstractStatusChangeNotifier {
         this.disableNotify = disableNotify;
     }
 
-    public String getParse_mode() {
-        return parse_mode;
+    public String getParseMode() {
+        return parseMode;
     }
 
-    public void setParse_mode(String parse_mode) {
-        this.parse_mode = parse_mode;
+    public void setParseMode(String parseMode) {
+        this.parseMode = parseMode;
     }
 
     public void setMessage(String message) {

@@ -21,6 +21,7 @@ import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 
 import java.util.logging.Level;
+import javax.annotation.Nullable;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +29,9 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractEventHandler<T extends InstanceEvent> {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final Publisher<InstanceEvent> publisher;
+    private final Class<T> eventType;
+    @Nullable
     private Disposable subscription;
-    private Class<T> eventType;
 
     protected AbstractEventHandler(Publisher<InstanceEvent> publisher, Class<T> eventType) {
         this.publisher = publisher;

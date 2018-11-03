@@ -40,9 +40,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import javax.annotation.Nullable;
 import org.springframework.util.Assert;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableList;
 
 /**
@@ -56,6 +58,7 @@ import static java.util.Collections.unmodifiableList;
 public class Instance implements Serializable {
     private final InstanceId id;
     private final long version;
+    @Nullable
     private final Registration registration;
     private final boolean registered;
     private final StatusInfo statusInfo;
@@ -63,16 +66,35 @@ public class Instance implements Serializable {
     private final Info info;
     private final List<InstanceEvent> unsavedEvents;
     private final Endpoints endpoints;
+    @Nullable
     private final BuildVersion buildVersion;
     private final Tags tags;
 
     private Instance(InstanceId id) {
-        this(id, -1L, null, false, StatusInfo.ofUnknown(), Instant.EPOCH, Info.empty(),
-            Endpoints.empty(), null, Tags.empty(), emptyList());
+        this(id,
+            -1L,
+            null,
+            false,
+            StatusInfo.ofUnknown(),
+            Instant.EPOCH,
+            Info.empty(),
+            Endpoints.empty(),
+            null,
+            Tags.empty(),
+            emptyList()
+        );
     }
 
-    private Instance(InstanceId id, long version, Registration registration, boolean registered, StatusInfo statusInfo,
-                     Instant statusTimestamp, Info info, Endpoints endpoints, BuildVersion buildVersion, Tags tags,
+    private Instance(InstanceId id,
+                     long version,
+                     @Nullable Registration registration,
+                     boolean registered,
+                     StatusInfo statusInfo,
+                     Instant statusTimestamp,
+                     Info info,
+                     Endpoints endpoints,
+                     @Nullable BuildVersion buildVersion,
+                     Tags tags,
                      List<InstanceEvent> unsavedEvents) {
         Assert.notNull(id, "'id' must not be null");
         Assert.notNull(endpoints, "'endpoints' must not be null");
@@ -85,7 +107,9 @@ public class Instance implements Serializable {
         this.statusInfo = statusInfo;
         this.statusTimestamp = statusTimestamp;
         this.info = info;
-        this.endpoints = registered ? endpoints.withEndpoint(Endpoint.HEALTH, registration.getHealthUrl()) : endpoints;
+        this.endpoints = registered && registration != null ? endpoints.withEndpoint(Endpoint.HEALTH,
+            registration.getHealthUrl()
+        ) : endpoints;
         this.unsavedEvents = unsavedEvents;
         this.buildVersion = buildVersion;
         this.tags = tags;
@@ -134,8 +158,11 @@ public class Instance implements Serializable {
 
     public Instance withEndpoints(Endpoints endpoints) {
         Assert.notNull(endpoints, "'endpoints' must not be null");
-        if (Objects.equals(this.endpoints,
-            this.registered ? endpoints.withEndpoint(Endpoint.HEALTH, this.registration.getHealthUrl()) : endpoints)) {
+        Endpoints endpointsWithHealth = this.registration != null ? endpoints.withEndpoint(
+            Endpoint.HEALTH,
+            this.registration.getHealthUrl()
+        ) : endpoints;
+        if (Objects.equals(this.endpoints, endpointsWithHealth)) {
             return this;
         }
         return this.apply(new InstanceEndpointsDetectedEvent(this.id, this.nextVersion(), endpoints), true);
@@ -145,13 +172,30 @@ public class Instance implements Serializable {
         return this.registered;
     }
 
+    public Registration getRegistration() {
+        if (this.registration == null) {
+            throw new IllegalStateException("Application '" + this.id + "' has no valid registration.");
+        }
+        return this.registration;
+    }
+
     List<InstanceEvent> getUnsavedEvents() {
         return unmodifiableList(this.unsavedEvents);
     }
 
     Instance clearUnsavedEvents() {
-        return new Instance(this.id, this.version, this.registration, this.registered, this.statusInfo,
-            this.statusTimestamp, info, this.endpoints, this.buildVersion, this.tags, emptyList());
+        return new Instance(this.id,
+            this.version,
+            this.registration,
+            this.registered,
+            this.statusInfo,
+            this.statusTimestamp,
+            info,
+            this.endpoints,
+            this.buildVersion,
+            this.tags,
+            emptyList()
+        );
     }
 
     Instance apply(Collection<InstanceEvent> events) {
@@ -171,44 +215,100 @@ public class Instance implements Serializable {
         Assert.notNull(event, "'event' must not be null");
         Assert.isTrue(this.id.equals(event.getInstance()), "'event' must refer the same instance");
         Assert.isTrue(this.nextVersion() == event.getVersion(),
-            () -> "Event " + event.getVersion() + " doesn't match exptected version " + this.nextVersion());
+            () -> "Event " + event.getVersion() + " doesn't match exptected version " + this.nextVersion()
+        );
 
         List<InstanceEvent> unsavedEvents = appendToEvents(event, isNewEvent);
 
         if (event instanceof InstanceRegisteredEvent) {
             Registration registration = ((InstanceRegisteredEvent) event).getRegistration();
-            return new Instance(this.id, event.getVersion(), registration, true, StatusInfo.ofUnknown(),
-                event.getTimestamp(), Info.empty(), Endpoints.empty(),
+            return new Instance(this.id,
+                event.getVersion(),
+                registration,
+                true,
+                StatusInfo.ofUnknown(),
+                event.getTimestamp(),
+                Info.empty(),
+                Endpoints.empty(),
                 updateBuildVersion(registration.getMetadata()),
-                updateTags(registration.getMetadata()), unsavedEvents);
+                updateTags(registration.getMetadata()),
+                unsavedEvents
+            );
 
         } else if (event instanceof InstanceRegistrationUpdatedEvent) {
             Registration registration = ((InstanceRegistrationUpdatedEvent) event).getRegistration();
-            return new Instance(this.id, event.getVersion(), registration, this.registered, this.statusInfo,
-                this.statusTimestamp, this.info, this.endpoints,
+            return new Instance(this.id,
+                event.getVersion(),
+                registration,
+                this.registered,
+                this.statusInfo,
+                this.statusTimestamp,
+                this.info,
+                this.endpoints,
                 updateBuildVersion(registration.getMetadata(), this.info.getValues()),
-                updateTags(registration.getMetadata(), this.info.getValues()), unsavedEvents);
+                updateTags(registration.getMetadata(), this.info.getValues()),
+                unsavedEvents
+            );
 
         } else if (event instanceof InstanceStatusChangedEvent) {
             StatusInfo statusInfo = ((InstanceStatusChangedEvent) event).getStatusInfo();
-            return new Instance(this.id, event.getVersion(), this.registration, this.registered, statusInfo,
-                event.getTimestamp(), this.info, this.endpoints, this.buildVersion, this.tags, unsavedEvents);
+            return new Instance(this.id,
+                event.getVersion(),
+                this.registration,
+                this.registered,
+                statusInfo,
+                event.getTimestamp(),
+                this.info,
+                this.endpoints,
+                this.buildVersion,
+                this.tags,
+                unsavedEvents
+            );
 
         } else if (event instanceof InstanceEndpointsDetectedEvent) {
             Endpoints endpoints = ((InstanceEndpointsDetectedEvent) event).getEndpoints();
-            return new Instance(this.id, event.getVersion(), this.registration, this.registered, this.statusInfo,
-                this.statusTimestamp, this.info, endpoints, this.buildVersion, this.tags, unsavedEvents);
+            return new Instance(this.id,
+                event.getVersion(),
+                this.registration,
+                this.registered,
+                this.statusInfo,
+                this.statusTimestamp,
+                this.info,
+                endpoints,
+                this.buildVersion,
+                this.tags,
+                unsavedEvents
+            );
 
         } else if (event instanceof InstanceInfoChangedEvent) {
             Info info = ((InstanceInfoChangedEvent) event).getInfo();
-            return new Instance(this.id, event.getVersion(), this.registration, this.registered, this.statusInfo,
-                this.statusTimestamp, info, this.endpoints,
-                updateBuildVersion(this.registration.getMetadata(), info.getValues()),
-                updateTags(registration.getMetadata(), info.getValues()), unsavedEvents);
+            Map<String, ?> metaData = this.registration != null ? this.registration.getMetadata() : emptyMap();
+            return new Instance(this.id,
+                event.getVersion(),
+                this.registration,
+                this.registered,
+                this.statusInfo,
+                this.statusTimestamp,
+                info,
+                this.endpoints,
+                updateBuildVersion(metaData, info.getValues()),
+                updateTags(metaData, info.getValues()),
+                unsavedEvents
+            );
 
         } else if (event instanceof InstanceDeregisteredEvent) {
-            return new Instance(this.id, event.getVersion(), this.registration, false, StatusInfo.ofUnknown(),
-                event.getTimestamp(), Info.empty(), Endpoints.empty(), null, Tags.empty(), unsavedEvents);
+            return new Instance(this.id,
+                event.getVersion(),
+                this.registration,
+                false,
+                StatusInfo.ofUnknown(),
+                event.getTimestamp(),
+                Info.empty(),
+                Endpoints.empty(),
+                null,
+                Tags.empty(),
+                unsavedEvents
+            );
         }
 
         return this;
@@ -228,19 +328,14 @@ public class Instance implements Serializable {
         return events;
     }
 
+    @Nullable
     @SafeVarargs
     private final BuildVersion updateBuildVersion(Map<String, ?>... sources) {
-        return Arrays.stream(sources)
-                     .map(BuildVersion::from)
-                     .filter(Objects::nonNull)
-                     .findFirst()
-                     .orElse(null);
+        return Arrays.stream(sources).map(BuildVersion::from).filter(Objects::nonNull).findFirst().orElse(null);
     }
 
     @SafeVarargs
     private final Tags updateTags(Map<String, ?>... sources) {
-        return Arrays.stream(sources)
-                     .map(source -> Tags.from(source, "tags"))
-                     .reduce(Tags.empty(), Tags::append);
+        return Arrays.stream(sources).map(source -> Tags.from(source, "tags")).reduce(Tags.empty(), Tags::append);
     }
 }

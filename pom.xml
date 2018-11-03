@@ -27,15 +27,18 @@
     <url>https://github.com/codecentric/spring-boot-admin/</url>
     <properties>
         <revision>2.1.0-SNAPSHOT</revision>
-        <spring-boot.version>2.1.0.RELEASE</spring-boot.version>
-        <spring-cloud.version>Finchley.SR2</spring-cloud.version>
-        <hazelcast-tests.version>3.11</hazelcast-tests.version>
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <resource.delimiter>@</resource.delimiter>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- used dependencies versions -->
+        <spring-boot.version>2.1.0.RELEASE</spring-boot.version>
+        <spring-cloud.version>Finchley.SR2</spring-cloud.version>
+        <hazelcast-tests.version>3.11</hazelcast-tests.version>
+        <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>

@@ -42,7 +42,7 @@ public class CloudFoundryApplicationFactory extends DefaultApplicationFactory {
     @Override
     protected String getServiceBaseUrl() {
         if (cfApplicationProperties.getUris().isEmpty()) {
-            return null;
+            return super.getServiceBaseUrl();
         }
 
         String uri = cfApplicationProperties.getUris().get(0);

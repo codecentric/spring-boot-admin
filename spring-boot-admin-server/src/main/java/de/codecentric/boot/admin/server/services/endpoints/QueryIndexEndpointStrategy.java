@@ -24,12 +24,15 @@ import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 import lombok.Data;
 import reactor.core.publisher.Mono;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.http.MediaType;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
     private final InstanceWebClient instanceWebClient;
@@ -42,13 +45,14 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
     @Override
     public Mono<Endpoints> detectEndpoints(Instance instance) {
         Registration registration = instance.getRegistration();
-        if (Objects.equals(registration.getServiceUrl(), registration.getManagementUrl())) {
+        String managementUrl = registration.getManagementUrl();
+        if (managementUrl == null || Objects.equals(registration.getServiceUrl(), managementUrl)) {
             return Mono.empty();
         }
 
         return instanceWebClient.instance(instance)
                                 .get()
-                                .uri(instance.getRegistration().getManagementUrl())
+                                .uri(managementUrl)
                                 .exchange()
                                 .flatMap(response -> {
                                     if (response.statusCode().is2xxSuccessful() &&
@@ -65,7 +69,7 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
     }
 
     private Mono<Endpoints> convert(Response response) {
-        List<Endpoint> endpoints = response.get_links()
+        List<Endpoint> endpoints = response.getLinks()
                                            .entrySet()
                                            .stream()
                                            .filter(e -> !e.getKey().equals("self") && !e.getValue().isTemplated())
@@ -80,12 +84,19 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
 
     @Data
     static class Response {
-        private Map<String, EndpointRef> _links;
+        @JsonProperty("_links")
+        private Map<String, EndpointRef> links = new HashMap<>();
 
         @Data
         static class EndpointRef {
-            private String href;
-            private boolean templated;
+            private final String href;
+            private final boolean templated;
+
+            @JsonCreator
+            EndpointRef(@JsonProperty("href") String href, @JsonProperty("templated") boolean templated) {
+                this.href = href;
+                this.templated = templated;
+            }
         }
     }
 }

@@ -55,21 +55,21 @@ public class InstanceTest {
     @Test
     public void should_track_unsaved_events() {
         Registration registration = Registration.create("foo", "http://health").build();
-        Registration registration2 = Registration.create("foo2", "http://health").build();
         Info info = Info.from(singletonMap("foo", "bar"));
-        Instance instance = Instance.create(InstanceId.of("id"));
+        Instance newInstance = Instance.create(InstanceId.of("id"));
 
-        assertThat(instance.isRegistered()).isFalse();
-        assertThat(instance.getRegistration()).isNull();
-        assertThat(instance.getInfo()).isEqualTo(Info.empty());
-        assertThat(instance.getStatusInfo()).isEqualTo(StatusInfo.ofUnknown());
-        assertThat(instance.getUnsavedEvents()).isEmpty();
+        assertThat(newInstance.isRegistered()).isFalse();
+        assertThatThrownBy(newInstance::getRegistration).isInstanceOf(IllegalStateException.class);
+        assertThat(newInstance.getInfo()).isEqualTo(Info.empty());
+        assertThat(newInstance.getStatusInfo()).isEqualTo(StatusInfo.ofUnknown());
+        assertThat(newInstance.getUnsavedEvents()).isEmpty();
 
-        instance = instance.register(registration).register(registration);
+        Instance instance = newInstance.register(registration).register(registration);
         assertThat(instance.getRegistration()).isEqualTo(registration);
         assertThat(instance.isRegistered()).isTrue();
         assertThat(instance.getVersion()).isEqualTo(0L);
 
+        Registration registration2 = Registration.create("foo2", "http://health").build();
         instance = instance.register(registration2);
         assertThat(instance.getRegistration()).isEqualTo(registration2);
         assertThat(instance.isRegistered()).isTrue();
@@ -85,6 +85,7 @@ public class InstanceTest {
 
         instance = instance.deregister().deregister();
         assertThat(instance.isRegistered()).isFalse();
+        assertThat(instance.getRegistration()).isEqualTo(registration2);
         assertThat(instance.getInfo()).isEqualTo(Info.empty());
         assertThat(instance.getStatusInfo()).isEqualTo(StatusInfo.ofUnknown());
         assertThat(instance.getVersion()).isEqualTo(4L);

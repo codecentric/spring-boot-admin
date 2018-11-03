@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
@@ -50,9 +51,12 @@ public class UiExtensionsScanner {
     }
 
     private boolean isExtension(Resource resource) {
-        return resource.isReadable() && resource.getFilename().endsWith(".css") || resource.getFilename().endsWith(".js");
+        return resource.isReadable() &&
+               resource.getFilename() != null &&
+               (resource.getFilename().endsWith(".css") || resource.getFilename().endsWith(".js"));
     }
 
+    @Nullable
     private String getResourcePath(String location, Resource resource) throws IOException {
         String locationWithouPrefix = location.replaceFirst("^[^:]+:", "");
         Matcher m = Pattern.compile(Pattern.quote(locationWithouPrefix) + "(.+)$")

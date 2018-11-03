@@ -55,6 +55,10 @@
             <artifactId>spring-boot-autoconfigure-processor</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+        </dependency>
         <!-- Optional Configuration Processor for metadata -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.ui.config;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.http.CacheControl;
@@ -64,6 +65,7 @@ public class AdminServerUiProperties {
         /**
          * include "max-age" directive in Cache-Control http header.
          */
+        @Nullable
         @DurationUnit(ChronoUnit.SECONDS)
         private Duration maxAge = Duration.ofSeconds(3600);
 

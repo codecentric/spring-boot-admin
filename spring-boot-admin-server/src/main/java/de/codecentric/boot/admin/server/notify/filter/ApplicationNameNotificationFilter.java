@@ -20,11 +20,12 @@ import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
 import java.time.Instant;
+import javax.annotation.Nullable;
 
 public class ApplicationNameNotificationFilter extends ExpiringNotificationFilter {
     private final String applicationName;
 
-    public ApplicationNameNotificationFilter(String applicationName, Instant expiry) {
+    public ApplicationNameNotificationFilter(String applicationName, @Nullable Instant expiry) {
         super(expiry);
         this.applicationName = applicationName;
     }

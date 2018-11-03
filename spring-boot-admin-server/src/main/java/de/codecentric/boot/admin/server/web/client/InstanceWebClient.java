@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import javax.annotation.Nullable;
 import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -65,8 +66,9 @@ public class InstanceWebClient {
         private int defaultRetries = 0;
         private Map<String, Integer> retriesPerEndpoint = Collections.emptyMap();
         private HttpHeadersProvider httpHeadersProvider = instance -> HttpHeaders.EMPTY;
-        private List<InstanceExchangeFilterFunction> filters = new ArrayList<>();
-        private WebClient webClient = null;
+        private final List<InstanceExchangeFilterFunction> filters = new ArrayList<>();
+        @Nullable
+        private WebClient webClient;
 
         public Builder webClientCustomizer(WebClientCustomizer webClientCustomizer) {
             this.webClientCustomizer = webClientCustomizer;

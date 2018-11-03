@@ -64,24 +64,11 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
             instance.getMetadata()
         );
 
-        Registration.Builder builder = Registration.create(instance.getServiceId(), getHealthUrl(instance).toString());
-
-        URI managementUrl = getManagementUrl(instance);
-        if (managementUrl != null) {
-            builder.managementUrl(managementUrl.toString());
-        }
-
-        URI serviceUrl = getServiceUrl(instance);
-        if (serviceUrl != null) {
-            builder.serviceUrl(serviceUrl.toString());
-        }
-
-        Map<String, String> metadata = getMetadata(instance);
-        if (metadata != null) {
-            builder.metadata(metadata);
-        }
-
-        return builder.build();
+        return Registration.create(instance.getServiceId(), getHealthUrl(instance).toString())
+                           .managementUrl(getManagementUrl(instance).toString())
+                           .serviceUrl(getServiceUrl(instance).toString())
+                           .metadata(getMetadata(instance))
+                           .build();
     }
 
     protected URI getHealthUrl(ServiceInstance instance) {

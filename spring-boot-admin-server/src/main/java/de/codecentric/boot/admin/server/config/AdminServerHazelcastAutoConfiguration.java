@@ -44,7 +44,7 @@ import com.hazelcast.core.IMap;
 public class AdminServerHazelcastAutoConfiguration {
 
     @Value("${spring.boot.admin.hazelcast.event-store:spring-boot-admin-event-store}")
-    private String mapName;
+    private String mapName = "spring-boot-admin-event-store";
 
     @Bean
     @ConditionalOnMissingBean(InstanceEventStore.class)

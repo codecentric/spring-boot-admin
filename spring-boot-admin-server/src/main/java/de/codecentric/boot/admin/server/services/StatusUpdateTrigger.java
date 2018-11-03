@@ -30,6 +30,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import javax.annotation.Nullable;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +38,10 @@ import org.slf4j.LoggerFactory;
 public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
     private static final Logger log = LoggerFactory.getLogger(StatusUpdateTrigger.class);
     private final StatusUpdater statusUpdater;
-    private Map<InstanceId, Instant> lastQueried = new HashMap<>();
+    private final Map<InstanceId, Instant> lastQueried = new HashMap<>();
     private Duration updateInterval = Duration.ofSeconds(10);
     private Duration statusLifetime = Duration.ofSeconds(10);
+    @Nullable
     private Disposable intervalSubscription;
 
 

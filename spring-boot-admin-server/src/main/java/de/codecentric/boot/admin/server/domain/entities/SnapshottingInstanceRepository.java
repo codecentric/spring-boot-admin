@@ -26,6 +26,7 @@ import reactor.core.publisher.Mono;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
 public class SnapshottingInstanceRepository extends EventsourcingInstanceRepository {
     private static final Logger log = LoggerFactory.getLogger(SnapshottingInstanceRepository.class);
     private final ConcurrentMap<InstanceId, Instance> snapshots = new ConcurrentHashMap<>();
+    @Nullable
     private Disposable subscription;
 
     public SnapshottingInstanceRepository(InstanceEventStore eventStore) {

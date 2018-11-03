@@ -58,7 +58,7 @@ public class TelegramNotifierTest {
         notifier.setDisableNotify(false);
         notifier.setAuthToken("--token-");
         notifier.setChatId("-room-");
-        notifier.setParse_mode("HTML");
+        notifier.setParseMode("HTML");
         notifier.setApiUrl("https://telegram.com");
         notifier.setRestTemplate(restTemplate);
     }

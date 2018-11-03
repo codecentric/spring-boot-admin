@@ -11,7 +11,7 @@
     {
       "name": "spring.boot.admin.hazelcast.event-store",
       "type": "java.lang.String",
-      "description": "Name of backing Hazelcast-Map for storing the instance events",
+      "description": "Name of backing Hazelcast-Map for storing the instance events.",
       "defaultValue": "spring-boot-admin-application-store"
     }
   ]
