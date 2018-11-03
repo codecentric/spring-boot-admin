@@ -19,7 +19,7 @@ import moment from 'moment-shortformat';
 export default {
   props: {
     date: {
-      type: [String, Date, Number],
+      type: [String, Date, Number, moment],
       default: null
     }
   },

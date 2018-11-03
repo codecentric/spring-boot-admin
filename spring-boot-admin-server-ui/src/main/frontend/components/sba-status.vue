@@ -26,6 +26,7 @@
 </template>
 
 <script>
+  import moment from 'moment';
   import sbaTimeAgo from './sba-time-ago';
 
   const icons = {
@@ -46,7 +47,7 @@
         default: 'UNKNOWN'
       },
       date: {
-        type: [String, Date, Number],
+        type: [String, Date, Number, moment],
         default: null
       },
     },
