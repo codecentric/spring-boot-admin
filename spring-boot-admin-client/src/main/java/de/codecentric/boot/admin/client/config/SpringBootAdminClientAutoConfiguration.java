@@ -115,7 +115,7 @@ public class SpringBootAdminClientAutoConfiguration {
                                                       .setConnectTimeout(client.getConnectTimeout())
                                                       .setReadTimeout(client.getReadTimeout());
         if (client.getUsername() != null) {
-            builder = builder.basicAuthorization(client.getUsername(), client.getPassword());
+            builder = builder.basicAuthentication(client.getUsername(), client.getPassword());
         }
         return new ApplicationRegistrator(builder.build(), client, applicationFactory);
     }
