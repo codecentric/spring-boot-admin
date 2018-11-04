@@ -1436,7 +1436,10 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
     MapConfig mapConfig = <span class="keyword">new</span> MapConfig(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-boot-admin-event-store</span><span class="delimiter">&quot;</span></span>).setInMemoryFormat(InMemoryFormat.OBJECT)
                                                                         .setBackupCount(<span class="integer">1</span>)
                                                                         .setEvictionPolicy(EvictionPolicy.NONE)
-                                                                        .setMergePolicy(PutIfAbsentMapMergePolicy.class.getName());
+                                                                        .setMergePolicyConfig(<span class="keyword">new</span> MergePolicyConfig(
+                                                                            PutIfAbsentMapMergePolicy.class.getName(),
+                                                                            <span class="integer">100</span>
+                                                                        ));
     <span class="keyword">return</span> <span class="keyword">new</span> Config().setProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">hazelcast.jmx</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>).addMapConfig(mapConfig);
 }</code></pre>
 </div>
