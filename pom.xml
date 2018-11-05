@@ -348,6 +348,16 @@
                     <artifactId>asciidoctor-maven-plugin</artifactId>
                     <version>${asciidoctor-maven-plugin.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.eluder.coveralls</groupId>
+                    <artifactId>coveralls-maven-plugin</artifactId>
+                    <version>${coveralls-maven-plugin.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -405,7 +415,6 @@
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>${jacoco-maven-plugin.version}</version>
                         <executions>
                             <!-- Prepares the property pointing to the JaCoCo
                             runtime agent which is passed as VM argument when Maven the Surefire plugin
@@ -430,7 +439,6 @@
                     <plugin>
                         <groupId>org.eluder.coveralls</groupId>
                         <artifactId>coveralls-maven-plugin</artifactId>
-                        <version>${coveralls-maven-plugin.version}</version>
                     </plugin>
                 </plugins>
             </build>
