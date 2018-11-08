@@ -60,7 +60,7 @@
                 <strong>Execution successful.</strong>
               </div>
             </div>
-            <pre v-text="result" />
+            <pre v-text="prettyPrintedResult" />
           </section>
           <footer class="modal-card-foot">
             <div class="field is-grouped is-grouped-right">
@@ -136,7 +136,25 @@
       args: null,
       result: null
     }),
-    computed: {},
+    computed: {
+      prettyPrintedResult() {
+        var json;
+        var prettyResult;
+          try {
+              json = JSON.parse(this.result);
+          } catch (e) {
+              // do nothing
+          }
+
+          if(json){
+            prettyResult = JSON.stringify(json, undefined, 2);
+          }else{
+            prettyResult = this.result;
+          }
+
+          return prettyResult;
+      }
+    },
     methods: {
       abort() {
         this.onClose();
@@ -156,7 +174,7 @@
         try {
           const result = await this.onExecute(this.args);
           if (result.data.status < 400) {
-            this.result = JSON.stringify(result.data.value, null, 4);
+            this.result = result.data.value;
             this.state = 'completed';
           } else {
             const error = new Error(`Execution failed: ${result.data.error}`);
