@@ -20,6 +20,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 
 
 module.exports = {
+  baseUrl: './',
   outputDir: 'target/dist',
   assetsDir: 'assets',
   pages: {
