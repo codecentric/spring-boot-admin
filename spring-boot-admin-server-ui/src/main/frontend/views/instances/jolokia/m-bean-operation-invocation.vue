@@ -60,7 +60,7 @@
                 <strong>Execution successful.</strong>
               </div>
             </div>
-            <pre v-text="prettyPrintedResult" />
+            <pre v-if="descriptor.ret !== 'void'" v-text="prettyPrintedResult" />
           </section>
           <footer class="modal-card-foot">
             <div class="field is-grouped is-grouped-right">
@@ -138,21 +138,17 @@
     }),
     computed: {
       prettyPrintedResult() {
-        var json;
-        var prettyResult;
+        if (this.result && typeof this.result === 'string') {
           try {
-              json = JSON.parse(this.result);
+            const o = JSON.parse(this.result);
+            return JSON.stringify(o, undefined, 4);
           } catch (e) {
-              // do nothing
+            return this.result;
           }
-
-          if(json){
-            prettyResult = JSON.stringify(json, undefined, 2);
-          }else{
-            prettyResult = this.result;
-          }
-
-          return prettyResult;
+        } else if (typeof result === 'object') {
+          return JSON.stringify(this.result, undefined, 4);
+        }
+        return this.result;
       }
     },
     methods: {
