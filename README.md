@@ -74,6 +74,22 @@ The source code of codecentric's Spring Boot Admin is licensed under [Apache Lic
 
 Spring, Spring Boot and Spring Cloud are trademarks of [Pivotal Software, Inc.](https://pivotal.io/) in the U.S. and other countries.
 
+## Snapshot builds
+You can access snapshot builds from the sonatype snapshot repository by adding the following to your `repositories`:
+```xml
+<repository>
+	<id>sonatype-nexus-snapshots</id>
+	<name>Sonatype Nexus Snapshots</name>
+	<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+	<snapshots>
+		<enabled>true</enabled>
+	</snapshots>
+	<releases>
+		<enabled>false</enabled>
+	</releases>
+</repository>
+```
+
 ## Screenshots
 
 ![Screenshot application list](/images/screenshot.png)
@@ -105,22 +121,6 @@ Spring, Spring Boot and Spring Cloud are trademarks of [Pivotal Software, Inc.](
 
 ![Screenshot journal](/images/screenshot-journal.png)
 *View history of registered applications*
-
-## Snapshot builds
-You can access snapshot builds from the sonatype snapshot repository by adding the following to your `repositories`:
-```xml
-<repository>
-	<id>sonatype-nexus-snapshots</id>
-	<name>Sonatype Nexus Snapshots</name>
-	<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-	<snapshots>
-		<enabled>true</enabled>
-	</snapshots>
-	<releases>
-		<enabled>false</enabled>
-	</releases>
-</repository>
-```
 
 ## Build
 **Requirements:**
