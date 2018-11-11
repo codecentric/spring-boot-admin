@@ -1,5 +1,4 @@
 language: java
-sudo: false
 
 env:
   - TRAVIS_NODE_VERSION="lts/*"
