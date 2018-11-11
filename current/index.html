@@ -1204,6 +1204,11 @@ user.password</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">`"Cookie", "Set-Cookie", "Authorization"</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.ui.public-url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Brand to be shown in then navbar.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If running behind a reverse proxy (using path rewriting) this can be used to make correct self references. If the host/port is omitted it will be inferred from the request.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.ui.brand</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Brand to be shown in then navbar.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>"&lt;img src="assets/img/icon-spring-boot-admin.svg"&gt;&lt;span&gt;Spring Boot Admin&lt;/span&gt;"</code></p></td>
@@ -2642,6 +2647,9 @@ able to register at a newer server. Since the API has slight changes, you need t
 <ul>
 <li>
 <p>Moved all classes to the <code>spring.boot.admin.server</code> package</p>
+</li>
+<li>
+<p>Spring cloud related extenstions moved to <code>spring-boot-admin-server-cloud</code>.</p>
 </li>
 <li>
 <p>Redesigned backend using event sourcing principles</p>
