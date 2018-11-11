@@ -64,7 +64,8 @@ public class AdminServerUiAutoConfiguration {
     @ConditionalOnMissingBean
     public UiController homeUiController() throws IOException {
         return new UiController(
-            this.adminServerProperties.getContextPath(),
+            this.uiProperties.getPublicUrl() !=
+            null ? this.uiProperties.getPublicUrl() : this.adminServerProperties.getContextPath(),
             this.uiProperties.getTitle(),
             this.uiProperties.getBrand(),
             this.uiExtensions()

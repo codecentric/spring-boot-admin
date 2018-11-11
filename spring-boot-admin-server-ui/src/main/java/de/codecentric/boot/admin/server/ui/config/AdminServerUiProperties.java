@@ -55,6 +55,16 @@ public class AdminServerUiProperties {
      */
     private String brand = "<img src=\"assets/img/icon-spring-boot-admin.svg\"><span>Spring Boot Admin</span>";
 
+    /**
+     * If running behind a reverse proxy (using path rewriting) this can be used to output correct self references.
+     * If the host/port is omitted it will be inferred from the request.
+     */
+    @Nullable
+    private String publicUrl = null;
+
+    /**
+     * Wether the thymeleaf templates should be cached.
+     */
     private boolean cacheTemplates = true;
 
     private final Cache cache = new Cache();

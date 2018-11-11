@@ -28,19 +28,21 @@ import javax.annotation.Nullable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 
 @AdminController
 public class UiController {
-    private final String adminContextPath;
+    private final String publicUrl;
     private final List<UiExtension> cssExtensions;
     private final List<UiExtension> jsExtensions;
     private final Map<String, Object> uiSettings;
 
-    public UiController(String adminContextPath, String title, String brand, List<UiExtension> uiExtensions) {
-        this.adminContextPath = adminContextPath;
+    public UiController(String publicUrl, String title, String brand, List<UiExtension> uiExtensions) {
+        this.publicUrl = publicUrl;
         this.uiSettings = new HashMap<>();
         this.uiSettings.put("title", title);
         this.uiSettings.put("brand", brand);
@@ -52,9 +54,19 @@ public class UiController {
                                         .collect(Collectors.toList());
     }
 
-    @ModelAttribute(value = "adminContextPath", binding = false)
-    public String getAdminContextPath() {
-        return adminContextPath;
+    @ModelAttribute(value = "baseUrl", binding = false)
+    public String getBaseUrl(UriComponentsBuilder uriBuilder) {
+        UriComponents publicComponents = UriComponentsBuilder.fromUriString(publicUrl).build();
+        if (publicComponents.getHost() != null) {
+            uriBuilder.host(publicComponents.getHost());
+        }
+        if (publicComponents.getPort() != -1) {
+            uriBuilder.port(publicComponents.getPort());
+        }
+        if (publicComponents.getPath() != null) {
+            uriBuilder.path(publicComponents.getPath());
+        }
+        return uriBuilder.path("/").toUriString();
     }
 
     @ModelAttribute(value = "uiSettings", binding = false)
