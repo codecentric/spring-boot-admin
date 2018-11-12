@@ -631,7 +631,7 @@ The UI is just a Vue.js application on top of the Spring Boot Actuator endpoints
 <div class="sect2">
 <h3 id="set-up-admin-server"><a class="anchor" href="#set-up-admin-server"></a><a class="link" href="#set-up-admin-server">2.1. Setting up Spring Boot Admin Server</a></h3>
 <div class="paragraph">
-<p>First you need to setup your server. To do this just setup a simple boot project (using <a href="http://start.spring.io" class="bare">start.spring.io</a>). As Spring Boot Admin Server is capable of running as servlet or webflux application, you need to decide on this and add the according Spring Boot Starter. In this example we&#8217;re using the servlet web starter.</p>
+<p>First, you need to setup your server. To do this just setup a simple boot project (using <a href="http://start.spring.io" class="bare">start.spring.io</a>). As Spring Boot Admin Server is capable of running as servlet or webflux application, you need to decide on this and add the according Spring Boot Starter. In this example we&#8217;re using the servlet web starter.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -688,12 +688,12 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <div class="sect2">
 <h3 id="register-client-applications"><a class="anchor" href="#register-client-applications"></a><a class="link" href="#register-client-applications">2.2. Registering client applications</a></h3>
 <div class="paragraph">
-<p>To register your application at the SBA Server you can either include the SBA Client or use <a href="http://projects.spring.io/spring-cloud/spring-cloud.html">Spring Cloud Discovery</a> (e.g. Eureka, Consul, &#8230;&#8203;). There is also a <a href="#spring-cloud-discovery-static-config">simple option using a static configuration on the SBA Server side</a>.</p>
+<p>To register your application at the SBA Server, you can either include the SBA Client or use <a href="http://projects.spring.io/spring-cloud/spring-cloud.html">Spring Cloud Discovery</a> (e.g. Eureka, Consul, &#8230;&#8203;). There is also a <a href="#spring-cloud-discovery-static-config">simple option using a static configuration on the SBA Server side</a>.</p>
 </div>
 <div class="sect3">
 <h4 id="register-clients-via-spring-boot-admin"><a class="anchor" href="#register-clients-via-spring-boot-admin"></a><a class="link" href="#register-clients-via-spring-boot-admin">2.2.1. Spring Boot Admin Client</a></h4>
 <div class="paragraph">
-<p>Each application that wants to register has to include the Spring Boot Admin Client. In order to secure the endpoints also add the <code>spring-boot-starter-security</code>.</p>
+<p>Each application that wants to register has to include the Spring Boot Admin Client. In order to secure the endpoints, also add the <code>spring-boot-starter-security</code>.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -771,12 +771,12 @@ management.endpoints.web.exposure.include=*  <i class="conum" data-value="2"></i
 <p>The following steps uses Eureka, but other Spring Cloud Discovery implementations are supported as well. There are examples using <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-consul/">Consul</a> and <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-zookeeper/">Zookeeper</a>.</p>
 </div>
 <div class="paragraph">
-<p>Also have a look at the <a href="http://projects.spring.io/spring-cloud/spring-cloud.html">Spring Cloud documentation</a>.</p>
+<p>Also, have a look at the <a href="http://projects.spring.io/spring-cloud/spring-cloud.html">Spring Cloud documentation</a>.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Add spring-cloud-starter-eureka to you dependencies:</p>
+<p>Add spring-cloud-starter-eureka to your dependencies:</p>
 <div class="listingblock">
 <div class="title">pom.xml</div>
 <div class="content">
