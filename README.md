@@ -40,7 +40,7 @@ It provides the following features for registered application.
 
 [A quick guide](http://codecentric.github.io/spring-boot-admin/2.1.0/#getting-started) to get started can be found in our docs.
 
-There are <a href="https://goo.gl/2tRiUi" target="_blank">introductory talks availabe on YouTube</a>:
+There are <a href="https://goo.gl/2tRiUi" target="_blank">introductory talks available on YouTube</a>:
 
 <a href="https://youtu.be/__zkypwjSMs" target="_blank"><img src="https://i.ytimg.com/vi/__zkypwjSMs/maxresdefault.jpg" 
 alt="Monitoring Spring Boot® Applications with Spring Boot Admin @ Spring I/O 2018" width="240" height="135" border="10" /></a><br>
