@@ -525,7 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.1.1-SNAPSHOT,</span>
-<span id="revdate">12.11.2018</span>
+<span id="revdate">14.11.2018</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -2108,7 +2108,7 @@ account and configure it appropriately.</p>
 By default <code>spring-boot-admin-server-ui</code> provides a login page and a logout button.</p>
 </div>
 <div class="paragraph">
-<p>A Spring Security configuration could look like this:</p>
+<p>A Spring Security configuration for your server could look like this:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2177,6 +2177,17 @@ By default <code>spring-boot-admin-server-ui</code> provides a login page and a 
 <td>Disables CRSF-Protection for the actuator endpoints.</td>
 </tr>
 </table>
+</div>
+<div class="paragraph">
+<p>In case you use the Spring Boot Admin Client, it needs the credentials for accessing the server:</p>
+</div>
+<div class="listingblock">
+<div class="title">application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">spring.boot.admin.client</span>:
+   <span class="key">username</span>: <span class="string"><span class="content">sba-client</span></span>
+   <span class="key">password</span>: <span class="string"><span class="content">s3cret</span></span></code></pre>
+</div>
 </div>
 <div class="paragraph">
 <p>For a complete sample look at <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-servlet/">spring-boot-admin-sample-servlet</a>.</p>
