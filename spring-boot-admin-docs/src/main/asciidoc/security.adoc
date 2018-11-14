@@ -6,7 +6,7 @@
 Since there are several approaches on solving authentication and authorization in distributed web applications Spring Boot Admin doesn't ship a default one.
 By default `spring-boot-admin-server-ui` provides a login page and a logout button.
 
-A Spring Security configuration could look like this:
+A Spring Security configuration for your server could look like this:
 [source,java,indent=0]
 ----
 include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/SpringBootAdminApplication.java[tags=configuration-spring-security]
@@ -18,6 +18,15 @@ include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecen
 <5> Enables CSRF-Protection using Cookies
 <6> Disables CRSF-Protection the endpoint the Spring Boot Admin Client uses to register.
 <7> Disables CRSF-Protection for the actuator endpoints.
+
+In case you use the Spring Boot Admin Client, it needs the credentials for accessing the server:
+[source,yaml]
+.application.yml
+----
+spring.boot.admin.client:
+   username: sba-client
+   password: s3cret
+----
 
 For a complete sample look at {github-src}/spring-boot-admin-samples/spring-boot-admin-sample-servlet/[spring-boot-admin-sample-servlet].
 
