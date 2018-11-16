@@ -57,6 +57,9 @@ public class UiController {
     @ModelAttribute(value = "baseUrl", binding = false)
     public String getBaseUrl(UriComponentsBuilder uriBuilder) {
         UriComponents publicComponents = UriComponentsBuilder.fromUriString(publicUrl).build();
+        if (publicComponents.getScheme() != null) {
+            uriBuilder.scheme(publicComponents.getScheme());
+        }
         if (publicComponents.getHost() != null) {
             uriBuilder.host(publicComponents.getHost());
         }
