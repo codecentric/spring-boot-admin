@@ -60,6 +60,16 @@ public class UiControllerTest {
                .andExpect(model().attribute("baseUrl", "http://public/public/"));
     }
 
+    @Test
+    public void should_use_scheme_host_and_path_from_public_url() throws Exception {
+        MockMvc mockMvc = setupController("https://public/public");
+
+        mockMvc.perform(get("http://example/"))
+            .andExpect(status().isOk())
+            .andExpect(view().name("index"))
+            .andExpect(model().attribute("baseUrl", "https://public/public/"));
+    }
+
     private MockMvc setupController(String publicUrl) {
         return MockMvcBuilders.standaloneSetup(new UiController(publicUrl, "", "", Collections.emptyList()))
                               .setCustomHandlerMapping(() -> new AdminControllerHandlerMapping(""))
