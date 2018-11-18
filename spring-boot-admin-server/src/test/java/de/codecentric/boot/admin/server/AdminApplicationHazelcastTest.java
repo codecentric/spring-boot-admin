@@ -39,6 +39,7 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.EvictionPolicy;
 import com.hazelcast.config.InMemoryFormat;
 import com.hazelcast.config.MapConfig;
+import com.hazelcast.config.MergePolicyConfig;
 import com.hazelcast.config.TcpIpConfig;
 import com.hazelcast.map.merge.PutIfAbsentMapMergePolicy;
 
@@ -139,8 +140,10 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
             MapConfig mapConfig = new MapConfig("spring-boot-admin-event-store").setInMemoryFormat(InMemoryFormat.OBJECT)
                                                                                 .setBackupCount(1)
                                                                                 .setEvictionPolicy(EvictionPolicy.NONE)
-                                                                                .setMergePolicy(
-                                                                                    PutIfAbsentMapMergePolicy.class.getName());
+                                                                                .setMergePolicyConfig(new MergePolicyConfig(
+                                                                                    PutIfAbsentMapMergePolicy.class.getName(),
+                                                                                    100
+                                                                                ));
 
             Config config = new Config();
             config.addMapConfig(mapConfig);
