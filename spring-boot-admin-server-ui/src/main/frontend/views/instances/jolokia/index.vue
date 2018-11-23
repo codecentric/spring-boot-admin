@@ -96,6 +96,7 @@
 <script>
   import sticksBelow from '@/directives/sticks-below';
   import Instance from '@/services/instance';
+  import flatMap from 'lodash/flatMap';
   import fromPairs from 'lodash/fromPairs';
   import isEmpty from 'lodash/isEmpty';
   import isEqual from 'lodash/isEqual';
@@ -128,7 +129,7 @@
     constructor({descriptor, op, ...mBean}) {
       Object.assign(this, mBean);
       this.descriptor = new MBeanDescriptor(descriptor);
-      const flattenedOps = Object.entries(op || {}).flatMap(([name, value]) => {
+      const flattenedOps = flatMap(Object.entries(op || {}), ([name, value]) => {
         if (Array.isArray(value)) {
           return value.map(v => [name, v]);
         } else {
