@@ -21,6 +21,7 @@ import de.codecentric.boot.admin.web.client.HttpHeadersProvider;
 import de.codecentric.boot.admin.zuul.ApplicationRouteLocator;
 import de.codecentric.boot.admin.zuul.filters.pre.ApplicationHeadersFilter;
 
+import de.codecentric.boot.admin.zuul.filters.route.HystrixProxyStreamFilter;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
@@ -89,6 +90,12 @@ public class RevereseZuulProxyConfiguration extends ZuulServerAutoConfiguration 
                 proxyRequestHelper());
     }
 
+    // hystrix.stream route  filters
+    @Bean
+    public HystrixProxyStreamFilter hystrixProxyStreamFilter() {
+        return new HystrixProxyStreamFilter();
+    }
+
     @Bean
     public ApplicationHeadersFilter applicationHeadersFilter(ApplicationRouteLocator routeLocator,
                                                              HttpHeadersProvider headersProvider) {
@@ -139,7 +146,7 @@ public class RevereseZuulProxyConfiguration extends ZuulServerAutoConfiguration 
         @Override
         public void onApplicationEvent(ApplicationEvent event) {
             if (event instanceof PayloadApplicationEvent &&
-                ((PayloadApplicationEvent<?>) event).getPayload() instanceof RoutesOutdatedEvent) {
+                    ((PayloadApplicationEvent<?>) event).getPayload() instanceof RoutesOutdatedEvent) {
                 zuulHandlerMapping.setDirty(true);
             }
         }
