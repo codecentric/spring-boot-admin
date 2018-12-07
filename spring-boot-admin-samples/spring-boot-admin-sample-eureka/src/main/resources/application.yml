@@ -1,12 +1,9 @@
-server:
-  port: 8090
-
 spring:
   application:
     name: spring-boot-admin-sample-eureka
   profiles:
     active:
-      - dev
+      - secure
 
 
 # tag::configuration-eureka[]
@@ -47,20 +44,3 @@ eureka:
     metadata-map:
       user.name: "user"         #These two are needed so that the server
       user.password: "password" #can access the protected client endpoints
-
----
-spring:
-  profiles: dev
-  security:
-    user:
-      name: "aca"
-      password: "aca"
-  boot:
-    admin:
-      ui:
-        cache:
-          no-cache: true
-        template-location: file:@project.basedir@/../../spring-boot-admin-server-ui/target/dist/
-        resource-locations: file:@project.basedir@/../../spring-boot-admin-server-ui/target/dist/
-        cache-templates: false
-        extension-resource-locations: file:@project.basedir@/../spring-boot-admin-sample-custom-ui/target/dist/
