@@ -28,11 +28,11 @@
 
     <div class="field has-addons" v-if="hasGlobalFiltersData">
       <p class="control is-expanded">
-        <input class="input" type="search" placeholder="name filter" v-model="globalFilterSearch">
+        <input class="input" type="search" placeholder="Filter by name" v-model="globalFilterSearch">
       </p>
     </div>
 
-    <SbaPanel :header-sticks-below="['#navigation']"
+    <sba-panel :header-sticks-below="['#navigation']"
               title="Global filters"
               v-if="hasLoaded"
     >
@@ -48,7 +48,7 @@
           <td v-text="filter.order" />
         </tr>
       </table>
-    </SbaPanel>
+    </sba-panel>
   </section>
 </template>
 
@@ -96,7 +96,7 @@
           const res = await this.instance.fetchGlobalFiltersData();
           this.globalFiltersData = Object.keys(res.data)
             .map(function(key) {
-              return {name: key, order: res.data[key]};
+              return {name: key.substr(0, key.indexOf('@')), order: res.data[key]};
             });
         } catch (error) {
           console.warn('Fetching global filters failed:', error);
