@@ -26,7 +26,7 @@
       </div>
     </div>
 
-    <div class="field has-addons" v-if="globalFilters">
+    <div class="field has-addons" v-if="hasGlobalFiltersData">
       <p class="control is-expanded">
         <input class="input" type="search" placeholder="name filter" v-model="globalFilterSearch">
       </p>
@@ -55,6 +55,10 @@
 <script>
   import Instance from '@/services/instance';
 
+  const globalFilterHasKeyword = (globalFilter, keyword) => {
+    return globalFilter.name.toString().toLowerCase().includes(keyword);
+  };
+
   export default {
     props: {
       instance: {
@@ -65,12 +69,21 @@
     data: () => ({
       hasLoaded: false,
       error: null,
-      globalFilters: null,
+      globalFiltersData: null,
       globalFilterSearch: null
     }),
     computed: {
-      hasGlobalFiltersData: function () {
-        return this.globalFilters && this.globalFilters.length;
+      hasGlobalFiltersData() {
+        return this.globalFiltersData && this.globalFiltersData.length;
+      },
+      globalFilters() {
+        if (!this.globalFiltersData) {
+          return [];
+        }
+        if (!this.globalFilterSearch) {
+          return this.globalFiltersData;
+        }
+        return this.globalFiltersData.filter(globalFilter => !this.globalFilterSearch || globalFilterHasKeyword(globalFilter, this.globalFilterSearch.toLowerCase()));
       }
     },
     created() {
@@ -81,9 +94,10 @@
         this.error = null;
         try {
           const res = await this.instance.fetchGlobalFiltersData();
-          this.globalFilters = Object.keys(res.data).map(function (key) {
-            return {name: key, order: res.data[key]};
-          });
+          this.globalFiltersData = Object.keys(res.data)
+            .map(function(key) {
+              return {name: key, order: res.data[key]};
+            });
         } catch (error) {
           console.warn('Fetching global filters failed:', error);
           this.error = error;
