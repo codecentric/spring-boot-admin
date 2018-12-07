@@ -32,8 +32,23 @@
       </p>
     </div>
 
-    <!-- TODO: Global filters panel -->
-
+    <SbaPanel :header-sticks-below="['#navigation']"
+              title="Global filters"
+              v-if="hasLoaded"
+    >
+      <table class="table is-fullwidth"
+             v-if="globalFilters.length > 0"
+      >
+        <tr v-for="filter in globalFilters"
+            :key="filter.name"
+        >
+          <td>
+            <span v-text="filter.name" class="is-breakable" /><br>
+          </td>
+          <td v-text="filter.order" />
+        </tr>
+      </table>
+    </SbaPanel>
   </section>
 </template>
 
@@ -66,7 +81,7 @@
         this.error = null;
         try {
           const res = await this.instance.fetchGlobalFiltersData();
-          this.globalFilters = Object.keys(res.data).map(function(key) {
+          this.globalFilters = Object.keys(res.data).map(function (key) {
             return {name: key, order: res.data[key]};
           });
         } catch (error) {
