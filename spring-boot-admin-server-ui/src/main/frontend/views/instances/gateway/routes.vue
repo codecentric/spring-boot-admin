@@ -49,8 +49,9 @@
           <th></th>
         </thead>
         <tbody>
-          <template>
-            <tr class="is-selectable" :key="route.route_id" v-for="route in routes">
+        <template v-for="route in routes">
+          <tr class="is-selectable" :key="route.route_id"
+              @click="showDetails[route.route_id] ? $delete(showDetails, route.route_id) : $set(showDetails, route.route_id, true)">
               <td class="is-breakable">
                 <span v-text="route.route_id"/>
               </td>
@@ -63,6 +64,18 @@
                   Delete
                 </button>
               </td>
+            </tr>
+            <tr v-if="showDetails[route.route_id]" :key="`${route.route_id}-detail`">
+              <table class="table is-fullwidth is-hoverable">
+                <tr v-for="predicate in route.route_definition.predicates" :key="predicate.name">
+                  <td colspan="1" class="has-background-white-ter"><span v-text="predicate.name"/></td>
+                  <td v-for="filter in route.route_definition.filters" :key="filter.name">
+                    <span v-text="filter.name"/>
+                  </td>
+                  <td colspan="1" class="has-background-white-ter"><span v-text="route.route_definition.uri"/></td>
+                  <td colspan="1" class="has-background-white-ter"><div id="container"></div></td>
+                </tr>
+              </table>
             </tr>
           </template>
         </tbody>
@@ -106,7 +119,8 @@
       error: null,
       routesData: null,
       routesFilter: null,
-      sort: 'undefined'
+      sort: 'undefined',
+      showDetails: {}
     }),
     computed: {
       routes() {
