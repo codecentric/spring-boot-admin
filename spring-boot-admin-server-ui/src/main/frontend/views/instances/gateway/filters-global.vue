@@ -26,16 +26,16 @@
       </div>
     </div>
 
-    <div class="field has-addons" v-if="hasGlobalFiltersData">
-      <p class="control is-expanded">
-        <input class="input" type="search" placeholder="Filter by name" v-model="globalFilterSearch">
-      </p>
-    </div>
-
     <sba-panel :header-sticks-below="['#navigation']"
               title="Global filters"
               v-if="hasLoaded"
     >
+      <div class="field has-addons" v-if="hasGlobalFiltersData">
+        <p class="control is-expanded">
+          <input class="input" type="search" placeholder="Filter by name" v-model="globalFilterSearch">
+        </p>
+      </div>
+
       <table class="table is-fullwidth"
              v-if="globalFilters.length > 0"
       >
