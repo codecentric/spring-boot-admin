@@ -127,6 +127,12 @@ class Instance {
     });
   }
 
+  async fetchGlobalFiltersData() {
+    return this.axios.get(uri`actuator/gateway/globalfilters`, {
+      headers: {'Accept': actuatorMimeTypes}
+    });
+  }
+
   async fetchCaches() {
     return this.axios.get(uri`actuator/caches`, {
       headers: {'Accept': actuatorMimeTypes}
