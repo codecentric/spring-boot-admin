@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <div class="container" :class="{ 'is-loading' : !hasLoaded }">
+  <div :class="{ 'is-loading' : !hasLoaded }">
     <div v-if="error" class="message is-danger">
       <div class="message-body">
         <strong>
@@ -31,6 +31,15 @@
         <p class="control is-expanded">
           <input class="input" type="search" placeholder="Filter by name" v-model="globalFilterSearch">
         </p>
+        <div class="control">
+          <div class="select">
+            <select v-model="sort">
+              <option value="undefined">- Sort by -</option>
+              <option value="name">Name</option>
+              <option value="order">Order</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       <table class="table is-fullwidth is-hoverable" v-if="globalFilters.length > 0">
@@ -58,6 +67,16 @@
     return globalFilter.name.toString().toLowerCase().includes(keyword);
   };
 
+  const sortGlobalFilter = (globalFilters, sort) => {
+    if (sort === 'name') {
+      return globalFilters.slice().sort(function(a, b) {return a.name.localeCompare(b.name)})
+    } else if (sort === 'order') {
+      return globalFilters.slice().sort(function(a, b) {return a.order - b.order})
+    }
+
+    return globalFilters;
+  };
+
   export default {
     props: {
       instance: {
@@ -69,7 +88,8 @@
       hasLoaded: false,
       error: null,
       globalFiltersData: null,
-      globalFilterSearch: null
+      globalFilterSearch: null,
+      sort: 'undefined'
     }),
     computed: {
       hasGlobalFiltersData() {
@@ -80,9 +100,9 @@
           return [];
         }
         if (!this.globalFilterSearch) {
-          return this.globalFiltersData;
+          return sortGlobalFilter(this.globalFiltersData, this.sort);;
         }
-        return this.globalFiltersData.filter(globalFilter => !this.globalFilterSearch || globalFilterHasKeyword(globalFilter, this.globalFilterSearch.toLowerCase()));
+        return sortGlobalFilter(this.globalFiltersData.filter(globalFilter => !this.globalFilterSearch || globalFilterHasKeyword(globalFilter, this.globalFilterSearch.toLowerCase())), this.sort);
       }
     },
     created() {

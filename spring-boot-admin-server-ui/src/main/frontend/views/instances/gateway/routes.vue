@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <div class="container" :class="{ 'is-loading' : !hasLoaded }">
+  <div :class="{ 'is-loading' : !hasLoaded }">
     <div v-if="error" class="message is-danger">
       <div class="message-body">
         <strong>
@@ -26,31 +26,38 @@
       </div>
     </div>
 
-
-    <sba-panel :header-sticks-below="['#navigation']" title="Routes" v-if="routes">
-
+    <sba-panel :header-sticks-below="['#navigation']" title="Routes" v-if="hasLoaded">
       <div class="field has-addons" v-if="routes">
         <p class="control is-expanded">
           <input class="input" type="search" placeholder="routes filter" v-model="routesFilter">
         </p>
+        <div class="control">
+          <div class="select">
+            <select v-model="sort">
+              <option value="undefined">- Sort by -</option>
+              <option value="route_id">Route Id</option>
+              <option value="order">Order</option>
+            </select>
+          </div>
+        </div>
       </div>
 
-      <table class="table is-fullwidth is-hoverable">
+      <table class="table routes is-fullwidth is-hoverable">
         <thead>
-          <th>Route id</th>
+          <th>Route Id</th>
           <th>Order</th>
           <th></th>
         </thead>
         <tbody>
           <template>
-            <tr class="is-selectable" :key="route.route_id" v-for="route in filterRoutes">
+            <tr class="is-selectable" :key="route.route_id" v-for="route in routes">
               <td class="is-breakable">
                 <span v-text="route.route_id"/>
               </td>
-              <td class="is-breakable">
+              <td>
                 <span v-text="route.order"/>
               </td>
-              <td class="is-breakable">
+              <td class="routes__delete-action">
                 <button class="button is-danger">Delete</button>
               </td>
             </tr>
@@ -66,7 +73,22 @@
   import uniqBy from 'lodash/uniqBy';
 
   const filterRoutesByKeyword = (route, keyword) => {
-    return route.route_id.toString().toLowerCase().includes(keyword);
+    return route.route_id.toString().toLowerCase().includes(keyword)
+      || route.route_definition.uri.toString().toLowerCase().includes(keyword)
+      || route.route_definition.predicates.filter(p => p.name.toLowerCase().includes(keyword)).length > 0
+      || route.route_definition.predicates.filter(p => Object.values(p.args).filter(pv => pv.toLowerCase().includes(keyword)).length > 0).length > 0
+      || route.route_definition.filters.filter(f => f.name.toLowerCase().includes(keyword)).length > 0
+      || route.route_definition.filters.filter(f => Object.values(f.args).filter(av => av.toLowerCase().includes(keyword)).length > 0).length > 0;
+  };
+
+  const sortRoutes = (globalFilters, sort) => {
+    if (sort === 'route_id') {
+      return globalFilters.slice().sort(function(a, b) {return a.route_id.localeCompare(b.route_id)})
+    } else if (sort === 'order') {
+      return globalFilters.slice().sort(function(a, b) {return a.order - b.order})
+    }
+
+    return globalFilters;
   };
 
   export default {
@@ -79,19 +101,19 @@
     data: () => ({
       hasLoaded: false,
       error: null,
-      filter: '',
-      routes: null,
-      routesFilter: null
+      routesData: null,
+      routesFilter: null,
+      sort: 'undefined'
     }),
     computed: {
-      filterRoutes() {
-        if (!this.routes) {
+      routes() {
+        if (!this.routesData) {
           return [];
         }
         if (!this.routesFilter) {
-          return this.routes;
+          return sortRoutes(this.routesData, this.sort);
         }
-        return this.routes.filter(route => !this.routesFilter || filterRoutesByKeyword(route, this.routesFilter.toLowerCase()));
+        return sortRoutes(this.routesData.filter(route => !this.routesFilter || filterRoutesByKeyword(route, this.routesFilter.toLowerCase())), this.sort);
       }
     },
     created() {
@@ -102,7 +124,7 @@
         this.error = null;
         try {
           const res = await this.instance.fetchRoutesData();
-          this.routes = uniqBy(res.data, 'route_id');
+          this.routesData = uniqBy(res.data, 'route_id');
         } catch (error) {
           console.warn('Fetching routes failed:', error);
           this.error = error;
@@ -119,4 +141,13 @@
     }
   }
 </script>
+
+<style lang="scss">
+  table .routes {
+    &__delete-action {
+      text-align: right;
+      vertical-align: middle;
+    }
+  }
+</style>
 
