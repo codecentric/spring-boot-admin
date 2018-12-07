@@ -58,7 +58,10 @@
                 <span v-text="route.order"/>
               </td>
               <td class="routes__delete-action">
-                <button class="button is-danger">Delete</button>
+                <button class="button is-danger" :data-route_id="route.route_id"
+                  v-confirm="{ ok: deleteRoute, cancel: closeDeleteDialog, message: 'Are you sure you want to delete route ' + route.route_id + '?' }">
+                  Delete
+                </button>
               </td>
             </tr>
           </template>
@@ -71,7 +74,7 @@
 <script>
   import Instance from '@/services/instance';
   import uniqBy from 'lodash/uniqBy';
-
+  
   const filterRoutesByKeyword = (route, keyword) => {
     return route.route_id.toString().toLowerCase().includes(keyword)
       || route.route_definition.uri.toString().toLowerCase().includes(keyword)
@@ -138,6 +141,23 @@
         const regex = new RegExp(this.filter, 'i');
         return route => (route.route_id.match(regex));
       },
+      deleteRoute(dialog) {
+        let button = dialog.node;
+        let routeId = button.dataset.route_id;
+        
+        try {
+          this.instance.deleteRoute(routeId);
+        } catch (error) {
+          console.warn('Deleting route failed:', error);
+          this.error = error;
+        }
+
+        dialog.close();
+        
+      },
+      closeDeleteDialog: function() {
+        // Dialog will get closed
+      }
     }
   }
 </script>
