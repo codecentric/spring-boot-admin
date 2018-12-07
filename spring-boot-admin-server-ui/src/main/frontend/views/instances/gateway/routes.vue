@@ -27,6 +27,8 @@
     </div>
 
     <sba-panel :header-sticks-below="['#navigation']" title="Routes" v-if="hasLoaded">
+      <button class="button refresh-button is-primary">Clear routes cache</button>
+
       <div class="field has-addons" v-if="routes">
         <p class="control is-expanded">
           <input class="input" type="search" placeholder="routes filter" v-model="routesFilter">
@@ -182,6 +184,10 @@
       text-align: right;
       vertical-align: middle;
     }
+  }
+
+  .refresh-button {
+    margin-bottom: 16px;
   }
 </style>
 
