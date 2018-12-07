@@ -15,41 +15,40 @@
   -->
 
 <template>
-  <section class="section" :class="{ 'is-loading' : !hasLoaded }">
+  <div class="container" :class="{ 'is-loading' : !hasLoaded }">
     <div v-if="error" class="message is-danger">
       <div class="message-body">
         <strong>
-          <FontAwesomeIcon class="has-text-danger" icon="exclamation-triangle" />
+          <FontAwesomeIcon class="has-text-danger" icon="exclamation-triangle"/>
           Fetching global filters failed.
         </strong>
-        <p v-text="error.message" />
+        <p v-text="error.message"/>
       </div>
     </div>
 
-    <sba-panel :header-sticks-below="['#navigation']"
-              title="Global filters"
-              v-if="hasLoaded"
-    >
+    <sba-panel :header-sticks-below="['#navigation']" title="Global filters" v-if="hasLoaded">
       <div class="field has-addons" v-if="hasGlobalFiltersData">
         <p class="control is-expanded">
           <input class="input" type="search" placeholder="Filter by name" v-model="globalFilterSearch">
         </p>
       </div>
 
-      <table class="table is-fullwidth"
-             v-if="globalFilters.length > 0"
-      >
-        <tr v-for="filter in globalFilters"
-            :key="filter.name"
-        >
-          <td>
-            <span v-text="filter.name" class="is-breakable" /><br>
-          </td>
-          <td v-text="filter.order" />
-        </tr>
+      <table class="table is-fullwidth is-hoverable" v-if="globalFilters.length > 0">
+        <thead>
+          <th>Filter name</th>
+          <th>Order</th>
+        </thead>
+        <tbody>
+          <tr v-for="filter in globalFilters" :key="filter.name">
+            <td>
+              <span v-text="filter.name" class="is-breakable"/><br>
+            </td>
+            <td v-text="filter.order"/>
+          </tr>
+        </tbody>
       </table>
     </sba-panel>
-  </section>
+  </div>
 </template>
 
 <script>
@@ -95,7 +94,7 @@
         try {
           const res = await this.instance.fetchGlobalFiltersData();
           this.globalFiltersData = Object.keys(res.data)
-            .map(function(key) {
+            .map(function (key) {
               return {name: key.substr(0, key.indexOf('@')), order: res.data[key]};
             });
         } catch (error) {

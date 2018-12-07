@@ -15,16 +15,19 @@
   -->
 
 <template>
-  <global-filters-control :instance="instance" />
-  <!-- TODO: Routes control -->
+  <section class="section">
+    <global-filters-control :instance="instance" />
+    <routes-control :instance="instance" />
+  </section>
 </template>
 
 <script>
   import Instance from '@/services/instance';
   import globalFiltersControl from './filters-global';
+  import routesControl from './routes';
 
   export default {
-    components: {globalFiltersControl},
+    components: {globalFiltersControl, routesControl},
     props: {
       instance: {
         type: Instance,

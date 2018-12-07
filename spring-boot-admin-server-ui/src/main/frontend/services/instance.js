@@ -133,6 +133,12 @@ class Instance {
     });
   }
 
+  async fetchRoutesData() {
+    return this.axios.get(uri`actuator/gateway/routes`, {
+      headers: {'Accept': actuatorMimeTypes}
+    });
+  }
+
   async fetchCaches() {
     return this.axios.get(uri`actuator/caches`, {
       headers: {'Accept': actuatorMimeTypes}
