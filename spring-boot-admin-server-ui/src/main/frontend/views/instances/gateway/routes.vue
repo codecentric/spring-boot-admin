@@ -26,6 +26,41 @@
       </div>
     </div>
 
+    <sba-panel :header-sticks-below="['#navigation']" title="Add Route">
+      <div class="field has-addons">
+        <p class="control is-expanded">
+          <input class="input" placeholder="Route id" v-model="addRouteData.id" required>
+        </p>
+      </div>
+      <div class="field has-addons">
+        <p class="control is-expanded">
+          <textarea rows="4" class="input" placeholder="Predicates" v-model="addRouteData.predicates" required />
+        </p>
+      </div>
+      <div class="field has-addons">
+        <p class="control is-expanded">
+          <textarea rows="4" class="input" placeholder="Filters" v-model="addRouteData.filters" />
+        </p>
+      </div>
+      <div class="field has-addons">
+        <p class="control is-expanded">
+          <input class="input" placeholder="Uri" v-model="addRouteData.uri" required>
+        </p>
+      </div>
+      <div class="field has-addons">
+        <p class="control is-expanded">
+          <input class="input" placeholder="Order" v-model="addRouteData.order" type="number" required>
+        </p>
+      </div>
+      <div class="field is-grouped is-grouped-right">
+        <div class="control">
+          <button class="button is-primary" :disabled="!addRouteData" @click="addRoute">
+            <span>Add route</span>
+          </button>
+        </div>
+      </div>
+    </sba-panel>
+
     <sba-panel :header-sticks-below="['#navigation']" title="Routes" v-if="routes">
       <sba-confirm-button class="button refresh-button is-light"
                           :class="{'is-loading' : clearRoutesCacheStatus === 'executing', 'is-danger' : clearRoutesCacheStatus === 'failed', 'is-info' : clearRoutesCacheStatus === 'completed'}"
@@ -42,39 +77,6 @@
           Clear routes cache
         </span>
       </sba-confirm-button>
-
-      <div class="field has-addons">
-        <p class="control is-expanded">
-          <input class="input" placeholder="Route id" v-model="addRouteData.id">
-        </p>
-      </div>
-      <div class="field has-addons">
-        <p class="control is-expanded">
-          <textarea rows="4" cols="50" class="input" placeholder="Predicates" v-model="addRouteData.predicates" />
-        </p>
-      </div>
-      <div class="field has-addons">
-        <p class="control is-expanded">
-          <input class="input" placeholder="Filters" v-model="addRouteData.filters">
-        </p>
-      </div>
-      <div class="field has-addons">
-        <p class="control is-expanded">
-          <input class="input" placeholder="Uri" v-model="addRouteData.uri">
-        </p>
-      </div>
-      <div class="field has-addons">
-        <p class="control is-expanded">
-          <input class="input" placeholder="Order" v-model="addRouteData.order">
-        </p>
-      </div>
-      <div class="field has-addons">
-        <div class="control">
-          <button class="button is-primary" :disabled="!addRouteData" @click="addRoute">
-            <span>Add route</span>
-          </button>
-        </div>
-      </div>
 
       <div class="field has-addons" v-if="routes">
         <p class="control is-expanded">
@@ -175,11 +177,11 @@
       showDetails: {},
       clearRoutesCacheStatus: null,
       addRouteData: {
-        'id': 'idddd',
-        'predicates': '[{"name":"Path","args":{"_genkey_0":"/first"}}]',
-        'filters': '[]',
-        'uri': 'http://example.org',
-        'order': 0
+        'id': null,
+        'predicates': null,
+        'filters': null,
+        'uri': null,
+        'order': null
       }
     }),
     computed: {
