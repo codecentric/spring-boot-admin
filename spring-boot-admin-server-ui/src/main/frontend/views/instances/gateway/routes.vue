@@ -50,7 +50,7 @@
       </div>
       <div class="field has-addons">
         <p class="control is-expanded">
-          <textarea rows="4" cols="50" class="input" placeholder="Predicates" v-model="addRouteData.predicates"></textarea>
+          <textarea rows="4" cols="50" class="input" placeholder="Predicates" v-model="addRouteData.predicates" />
         </p>
       </div>
       <div class="field has-addons">
