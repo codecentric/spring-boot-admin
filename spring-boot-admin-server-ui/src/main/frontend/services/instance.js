@@ -145,6 +145,12 @@ class Instance {
     });
   }
 
+  async clearRoutesCache() {
+    return this.axios.post(uri`actuator/gateway/refresh`, {
+      headers: {'Accept': actuatorMimeTypes}
+    });
+  }
+
   async fetchCaches() {
     return this.axios.get(uri`actuator/caches`, {
       headers: {'Accept': actuatorMimeTypes}
