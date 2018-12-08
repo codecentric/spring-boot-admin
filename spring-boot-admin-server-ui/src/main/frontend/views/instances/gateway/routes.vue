@@ -19,10 +19,10 @@
     <div v-if="error" class="message is-danger">
       <div class="message-body">
         <strong>
-          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
-          {{error.action}}
+          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
+          {{ error.action }}
         </strong>
-        <p v-text="error.value.message"/>
+        <p v-text="error.value.message" />
       </div>
     </div>
 
@@ -118,8 +118,9 @@
               </td>
               <td class="routes__delete-action">
                 <button class="button is-danger" :data-route_id="route.route_id"
-                        v-confirm="{ ok: deleteRoute, cancel: closeDeleteDialog, message: 'Are you sure you want to delete route ' + route.route_id + '?' }">
-                        <span><font-awesome-icon icon="trash" />&nbsp;Delete</span>
+                        v-confirm="{ ok: deleteRoute, cancel: closeDeleteDialog, message: 'Are you sure you want to delete route ' + route.route_id + '?' }"
+                >
+                  <span><font-awesome-icon icon="trash" />&nbsp;Delete</span>
                 </button>
               </td>
             </tr>
