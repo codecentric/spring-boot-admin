@@ -16,6 +16,15 @@
 
 <template>
   <sba-panel :header-sticks-below="['#navigation']" title="Add Route">
+    <div v-if="error" class="message is-danger">
+      <div class="message-body">
+        <strong>
+          <font-awesome-icon class="has-text-warning" icon="exclamation-triangle" />
+          Adding route failed:
+        </strong>
+        <p v-text="error" />
+      </div>
+    </div>
     <div class="field has-addons">
       <p class="control is-expanded">
         <input class="input" placeholder="Route id" v-model="addRouteData.id" required>
@@ -23,12 +32,12 @@
     </div>
     <div class="field has-addons">
       <p class="control is-expanded">
-        <textarea rows="4" class="input" placeholder="Predicates" v-model="addRouteData.predicates" required />
+        <textarea rows="4" class="input" placeholder="Predicates" v-model="addRouteData.predicates" required/>
       </p>
     </div>
     <div class="field has-addons">
       <p class="control is-expanded">
-        <textarea rows="4" class="input" placeholder="Filters" v-model="addRouteData.filters" />
+        <textarea rows="4" class="input" placeholder="Filters" v-model="addRouteData.filters"/>
       </p>
     </div>
     <div class="field has-addons">
@@ -63,33 +72,39 @@
       }
     },
     data: () => ({
-    addRouteData: {
-      'id': null,
-      'predicates': null,
-      'filters': null,
-      'uri': null,
-      'order': null
-    }
-  }),
-  methods: {
-    addRoute() {
-      const vm = this;
-      from(vm.instance.addGatewayRoute(JSON.parse(vm.addRouteData)))
-        .subscribe({
-          complete: () => {
-          console.warn('complete');
-      vm.addRouteData = {
+      error: null,
+      addRouteData: {
         'id': null,
         'predicates': null,
         'filters': null,
         'uri': null,
         'order': null
-      };
-    },
-      error: () => console.warn('error')
-    });
+      }
+    }),
+    methods: {
+      addRoute() {
+        const vm = this;
+        this.addRouteData.predicates = JSON.parse(vm.addRouteData.predicates);
+        this.addRouteData.filters = JSON.parse(vm.addRouteData.filters);
+        from(vm.instance.addGatewayRoute(vm.addRouteData))
+          .subscribe({
+            complete: () => {
+              console.warn('complete');
+              vm.addRouteData = {
+                'id': null,
+                'predicates': null,
+                'filters': null,
+                'uri': null,
+                'order': null
+              };
+              this.error = null;
+            },
+            error: (error) => {
+              this.error = 'Server returned: ' + error.response.status;
+            }
+          });
+      }
     }
-  }
   }
 </script>
 
