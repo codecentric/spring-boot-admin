@@ -26,17 +26,65 @@
       </div>
     </div>
 
-    <sba-panel :header-sticks-below="['#navigation']" title="Routes" v-if="hasLoaded">
+    <sba-panel :header-sticks-below="['#navigation']" title="Routes" v-if="routes">
+      <sba-confirm-button class="button refresh-button is-light"
+                          :class="{'is-loading' : clearRoutesCacheStatus === 'executing', 'is-danger' : clearRoutesCacheStatus === 'failed', 'is-info' : clearRoutesCacheStatus === 'completed'}"
+                          :disabled="clearRoutesCacheStatus === 'executing'"
+                          @click="clearRoutesCache">
+        <span v-if="clearRoutesCacheStatus === 'completed'">Routes cache cleared</span>
+        <span v-else-if="clearRoutesCacheStatus === 'failed'">Failed</span>
+        <span v-else>Clear routes cache</span>
+      </sba-confirm-button>
+
+      <div class="field has-addons">
+        <p class="control is-expanded">
+          <input class="input" placeholder="Route id" v-model="addRouteData.id">
+        </p>
+      </div>
+      <div class="field has-addons">
+        <p class="control is-expanded">
+          <textarea rows="4" cols="50" class="input" placeholder="Predicates" v-model="addRouteData.predicates"></textarea>
+        </p>
+      </div>
+      <div class="field has-addons">
+        <p class="control is-expanded">
+          <input class="input" placeholder="Filters" v-model="addRouteData.filters">
+        </p>
+      </div>
+      <div class="field has-addons">
+        <p class="control is-expanded">
+          <input class="input" placeholder="Uri" v-model="addRouteData.uri">
+        </p>
+      </div>
+      <div class="field has-addons">
+        <p class="control is-expanded">
+          <input class="input" placeholder="Order" v-model="addRouteData.order">
+        </p>
+      </div>
+      <div class="field has-addons">
+        <div class="control">
+          <button class="button is-primary" :disabled="!addRouteData" @click="addRoute">
+            <span>Add route</span>
+          </button>
+        </div>
+      </div>
+
       <div class="field has-addons" v-if="routes">
         <p class="control is-expanded">
-          <input class="input" type="search" placeholder="routes filter" v-model="routesFilter">
+          <input class="input" type="search" placeholder="Search routes by name" v-model="routesFilter">
         </p>
         <div class="control">
           <div class="select">
             <select v-model="sort">
-              <option value="undefined">- Sort by -</option>
-              <option value="route_id">Route Id</option>
-              <option value="order">Order</option>
+              <option value="undefined">
+                - Sort by -
+              </option>
+              <option value="route_id">
+                Route Id
+              </option>
+              <option value="order">
+                Order
+              </option>
             </select>
           </div>
         </div>
@@ -46,17 +94,18 @@
         <thead>
           <th>Route Id</th>
           <th>Order</th>
-          <th></th>
+          <th />
         </thead>
         <tbody>
-        <template v-for="route in routes">
-          <tr class="is-selectable" :key="route.route_id"
-              @click="showDetails[route.route_id] ? $delete(showDetails, route.route_id) : $set(showDetails, route.route_id, true)">
+          <template v-for="route in routes">
+            <tr class="is-selectable" :key="route.route_id"
+                @click="showDetails[route.route_id] ? $delete(showDetails, route.route_id) : $set(showDetails, route.route_id, true)"
+            >
               <td class="is-breakable">
-                <span v-text="route.route_id"/>
+                <span v-text="route.route_id" />
               </td>
               <td>
-                <span v-text="route.order"/>
+                <span v-text="route.order" />
               </td>
               <td class="routes__delete-action">
                 <button class="button is-danger" :data-route_id="route.route_id"
@@ -65,18 +114,7 @@
                 </button>
               </td>
             </tr>
-            <tr v-if="showDetails[route.route_id]" :key="`${route.route_id}-detail`">
-              <table class="table is-fullwidth is-hoverable">
-                <tr v-for="predicate in route.route_definition.predicates" :key="predicate.name">
-                  <td colspan="1" class="has-background-white-ter"><span v-text="predicate.name"/></td>
-                  <td v-for="filter in route.route_definition.filters" :key="filter.name">
-                    <span v-text="filter.name"/>
-                  </td>
-                  <td colspan="1" class="has-background-white-ter"><span v-text="route.route_definition.uri"/></td>
-                  <td colspan="1" class="has-background-white-ter"><div id="container"></div></td>
-                </tr>
-              </table>
-            </tr>
+            <route-detail-control :route="route" :show-details="showDetails" :key="`${route.route_id}-detail`" />
           </template>
         </tbody>
       </table>
@@ -86,7 +124,9 @@
 
 <script>
   import Instance from '@/services/instance';
+  import {from, listen} from '@/utils/rxjs';
   import uniqBy from 'lodash/uniqBy';
+  import routeDetailControl from './route-details';
   
   const filterRoutesByKeyword = (route, keyword) => {
     return route.route_id.toString().toLowerCase().includes(keyword)
@@ -99,15 +139,20 @@
 
   const sortRoutes = (globalFilters, sort) => {
     if (sort === 'route_id') {
-      return globalFilters.slice().sort(function(a, b) {return a.route_id.localeCompare(b.route_id)})
+      return globalFilters.slice().sort(function (a, b) {
+        return a.route_id.localeCompare(b.route_id)
+      })
     } else if (sort === 'order') {
-      return globalFilters.slice().sort(function(a, b) {return a.order - b.order})
+      return globalFilters.slice().sort(function (a, b) {
+        return a.order - b.order
+      })
     }
 
     return globalFilters;
   };
 
   export default {
+    components: {routeDetailControl},
     props: {
       instance: {
         type: Instance,
@@ -120,7 +165,15 @@
       routesData: null,
       routesFilter: null,
       sort: 'undefined',
-      showDetails: {}
+      showDetails: {},
+      clearRoutesCacheStatus: null,
+      addRouteData: {
+        'id': 'idddd',
+        'predicates': '[{"name":"Path","args":{"_genkey_0":"/first"}}]',
+        'filters': '[]',
+        'uri': 'http://example.org',
+        'order': 0
+      }
     }),
     computed: {
       routes() {
@@ -155,11 +208,24 @@
         const regex = new RegExp(this.filter, 'i');
         return route => (route.route_id.match(regex));
       },
-      async deleteRoute(dialog) {
+      addRoute() {
+        //secure addRouteData from empty strings (add top check if trimmed length larger than zero)
+        const vm = this;
+        from(vm.instance.addGatewayRoute(JSON.parse(vm.addRouteData)))
+          .subscribe({
+            complete: () => {
+              console.warn('complete');
+              //Clean addRouteData object
+            },
+            error: () => console.warn('error')
+          });
+      },
+      deleteRoute(dialog) {
         let button = dialog.node;
         let routeId = button.dataset.route_id;
+
         try {
-          await this.instance.deleteRoute(routeId);
+          const res = await this.instance.deleteRoute(routeId);
           this.error = null;
         } catch (error) {
           console.warn('Deleting route failed:', error);
@@ -169,7 +235,26 @@
         }
 
         dialog.close();
-        
+      },
+      clearRoutesCache() {
+        console.warn('clearRoutesCache');
+        const vm = this;
+        from(vm.instance.clearRoutesCache())
+          .pipe(listen(status => vm.clearRoutesCacheStatus = status))
+          .subscribe({
+            complete: () => {
+            setTimeout(() => vm.clearRoutesCacheStatus = null, 2500);
+            return vm.$emit('reset');
+          },
+          error: () => vm.$emit('reset')
+        });
+
+        try {
+          this.instance.clearRoutesCache();
+        } catch (error) {
+          console.warn('Clearing routes cache failed:', error);
+          this.error = error;
+        }
       },
       closeDeleteDialog: function() {
         // Dialog will get closed
@@ -199,6 +284,9 @@
  
   .dg-btn-loader .dg-circle {
       background-color: green;
+  }
+  .refresh-button {
+    margin-bottom: 16px;
   }
 </style>
 

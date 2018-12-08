@@ -133,6 +133,12 @@ class Instance {
     });
   }
 
+  async addGatewayRoute(route) {
+    return this.axios.post(uri`actuator/gateway/routes/${route.id}`, route, {
+      headers: {'Content-Type': 'application/json'}
+    });
+  }
+
   async fetchRoutesData() {
     return this.axios.get(uri`actuator/gateway/routes`, {
       headers: {'Accept': actuatorMimeTypes}
@@ -141,6 +147,12 @@ class Instance {
 
   async deleteRoute(routeId) {
     return this.axios.delete(uri`actuator/gateway/routes/${routeId}`, {
+      headers: {'Accept': actuatorMimeTypes}
+    });
+  }
+
+  async clearRoutesCache() {
+    return this.axios.post(uri`actuator/gateway/refresh`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }

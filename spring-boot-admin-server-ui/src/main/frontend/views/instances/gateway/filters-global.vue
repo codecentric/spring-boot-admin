@@ -19,17 +19,17 @@
     <div v-if="error" class="message is-danger">
       <div class="message-body">
         <strong>
-          <FontAwesomeIcon class="has-text-danger" icon="exclamation-triangle"/>
+          <FontAwesomeIcon class="has-text-danger" icon="exclamation-triangle" />
           Fetching global filters failed.
         </strong>
-        <p v-text="error.message"/>
+        <p v-text="error.message" />
       </div>
     </div>
 
     <sba-panel :header-sticks-below="['#navigation']" title="Global filters" v-if="hasLoaded">
       <div class="field has-addons" v-if="hasGlobalFiltersData">
         <p class="control is-expanded">
-          <input class="input" type="search" placeholder="Filter by name" v-model="globalFilterSearch">
+          <input class="input" type="search" placeholder="Search filters by name" v-model="globalFilterSearch">
         </p>
         <div class="control">
           <div class="select">
@@ -50,9 +50,9 @@
         <tbody>
           <tr v-for="filter in globalFilters" :key="filter.name">
             <td>
-              <span v-text="filter.name" class="is-breakable"/><br>
+              <span v-text="filter.name" class="is-breakable" /><br>
             </td>
-            <td v-text="filter.order"/>
+            <td v-text="filter.order" />
           </tr>
         </tbody>
       </table>
@@ -100,7 +100,7 @@
           return [];
         }
         if (!this.globalFilterSearch) {
-          return sortGlobalFilter(this.globalFiltersData, this.sort);;
+          return sortGlobalFilter(this.globalFiltersData, this.sort);
         }
         return sortGlobalFilter(this.globalFiltersData.filter(globalFilter => !this.globalFilterSearch || globalFilterHasKeyword(globalFilter, this.globalFilterSearch.toLowerCase())), this.sort);
       }
