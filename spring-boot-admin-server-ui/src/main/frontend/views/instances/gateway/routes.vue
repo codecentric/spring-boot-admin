@@ -197,10 +197,10 @@
           .pipe(listen(status => vm.clearRoutesCacheStatus = status))
           .subscribe({
             complete: () => {
-            setTimeout(() => vm.clearRoutesCacheStatus = null, 2500);
-            return vm.$emit('reset');
-          },
-          error: () => vm.$emit('reset')
+              setTimeout(() => vm.clearRoutesCacheStatus = null, 2500);
+              return vm.$emit('reset');
+            },
+            error: () => vm.$emit('reset')
         });
 
         try {

@@ -32,12 +32,12 @@
     </div>
     <div class="field has-addons">
       <p class="control is-expanded">
-        <textarea rows="4" class="input" placeholder="Predicates" v-model="addRouteData.predicates" required/>
+        <textarea rows="4" class="input" placeholder="Predicates" v-model="addRouteData.predicates" required />
       </p>
     </div>
     <div class="field has-addons">
       <p class="control is-expanded">
-        <textarea rows="4" class="input" placeholder="Filters" v-model="addRouteData.filters"/>
+        <textarea rows="4" class="input" placeholder="Filters" v-model="addRouteData.filters" />
       </p>
     </div>
     <div class="field has-addons">
