@@ -89,7 +89,7 @@
         from(vm.instance.addGatewayRoute(vm.addRouteData))
           .subscribe({
             complete: () => {
-              console.warn('complete');
+
               vm.addRouteData = {
                 'id': null,
                 'predicates': null,
