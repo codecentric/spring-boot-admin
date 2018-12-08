@@ -26,19 +26,59 @@
       </div>
     </div>
 
-    <sba-panel :header-sticks-below="['#navigation']" title="Routes" v-if="hasLoaded">
+    <sba-panel :header-sticks-below="['#navigation']" title="Routes" v-if="routes">
       <sba-confirm-button class="button refresh-button is-light"
                           :class="{'is-loading' : clearRoutesCacheStatus === 'executing', 'is-danger' : clearRoutesCacheStatus === 'failed', 'is-info' : clearRoutesCacheStatus === 'completed'}"
                           :disabled="clearRoutesCacheStatus === 'executing'"
-                          @click="clearRoutesCache">
-        <span v-if="clearRoutesCacheStatus === 'completed'">Routes cache cleared</span>
-        <span v-else-if="clearRoutesCacheStatus === 'failed'">Failed</span>
-        <span v-else>Clear routes cache</span>
+                          @click="clearRoutesCache"
+      >
+        <span v-if="clearRoutesCacheStatus === 'completed'">
+          Routes cache cleared
+        </span>
+        <span v-else-if="clearRoutesCacheStatus === 'failed'">
+          Failed
+        </span>
+        <span v-else>
+          Clear routes cache
+        </span>
       </sba-confirm-button>
+
+      <div class="field has-addons">
+        <p class="control is-expanded">
+          <input class="input" placeholder="Route id" v-model="addRouteData.id">
+        </p>
+      </div>
+      <div class="field has-addons">
+        <p class="control is-expanded">
+          <textarea rows="4" cols="50" class="input" placeholder="Predicates" v-model="addRouteData.predicates" />
+        </p>
+      </div>
+      <div class="field has-addons">
+        <p class="control is-expanded">
+          <input class="input" placeholder="Filters" v-model="addRouteData.filters">
+        </p>
+      </div>
+      <div class="field has-addons">
+        <p class="control is-expanded">
+          <input class="input" placeholder="Uri" v-model="addRouteData.uri">
+        </p>
+      </div>
+      <div class="field has-addons">
+        <p class="control is-expanded">
+          <input class="input" placeholder="Order" v-model="addRouteData.order">
+        </p>
+      </div>
+      <div class="field has-addons">
+        <div class="control">
+          <button class="button is-primary" :disabled="!addRouteData" @click="addRoute">
+            <span>Add route</span>
+          </button>
+        </div>
+      </div>
 
       <div class="field has-addons" v-if="routes">
         <p class="control is-expanded">
-          <input class="input" type="search" placeholder="routes filter" v-model="routesFilter">
+          <input class="input" type="search" placeholder="Search routes by name" v-model="routesFilter">
         </p>
         <div class="control">
           <div class="select">
@@ -76,7 +116,8 @@
               </td>
               <td class="routes__delete-action">
                 <button class="button is-danger" :data-route_id="route.route_id"
-                  v-confirm="{ ok: deleteRoute, cancel: closeDeleteDialog, message: 'Are you sure you want to delete route ' + route.route_id + '?' }">
+                        v-confirm="{ ok: deleteRoute, cancel: closeDeleteDialog, message: 'Are you sure you want to delete route ' + route.route_id + '?' }"
+                >
                   Delete
                 </button>
               </td>
@@ -93,9 +134,8 @@
   import Instance from '@/services/instance';
   import {from, listen} from '@/utils/rxjs';
   import uniqBy from 'lodash/uniqBy';
-
   import routeDetailControl from './route-details';
-
+  
   const filterRoutesByKeyword = (route, keyword) => {
     return route.route_id.toString().toLowerCase().includes(keyword)
       || route.route_definition.uri.toString().toLowerCase().includes(keyword)
@@ -134,7 +174,14 @@
       routesFilter: null,
       sort: 'undefined',
       showDetails: {},
-      clearRoutesCacheStatus: null
+      clearRoutesCacheStatus: null,
+      addRouteData: {
+        'id': 'idddd',
+        'predicates': '[{"name":"Path","args":{"_genkey_0":"/first"}}]',
+        'filters': '[]',
+        'uri': 'http://example.org',
+        'order': 0
+      }
     }),
     computed: {
       routes() {
@@ -168,6 +215,18 @@
         }
         const regex = new RegExp(this.filter, 'i');
         return route => (route.route_id.match(regex));
+      },
+      addRoute() {
+        //secure addRouteData from empty strings (add top check if trimmed length larger than zero)
+        const vm = this;
+        from(vm.instance.addGatewayRoute(JSON.parse(vm.addRouteData)))
+          .subscribe({
+            complete: () => {
+              console.warn('complete');
+              //Clean addRouteData object
+            },
+            error: () => console.warn('error')
+          });
       },
       deleteRoute(dialog) {
         let button = dialog.node;
