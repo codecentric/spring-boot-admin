@@ -182,6 +182,7 @@
         try {
           await this.instance.deleteRoute(routeId);
         } catch (response) {
+          this.fetchRoutesData();
           console.warn('Deleting route failed:', response);
           this.error = {
             action:'Deleting route ' + routeId + ' failed:', 

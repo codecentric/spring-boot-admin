@@ -98,6 +98,7 @@
                 'order': null
               };
               this.error = null;
+              vm.instance.fetchRoutesData();
             },
             error: (error) => {
               this.error = 'Server returned: ' + error.response.status;
