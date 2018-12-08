@@ -19,10 +19,10 @@
     <div v-if="error" class="message is-danger">
       <div class="message-body">
         <strong>
-          <FontAwesomeIcon class="has-text-danger" icon="exclamation-triangle"/>
+          <FontAwesomeIcon class="has-text-danger" icon="exclamation-triangle" />
           Fetching global filters failed.
         </strong>
-        <p v-text="error.message"/>
+        <p v-text="error.message" />
       </div>
     </div>
 
@@ -34,9 +34,15 @@
         <div class="control">
           <div class="select">
             <select v-model="sort">
-              <option value="undefined">- Sort by -</option>
-              <option value="name">Name</option>
-              <option value="order">Order</option>
+              <option value="undefined">
+                - Sort by -
+              </option>
+              <option value="name">
+                Name
+              </option>
+              <option value="order">
+                Order
+              </option>
             </select>
           </div>
         </div>
@@ -50,9 +56,9 @@
         <tbody>
           <tr v-for="filter in globalFilters" :key="filter.name">
             <td>
-              <span v-text="filter.name" class="is-breakable"/><br>
+              <span v-text="filter.name" class="is-breakable" /><br>
             </td>
-            <td v-text="filter.order"/>
+            <td v-text="filter.order" />
           </tr>
         </tbody>
       </table>
@@ -100,7 +106,7 @@
           return [];
         }
         if (!this.globalFilterSearch) {
-          return sortGlobalFilter(this.globalFiltersData, this.sort);;
+          return sortGlobalFilter(this.globalFiltersData, this.sort);
         }
         return sortGlobalFilter(this.globalFiltersData.filter(globalFilter => !this.globalFilterSearch || globalFilterHasKeyword(globalFilter, this.globalFilterSearch.toLowerCase())), this.sort);
       }
