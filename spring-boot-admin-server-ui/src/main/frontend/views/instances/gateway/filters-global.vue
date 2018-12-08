@@ -29,7 +29,7 @@
     <sba-panel :header-sticks-below="['#navigation']" title="Global filters" v-if="hasLoaded">
       <div class="field has-addons" v-if="hasGlobalFiltersData">
         <p class="control is-expanded">
-          <input class="input" type="search" placeholder="Filter by name" v-model="globalFilterSearch">
+          <input class="input" type="search" placeholder="Search filters by name" v-model="globalFilterSearch">
         </p>
       </div>
 

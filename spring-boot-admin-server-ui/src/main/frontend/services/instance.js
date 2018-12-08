@@ -133,6 +133,12 @@ class Instance {
     });
   }
 
+  async addGatewayRoute(route) {
+    return this.axios.post(uri`actuator/gateway/routes/${route.id}`, route, {
+      headers: {'Content-Type': 'application/json'}
+    });
+  }
+
   async fetchRoutesData() {
     return this.axios.get(uri`actuator/gateway/routes`, {
       headers: {'Accept': actuatorMimeTypes}
