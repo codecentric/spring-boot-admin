@@ -24,10 +24,19 @@ import sbaShell from './shell';
 import Store from './store';
 import ViewRegistry from './viewRegistry';
 import views from './views';
+import VuejsDialog from 'vuejs-dialog';
 
 moment.locale(window.navigator.language);
 Vue.use(VueRouter);
 Vue.use(components);
+Vue.use(VuejsDialog, {
+  html: true, 
+  loader: true,
+  okText: 'Yes',
+  cancelText: 'No',
+  animation: 'fade',
+  customClass: 'dialog' 
+});
 
 const applicationStore = new Store();
 const viewRegistry = new ViewRegistry();

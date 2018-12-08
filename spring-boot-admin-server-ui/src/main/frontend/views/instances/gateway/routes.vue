@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <div class="container" :class="{ 'is-loading' : !hasLoaded }">
+  <div :class="{ 'is-loading' : !hasLoaded }">
     <div v-if="error" class="message is-danger">
       <div class="message-body">
         <strong>
@@ -26,8 +26,16 @@
       </div>
     </div>
 
-
     <sba-panel :header-sticks-below="['#navigation']" title="Routes" v-if="routes">
+      <sba-confirm-button class="button refresh-button is-light"
+                          :class="{'is-loading' : clearRoutesCacheStatus === 'executing', 'is-danger' : clearRoutesCacheStatus === 'failed', 'is-info' : clearRoutesCacheStatus === 'completed'}"
+                          :disabled="clearRoutesCacheStatus === 'executing'"
+                          @click="clearRoutesCache">
+        <span v-if="clearRoutesCacheStatus === 'completed'">Routes cache cleared</span>
+        <span v-else-if="clearRoutesCacheStatus === 'failed'">Failed</span>
+        <span v-else>Clear routes cache</span>
+      </sba-confirm-button>
+
       <div class="field has-addons">
         <p class="control is-expanded">
           <input class="input" placeholder="Route id" v-model="addRouteData.id">
@@ -65,26 +73,51 @@
         <p class="control is-expanded">
           <input class="input" type="search" placeholder="Search routes by name" v-model="routesFilter">
         </p>
+        <div class="control">
+          <div class="select">
+            <select v-model="sort">
+              <option value="undefined">- Sort by -</option>
+              <option value="route_id">Route Id</option>
+              <option value="order">Order</option>
+            </select>
+          </div>
+        </div>
       </div>
 
-      <table class="table is-fullwidth is-hoverable">
+      <table class="table routes is-fullwidth is-hoverable">
         <thead>
-          <th>Route id</th>
+          <th>Route Id</th>
           <th>Order</th>
           <th></th>
         </thead>
         <tbody>
-          <template>
-            <tr class="is-selectable" :key="route.route_id" v-for="route in filterRoutes">
+        <template v-for="route in routes">
+          <tr class="is-selectable" :key="route.route_id"
+              @click="showDetails[route.route_id] ? $delete(showDetails, route.route_id) : $set(showDetails, route.route_id, true)">
               <td class="is-breakable">
                 <span v-text="route.route_id" />
               </td>
-              <td class="is-breakable">
-                <span v-text="route.order" />
+              <td>
+                <span v-text="route.order"/>
               </td>
-              <td class="is-breakable">
-                <button class="button is-danger">Delete</button>
+              <td class="routes__delete-action">
+                <button class="button is-danger" :data-route_id="route.route_id"
+                  v-confirm="{ ok: deleteRoute, cancel: closeDeleteDialog, message: 'Are you sure you want to delete route ' + route.route_id + '?' }">
+                  Delete
+                </button>
               </td>
+            </tr>
+            <tr v-if="showDetails[route.route_id]" :key="`${route.route_id}-detail`">
+              <table class="table is-fullwidth is-hoverable">
+                <tr v-for="predicate in route.route_definition.predicates" :key="predicate.name">
+                  <td colspan="1" class="has-background-white-ter"><span v-text="predicate.name"/></td>
+                  <td v-for="filter in route.route_definition.filters" :key="filter.name">
+                    <span v-text="filter.name"/>
+                  </td>
+                  <td colspan="1" class="has-background-white-ter"><span v-text="route.route_definition.uri"/></td>
+                  <td colspan="1" class="has-background-white-ter"><div id="container"></div></td>
+                </tr>
+              </table>
             </tr>
           </template>
         </tbody>
@@ -95,11 +128,26 @@
 
 <script>
   import Instance from '@/services/instance';
-  import {from} from '@/utils/rxjs';
+  import {from, listen} from '@/utils/rxjs';
   import uniqBy from 'lodash/uniqBy';
 
   const filterRoutesByKeyword = (route, keyword) => {
-    return route.route_id.toString().toLowerCase().includes(keyword);
+    return route.route_id.toString().toLowerCase().includes(keyword)
+      || route.route_definition.uri.toString().toLowerCase().includes(keyword)
+      || route.route_definition.predicates.filter(p => p.name.toLowerCase().includes(keyword)).length > 0
+      || route.route_definition.predicates.filter(p => Object.values(p.args).filter(pv => pv.toLowerCase().includes(keyword)).length > 0).length > 0
+      || route.route_definition.filters.filter(f => f.name.toLowerCase().includes(keyword)).length > 0
+      || route.route_definition.filters.filter(f => Object.values(f.args).filter(av => av.toLowerCase().includes(keyword)).length > 0).length > 0;
+  };
+
+  const sortRoutes = (globalFilters, sort) => {
+    if (sort === 'route_id') {
+      return globalFilters.slice().sort(function(a, b) {return a.route_id.localeCompare(b.route_id)})
+    } else if (sort === 'order') {
+      return globalFilters.slice().sort(function(a, b) {return a.order - b.order})
+    }
+
+    return globalFilters;
   };
 
   export default {
@@ -112,9 +160,11 @@
     data: () => ({
       hasLoaded: false,
       error: null,
-      filter: '',
-      routes: null,
+      routesData: null,
       routesFilter: null,
+      sort: 'undefined',
+      showDetails: {},
+      clearRoutesCacheStatus: null,
       addRouteData: {
         'id': 'idddd',
         'predicates': '[{"name":"Path","args":{"_genkey_0":"/first"}}]',
@@ -124,14 +174,14 @@
       }
     }),
     computed: {
-      filterRoutes() {
-        if (!this.routes) {
+      routes() {
+        if (!this.routesData) {
           return [];
         }
         if (!this.routesFilter) {
-          return this.routes;
+          return sortRoutes(this.routesData, this.sort);
         }
-        return this.routes.filter(route => !this.routesFilter || filterRoutesByKeyword(route, this.routesFilter.toLowerCase()));
+        return sortRoutes(this.routesData.filter(route => !this.routesFilter || filterRoutesByKeyword(route, this.routesFilter.toLowerCase())), this.sort);
       }
     },
     created() {
@@ -142,7 +192,7 @@
         this.error = null;
         try {
           const res = await this.instance.fetchRoutesData();
-          this.routes = uniqBy(res.data, 'route_id');
+          this.routesData = uniqBy(res.data, 'route_id');
         } catch (error) {
           console.warn('Fetching routes failed:', error);
           this.error = error;
@@ -167,8 +217,57 @@
             },
             error: () => console.warn('error')
           });
+      },
+      deleteRoute(dialog) {
+        let button = dialog.node;
+        let routeId = button.dataset.route_id;
+
+        try {
+          this.instance.deleteRoute(routeId);
+        } catch (error) {
+          console.warn('Deleting route failed:', error);
+          this.error = error;
+        }
+
+        dialog.close();
+      },
+      clearRoutesCache() {
+        console.warn('clearRoutesCache');
+        const vm = this;
+        from(vm.instance.clearRoutesCache())
+          .pipe(listen(status => vm.clearRoutesCacheStatus = status))
+          .subscribe({
+            complete: () => {
+            setTimeout(() => vm.clearRoutesCacheStatus = null, 2500);
+            return vm.$emit('reset');
+          },
+          error: () => vm.$emit('reset')
+        });
+
+        try {
+          this.instance.clearRoutesCache();
+        } catch (error) {
+          console.warn('Clearing routes cache failed:', error);
+          this.error = error;
+        }
+      },
+      closeDeleteDialog: function() {
+        // Dialog will get closed
       }
     }
   }
 </script>
+
+<style lang="scss">
+  table .routes {
+    &__delete-action {
+      text-align: right;
+      vertical-align: middle;
+    }
+  }
+
+  .refresh-button {
+    margin-bottom: 16px;
+  }
+</style>
 

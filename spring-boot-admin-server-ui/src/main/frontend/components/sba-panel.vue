@@ -82,6 +82,7 @@
     &__header--sticky {
       position: sticky;
       background-color: $white;
+      z-index: 1000;
     }
   }
 </style>
