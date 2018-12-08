@@ -27,6 +27,15 @@
     </div>
 
     <sba-panel :header-sticks-below="['#navigation']" title="Routes" v-if="hasLoaded">
+      <sba-confirm-button class="button refresh-button is-light"
+                          :class="{'is-loading' : clearRoutesCacheStatus === 'executing', 'is-danger' : clearRoutesCacheStatus === 'failed', 'is-info' : clearRoutesCacheStatus === 'completed'}"
+                          :disabled="clearRoutesCacheStatus === 'executing'"
+                          @click="clearRoutesCache">
+        <span v-if="clearRoutesCacheStatus === 'completed'">Routes cache cleared</span>
+        <span v-else-if="clearRoutesCacheStatus === 'failed'">Failed</span>
+        <span v-else>Clear routes cache</span>
+      </sba-confirm-button>
+
       <div class="field has-addons" v-if="routes">
         <p class="control is-expanded">
           <input class="input" type="search" placeholder="routes filter" v-model="routesFilter">
@@ -66,7 +75,8 @@
                 <span v-text="route.order" />
               </td>
               <td class="routes__delete-action">
-                <button class="button is-danger">
+                <button class="button is-danger" :data-route_id="route.route_id"
+                  v-confirm="{ ok: deleteRoute, cancel: closeDeleteDialog, message: 'Are you sure you want to delete route ' + route.route_id + '?' }">
                   Delete
                 </button>
               </td>
@@ -81,7 +91,9 @@
 
 <script>
   import Instance from '@/services/instance';
+  import {from, listen} from '@/utils/rxjs';
   import uniqBy from 'lodash/uniqBy';
+
   import routeDetailControl from './route-details';
 
   const filterRoutesByKeyword = (route, keyword) => {
@@ -121,7 +133,8 @@
       routesData: null,
       routesFilter: null,
       sort: 'undefined',
-      showDetails: {}
+      showDetails: {},
+      clearRoutesCacheStatus: null
     }),
     computed: {
       routes() {
@@ -156,6 +169,42 @@
         const regex = new RegExp(this.filter, 'i');
         return route => (route.route_id.match(regex));
       },
+      deleteRoute(dialog) {
+        let button = dialog.node;
+        let routeId = button.dataset.route_id;
+
+        try {
+          this.instance.deleteRoute(routeId);
+        } catch (error) {
+          console.warn('Deleting route failed:', error);
+          this.error = error;
+        }
+
+        dialog.close();
+      },
+      clearRoutesCache() {
+        console.warn('clearRoutesCache');
+        const vm = this;
+        from(vm.instance.clearRoutesCache())
+          .pipe(listen(status => vm.clearRoutesCacheStatus = status))
+          .subscribe({
+            complete: () => {
+            setTimeout(() => vm.clearRoutesCacheStatus = null, 2500);
+            return vm.$emit('reset');
+          },
+          error: () => vm.$emit('reset')
+        });
+
+        try {
+          this.instance.clearRoutesCache();
+        } catch (error) {
+          console.warn('Clearing routes cache failed:', error);
+          this.error = error;
+        }
+      },
+      closeDeleteDialog: function() {
+        // Dialog will get closed
+      }
     }
   }
 </script>
@@ -166,6 +215,10 @@
       text-align: right;
       vertical-align: middle;
     }
+  }
+
+  .refresh-button {
+    margin-bottom: 16px;
   }
 </style>
 

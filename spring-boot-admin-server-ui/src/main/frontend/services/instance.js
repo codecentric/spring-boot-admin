@@ -139,6 +139,18 @@ class Instance {
     });
   }
 
+  async deleteRoute(routeId) {
+    return this.axios.delete(uri`actuator/gateway/routes/${routeId}`, {
+      headers: {'Accept': actuatorMimeTypes}
+    });
+  }
+
+  async clearRoutesCache() {
+    return this.axios.post(uri`actuator/gateway/refresh`, {
+      headers: {'Accept': actuatorMimeTypes}
+    });
+  }
+
   async fetchCaches() {
     return this.axios.get(uri`actuator/caches`, {
       headers: {'Accept': actuatorMimeTypes}
