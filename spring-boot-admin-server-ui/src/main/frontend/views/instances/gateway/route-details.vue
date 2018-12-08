@@ -1,0 +1,112 @@
+<template>
+  <tr v-if="showDetails[route.route_id]" :key="`${route.route_id}-detail`">
+    <td colspan="3" style="background-color: #fafafa">
+      <div class="route-detail route-detail-dimension">
+        <div class="route-detail-border">
+          <div class="route-detail-margin">
+            <span>
+              <img class="route-image" src="assets/img/predicate.png">
+              <b>Predicates</b>
+            </span>
+          </div>
+          <div class="route-detail-background" v-for="predicate in route.route_definition.predicates" :key="predicate.name">
+            <span class="route-detail-text" v-text="predicate.name" />
+            <ul>
+              <li v-for="item in Object.entries(predicate.args).map(([key,value])=>key + ' : ' + value)" :key="item">
+                <span class="route-detail-arg-text" v-text="item" />
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="route-detail">
+        <img src="assets/img/arrow.png">
+      </div>
+      <div class="route-detail route-detail-dimension">
+        <div class="route-detail-border">
+          <div class="route-detail-margin">
+            <span>
+              <img class="route-image" src="assets/img/filter.png">
+              <b>Filters</b>
+            </span>
+          </div>
+          <div v-for="filter in route.route_definition.filters" :key="filter.name"
+               class="route-detail-background"
+          >
+            <span class="route-detail-text" v-text="filter.name" />
+            <ul>
+              <li v-for="item in Object.entries(filter.args).map(([key,value])=>key + ' : ' + value)" :key="item">
+                <span class="route-detail-arg-text" v-text="item" />
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="route-detail">
+        <img src="assets/img/arrow.png">
+      </div>
+      <div class="route-detail route-detail-dimension">
+        <div class="route-detail-border">
+          <div class="route-detail-margin">
+            <span>
+              <img class="route-image" src="assets/img/target.png">
+              <b>URI</b>
+            </span>
+          </div>
+          <div class="route-detail-background">
+            <span v-text="route.route_definition.uri" class="route-detail-text" />
+          </div>
+        </div>
+      </div>
+    </td>
+  </tr>
+</template>
+
+<script>
+  export default {
+    props: ['route', 'showDetails']
+  }
+</script>
+
+<style scoped>
+  .route-detail {
+    display: table-cell;
+    vertical-align: middle;
+  }
+
+  .route-detail-dimension {
+    min-width: 16em;
+    max-width: 28em;
+  }
+
+  .route-detail-border {
+    border: solid 1px lightgrey;
+    margin: 16px;
+  }
+
+  .route-detail-text {
+    color: white;
+    font-weight: bold;
+  }
+
+  .route-detail-arg-text {
+    color: white;
+    font-size: 12px
+  }
+
+  .route-detail-background {
+    background-color: #42d3a5;
+    margin: 4px;
+    padding: 4px;
+  }
+
+  .route-detail-margin {
+    margin: 4px;
+    padding: 4px;
+  }
+
+  .route-image {
+    height: 16px;
+    margin-right: 2px
+  }
+</style>

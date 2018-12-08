@@ -19,10 +19,10 @@
     <div v-if="error" class="message is-danger">
       <div class="message-body">
         <strong>
-          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
           Fetching gateway routes failed.
         </strong>
-        <p v-text="error.message"/>
+        <p v-text="error.message" />
       </div>
     </div>
 
@@ -34,9 +34,15 @@
         <div class="control">
           <div class="select">
             <select v-model="sort">
-              <option value="undefined">- Sort by -</option>
-              <option value="route_id">Route Id</option>
-              <option value="order">Order</option>
+              <option value="undefined">
+                - Sort by -
+              </option>
+              <option value="route_id">
+                Route Id
+              </option>
+              <option value="order">
+                Order
+              </option>
             </select>
           </div>
         </div>
@@ -46,34 +52,26 @@
         <thead>
           <th>Route Id</th>
           <th>Order</th>
-          <th></th>
+          <th />
         </thead>
         <tbody>
-        <template v-for="route in routes">
-          <tr class="is-selectable" :key="route.route_id"
-              @click="showDetails[route.route_id] ? $delete(showDetails, route.route_id) : $set(showDetails, route.route_id, true)">
+          <template v-for="route in routes">
+            <tr class="is-selectable" :key="route.route_id"
+                @click="showDetails[route.route_id] ? $delete(showDetails, route.route_id) : $set(showDetails, route.route_id, true)"
+            >
               <td class="is-breakable">
-                <span v-text="route.route_id"/>
+                <span v-text="route.route_id" />
               </td>
               <td>
-                <span v-text="route.order"/>
+                <span v-text="route.order" />
               </td>
               <td class="routes__delete-action">
-                <button class="button is-danger">Delete</button>
+                <button class="button is-danger">
+                  Delete
+                </button>
               </td>
             </tr>
-            <tr v-if="showDetails[route.route_id]" :key="`${route.route_id}-detail`">
-              <table class="table is-fullwidth is-hoverable">
-                <tr v-for="predicate in route.route_definition.predicates" :key="predicate.name">
-                  <td colspan="1" class="has-background-white-ter"><span v-text="predicate.name"/></td>
-                  <td v-for="filter in route.route_definition.filters" :key="filter.name">
-                    <span v-text="filter.name"/>
-                  </td>
-                  <td colspan="1" class="has-background-white-ter"><span v-text="route.route_definition.uri"/></td>
-                  <td colspan="1" class="has-background-white-ter"><div id="container"></div></td>
-                </tr>
-              </table>
-            </tr>
+            <route-detail-control :route="route" :show-details="showDetails" :key="`${route.route_id}-detail`" />
           </template>
         </tbody>
       </table>
@@ -84,6 +82,7 @@
 <script>
   import Instance from '@/services/instance';
   import uniqBy from 'lodash/uniqBy';
+  import routeDetailControl from './route-details';
 
   const filterRoutesByKeyword = (route, keyword) => {
     return route.route_id.toString().toLowerCase().includes(keyword)
@@ -96,15 +95,20 @@
 
   const sortRoutes = (globalFilters, sort) => {
     if (sort === 'route_id') {
-      return globalFilters.slice().sort(function(a, b) {return a.route_id.localeCompare(b.route_id)})
+      return globalFilters.slice().sort(function (a, b) {
+        return a.route_id.localeCompare(b.route_id)
+      })
     } else if (sort === 'order') {
-      return globalFilters.slice().sort(function(a, b) {return a.order - b.order})
+      return globalFilters.slice().sort(function (a, b) {
+        return a.order - b.order
+      })
     }
 
     return globalFilters;
   };
 
   export default {
+    components: {routeDetailControl},
     props: {
       instance: {
         type: Instance,
