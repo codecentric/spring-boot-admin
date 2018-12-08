@@ -34,9 +34,15 @@
         <div class="control">
           <div class="select">
             <select v-model="sort">
-              <option value="undefined">- Sort by -</option>
-              <option value="name">Name</option>
-              <option value="order">Order</option>
+              <option value="undefined">
+                - Sort by -
+              </option>
+              <option value="name">
+                Name
+              </option>
+              <option value="order">
+                Order
+              </option>
             </select>
           </div>
         </div>

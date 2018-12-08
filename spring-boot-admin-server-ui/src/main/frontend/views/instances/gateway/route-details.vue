@@ -1,3 +1,19 @@
+<!--
+  - Copyright 2014-2018 the original author or authors.
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
 <template>
   <tr v-if="showDetails[route.route_id]" :key="`${route.route_id}-detail`">
     <td colspan="3" style="background-color: #fafafa">
@@ -9,11 +25,13 @@
               <b>Predicates</b>
             </span>
           </div>
-          <div class="route-detail-background" v-for="predicate in route.route_definition.predicates" :key="predicate.name">
-            <span class="route-detail-text" v-text="predicate.name" />
+          <div class="route-detail-background" v-for="predicate in route.route_definition.predicates"
+               :key="predicate.name"
+          >
+            <span class="route-detail-text" v-text="predicate.name"/>
             <ul>
               <li v-for="item in Object.entries(predicate.args).map(([key,value])=>key + ' : ' + value)" :key="item">
-                <span class="route-detail-arg-text" v-text="item" />
+                <span class="route-detail-arg-text" v-text="item"/>
               </li>
             </ul>
           </div>
@@ -22,7 +40,7 @@
       <div class="route-detail">
         <img src="assets/img/arrow.png">
       </div>
-      <div class="route-detail route-detail-dimension">
+      <div class="route-detail route-detail-dimension" v-if="route.route_definition.filters.length > 0">
         <div class="route-detail-border">
           <div class="route-detail-margin">
             <span>
@@ -33,16 +51,16 @@
           <div v-for="filter in route.route_definition.filters" :key="filter.name"
                class="route-detail-background"
           >
-            <span class="route-detail-text" v-text="filter.name" />
+            <span class="route-detail-text" v-text="filter.name"/>
             <ul>
               <li v-for="item in Object.entries(filter.args).map(([key,value])=>key + ' : ' + value)" :key="item">
-                <span class="route-detail-arg-text" v-text="item" />
+                <span class="route-detail-arg-text" v-text="item"/>
               </li>
             </ul>
           </div>
         </div>
       </div>
-      <div class="route-detail">
+      <div class="route-detail" v-if="route.route_definition.filters.length > 0">
         <img src="assets/img/arrow.png">
       </div>
       <div class="route-detail route-detail-dimension">
@@ -54,7 +72,7 @@
             </span>
           </div>
           <div class="route-detail-background">
-            <span v-text="route.route_definition.uri" class="route-detail-text" />
+            <span v-text="route.route_definition.uri" class="route-detail-text"/>
           </div>
         </div>
       </div>
