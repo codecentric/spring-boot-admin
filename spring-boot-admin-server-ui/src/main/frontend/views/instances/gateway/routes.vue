@@ -20,9 +20,9 @@
       <div class="message-body">
         <strong>
           <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
-          Fetching gateway routes failed.
+          {{error.action}}
         </strong>
-        <p v-text="error.message"/>
+        <p v-text="error.value.message"/>
       </div>
     </div>
 
@@ -61,7 +61,7 @@
               <td class="routes__delete-action">
                 <button class="button is-danger" :data-route_id="route.route_id"
                   v-confirm="{ ok: deleteRoute, cancel: closeDeleteDialog, message: 'Are you sure you want to delete route ' + route.route_id + '?' }">
-                  Delete
+                  <span><font-awesome-icon icon="trash" />&nbsp;Delete</span>
                 </button>
               </td>
             </tr>
@@ -144,7 +144,7 @@
           this.routesData = uniqBy(res.data, 'route_id');
         } catch (error) {
           console.warn('Fetching routes failed:', error);
-          this.error = error;
+          this.error = {action:'Fetching gateway routes failed:', value:error};
         }
         this.hasLoaded = true;
       },
@@ -155,15 +155,17 @@
         const regex = new RegExp(this.filter, 'i');
         return route => (route.route_id.match(regex));
       },
-      deleteRoute(dialog) {
+      async deleteRoute(dialog) {
         let button = dialog.node;
         let routeId = button.dataset.route_id;
-        
         try {
-          this.instance.deleteRoute(routeId);
+          await this.instance.deleteRoute(routeId);
+          this.error = null;
         } catch (error) {
           console.warn('Deleting route failed:', error);
-          this.error = error;
+          this.error = {
+            action:'Deleting route ' + routeId + ' failed:', 
+            value:error};
         }
 
         dialog.close();
@@ -182,6 +184,21 @@
       text-align: right;
       vertical-align: middle;
     }
+  }
+  .dg-btn--ok {
+    background-color: #ff4949;
+    border-color: transparent;
+    color: #fff;
+  }
+
+  .dg-btn--cancel {
+    background-color: #38d1a0;
+    border-color: transparent;
+    color: white;
+  }
+ 
+  .dg-btn-loader .dg-circle {
+      background-color: green;
   }
 </style>
 
