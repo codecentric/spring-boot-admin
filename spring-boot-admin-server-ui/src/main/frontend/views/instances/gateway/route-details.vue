@@ -9,11 +9,13 @@
               <b>Predicates</b>
             </span>
           </div>
-          <div class="route-detail-background" v-for="predicate in route.route_definition.predicates" :key="predicate.name">
-            <span class="route-detail-text" v-text="predicate.name" />
+          <div class="route-detail-background" v-for="predicate in route.route_definition.predicates"
+               :key="predicate.name"
+          >
+            <span class="route-detail-text" v-text="predicate.name"/>
             <ul>
               <li v-for="item in Object.entries(predicate.args).map(([key,value])=>key + ' : ' + value)" :key="item">
-                <span class="route-detail-arg-text" v-text="item" />
+                <span class="route-detail-arg-text" v-text="item"/>
               </li>
             </ul>
           </div>
@@ -22,7 +24,7 @@
       <div class="route-detail">
         <img src="assets/img/arrow.png">
       </div>
-      <div class="route-detail route-detail-dimension">
+      <div class="route-detail route-detail-dimension" v-if="route.route_definition.filters.length > 0">
         <div class="route-detail-border">
           <div class="route-detail-margin">
             <span>
@@ -33,16 +35,16 @@
           <div v-for="filter in route.route_definition.filters" :key="filter.name"
                class="route-detail-background"
           >
-            <span class="route-detail-text" v-text="filter.name" />
+            <span class="route-detail-text" v-text="filter.name"/>
             <ul>
               <li v-for="item in Object.entries(filter.args).map(([key,value])=>key + ' : ' + value)" :key="item">
-                <span class="route-detail-arg-text" v-text="item" />
+                <span class="route-detail-arg-text" v-text="item"/>
               </li>
             </ul>
           </div>
         </div>
       </div>
-      <div class="route-detail">
+      <div class="route-detail" v-if="route.route_definition.filters.length > 0">
         <img src="assets/img/arrow.png">
       </div>
       <div class="route-detail route-detail-dimension">
@@ -54,7 +56,7 @@
             </span>
           </div>
           <div class="route-detail-background">
-            <span v-text="route.route_definition.uri" class="route-detail-text" />
+            <span v-text="route.route_definition.uri" class="route-detail-text"/>
           </div>
         </div>
       </div>
