@@ -30,10 +30,17 @@
       <sba-confirm-button class="button refresh-button is-light"
                           :class="{'is-loading' : clearRoutesCacheStatus === 'executing', 'is-danger' : clearRoutesCacheStatus === 'failed', 'is-info' : clearRoutesCacheStatus === 'completed'}"
                           :disabled="clearRoutesCacheStatus === 'executing'"
-                          @click="clearRoutesCache">
-        <span v-if="clearRoutesCacheStatus === 'completed'">Routes cache cleared</span>
-        <span v-else-if="clearRoutesCacheStatus === 'failed'">Failed</span>
-        <span v-else>Clear routes cache</span>
+                          @click="clearRoutesCache"
+      >
+        <span v-if="clearRoutesCacheStatus === 'completed'">
+          Routes cache cleared
+        </span>
+        <span v-else-if="clearRoutesCacheStatus === 'failed'">
+          Failed
+        </span>
+        <span v-else>
+          Clear routes cache
+        </span>
       </sba-confirm-button>
 
       <div class="field has-addons">
@@ -109,7 +116,8 @@
               </td>
               <td class="routes__delete-action">
                 <button class="button is-danger" :data-route_id="route.route_id"
-                  v-confirm="{ ok: deleteRoute, cancel: closeDeleteDialog, message: 'Are you sure you want to delete route ' + route.route_id + '?' }">
+                        v-confirm="{ ok: deleteRoute, cancel: closeDeleteDialog, message: 'Are you sure you want to delete route ' + route.route_id + '?' }"
+                >
                   Delete
                 </button>
               </td>
