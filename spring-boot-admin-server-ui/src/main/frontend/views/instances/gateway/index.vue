@@ -17,6 +17,7 @@
 <template>
   <section class="section">
     <global-filters-control :instance="instance" />
+    <add-route-control :instance="instance" />
     <routes-control :instance="instance" />
   </section>
 </template>
@@ -25,9 +26,10 @@
   import Instance from '@/services/instance';
   import globalFiltersControl from './filters-global';
   import routesControl from './routes';
+  import addRouteControl from './route-add';
 
   export default {
-    components: {globalFiltersControl, routesControl},
+    components: {globalFiltersControl, routesControl, addRouteControl},
     props: {
       instance: {
         type: Instance,

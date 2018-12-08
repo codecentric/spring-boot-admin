@@ -26,41 +26,6 @@
       </div>
     </div>
 
-    <sba-panel :header-sticks-below="['#navigation']" title="Add Route">
-      <div class="field has-addons">
-        <p class="control is-expanded">
-          <input class="input" placeholder="Route id" v-model="addRouteData.id" required>
-        </p>
-      </div>
-      <div class="field has-addons">
-        <p class="control is-expanded">
-          <textarea rows="4" class="input" placeholder="Predicates" v-model="addRouteData.predicates" required />
-        </p>
-      </div>
-      <div class="field has-addons">
-        <p class="control is-expanded">
-          <textarea rows="4" class="input" placeholder="Filters" v-model="addRouteData.filters" />
-        </p>
-      </div>
-      <div class="field has-addons">
-        <p class="control is-expanded">
-          <input class="input" placeholder="Uri" v-model="addRouteData.uri" required>
-        </p>
-      </div>
-      <div class="field has-addons">
-        <p class="control is-expanded">
-          <input class="input" placeholder="Order" v-model="addRouteData.order" type="number" required>
-        </p>
-      </div>
-      <div class="field is-grouped is-grouped-right">
-        <div class="control">
-          <button class="button is-primary" :disabled="!addRouteData" @click="addRoute">
-            <span>Add route</span>
-          </button>
-        </div>
-      </div>
-    </sba-panel>
-
     <sba-panel :header-sticks-below="['#navigation']" title="Routes" v-if="routes">
       <sba-confirm-button class="button refresh-button is-light"
                           :class="{'is-loading' : clearRoutesCacheStatus === 'executing', 'is-danger' : clearRoutesCacheStatus === 'failed', 'is-info' : clearRoutesCacheStatus === 'completed'}"
@@ -176,14 +141,7 @@
       routesFilter: null,
       sort: 'undefined',
       showDetails: {},
-      clearRoutesCacheStatus: null,
-      addRouteData: {
-        'id': null,
-        'predicates': null,
-        'filters': null,
-        'uri': null,
-        'order': null
-      }
+      clearRoutesCacheStatus: null
     }),
     computed: {
       routes() {
@@ -217,18 +175,6 @@
         }
         const regex = new RegExp(this.filter, 'i');
         return route => (route.route_id.match(regex));
-      },
-      addRoute() {
-        //secure addRouteData from empty strings (add top check if trimmed length larger than zero)
-        const vm = this;
-        from(vm.instance.addGatewayRoute(JSON.parse(vm.addRouteData)))
-          .subscribe({
-            complete: () => {
-              console.warn('complete');
-              //Clean addRouteData object
-            },
-            error: () => console.warn('error')
-          });
       },
       async deleteRoute(dialog) {
         let button = dialog.node;
