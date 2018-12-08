@@ -89,7 +89,6 @@
         from(vm.instance.addGatewayRoute(vm.addRouteData))
           .subscribe({
             complete: () => {
-
               vm.addRouteData = {
                 'id': null,
                 'predicates': null,
@@ -97,8 +96,8 @@
                 'uri': null,
                 'order': null
               };
-              this.error = null;
-              vm.instance.fetchRoutesData();
+              vm.error = null;
+              setTimeout(() => vm.$emit('route-added'), 2500);
             },
             error: (error) => {
               this.error = 'Server returned: ' + error.response.status;

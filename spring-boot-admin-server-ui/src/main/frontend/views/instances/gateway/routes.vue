@@ -70,7 +70,7 @@
           <th />
         </thead>
         <tbody>
-          <template v-for="route in routes">
+          <template v-for="route in routes" @route-added="fetchRoutesData" @route-deleted="fetchRoutesData">
             <tr class="is-selectable" :key="route.route_id"
                 @click="showDetails[route.route_id] ? $delete(showDetails, route.route_id) : $set(showDetails, route.route_id, true)"
             >
@@ -181,8 +181,8 @@
 
         try {
           await this.instance.deleteRoute(routeId);
+          setTimeout(() => this.$emit('route-deleted'), 2500);
         } catch (response) {
-          this.fetchRoutesData();
           console.warn('Deleting route failed:', response);
           this.error = {
             action:'Deleting route ' + routeId + ' failed:', 
