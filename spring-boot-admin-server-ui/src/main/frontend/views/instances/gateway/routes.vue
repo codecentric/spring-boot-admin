@@ -16,17 +16,16 @@
 
 <template>
   <div :class="{ 'is-loading' : !hasLoaded }">
-    <div v-if="error" class="message is-danger">
-      <div class="message-body">
-        <strong>
-          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-          {{ error.action }}
-        </strong>
-        <p v-text="error.value.message" />
-      </div>
-    </div>
-
     <sba-panel :header-sticks-below="['#navigation']" title="Routes" v-if="routes">
+      <div v-if="error" class="message is-danger">
+        <div class="message-body">
+          <strong>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
+            {{ error.action }}
+          </strong>
+          <p v-text="error.value.message" />
+        </div>
+      </div>
       <sba-confirm-button class="button refresh-button is-light"
                           :class="{'is-loading' : clearRoutesCacheStatus === 'executing', 'is-danger' : clearRoutesCacheStatus === 'failed', 'is-info' : clearRoutesCacheStatus === 'completed'}"
                           :disabled="clearRoutesCacheStatus === 'executing'"
@@ -192,7 +191,6 @@
         dialog.close();
       },
       clearRoutesCache() {
-        console.warn('clearRoutesCache');
         const vm = this;
         from(vm.instance.clearRoutesCache())
           .pipe(listen(status => vm.clearRoutesCacheStatus = status))

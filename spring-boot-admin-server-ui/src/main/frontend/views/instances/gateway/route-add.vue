@@ -77,7 +77,6 @@
       from(vm.instance.addGatewayRoute(JSON.parse(vm.addRouteData)))
         .subscribe({
           complete: () => {
-          console.warn('complete');
       vm.addRouteData = {
         'id': null,
         'predicates': null,
