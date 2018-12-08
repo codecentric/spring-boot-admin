@@ -220,18 +220,17 @@
             error: () => console.warn('error')
           });
       },
-      deleteRoute(dialog) {
+      async deleteRoute(dialog) {
         let button = dialog.node;
         let routeId = button.dataset.route_id;
 
         try {
-          const res = await this.instance.deleteRoute(routeId);
-          this.error = null;
-        } catch (error) {
-          console.warn('Deleting route failed:', error);
+          await this.instance.deleteRoute(routeId);
+        } catch (response) {
+          console.warn('Deleting route failed:', response);
           this.error = {
             action:'Deleting route ' + routeId + ' failed:', 
-            value:error};
+            value:response};
         }
 
         dialog.close();
