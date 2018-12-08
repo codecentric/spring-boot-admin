@@ -29,6 +29,7 @@
                :key="predicate.name"
           >
             <span class="route-detail-text" v-text="predicate.name" />
+            <div class="route-detail-separator" />
             <ul>
               <li v-for="item in Object.entries(predicate.args).map(([key,value])=>key + ' : ' + value)" :key="item">
                 <span class="route-detail-arg-text" v-text="item" />
@@ -52,6 +53,7 @@
                class="route-detail-background"
           >
             <span class="route-detail-text" v-text="filter.name" />
+            <div class="route-detail-separator" />
             <ul>
               <li v-for="item in Object.entries(filter.args).map(([key,value])=>key + ' : ' + value)" :key="item">
                 <span class="route-detail-arg-text" v-text="item" />
@@ -98,13 +100,18 @@
   }
 
   .route-detail-arrow {
-    min-width: 2em;
-    max-width: 8em;
+    min-width: 1em;
+    max-width: 2.5em;
   }
 
   .route-detail-border {
     border: solid 1px lightgrey;
     margin: 16px;
+    border-radius: 8px;
+  }
+
+  .route-detail-separator {
+    border-bottom: 1px dotted #fafafa;
   }
 
   .route-detail-text {
@@ -121,6 +128,7 @@
     background-color: #42d3a5;
     margin: 4px;
     padding: 4px;
+    border-radius: 4px;
   }
 
   .route-detail-margin {
