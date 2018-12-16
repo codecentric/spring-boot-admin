@@ -39,7 +39,9 @@
           <footer class="modal-card-foot">
             <div class="field is-grouped is-grouped-right">
               <div class="control">
-                <button class="button is-primary" @click="invoke(args)">Execute</button>
+                <button class="button is-primary" @click="invoke(args)">
+                  Execute
+                </button>
               </div>
             </div>
           </footer>
@@ -65,7 +67,9 @@
           <footer class="modal-card-foot">
             <div class="field is-grouped is-grouped-right">
               <div class="control">
-                <button class="button is-light" @click="abort"> Close</button>
+                <button class="button is-light" @click="abort">
+                  Close
+                </button>
               </div>
             </div>
           </footer>
@@ -94,7 +98,9 @@
           <footer class="modal-card-foot">
             <div class="field is-grouped is-grouped-right">
               <div class="control">
-                <button class="button is-light" @click="abort"> Close</button>
+                <button class="button is-light" @click="abort">
+                  Close
+                </button>
               </div>
             </div>
           </footer>

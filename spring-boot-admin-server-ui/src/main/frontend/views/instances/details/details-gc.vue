@@ -29,19 +29,25 @@
       <div class="level" v-if="current">
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading">Count</p>
+            <p class="heading">
+              Count
+            </p>
             <p v-text="current.count" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading">Total time spent</p>
+            <p class="heading">
+              Total time spent
+            </p>
             <p v-text="`${current.total_time.asSeconds().toFixed(4)}s`" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading">Max time spent</p>
+            <p class="heading">
+              Max time spent
+            </p>
             <p v-text="`${current.max.asSeconds().toFixed(4)}s`" />
           </div>
         </div>

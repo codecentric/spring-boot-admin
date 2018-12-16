@@ -34,7 +34,8 @@
         <div class="control">
           <button class="button is-warning" :class="{'is-loading' : actionState === 'executing'}"
                   @click.stop="addFilter"
-          ><font-awesome-icon icon="bell-slash" />&nbsp;Suppress
+          >
+            <font-awesome-icon icon="bell-slash" />&nbsp;Suppress
           </button>
         </div>
       </div>

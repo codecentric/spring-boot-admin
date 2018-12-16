@@ -35,7 +35,9 @@
             </td>
           </tr>
         </table>
-        <p v-else class="is-muted">No info provided.</p>
+        <p v-else class="is-muted">
+          No info provided.
+        </p>
       </div>
     </div>
   </sba-panel>

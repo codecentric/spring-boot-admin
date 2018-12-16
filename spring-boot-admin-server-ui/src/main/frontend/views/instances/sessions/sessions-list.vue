@@ -30,9 +30,15 @@
                               :disabled="deletingAll !== null"
                               v-if="sessions.length > 1" @click="deleteAllSessions()"
           >
-            <span v-if="deletingAll === 'completed'">Deleted</span>
-            <span v-else-if="deletingAll === 'failed'">Failed</span>
-            <span v-else><font-awesome-icon icon="trash" />&nbsp;Delete</span>
+            <span v-if="deletingAll === 'completed'">
+              Deleted
+            </span>
+            <span v-else-if="deletingAll === 'failed'">
+              Failed
+            </span>
+            <span v-else>
+              <font-awesome-icon icon="trash" />&nbsp;Delete
+            </span>
           </sba-confirm-button>
         </th>
       </tr>
@@ -46,11 +52,15 @@
       <td v-text="session.creationTime.format('L HH:mm:ss.SSS')" />
       <td v-text="session.lastAccessedTime.format('L HH:mm:ss.SSS')" />
       <td>
-        <span v-if="session.expired" class="tag is-info">Expired</span>
+        <span v-if="session.expired" class="tag is-info">
+          Expired
+        </span>
       </td>
       <td>
         <span v-if="session.maxInactiveInterval >= 0" v-text="`${session.maxInactiveInterval}s`" />
-        <span v-else>unlimited</span>
+        <span v-else>
+          unlimited
+        </span>
       </td>
       <td>
         <span class="tag" v-for="name in session.attributeNames" :key="`${session.id}-${name}`"
@@ -62,16 +72,26 @@
                 :class="{ 'is-loading' : deleting[session.id] === 'executing', 'is-info' : deleting[session.id] === 'completed', 'is-danger' : deleting[session.id] === 'failed' }"
                 :disabled="session.id in deleting" @click="deleteSession(session.id)"
         >
-          <span v-if="deleting[session.id] === 'completed'">Deleted</span>
-          <span v-else-if="deleting[session.id] === 'failed'">Failed</span>
-          <span v-else><font-awesome-icon icon="trash" />&nbsp;Delete</span>
+          <span v-if="deleting[session.id] === 'completed'">
+            Deleted
+          </span>
+          <span v-else-if="deleting[session.id] === 'failed'">
+            Failed
+          </span>
+          <span v-else>
+            <font-awesome-icon icon="trash" />&nbsp;Delete
+          </span>
         </button>
       </td>
     </tr>
     <tr v-if="sessions.length === 0">
       <td class="is-muted" colspan="7 ">
-        <p v-if="isLoading" class="is-loading">Loading Sessions...</p>
-        <p v-else>No Sessions found.</p>
+        <p v-if="isLoading" class="is-loading">
+          Loading Sessions...
+        </p>
+        <p v-else>
+          No Sessions found.
+        </p>
       </td>
     </tr>
   </table>

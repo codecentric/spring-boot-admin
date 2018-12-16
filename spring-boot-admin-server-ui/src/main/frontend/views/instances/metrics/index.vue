@@ -41,7 +41,9 @@
         </div>
       </div>
       <div>
-        <p v-if="stateFetchingTags === 'executing'" class="is-loading">Fetching available tags</p>
+        <p v-if="stateFetchingTags === 'executing'" class="is-loading">
+          Fetching available tags
+        </p>
 
         <div class="box" v-if="availableTags">
           <div class="field is-horizontal" v-for="tag in availableTags" :key="tag.tag">
@@ -52,7 +54,9 @@
               <div class="control">
                 <div class="select">
                   <select v-model="selectedTags[tag.tag]">
-                    <option :value="undefined">-</option>
+                    <option :value="undefined">
+                      -
+                    </option>
                     <option v-for="value in tag.values" :key="value" :value="value" v-text="value" />
                   </select>
                 </div>
@@ -64,7 +68,9 @@
           </p>
           <div class="field is-grouped is-grouped-right">
             <div class="control">
-              <button type="submit" class="button is-primary">Add Metric</button>
+              <button type="submit" class="button is-primary">
+                Add Metric
+              </button>
             </div>
           </div>
         </div>

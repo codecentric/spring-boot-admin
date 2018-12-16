@@ -29,23 +29,37 @@
       <div class="level applications-stats">
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading">Applications</p>
-            <p class="title" v-text="applicationsCount">1</p>
+            <p class="heading">
+              Applications
+            </p>
+            <p class="title" v-text="applicationsCount">
+              1
+            </p>
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading">Instances</p>
-            <p class="title" v-text="instancesCount">1</p>
+            <p class="heading">
+              Instances
+            </p>
+            <p class="title" v-text="instancesCount">
+              1
+            </p>
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div v-if="downCount === 0">
-            <p class="heading">Status</p>
-            <p class="title has-text-success">all up</p>
+            <p class="heading">
+              Status
+            </p>
+            <p class="title has-text-success">
+              all up
+            </p>
           </div>
           <div v-else>
-            <p class="heading">instances down</p>
+            <p class="heading">
+              instances down
+            </p>
             <p class="title has-text-danger" v-text="downCount" />
           </div>
         </div>
@@ -55,7 +69,9 @@
         <applications-list :applications="group.applications" :selected="selected" />
       </div>
       <div v-if="statusGroups.length === 0">
-        <p class="is-muted">No applications registered.</p>
+        <p class="is-muted">
+          No applications registered.
+        </p>
       </div>
     </div>
   </section>

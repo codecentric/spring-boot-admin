@@ -16,7 +16,9 @@
 
 <template>
   <button @click="click" class="confirm-button" :class="{ 'is-warning' : confirm }" v-on-clickaway="abort">
-    <slot name="confirm" v-if="confirm">Confirm</slot>
+    <slot name="confirm" v-if="confirm">
+      Confirm
+    </slot>
     <slot v-else />
   </button>
 </template>

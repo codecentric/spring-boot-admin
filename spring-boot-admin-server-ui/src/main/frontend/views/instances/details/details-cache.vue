@@ -29,25 +29,33 @@
       <div class="level cache-current" v-if="current">
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading has-bullet has-bullet-info">Hits</p>
+            <p class="heading has-bullet has-bullet-info">
+              Hits
+            </p>
             <p v-text="current.hit" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading has-bullet has-bullet-warning">Misses</p>
+            <p class="heading has-bullet has-bullet-warning">
+              Misses
+            </p>
             <p v-text="current.miss" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading">Hit ratio</p>
+            <p class="heading">
+              Hit ratio
+            </p>
             <p v-text="ratio" />
           </div>
         </div>
         <div v-if="current.size" class="level-item has-text-centered">
           <div>
-            <p class="heading">Size</p>
+            <p class="heading">
+              Size
+            </p>
             <p v-text="current.size" />
           </div>
         </div>

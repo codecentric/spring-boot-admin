@@ -20,8 +20,12 @@
       <div class="control">
         <span class="select">
           <select v-model="filter.type">
-            <option value="username">Username</option>
-            <option value="sessionId">SessionId</option>
+            <option value="username">
+              Username
+            </option>
+            <option value="sessionId">
+              SessionId
+            </option>
           </select>
         </span>
       </div>

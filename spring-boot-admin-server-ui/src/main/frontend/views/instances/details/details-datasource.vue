@@ -29,21 +29,29 @@
       <div class="level datasource-current" v-if="current">
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading has-bullet has-bullet-info">Active connections</p>
+            <p class="heading has-bullet has-bullet-info">
+              Active connections
+            </p>
             <p v-text="current.active" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading">Min connections</p>
+            <p class="heading">
+              Min connections
+            </p>
             <p v-text="current.min" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading">Max connections</p>
+            <p class="heading">
+              Max connections
+            </p>
             <p v-if="current.max >= 0" v-text="current.max" />
-            <p v-else>unlimited</p>
+            <p v-else>
+              unlimited
+            </p>
           </div>
         </div>
       </div>

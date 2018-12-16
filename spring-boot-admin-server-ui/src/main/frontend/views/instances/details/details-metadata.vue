@@ -25,7 +25,9 @@
           </td>
         </tr>
       </table>
-      <p v-else class="is-muted">No metadata provided.</p>
+      <p v-else class="is-muted">
+        No metadata provided.
+      </p>
     </div>
   </sba-panel>
 </template>

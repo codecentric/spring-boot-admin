@@ -27,11 +27,15 @@
         </div>
       </div>
       <div v-else-if="!hasData" class="message is-warning">
-        <div class="message-body">No scheduled tasks present.</div>
+        <div class="message-body">
+          No scheduled tasks present.
+        </div>
       </div>
 
       <template v-if="hasCronData">
-        <h3 class="title">Cron</h3>
+        <h3 class="title">
+          Cron
+        </h3>
         <table class="table is-fullwidth">
           <thead>
             <tr>
@@ -49,7 +53,9 @@
       </template>
 
       <template v-if="hasFixedDelayData">
-        <h3 class="title">Fixed Delay</h3>
+        <h3 class="title">
+          Fixed Delay
+        </h3>
         <table class="metrics table is-fullwidth">
           <thead>
             <tr>
@@ -69,7 +75,9 @@
       </template>
 
       <template v-if="hasFixedRateData">
-        <h3 class="title">Fixed Rate</h3>
+        <h3 class="title">
+          Fixed Rate
+        </h3>
         <table class="metrics table is-fullwidth">
           <thead>
             <tr>
@@ -87,7 +95,6 @@
           </tbody>
         </table>
       </template>
-
     </template>
   </section>
 </template>

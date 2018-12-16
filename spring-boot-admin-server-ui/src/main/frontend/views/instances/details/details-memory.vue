@@ -29,25 +29,33 @@
       <div class="level memory-current" v-if="current">
         <div class="level-item has-text-centered" v-if="current.metaspace">
           <div>
-            <p class="heading has-bullet has-bullet-primary">Metaspace</p>
+            <p class="heading has-bullet has-bullet-primary">
+              Metaspace
+            </p>
             <p v-text="prettyBytes(current.metaspace)" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading has-bullet has-bullet-info">Used</p>
+            <p class="heading has-bullet has-bullet-info">
+              Used
+            </p>
             <p v-text="prettyBytes(current.used)" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading has-bullet has-bullet-warning">Size</p>
+            <p class="heading has-bullet has-bullet-warning">
+              Size
+            </p>
             <p v-text="prettyBytes(current.committed)" />
           </div>
         </div>
         <div class="level-item has-text-centered" v-if="current.max >= 0">
           <div>
-            <p class="heading">Max</p>
+            <p class="heading">
+              Max
+            </p>
             <p v-text="prettyBytes(current.max)" />
           </div>
         </div>

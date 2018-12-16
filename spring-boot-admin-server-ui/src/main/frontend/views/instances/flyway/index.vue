@@ -54,9 +54,11 @@
                 <td v-text="migration.version" />
                 <td v-text="migration.description" />
                 <td v-text="migration.script" />
-                <td><span v-text="migration.state" class="tag"
-                          :class="stateClass(migration.state)"
-                /></td>
+                <td>
+                  <span v-text="migration.state" class="tag"
+                        :class="stateClass(migration.state)"
+                  />
+                </td>
                 <td v-text="migration.installedBy" />
                 <td v-text="migration.installedOn" />
                 <td v-text="migration.installedRank" />

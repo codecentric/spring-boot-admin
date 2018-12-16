@@ -47,10 +47,13 @@
       </div>
     </div>
     <div class="control" v-if="editing">
-      <button class="button is-light is-small" @click="cancel">Cancel</button>
+      <button class="button is-light is-small" @click="cancel">
+        Cancel
+      </button>
       <button class="button is-primary is-small" :class="{'is-loading' : saving}" @click="save"
               :disabled="value === input"
-      >Save
+      >
+        Save
       </button>
     </div>
   </div>

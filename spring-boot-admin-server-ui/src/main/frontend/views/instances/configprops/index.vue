@@ -43,7 +43,9 @@
           <td class="is-breakable" v-text="value" />
         </tr>
       </table>
-      <p class="is-muted" v-else>No properties set</p>
+      <p class="is-muted" v-else>
+        No properties set
+      </p>
     </sba-panel>
   </section>
 </template>

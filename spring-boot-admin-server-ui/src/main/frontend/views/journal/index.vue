@@ -17,7 +17,9 @@
 <template>
   <div class="section">
     <div class="container">
-      <h1 class="title">Event Journal</h1>
+      <h1 class="title">
+        Event Journal
+      </h1>
       <div v-if="error" class="message is-warning">
         <div class="message-body">
           <strong>

@@ -34,10 +34,12 @@
               :title="bean.type"
             />
           </td>
-          <td><span
-            v-text="bean.scope"
-            class="tag"
-          /></td>
+          <td>
+            <span
+              v-text="bean.scope"
+              class="tag"
+            />
+          </td>
         </tr>
         <tr
           :key="`${bean.name}-detail`"

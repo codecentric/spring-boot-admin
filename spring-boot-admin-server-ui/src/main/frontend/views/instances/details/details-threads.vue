@@ -29,19 +29,25 @@
       <div class="level threads-current" v-if="current">
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading has-bullet has-bullet-warning">Live</p>
+            <p class="heading has-bullet has-bullet-warning">
+              Live
+            </p>
             <p v-text="current.live" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading  has-bullet has-bullet-info">Daemon</p>
+            <p class="heading  has-bullet has-bullet-info">
+              Daemon
+            </p>
             <p v-text="current.daemon" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading">Peak Live</p>
+            <p class="heading">
+              Peak Live
+            </p>
             <p v-text="current.peak" />
           </div>
         </div>

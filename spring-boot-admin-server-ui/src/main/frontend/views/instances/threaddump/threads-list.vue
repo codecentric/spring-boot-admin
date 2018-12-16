@@ -18,7 +18,9 @@
   <table class="threads table is-fullwidth is-hoverable">
     <thead>
       <tr>
-        <th class="threads__thread-name">Name</th>
+        <th class="threads__thread-name">
+          Name
+        </th>
         <th class="threads__timeline">
           <svg class="threads__scale" height="24px" />
         </th>
@@ -84,7 +86,8 @@
                   <td v-text="thread.details.lockOwnerName" />
                 </tr>
                 <tr v-if="thread.details.stackTrace.length > 0">
-                  <td colspan="2">Stacktrace
+                  <td colspan="2">
+                    Stacktrace
                     <pre class="threads__thread-stacktrace"><template
                       v-for="(frame, idx) in thread.details.stackTrace"
                     ><span

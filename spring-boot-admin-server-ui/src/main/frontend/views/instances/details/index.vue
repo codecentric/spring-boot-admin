@@ -18,7 +18,9 @@
   <section class="section">
     <div class="details-header">
       <h1 class="title" v-if="instance" v-text="instance.registration.name" />
-      <h2 class="subtitle is-5" v-if="instance">Id: <span v-text="instance.id" /></h2>
+      <h2 class="subtitle is-5" v-if="instance">
+        Id: <span v-text="instance.id" />
+      </h2>
       <sba-tags v-if="instance" :tags="instance.tags" />
       <div class="details-header__urls">
         <a class="button is-small " :href="instance.registration.serviceUrl">

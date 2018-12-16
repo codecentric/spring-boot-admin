@@ -18,13 +18,27 @@
   <table class="httptraces table is-hoverable is-fullwidth">
     <thead>
       <tr>
-        <th class="httptraces__trace-timestamp">Timestamp</th>
-        <th class="httptraces__trace-method">Method</th>
-        <th class="httptraces__trace-uri">Path</th>
-        <th class="httptraces__trace-status">Status</th>
-        <th class="httptraces__trace-contentType">Content-Type</th>
-        <th class="httptraces__trace-contentLength">Length</th>
-        <th class="httptraces__trace-timeTaken">Time</th>
+        <th class="httptraces__trace-timestamp">
+          Timestamp
+        </th>
+        <th class="httptraces__trace-method">
+          Method
+        </th>
+        <th class="httptraces__trace-uri">
+          Path
+        </th>
+        <th class="httptraces__trace-status">
+          Status
+        </th>
+        <th class="httptraces__trace-contentType">
+          Content-Type
+        </th>
+        <th class="httptraces__trace-contentLength">
+          Length
+        </th>
+        <th class="httptraces__trace-timeTaken">
+          Time
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -57,7 +71,9 @@
         </tr>
       </template>
       <tr v-if="traces.length === 0">
-        <td class="is-muted" colspan="7">No traces found.</td>
+        <td class="is-muted" colspan="7">
+          No traces found.
+        </td>
       </tr>
     </tbody>
   </table>

@@ -81,7 +81,8 @@
             </td>
           </tr>
           <tr v-if="limitedLoggers.length === 0">
-            <td class="is-muted" colspan="5">No loggers found.
+            <td class="is-muted" colspan="5">
+              No loggers found.
             </td>
           </tr>
         </tbody>

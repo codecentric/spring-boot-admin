@@ -17,7 +17,9 @@
 <template>
   <div class="section">
     <div class="container">
-      <h1 class="title">About Spring Boot Admin</h1>
+      <h1 class="title">
+        About Spring Boot Admin
+      </h1>
       <h2 class="subtitle" v-if="version" v-text="`Version ${version}`" />
       <div class="content">
         <p>
@@ -39,13 +41,21 @@
         </p>
         <p>
           If you have any question please consult the
-          <a :href="`${documentationBaseUrl}`">Reference Guide</a>, ask
-          on <a href="https://stackoverflow.com/questions/tagged/spring-boot-admin"> Stack Overflow</a> or
-          have a chat on the <a href="https://gitter.im/codecentric/spring-boot-admin">Gitter</a> channel.
+          <a :href="`${documentationBaseUrl}`">
+            Reference Guide
+          </a>, ask
+          on <a href="https://stackoverflow.com/questions/tagged/spring-boot-admin">
+            Stack Overflow
+          </a> or
+          have a chat on the <a href="https://gitter.im/codecentric/spring-boot-admin">
+            Gitter
+          </a> channel.
         </p>
         <p>
           If you found a bug, want to propose a feature or submit a pull request please use the
-          <a href="https://github.com/codecentric/spring-boot-admin/issues">issue tracker</a>.
+          <a href="https://github.com/codecentric/spring-boot-admin/issues">
+            issue tracker
+          </a>.
         </p>
         <div class="about-links">
           <a class="button is-primary is-outlined"
@@ -66,16 +76,22 @@
           </a>
         </div>
       </div>
-      <h1 class="title is-5">Trademarks and Licenses</h1>
+      <h1 class="title is-5">
+        Trademarks and Licenses
+      </h1>
       <div class="content">
         <p>
           The source code of Spring Boot Admin is licensed under <a
             href="https://www.apache.org/licenses/LICENSE-2.0"
-          >Apache License 2.0</a>.
+          >
+            Apache License 2.0
+          </a>.
         </p>
         <p>
-          Spring, Spring Boot and Spring Cloud are trademarks of <a href="https://pivotal.io/">Pivotal
-          Software, Inc.</a> in the U.S. and other countries.
+          Spring, Spring Boot and Spring Cloud are trademarks of <a href="https://pivotal.io/">
+            Pivotal
+            Software, Inc.
+          </a> in the U.S. and other countries.
         </p>
       </div>
     </div>

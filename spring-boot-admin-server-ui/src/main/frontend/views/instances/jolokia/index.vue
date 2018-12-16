@@ -27,12 +27,13 @@
     </div>
     <div class="columns">
       <div class="column" v-if="selectedDomain">
-        <h1 class="heading">MBeans</h1>
+        <h1 class="heading">
+          MBeans
+        </h1>
         <div class="m-bean card" :class="{'is-active': mBean === selectedMBean}"
              v-for="mBean in selectedDomain.mBeans" :key="mBean.descriptor.raw" :id="mBean.descriptor.raw"
              v-on-clickaway="() => mBean === selectedMBean && select(selectedDomain)"
         >
-
           <header class="m-bean--header hero"
                   :class="{'is-primary': mBean === selectedMBean, 'is-selectable' : mBean !== selectedMBean }"
                   @click="select(selectedDomain, mBean)"
@@ -57,10 +58,14 @@
             <div class="hero-foot tabs is-boxed" v-if="mBean === selectedMBean">
               <ul>
                 <li v-if="mBean.attr" :class="{'is-active' : selected.view === 'attributes' }">
-                  <a @click.stop="select(selectedDomain, selectedMBean, 'attributes')">Attributes</a>
+                  <a @click.stop="select(selectedDomain, selectedMBean, 'attributes')">
+                    Attributes
+                  </a>
                 </li>
                 <li v-if="mBean.op" :class="{'is-active' : selected.view === 'operations' }">
-                  <a @click.stop="select(selectedDomain, selectedMBean, 'operations')">Operations</a>
+                  <a @click.stop="select(selectedDomain, selectedMBean, 'operations')">
+                    Operations
+                  </a>
                 </li>
               </ul>
             </div>
@@ -78,7 +83,9 @@
       </div>
       <div class="column is-narrow">
         <nav class="menu" v-sticks-below="['#navigation']">
-          <p class="menu-label">domains</p>
+          <p class="menu-label">
+            domains
+          </p>
           <ul class="menu-list">
             <li>
               <a class="" v-for="domain in domains" :key="domain.domain"

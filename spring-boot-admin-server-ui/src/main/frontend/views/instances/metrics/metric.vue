@@ -28,12 +28,24 @@
             <select :value="statisticTypes[statistic]"
                     @change="$emit('type-select', metricName, statistic, $event.target.value)"
             >
-              <option :value="undefined">-</option>
-              <option value="integer">Integer</option>
-              <option value="float">Float</option>
-              <option value="duration">Duration</option>
-              <option value="millis">Milliseconds</option>
-              <option value="bytes">Bytes</option>
+              <option :value="undefined">
+                -
+              </option>
+              <option value="integer">
+                Integer
+              </option>
+              <option value="float">
+                Float
+              </option>
+              <option value="duration">
+                Duration
+              </option>
+              <option value="millis">
+                Milliseconds
+              </option>
+              <option value="bytes">
+                Bytes
+              </option>
             </select>
           </div>
         </th>
