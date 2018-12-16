@@ -36,6 +36,11 @@ module.exports = {
     }
   },
   chainWebpack: config => {
+    if (process.env.NODE_ENV === 'development') {
+      //Fix different paths for watch-mode
+      config.output.filename('assets/js/[name].js');
+      config.output.chunkFilename('assets/js/[name].js');
+    }
     config.resolve.alias.set('@', resolve(__dirname, 'src/main/frontend'));
     config.module.rule('html')
       .test(/\.html$/)
