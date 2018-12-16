@@ -525,7 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.1.2-SNAPSHOT,</span>
-<span id="revdate">02.12.2018</span>
+<span id="revdate">16.12.2018</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -2486,27 +2486,27 @@ There are some helpful methods on the application and instances object available
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="html"><span class="tag">&lt;template&gt;</span>
   <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">custom</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
-    Instance: <span class="tag">&lt;span</span> <span class="attribute-name">v-text</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">instance.id</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
-    Output: <span class="tag">&lt;span</span> <span class="attribute-name">v-text</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">text</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
+    <span class="tag">&lt;p&gt;</span>Instance: <span class="tag">&lt;span</span> <span class="attribute-name">v-text</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">instance.id</span><span class="delimiter">&quot;</span></span> <span class="tag">/&gt;</span><span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;p&gt;</span>Output: <span class="tag">&lt;span</span> <span class="attribute-name">v-text</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">text</span><span class="delimiter">&quot;</span></span> <span class="tag">/&gt;</span><span class="tag">&lt;/p&gt;</span>
   <span class="tag">&lt;/div&gt;</span>
 <span class="tag">&lt;/template&gt;</span>
 
 <span class="tag">&lt;script&gt;</span>
-<span class="inline"><span class="reserved">export</span> <span class="keyword">default</span> {
-  <span class="key">props</span>: {
-    <span class="key">instance</span>: { <i class="conum" data-value="1"></i><b>(1)</b>
-      <span class="key">type</span>: Object,
-      <span class="key">required</span>: <span class="predefined-constant">true</span>
+<span class="inline">  <span class="reserved">export</span> <span class="keyword">default</span> {
+    <span class="key">props</span>: {
+      <span class="key">instance</span>: { <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="key">type</span>: Object,
+        <span class="key">required</span>: <span class="predefined-constant">true</span>
+      }
+    },
+    <span class="key">data</span>: () =&gt; ({
+      <span class="key">text</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+    }),
+    async created() {
+      const response = await <span class="local-variable">this</span>.instance.axios.get(<span class="string"><span class="delimiter">'</span><span class="content">actuator/custom</span><span class="delimiter">'</span></span>); <i class="conum" data-value="2"></i><b>(2)</b>
+      <span class="local-variable">this</span>.text = response.data;
     }
-  },
-  <span class="key">data</span>: () =&gt; ({
-    <span class="key">text</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
-  }),
-  async created() {
-    const response = await <span class="local-variable">this</span>.instance.axios.get(<span class="string"><span class="delimiter">'</span><span class="content">actuator/custom</span><span class="delimiter">'</span></span>); <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="local-variable">this</span>.text = response.data;
-  }
-};</span>
+  };</span>
 <span class="tag">&lt;/script&gt;</span>
 
 <span class="tag">&lt;style&gt;</span>
