@@ -225,7 +225,7 @@
     },
     async mounted() {
       this.scrollIntoView(this.selected, 'instant');
-      this.hasNotificationFiltersSupport = await NotificationFilter.isSupported();
+      this.hasNotificationFiltersSupport = NotificationFilter.isSupported();
       this.fetchNotificationFilters();
     },
     watch: {

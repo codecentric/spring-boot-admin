@@ -41,11 +41,16 @@ public class UiController {
     private final List<UiExtension> jsExtensions;
     private final Map<String, Object> uiSettings;
 
-    public UiController(String publicUrl, String title, String brand, List<UiExtension> uiExtensions) {
+    public UiController(String publicUrl,
+                        String title,
+                        String brand,
+                        List<UiExtension> uiExtensions,
+                        boolean notificationFilterEnabled) {
         this.publicUrl = publicUrl;
         this.uiSettings = new HashMap<>();
         this.uiSettings.put("title", title);
         this.uiSettings.put("brand", brand);
+        this.uiSettings.put("notificationFilterEnabled", notificationFilterEnabled);
         this.cssExtensions = uiExtensions.stream()
                                          .filter(e -> e.getResourcePath().endsWith(".css"))
                                          .collect(Collectors.toList());
@@ -88,7 +93,7 @@ public class UiController {
     }
 
     @ModelAttribute(value = "user", binding = false)
-    public Map<String, Object> getUiSettings(@Nullable Principal principal) {
+    public Map<String, Object> getUser(@Nullable Principal principal) {
         if (principal != null) {
             return singletonMap("name", principal.getName());
         }

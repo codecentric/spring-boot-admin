@@ -65,13 +65,13 @@ public class UiControllerTest {
         MockMvc mockMvc = setupController("https://public/public");
 
         mockMvc.perform(get("http://example/"))
-            .andExpect(status().isOk())
-            .andExpect(view().name("index"))
-            .andExpect(model().attribute("baseUrl", "https://public/public/"));
+               .andExpect(status().isOk())
+               .andExpect(view().name("index"))
+               .andExpect(model().attribute("baseUrl", "https://public/public/"));
     }
 
     private MockMvc setupController(String publicUrl) {
-        return MockMvcBuilders.standaloneSetup(new UiController(publicUrl, "", "", Collections.emptyList()))
+        return MockMvcBuilders.standaloneSetup(new UiController(publicUrl, "", "", Collections.emptyList(), false))
                               .setCustomHandlerMapping(() -> new AdminControllerHandlerMapping(""))
                               .build();
     }
