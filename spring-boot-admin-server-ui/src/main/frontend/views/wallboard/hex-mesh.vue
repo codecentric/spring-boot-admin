@@ -34,7 +34,7 @@
             <foreignObject v-if="item(col,row)" x="0" y="0" :width="hexWidth" :height="hexHeight"
                            style="pointer-events: none"
             >
-              <slot name="item" v-bind="item(col,row)" />
+              <slot name="item" :item="item(col,row)" />
             </foreignObject>
           </g>
         </template>

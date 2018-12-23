@@ -16,42 +16,22 @@
 
 <template>
   <div class="applications-list">
-    <div class="application-list__item card" :class="{'is-active': selected === application.name}"
-         v-for="application in applications" :key="application.name" :id=" application.name"
+    <div class="application-list-item card" :class="{'is-active': selected === application.name}"
+         v-for="application in applications" :key="application.name" :id="application.name"
          v-on-clickaway="(event) => deselect(event, application.name)"
     >
-      <header class="hero application-list__item__header"
+      <header class="hero application-list-item__header"
               :class="getHeaderClass(application)"
               @click.stop="select(application.name)"
       >
-        <template v-if="selected !== application.name">
-          <sba-status :status="application.status"
-                      :date="application.statusTimestamp"
-                      class="application-list__item__header__status"
-          />
-          <p class="application-list__item__header__name">
-            <span v-text="application.name" /><br>
-            <span class="is-muted">
-              <a v-if="application.instances.length === 1"
-                 v-text="application.instances[0].registration.serviceUrl || application.instances[0].registration.healthUrl"
-                 :href="application.instances[0].registration.serviceUrl || application.instances[0].registration.healthUrl"
-              />
-              <span v-else
-                    v-text="`${application.instances.length} instances`"
-              />
-            </span>
-          </p>
-          <p class="application-list__item__header__version" v-text="application.buildVersion" />
-        </template>
-        <template v-else>
-          <h1 class="title is-size-5 application-list__item__header__name" v-text="application.name" />
-        </template>
-        <div class="application-list__item__header__actions">
+        <application-summary v-if="selected !== application.name" :application="application" />
+        <h1 v-else class="title is-size-5" v-text="application.name" />
+        <div class="application-list-item__header__actions">
           <sba-icon-button :id="`nf-settings-${application.name}`"
                            v-if="hasNotificationFiltersSupport"
                            @click.stop="toggleNotificationFilterSettingsFor(application)"
-                           :icon="hasActiveFilter(application) ? 'bell-slash' : 'bell'"
-          />&nbsp;
+                           :icon="hasActiveNotificationFilter(application) ? 'bell-slash' : 'bell'"
+          />
           <sba-icon-button icon="trash"
                            v-if="application.isUnregisterable"
                            @click.stop="unregister(application)"
@@ -59,39 +39,19 @@
         </div>
       </header>
       <div class="card-content" v-if="selected === application.name">
-        <table class="table is-hoverable is-selectable is-fullwidth application__instances">
-          <tbody>
-            <tr v-for="instance in application.instances" :key="instance.id" @click.stop="showDetails(instance)">
-              <td class="instance__status">
-                <sba-status :status="instance.statusInfo.status" :date="instance.statusTimestamp" />
-              </td>
-              <td class="is-narrow">
-                <a v-text="instance.registration.serviceUrl || instance.registration.healthUrl"
-                   :href="instance.registration.serviceUrl || instance.registration.healthUrl"
-                   @click.stop
-                /><br>
-                <span class="is-muted" v-text="instance.id" />
-              </td>
-              <td>
-                <sba-tags :tags="instance.tags" />
-              </td>
-              <td>
-                <span v-text="instance.buildVersion" />
-              </td>
-              <td class="instance__actions">
-                <sba-icon-button :id="`nf-settings-${instance.id}`"
-                                 v-if="hasNotificationFiltersSupport"
-                                 @click.stop="toggleNotificationFilterSettingsFor(instance)"
-                                 :icon="hasActiveFilter(instance) ? 'bell-slash' : 'bell'"
-                />
-                <sba-icon-button icon="trash"
-                                 v-if="instance.isUnregisterable"
-                                 @click.stop="unregister(instance)"
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <instances-list :instances="application.instances">
+          <template slot="actions" slot-scope="{instance}">
+            <sba-icon-button :id="`nf-settings-${instance.id}`"
+                             v-if="hasNotificationFiltersSupport"
+                             @click.stop="toggleNotificationFilterSettingsFor(instance)"
+                             :icon="hasActiveNotificationFilter(instance) ? 'bell-slash' : 'bell'"
+            />
+            <sba-icon-button icon="trash"
+                             v-if="instance.isUnregisterable"
+                             @click.stop="unregister(instance)"
+            />
+          </template>
+        </instances-list>
       </div>
     </div>
     <notification-filter-settings v-if="showNotificationFilterSettingsObject"
@@ -110,6 +70,8 @@
   import NotificationFilter from '@/services/notification-filter';
   import {concatMap, merge, Subject, timer} from '@/utils/rxjs';
   import {directive as onClickaway} from 'vue-clickaway';
+  import ApplicationSummary from './application-summary';
+  import InstancesList from './instances-list';
   import NotificationFilterSettings from './notification-filter-settings';
 
   export default {
@@ -125,7 +87,7 @@
     },
     directives: {onClickaway, Popper},
     mixins: [subscribing],
-    components: {NotificationFilterSettings},
+    components: {ApplicationSummary, InstancesList, NotificationFilterSettings},
     data: () => ({
       errors: [],
       hasNotificationFiltersSupport: false,
@@ -145,9 +107,6 @@
         if (this.selected === expectedSelected || !expectedSelected) {
           this.$router.replace({name: 'applications'});
         }
-      },
-      showDetails(instance) {
-        this.$router.push({name: 'instances/details', params: {instanceId: instance.id}});
       },
       async scrollIntoView(id, behavior) {
         if (id) {
@@ -219,7 +178,7 @@
       toggleNotificationFilterSettingsFor(obj) {
         this.showNotificationFilterSettingsObject = obj ? obj : null;
       },
-      hasActiveFilter(object) {
+      hasActiveNotificationFilter(object) {
         return this.notificationFilters.findIndex(f => f.affects(object)) >= 0;
       }
     },
@@ -239,7 +198,7 @@
 <style lang="scss">
   @import "~@/assets/css/utilities";
 
-  .application-list__item {
+  .application-list-item {
     transition: all $easing $speed;
 
     &.is-active {
@@ -261,17 +220,9 @@
         margin-left: 12px;
       }
 
-      &__status {
-        width: $gap;
-      }
-
-      &__name,
-      &__version {
+      .title {
         flex-grow: 1;
         flex-basis: 50%;
-      }
-
-      &__name.title {
         margin: 0.75rem 0;
       }
 
@@ -295,33 +246,4 @@
       }
     }
   }
-
-  .application__instances td {
-    vertical-align: middle;
-  }
-
-  .instance {
-    &__status {
-      width: $gap;
-    }
-
-    &__actions {
-      text-align: right;
-      opacity: 0;
-      transition: all $easing $speed;
-      will-change: opacity;
-      margin-right: $gap;
-
-      *:hover > & {
-        opacity: 1;
-      }
-
-      & > * {
-        width: ($gap / 2);
-        height: ($gap / 2);
-      }
-
-    }
-  }
-
 </style>

@@ -20,7 +20,7 @@
       Loading applications...
     </p>
     <hex-mesh v-if="applicationsInitialized" :items="applications" :class-for-item="classForApplication" @click="select">
-      <div class="hex__body application" slot="item" slot-scope="application" :key="application.name">
+      <div class="hex__body application" slot="item" slot-scope="{item: application}" :key="application.name">
         <div class="application__header application__time-ago is-muted">
           <sba-time-ago :date="application.statusTimestamp" />
         </div>
