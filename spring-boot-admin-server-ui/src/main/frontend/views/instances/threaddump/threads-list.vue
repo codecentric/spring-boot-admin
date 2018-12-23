@@ -126,7 +126,6 @@
       showDetails: {},
       lastEndPosition: 0
     }),
-    // eslint-disable-next-line vue/no-unused-components
     components: {threadTag},
     watch: {
       threadTimelines: {

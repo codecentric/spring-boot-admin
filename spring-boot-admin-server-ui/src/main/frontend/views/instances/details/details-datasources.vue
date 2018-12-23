@@ -36,7 +36,6 @@
       }
     },
     mixins: [subscribing],
-    // eslint-disable-next-line vue/no-unused-components
     components: {detailsDatasource},
     data: () => ({
       dataSources: [],

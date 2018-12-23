@@ -103,7 +103,6 @@
       : (val, key) => oldFilter(val, key) && addedFilter(val, key);
 
   export default {
-    // eslint-disable-next-line vue/no-unused-components
     components: {sbaLoggerControl},
     props: {
       instance: {

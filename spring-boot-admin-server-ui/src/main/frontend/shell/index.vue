@@ -43,7 +43,6 @@
         default: false
       }
     },
-    // eslint-disable-next-line vue/no-unused-components
     components: {sbaNavbar},
     computed: {
       mainViews() {

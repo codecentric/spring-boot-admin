@@ -72,7 +72,6 @@
       }
     },
     mixins: [subscribing],
-    // eslint-disable-next-line vue/no-unused-components
     components: {threadsChart},
     data: () => ({
       hasLoaded: false,

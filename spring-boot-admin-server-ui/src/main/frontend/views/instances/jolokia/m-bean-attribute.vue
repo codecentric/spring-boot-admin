@@ -71,7 +71,6 @@
         required: true
       },
       value: {
-        // eslint-disable-next-line vue/require-prop-type-constructor
         type: null,
         default: null
       },

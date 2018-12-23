@@ -40,7 +40,6 @@
   import hexMesh from './hex-mesh';
 
   export default {
-    // eslint-disable-next-line vue/no-unused-components
     components: {hexMesh},
     props: {
       applications: {

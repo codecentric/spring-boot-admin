@@ -30,7 +30,6 @@
   export default {
     props: {
       value: {
-        // eslint-disable-next-line vue/require-prop-type-constructor
         type: null,
         required: true
       },
