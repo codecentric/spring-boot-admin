@@ -86,9 +86,9 @@ pre.is-breakable {
 
 p.is-loading {
   &::before {
+    @include loader;
     display: inline-block;
     right: 0.25em;
-    @include loader;
   }
 }
 

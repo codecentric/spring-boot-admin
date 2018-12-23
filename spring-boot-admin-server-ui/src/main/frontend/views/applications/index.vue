@@ -17,6 +17,9 @@
 <template>
   <section class="section">
     <div class="container">
+      <p v-if="!applicationsInitialized" class="is-muted is-loading">
+        Loading applications...
+      </p>
       <div v-if="error" class="message is-warning">
         <div class="message-body">
           <strong>
@@ -26,53 +29,55 @@
           <p v-text="error.message" />
         </div>
       </div>
-      <div class="level applications-stats">
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading">
-              Applications
-            </p>
-            <p class="title" v-text="applicationsCount">
-              1
-            </p>
+      <template v-if="applicationsInitialized">
+        <div class="level applications-stats">
+          <div class="level-item has-text-centered">
+            <div>
+              <p class="heading">
+                Applications
+              </p>
+              <p class="title" v-text="applicationsCount">
+                1
+              </p>
+            </div>
+          </div>
+          <div class="level-item has-text-centered">
+            <div>
+              <p class="heading">
+                Instances
+              </p>
+              <p class="title" v-text="instancesCount">
+                1
+              </p>
+            </div>
+          </div>
+          <div class="level-item has-text-centered">
+            <div v-if="downCount === 0">
+              <p class="heading">
+                Status
+              </p>
+              <p class="title has-text-success">
+                all up
+              </p>
+            </div>
+            <div v-else>
+              <p class="heading">
+                instances down
+              </p>
+              <p class="title has-text-danger" v-text="downCount" />
+            </div>
           </div>
         </div>
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading">
-              Instances
-            </p>
-            <p class="title" v-text="instancesCount">
-              1
-            </p>
-          </div>
+        <div class="application-group" v-for="group in statusGroups" :key="group.status">
+          <p class="heading" v-text="group.status" />
+          <applications-list :applications="group.applications" :selected="selected" />
         </div>
-        <div class="level-item has-text-centered">
-          <div v-if="downCount === 0">
-            <p class="heading">
-              Status
-            </p>
-            <p class="title has-text-success">
-              all up
-            </p>
-          </div>
-          <div v-else>
-            <p class="heading">
-              instances down
-            </p>
-            <p class="title has-text-danger" v-text="downCount" />
-          </div>
+        <div v-if="statusGroups.length === 0">
+          <p class="is-muted">
+            No applications registered.
+          </p>
         </div>
-      </div>
-      <div class="application-group" v-for="group in statusGroups" :key="group.status">
-        <p class="heading" v-text="group.status" />
-        <applications-list :applications="group.applications" :selected="selected" />
-      </div>
-      <div v-if="statusGroups.length === 0">
-        <p class="is-muted">
-          No applications registered.
-        </p>
-      </div>
+      </template>
     </div>
   </section>
 </template>
@@ -97,6 +102,10 @@
       selected: {
         type: String,
         default: null
+      },
+      applicationsInitialized: {
+        type: Boolean,
+        default: false
       }
     },
     // eslint-disable-next-line vue/no-unused-components

@@ -16,7 +16,10 @@
 
 <template>
   <section class="wallboard section">
-    <hex-mesh :items="applications" :class-for-item="classForApplication" @click="select">
+    <p v-if="!applicationsInitialized" class="is-muted is-loading">
+      Loading applications...
+    </p>
+    <hex-mesh v-if="applicationsInitialized" :items="applications" :class-for-item="classForApplication" @click="select">
       <div class="hex__body application" slot="item" slot-scope="application" :key="application.name">
         <div class="application__header application__time-ago is-muted">
           <sba-time-ago :date="application.statusTimestamp" />
@@ -47,6 +50,10 @@
       error: {
         type: Error,
         default: null
+      },
+      applicationsInitialized: {
+        type: Boolean,
+        default: false
       }
     },
     methods: {
