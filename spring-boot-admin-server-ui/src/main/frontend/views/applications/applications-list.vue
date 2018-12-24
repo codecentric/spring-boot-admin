@@ -16,44 +16,18 @@
 
 <template>
   <div class="applications-list">
-    <div class="application-list-item card" :class="{'is-active': selected === application.name}"
-         v-for="application in applications" :key="application.name" :id="application.name"
-         v-on-clickaway="(event) => deselect(event, application.name)"
-    >
-      <header class="hero application-list-item__header"
-              :class="getHeaderClass(application)"
-              @click.stop="select(application.name)"
-      >
-        <application-summary v-if="selected !== application.name" :application="application" />
-        <h1 v-else class="title is-size-5" v-text="application.name" />
-        <div class="application-list-item__header__actions">
-          <sba-icon-button :id="`nf-settings-${application.name}`"
-                           v-if="hasNotificationFiltersSupport"
-                           @click.stop="toggleNotificationFilterSettingsFor(application)"
-                           :icon="hasActiveNotificationFilter(application) ? 'bell-slash' : 'bell'"
-          />
-          <sba-icon-button icon="trash"
-                           v-if="application.isUnregisterable"
-                           @click.stop="unregister(application)"
-          />
-        </div>
-      </header>
-      <div class="card-content" v-if="selected === application.name">
-        <instances-list :instances="application.instances">
-          <template slot="actions" slot-scope="{instance}">
-            <sba-icon-button :id="`nf-settings-${instance.id}`"
-                             v-if="hasNotificationFiltersSupport"
-                             @click.stop="toggleNotificationFilterSettingsFor(instance)"
-                             :icon="hasActiveNotificationFilter(instance) ? 'bell-slash' : 'bell'"
-            />
-            <sba-icon-button icon="trash"
-                             v-if="instance.isUnregisterable"
-                             @click.stop="unregister(instance)"
-            />
-          </template>
-        </instances-list>
-      </div>
-    </div>
+    <applicatios-list-item v-for="application in applications"
+                           :key="application.name"
+                           :id="application.name"
+                           :application="application"
+                           @click.stop="select(application.name)"
+                           v-on-clickaway="(event) => deselect(event, application.name)"
+                           :is-expanded="selected === application.name"
+                           :has-notification-filters-support="hasNotificationFiltersSupport"
+                           :notification-filters="notificationFilters"
+                           @unregister="unregister"
+                           @toggle-notification-filter-settings="toggleNotificationFilterSettings"
+    />
     <notification-filter-settings v-if="showNotificationFilterSettingsObject"
                                   v-popper="`nf-settings-${showNotificationFilterSettingsObject.id || showNotificationFilterSettingsObject.name}`"
                                   :notification-filters="notificationFilters"
@@ -63,15 +37,13 @@
     />
   </div>
 </template>
-
 <script>
   import Popper from '@/directives/popper';
   import subscribing from '@/mixins/subscribing';
   import NotificationFilter from '@/services/notification-filter';
   import {concatMap, merge, Subject, timer} from '@/utils/rxjs';
   import {directive as onClickaway} from 'vue-clickaway';
-  import ApplicationSummary from './application-summary';
-  import InstancesList from './instances-list';
+  import ApplicationsListItem from './applications-list-item';
   import NotificationFilterSettings from './notification-filter-settings';
 
   export default {
@@ -87,7 +59,7 @@
     },
     directives: {onClickaway, Popper},
     mixins: [subscribing],
-    components: {ApplicationSummary, InstancesList, NotificationFilterSettings},
+    components: {ApplicatiosListItem: ApplicationsListItem, NotificationFilterSettings},
     data: () => ({
       errors: [],
       hasNotificationFiltersSupport: false,
@@ -100,7 +72,7 @@
         this.$router.replace({name: 'applications', params: {selected: name}});
       },
       deselect(event, expectedSelected) {
-        this.toggleNotificationFilterSettingsFor(null);
+        this.toggleNotificationFilterSettings(null);
         if (event && event.target instanceof HTMLAnchorElement) {
           return;
         }
@@ -117,27 +89,6 @@
             window.scroll({top, left: window.scrollX, behavior: behavior || 'smooth'});
           }
         }
-      },
-      getHeaderClass(application) {
-        if (this.selected !== application.name) {
-          return 'is-selectable';
-        }
-        if (application.status === 'UP') {
-          return 'is-primary';
-        }
-        if (application.status === 'RESTRICTED') {
-          return 'is-warning';
-        }
-        if (application.status === 'DOWN') {
-          return 'is-danger';
-        }
-        if (application.status === 'OUT_OF_SERVICE') {
-          return 'is-danger';
-        }
-        if (application.status === 'OFFLINE') {
-          return 'is-light';
-        }
-        return 'is-light';
       },
       async unregister(item) {
         try {
@@ -172,20 +123,16 @@
         return [];
       },
       handleFilterChange(event) {
-        this.toggleNotificationFilterSettingsFor(null);
+        this.toggleNotificationFilterSettings(null);
         this.notificationFilterSubject.next(event);
       },
-      toggleNotificationFilterSettingsFor(obj) {
+      toggleNotificationFilterSettings(obj) {
         this.showNotificationFilterSettingsObject = obj ? obj : null;
-      },
-      hasActiveNotificationFilter(object) {
-        return this.notificationFilters.findIndex(f => f.affects(object)) >= 0;
       }
     },
-    async mounted() {
+    mounted() {
       this.scrollIntoView(this.selected, 'instant');
       this.hasNotificationFiltersSupport = NotificationFilter.isSupported();
-      this.fetchNotificationFilters();
     },
     watch: {
       selected(newVal) {
@@ -195,55 +142,3 @@
   }
 </script>
 
-<style lang="scss">
-  @import "~@/assets/css/utilities";
-
-  .application-list-item {
-    transition: all $easing $speed;
-
-    &.is-active {
-      margin: 0.75rem -0.75rem;
-      max-width: unset;
-    }
-
-    &__header {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-start;
-      align-items: center;
-
-      *:not(.is-active) > &:hover {
-        background-color: $white-bis;
-      }
-
-      & > *:not(:first-child) {
-        margin-left: 12px;
-      }
-
-      .title {
-        flex-grow: 1;
-        flex-basis: 50%;
-        margin: 0.75rem 0;
-      }
-
-      &__actions {
-        justify-self: end;
-        opacity: 0;
-        transition: all $easing $speed;
-        will-change: opacity;
-        margin-right: ($gap / 2);
-        display: flex;
-
-        *:hover > &,
-        *.is-active & {
-          opacity: 1;
-        }
-
-        & > * {
-          width: ($gap / 2);
-          height: ($gap / 2);
-        }
-      }
-    }
-  }
-</style>

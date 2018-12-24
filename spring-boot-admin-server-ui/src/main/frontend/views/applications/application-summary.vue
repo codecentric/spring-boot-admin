@@ -37,7 +37,6 @@
   import Application from '../../services/application';
 
   export default {
-    name: 'ApplicationSummary',
     props: {
       application: {
         type: Application,
