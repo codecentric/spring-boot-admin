@@ -41,8 +41,8 @@ public abstract class AbstractStatusChangeNotifier extends AbstractEventNotifier
      */
     private String[] ignoreChanges = {"UNKNOWN:UP"};
 
-    public AbstractStatusChangeNotifier(InstanceRepository repositpry) {
-        super(repositpry);
+    public AbstractStatusChangeNotifier(InstanceRepository repository) {
+        super(repository);
     }
 
     @Override

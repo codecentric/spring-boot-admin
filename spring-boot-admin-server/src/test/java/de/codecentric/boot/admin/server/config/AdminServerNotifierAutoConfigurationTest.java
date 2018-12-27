@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.config;
 
 import de.codecentric.boot.admin.server.notify.CompositeNotifier;
+import de.codecentric.boot.admin.server.notify.DiscordNotifier;
 import de.codecentric.boot.admin.server.notify.HipchatNotifier;
 import de.codecentric.boot.admin.server.notify.LetsChatNotifier;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
@@ -112,6 +113,12 @@ public class AdminServerNotifierAutoConfigurationTest {
         contextRunner.withPropertyValues(
             "spring.boot.admin.notify.telegram.auth-token:123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11")
                      .run(context -> assertThat(context).hasSingleBean(TelegramNotifier.class));
+    }
+    
+    @Test
+    public void test_discord() {
+        contextRunner.withPropertyValues("spring.boot.admin.notify.discord.webhook-url:http://example.com")
+                     .run(context -> assertThat(context).hasSingleBean(DiscordNotifier.class));
     }
 
     @Test
