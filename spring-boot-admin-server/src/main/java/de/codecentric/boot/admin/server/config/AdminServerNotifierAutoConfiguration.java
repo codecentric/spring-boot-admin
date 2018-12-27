@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.config;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.notify.CompositeNotifier;
+import de.codecentric.boot.admin.server.notify.DiscordNotifier;
 import de.codecentric.boot.admin.server.notify.HipchatNotifier;
 import de.codecentric.boot.admin.server.notify.LetsChatNotifier;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
@@ -219,6 +220,18 @@ public class AdminServerNotifierAutoConfiguration {
         @ConfigurationProperties("spring.boot.admin.notify.telegram")
         public TelegramNotifier telegramNotifier(InstanceRepository repository) {
             return new TelegramNotifier(repository);
+        }
+    }
+    
+    @Configuration
+    @ConditionalOnProperty(prefix = "spring.boot.admin.notify.discord", name = "webhook-url")
+    @AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
+    public static class DiscordNotifierConfiguration {
+        @Bean
+        @ConditionalOnMissingBean
+        @ConfigurationProperties("spring.boot.admin.notify.discord")
+        public DiscordNotifier discordNotifier(InstanceRepository repository) {
+            return new DiscordNotifier(repository);
         }
     }
 }
