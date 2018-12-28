@@ -525,7 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.1.2-SNAPSHOT,</span>
-<span id="revdate">27.12.2018</span>
+<span id="revdate">28.12.2018</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -574,6 +574,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#letschat-notifications">4.3.8. Let&#8217;s Chat notifications</a></li>
 <li><a href="#ms-teams-notifications">4.3.9. Microsoft Teams notifications</a></li>
 <li><a href="#telegram-notifications">4.3.10. Telegram notifications</a></li>
+<li><a href="#discord-notifications">4.3.11. Discord notifications</a></li>
 </ul>
 </li>
 </ul>
@@ -1920,7 +1921,7 @@ account and configure it appropriately.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.slack.webhook-url</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The Slack Webhook URL to send notifications</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Slack Webhook URL to send notifications to.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
@@ -2091,6 +2092,59 @@ account and configure it appropriately.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.telegram.message</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Text to send. SpEL-expressions are supported.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>"&lt;strong&gt;#{instance.registration.name}&lt;/strong&gt;/#{instance.id} is &lt;strong&gt;#{event.statusInfo.status}&lt;/strong&gt;"</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="discord-notifications"><a class="anchor" href="#discord-notifications"></a><a class="link" href="#discord-notifications">4.3.11. Discord notifications</a></h4>
+<div class="paragraph">
+<p>To enable Discord notifications you need to create a webhook and set the appropriate configuration property.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 15. Discord notifications configuration options</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.discord.enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enable Discord notifications</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.discord.webhook-url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Discord webhook url to send the notifications to.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.discord.username</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optional username.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Default set in Discord</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.discord.avatar-url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optional URL to avatar.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Default set in Discord</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.discord.tts</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If the message is a text to speech message.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.discord.message</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Text to send. SpEL-expressions are supported.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*"</code></p></td>
 </tr>
 </tbody>
 </table>
