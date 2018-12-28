@@ -30,7 +30,7 @@ spring:
               environment: test
   profiles:
     active:
-      - insecure
+      - secure
 
 ---
 spring:
