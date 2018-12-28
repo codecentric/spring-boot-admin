@@ -16,23 +16,6 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.web.client.RestTemplate;
-
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
@@ -41,6 +24,22 @@ import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.RestTemplate;
+
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class DiscordNotifierTest {
     private static final String avatarUrl = "http://avatarUrl";
@@ -69,29 +68,33 @@ public class DiscordNotifierTest {
         notifier.setUsername(username);
         notifier.setAvatarUrl(avatarUrl);
         notifier.setTts(true);
-        
-        StepVerifier.create(notifier.notify(
-            new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofDown())))
-                    .verifyComplete();
+
+        StepVerifier.create(notifier.notify(new InstanceStatusChangedEvent(INSTANCE.getId(),
+            INSTANCE.getVersion(),
+            StatusInfo.ofDown()
+        ))).verifyComplete();
         clearInvocations(restTemplate);
-        StepVerifier.create(
-            notifier.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
-                    .verifyComplete();
+        StepVerifier.create(notifier.notify(new InstanceStatusChangedEvent(INSTANCE.getId(),
+            INSTANCE.getVersion(),
+            StatusInfo.ofUp()
+        ))).verifyComplete();
 
         Object expected = expectedMessage(username, true, avatarUrl, standardMessage("UP"));
 
         verify(restTemplate).postForEntity(eq(webhookUri), eq(expected), eq(Void.class));
     }
-    
+
     @Test
     public void test_onApplicationEvent_resolve_minimum_configuration() {
-        StepVerifier.create(notifier.notify(
-            new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofDown())))
-                    .verifyComplete();
+        StepVerifier.create(notifier.notify(new InstanceStatusChangedEvent(INSTANCE.getId(),
+            INSTANCE.getVersion(),
+            StatusInfo.ofDown()
+        ))).verifyComplete();
         clearInvocations(restTemplate);
-        StepVerifier.create(
-            notifier.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
-                    .verifyComplete();
+        StepVerifier.create(notifier.notify(new InstanceStatusChangedEvent(INSTANCE.getId(),
+            INSTANCE.getVersion(),
+            StatusInfo.ofUp()
+        ))).verifyComplete();
 
         Object expected = expectedMessage(null, false, null, standardMessage("UP"));
 
@@ -100,25 +103,23 @@ public class DiscordNotifierTest {
 
     private HttpEntity<Map<String, Object>> expectedMessage(String username,
                                                             boolean tts,
-                                                            String avatarUrl,
-                                                            String message
-                                                            ) {
-		Map<String, Object> body = new HashMap<>();
-		body.put("content", message);
-		body.put("tts", tts);
-		
-		if(avatarUrl != null) {
-			body.put("avatar_url", avatarUrl);
-		}
-		if(username != null) {
-			body.put("username", username);
-		}
-		
-		HttpHeaders  headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
+                                                            String avatarUrl, String message) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("content", message);
+        body.put("tts", tts);
+
+        if (avatarUrl != null) {
+            body.put("avatar_url", avatarUrl);
+        }
+        if (username != null) {
+            body.put("username", username);
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add(HttpHeaders.USER_AGENT, "RestTemplate");
-        
-		return new HttpEntity<>(body, headers);
+
+        return new HttpEntity<>(body, headers);
     }
 
     private String standardMessage(String status) {

@@ -262,7 +262,7 @@ account and configure it appropriately.
 | `"UNKNOWN:UP"`
 
 | spring.boot.admin.notify.slack.webhook-url
-| The Slack Webhook URL to send notifications
+| The Slack Webhook URL to send notifications to.
 |
 
 | spring.boot.admin.notify.slack.channel
@@ -376,4 +376,38 @@ To enable https://telegram.org/[Telegram] notifications you need to create and a
 | spring.boot.admin.notify.telegram.message
 | Text to send. SpEL-expressions are supported.
 | `+++"&lt;strong&gt;#{instance.registration.name}&lt;/strong&gt;/#{instance.id} is &lt;strong&gt;#{event.statusInfo.status}&lt;/strong&gt;"+++`
+|===
+
+
+[[discord-notifications]]
+==== Discord notifications ====
+To enable Discord notifications you need to create a webhook and set the appropriate configuration property.
+
+.Discord notifications configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.discord.enabled
+| Enable Discord notifications
+| `true`
+
+| spring.boot.admin.notify.discord.webhook-url
+| The Discord webhook url to send the notifications to.
+|
+
+| spring.boot.admin.notify.discord.username
+| Optional username.
+| __Default set in Discord__
+
+| spring.boot.admin.notify.discord.avatar-url
+| Optional URL to avatar.
+| __Default set in Discord__
+
+| spring.boot.admin.notify.discord.tts
+| If the message is a text to speech message.
+| `false`
+
+| spring.boot.admin.notify.discord.message
+| Text to send. SpEL-expressions are supported.
+| `+++"*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*"+++`
 |===

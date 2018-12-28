@@ -222,7 +222,7 @@ public class AdminServerNotifierAutoConfiguration {
             return new TelegramNotifier(repository);
         }
     }
-    
+
     @Configuration
     @ConditionalOnProperty(prefix = "spring.boot.admin.notify.discord", name = "webhook-url")
     @AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
