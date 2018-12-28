@@ -21,6 +21,9 @@ import de.codecentric.boot.admin.client.config.InstanceProperties;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
+
+import de.codecentric.boot.admin.client.utils.InetUtils;
+import de.codecentric.boot.admin.client.utils.InetUtilsProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -46,7 +49,8 @@ public class ServletApplicationFactoryTest {
     private PathMappedEndpoints pathMappedEndpoints = mock(PathMappedEndpoints.class);
     private WebEndpointProperties webEndpoint = new WebEndpointProperties();
     private DispatcherServletPath dispatcherServletPath = mock(DispatcherServletPath.class);
-    private ServletApplicationFactory factory = new ServletApplicationFactory(instance, management, server,
+    private InetUtils inetUtils = new InetUtils(new InetUtilsProperties());
+    private ServletApplicationFactory factory = new ServletApplicationFactory(inetUtils, instance, management, server,
         servletContext, pathMappedEndpoints, webEndpoint, Collections::emptyMap, dispatcherServletPath
     );
 

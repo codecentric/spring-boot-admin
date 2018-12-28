@@ -20,6 +20,7 @@ import de.codecentric.boot.admin.client.config.CloudFoundryApplicationProperties
 import de.codecentric.boot.admin.client.config.InstanceProperties;
 import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
 
+import de.codecentric.boot.admin.client.utils.InetUtils;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
@@ -28,14 +29,14 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 public class CloudFoundryApplicationFactory extends DefaultApplicationFactory {
     private final CloudFoundryApplicationProperties cfApplicationProperties;
 
-    public CloudFoundryApplicationFactory(InstanceProperties instance,
+    public CloudFoundryApplicationFactory(InetUtils inetUtils, InstanceProperties instance,
                                           ManagementServerProperties management,
                                           ServerProperties server,
                                           PathMappedEndpoints pathMappedEndpoints,
                                           WebEndpointProperties webEndpoint,
                                           MetadataContributor metadataContributor,
                                           CloudFoundryApplicationProperties cfApplicationProperties) {
-        super(instance, management, server, pathMappedEndpoints, webEndpoint, metadataContributor);
+        super(inetUtils,instance, management, server, pathMappedEndpoints, webEndpoint, metadataContributor);
         this.cfApplicationProperties = cfApplicationProperties;
     }
 

@@ -20,6 +20,8 @@ import de.codecentric.boot.admin.client.config.InstanceProperties;
 import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
 
 import javax.servlet.ServletContext;
+
+import de.codecentric.boot.admin.client.utils.InetUtils;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
@@ -36,7 +38,7 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
     private final InstanceProperties instance;
     private final DispatcherServletPath dispatcherServletPath;
 
-    public ServletApplicationFactory(InstanceProperties instance,
+    public ServletApplicationFactory(InetUtils inetUtils,InstanceProperties instance,
                                      ManagementServerProperties management,
                                      ServerProperties server,
                                      ServletContext servletContext,
@@ -44,7 +46,7 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
                                      WebEndpointProperties webEndpoint,
                                      MetadataContributor metadataContributor,
                                      DispatcherServletPath dispatcherServletPath) {
-        super(instance, management, server, pathMappedEndpoints, webEndpoint, metadataContributor);
+        super(inetUtils,instance, management, server, pathMappedEndpoints, webEndpoint, metadataContributor);
         this.servletContext = servletContext;
         this.server = server;
         this.management = management;

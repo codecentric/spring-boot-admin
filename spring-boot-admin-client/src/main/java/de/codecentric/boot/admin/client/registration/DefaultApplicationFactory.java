@@ -24,6 +24,8 @@ import java.net.UnknownHostException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
+
+import de.codecentric.boot.admin.client.utils.InetUtils;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.EndpointId;
@@ -49,13 +51,14 @@ public class DefaultApplicationFactory implements ApplicationFactory {
     private final PathMappedEndpoints pathMappedEndpoints;
     private final WebEndpointProperties webEndpoint;
     private final MetadataContributor metadataContributor;
+    private final InetUtils inetUtils;
     @Nullable
     private Integer localServerPort;
     @Nullable
     private Integer localManagementPort;
 
 
-    public DefaultApplicationFactory(InstanceProperties instance,
+    public DefaultApplicationFactory(InetUtils inetUtils,InstanceProperties instance,
                                      ManagementServerProperties management,
                                      ServerProperties server,
                                      PathMappedEndpoints pathMappedEndpoints,
@@ -67,6 +70,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
         this.pathMappedEndpoints = pathMappedEndpoints;
         this.webEndpoint = webEndpoint;
         this.metadataContributor = metadataContributor;
+        this.inetUtils = inetUtils;
     }
 
     @Override
@@ -177,11 +181,14 @@ public class DefaultApplicationFactory implements ApplicationFactory {
     }
 
     protected InetAddress getLocalHost() {
-        try {
-            return InetAddress.getLocalHost();
-        } catch (UnknownHostException ex) {
-            throw new IllegalArgumentException(ex.getMessage(), ex);
+        if(inetUtils == null){
+            try {
+                return InetAddress.getLocalHost();
+            } catch (UnknownHostException ex) {
+                throw new IllegalArgumentException(ex.getMessage(), ex);
+            }
         }
+        return inetUtils.findFirstNonLoopbackAddress();
     }
 
     protected Integer getLocalServerPort() {

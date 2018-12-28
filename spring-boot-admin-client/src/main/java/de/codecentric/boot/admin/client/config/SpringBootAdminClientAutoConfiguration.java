@@ -28,7 +28,10 @@ import de.codecentric.boot.admin.client.registration.metadata.StartupDateMetadat
 import java.util.Collections;
 import java.util.List;
 import javax.servlet.ServletContext;
+
+import de.codecentric.boot.admin.client.utils.InetUtils;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
@@ -54,7 +57,7 @@ import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebA
 @Configuration
 @ConditionalOnWebApplication
 @Conditional(SpringBootAdminClientEnabledCondition.class)
-@AutoConfigureAfter({WebEndpointAutoConfiguration.class, RestTemplateAutoConfiguration.class})
+@AutoConfigureAfter({WebEndpointAutoConfiguration.class, RestTemplateAutoConfiguration.class,UtilAutoConfiguration.class})
 @EnableConfigurationProperties({ClientProperties.class, InstanceProperties.class, ServerProperties.class, ManagementServerProperties.class})
 public class SpringBootAdminClientAutoConfiguration {
 
@@ -64,7 +67,7 @@ public class SpringBootAdminClientAutoConfiguration {
     public static class ServletConfiguration {
         @Bean
         @ConditionalOnMissingBean
-        public ApplicationFactory applicationFactory(InstanceProperties instance,
+        public ApplicationFactory applicationFactory(@Autowired(required = false) InetUtils inetUtils, InstanceProperties instance,
                                                      ManagementServerProperties management,
                                                      ServerProperties server,
                                                      ServletContext servletContext,
@@ -72,7 +75,7 @@ public class SpringBootAdminClientAutoConfiguration {
                                                      WebEndpointProperties webEndpoint,
                                                      MetadataContributor metadataContributor,
                                                      DispatcherServletPath dispatcherServletPath) {
-            return new ServletApplicationFactory(instance,
+            return new ServletApplicationFactory(inetUtils,instance,
                 management,
                 server,
                 servletContext,
@@ -89,13 +92,13 @@ public class SpringBootAdminClientAutoConfiguration {
     public static class ReactiveConfiguration {
         @Bean
         @ConditionalOnMissingBean
-        public ApplicationFactory applicationFactory(InstanceProperties instance,
+        public ApplicationFactory applicationFactory(@Autowired(required = false) InetUtils inetUtils, InstanceProperties instance,
                                                      ManagementServerProperties management,
                                                      ServerProperties server,
                                                      PathMappedEndpoints pathMappedEndpoints,
                                                      WebEndpointProperties webEndpoint,
                                                      MetadataContributor metadataContributor) {
-            return new DefaultApplicationFactory(instance,
+            return new DefaultApplicationFactory(inetUtils,instance,
                 management,
                 server,
                 pathMappedEndpoints,

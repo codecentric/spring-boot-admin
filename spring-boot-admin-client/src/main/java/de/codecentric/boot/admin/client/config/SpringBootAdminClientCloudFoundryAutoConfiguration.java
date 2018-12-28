@@ -20,6 +20,8 @@ import de.codecentric.boot.admin.client.registration.CloudFoundryApplicationFact
 import de.codecentric.boot.admin.client.registration.metadata.CloudFoundryMetadataContributor;
 import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
 
+import de.codecentric.boot.admin.client.utils.InetUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
@@ -39,7 +41,7 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
 @Conditional(SpringBootAdminClientEnabledCondition.class)
 @EnableConfigurationProperties(CloudFoundryApplicationProperties.class)
-@AutoConfigureBefore({SpringBootAdminClientAutoConfiguration.class})
+@AutoConfigureBefore({SpringBootAdminClientAutoConfiguration.class,UtilAutoConfiguration.class})
 public class SpringBootAdminClientCloudFoundryAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
@@ -49,14 +51,14 @@ public class SpringBootAdminClientCloudFoundryAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public CloudFoundryApplicationFactory applicationFactory(InstanceProperties instance,
+    public CloudFoundryApplicationFactory applicationFactory(@Autowired(required = false) InetUtils inetUtils, InstanceProperties instance,
                                                              ManagementServerProperties management,
                                                              ServerProperties server,
                                                              PathMappedEndpoints pathMappedEndpoints,
                                                              WebEndpointProperties webEndpoint,
                                                              MetadataContributor metadataContributor,
                                                              CloudFoundryApplicationProperties cfApplicationProperties) {
-        return new CloudFoundryApplicationFactory(instance, management, server, pathMappedEndpoints, webEndpoint,
+        return new CloudFoundryApplicationFactory(inetUtils,instance, management, server, pathMappedEndpoints, webEndpoint,
             metadataContributor, cfApplicationProperties);
     }
 }

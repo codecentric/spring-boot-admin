@@ -19,6 +19,8 @@ package de.codecentric.boot.admin.client.registration;
 import de.codecentric.boot.admin.client.config.CloudFoundryApplicationProperties;
 import de.codecentric.boot.admin.client.config.InstanceProperties;
 
+import de.codecentric.boot.admin.client.utils.InetUtils;
+import de.codecentric.boot.admin.client.utils.InetUtilsProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -40,7 +42,8 @@ public class CloudFoundryApplicationFactoryTest {
     private PathMappedEndpoints pathMappedEndpoints = mock(PathMappedEndpoints.class);
     private WebEndpointProperties webEndpoint = new WebEndpointProperties();
     private CloudFoundryApplicationProperties cfApplicationProperties = new CloudFoundryApplicationProperties();
-    private CloudFoundryApplicationFactory factory = new CloudFoundryApplicationFactory(instanceProperties, management,
+    private InetUtils inetUtils = new InetUtils(new InetUtilsProperties());
+    private CloudFoundryApplicationFactory factory = new CloudFoundryApplicationFactory(inetUtils,instanceProperties, management,
         server, pathMappedEndpoints, webEndpoint, () -> singletonMap("contributor", "test"), cfApplicationProperties);
 
     @Before
