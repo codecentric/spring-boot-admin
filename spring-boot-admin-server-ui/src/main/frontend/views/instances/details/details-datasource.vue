@@ -79,7 +79,6 @@
       }
     },
     mixins: [subscribing],
-    // eslint-disable-next-line vue/no-unused-components
     components: {datasourceChart},
     data: () => ({
       hasLoaded: false,

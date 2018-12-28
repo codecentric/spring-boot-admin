@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.ui.config;
 import de.codecentric.boot.admin.server.config.AdminServerMarkerConfiguration;
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.AdminServerWebConfiguration;
+import de.codecentric.boot.admin.server.notify.filter.web.NotificationFilterController;
 import de.codecentric.boot.admin.server.ui.extensions.UiExtension;
 import de.codecentric.boot.admin.server.ui.extensions.UiExtensionsScanner;
 import de.codecentric.boot.admin.server.ui.web.UiController;
@@ -68,7 +69,8 @@ public class AdminServerUiAutoConfiguration {
             null ? this.uiProperties.getPublicUrl() : this.adminServerProperties.getContextPath(),
             this.uiProperties.getTitle(),
             this.uiProperties.getBrand(),
-            this.uiExtensions()
+            this.uiExtensions(),
+            !this.applicationContext.getBeansOfType(NotificationFilterController.class).isEmpty()
         );
     }
 

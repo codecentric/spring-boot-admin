@@ -13,46 +13,88 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {bufferTime, filter, Subject} from '@/utils/rxjs';
+import groupBy from 'lodash/groupBy';
+import values from 'lodash/values';
+
 let granted = false;
 
-const requestPermissions = () => {
+const requestPermissions = async () => {
   if ('Notification' in window) {
     granted = (window.Notification.permission === 'granted');
     if (!granted && window.Notification.permission !== 'denied') {
-      window.Notification.requestPermission(permission => granted = (permission === 'granted'));
+      const permission = await window.Notification.requestPermission();
+      granted = permission === 'granted';
     }
   }
 };
 
-const notify = (title, options) => {
+const notifyForSingleChange = (application, oldApplication) => {
+  return createNotification(`${application.name} is now ${application.status}`, {
+    tag: `${application.name}-${application.status}`,
+    lang: 'en',
+    body: `was ${oldApplication.status}.`,
+    icon: application.status === 'UP' ? 'assets/img/favicon.png' : 'assets/img/favicon-danger.png',
+    renotify: true,
+    timeout: 5000
+  });
+};
+
+const notifyForBulkChange = ({count, status, oldStatus}) => {
+  return createNotification(`${count} applications are now ${status}`, {
+    lang: 'en',
+    body: `was ${oldStatus}.`,
+    icon: status === 'UP' ? 'assets/img/favicon.png' : 'assets/img/favicon-danger.png',
+    timeout: 5000
+  });
+};
+
+const createNotification = (title, options) => {
   if (granted) {
-    const note = new window.Notification(title, options);
+    const notification = new window.Notification(title, options);
     if (options.url !== null) {
-      note.onclick = () => {
+      notification.onclick = () => {
         window.focus();
         window.open(options.url, '_self');
       };
     }
     if (options.timeout > 0) {
-      note.onshow = () => setTimeout(() => note.close(), options.timeout);
+      notification.onshow = () => setTimeout(() => notification.close(), options.timeout);
     }
   }
 };
+
 
 export default {
   install: ({applicationStore}) => {
     requestPermissions();
 
-    applicationStore.addEventListener('updated', (newVal, oldVal) => {
-      if (newVal.status !== oldVal.status) {
-        notify(`${newVal.name} is now ${newVal.status}`, {
-          tag: `${newVal.name}-${newVal.status}`,
-          lang: 'en',
-          body: `was ${oldVal.status}.`,
-          icon: newVal.status === 'UP' ? 'assets/img/favicon.png' : 'assets/img/favicon-danger.png',
-          renotify: true,
-          timeout: 10000
-        })
+    const queue = new Subject();
+    queue.pipe(
+      bufferTime(1000),
+      filter(n => n.length > 0)
+    ).subscribe({
+      next: events => {
+        const groupedByChange = groupBy(events, event => `${event.oldApplication.status}-${event.application.status}`);
+        for (const eventsPerChange of values(groupedByChange)) {
+          if (eventsPerChange.length <= 5) {
+            eventsPerChange.forEach(event => {
+              notifyForSingleChange(event.application, event.oldApplication);
+            })
+          } else {
+            notifyForBulkChange({
+              status: eventsPerChange[0].application.status,
+              oldStatus: eventsPerChange[0].oldApplication.status,
+              count: events.length
+            })
+          }
+        }
+      }
+    });
+
+    applicationStore.addEventListener('updated', (application, oldApplication) => {
+      if (application.status !== oldApplication.status) {
+        queue.next({application, oldApplication});
       }
     });
   }

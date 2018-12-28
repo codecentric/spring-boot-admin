@@ -46,7 +46,6 @@
         required: true
       }
     },
-    // eslint-disable-next-line vue/no-unused-components
     components: {mBeanOperation, mBeanOperationInvocation},
     data: () => ({
       invocation: null

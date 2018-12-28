@@ -37,6 +37,7 @@ export {tap} from 'rxjs/internal/operators/tap';
 export {filter} from 'rxjs/internal/operators/filter';
 export {concatAll} from 'rxjs/internal/operators/concatAll';
 export {ignoreElements} from 'rxjs/internal/operators/ignoreElements';
+export {bufferTime} from 'rxjs/internal/operators/bufferTime';
 
 export const doOnSubscribe = cb => source =>
   defer(() => {
