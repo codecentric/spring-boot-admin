@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2019 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@
           <p v-text="error.message" />
         </div>
       </div>
-      <table class="table is-fullwidth">
+      <table class="table is-fullwidth is-hoverable">
         <thead>
           <tr>
             <th>Application</th>
