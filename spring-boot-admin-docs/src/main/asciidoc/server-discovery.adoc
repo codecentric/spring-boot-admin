@@ -6,7 +6,7 @@ The Spring Boot Admin Server can use Spring Clouds `DiscoveryClient` to discover
 TIP: Spring Boot Admin will only update the info and available endpoints when a application changes status or when the registration changes. If you want to trigger an update with every new deployment, you can add a key value pair that changes with every restart (e.g. `eureka.instance.metadata-map.startup: ${random.int}`).
 
 [[spring-cloud-discovery-static-config]]
-==== SimpleDiscoveryClient configuration ====
+==== Static Configuration using SimpleDiscoveryClient ====
 
 Spring Cloud provides a `SimpleDiscoveryClient`. It allows you to specify client applications via static configuration:
 

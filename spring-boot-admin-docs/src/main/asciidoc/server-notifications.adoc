@@ -2,7 +2,7 @@
 
 
 [[reminder-notifications]]
-==== Reminder notifications ====
+==== Reminder Notifications ====
 The `RemindingNotifier` sends reminders for down/offline applications, it delegates the sending of notifications to another notifier.
 
 By default a reminder is triggered when a registered application changes to `DOWN` or `OFFLINE`. You can alter this behaviour via `setReminderStatuses()`. The reminder ends when either the status changes to a non-triggering status or the regarding application gets deregistered.
@@ -32,7 +32,7 @@ public class NotifierConfiguration {
 
 
 [[filtering-notifications]]
-==== Filtering notifications ====
+==== Filtering Notifications ====
 The `FilteringNotifier` allows you to filter certain notification based on rules you can add/remove at runtime. It delegates the sending of notifications to another notifier.
 
 If you add a `FilteringNotifier` to your `ApplicationContext` a RESTful interface on `notifications/filter` gets available.
@@ -51,7 +51,7 @@ TIP: This example combines the reminding and filtering notifiers. This allows yo
 
 
 [[mail-notifications]]
-==== Mail notifications ====
+==== Mail Notifications ====
 
 Mail notifications will be delivered as HTML emails rendered using https://www.thymeleaf.org/[Thymeleaf] templates.
 To enable Mail notifications, configure a `JavaMailSender` using `spring-boot-starter-mail` and set a recipient.
@@ -118,7 +118,7 @@ spring.boot.admin.notify.mail.to=admin@example.com
 |===
 
 [[pagerduty-notifications]]
-==== PagerDuty notifications ====
+==== PagerDuty Notifications ====
 To enable https://www.pagerduty.com/[PagerDuty] notifications you just have to add a generic service to your PagerDuty-account and set `spring.boot.admin.notify.pagerduty.service-key` to the service-key you received.
 
 .PagerDuty notifications configuration options
@@ -156,7 +156,7 @@ To enable https://www.pagerduty.com/[PagerDuty] notifications you just have to a
 
 
 [[opsgenie-notifications]]
-==== OpsGenie notifications ====
+==== OpsGenie Notifications ====
 To enable https://www.opsgenie.com/[OpsGenie] notifications you just have to add a new JSON Rest API integration to your OpsGenie account and set `spring.boot.admin.notify.opsgenie.api-key` to the apiKey you received.
 
 .OpsGenie notifications configuration options
@@ -206,7 +206,7 @@ To enable https://www.opsgenie.com/[OpsGenie] notifications you just have to add
 
 
 [[hipchat-notifications]]
-==== Hipchat notifications ====
+==== Hipchat Notifications ====
 To enable https://www.hipchat.com/[Hipchat] notifications you need to create an API token on your Hipchat account and set the appropriate configuration properties.
 
 .Hipchat notifications configuration options
@@ -245,7 +245,7 @@ To enable https://www.hipchat.com/[Hipchat] notifications you need to create an 
 
 
 [[slack-notifications]]
-==== Slack notifications ====
+==== Slack Notifications ====
 To enable https://slack.com/[Slack] notifications you need to add a incoming Webhook under custom integrations on your Slack
 account and configure it appropriately.
 
@@ -285,7 +285,7 @@ account and configure it appropriately.
 
 
 [[letschat-notifications]]
-==== Let's Chat notifications ====
+==== Let's Chat Notifications ====
 To enable https://sdelements.github.io/lets-chat/[Let's Chat] notifications you need to add the host url and add the API token and username from Let's Chat
 
 .Let's Chat notifications configuration options
@@ -324,7 +324,7 @@ To enable https://sdelements.github.io/lets-chat/[Let's Chat] notifications you 
 
 
 [[ms-teams-notifications]]
-==== Microsoft Teams notifications ====
+==== Microsoft Teams Notifications ====
 To enable Microsoft Teams notifications you need to setup a connector webhook url and set the appropriate configuration property.
 
 .Microsoft Teams notifications configuration options
@@ -346,7 +346,7 @@ To enable Microsoft Teams notifications you need to setup a connector webhook ur
 
 
 [[telegram-notifications]]
-==== Telegram notifications ====
+==== Telegram Notifications ====
 To enable https://telegram.org/[Telegram] notifications you need to create and authorize a telegram bot and set the appropriate configuration properties for auth-token and chat-id.
 
 .Telegram notifications configuration options
@@ -380,7 +380,7 @@ To enable https://telegram.org/[Telegram] notifications you need to create and a
 
 
 [[discord-notifications]]
-==== Discord notifications ====
+==== Discord Notifications ====
 To enable Discord notifications you need to create a webhook and set the appropriate configuration property.
 
 .Discord notifications configuration options
