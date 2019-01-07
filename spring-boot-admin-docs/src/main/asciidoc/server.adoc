@@ -52,11 +52,11 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 | `"Cookie", "Set-Cookie", "Authorization"
 
 | spring.boot.admin.ui.public-url
-| Brand to be shown in then navbar.
+| Base url to use to build the base href in the ui.
 | If running behind a reverse proxy (using path rewriting) this can be used to make correct self references. If the host/port is omitted it will be inferred from the request.
 
 | spring.boot.admin.ui.brand
-| Brand to be shown in then navbar.
+| Brand to be shown in the navbar.
 | `"<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>"`
 
 | spring.boot.admin.ui.title
