@@ -16,12 +16,12 @@
 
 <template>
   <tr v-if="showDetails[route.route_id]" :key="`${route.route_id}-detail`">
-    <td colspan="3" style="background-color: #fafafa">
+    <td colspan="3" class="route-detail-color">
       <div class="route-detail route-detail-dimension">
         <div class="route-detail-border">
           <div class="route-detail-margin">
             <span>
-              <img class="route-image" src="assets/img/predicate.png">
+              <font-awesome-icon icon="search" />
               <b>Predicates</b>
             </span>
           </div>
@@ -39,13 +39,13 @@
         </div>
       </div>
       <div class="route-detail route-detail-arrow">
-        <img src="assets/img/arrow.png">
+        <font-awesome-icon icon="angle-double-right" class="route-detail-arrow" />
       </div>
       <div class="route-detail route-detail-dimension" v-if="route.route_definition.filters.length > 0">
         <div class="route-detail-border">
           <div class="route-detail-margin">
             <span>
-              <img class="route-image" src="assets/img/filter.png">
+              <font-awesome-icon icon="filter" />
               <b>Filters</b>
             </span>
           </div>
@@ -63,13 +63,13 @@
         </div>
       </div>
       <div class="route-detail route-detail-arrow" v-if="route.route_definition.filters.length > 0">
-        <img src="assets/img/arrow.png">
+        <font-awesome-icon icon="angle-double-right" class="route-detail-arrow" />
       </div>
       <div class="route-detail route-detail-dimension">
         <div class="route-detail-border">
           <div class="route-detail-margin">
             <span>
-              <img class="route-image" src="assets/img/target.png">
+              <font-awesome-icon icon="map-marker" />
               <b>URI</b>
             </span>
           </div>
@@ -99,9 +99,14 @@
     max-width: 28em;
   }
 
+  .route-detail-color {
+    background-color: #fafafa;
+  }
+
   .route-detail-arrow {
     min-width: 1em;
-    max-width: 2.5em;
+    max-width: 3.5em;
+    font-size: 2em;
   }
 
   .route-detail-border {
