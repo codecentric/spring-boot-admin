@@ -68,6 +68,7 @@
 
 <script>
   import Instance from '@/services/instance';
+  import {compareBy} from '@/utils/collections';
 
   const globalFilterHasKeyword = (globalFilter, keyword) => {
     return globalFilter.name.toString().toLowerCase().includes(keyword);
@@ -75,9 +76,9 @@
 
   const sortGlobalFilter = (globalFilters, sort) => {
     if (sort === 'name') {
-      return globalFilters.slice().sort(function(a, b) {return a.name.localeCompare(b.name)})
+      return globalFilters.slice().sort(compareBy(f => f.name))
     } else if (sort === 'order') {
-      return globalFilters.slice().sort(function(a, b) {return a.order - b.order})
+      return globalFilters.slice().sort(compareBy(f => f.order))
     }
 
     return globalFilters;
