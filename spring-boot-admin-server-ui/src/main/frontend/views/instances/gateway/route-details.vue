@@ -31,7 +31,7 @@
             <span class="route-detail-text" v-text="predicate.name" />
             <div class="route-detail-separator" />
             <ul>
-              <li v-for="item in Object.entries(predicate.args).map(([key,value])=>key + ' : ' + value)" :key="item">
+              <li v-for="item in transformArgs(predicate.args)" :key="item">
                 <span class="route-detail-arg-text" v-text="item" />
               </li>
             </ul>
@@ -55,7 +55,7 @@
             <span class="route-detail-text" v-text="filter.name" />
             <div class="route-detail-separator" />
             <ul>
-              <li v-for="item in Object.entries(filter.args).map(([key,value])=>key + ' : ' + value)" :key="item">
+              <li v-for="item in transformArgs(filter.args)" :key="item">
                 <span class="route-detail-arg-text" v-text="item" />
               </li>
             </ul>
@@ -84,7 +84,12 @@
 
 <script>
   export default {
-    props: ['route', 'showDetails']
+    props: ['route', 'showDetails'],
+    methods: {
+      transformArgs(args) {
+        return Object.entries(args).map(([key,value])=>key + ' : ' + value);
+      }
+    }
   }
 </script>
 

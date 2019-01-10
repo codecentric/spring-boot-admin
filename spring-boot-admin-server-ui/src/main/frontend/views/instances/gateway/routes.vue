@@ -105,10 +105,10 @@
   const filterRoutesByKeyword = (route, keyword) => {
     return route.route_id.toString().toLowerCase().includes(keyword)
       || route.route_definition.uri.toString().toLowerCase().includes(keyword)
-      || route.route_definition.predicates.filter(p => p.name.toLowerCase().includes(keyword)).length > 0
-      || route.route_definition.predicates.filter(p => Object.values(p.args).filter(pv => pv.toLowerCase().includes(keyword)).length > 0).length > 0
-      || route.route_definition.filters.filter(f => f.name.toLowerCase().includes(keyword)).length > 0
-      || route.route_definition.filters.filter(f => Object.values(f.args).filter(av => av.toLowerCase().includes(keyword)).length > 0).length > 0;
+      || route.route_definition.predicates.some(p => p.name.toLowerCase().includes(keyword))
+      || route.route_definition.predicates.some(p => Object.values(p.args).some(pv => pv.toLowerCase().includes(keyword)))
+      || route.route_definition.filters.some(f => f.name.toLowerCase().includes(keyword))
+      || route.route_definition.filters.some(f => Object.values(f.args).some(av => av.toLowerCase().includes(keyword)));
   };
 
   const sortRoutes = (globalFilters, sort) => {
@@ -202,13 +202,6 @@
             },
             error: () => vm.$emit('reset')
         });
-
-        try {
-          this.instance.clearRoutesCache();
-        } catch (error) {
-          console.warn('Clearing routes cache failed:', error);
-          this.error = error;
-        }
       },
       closeDeleteDialog: function() {
         // Dialog will get closed
