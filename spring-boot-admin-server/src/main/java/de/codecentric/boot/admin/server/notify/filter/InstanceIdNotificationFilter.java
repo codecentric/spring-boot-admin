@@ -21,11 +21,12 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 import java.time.Instant;
+import javax.annotation.Nullable;
 
 public class InstanceIdNotificationFilter extends ExpiringNotificationFilter {
     private final InstanceId instanceId;
 
-    public InstanceIdNotificationFilter(InstanceId instanceId, Instant expiry) {
+    public InstanceIdNotificationFilter(InstanceId instanceId,  @Nullable Instant expiry) {
         super(expiry);
         this.instanceId = instanceId;
     }

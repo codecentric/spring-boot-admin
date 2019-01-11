@@ -20,10 +20,10 @@
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
             Fetching loggers failed.
           </strong>
-          <p v-text="error.message"/>
+          <p v-text="error.message" />
         </div>
       </div>
       <template v-if="loggerConfig">
@@ -34,9 +34,9 @@
             </p>
             <p class="control">
               <span class="button is-static">
-                <span v-text="filteredLoggers.length"/>
+                <span v-text="filteredLoggers.length" />
                 /
-                <span v-text="loggerConfig.loggers.length"/>
+                <span v-text="loggerConfig.loggers.length" />
               </span>
             </p>
           </div>
@@ -64,10 +64,10 @@
         <tbody>
           <tr v-for="logger in limitedLoggers" :key="logger.name">
             <td>
-              <span class="is-breakable" v-text="logger.name"/>
+              <span class="is-breakable" v-text="logger.name" />
               <span class="has-text-danger" v-if="logger.name in failed">
-                <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
-                <span v-text="`Configuring ${failed[logger.name]} failed.`"/>
+                <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
+                <span v-text="`Configuring ${failed[logger.name]} failed.`" />
               </span>
               <sba-logger-control class="is-pulled-right"
                                   :level-options="levels"
@@ -76,11 +76,13 @@
                                   :is-loading="loading[logger.name]"
                                   :has-failed="failed[logger.name]"
                                   :allow-reset="logger.name !== 'ROOT'"
-                                  @input="level => configureLogger(logger, level)"/>
+                                  @input="level => configureLogger(logger, level)"
+              />
             </td>
           </tr>
           <tr v-if="limitedLoggers.length === 0">
-            <td class="is-muted" colspan="5">No loggers found.
+            <td class="is-muted" colspan="5">
+              No loggers found.
             </td>
           </tr>
         </tbody>
@@ -101,9 +103,7 @@
       : (val, key) => oldFilter(val, key) && addedFilter(val, key);
 
   export default {
-    components: {
-      sbaLoggerControl
-    },
+    components: {sbaLoggerControl},
     props: {
       instance: {
         type: Instance,
@@ -156,7 +156,7 @@
           clearTimeout(setLoadingHandle);
         }
       },
-      fetchLoggers: async function () {
+      async fetchLoggers() {
         this.error = null;
         try {
           const res = await this.instance.fetchLoggers();

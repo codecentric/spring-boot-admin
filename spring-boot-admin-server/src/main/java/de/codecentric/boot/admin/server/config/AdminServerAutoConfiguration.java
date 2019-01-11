@@ -37,7 +37,6 @@ import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider;
 import de.codecentric.boot.admin.server.web.client.CompositeHttpHeadersProvider;
 import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
 import de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunction;
-import de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunctions;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 import java.util.Collection;
@@ -48,7 +47,6 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -112,8 +110,10 @@ public class AdminServerAutoConfiguration {
     @ConditionalOnMissingBean
     public EndpointDetector endpointDetector(InstanceRepository instanceRepository,
                                              InstanceWebClient instanceWebClient) {
-        ChainingStrategy strategy = new ChainingStrategy(new QueryIndexEndpointStrategy(instanceWebClient),
-            new ProbeEndpointsStrategy(instanceWebClient, adminServerProperties.getProbedEndpoints()));
+        ChainingStrategy strategy = new ChainingStrategy(
+            new QueryIndexEndpointStrategy(instanceWebClient),
+            new ProbeEndpointsStrategy(instanceWebClient, adminServerProperties.getProbedEndpoints())
+        );
         return new EndpointDetector(instanceRepository, strategy);
     }
 
@@ -152,12 +152,14 @@ public class AdminServerAutoConfiguration {
     @ConditionalOnMissingBean
     public InstanceWebClient instanceWebClient(HttpHeadersProvider httpHeadersProvider,
                                                ObjectProvider<List<InstanceExchangeFilterFunction>> filtersProvider) {
-        List<InstanceExchangeFilterFunction> filters = filtersProvider.getIfAvailable(Collections::emptyList);
-        WebClientCustomizer customizer = (webClient) -> filters.forEach(instanceFilter -> webClient.filter(
-            InstanceExchangeFilterFunctions.toExchangeFilterFunction(instanceFilter)));
-
-        return new InstanceWebClient(httpHeadersProvider, adminServerProperties.getMonitor().getConnectTimeout(),
-            adminServerProperties.getMonitor().getReadTimeout(), customizer);
+        List<InstanceExchangeFilterFunction> additionalFilters = filtersProvider.getIfAvailable(Collections::emptyList);
+        return InstanceWebClient.builder()
+                                .connectTimeout(adminServerProperties.getMonitor().getConnectTimeout())
+                                .readTimeout(adminServerProperties.getMonitor().getReadTimeout())
+                                .defaultRetries(adminServerProperties.getMonitor().getDefaultRetries())
+                                .retries(adminServerProperties.getMonitor().getRetries())
+                                .httpHeadersProvider(httpHeadersProvider)
+                                .filters(filters -> filters.addAll(additionalFilters))
+                                .build();
     }
-
 }

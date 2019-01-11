@@ -53,13 +53,8 @@ class NotificationFilter {
     return axios.delete(uri`notifications/filters/${this.id}`);
   }
 
-  static async isSupported() {
-    try {
-      const response = await axios.options('notifications/filters');
-      return response.headers['allow'] && response.headers['allow'].includes('POST');
-    } catch (error) {
-      return false;
-    }
+  static isSupported() {
+    return Boolean(global.SBA && global.SBA.uiSettings && global.SBA.uiSettings.notificationFilterEnabled);
   }
 
   static async getFilters() {

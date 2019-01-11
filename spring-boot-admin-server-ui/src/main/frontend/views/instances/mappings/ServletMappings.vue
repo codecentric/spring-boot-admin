@@ -29,12 +29,13 @@
           <tr :key="`${servletMapping.name}`">
             <td>
               <div v-for="mapping in servletMapping.mappings"
-                   :key="`${servletMapping.name}_${mapping}`">
-                <code v-text="mapping"/>
+                   :key="`${servletMapping.name}_${mapping}`"
+              >
+                <code v-text="mapping" />
               </div>
             </td>
-            <td class="is-breakable" v-text="servletMapping.name"/>
-            <td class="is-breakable" v-text="servletMapping.className"/>
+            <td class="is-breakable" v-text="servletMapping.name" />
+            <td class="is-breakable" v-text="servletMapping.className" />
           </tr>
         </template>
       </tbody>

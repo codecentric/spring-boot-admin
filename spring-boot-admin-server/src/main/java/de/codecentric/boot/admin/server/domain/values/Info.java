@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 
 /**
@@ -41,7 +42,7 @@ public class Info implements Serializable {
         }
     }
 
-    public static Info from(Map<String, Object> values) {
+    public static Info from(@Nullable Map<String, Object> values) {
         if (values == null || values.isEmpty()) {
             return empty();
         }

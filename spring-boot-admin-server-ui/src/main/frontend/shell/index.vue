@@ -16,8 +16,8 @@
 
 <template>
   <div id="app">
-    <sba-navbar :views="mainViews" :applications="applications" :error="error"/>
-    <router-view :views="childViews" :applications="applications" :error="error"/>
+    <sba-navbar :views="mainViews" :applications="applications" :error="error" :applications-initialized="applicationsInitialized" />
+    <router-view :views="childViews" :applications="applications" :error="error" :applications-initialized="applicationsInitialized" />
   </div>
 </template>
 
@@ -35,8 +35,12 @@
         default: () => [],
       },
       error: {
-        type: null,
+        type: Error,
         default: null
+      },
+      applicationsInitialized: {
+        type: Boolean,
+        default: false
       }
     },
     components: {sbaNavbar},

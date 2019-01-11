@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.client.registration;
 
 import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -42,6 +43,7 @@ public class RegistrationApplicationListener implements InitializingBean, Dispos
     private boolean autoDeregister = false;
     private boolean autoRegister = true;
     private Duration registerPeriod = Duration.ofSeconds(10);
+    @Nullable
     private volatile ScheduledFuture<?> scheduledTask;
 
     public RegistrationApplicationListener(ApplicationRegistrator registrator) {

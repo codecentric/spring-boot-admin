@@ -22,11 +22,11 @@ import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.retry.Retry;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,11 +38,8 @@ import org.slf4j.LoggerFactory;
 public class SnapshottingInstanceRepository extends EventsourcingInstanceRepository {
     private static final Logger log = LoggerFactory.getLogger(SnapshottingInstanceRepository.class);
     private final ConcurrentMap<InstanceId, Instance> snapshots = new ConcurrentHashMap<>();
+    @Nullable
     private Disposable subscription;
-    private final Retry<Object> retryOnAny = Retry.any()
-                                                  .retryMax(Integer.MAX_VALUE)
-                                                  .doOnRetry(ctx -> log.error("Resubscribing after uncaught error",
-                                                      ctx.exception()));
 
     public SnapshottingInstanceRepository(InstanceEventStore eventStore) {
         super(eventStore);
@@ -50,25 +47,25 @@ public class SnapshottingInstanceRepository extends EventsourcingInstanceReposit
 
     @Override
     public Flux<Instance> findAll() {
-        return Mono.fromSupplier(snapshots::values).flatMapIterable(Function.identity());
+        return Mono.fromSupplier(this.snapshots::values).flatMapIterable(Function.identity());
     }
 
     @Override
     public Mono<Instance> find(InstanceId id) {
-        return Mono.defer(() -> Mono.justOrEmpty(snapshots.get(id)));
+        return Mono.defer(() -> Mono.justOrEmpty(this.snapshots.get(id)));
     }
 
     @Override
     public Flux<Instance> findByName(String name) {
-        return findAll().filter(a -> a.isRegistered() && name.equals(a.getRegistration().getName()));
+        return this.findAll().filter(a -> a.isRegistered() && name.equals(a.getRegistration().getName()));
     }
 
     public void start() {
-        this.subscription = getEventStore().findAll()
-                                           .concatWith(getEventStore())
-                                           .doOnNext(this::updateSnapshot)
-                                           .retryWhen(retryOnAny)
-                                           .subscribe();
+        this.subscription = this.getEventStore()
+                                .findAll()
+                                .concatWith(this.getEventStore())
+                                .concatMap(this::updateSnapshot)
+                                .subscribe();
     }
 
     public void stop() {
@@ -77,10 +74,34 @@ public class SnapshottingInstanceRepository extends EventsourcingInstanceReposit
         }
     }
 
-    protected void updateSnapshot(InstanceEvent event) {
-        snapshots.compute(event.getInstance(), (key, old) -> {
+    protected Mono<Void> updateSnapshot(InstanceEvent event) {
+        return Mono.<Void>fromRunnable(() -> snapshots.compute(event.getInstance(), (key, old) -> {
             Instance instance = old != null ? old : Instance.create(key);
             return instance.apply(event);
+        })).onErrorResume(ex -> {
+            log.warn(
+                "Error while updating the snapshot with event {}. Recomputing instance snapshot from event history.",
+                event,
+                ex
+            );
+            return recomputeSnapshot(event.getInstance());
         });
+    }
+
+    protected Mono<Void> recomputeSnapshot(InstanceId instanceId) {
+        return this.getEventStore()
+                   .find(instanceId)
+                   .collectList()
+                   .map(events -> Instance.create(instanceId).apply(events))
+                   .doOnNext(instance -> snapshots.put(instance.getId(), instance))
+                   .then()
+                   .onErrorResume(ex2 -> {
+                       log.error(
+                           "Error while recomputing snapshot. Event history for instance {} may be wrong,",
+                           instanceId,
+                           ex2
+                       );
+                       return Mono.empty();
+                   });
     }
 }

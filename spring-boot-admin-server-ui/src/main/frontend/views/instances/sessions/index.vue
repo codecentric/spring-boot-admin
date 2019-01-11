@@ -20,33 +20,40 @@
       <div class="control">
         <span class="select">
           <select v-model="filter.type">
-            <option value="username">Username</option>
-            <option value="sessionId">SessionId</option>
+            <option value="username">
+              Username
+            </option>
+            <option value="sessionId">
+              SessionId
+            </option>
           </select>
         </span>
       </div>
       <div class="control is-expanded">
         <input class="input" type="text" v-model="filter.value"
-               @keyup.enter="fetchSessionsByUsername()" @paste="handlePaste">
+               @keyup.enter="fetchSessionsByUsername()" @paste="handlePaste"
+        >
       </div>
     </div>
     <div v-if="error" class="message is-danger">
       <div class="message-body">
         <strong>
-          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
           Fetching sessions failed.
         </strong>
-        <p v-text="error.message"/>
+        <p v-text="error.message" />
       </div>
     </div>
     <sba-sessions-list :instance="instance" :sessions="sessions" :is-loading="isLoading"
-                       @deleted="fetch"/>
+                       @deleted="fetch"
+    />
   </section>
 </template>
 
 <script>
   import Instance from '@/services/instance';
-  import _ from 'lodash'
+  import debounce from 'lodash/debounce';
+  import isEqual from 'lodash/isEqual';
   import moment from 'moment'
   import sbaSessionsList from './sessions-list'
 
@@ -75,7 +82,7 @@
       isLoading: false
     }),
     methods: {
-      fetch: _.debounce(async function () {
+      fetch: debounce(async function () {
         this.error = null;
         if (!this.filter.value) {
           this.sessions = [];
@@ -122,7 +129,7 @@
       '$route.query': {
         immediate: true,
         handler() {
-          this.filter = _.entries(this.$route.query)
+          this.filter = Object.entries(this.$route.query)
             .reduce((acc, [name, value]) => {
               acc.type = name;
               acc.value = value;
@@ -135,7 +142,7 @@
         immediate: true,
         handler() {
           const query = {[this.filter.type]: this.filter.value};
-          if (!_.isEqual(query, !this.$route.query)) {
+          if (!isEqual(query, !this.$route.query)) {
             this.$router.replace({
               name: 'instances/sessions',
               query: query

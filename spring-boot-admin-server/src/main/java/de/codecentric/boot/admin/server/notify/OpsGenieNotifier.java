@@ -27,6 +27,7 @@ import reactor.core.publisher.Mono;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
@@ -57,31 +58,37 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
     /**
      * Integration ApiKey
      */
+    @Nullable
     private String apiKey;
 
     /**
      * Comma separated list of actions that can be executed.
      */
+    @Nullable
     private String actions;
 
     /**
      * Field to specify source of alert. By default, it will be assigned to IP address of incoming request
      */
+    @Nullable
     private String source;
 
     /**
      * Comma separated list of labels attached to the alert
      */
+    @Nullable
     private String tags;
 
     /**
      * The entity the alert is related to.
      */
+    @Nullable
     private String entity;
 
     /**
      * Default owner of the execution. If user is not specified, the system becomes owner of the execution.
      */
+    @Nullable
     private String user;
 
     /**
@@ -153,6 +160,7 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
         return instance.getRegistration().getName() + "_" + instance.getId();
     }
 
+    @Nullable
     protected String getMessage(InstanceEvent event, Instance instance) {
         Map<String, Object> root = new HashMap<>();
         root.put("event", event);
@@ -169,10 +177,11 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
             ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus());
     }
 
-    public void setApiKey(String apiKey) {
+    public void setApiKey(@Nullable String apiKey) {
         this.apiKey = apiKey;
     }
 
+    @Nullable
     public String getApiKey() {
         return apiKey;
     }
@@ -189,44 +198,56 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
         this.restTemplate = restTemplate;
     }
 
+    @Nullable
     public String getActions() {
         return actions;
     }
 
-    public void setActions(String actions) {
+    public void setActions(@Nullable String actions) {
         this.actions = actions;
     }
 
+    @Nullable
     public String getSource() {
         return source;
     }
 
-    public void setSource(String source) {
+    public void setSource(@Nullable String source) {
         this.source = source;
     }
 
+    @Nullable
     public String getTags() {
         return tags;
     }
 
-    public void setTags(String tags) {
+    public void setTags(@Nullable String tags) {
         this.tags = tags;
     }
 
+    @Nullable
     public String getEntity() {
         return entity;
     }
 
-    public void setEntity(String entity) {
+    public void setEntity(@Nullable String entity) {
         this.entity = entity;
     }
 
+    @Nullable
     public String getUser() {
         return user;
     }
 
-    public void setUser(String user) {
+    public void setUser(@Nullable String user) {
         this.user = user;
     }
 
+    public URI getUrl() {
+        return url;
+    }
+
+    public void setUrl(URI url) {
+        this.url = url;
+    }
 }

@@ -14,4 +14,9 @@
  * limitations under the License.
  */
 
-module.exports = 'file-mock';
+@NonNullApi
+@NonNullFields
+package de.codecentric.boot.admin.server.domain.entities;
+
+import org.springframework.lang.NonNullApi;
+import org.springframework.lang.NonNullFields;

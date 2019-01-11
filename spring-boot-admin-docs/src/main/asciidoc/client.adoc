@@ -1,8 +1,8 @@
 [[client-applications]]
-== Client applications ==
+== Client Applications ==
 
 [[show-version-in-application-list]]
-=== Show version in application list ===
+=== Show Version in Application List ===
 
 For *Spring Boot* applications the easiest way to show the version, is to use the `build-info` goal from the `spring-boot-maven-plugin`, which generates the `META-INF/build-info.properties`. See also the http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#howto-build-info[Spring Boot Reference Guide].
 
@@ -29,7 +29,7 @@ For *non-Spring Boot* applications you can either add a `version` or `build.vers
 ----
 
 [[jmx-bean-management]]
-=== JMX-bean management ===
+=== JMX-Bean Management ===
 
 To interact with JMX-beans in the admin UI you have to include https://jolokia.org/[Jolokia] in your application. As Jolokia is servlet based there is no support for reactive applications.
 In case you are using the `spring-boot-admin-starter-client` it will be pulled in for you, if not add Jolokia to your dependencies:
@@ -44,7 +44,7 @@ In case you are using the `spring-boot-admin-starter-client` it will be pulled i
 ----
 
 [[logfile]]
-=== Logfile viewer ===
+=== Logfile Viewer ===
 
 By default the logfile is not accessible via actuator endpoints and therefore not visible in Spring Boot Admin.
 In order to enable the logfile actuator endpoint you need to configure Spring Boot to write a logfile, either by setting
@@ -63,7 +63,7 @@ logging.pattern.file=%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${P
 <2> File log pattern using ANSI colors.
 
 [[show-instance-tags]]
-=== Show tags per instance ===
+=== Show Tags per Instance ===
 
 `Tags` are a way to add visual markers per instanace, they will appear in the application list as well as in the instance view.
 By default no tags are added to instances, and it's up to the client to specify the desired tags by adding the information to the metadata or info endpoint.

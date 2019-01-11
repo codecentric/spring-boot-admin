@@ -16,30 +16,32 @@
 
 <template>
   <div class="modal is-active">
-    <div class="modal-background" @click="abort"/>
+    <div class="modal-background" @click="abort" />
     <div class="modal-content">
       <div class="modal-card">
         <header class="modal-card-head">
-          <p class="modal-card-title" v-text="name"/>
+          <p class="modal-card-title" v-text="name" />
         </header>
 
         <template v-if="state === 'input-args'">
           <section class="modal-card-body" @keyup.ctrl.enter="invoke(args)">
             <div class="field" v-for="(arg, idx) in descriptor.args" :key="arg.name">
               <label class="label">
-                <span v-text="arg.name"/>
-                <small class="is-muted has-text-weight-normal" v-text="arg.type"/>
+                <span v-text="arg.name" />
+                <small class="is-muted has-text-weight-normal" v-text="arg.type" />
               </label>
               <div class="control">
                 <input type="text" class="input" v-model="args[idx]">
               </div>
-              <p class="help" v-text="arg.desc"/>
+              <p class="help" v-text="arg.desc" />
             </div>
           </section>
           <footer class="modal-card-foot">
             <div class="field is-grouped is-grouped-right">
               <div class="control">
-                <button class="button is-primary" @click="invoke(args)">Execute</button>
+                <button class="button is-primary" @click="invoke(args)">
+                  Execute
+                </button>
               </div>
             </div>
           </footer>
@@ -60,12 +62,14 @@
                 <strong>Execution successful.</strong>
               </div>
             </div>
-            <pre v-text="result"/>
+            <pre v-if="descriptor.ret !== 'void'" v-text="prettyPrintedResult" />
           </section>
           <footer class="modal-card-foot">
             <div class="field is-grouped is-grouped-right">
               <div class="control">
-                <button class="button is-light" @click="abort"> Close</button>
+                <button class="button is-light" @click="abort">
+                  Close
+                </button>
               </div>
             </div>
           </footer>
@@ -77,21 +81,26 @@
               <div class="message-body">
                 <strong>
                   <font-awesome-icon class="has-text-danger"
-                                     icon="exclamation-triangle"/>
+                                     icon="exclamation-triangle"
+                  />
                   Execution failed.
                 </strong>
-                <p v-text="error.message"/>
+                <p v-text="error.message" />
               </div>
             </div>
             <pre v-if="error.stacktrace"
-                 v-text="error.stacktrace"/>
+                 v-text="error.stacktrace"
+            />
             <pre v-if="error.response && error.response.data"
-                 v-text="error.response.data"/>
+                 v-text="error.response.data"
+            />
           </section>
           <footer class="modal-card-foot">
             <div class="field is-grouped is-grouped-right">
               <div class="control">
-                <button class="button is-light" @click="abort"> Close</button>
+                <button class="button is-light" @click="abort">
+                  Close
+                </button>
               </div>
             </div>
           </footer>
@@ -132,7 +141,21 @@
       args: null,
       result: null
     }),
-    computed: {},
+    computed: {
+      prettyPrintedResult() {
+        if (this.result && typeof this.result === 'string') {
+          try {
+            const o = JSON.parse(this.result);
+            return JSON.stringify(o, undefined, 4);
+          } catch (e) {
+            return this.result;
+          }
+        } else if (typeof result === 'object') {
+          return JSON.stringify(this.result, undefined, 4);
+        }
+        return this.result;
+      }
+    },
     methods: {
       abort() {
         this.onClose();
@@ -152,7 +175,7 @@
         try {
           const result = await this.onExecute(this.args);
           if (result.data.status < 400) {
-            this.result = JSON.stringify(result.data.value, null, 4);
+            this.result = result.data.value;
             this.state = 'completed';
           } else {
             const error = new Error(`Execution failed: ${result.data.error}`);

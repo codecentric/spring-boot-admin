@@ -25,6 +25,7 @@ import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -98,6 +100,11 @@ public final class InstanceExchangeFilterFunctions {
         return toExchangeFilterFunction((instance, request, next) -> {
             if (request.url().isAbsolute()) {
                 log.trace("Absolute URL '{}' for instance {} not rewritten", request.url(), instance.getId());
+                if (request.url().toString().equals(instance.getRegistration().getManagementUrl())) {
+                    return next.exchange(ClientRequest.from(request)
+                                                      .attribute(ATTRIBUTE_ENDPOINT, Endpoint.ACTUATOR_INDEX)
+                                                      .build());
+                }
                 return next.exchange(request);
             }
 
@@ -170,7 +177,7 @@ public final class InstanceExchangeFilterFunctions {
     }
 
     public static ExchangeFilterFunction setDefaultAcceptHeader() {
-        return toExchangeFilterFunction((instance, request, next) -> {
+        return (request, next) -> {
             if (request.headers().getAccept().isEmpty()) {
                 Boolean isRequestForLogfile = request.attribute(ATTRIBUTE_ENDPOINT)
                                                      .map(Endpoint.LOGFILE::equals)
@@ -181,6 +188,19 @@ public final class InstanceExchangeFilterFunctions {
                                                   .build());
             }
             return next.exchange(request);
-        });
+        };
+    }
+
+    public static ExchangeFilterFunction retry(int defaultRetries, Map<String, Integer> retriesPerEndpoint) {
+        return (request, next) -> {
+            int retries = 0;
+            if (!request.method().equals(HttpMethod.DELETE) &&
+                !request.method().equals(HttpMethod.PATCH) &&
+                !request.method().equals(HttpMethod.POST) &&
+                !request.method().equals(HttpMethod.PUT)) {
+                retries = request.attribute(ATTRIBUTE_ENDPOINT).map(retriesPerEndpoint::get).orElse(defaultRetries);
+            }
+            return next.exchange(request).retry(retries);
+        };
     }
 }

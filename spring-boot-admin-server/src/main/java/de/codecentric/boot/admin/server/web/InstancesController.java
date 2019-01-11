@@ -52,7 +52,7 @@ public class InstancesController {
     private static final Logger LOGGER = LoggerFactory.getLogger(InstancesController.class);
     private static final ServerSentEvent<?> PING = ServerSentEvent.builder().comment("ping").build();
     private static final Flux<ServerSentEvent<?>> PING_FLUX = Flux.interval(Duration.ZERO, Duration.ofSeconds(10L))
-                                                                  .map(tick -> (ServerSentEvent<?>) PING);
+                                                                  .map(tick -> PING);
     private final InstanceRegistry registry;
     private final InstanceEventStore eventStore;
 
@@ -85,14 +85,20 @@ public class InstancesController {
      * @param name the name to search for
      * @return application list
      */
+    @GetMapping(path = "/instances", produces = MediaType.APPLICATION_JSON_VALUE, params = "name")
+    public Flux<Instance> instances(@RequestParam("name") String name) {
+        return registry.getInstances(name).filter(Instance::isRegistered);
+    }
+
+    /**
+     * List all registered instances with name
+     *
+     * @return application list
+     */
     @GetMapping(path = "/instances", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Flux<Instance> instances(@RequestParam(value = "name", required = false) String name) {
-        LOGGER.debug("Deliver registered instances with name={}", name);
-        if (name == null || name.isEmpty()) {
-            return registry.getInstances().filter(Instance::isRegistered);
-        } else {
-            return registry.getInstances(name).filter(Instance::isRegistered);
-        }
+    public Flux<Instance> instances() {
+        LOGGER.debug("Deliver all registered instances");
+        return registry.getInstances().filter(Instance::isRegistered);
     }
 
     /**

@@ -19,10 +19,10 @@
     <div v-if="error" class="message is-danger">
       <div class="message-body">
         <strong>
-          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
           Fetching metrics failed.
         </strong>
-        <p v-text="error.message"/>
+        <p v-text="error.message" />
       </div>
     </div>
     <div v-if="isOldMetrics" class="message is-warning">
@@ -35,25 +35,29 @@
         <div class="control">
           <div class="select">
             <select v-model="selectedMetric">
-              <option v-for="metric in availableMetrics" v-text="metric" :key="metric"/>
+              <option v-for="metric in availableMetrics" v-text="metric" :key="metric" />
             </select>
           </div>
         </div>
       </div>
       <div>
-        <p v-if="stateFetchingTags === 'executing'" class="is-loading">Fetching available tags</p>
+        <p v-if="stateFetchingTags === 'executing'" class="is-loading">
+          Fetching available tags
+        </p>
 
         <div class="box" v-if="availableTags">
           <div class="field is-horizontal" v-for="tag in availableTags" :key="tag.tag">
             <div class="field-label">
-              <label class="label" v-text="tag.tag"/>
+              <label class="label" v-text="tag.tag" />
             </div>
             <div class="field-body">
               <div class="control">
                 <div class="select">
                   <select v-model="selectedTags[tag.tag]">
-                    <option :value="undefined">-</option>
-                    <option v-for="value in tag.values" :key="value" :value="value" v-text="value"/>
+                    <option :value="undefined">
+                      -
+                    </option>
+                    <option v-for="value in tag.values" :key="value" :value="value" v-text="value" />
                   </select>
                 </div>
               </div>
@@ -64,7 +68,9 @@
           </p>
           <div class="field is-grouped is-grouped-right">
             <div class="control">
-              <button type="submit" class="button is-primary">Add Metric</button>
+              <button type="submit" class="button is-primary">
+                Add Metric
+              </button>
             </div>
           </div>
         </div>
@@ -85,23 +91,8 @@
 
 <script>
   import Instance from '@/services/instance';
-  import _ from 'lodash';
+  import sortBy from 'lodash/sortBy';
   import Metric from './metric';
-
-  const stringify = metrics => {
-    return {q: metrics.map(JSON.stringify)};
-  };
-
-  const parse = query => {
-    if (!query.q) {
-      return [];
-    }
-    if (query.q instanceof Array) {
-      return query.q.map(JSON.parse);
-    } else {
-      return JSON.parse(query.q);
-    }
-  };
 
   export default {
     components: {Metric},
@@ -123,22 +114,14 @@
     }),
     created() {
       this.fetchMetricIndex();
+      this.metrics = this.loadMetrics();
     },
     watch: {
       selectedMetric: 'fetchAvailableTags',
       metrics: {
         deep: true,
-        handler() {
-          this.$router.replace({
-            name: 'instances/metrics',
-            query: stringify(this.metrics)
-          })
-        }
-      },
-      '$route.query': {
-        immediate: true,
-        handler() {
-          this.metrics = parse(this.$route.query);
+        handler(value) {
+          this.persistMetrics(value);
         }
       }
     },
@@ -170,12 +153,26 @@
           if (metric) {
             metric.tagSelections = [...metric.tagSelections, {...tagSelection}]
           } else {
-            this.metrics = _.sortBy([...this.metrics, {
+            this.metrics = sortBy([...this.metrics, {
               name: metricName,
               tagSelections: [{...tagSelection}],
               types: {}
             }], [m => m.name]);
           }
+        }
+      },
+      loadMetrics() {
+        if (window.localStorage) {
+          let persistedMetrics = localStorage.getItem(`applications/${this.instance.registration.name}/metrics`);
+          if (persistedMetrics) {
+            return JSON.parse(persistedMetrics);
+          }
+        }
+        return [];
+      },
+      persistMetrics(value) {
+        if (window.localStorage) {
+          localStorage.setItem(`applications/${this.instance.registration.name}/metrics`, JSON.stringify(value));
         }
       },
       async fetchMetricIndex() {

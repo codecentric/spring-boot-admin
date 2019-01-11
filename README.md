@@ -21,14 +21,15 @@ It provides the following features for registered application.
 * Show build-info number
 * Follow and download logfile
 * View jvm system- & environment-properties
+* View Spring Boot Configuration Properties
 * Support for Spring Cloud's postable /env- &/refresh-endpoint
 * Easy loglevel management
 * Interact with JMX-beans
 * View thread dump
 * View http-traces
 * View auditevents
-* View Http-Endpoints
-* View Scheduled Tasks
+* View http-endpoints
+* View scheduled tasks
 * View and delete active sessions (using spring-session)
 * View Flyway / Liquibase database migrations
 * Download heapdump
@@ -37,9 +38,9 @@ It provides the following features for registered application.
 
 ## Getting Started
 
-[A quick guide](http://codecentric.github.io/spring-boot-admin/2.0.2/#getting-started) to get started can be found in our docs.
+[A quick guide](http://codecentric.github.io/spring-boot-admin/2.1.1/#getting-started) to get started can be found in our docs.
 
-There are <a href="https://goo.gl/2tRiUi" target="_blank">introductory talks availabe on YouTube</a>:
+There are <a href="https://goo.gl/2tRiUi" target="_blank">introductory talks available on YouTube</a>:
 
 <a href="https://youtu.be/__zkypwjSMs" target="_blank"><img src="https://i.ytimg.com/vi/__zkypwjSMs/maxresdefault.jpg" 
 alt="Monitoring Spring Boot® Applications with Spring Boot Admin @ Spring I/O 2018" width="240" height="135" border="10" /></a><br>
@@ -62,7 +63,9 @@ Having trouble with codecentric's Spring Boot Admin? We’d like to help!
  * Report bugs at http://github.com/codecentric/spring-boot-admin/issues.
 
 ## Reference Guide
-[Version 2.0.2](http://codecentric.github.io/spring-boot-admin/2.0.2/)
+[Version 2.1.1](http://codecentric.github.io/spring-boot-admin/2.1.1/)
+
+[Version 2.0.4](http://codecentric.github.io/spring-boot-admin/2.0.4/)
 
 [Version 1.5.7](http://codecentric.github.io/spring-boot-admin/1.5.7/)
 
@@ -70,6 +73,22 @@ Having trouble with codecentric's Spring Boot Admin? We’d like to help!
 The source code of codecentric's Spring Boot Admin is licensed under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
 Spring, Spring Boot and Spring Cloud are trademarks of [Pivotal Software, Inc.](https://pivotal.io/) in the U.S. and other countries.
+
+## Snapshot builds
+You can access snapshot builds from the sonatype snapshot repository by adding the following to your `repositories`:
+```xml
+<repository>
+	<id>sonatype-nexus-snapshots</id>
+	<name>Sonatype Nexus Snapshots</name>
+	<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+	<snapshots>
+		<enabled>true</enabled>
+	</snapshots>
+	<releases>
+		<enabled>false</enabled>
+	</releases>
+</repository>
+```
 
 ## Screenshots
 
@@ -102,22 +121,6 @@ Spring, Spring Boot and Spring Cloud are trademarks of [Pivotal Software, Inc.](
 
 ![Screenshot journal](/images/screenshot-journal.png)
 *View history of registered applications*
-
-## Snapshot builds
-You can access snapshot builds from the sonatype snapshot repository by adding the following to your `repositories`:
-```xml
-<repository>
-	<id>sonatype-nexus-snapshots</id>
-	<name>Sonatype Nexus Snapshots</name>
-	<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-	<snapshots>
-		<enabled>true</enabled>
-	</snapshots>
-	<releases>
-		<enabled>false</enabled>
-	</releases>
-</repository>
-```
 
 ## Build
 **Requirements:**

@@ -31,6 +31,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import javax.annotation.Nullable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -66,6 +67,9 @@ public class LegacyEndpointConverters {
                                                      .build();
         DECODER = new Jackson2JsonDecoder(om);
         ENCODER = new Jackson2JsonEncoder(om);
+    }
+
+    private LegacyEndpointConverters() {
     }
 
     public static LegacyEndpointConverter health() {
@@ -269,6 +273,7 @@ public class LegacyEndpointConverters {
         }).collect(toList());
     }
 
+    @Nullable
     private static Instant getInstant(Object o) {
         try {
             if (o instanceof String) {

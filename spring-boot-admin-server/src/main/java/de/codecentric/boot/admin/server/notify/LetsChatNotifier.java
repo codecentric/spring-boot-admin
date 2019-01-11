@@ -25,6 +25,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
@@ -52,16 +53,19 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
     /**
      * Host URL for Let´s Chat
      */
+    @Nullable
     private URI url;
 
     /**
      * Name of the room
      */
+    @Nullable
     private String room;
 
     /**
      * Token for the Let´s chat API
      */
+    @Nullable
     private String token;
 
     /**
@@ -84,38 +88,21 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         // Let's Chat requiers the token as basic username, the password can be an arbitrary string.
-        String auth = Base64Utils.encodeToString(String.format("%s:%s", token, username).getBytes(StandardCharsets.UTF_8));
+        String auth = Base64Utils.encodeToString(String.format("%s:%s", token, username)
+                                                       .getBytes(StandardCharsets.UTF_8));
         headers.add(HttpHeaders.AUTHORIZATION, String.format("Basic %s", auth));
-        return Mono.fromRunnable(() -> restTemplate.exchange(createUrl(), HttpMethod.POST,
-            new HttpEntity<>(createMessage(event, instance), headers), Void.class));
+        return Mono.fromRunnable(() -> restTemplate.exchange(createUrl(),
+            HttpMethod.POST,
+            new HttpEntity<>(createMessage(event, instance), headers),
+            Void.class
+        ));
     }
 
     private URI createUrl() {
+        if (url == null) {
+            throw new IllegalStateException("'url' must not be null.");
+        }
         return URI.create(String.format("%s/rooms/%s/messages", url, room));
-    }
-
-    public void setRestTemplate(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
-
-    public void setUrl(URI url) {
-        this.url = url;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setRoom(String room) {
-        this.room = room;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public void setMessage(String message) {
-        this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
     }
 
     protected Object createMessage(InstanceEvent event, Instance instance) {
@@ -124,6 +111,7 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
         return messageJson;
     }
 
+    @Nullable
     protected String getText(InstanceEvent event, Instance instance) {
         Map<String, Object> root = new HashMap<>();
         root.put("event", event);
@@ -134,21 +122,47 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
         return message.getValue(context, String.class);
     }
 
+    public void setRestTemplate(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
+    public void setUrl(@Nullable URI url) {
+        this.url = url;
+    }
+
+    @Nullable
     public URI getUrl() {
         return url;
     }
 
-    public String getRoom() {
-        return room;
-    }
-
-    public String getToken() {
-        return token;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getUsername() {
         return username;
+    }
+
+    public void setRoom(@Nullable String room) {
+        this.room = room;
+    }
+
+    @Nullable
+    public String getRoom() {
+        return room;
+    }
+
+    public void setToken(@Nullable String token) {
+        this.token = token;
+    }
+
+    @Nullable
+    public String getToken() {
+        return token;
+    }
+
+    public void setMessage(String message) {
+        this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
     }
 
     public String getMessage() {

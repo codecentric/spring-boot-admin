@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 
@@ -49,7 +50,7 @@ public class CloudFoundryApplicationFactoryTest {
 
     @Test
     public void should_use_application_uri() {
-        when(pathMappedEndpoints.getPath("health")).thenReturn("/actuator/health");
+        when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
         cfApplicationProperties.setUris(singletonList("application/Uppercase"));
 
         Application app = factory.createApplication();

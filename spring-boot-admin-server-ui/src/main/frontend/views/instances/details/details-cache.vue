@@ -20,39 +20,47 @@
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
             Fetching cache metrics failed.
           </strong>
-          <p v-text="error.message"/>
+          <p v-text="error.message" />
         </div>
       </div>
       <div class="level cache-current" v-if="current">
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading has-bullet has-bullet-info">Hits</p>
-            <p v-text="current.hit"/>
+            <p class="heading has-bullet has-bullet-info">
+              Hits
+            </p>
+            <p v-text="current.hit" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading has-bullet has-bullet-warning">Misses</p>
-            <p v-text="current.miss"/>
+            <p class="heading has-bullet has-bullet-warning">
+              Misses
+            </p>
+            <p v-text="current.miss" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading">Hit ratio</p>
-            <p v-text="ratio"/>
+            <p class="heading">
+              Hit ratio
+            </p>
+            <p v-text="ratio" />
           </div>
         </div>
         <div v-if="current.size" class="level-item has-text-centered">
           <div>
-            <p class="heading">Size</p>
-            <p v-text="current.size"/>
+            <p class="heading">
+              Size
+            </p>
+            <p v-text="current.size" />
           </div>
         </div>
       </div>
-      <cache-chart v-if="chartData.length > 0" :data="chartData"/>
+      <cache-chart v-if="chartData.length > 0" :data="chartData" />
     </div>
   </sba-panel>
 </template>
@@ -123,7 +131,7 @@
             next: data => {
               vm.hasLoaded = true;
               vm.current = data;
-              vm.chartData.push({...data, timestamp: moment.now().valueOf()});
+              vm.chartData.push({...data, timestamp: moment().valueOf()});
             },
             error: error => {
               vm.hasLoaded = true;

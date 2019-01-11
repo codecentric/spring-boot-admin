@@ -19,13 +19,15 @@
     <div class="content metadata" v-if="metadata">
       <table class="table" v-if="!isEmptyMetadata">
         <tr v-for="(value, key) in metadata" :key="key">
-          <td class="metadata__key" v-text="key"/>
+          <td class="metadata__key" v-text="key" />
           <td>
-            <sba-formatted-obj :value="value"/>
+            <sba-formatted-obj :value="value" />
           </td>
         </tr>
       </table>
-      <p v-else class="is-muted">No metadata provided.</p>
+      <p v-else class="is-muted">
+        No metadata provided.
+      </p>
     </div>
   </sba-panel>
 </template>

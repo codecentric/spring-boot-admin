@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <div v-html="formatted" class="formatted"/>
+  <div v-html="formatted" class="formatted" />
 </template>
 
 <script>

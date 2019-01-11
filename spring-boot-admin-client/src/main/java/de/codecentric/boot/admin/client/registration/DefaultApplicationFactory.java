@@ -23,8 +23,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
@@ -47,7 +49,9 @@ public class DefaultApplicationFactory implements ApplicationFactory {
     private final PathMappedEndpoints pathMappedEndpoints;
     private final WebEndpointProperties webEndpoint;
     private final MetadataContributor metadataContributor;
+    @Nullable
     private Integer localServerPort;
+    @Nullable
     private Integer localManagementPort;
 
 
@@ -94,10 +98,6 @@ public class DefaultApplicationFactory implements ApplicationFactory {
             return baseUrl;
         }
 
-        if (getLocalServerPort() == null) {
-            throw new IllegalStateException("couldn't determine local port. Please set spring.boot.admin.client.instance.service-base-url.");
-        }
-
         return UriComponentsBuilder.newInstance()
                                    .scheme(getScheme(server.getSsl()))
                                    .host(getServiceHost())
@@ -136,7 +136,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
     }
 
     protected boolean isManagementPortEqual() {
-        return getLocalManagementPort() == null || getLocalManagementPort().equals(getLocalServerPort());
+        return this.localManagementPort == null || this.localManagementPort.equals(this.localServerPort);
     }
 
     protected String getEndpointsWebPath() {
@@ -185,26 +185,33 @@ public class DefaultApplicationFactory implements ApplicationFactory {
     }
 
     protected Integer getLocalServerPort() {
-        return localServerPort;
+        if (this.localServerPort == null) {
+            throw new IllegalStateException(
+                "couldn't determine local port. Please set spring.boot.admin.client.instance.service-base-url.");
+        }
+        return this.localServerPort;
     }
 
     protected Integer getLocalManagementPort() {
+        if (this.localManagementPort == null) {
+            return this.getLocalServerPort();
+        }
         return localManagementPort;
     }
 
     protected String getHealthEndpointPath() {
-        String health = pathMappedEndpoints.getPath("health");
+        String health = pathMappedEndpoints.getPath(EndpointId.of("health"));
         if (StringUtils.hasText(health)) {
             return health;
         }
-        String status = pathMappedEndpoints.getPath("status");
+        String status = pathMappedEndpoints.getPath(EndpointId.of("status"));
         if (StringUtils.hasText(status)) {
             return status;
         }
         throw new IllegalStateException("Either health or status endpoint must be enabled!");
     }
 
-    protected String getScheme(Ssl ssl) {
+    protected String getScheme(@Nullable Ssl ssl) {
         return ssl != null && ssl.isEnabled() ? "https" : "http";
     }
 

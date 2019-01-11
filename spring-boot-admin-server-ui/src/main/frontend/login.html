@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <!--
   ~ Copyright 2014-2018 the original author or authors.
   ~
@@ -15,17 +14,17 @@
   ~ limitations under the License.
   -->
 
+<!DOCTYPE html>
+
 <html>
 <head>
-    <base th:href="@{${adminContextPath} + '/'}" href="/">
+    <base th:href="${baseUrl}" href="/">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="format-detection" content="telephone=no,email=no">
     <meta name="theme-color" content="#42d3a5">
     <link rel="shortcut icon" href="assets/img/favicon.png" type="image/png">
-    <link rel="preload" href="assets/css/sba-core.css" as="style">
-    <link href="assets/css/sba-core.css" rel="stylesheet">
-    <title>Spring Boot Admin - Login</title>
+    <title th:text="${uiSettings.title}">Spring Boot Admin - Login</title>
 </head>
 <body class="login">
 
@@ -75,6 +74,5 @@
         </div>
     </div>
 </section>
-
 </body>
 </html>

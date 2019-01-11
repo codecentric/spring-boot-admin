@@ -24,23 +24,24 @@ import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
-import reactor.retry.Retry;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import javax.annotation.Nullable;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StatusUpdateTrigger extends ResubscribingEventHandler<InstanceEvent> {
+public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
     private static final Logger log = LoggerFactory.getLogger(StatusUpdateTrigger.class);
     private final StatusUpdater statusUpdater;
-    private Map<InstanceId, Instant> lastQueried = new HashMap<>();
+    private final Map<InstanceId, Instant> lastQueried = new HashMap<>();
     private Duration updateInterval = Duration.ofSeconds(10);
     private Duration statusLifetime = Duration.ofSeconds(10);
+    @Nullable
     private Disposable intervalSubscription;
 
 
@@ -53,20 +54,18 @@ public class StatusUpdateTrigger extends ResubscribingEventHandler<InstanceEvent
     public void start() {
         super.start();
         intervalSubscription = Flux.interval(updateInterval)
-                                   .doOnSubscribe(
-                                       subscription -> log.debug("Scheduled status update every {}", updateInterval))
+                                   .doOnSubscribe(s -> log.debug("Scheduled status update every {}", updateInterval))
                                    .log(log.getName(), Level.FINEST)
                                    .subscribeOn(Schedulers.newSingle("status-monitor"))
-                                   .flatMap((i) -> this.updateStatusForAllInstances())
-                                   .retryWhen(Retry.any()
-                                                   .retryMax(Integer.MAX_VALUE)
-                                                   .doOnRetry(ctx -> log.error("Resubscribing after uncaught error",
-                                                       ctx.exception())))
+                                   .concatMap(i -> this.updateStatusForAllInstances())
+                                   .onErrorContinue((ex, value) -> log.warn("Unexpected error while updating statuses",
+                                       ex
+                                   ))
                                    .subscribe();
     }
 
     @Override
-    protected Publisher<?> handle(Flux<InstanceEvent> publisher) {
+    protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
         return publisher.subscribeOn(Schedulers.newSingle("status-updater"))
                         .filter(event -> event instanceof InstanceRegisteredEvent ||
                                          event instanceof InstanceRegistrationUpdatedEvent)
@@ -92,7 +91,7 @@ public class StatusUpdateTrigger extends ResubscribingEventHandler<InstanceEvent
     }
 
     protected Mono<Void> updateStatus(InstanceId instanceId) {
-        return statusUpdater.updateStatus(instanceId).doFinally((s) -> lastQueried.put(instanceId, Instant.now()));
+        return statusUpdater.updateStatus(instanceId).doFinally(s -> lastQueried.put(instanceId, Instant.now()));
     }
 
     public void setUpdateInterval(Duration updateInterval) {

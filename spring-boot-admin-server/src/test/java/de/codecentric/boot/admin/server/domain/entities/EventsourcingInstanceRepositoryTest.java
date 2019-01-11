@@ -18,10 +18,9 @@ package de.codecentric.boot.admin.server.domain.entities;
 
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
 
-public class EventsourcingInstanceRepositoryTest extends AbstractInstanceRepositoryTest {
+public class EventsourcingInstanceRepositoryTest extends AbstractInstanceRepositoryTest<EventsourcingInstanceRepository> {
 
     public EventsourcingInstanceRepositoryTest() {
         super(new EventsourcingInstanceRepository(new InMemoryEventStore()));
     }
-
 }

@@ -25,7 +25,7 @@ import reactor.core.scheduler.Schedulers;
 
 import org.reactivestreams.Publisher;
 
-public class EndpointDetectionTrigger extends ResubscribingEventHandler<InstanceEvent> {
+public class EndpointDetectionTrigger extends AbstractEventHandler<InstanceEvent> {
     private final EndpointDetector endpointDetector;
 
     public EndpointDetectionTrigger(EndpointDetector endpointDetector, Publisher<InstanceEvent> publisher) {
@@ -34,7 +34,7 @@ public class EndpointDetectionTrigger extends ResubscribingEventHandler<Instance
     }
 
     @Override
-    protected Publisher<?> handle(Flux<InstanceEvent> publisher) {
+    protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
         return publisher.subscribeOn(Schedulers.newSingle("endpoint-detector"))
                         .filter(event -> event instanceof InstanceStatusChangedEvent ||
                                          event instanceof InstanceRegistrationUpdatedEvent)

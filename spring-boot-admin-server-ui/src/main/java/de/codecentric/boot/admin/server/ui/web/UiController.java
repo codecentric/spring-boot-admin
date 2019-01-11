@@ -24,25 +24,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 
 @AdminController
 public class UiController {
-    private final String adminContextPath;
+    private final String publicUrl;
     private final List<UiExtension> cssExtensions;
     private final List<UiExtension> jsExtensions;
     private final Map<String, Object> uiSettings;
 
-    public UiController(String adminContextPath, String title, String brand, List<UiExtension> uiExtensions) {
-        this.adminContextPath = adminContextPath;
+    public UiController(String publicUrl,
+                        String title,
+                        String brand,
+                        List<UiExtension> uiExtensions,
+                        boolean notificationFilterEnabled) {
+        this.publicUrl = publicUrl;
         this.uiSettings = new HashMap<>();
         this.uiSettings.put("title", title);
         this.uiSettings.put("brand", brand);
+        this.uiSettings.put("notificationFilterEnabled", notificationFilterEnabled);
         this.cssExtensions = uiExtensions.stream()
                                          .filter(e -> e.getResourcePath().endsWith(".css"))
                                          .collect(Collectors.toList());
@@ -51,9 +59,22 @@ public class UiController {
                                         .collect(Collectors.toList());
     }
 
-    @ModelAttribute(value = "adminContextPath", binding = false)
-    public String getAdminContextPath() {
-        return adminContextPath;
+    @ModelAttribute(value = "baseUrl", binding = false)
+    public String getBaseUrl(UriComponentsBuilder uriBuilder) {
+        UriComponents publicComponents = UriComponentsBuilder.fromUriString(publicUrl).build();
+        if (publicComponents.getScheme() != null) {
+            uriBuilder.scheme(publicComponents.getScheme());
+        }
+        if (publicComponents.getHost() != null) {
+            uriBuilder.host(publicComponents.getHost());
+        }
+        if (publicComponents.getPort() != -1) {
+            uriBuilder.port(publicComponents.getPort());
+        }
+        if (publicComponents.getPath() != null) {
+            uriBuilder.path(publicComponents.getPath());
+        }
+        return uriBuilder.path("/").toUriString();
     }
 
     @ModelAttribute(value = "uiSettings", binding = false)
@@ -72,7 +93,7 @@ public class UiController {
     }
 
     @ModelAttribute(value = "user", binding = false)
-    public Map<String, Object> getUiSettings(Principal principal) {
+    public Map<String, Object> getUser(@Nullable Principal principal) {
         if (principal != null) {
             return singletonMap("name", principal.getName());
         }

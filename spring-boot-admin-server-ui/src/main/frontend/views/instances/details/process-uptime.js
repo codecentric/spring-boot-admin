@@ -44,11 +44,11 @@ export default {
     createSubscription() {
       if (this.value) {
         const vm = this;
-        vm.startTs = moment.now();
+        vm.startTs = moment();
         vm.offset = 0;
         return timer(0, 1000).subscribe({
           next: () => {
-            vm.offset = moment.now().valueOf() - vm.startTs.valueOf();
+            vm.offset = moment().valueOf() - vm.startTs.valueOf();
           }
         })
       }

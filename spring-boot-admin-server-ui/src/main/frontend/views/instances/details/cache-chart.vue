@@ -16,7 +16,7 @@
 
 <template>
   <div class="cache-chart">
-    <svg class="cache-chart__svg"/>
+    <svg class="cache-chart__svg" />
   </div>
 </template>
 

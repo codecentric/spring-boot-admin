@@ -16,7 +16,7 @@
 
 <template>
   <div class="mem-chart">
-    <svg class="mem-chart__svg"/>
+    <svg class="mem-chart__svg" />
   </div>
 </template>
 

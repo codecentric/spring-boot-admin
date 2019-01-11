@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import javax.annotation.Nullable;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -62,7 +63,7 @@ public class Endpoints implements Iterable<Endpoint>, Serializable {
         return new Endpoints(Collections.singletonList(Endpoint.of(id, url)));
     }
 
-    public static Endpoints of(Collection<Endpoint> endpoints) {
+    public static Endpoints of(@Nullable Collection<Endpoint> endpoints) {
         if (endpoints == null || endpoints.isEmpty()) {
             return empty();
         }

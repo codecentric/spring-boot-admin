@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.domain.values;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Scanner;
+import javax.annotation.Nullable;
 import org.springframework.util.Assert;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -35,6 +36,7 @@ public class BuildVersion implements Serializable, Comparable<BuildVersion> {
         return new BuildVersion(s);
     }
 
+    @Nullable
     public static BuildVersion from(Map<String, ?> map) {
         if (map.isEmpty()) {
             return null;

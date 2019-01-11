@@ -40,6 +40,10 @@ body {
   word-break: break-all;
 }
 
+pre.is-breakable {
+  white-space: pre-wrap;
+}
+
 .monospaced {
   font-family: $family-monospace;
 }
@@ -62,6 +66,7 @@ body {
 }
 
 .navbar .badge {
+  z-index: 10;
   &[data-badge]::after {
     box-shadow: 0 0 0 $badge-border-size $navbar-background-color;
   }
@@ -82,9 +87,9 @@ body {
 
 p.is-loading {
   &::before {
+    @include loader;
     display: inline-block;
     right: 0.25em;
-    @include loader;
   }
 }
 

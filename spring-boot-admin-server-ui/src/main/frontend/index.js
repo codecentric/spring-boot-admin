@@ -15,7 +15,6 @@
  */
 
 import '@/assets/css/base.scss';
-import '@/assets/img/icon-spring-boot-admin.svg';
 import moment from 'moment';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
@@ -36,8 +35,7 @@ const viewRegistry = new ViewRegistry();
 const installables = [
   Notifications,
   ...views,
-  /* global SBA */
-  ...SBA.extensions
+  ...global.SBA.extensions
 ];
 
 installables.forEach(view => view.install({
@@ -57,6 +55,7 @@ new Vue({
       props: {
         views: this.views,
         applications: this.applications,
+        applicationsInitialized: this.applicationsInitialized,
         error: this.error
       }
     });
@@ -64,14 +63,17 @@ new Vue({
   data: {
     views: viewRegistry.views,
     applications: applicationStore.applications,
+    applicationsInitialized: false,
     error: null
   },
   methods: {
     onError(error) {
       console.warn('Connection to server failed:', error);
+      this.applicationsInitialized = true;
       this.error = error;
     },
     onConnected() {
+      this.applicationsInitialized = true;
       this.error = null;
     }
   },

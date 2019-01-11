@@ -31,7 +31,7 @@ public class TagsTest {
     @Test
     public void should_return_empty_from_factory_method() {
         assertThat(Tags.empty().getValues()).isEmpty();
-        assertThat(Tags.from(Collections.emptyMap(), null)).isSameAs(Tags.empty());
+        assertThat(Tags.from(Collections.emptyMap())).isSameAs(Tags.empty());
     }
 
     @Test
@@ -64,8 +64,8 @@ public class TagsTest {
     public void should_append_tags() {
         Tags tags = Tags.empty()
                         .append(Tags.from(singletonMap("tags.env", "test"), "tags"))
-                        .append(Tags.from(singletonMap("env", "test2"), null))
-                        .append(Tags.from(singletonMap("foo", "bar"), null));
+                        .append(Tags.from(singletonMap("env", "test2")))
+                        .append(Tags.from(singletonMap("foo", "bar")));
 
         assertThat(tags.getValues()).containsExactly(entry("env", "test2"), entry("foo", "bar"));
     }

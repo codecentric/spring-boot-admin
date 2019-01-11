@@ -60,7 +60,11 @@ public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
     }
 
     private Mono<DetectedEndpoint> detectEndpoint(Instance instance, EndpointDefinition endpoint) {
-        URI uri = UriComponentsBuilder.fromUriString(instance.getRegistration().getManagementUrl())
+        String managementUrl = instance.getRegistration().getManagementUrl();
+        if (managementUrl == null) {
+            return Mono.empty();
+        }
+        URI uri = UriComponentsBuilder.fromUriString(managementUrl)
                                       .path("/")
                                       .path(endpoint.getPath())
                                       .build()

@@ -20,11 +20,13 @@ import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
 import java.time.Instant;
+import javax.annotation.Nullable;
 
 public abstract class ExpiringNotificationFilter extends AbstractNotificationFilter {
+    @Nullable
     private final Instant expiry;
 
-    public ExpiringNotificationFilter(Instant expiry) {
+    public ExpiringNotificationFilter(@Nullable Instant expiry) {
         this.expiry = expiry;
     }
 
@@ -39,6 +41,7 @@ public abstract class ExpiringNotificationFilter extends AbstractNotificationFil
 
     protected abstract boolean doFilter(InstanceEvent event, Instance instance);
 
+    @Nullable
     public Instant getExpiry() {
         return expiry;
     }

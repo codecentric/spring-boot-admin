@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.ui.config;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.http.CacheControl;
@@ -54,6 +55,16 @@ public class AdminServerUiProperties {
      */
     private String brand = "<img src=\"assets/img/icon-spring-boot-admin.svg\"><span>Spring Boot Admin</span>";
 
+    /**
+     * If running behind a reverse proxy (using path rewriting) this can be used to output correct self references.
+     * If the host/port is omitted it will be inferred from the request.
+     */
+    @Nullable
+    private String publicUrl = null;
+
+    /**
+     * Wether the thymeleaf templates should be cached.
+     */
     private boolean cacheTemplates = true;
 
     private final Cache cache = new Cache();
@@ -64,6 +75,7 @@ public class AdminServerUiProperties {
         /**
          * include "max-age" directive in Cache-Control http header.
          */
+        @Nullable
         @DurationUnit(ChronoUnit.SECONDS)
         private Duration maxAge = Duration.ofSeconds(3600);
 

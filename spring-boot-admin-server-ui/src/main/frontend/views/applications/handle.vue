@@ -17,7 +17,7 @@
 <template>
   <span>
     <span class="has-text-warning" v-if="error">
-      <font-awesome-icon icon="exclamation-triangle"/>
+      <font-awesome-icon icon="exclamation-triangle" />
     </span>
     <span :class="{ 'badge is-badge-danger' : downCount > 0 }" :data-badge="downCount">
       Applications
@@ -26,9 +26,6 @@
 </template>
 
 <script>
-  import logoDanger from '@/assets/img/favicon-danger.png';
-  import logoOk from '@/assets/img/favicon.png';
-
   export default {
     props: {
       applications: {
@@ -36,7 +33,7 @@
         default: () => [],
       },
       error: {
-        type: null,
+        type: Error,
         default: null
       }
     },
@@ -56,7 +53,7 @@
     },
     methods: {
       updateFavicon(up) {
-        document.querySelector('link[rel*="icon"]').href = up ? logoOk : logoDanger;
+        document.querySelector('link[rel*="icon"]').href = up ? 'assets/img/favicon.png' : 'assets/img/favicon-danger.png';
       }
     }
   };

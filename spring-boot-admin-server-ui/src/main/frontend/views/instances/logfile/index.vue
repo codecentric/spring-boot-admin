@@ -19,24 +19,26 @@
     <div v-if="error" class="message is-danger">
       <div class="message-body">
         <strong>
-          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
           Fetching logfile failed.
         </strong>
-        <p v-text="error.message"/>
+        <p v-text="error.message" />
       </div>
     </div>
     <div class="logfile-view-actions" v-if="hasLoaded">
       <div class="logfile-view-actions__navigation">
         <sba-icon-button :disabled="atTop" @click="scrollToTop" icon="step-backward" size="lg"
-                         icon-class="rotated"/>
+                         icon-class="rotated"
+        />
         <sba-icon-button :disabled="atBottom" @click="scrollToBottom" icon="step-forward" size="lg"
-                         icon-class="rotated"/>
+                         icon-class="rotated"
+        />
       </div>
       <a class="button" :href="`instances/${instance.id}/actuator/logfile`" target="_blank">
-        <font-awesome-icon icon="download"/>&nbsp;Download
+        <font-awesome-icon icon="download" />&nbsp;Download
       </a>
     </div>
-    <p v-if="skippedBytes" v-text="`skipped ${prettyBytes(skippedBytes)}`"/>
+    <p v-if="skippedBytes" v-text="`skipped ${prettyBytes(skippedBytes)}`" />
     <!-- log will be appended here -->
   </div>
 </template>
@@ -47,7 +49,7 @@
   import autolink from '@/utils/autolink';
   import {animationFrameScheduler, concatAll, concatMap, map, of, tap} from '@/utils/rxjs';
   import AnsiUp from 'ansi_up';
-  import _ from 'lodash';
+  import chunk from 'lodash/chunk';
   import prettyBytes from 'pretty-bytes';
 
   export default {
@@ -81,8 +83,8 @@
         vm.error = null;
         return this.instance.streamLogfile(1000)
           .pipe(
-            tap(chunk => vm.skippedBytes = vm.skippedBytes || chunk.skipped),
-            concatMap(chunk => _.chunk(chunk.addendum.split(/\r?\n/), 250)),
+            tap(part => vm.skippedBytes = vm.skippedBytes || part.skipped),
+            concatMap(part => chunk(part.addendum.split(/\r?\n/), 250)),
             map(lines => of(lines, animationFrameScheduler)),
             concatAll()
           )

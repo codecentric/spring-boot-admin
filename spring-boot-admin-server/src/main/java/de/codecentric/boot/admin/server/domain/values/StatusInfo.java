@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 import org.springframework.util.Assert;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -40,19 +41,24 @@ public class StatusInfo implements Serializable {
     public static final String STATUS_DOWN = "DOWN";
     public static final String STATUS_OFFLINE = "OFFLINE";
     public static final String STATUS_RESTRICTED = "RESTRICTED";
-    private static final List<String> STATUS_ORDER = asList(STATUS_DOWN, STATUS_OUT_OF_SERVICE, STATUS_OFFLINE,
-        STATUS_UNKNOWN, STATUS_RESTRICTED, STATUS_UP);
+    private static final List<String> STATUS_ORDER = asList(STATUS_DOWN,
+        STATUS_OUT_OF_SERVICE,
+        STATUS_OFFLINE,
+        STATUS_UNKNOWN,
+        STATUS_RESTRICTED,
+        STATUS_UP
+    );
 
     private final String status;
     private final Map<String, Object> details;
 
-    private StatusInfo(String status, Map<String, ?> details) {
+    private StatusInfo(String status, @Nullable Map<String, ?> details) {
         Assert.hasText(status, "'status' must not be empty.");
         this.status = status.toUpperCase();
         this.details = details != null ? new HashMap<>(details) : Collections.emptyMap();
     }
 
-    public static StatusInfo valueOf(String statusCode, Map<String, ?> details) {
+    public static StatusInfo valueOf(String statusCode, @Nullable Map<String, ?> details) {
         return new StatusInfo(statusCode, details);
     }
 
@@ -76,15 +82,15 @@ public class StatusInfo implements Serializable {
         return ofOffline(null);
     }
 
-    public static StatusInfo ofUp(Map<String, Object> details) {
+    public static StatusInfo ofUp(@Nullable Map<String, Object> details) {
         return valueOf(STATUS_UP, details);
     }
 
-    public static StatusInfo ofDown(Map<String, Object> details) {
+    public static StatusInfo ofDown(@Nullable Map<String, Object> details) {
         return valueOf(STATUS_DOWN, details);
     }
 
-    public static StatusInfo ofOffline(Map<String, Object> details) {
+    public static StatusInfo ofOffline(@Nullable Map<String, Object> details) {
         return valueOf(STATUS_OFFLINE, details);
     }
 

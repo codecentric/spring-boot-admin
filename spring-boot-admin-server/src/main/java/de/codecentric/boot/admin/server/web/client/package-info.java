@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-const path = require('path');
+@NonNullApi
+@NonNullFields
+package de.codecentric.boot.admin.server.web.client;
 
-module.exports = {
-  process(_, filename, config) {
-    const relative = path.relative(config.rootDir, filename);
-    return `
-      module.exports = { 
-        render() { return this._v('${relative}'); } 
-      };
-    `;
-  }
-};
+import org.springframework.lang.NonNullApi;
+import org.springframework.lang.NonNullFields;

@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collector;
+import javax.annotation.Nullable;
 import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 
@@ -57,8 +58,12 @@ public class Tags implements Serializable {
         return EMPTY;
     }
 
+    public static Tags from(Map<String, ?> map) {
+        return from(map, null);
+    }
+
     @SuppressWarnings("unchecked")
-    public static Tags from(Map<String, ?> map, String prefix) {
+    public static Tags from(Map<String, ?> map, @Nullable String prefix) {
         if (map.isEmpty()) {
             return empty();
         }
@@ -66,17 +71,16 @@ public class Tags implements Serializable {
         if (StringUtils.hasText(prefix)) {
             Object nestedTags = map.get(prefix);
             if (nestedTags instanceof Map) {
-                return from((Map<String, Object>) nestedTags, null);
+                return from((Map<String, Object>) nestedTags);
             }
 
             String flatPrefix = prefix + ".";
             return from(map.entrySet()
                            .stream()
                            .filter(e -> e.getKey().toLowerCase().startsWith(flatPrefix))
-                           .collect(toLinkedHashMap(
-                               e -> e.getKey().substring(flatPrefix.length()),
+                           .collect(toLinkedHashMap(e -> e.getKey().substring(flatPrefix.length()),
                                Map.Entry::getValue
-                           )), null);
+                           )));
         }
 
         return new Tags(map.entrySet()
@@ -86,8 +90,7 @@ public class Tags implements Serializable {
 
     private static <T, K, U> Collector<T, ?, LinkedHashMap<K, U>> toLinkedHashMap(Function<? super T, ? extends K> keyMapper,
                                                                                   Function<? super T, ? extends U> valueMapper) {
-        return toMap(
-            keyMapper,
+        return toMap(keyMapper,
             valueMapper,
             (u, v) -> { throw new IllegalStateException(String.format("Duplicate key %s", u)); },
             LinkedHashMap::new

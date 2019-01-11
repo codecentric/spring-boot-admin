@@ -22,24 +22,33 @@ import de.codecentric.boot.admin.client.registration.DefaultApplicationFactory;
 import de.codecentric.boot.admin.client.registration.metadata.CloudFoundryMetadataContributor;
 
 import org.junit.Test;
+import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SpringBootAdminClientCloudFoundryAutoConfigurationTest {
-    private final AutoConfigurations autoConfigurations = AutoConfigurations.of(
-        SpringBootAdminClientAutoConfiguration.class, SpringBootAdminClientCloudFoundryAutoConfiguration.class);
     private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
-        autoConfigurations).withUserConfiguration(TestClientApplication.class);
+        AutoConfigurations.of(
+            EndpointAutoConfiguration.class,
+            WebEndpointAutoConfiguration.class,
+            WebMvcAutoConfiguration.class,
+            DispatcherServletAutoConfiguration.class,
+            RestTemplateAutoConfiguration.class,
+            SpringBootAdminClientAutoConfiguration.class,
+            SpringBootAdminClientCloudFoundryAutoConfiguration.class
+        ));
 
     @Test
     public void non_cloud_platform() {
         this.contextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081").run(context -> {
-            assertThat(context.getBeansOfType(CloudFoundryMetadataContributor.class)).isEmpty();
-            assertThat(context.getBean(ApplicationFactory.class)).isInstanceOf(DefaultApplicationFactory.class);
+            assertThat(context).doesNotHaveBean(CloudFoundryMetadataContributor.class);
+            assertThat(context).getBean(ApplicationFactory.class).isInstanceOf(DefaultApplicationFactory.class);
         });
     }
 
@@ -48,23 +57,17 @@ public class SpringBootAdminClientCloudFoundryAutoConfigurationTest {
         this.contextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
                           .withPropertyValues("VCAP_APPLICATION:{}")
                           .run(context -> {
-                              assertThat(context.getBean(CloudFoundryMetadataContributor.class)).isInstanceOf(
-                                  CloudFoundryMetadataContributor.class);
-                              assertThat(context.getBean(ApplicationFactory.class)).isInstanceOf(
-                                  CloudFoundryApplicationFactory.class);
+                              assertThat(context).hasSingleBean(CloudFoundryMetadataContributor.class);
+                              assertThat(context).getBean(ApplicationFactory.class)
+                                                 .isInstanceOf(CloudFoundryApplicationFactory.class);
                           });
     }
 
     @Test
-    public void cloudfoundry_disabled() {
+    public void cloudfoundry_sba_disabled() {
         this.contextRunner.withPropertyValues("VCAP_APPLICATION:{}").run(context -> {
-            assertThat(context.getBeansOfType(CloudFoundryMetadataContributor.class)).isEmpty();
-            assertThat(context.getBeansOfType(ApplicationFactory.class)).isEmpty();
+            assertThat(context).doesNotHaveBean(CloudFoundryMetadataContributor.class);
+            assertThat(context).doesNotHaveBean(ApplicationFactory.class);
         });
-    }
-
-    @Configuration
-    @EnableAutoConfiguration
-    static class TestClientApplication {
     }
 }

@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -66,6 +67,7 @@ public class MailNotifier extends AbstractStatusChangeNotifier {
     /**
      * Base-URL used for hyperlinks in mail
      */
+    @Nullable
     private String baseUrl;
 
     /**
@@ -144,11 +146,12 @@ public class MailNotifier extends AbstractStatusChangeNotifier {
         this.template = template;
     }
 
+    @Nullable
     public String getBaseUrl() {
         return baseUrl;
     }
 
-    public void setBaseUrl(String baseUrl) {
+    public void setBaseUrl(@Nullable  String baseUrl) {
         this.baseUrl = baseUrl;
     }
 

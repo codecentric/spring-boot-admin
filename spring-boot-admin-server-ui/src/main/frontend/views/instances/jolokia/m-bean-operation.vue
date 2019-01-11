@@ -18,9 +18,9 @@
   <div class="field">
     <div class="control">
       <button class="button is-light is-fullwidth" @click="$emit('click', $event)">
-        <small class="is-light is-muted" v-text="descriptor.ret"/>&nbsp;<span v-text="name"/>
+        <small class="is-light is-muted" v-text="descriptor.ret" />&nbsp;<span v-text="name" />
       </button>
-      <p class="help" v-text="descriptor.desc"/>
+      <p class="help" v-text="descriptor.desc" />
     </div>
   </div>
 </template>

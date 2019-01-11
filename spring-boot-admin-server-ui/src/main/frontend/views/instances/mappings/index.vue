@@ -20,10 +20,10 @@
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
             Fetching mappings failed.
           </strong>
-          <p v-text="error.message"/>
+          <p v-text="error.message" />
         </div>
       </div>
       <div v-if="isOldMetrics" class="message is-warning">
@@ -32,21 +32,25 @@
         </div>
       </div>
       <template v-for="(context, ctxName) in contexts">
-        <h3 class="title" v-text="ctxName" :key="ctxName"/>
+        <h3 class="title" v-text="ctxName" :key="ctxName" />
 
         <DispatcherMappings v-if="!isEmpty(context.mappings.dispatcherServlets)"
                             :key="`${ctxName}_dispatcherServlets`"
-                            :dispatchers="context.mappings.dispatcherServlets"/>
+                            :dispatchers="context.mappings.dispatcherServlets"
+        />
 
         <DispatcherMappings v-if="!isEmpty(context.mappings.dispatcherHandlers)"
                             :key="`${ctxName}_dispatcherHandlers`"
-                            :dispatchers="context.mappings.dispatcherHandlers"/>
+                            :dispatchers="context.mappings.dispatcherHandlers"
+        />
 
         <ServletMappings :key="`${ctxName}_servlets`"
-                         :servlets="context.mappings.servlets"/>
+                         :servlets="context.mappings.servlets"
+        />
 
         <ServletFilterMappings :key="`${ctxName}_servletFilters`"
-                               :servlet-filters="context.mappings.servletFilters"/>
+                               :servlet-filters="context.mappings.servletFilters"
+        />
       </template>
     </template>
   </section>
@@ -57,7 +61,7 @@
   import DispatcherMappings from '@/views/instances/mappings/DispatcherMappings';
   import ServletFilterMappings from '@/views/instances/mappings/ServletFilterMappings';
   import ServletMappings from '@/views/instances/mappings/ServletMappings';
-  import _ from 'lodash';
+  import isEmpty from 'lodash/isEmpty';
 
   export default {
     components: {DispatcherMappings, ServletMappings, ServletFilterMappings},
@@ -78,7 +82,7 @@
     },
     computed: {},
     methods: {
-      isEmpty: _.isEmpty,
+      isEmpty,
       async fetchMappings() {
         this.error = null;
         try {

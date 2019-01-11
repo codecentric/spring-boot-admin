@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
@@ -51,21 +52,25 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
     /**
      * Webhook url for Slack API (i.e. https://hooks.slack.com/services/xxx)
      */
+    @Nullable
     private URI webhookUrl;
 
     /**
      * Optional channel name without # sign (i.e. somechannel)
      */
+    @Nullable
     private String channel;
 
     /**
      * Optional emoji icon without colons (i.e. my-emoji)
      */
+    @Nullable
     private String icon;
 
     /**
      * Optional username which sends notification
      */
+    @Nullable
     private String username = "Spring Boot Admin";
 
     /**
@@ -80,6 +85,9 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
 
     @Override
     protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
+        if (webhookUrl == null) {
+            return Mono.error(new IllegalStateException("'webhookUrl' must not be null."));
+        }
         return Mono.fromRunnable(
             () -> restTemplate.postForEntity(webhookUrl, createMessage(event, instance), Void.class));
     }
@@ -109,6 +117,7 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
         return new HttpEntity<>(messageJson, headers);
     }
 
+    @Nullable
     protected String getText(InstanceEvent event, Instance instance) {
         Map<String, Object> root = new HashMap<>();
         root.put("event", event);
@@ -129,35 +138,39 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
         }
     }
 
+    @Nullable
     public URI getWebhookUrl() {
         return webhookUrl;
     }
 
-    public void setWebhookUrl(URI webhookUrl) {
+    public void setWebhookUrl(@Nullable URI webhookUrl) {
         this.webhookUrl = webhookUrl;
     }
 
+    @Nullable
     public String getChannel() {
         return channel;
     }
 
-    public void setChannel(String channel) {
+    public void setChannel(@Nullable String channel) {
         this.channel = channel;
     }
 
+    @Nullable
     public String getIcon() {
         return icon;
     }
 
-    public void setIcon(String icon) {
+    public void setIcon(@Nullable String icon) {
         this.icon = icon;
     }
 
+    @Nullable
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
+    public void setUsername(@Nullable String username) {
         this.username = username;
     }
 

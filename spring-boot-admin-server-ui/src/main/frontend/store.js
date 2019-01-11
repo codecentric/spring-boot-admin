@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 import Application from '@/services/application';
-import {concat, concatMap, defer, delay, doFirst, map, retryWhen, tap} from '@/utils/rxjs';
+import {bufferTime, concat, concatMap, defer, delay, doFirst, filter, map, retryWhen, tap} from '@/utils/rxjs';
 
 export default class {
   constructor() {
+    this._listeners = {};
+    this._applications = new Map();
     this.applications = [];
     this.applications.findInstance = (instanceId) => {
       for (let application of this.applications) {
@@ -29,16 +31,7 @@ export default class {
       return undefined;
     };
     this.applications.findApplicationForInstance = (instanceId) => {
-      return this.applications.find(application => !!application.findInstance(instanceId));
-    };
-    this.applications.indexOfApplication = (name) => {
-      return this.applications.findIndex(application => application.name === name);
-    };
-
-    this._listeners = {
-      added: [],
-      updated: [],
-      removed: []
+      return this.applications.find(application => Boolean(application.findInstance(instanceId)));
     };
   }
 
@@ -71,6 +64,7 @@ export default class {
   }
 
   start() {
+    //TODO: make this a single request
     const list = defer(() => Application.list())
       .pipe(concatMap(message => message.data));
     const stream = Application.getStream()
@@ -78,30 +72,34 @@ export default class {
     this.subscription = concat(list, stream)
       .pipe(
         doFirst(() => this._dispatchEvent('connected')),
-        retryWhen(
-          errors => errors.pipe(
-            tap(error => this._dispatchEvent('error', error)),
-            delay(5000)
-          )
-        )
+        retryWhen(errors => errors.pipe(
+          tap(error => this._dispatchEvent('error', error)),
+          delay(5000)
+        )),
+        bufferTime(250),
+        filter(a => a.length > 0)
       ).subscribe({
-        next: application => {
-          const idx = this.applications.indexOfApplication(application.name);
-          if (idx >= 0) {
-            const oldApplication = this.applications[idx];
-            if (application.instances.length > 0) {
-              this.applications.splice(idx, 1, application);
-              this._dispatchEvent('updated', application, oldApplication);
-            } else {
-              this.applications.splice(idx, 1);
-              this._dispatchEvent('removed', oldApplication);
-            }
-          } else {
-            this.applications.push(application);
-            this._dispatchEvent('added', application);
-          }
-        }
+        next: applications => this.updateApplications(applications)
       });
+  }
+
+  updateApplications(applications) {
+    applications.forEach(a => this.updateApplication(a));
+    this.applications.splice(0, this.applications.length, ...Array.from(this._applications.values()));
+  }
+
+  updateApplication(application) {
+    const oldApplication = this._applications.get(application.name);
+    if (!oldApplication && application.instances.length > 0) {
+      this._applications.set(application.name, application);
+      this._dispatchEvent('added', application);
+    } else if (oldApplication && application.instances.length > 0) {
+      this._applications.set(application.name, application);
+      this._dispatchEvent('updated', application, oldApplication);
+    } else if (oldApplication && application.instances.length <= 0) {
+      this._applications.delete(application.name);
+      this._dispatchEvent('removed', oldApplication);
+    }
   }
 
   stop() {

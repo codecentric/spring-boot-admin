@@ -43,8 +43,7 @@ public abstract class ConcurrentMapEventStore extends InstanceEventPublisher imp
     private static final Comparator<InstanceEvent> byTimestampAndIdAndVersion = comparing(
         InstanceEvent::getTimestamp).thenComparing(InstanceEvent::getInstance).thenComparing(InstanceEvent::getVersion);
     private final int maxLogSizePerAggregate;
-
-    private ConcurrentMap<InstanceId, List<InstanceEvent>> eventLog;
+    private final ConcurrentMap<InstanceId, List<InstanceEvent>> eventLog;
 
     protected ConcurrentMapEventStore(int maxLogSizePerAggregate,
                                       ConcurrentMap<InstanceId, List<InstanceEvent>> eventLog) {

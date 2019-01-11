@@ -18,32 +18,46 @@
   <table class="metrics table is-fullwidth">
     <thead>
       <tr>
-        <th class="metrics__label" :title="description" v-text="metricName"/>
+        <th class="metrics__label" :title="description" v-text="metricName" />
         <th class="metrics__statistic-name"
             v-for="statistic in statistics"
-            :key="`head-${statistic}`">
-          <span v-text="statistic"/>
+            :key="`head-${statistic}`"
+        >
+          <span v-text="statistic" />
           <div class="select is-small is-pulled-right">
             <select :value="statisticTypes[statistic]"
-                    @change="$emit('type-select', metricName, statistic, $event.target.value)">
-              <option :value="undefined">-</option>
-              <option value="integer">Integer</option>
-              <option value="float">Float</option>
-              <option value="duration">Duration</option>
-              <option value="millis">Milliseconds</option>
-              <option value="bytes">Bytes</option>
+                    @change="$emit('type-select', metricName, statistic, $event.target.value)"
+            >
+              <option :value="undefined">
+                -
+              </option>
+              <option value="integer">
+                Integer
+              </option>
+              <option value="float">
+                Float
+              </option>
+              <option value="duration">
+                Duration
+              </option>
+              <option value="millis">
+                Milliseconds
+              </option>
+              <option value="bytes">
+                Bytes
+              </option>
             </select>
           </div>
         </th>
-        <td/>
+        <td />
       </tr>
     </thead>
     <tbody>
       <tr v-for="(tags, idx) in tagSelections" :key="idx">
         <td class="metrics__label">
-          <span v-text="getLabel(tags)"/>
+          <span v-text="getLabel(tags)" />
           <span class="has-text-warning" v-if="errors[idx]" :title="errors[idx]">
-            <font-awesome-icon icon="exclamation-triangle"/>
+            <font-awesome-icon icon="exclamation-triangle" />
           </span>
         </td>
         <td class="metrics__statistic-value"
@@ -52,7 +66,7 @@
             v-text="getValue(measurements[idx], statistic)"
         />
         <td class="metrics__actions">
-          <sba-icon-button :icon="'trash'" @click.stop="handleRemove(idx)"/>
+          <sba-icon-button :icon="'trash'" @click.stop="handleRemove(idx)" />
         </td>
       </tr>
     </tbody>
@@ -63,7 +77,6 @@
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
   import {concatMap, from, timer} from '@/utils/rxjs';
-  import _ from 'lodash';
   import moment from 'moment';
   import prettyBytes from 'pretty-bytes';
 
@@ -145,7 +158,7 @@
         }
       },
       getLabel(tags) {
-        return _.entries(tags).filter(([, value]) => typeof value !== 'undefined')
+        return Object.entries(tags).filter(([, value]) => typeof value !== 'undefined')
           .map(pair => pair.join(':'))
           .join('\n') || '(no tags)';
       },
@@ -187,7 +200,6 @@
   }
 </script>
 <style lang="scss">
-
   table .metrics {
     &__label {
       width: 300px;

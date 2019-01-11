@@ -26,7 +26,7 @@ import reactor.core.scheduler.Schedulers;
 
 import org.reactivestreams.Publisher;
 
-public class InfoUpdateTrigger extends ResubscribingEventHandler<InstanceEvent> {
+public class InfoUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
     private final InfoUpdater infoUpdater;
 
     public InfoUpdateTrigger(InfoUpdater infoUpdater, Publisher<InstanceEvent> publisher) {
@@ -35,7 +35,7 @@ public class InfoUpdateTrigger extends ResubscribingEventHandler<InstanceEvent> 
     }
 
     @Override
-    protected Publisher<?> handle(Flux<InstanceEvent> publisher) {
+    protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
         return publisher.subscribeOn(Schedulers.newSingle("info-updater"))
                         .filter(event -> event instanceof InstanceEndpointsDetectedEvent ||
                                          event instanceof InstanceStatusChangedEvent ||

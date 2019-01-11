@@ -20,33 +20,39 @@
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
             Fetching threads metrics failed.
           </strong>
-          <p v-text="error.message"/>
+          <p v-text="error.message" />
         </div>
       </div>
       <div class="level threads-current" v-if="current">
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading has-bullet has-bullet-warning">Live</p>
-            <p v-text="current.live"/>
+            <p class="heading has-bullet has-bullet-warning">
+              Live
+            </p>
+            <p v-text="current.live" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading  has-bullet has-bullet-info">Daemon</p>
-            <p v-text="current.daemon"/>
+            <p class="heading  has-bullet has-bullet-info">
+              Daemon
+            </p>
+            <p v-text="current.daemon" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading">Peak Live</p>
-            <p v-text="current.peak"/>
+            <p class="heading">
+              Peak Live
+            </p>
+            <p v-text="current.peak" />
           </div>
         </div>
       </div>
-      <threads-chart v-if="chartData.length > 0" :data="chartData"/>
+      <threads-chart v-if="chartData.length > 0" :data="chartData" />
     </div>
   </sba-panel>
 </template>
@@ -93,7 +99,7 @@
             next: data => {
               vm.hasLoaded = true;
               vm.current = data;
-              vm.chartData.push({...data, timestamp: moment.now().valueOf()});
+              vm.chartData.push({...data, timestamp: moment().valueOf()});
             },
             error: error => {
               vm.hasLoaded = true;

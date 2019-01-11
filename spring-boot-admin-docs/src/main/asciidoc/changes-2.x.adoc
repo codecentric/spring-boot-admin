@@ -31,6 +31,7 @@ As some of the actuator endpoints changed with the Spring Boot 2 release not all
 
 === Backend
 * Moved all classes to the `spring.boot.admin.server` package
+* Spring cloud related extenstions moved to `spring-boot-admin-server-cloud`.
 * Redesigned backend using event sourcing principles
 * Added concept of applications (consisting of 1 to n instances)
 * Moved endpoint detection to the backend by querying the `/actuator`-index or by probing via OPTIONS request

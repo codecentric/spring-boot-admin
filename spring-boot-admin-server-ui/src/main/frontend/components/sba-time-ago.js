@@ -19,12 +19,12 @@ import moment from 'moment-shortformat';
 export default {
   props: {
     date: {
-      type: null,
+      type: [String, Date, Number, moment],
       default: null
     }
   },
   data: () => ({
-    now: moment.now(),
+    now: moment(),
     timer: null,
   }),
   computed: {
@@ -34,7 +34,7 @@ export default {
   },
   created() {
     this.timer = window.setInterval(() => {
-      this.now = moment.now();
+      this.now = moment();
     }, 1000);
   },
   render() {
