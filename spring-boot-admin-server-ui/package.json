@@ -15,7 +15,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.6.3",
     "@fortawesome/vue-fontawesome": "^0.1.4",
     "ansi_up": "^3.0.0",
-    "autolinker": "^2.2.1",
+    "autolinker": "^2.2.2",
     "axios": "^0.18.0",
     "bulma": "^0.7.2",
     "bulma-badge": "^2.0.0",
@@ -34,15 +34,15 @@
     "pretty-bytes": "^5.1.0",
     "resize-observer-polyfill": "^1.5.1",
     "rxjs": "^6.3.3",
-    "vue": "^2.5.21",
+    "vue": "^2.5.22",
     "vue-clickaway": "2.2.1",
     "vue-router": "^3.0.2"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.2.2",
-    "@vue/cli-plugin-eslint": "^3.2.2",
-    "@vue/cli-plugin-unit-jest": "^3.2.3",
-    "@vue/cli-service": "^3.2.3",
+    "@vue/cli-plugin-babel": "^3.3.0",
+    "@vue/cli-plugin-eslint": "^3.3.0",
+    "@vue/cli-plugin-unit-jest": "^3.3.0",
+    "@vue/cli-service": "^3.3.0",
     "@vue/eslint-config-standard": "^4.0.0",
     "@vue/test-utils": "^1.0.0-beta.28",
     "babel-core": "7.0.0-bridge.0",
@@ -53,7 +53,7 @@
     "html-loader": "^0.5.5",
     "node-sass": "^4.11.0",
     "sass-loader": "^7.0.1",
-    "vue-template-compiler": "^2.5.21",
+    "vue-template-compiler": "^2.5.22",
     "webpack-bundle-analyzer": "^3.0.3"
   },
   "eslintConfig": {
