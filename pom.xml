@@ -62,6 +62,7 @@
         <flatten-maven-plugin.version>1.0.1</flatten-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>
         <checkstyle.version>8.8</checkstyle.version>
+        <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
     </properties>
     <modules>
         <module>spring-boot-admin-server</module>
@@ -345,6 +346,21 @@
                     <artifactId>asciidoctor-maven-plugin</artifactId>
                     <version>${asciidoctor-maven-plugin.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.eluder.coveralls</groupId>
+                    <artifactId>coveralls-maven-plugin</artifactId>
+                    <version>${coveralls-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <version>${nexus-staging-maven-plugin.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -404,17 +420,16 @@
                         <artifactId>jacoco-maven-plugin</artifactId>
                         <version>${jacoco-maven-plugin.version}</version>
                         <executions>
-                            <!-- Prepares the property pointing to the JaCoCo
-                            runtime agent which is passed as VM argument when Maven the Surefire plugin
-                            is executed. -->
+                            <!-- Prepares the property pointing to the JaCoCo runtime agent which is passed as
+                                 VM argument when Maven the Surefire plugin is executed. -->
                             <execution>
                                 <id>pre-unit-test</id>
                                 <goals>
                                     <goal>prepare-agent</goal>
                                 </goals>
                             </execution>
-                            <!-- Ensures that the code coverage report for
-                            unit tests is created after unit tests have been run. -->
+                            <!-- Ensures that the code coverage report for unit tests is created after unit tests have
+                                 been run. -->
                             <execution>
                                 <id>post-unit-test</id>
                                 <phase>test</phase>
@@ -427,7 +442,36 @@
                     <plugin>
                         <groupId>org.eluder.coveralls</groupId>
                         <artifactId>coveralls-maven-plugin</artifactId>
-                        <version>${coveralls-maven-plugin.version}</version>
+                    </plugin>
+
+                    <!-- We need to deploy using the nexus-staging-maven-plugin specifying a stagingProfileId. This is to
+                         workaround the problem that travis uploads the artifacts using different ip addresses resulting
+                         in multiple staging repositories -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>default-deploy</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>deploy</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <serverId>${repositoryId}</serverId>
+                            <nexusUrl>https://oss.sonatype.org</nexusUrl>
+                            <!-- explicit matching using the staging profile id -->
+                            <stagingProfileId>1e79a0f1acc1b8</stagingProfileId>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
