@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2014-2018 the original author or authors.
+  ~ Copyright 2014-2019 the original author or authors.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@
     <url>https://github.com/codecentric/spring-boot-admin/</url>
     <properties>
         <revision>2.0.5-SNAPSHOT</revision>
-        <spring-boot.version>2.0.7.RELEASE</spring-boot.version>
+        <spring-boot.version>2.0.8.RELEASE</spring-boot.version>
         <spring-cloud.version>Finchley.SR2</spring-cloud.version>
         <hazelcast-tests.version>3.9.4</hazelcast-tests.version>
         <java.version>1.8</java.version>
