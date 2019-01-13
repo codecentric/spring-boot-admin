@@ -18,5 +18,5 @@ script: ./mvnw verify ${TRAVIS_TAG:+-Drevision=${TRAVIS_TAG} -DdisableSpringSnap
 
 after_success:
   - ./mvnw jacoco:report coveralls:report
-  - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} == '' ]] && ./mvnw deploy -DreposityId=sonatype-nexus-snapshots -DskipTests --settings deploy-settings.xml"
-  - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} != '' ]] && ./mvnw deploy -DreposityId=sonatype-nexus-staging -DskipTests -Drevision=${TRAVIS_TAG} -DdisableSpringSnapshots=true --settings deploy-settings.xml"
+  - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} == '' ]] && ./mvnw deploy -DrepositoryId=sonatype-nexus-snapshots -DskipTests --settings deploy-settings.xml"
+  - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_TAG} != '' ]] && ./mvnw deploy -DrepositoryId=sonatype-nexus-staging -DskipTests -Drevision=${TRAVIS_TAG} -DdisableSpringSnapshots=true --settings deploy-settings.xml"
