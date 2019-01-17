@@ -69,6 +69,8 @@ public class AdminServerUiAutoConfiguration {
             null ? this.uiProperties.getPublicUrl() : this.adminServerProperties.getContextPath(),
             this.uiProperties.getTitle(),
             this.uiProperties.getBrand(),
+            this.uiProperties.getFaviconBase(),
+            this.uiProperties.getFaviconDanger(),
             this.uiExtensions(),
             !this.applicationContext.getBeansOfType(NotificationFilterController.class).isEmpty()
         );

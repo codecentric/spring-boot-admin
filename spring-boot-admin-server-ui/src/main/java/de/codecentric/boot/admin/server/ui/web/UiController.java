@@ -44,12 +44,16 @@ public class UiController {
     public UiController(String publicUrl,
                         String title,
                         String brand,
+                        String faviconBase,
+                        String faviconDanger,
                         List<UiExtension> uiExtensions,
                         boolean notificationFilterEnabled) {
         this.publicUrl = publicUrl;
         this.uiSettings = new HashMap<>();
         this.uiSettings.put("title", title);
         this.uiSettings.put("brand", brand);
+        this.uiSettings.put("faviconBase", faviconBase);
+        this.uiSettings.put("faviconDanger", faviconDanger);
         this.uiSettings.put("notificationFilterEnabled", notificationFilterEnabled);
         this.cssExtensions = uiExtensions.stream()
                                          .filter(e -> e.getResourcePath().endsWith(".css"))

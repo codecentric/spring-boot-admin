@@ -27,6 +27,10 @@
 
 <script>
   export default {
+     data: () => ({
+      faviconBase: 'assets/img/favicon.png',
+      faviconDanger: 'assets/img/favicon-danger.png',
+    }),
     props: {
       applications: {
         type: Array,
@@ -44,6 +48,16 @@
         }, 0);
       }
     },
+    created() {
+      if (global.SBA && global.SBA.uiSettings) {
+        if (global.SBA.uiSettings.favicon) {
+          this.faviconBase = global.SBA.uiSettings.faviconBase
+        }
+        if (global.SBA.uiSettings.faviconDanger) {
+          this.faviconDanger = global.SBA.uiSettings.faviconDanger
+        }
+      }
+    },
     watch: {
       downCount(newVal, oldVal) {
         if ((newVal === 0) !== (oldVal === 0)) {
@@ -53,7 +67,7 @@
     },
     methods: {
       updateFavicon(up) {
-        document.querySelector('link[rel*="icon"]').href = up ? 'assets/img/favicon.png' : 'assets/img/favicon-danger.png';
+        document.querySelector('link[rel*="icon"]').href = up ? this.faviconBase : this.faviconDanger;
       }
     }
   };
