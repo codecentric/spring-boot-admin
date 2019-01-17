@@ -46,6 +46,16 @@ public class AdminServerUiProperties {
     private String templateLocation = CLASSPATH_RESOURCE_LOCATIONS[0];
 
     /**
+     * Custom favicon. When all services are up
+     */
+    private String faviconBase = null;
+
+    /**
+     * Custom favicon. When one or more services is down
+     */
+    private String faviconDanger = null;
+
+    /**
      * Page-Title to be shown.
      */
     private String title = "Spring Boot Admin";
