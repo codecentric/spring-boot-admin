@@ -71,7 +71,7 @@ public class UiControllerTest {
     }
 
     private MockMvc setupController(String publicUrl) {
-        return MockMvcBuilders.standaloneSetup(new UiController(publicUrl, "", "", Collections.emptyList(), false))
+        return MockMvcBuilders.standaloneSetup(new UiController(publicUrl, "", "", "", "", Collections.emptyList(), false))
                               .setCustomHandlerMapping(() -> new AdminControllerHandlerMapping(""))
                               .build();
     }
