@@ -63,6 +63,14 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 | Page-Title to be shown.
 | `"Spring Boot Admin"`
 
+| spring.boot.admin.ui.faviconBase
+| Custom favicon when all services are up
+| `"assets/img/favicon.png"`
+
+| spring.boot.admin.ui.faviconDanger
+| Custom favicon when one or more services is down
+| `"assets/img/favicon-danger.png"`
+
 |===
 
 include::server-discovery.adoc[]

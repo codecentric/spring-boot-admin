@@ -95,3 +95,11 @@ Either you just add the image to your jar-file in `/META-INF/spring-boot-admin-s
 or you must ensure yourself that the image gets served correctly (e.g. by registering your own `ResourceHandler`)
 
 - **spring.boot.admin.ui.title**: Use this option to customize the browsers window title.
+
+=== Customizing Page Favicon ===
+You can show custom browser favicon by using following configuration properties:
+
+- **spring.boot.admin.ui.faviconBase**: Sets default icon, that is shown when all services are up.
+
+- **spring.boot.admin.ui.faviconDanger**: Sets alerting icon that is shown when 1 or more services are down.
+
