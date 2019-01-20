@@ -31,6 +31,13 @@
       </div>
       <template v-if="applicationsInitialized">
         <applications-stats :applications="applications" />
+            <input
+              class="input"
+              type="search"
+              placeholder="Application filter"
+              v-model="filter"
+              v-if="applications.length>1"
+            >
         <div class="application-group" v-for="group in statusGroups" :key="group.status">
           <p class="heading" v-text="group.status" />
           <applications-list :applications="group.applications" :selected="selected" />
@@ -65,6 +72,10 @@
         type: String,
         default: null
       },
+      filter: {
+        type: String,
+        default: ''
+      },
       applicationsInitialized: {
         type: Boolean,
         default: false
@@ -75,7 +86,12 @@
       statusGroups() {
         const byStatus = groupBy(this.applications, application => application.status);
         const list = transform(byStatus, (result, value, key) => {
-          result.push({status: key, applications: sortBy(value, [application => application.name])})
+          if(this.filter===''){
+            result.push({status: key, applications: sortBy(value, [application => application.name])})
+          }else{
+            const filteredResult=value.filter( val => val.name.includes(this.filter))
+            result.push({status: key, applications: sortBy(filteredResult, [application => application.name])})
+          }
         }, []);
         return sortBy(list, [item => item.status]);
       }
