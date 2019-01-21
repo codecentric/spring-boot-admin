@@ -124,7 +124,7 @@
     if (sort === 'route_id') {
       return [...routes].sort(compareBy(r => r.route_id.toLowerCase()))
     } else if (sort === 'order') {
-      [...routes].sort(compareBy(r => r.order))
+      return [...routes].sort(compareBy(r => r.order))
     }
     return routes;
   };
