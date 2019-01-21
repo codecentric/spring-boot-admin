@@ -109,6 +109,7 @@
   import uniqBy from 'lodash/uniqBy';
   import find from 'lodash/find';
   import routeDetailControl from './route-details';
+  import {compareBy} from '@/utils/collections';
 
   const filterRoutesByKeyword = (route, keyword) => {
     return route.route_id.toString().toLowerCase().includes(keyword)
@@ -119,18 +120,13 @@
       || route.route_definition.filters.some(f => Object.values(f.args).some(av => av.toLowerCase().includes(keyword)));
   };
 
-  const sortRoutes = (globalFilters, sort) => {
+  const sortRoutes = (routes, sort) => {
     if (sort === 'route_id') {
-      return globalFilters.slice().sort(function (a, b) {
-        return a.route_id.localeCompare(b.route_id)
-      })
+      return [...routes].sort(compareBy(r => r.route_id.toLowerCase()))
     } else if (sort === 'order') {
-      return globalFilters.slice().sort(function (a, b) {
-        return a.order - b.order
-      })
+      [...routes].sort(compareBy(r => r.order))
     }
-
-    return globalFilters;
+    return routes;
   };
 
   export default {
