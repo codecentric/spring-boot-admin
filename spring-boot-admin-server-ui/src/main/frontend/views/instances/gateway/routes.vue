@@ -81,11 +81,18 @@
                 <span v-text="route.order" />
               </td>
               <td class="routes__delete-action">
-                <button class="button is-danger" :data-route_id="route.route_id"
-                        v-confirm="{ ok: deleteRoute, cancel: closeDeleteDialog, message: 'Are you sure you want to delete route ' + route.route_id + '?' }"
+                <sba-confirm-button class="button refresh-button is-light"
+                                    :class="{'is-loading' : findDeleteRouteStatus(route.route_id).status === 'executing', 'is-danger' : findDeleteRouteStatus(route.route_id).status === 'failed'}"
+                                    :disabled="findDeleteRouteStatus(route.route_id).status === 'executing'"
+                                    @click="deleteRoute(route.route_id)"
                 >
-                  <span><font-awesome-icon icon="trash" />&nbsp;Delete</span>
-                </button>
+                  <span v-if="findDeleteRouteStatus(route.route_id).status === 'failed'">
+                    Failed
+                  </span>
+                  <span v-else>
+                    Delete route
+                  </span>
+                </sba-confirm-button>
               </td>
             </tr>
             <route-detail-control :route="route" :show-details="showDetails" :key="`${route.route_id}-detail`" />
@@ -100,8 +107,9 @@
   import Instance from '@/services/instance';
   import {from, listen} from '@/utils/rxjs';
   import uniqBy from 'lodash/uniqBy';
+  import find from 'lodash/find';
   import routeDetailControl from './route-details';
-  
+
   const filterRoutesByKeyword = (route, keyword) => {
     return route.route_id.toString().toLowerCase().includes(keyword)
       || route.route_definition.uri.toString().toLowerCase().includes(keyword)
@@ -140,7 +148,11 @@
       routesFilter: null,
       sort: 'undefined',
       showDetails: {},
-      clearRoutesCacheStatus: null
+      clearRoutesCacheStatus: null,
+      routesDeleteStatus: [{
+        id: null,
+        status: null,
+      }]
     }),
     computed: {
       routes() {
@@ -162,6 +174,13 @@
         try {
           const res = await this.instance.fetchRoutesData();
           this.routesData = uniqBy(res.data, 'route_id');
+          this.routesData.map(route => {
+            let routeDeleteStatus = {
+              id: route.route_id,
+              status: null
+            }
+            this.routesDeleteStatus.push(routeDeleteStatus);
+          });
         } catch (error) {
           console.warn('Fetching routes failed:', error);
           this.error = {action:'Fetching gateway routes failed:', value:error};
@@ -175,21 +194,20 @@
         const regex = new RegExp(this.filter, 'i');
         return route => (route.route_id.match(regex));
       },
-      async deleteRoute(dialog) {
-        let button = dialog.node;
-        let routeId = button.dataset.route_id;
-
-        try {
-          await this.instance.deleteRoute(routeId);
-          setTimeout(() => this.$emit('route-deleted'), 2500);
-        } catch (response) {
-          console.warn('Deleting route failed:', response);
-          this.error = {
-            action:'Deleting route ' + routeId + ' failed:', 
-            value:response};
-        }
-
-        dialog.close();
+      deleteRoute(routeId) {
+        const vm = this;
+        from(vm.instance.deleteRoute(routeId))
+          .pipe(listen(status => vm.findDeleteRouteStatus(routeId).status = status))
+          .subscribe({
+            complete: () => {
+              setTimeout(() => vm.findDeleteRouteStatus(routeId).status = null, 2500);
+              return vm.$emit('reset');
+            },
+            error: () => vm.$emit('reset')
+          });
+      },
+      findDeleteRouteStatus(routeId) {
+        return find(this.routesDeleteStatus, route => route.id === routeId);
       },
       clearRoutesCache() {
         const vm = this;
@@ -202,9 +220,6 @@
             },
             error: () => vm.$emit('reset')
         });
-      },
-      closeDeleteDialog: function() {
-        // Dialog will get closed
       }
     }
   }
@@ -236,4 +251,3 @@
     margin-bottom: 16px;
   }
 </style>
-
