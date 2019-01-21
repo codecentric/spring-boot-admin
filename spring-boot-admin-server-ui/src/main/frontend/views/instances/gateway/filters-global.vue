@@ -76,11 +76,10 @@
 
   const sortGlobalFilter = (globalFilters, sort) => {
     if (sort === 'name') {
-      return globalFilters.slice().sort(compareBy(f => f.name))
+      return [...globalFilters].sort(compareBy(f => f.name))
     } else if (sort === 'order') {
-      return globalFilters.slice().sort(compareBy(f => f.order))
+      return [...globalFilters].sort(compareBy(f => f.order))
     }
-
     return globalFilters;
   };
 
