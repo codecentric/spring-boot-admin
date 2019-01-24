@@ -36,7 +36,7 @@
 
         <!-- used dependencies versions -->
         <spring-boot.version>2.1.2.RELEASE</spring-boot.version>
-        <spring-cloud.version>Greenwich.RC2</spring-cloud.version>
+        <spring-cloud.version>Greenwich.RELEASE</spring-cloud.version>
         <hazelcast-tests.version>3.11.1</hazelcast-tests.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
 
