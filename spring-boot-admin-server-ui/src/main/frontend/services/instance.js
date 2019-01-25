@@ -30,7 +30,8 @@ const actuatorMimeTypes = [
 const isInstanceActuatorRequest = url => url.match(/^instances[/][^/]+[/]actuator([/].*)?$/);
 
 class Instance {
-  constructor(id) {
+  constructor({id, ...instance}) {
+    Object.assign(this, instance);
     this.id = id;
     this.axios = axios.create({
       baseURL: uri`instances/${this.id}/`,
@@ -86,7 +87,7 @@ class Instance {
   }
 
   async fetchEnv(name) {
-    return this.axios.get(uri`actuator/env/${name || '' }`, {
+    return this.axios.get(uri`actuator/env/${name || ''}`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
@@ -171,7 +172,7 @@ class Instance {
   }
 
   async clearCache(name, cacheManager) {
-    return this.axios.delete(uri`actuator/caches/${name}` , {
+    return this.axios.delete(uri`actuator/caches/${name}`, {
       params: {'cacheManager': cacheManager},
       headers: {'Accept': actuatorMimeTypes}
     });
@@ -322,16 +323,14 @@ class Instance {
 
   static async get(id) {
     return axios.get(uri`instances/${id}`, {
-      transformResponse: Instance._toInstance
+      transformResponse(data) {
+        if (!data) {
+          return data;
+        }
+        const instance = JSON.parse(data);
+        return new Instance(instance);
+      }
     });
-  }
-
-  static _toInstance(data) {
-    if (!data) {
-      return data;
-    }
-    const instance = JSON.parse(data);
-    return Object.assign(new Instance(instance.id), instance);
   }
 
   static _toLoggers(data) {

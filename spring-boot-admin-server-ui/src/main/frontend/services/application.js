@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import sortBy from 'lodash/sortBy';
 import Instance from './instance';
 
 class Application {
-
-  constructor(name) {
+  constructor({name, instances, ...application}) {
+    Object.assign(this, application);
     this.name = name;
     this.axios = axios.create({
       baseURL: uri`applications/${this.name}/`
@@ -32,6 +32,14 @@ class Application {
       response => response,
       redirectOn401()
     );
+    this.instances = sortBy(instances.map(i => new Instance(i), [instance => instance.registration.healthUrl]));
+  }
+
+  filterInstances(predicate) {
+    return new Application({
+      ...this,
+      instances: this.instances.filter(predicate)
+    })
   }
 
   findInstance(instanceId) {
@@ -76,18 +84,10 @@ class Application {
     }
     const json = JSON.parse(data);
     if (json instanceof Array) {
-      const applications = json.map(Application._toApplication);
+      const applications = json.map(j => new Application(j));
       return sortBy(applications, [item => item.name]);
     }
-    return Application._toApplication(json);
-  }
-
-  static _toApplication(application) {
-    const instances = application.instances.map(instance => Object.assign(new Instance(instance.id), instance));
-    return Object.assign(new Application(application.name), {
-      ...application,
-      instances: sortBy(instances, [instance => instance.registration.healthUrl])
-    });
+    return new Application(json);
   }
 }
 

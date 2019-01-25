@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2019 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -30,9 +30,16 @@
       </div>
 
       <div class="field">
-        <div class="control is-expanded">
-          <input class="input" type="search" placeholder="Search routes by name" v-model="routesFilterCriteria">
-        </div>
+        <p class="control is-expanded has-icons-left">
+          <input
+            class="input"
+            type="search"
+            v-model="routesFilterCriteria"
+          >
+          <span class="icon is-small is-left">
+            <font-awesome-icon icon="filter" />
+          </span>
+        </p>
       </div>
 
       <routes-list :instance="instance" :is-loading="isLoading" :routes="routes" @route-deleted="fetchRoutes" />
@@ -45,7 +52,7 @@
 
 <script>
   import Instance from '@/services/instance';
-  import {compareBy} from '@/utils/collections';
+  import {anyValueMatches, compareBy} from '@/utils/collections';
   import addRoute from './add-route';
   import refreshRouteCache from './refresh-route-cache';
   import routesList from './routes-list';
@@ -54,25 +61,10 @@
     if (!routeDef) {
       return false;
     }
-
-    const uriMatches = routeDef.uri && routeDef.uri.toString().toLowerCase().includes(keyword);
-    if (uriMatches) {
-      return true;
-    }
-
-    const predicatesMatches = routeDef.predicates && (
-      routeDef.predicates.some(p => p.name.toLowerCase().includes(keyword))
-      || routeDef.predicates.some(p => Object.values(p.args).some(pv => pv.toLowerCase().includes(keyword)))
-    );
-    if (predicatesMatches) {
-      return true;
-    }
-
-    const filtersMatches = routeDef.filters && (
-      routeDef.filters.some(f => f.name.toLowerCase().includes(keyword))
-      || routeDef.filters.some(f => Object.values(f.args).some(av => av.toLowerCase().includes(keyword)))
-    );
-    return Boolean(filtersMatches);
+    const predicate = value => String(value).toLowerCase().includes(keyword);
+    return (routeDef.uri && anyValueMatches(routeDef.uri.toString(), predicate)) ||
+      anyValueMatches(routeDef.predicates, predicate) ||
+      anyValueMatches(routeDef.filters, predicate);
   };
 
   const routeMatches = (route, keyword) => {

@@ -25,9 +25,16 @@
         <p v-text="error.message" />
       </div>
     </div>
-    <div class="field has-addons" v-if="configprops">
-      <p class="control is-expanded">
-        <input class="input" type="search" placeholder="name / value filter" v-model="filter">
+    <div class="field">
+      <p class="control is-expanded has-icons-left">
+        <input
+          class="input"
+          type="search"
+          v-model="filter"
+        >
+        <span class="icon is-small is-left">
+          <font-awesome-icon icon="filter" />
+        </span>
       </p>
     </div>
     <sba-panel :header-sticks-below="['#navigation']"

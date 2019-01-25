@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2019 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -29,8 +29,16 @@
       <template v-if="traces">
         <div class="field-body">
           <div class="field has-addons">
-            <p class="control is-expanded">
-              <input class="input" type="search" placeholder="path filter" v-model="filter">
+            <p class="control is-expanded has-icons-left">
+              <input
+                class="input"
+                type="search"
+                v-model="filter"
+                placeholder="Path"
+              >
+              <span class="icon is-small is-left">
+                <font-awesome-icon icon="filter" />
+              </span>
             </p>
             <p class="control">
               <span class="button is-static">

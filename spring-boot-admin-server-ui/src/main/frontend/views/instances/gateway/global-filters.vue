@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2019 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -28,8 +28,15 @@
 
     <sba-panel :header-sticks-below="['#navigation']" title="Global Filters">
       <div class="field" v-if="globalFilters.length > 0">
-        <p class="control is-expanded">
-          <input class="input" type="search" placeholder="Search filters by name" v-model="filterCriteria">
+        <p class="control is-expanded has-icons-left">
+          <input
+            class="input"
+            type="search"
+            v-model="filterCriteria"
+          >
+          <span class="icon is-small is-left">
+            <font-awesome-icon icon="filter" />
+          </span>
         </p>
       </div>
 

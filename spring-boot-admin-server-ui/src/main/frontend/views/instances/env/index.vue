@@ -39,9 +39,16 @@
                      :instance="instance" :property-sources="env.propertySources"
                      @refresh="fetchEnv()" @update="fetchEnv" @reset="fetchEnv()"
     />
-    <div class="field has-addons" v-if="env">
-      <p class="control is-expanded">
-        <input class="input" type="search" placeholder="name / value filter" v-model="filter">
+    <div class="field" v-if="env">
+      <p class="control is-expanded has-icons-left">
+        <input
+          class="input"
+          type="search"
+          v-model="filter"
+        >
+        <span class="icon is-small is-left">
+          <font-awesome-icon icon="filter" />
+        </span>
       </p>
     </div>
     <sba-panel :header-sticks-below="['#navigation']"
