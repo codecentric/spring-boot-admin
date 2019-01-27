@@ -127,7 +127,7 @@ class Instance {
     });
   }
 
-  async fetchGlobalFiltersData() {
+  async fetchGatewayGlobalFilters() {
     return this.axios.get(uri`actuator/gateway/globalfilters`, {
       headers: {'Accept': actuatorMimeTypes}
     });
@@ -139,19 +139,19 @@ class Instance {
     });
   }
 
-  async fetchRoutesData() {
+  async fetchGatewayRoutes() {
     return this.axios.get(uri`actuator/gateway/routes`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
-  async deleteRoute(routeId) {
+  async deleteGatewayRoute(routeId) {
     return this.axios.delete(uri`actuator/gateway/routes/${routeId}`, {
       headers: {'Accept': actuatorMimeTypes}
     });
   }
 
-  async clearRoutesCache() {
+  async refreshGatewayRoutesCache() {
     return this.axios.post(uri`actuator/gateway/refresh`, {
       headers: {'Accept': actuatorMimeTypes}
     });

@@ -16,7 +16,7 @@
 
 <template>
   <div class="box">
-    <h1 class="is-size-5">
+    <h1 class="is-size-6">
       Environment Manager
     </h1>
     <datalist id="allPropertyNames">

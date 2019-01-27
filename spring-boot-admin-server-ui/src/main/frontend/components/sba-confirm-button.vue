@@ -42,6 +42,7 @@
         } else {
           const width = this.$el.getBoundingClientRect().width;
           this.$el.style.width = `${width}px`;
+          event.stopPropagation();
         }
         this.confirm = !this.confirm;
       }

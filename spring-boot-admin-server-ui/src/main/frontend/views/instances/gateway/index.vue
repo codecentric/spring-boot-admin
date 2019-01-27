@@ -16,20 +16,21 @@
 
 <template>
   <section class="section">
-    <global-filters-control :instance="instance" />
-    <add-route-control :instance="instance" />
-    <routes-control :instance="instance" />
+    <global-filters :instance="instance" />
+    <routes :instance="instance" />
   </section>
 </template>
 
 <script>
   import Instance from '@/services/instance';
-  import globalFiltersControl from './filters-global';
-  import routesControl from './routes';
-  import addRouteControl from './route-add';
+  import globalFilters from './global-filters';
+  import routes from './routes';
 
   export default {
-    components: {globalFiltersControl, routesControl, addRouteControl},
+    components: {
+      globalFilters,
+      routes
+    },
     props: {
       instance: {
         type: Instance,
@@ -43,7 +44,7 @@
         path: 'gateway',
         component: this,
         label: 'Gateway',
-        group: 'Insights',
+        group: 'Web',
         order: 960,
         isEnabled: ({instance}) => instance.hasEndpoint('gateway')
       });

@@ -85,7 +85,7 @@
       </td>
     </tr>
     <tr v-if="sessions.length === 0">
-      <td class="is-muted" colspan="7 ">
+      <td class="is-muted" colspan="7">
         <p v-if="isLoading" class="is-loading">
           Loading Sessions...
         </p>
