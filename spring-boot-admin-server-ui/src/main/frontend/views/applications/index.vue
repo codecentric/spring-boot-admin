@@ -89,7 +89,7 @@
           if(this.filter===''){
             result.push({status: key, applications: sortBy(value, [application => application.name])})
           }else{
-            const filteredResult=value.filter( val => val.name.includes(this.filter))
+            const filteredResult=value.filter( val => val.name.toLowerCase().includes(this.filter.toLowerCase()))
             result.push({status: key, applications: sortBy(filteredResult, [application => application.name])})
           }
         }, []);
