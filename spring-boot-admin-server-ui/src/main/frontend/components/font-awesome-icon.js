@@ -39,6 +39,10 @@ import {faTimesCircle} from '@fortawesome/free-solid-svg-icons/faTimesCircle';
 import {faTrash} from '@fortawesome/free-solid-svg-icons/faTrash';
 import {faUserCircle} from '@fortawesome/free-solid-svg-icons/faUserCircle';
 import {faWrench} from '@fortawesome/free-solid-svg-icons/faWrench';
+import {faAngleDoubleRight} from '@fortawesome/free-solid-svg-icons/faAngleDoubleRight';
+import {faSearch} from '@fortawesome/free-solid-svg-icons/faSearch';
+import {faMapMarker} from '@fortawesome/free-solid-svg-icons/faMapMarker';
+import {faFilter} from '@fortawesome/free-solid-svg-icons/faFilter';
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
 
 library.add(
@@ -63,6 +67,10 @@ library.add(
   faHeartbeat,
   faHome,
   faWrench,
+  faAngleDoubleRight,
+  faSearch,
+  faMapMarker,
+  faFilter,
 //regular,
   farTimesCircle,
 //brands
