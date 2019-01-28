@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,10 +41,7 @@ public class UiController {
     private final List<UiExtension> jsExtensions;
     private final Map<String, Object> uiSettings;
 
-    public UiController(String publicUrl,
-                        String title,
-                        String brand,
-                        String faviconBase,
+    public UiController(String publicUrl, String title, String brand, String favicon,
                         String faviconDanger,
                         List<UiExtension> uiExtensions,
                         boolean notificationFilterEnabled) {
@@ -52,7 +49,7 @@ public class UiController {
         this.uiSettings = new HashMap<>();
         this.uiSettings.put("title", title);
         this.uiSettings.put("brand", brand);
-        this.uiSettings.put("faviconBase", faviconBase);
+        this.uiSettings.put("favicon", favicon);
         this.uiSettings.put("faviconDanger", faviconDanger);
         this.uiSettings.put("notificationFilterEnabled", notificationFilterEnabled);
         this.cssExtensions = uiExtensions.stream()

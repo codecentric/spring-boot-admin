@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,14 +46,14 @@ public class AdminServerUiProperties {
     private String templateLocation = CLASSPATH_RESOURCE_LOCATIONS[0];
 
     /**
-     * Custom favicon. When all services are up
+     * Icon used as default favicon and icon for desktop notifications.
      */
-    private String faviconBase = null;
+    private String favicon = "assets/img/favicon.png";
 
     /**
-     * Custom favicon. When one or more services is down
+     * Icon used as default favicon and icon for desktop notifications.
      */
-    private String faviconDanger = null;
+    private String faviconDanger = "assets/img/favicon-danger.png";
 
     /**
      * Page-Title to be shown.

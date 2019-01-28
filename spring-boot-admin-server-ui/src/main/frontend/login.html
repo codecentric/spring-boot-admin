@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2014-2018 the original author or authors.
+  ~ Copyright 2014-2019 the original author or authors.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="format-detection" content="telephone=no,email=no">
     <meta name="theme-color" content="#42d3a5">
-    <link rel="shortcut icon" href="assets/img/favicon.png" type="image/png">
+    <link rel="shortcut icon" th:href="${uiSettings.favicon}" type="image/png">
     <title th:text="${uiSettings.title}">Spring Boot Admin - Login</title>
 </head>
 <body class="login">
