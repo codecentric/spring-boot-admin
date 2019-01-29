@@ -21,12 +21,14 @@ import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdate
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import org.reactivestreams.Publisher;
 
 public class EndpointDetectionTrigger extends AbstractEventHandler<InstanceEvent> {
     private final EndpointDetector endpointDetector;
+    private Scheduler scheduler;
 
     public EndpointDetectionTrigger(EndpointDetector endpointDetector, Publisher<InstanceEvent> publisher) {
         super(publisher, InstanceEvent.class);
@@ -34,8 +36,24 @@ public class EndpointDetectionTrigger extends AbstractEventHandler<InstanceEvent
     }
 
     @Override
+    public void start() {
+        assert scheduler == null;
+        scheduler = Schedulers.newSingle("endpoint-detector");
+        super.start();
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
+        if (scheduler != null) {
+            scheduler.dispose();
+            scheduler = null;
+        }
+    }
+
+    @Override
     protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
-        return publisher.subscribeOn(Schedulers.newSingle("endpoint-detector"))
+        return publisher.subscribeOn(scheduler)
                         .filter(event -> event instanceof InstanceStatusChangedEvent ||
                                          event instanceof InstanceRegistrationUpdatedEvent)
                         .flatMap(this::detectEndpoints);

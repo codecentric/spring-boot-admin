@@ -20,12 +20,14 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.services.AbstractEventHandler;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import org.reactivestreams.Publisher;
 
 public class NotificationTrigger extends AbstractEventHandler<InstanceEvent> {
     private final Notifier notifier;
+    private Scheduler scheduler;
 
     public NotificationTrigger(Notifier notifier, Publisher<InstanceEvent> publisher) {
         super(publisher, InstanceEvent.class);
@@ -33,8 +35,24 @@ public class NotificationTrigger extends AbstractEventHandler<InstanceEvent> {
     }
 
     @Override
+    public void start() {
+        assert scheduler == null;
+        scheduler = Schedulers.newSingle("notifications");
+        super.start();
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
+        if (scheduler != null) {
+            scheduler.dispose();
+            scheduler = null;
+        }
+    }
+
+    @Override
     protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
-        return publisher.subscribeOn(Schedulers.newSingle("notifications")).flatMap(this::sendNotifications);
+        return publisher.subscribeOn(scheduler).flatMap(this::sendNotifications);
     }
 
     protected Mono<Void> sendNotifications(InstanceEvent event) {

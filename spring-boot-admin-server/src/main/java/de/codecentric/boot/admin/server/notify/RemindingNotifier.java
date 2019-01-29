@@ -25,6 +25,7 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
@@ -51,6 +52,7 @@ public class RemindingNotifier extends AbstractEventNotifier {
     private String[] reminderStatuses = {"DOWN", "OFFLINE"};
     @Nullable
     private Disposable subscription;
+    private Scheduler scheduler;
 
     public RemindingNotifier(Notifier delegate, InstanceRepository repository) {
         super(repository);
@@ -69,9 +71,10 @@ public class RemindingNotifier extends AbstractEventNotifier {
         }));
     }
 
-
     public void start() {
-        this.subscription = Flux.interval(this.checkReminderInverval, Schedulers.newSingle("reminders"))
+        assert scheduler == null;
+        scheduler = Schedulers.newSingle("reminders");
+        this.subscription = Flux.interval(this.checkReminderInverval, scheduler)
                                 .log(log.getName(), Level.FINEST)
                                 .doOnSubscribe(s -> log.debug("Started reminders"))
                                 .flatMap(i -> this.sendReminders())
@@ -86,6 +89,10 @@ public class RemindingNotifier extends AbstractEventNotifier {
         if (this.subscription != null && !this.subscription.isDisposed()) {
             log.debug("stopped reminders");
             this.subscription.dispose();
+        }
+        if (scheduler != null) {
+            scheduler.dispose();
+            scheduler = null;
         }
     }
 

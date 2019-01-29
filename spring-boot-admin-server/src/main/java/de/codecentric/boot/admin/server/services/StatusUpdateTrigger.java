@@ -23,6 +23,7 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
@@ -43,7 +44,8 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
     private Duration statusLifetime = Duration.ofSeconds(10);
     @Nullable
     private Disposable intervalSubscription;
-
+    private Scheduler statusMonitorScheduler;
+    private Scheduler statusUpdaterScheduler;
 
     public StatusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> publisher) {
         super(publisher, InstanceEvent.class);
@@ -52,11 +54,15 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 
     @Override
     public void start() {
+        assert statusMonitorScheduler == null;
+        statusMonitorScheduler = Schedulers.newSingle("status-monitor");
+        assert statusUpdaterScheduler == null;
+        statusUpdaterScheduler = Schedulers.newSingle("status-updater");
         super.start();
         intervalSubscription = Flux.interval(updateInterval)
                                    .doOnSubscribe(s -> log.debug("Scheduled status update every {}", updateInterval))
                                    .log(log.getName(), Level.FINEST)
-                                   .subscribeOn(Schedulers.newSingle("status-monitor"))
+                                   .subscribeOn(statusMonitorScheduler)
                                    .concatMap(i -> this.updateStatusForAllInstances())
                                    .onErrorContinue((ex, value) -> log.warn("Unexpected error while updating statuses",
                                        ex
@@ -66,7 +72,7 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 
     @Override
     protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
-        return publisher.subscribeOn(Schedulers.newSingle("status-updater"))
+        return publisher.subscribeOn(statusUpdaterScheduler)
                         .filter(event -> event instanceof InstanceRegisteredEvent ||
                                          event instanceof InstanceRegistrationUpdatedEvent)
                         .flatMap(event -> updateStatus(event.getInstance()));
@@ -77,6 +83,14 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
         super.stop();
         if (intervalSubscription != null) {
             intervalSubscription.dispose();
+        }
+        if (statusUpdaterScheduler != null) {
+            statusUpdaterScheduler.dispose();
+            statusUpdaterScheduler = null;
+        }
+        if (statusMonitorScheduler != null) {
+            statusMonitorScheduler.dispose();
+            statusMonitorScheduler = null;
         }
     }
 
