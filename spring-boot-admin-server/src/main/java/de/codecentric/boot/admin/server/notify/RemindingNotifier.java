@@ -90,8 +90,10 @@ public class RemindingNotifier extends AbstractEventNotifier {
             log.debug("stopped reminders");
             this.subscription.dispose();
         }
-        scheduler.dispose();
-        scheduler = null;
+        if (scheduler != null) {
+            scheduler.dispose();
+            scheduler = null;
+        }
     }
 
     protected Mono<Void> sendReminders() {

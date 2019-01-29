@@ -84,10 +84,14 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
         if (intervalSubscription != null) {
             intervalSubscription.dispose();
         }
-        statusUpdaterScheduler.dispose();
-        statusUpdaterScheduler = null;
-        statusMonitorScheduler.dispose();
-        statusMonitorScheduler = null;
+        if (statusUpdaterScheduler != null) {
+            statusUpdaterScheduler.dispose();
+            statusUpdaterScheduler = null;
+        }
+        if (statusMonitorScheduler != null) {
+            statusMonitorScheduler.dispose();
+            statusMonitorScheduler = null;
+        }
     }
 
     protected Mono<Void> updateStatusForAllInstances() {

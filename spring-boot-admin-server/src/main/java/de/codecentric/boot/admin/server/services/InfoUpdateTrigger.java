@@ -46,8 +46,10 @@ public class InfoUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
     @Override
     public void stop() {
         super.stop();
-        scheduler.dispose();
-        scheduler = null;
+        if (scheduler != null) {
+            scheduler.dispose();
+            scheduler = null;
+        }
     }
 
     @Override
