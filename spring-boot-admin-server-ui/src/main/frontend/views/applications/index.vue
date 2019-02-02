@@ -107,6 +107,10 @@
         component: this
       });
       viewRegistry.addRedirect('/', 'applications');
+    },
+    mounted: function(){
+      if(this.$route.query.filterparam)
+        this.filter=this.$route.query.filterparam;
     }
   };
 </script>
