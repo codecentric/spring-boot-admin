@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +45,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import static de.codecentric.boot.admin.server.domain.values.StatusInfo.STATUS_OFFLINE;
 import static de.codecentric.boot.admin.server.domain.values.StatusInfo.STATUS_UNKNOWN;
 import static java.util.Comparator.naturalOrder;
 import static java.util.stream.Collectors.toList;
@@ -60,10 +63,14 @@ public class ApplicationsController {
                                                                   .map(tick -> PING);
     private final InstanceRegistry registry;
     private final InstanceEventPublisher eventPublisher;
+    private final Map<String, Application> requiredApplications;
 
-    public ApplicationsController(InstanceRegistry registry, InstanceEventPublisher eventPublisher) {
+    public ApplicationsController(InstanceRegistry registry, InstanceEventPublisher eventPublisher, String[] requiredApplications) {
         this.registry = registry;
         this.eventPublisher = eventPublisher;
+        this.requiredApplications = Stream.of(requiredApplications)
+                .map(ApplicationsController::requiredApplication)
+                .collect(toMap(Application::getName, Function.identity()));
     }
 
     @GetMapping(path = "/applications", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -71,7 +78,9 @@ public class ApplicationsController {
         return registry.getInstances()
                        .filter(Instance::isRegistered)
                        .groupBy(instance -> instance.getRegistration().getName())
-                       .flatMap(grouped -> toApplication(grouped.key(), grouped));
+                       .flatMap(grouped -> toApplication(grouped.key(), grouped))
+                       .concatWith(Flux.fromIterable(requiredApplications.values()))
+                       .distinct((app) -> app.getName());
     }
 
 
@@ -80,7 +89,16 @@ public class ApplicationsController {
         return this.toApplication(name, registry.getInstances(name).filter(Instance::isRegistered))
                    .filter(a -> !a.getInstances().isEmpty())
                    .map(ResponseEntity::ok)
-                   .defaultIfEmpty(ResponseEntity.notFound().build());
+                   .defaultIfEmpty(this.responseIfNoInstance(name));
+    }
+
+    private ResponseEntity<Application> responseIfNoInstance(String name) {
+        Application application = this.requiredApplications.get(name);
+        if (application == null) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(application);
+        }
     }
 
     @GetMapping(path = "/applications", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
@@ -184,6 +202,16 @@ public class ApplicationsController {
         private BuildVersion buildVersion;
         private String status = STATUS_UNKNOWN;
         private Instant statusTimestamp = Instant.now();
+        private boolean required = false;
         private List<Instance> instances = new ArrayList<>();
+    }
+
+    private static Application requiredApplication(String name) {
+        Application application = new Application(
+                name
+        );
+        application.setStatus(STATUS_OFFLINE);
+        application.setRequired(true);
+        return application;
     }
 }

@@ -32,13 +32,13 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ApplicationControllerIntegrationTest {
     private int localPort;
     private WebTestClient client;
     private String register_as_test;
+    private String register_as_required;
     private ConfigurableApplicationContext instance;
     private ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
     };
@@ -47,7 +47,7 @@ public class ApplicationControllerIntegrationTest {
     public void setUp() {
         instance = new SpringApplicationBuilder().sources(AdminReactiveApplicationTest.TestAdminApplication.class)
                                                  .web(WebApplicationType.REACTIVE)
-                                                 .run("--server.port=0", "--eureka.client.enabled=false");
+                                                 .run("--server.port=0", "--eureka.client.enabled=false", "--spring.boot.admin.applicationsRequired=required");
 
         localPort = instance.getEnvironment().getProperty("local.server.port", Integer.class, 0);
 
@@ -55,6 +55,9 @@ public class ApplicationControllerIntegrationTest {
         this.register_as_test = "{ \"name\": \"test\", \"healthUrl\": \"http://localhost:" +
                                 localPort +
                                 "/application/health\" }";
+        this.register_as_required = "{ \"name\": \"required\", \"healthUrl\": \"http://localhost:" +
+                localPort +
+                "/application/health\" }";
     }
 
     @After
@@ -64,7 +67,7 @@ public class ApplicationControllerIntegrationTest {
 
 
     @Test
-    public void should_return_empty_list() {
+    public void should_return_only_required_app() {
         this.client.get()
                    .uri("/applications")
                    .accept(MediaType.APPLICATION_JSON)
@@ -72,11 +75,11 @@ public class ApplicationControllerIntegrationTest {
                    .expectStatus()
                    .isOk()
                    .expectBody(List.class)
-                   .isEqualTo(emptyList());
+                   .value(list -> assertThat(list).hasSize(1));
     }
 
     @Test
-    public void should_return_one_application() {
+    public void should_return_two_applications() {
         this.register();
         this.client.get()
                 .uri("/applications")
@@ -85,15 +88,51 @@ public class ApplicationControllerIntegrationTest {
                 .expectStatus()
                 .isOk()
                 .expectBody(List.class)
-                .value(list -> assertThat(list).hasSize(1));
+                .value(list -> assertThat(list).hasSize(2));
     }
 
 
     @Test
     public void should_return_not_found_when_getting_unknown_application() {
-        this.client.get().uri("/applications/test").exchange().expectStatus().isNotFound();
+        this.client.get().uri("/applications/test").exchange().expectStatus()
+                .isNotFound();
     }
 
+    @Test
+    public void should_return_one_when_getting_required_application() {
+        this.client.get().uri("/applications/required").exchange()
+                .expectStatus()
+                .isOk();
+    }
+
+    @Test
+    public void should_return_only_one_if_required_app_register() {
+        this.registerRequired();
+        this.client.get().uri("/applications").exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(List.class)
+                .value(list -> assertThat(list).hasSize(1));
+    }
+
+
+
+    private String registerRequired() {
+        //@formatter:off
+        EntityExchangeResult<Map<String, Object>> result = client.post()
+                .uri("/instances")
+                .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+                .syncBody(register_as_required)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+                .expectHeader().valueMatches("location", "http://localhost:" + localPort + "/instances/[0-9a-f]+")
+                .expectBody(RESPONSE_TYPE)
+                .returnResult();
+        //@formatter:on
+        assertThat(result.getResponseBody()).containsKeys("id");
+        return result.getResponseBody().get("id").toString();
+    }
 
     private String register() {
         //@formatter:off

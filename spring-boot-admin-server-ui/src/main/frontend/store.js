@@ -90,10 +90,10 @@ export default class {
 
   updateApplication(application) {
     const oldApplication = this._applications.get(application.name);
-    if (!oldApplication && application.instances.length > 0) {
+    if (!oldApplication) {
       this._applications.set(application.name, application);
       this._dispatchEvent('added', application);
-    } else if (oldApplication && application.instances.length > 0) {
+    } else if (oldApplication && (application.instances.length > 0 || application.required)) {
       this._applications.set(application.name, application);
       this._dispatchEvent('updated', application, oldApplication);
     } else if (oldApplication && application.instances.length <= 0) {

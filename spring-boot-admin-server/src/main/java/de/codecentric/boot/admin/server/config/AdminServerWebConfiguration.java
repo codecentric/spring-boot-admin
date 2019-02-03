@@ -65,7 +65,7 @@ public class AdminServerWebConfiguration {
     @ConditionalOnMissingBean
     public ApplicationsController applicationsController(InstanceRegistry instanceRegistry,
                                                          InstanceEventPublisher eventPublisher) {
-        return new ApplicationsController(instanceRegistry, eventPublisher);
+        return new ApplicationsController(instanceRegistry, eventPublisher, this.adminServerProperties.getApplicationsRequired());
     }
 
     @Configuration

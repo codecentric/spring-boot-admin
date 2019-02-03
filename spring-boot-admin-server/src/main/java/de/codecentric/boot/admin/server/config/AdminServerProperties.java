@@ -48,6 +48,10 @@ public class AdminServerProperties {
     private String[] metadataKeysToSanitize = new String[]{".*password$", ".*secret$", ".*key$", ".*$token$", ".*credentials.*", ".*vcap_services$"};
 
     /**
+     * The applications that are required. They will appear in the dashboard even if no instances are up
+     */
+    private String[] applicationsRequired = new String[]{};
+    /**
      * For Spring Boot 2.x applications the endpoints should be discovered automatically using the actuator links.
      * For Spring Boot 1.x applications SBA probes for the specified endpoints using an OPTIONS request.
      * If the path differs from the id you can specify this as id:path (e.g. health:ping).
