@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -139,9 +139,20 @@ public class InstanceDiscoveryListener {
             log.debug("Registering discovered instance {}", registration);
             return registry.register(registration);
         } catch (Exception ex) {
-            log.error("Couldn't register instance for service {}", instance, ex);
+            log.error("Couldn't register instance for service ({})", toString(instance), ex);
         }
         return Mono.empty();
+    }
+
+    protected String toString(ServiceInstance instance) {
+        String httpScheme = instance.isSecure() ? "https" : "http";
+        return String.format(
+            "serviceId=%s, url= %s://%s:%d",
+            instance.getServiceId(),
+            instance.getScheme() != null ? instance.getScheme() : httpScheme,
+            instance.getHost(),
+            instance.getPort()
+        );
     }
 
     public void setConverter(ServiceInstanceConverter converter) {
