@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,10 +62,13 @@ public class InstanceDiscoveryListenerTest {
     }
 
     @Test
-    public void test_application_ready() {
+    public void should_discover_instances_when_application_is_ready() {
         when(discovery.getServices()).thenReturn(Collections.singletonList("service"));
-        when(discovery.getInstances("service")).thenReturn(
-            Collections.singletonList(new DefaultServiceInstance("service", "localhost", 80, false)));
+        when(discovery.getInstances("service")).thenReturn(Collections.singletonList(new DefaultServiceInstance("service",
+            "localhost",
+            80,
+            false
+        )));
 
         listener.onApplicationReady(null);
 
@@ -76,10 +79,13 @@ public class InstanceDiscoveryListenerTest {
 
 
     @Test
-    public void test_ignore() {
+    public void should_not_register_instance_when_serviceId_is_ignored() {
         when(discovery.getServices()).thenReturn(singletonList("service"));
-        when(discovery.getInstances("service")).thenReturn(
-            singletonList(new DefaultServiceInstance("service", "localhost", 80, false)));
+        when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("service",
+            "localhost",
+            80,
+            false
+        )));
 
         listener.setIgnoredServices(singleton("service"));
         listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
@@ -88,10 +94,13 @@ public class InstanceDiscoveryListenerTest {
     }
 
     @Test
-    public void test_matching() {
+    public void should_register_instance_when_serviceId_is_not_ignored() {
         when(discovery.getServices()).thenReturn(singletonList("service"));
-        when(discovery.getInstances("service")).thenReturn(
-            singletonList(new DefaultServiceInstance("service", "localhost", 80, false)));
+        when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("service",
+            "localhost",
+            80,
+            false
+        )));
 
         listener.setServices(singleton("notService"));
         listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
@@ -100,10 +109,13 @@ public class InstanceDiscoveryListenerTest {
     }
 
     @Test
-    public void test_ignore_pattern() {
+    public void should_not_register_instance_when_serviceId_matches_ignored_pattern() {
         when(discovery.getServices()).thenReturn(asList("service", "rabbit-1", "rabbit-2"));
-        when(discovery.getInstances("service")).thenReturn(
-            singletonList(new DefaultServiceInstance("service", "localhost", 80, false)));
+        when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("service",
+            "localhost",
+            80,
+            false
+        )));
 
         listener.setIgnoredServices(singleton("rabbit-*"));
         listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
@@ -114,10 +126,13 @@ public class InstanceDiscoveryListenerTest {
     }
 
     @Test
-    public void test_matching_pattern() {
+    public void should_register_instances_when_serviceId_matches_wanted_pattern() {
         when(discovery.getServices()).thenReturn(asList("service", "rabbit-1", "rabbit-2"));
-        when(discovery.getInstances("service")).thenReturn(
-            singletonList(new DefaultServiceInstance("service", "localhost", 80, false)));
+        when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("service",
+            "localhost",
+            80,
+            false
+        )));
 
         listener.setServices(singleton("ser*"));
         listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
@@ -128,12 +143,18 @@ public class InstanceDiscoveryListenerTest {
     }
 
     @Test
-    public void test_matching_and_ignore_pattern() {
+    public void should_register_instances_when_serviceId_matches_wanted_pattern_and_igonred_pattern() {
         when(discovery.getServices()).thenReturn(asList("service-1", "service", "rabbit-1", "rabbit-2"));
-        when(discovery.getInstances("service")).thenReturn(
-            singletonList(new DefaultServiceInstance("service", "localhost", 80, false)));
-        when(discovery.getInstances("service-1")).thenReturn(
-            singletonList(new DefaultServiceInstance("service-1", "localhost", 80, false)));
+        when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("service",
+            "localhost",
+            80,
+            false
+        )));
+        when(discovery.getInstances("service-1")).thenReturn(singletonList(new DefaultServiceInstance("service-1",
+            "localhost",
+            80,
+            false
+        )));
 
         listener.setServices(singleton("ser*"));
         listener.setIgnoredServices(singleton("service-*"));
@@ -145,10 +166,13 @@ public class InstanceDiscoveryListenerTest {
     }
 
     @Test
-    public void test_register_and_convert() {
+    public void should_register_instance_when_new_service_instance_is_discovered() {
         when(discovery.getServices()).thenReturn(singletonList("service"));
-        when(discovery.getInstances("service")).thenReturn(
-            singletonList(new DefaultServiceInstance("service", "localhost", 80, false)));
+        when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("service",
+            "localhost",
+            80,
+            false
+        )));
 
         listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
@@ -159,18 +183,19 @@ public class InstanceDiscoveryListenerTest {
             assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80/");
             assertThat(registration.getName()).isEqualTo("service");
         }).verifyComplete();
-
-
     }
 
     @Test
-    public void single_discovery_for_same_heartbeat() {
+    public void should_only_discover_new_instances_when_new_heartbeat_is_emitted() {
         Object heartbeat = new Object();
         listener.onParentHeartbeat(new ParentHeartbeatEvent(new Object(), heartbeat));
 
         when(discovery.getServices()).thenReturn(singletonList("service"));
-        when(discovery.getInstances("service")).thenReturn(
-            singletonList(new DefaultServiceInstance("service", "localhost", 80, false)));
+        when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("service",
+            "localhost",
+            80,
+            false
+        )));
 
         listener.onApplicationEvent(new HeartbeatEvent(new Object(), heartbeat));
         StepVerifier.create(registry.getInstances()).verifyComplete();
@@ -182,14 +207,13 @@ public class InstanceDiscoveryListenerTest {
     }
 
     @Test
-    public void deregister_removed_app() {
+    public void should_remove_instances_when_they_are_no_longer_available_in_discovery() {
         StepVerifier.create(registry.register(Registration.create("ignored", "http://health").build()))
                     .consumeNextWith(id -> { })
                     .verifyComplete();
-        StepVerifier.create(
-            registry.register(Registration.create("different-source", "http://health2").source("http-api").build()))
-                    .consumeNextWith(id -> { })
-                    .verifyComplete();
+        StepVerifier.create(registry.register(Registration.create("different-source", "http://health2")
+                                                          .source("http-api")
+                                                          .build())).consumeNextWith(id -> { }).verifyComplete();
         listener.setIgnoredServices(singleton("ignored"));
 
         List<ServiceInstance> instances = new ArrayList<>();
@@ -234,5 +258,29 @@ public class InstanceDiscoveryListenerTest {
         //shouldn't deregister a second time
         listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
         verify(registry, times(1)).deregister(any(InstanceId.class));
+    }
+
+
+    @Test
+    public void should_not_throw_error_when_conversion_fails_and_proceed_with_next_instance() {
+        when(discovery.getServices()).thenReturn(singletonList("service"));
+        when(discovery.getInstances("service")).thenReturn(asList(new DefaultServiceInstance("service",
+            "localhost",
+            80,
+            false
+        ), new DefaultServiceInstance("error", "localhost", 80, false)));
+        listener.setConverter(instance -> {
+            if (instance.getServiceId().equals("error")) {
+                throw new IllegalStateException("Test-Error");
+            } else {
+                return new DefaultServiceInstanceConverter().convert(instance);
+            }
+        });
+
+        listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
+
+        StepVerifier.create(registry.getInstances())
+                    .assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service"))
+                    .verifyComplete();
     }
 }
