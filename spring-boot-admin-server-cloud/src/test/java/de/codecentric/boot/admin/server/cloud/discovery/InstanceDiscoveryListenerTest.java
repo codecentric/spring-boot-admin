@@ -64,7 +64,8 @@ public class InstanceDiscoveryListenerTest {
     @Test
     public void should_discover_instances_when_application_is_ready() {
         when(discovery.getServices()).thenReturn(Collections.singletonList("service"));
-        when(discovery.getInstances("service")).thenReturn(Collections.singletonList(new DefaultServiceInstance("service",
+        when(discovery.getInstances("service")).thenReturn(Collections.singletonList(new DefaultServiceInstance("test-1",
+            "service",
             "localhost",
             80,
             false
@@ -81,7 +82,7 @@ public class InstanceDiscoveryListenerTest {
     @Test
     public void should_not_register_instance_when_serviceId_is_ignored() {
         when(discovery.getServices()).thenReturn(singletonList("service"));
-        when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("service",
+        when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("test-1", "service",
             "localhost",
             80,
             false
@@ -96,7 +97,7 @@ public class InstanceDiscoveryListenerTest {
     @Test
     public void should_register_instance_when_serviceId_is_not_ignored() {
         when(discovery.getServices()).thenReturn(singletonList("service"));
-        when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("service",
+        when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("test-1", "service",
             "localhost",
             80,
             false
@@ -111,7 +112,7 @@ public class InstanceDiscoveryListenerTest {
     @Test
     public void should_not_register_instance_when_serviceId_matches_ignored_pattern() {
         when(discovery.getServices()).thenReturn(asList("service", "rabbit-1", "rabbit-2"));
-        when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("service",
+        when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("test-1", "service",
             "localhost",
             80,
             false
@@ -128,7 +129,7 @@ public class InstanceDiscoveryListenerTest {
     @Test
     public void should_register_instances_when_serviceId_matches_wanted_pattern() {
         when(discovery.getServices()).thenReturn(asList("service", "rabbit-1", "rabbit-2"));
-        when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("service",
+        when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("test-1", "service",
             "localhost",
             80,
             false
@@ -145,12 +146,13 @@ public class InstanceDiscoveryListenerTest {
     @Test
     public void should_register_instances_when_serviceId_matches_wanted_pattern_and_igonred_pattern() {
         when(discovery.getServices()).thenReturn(asList("service-1", "service", "rabbit-1", "rabbit-2"));
-        when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("service",
+        when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("test-1", "service",
             "localhost",
             80,
             false
         )));
-        when(discovery.getInstances("service-1")).thenReturn(singletonList(new DefaultServiceInstance("service-1",
+        when(discovery.getInstances("service-1")).thenReturn(singletonList(new DefaultServiceInstance("test-1",
+            "service-1",
             "localhost",
             80,
             false
@@ -168,7 +170,7 @@ public class InstanceDiscoveryListenerTest {
     @Test
     public void should_register_instance_when_new_service_instance_is_discovered() {
         when(discovery.getServices()).thenReturn(singletonList("service"));
-        when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("service",
+        when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("test-1", "service",
             "localhost",
             80,
             false
@@ -191,7 +193,7 @@ public class InstanceDiscoveryListenerTest {
         listener.onParentHeartbeat(new ParentHeartbeatEvent(new Object(), heartbeat));
 
         when(discovery.getServices()).thenReturn(singletonList("service"));
-        when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("service",
+        when(discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("test-1", "service",
             "localhost",
             80,
             false
@@ -217,8 +219,8 @@ public class InstanceDiscoveryListenerTest {
         listener.setIgnoredServices(singleton("ignored"));
 
         List<ServiceInstance> instances = new ArrayList<>();
-        instances.add(new DefaultServiceInstance("service", "localhost", 80, false));
-        instances.add(new DefaultServiceInstance("service", "example.net", 80, false));
+        instances.add(new DefaultServiceInstance("test-1", "service", "localhost", 80, false));
+        instances.add(new DefaultServiceInstance("test-1", "service", "example.net", 80, false));
 
         when(discovery.getServices()).thenReturn(singletonList("service"));
         when(discovery.getInstances("service")).thenReturn(instances);
@@ -264,11 +266,11 @@ public class InstanceDiscoveryListenerTest {
     @Test
     public void should_not_throw_error_when_conversion_fails_and_proceed_with_next_instance() {
         when(discovery.getServices()).thenReturn(singletonList("service"));
-        when(discovery.getInstances("service")).thenReturn(asList(new DefaultServiceInstance("service",
+        when(discovery.getInstances("service")).thenReturn(asList(new DefaultServiceInstance("test-1", "service",
             "localhost",
             80,
             false
-        ), new DefaultServiceInstance("error", "localhost", 80, false)));
+        ), new DefaultServiceInstance("error-1", "error", "localhost", 80, false)));
         listener.setConverter(instance -> {
             if (instance.getServiceId().equals("error")) {
                 throw new IllegalStateException("Test-Error");
