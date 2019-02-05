@@ -39,7 +39,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class InstanceWebClient {
     private final WebClient webClient;
 
-    private InstanceWebClient(WebClient webClient) {
+    protected InstanceWebClient(WebClient webClient) {
         this.webClient = webClient;
     }
 
