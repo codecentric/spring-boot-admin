@@ -26,7 +26,7 @@ describe('time-ago', () => {
     it('should match the snapshot', () => {
       const wrapper = shallowMount(sbaTimeAgo, {
         propsData: {
-          date: moment(1318781000000)
+          date: moment(1318781000000).utc()
         }
       });
       expect(wrapper.vm.$el).toMatchSnapshot();
@@ -37,7 +37,7 @@ describe('time-ago', () => {
     it('should match the snapshot', () => {
       const wrapper = shallowMount(sbaTimeAgo, {
         propsData: {
-          date: moment(1310000000000)
+          date: moment(1310000000000).utc()
         }
       });
       expect(wrapper.vm.$el).toMatchSnapshot();
