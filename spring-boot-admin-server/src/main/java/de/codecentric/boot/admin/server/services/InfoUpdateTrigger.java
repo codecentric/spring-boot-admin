@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import org.reactivestreams.Publisher;
 
 public class InfoUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
     private final InfoUpdater infoUpdater;
-    private Scheduler scheduler;
 
     public InfoUpdateTrigger(InfoUpdater infoUpdater, Publisher<InstanceEvent> publisher) {
         super(publisher, InstanceEvent.class);
@@ -37,28 +36,14 @@ public class InfoUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
     }
 
     @Override
-    public void start() {
-        assert scheduler == null;
-        scheduler = Schedulers.newSingle("info-updater");
-        super.start();
-    }
-
-    @Override
-    public void stop() {
-        super.stop();
-        if (scheduler != null) {
-            scheduler.dispose();
-            scheduler = null;
-        }
-    }
-
-    @Override
     protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
+        Scheduler scheduler = Schedulers.newSingle("info-updater");
         return publisher.subscribeOn(scheduler)
                         .filter(event -> event instanceof InstanceEndpointsDetectedEvent ||
                                          event instanceof InstanceStatusChangedEvent ||
                                          event instanceof InstanceRegistrationUpdatedEvent)
-                        .flatMap(this::updateInfo);
+                        .flatMap(this::updateInfo)
+                        .doFinally(s -> scheduler.dispose());
     }
 
     protected Mono<Void> updateInfo(InstanceEvent event) {

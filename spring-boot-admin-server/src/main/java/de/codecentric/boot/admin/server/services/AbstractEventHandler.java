@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,7 @@ public abstract class AbstractEventHandler<T extends InstanceEvent> {
                            .log(log.getName(), Level.FINEST)
                            .doOnSubscribe(s -> log.debug("Subscribed to {} events", eventType))
                            .ofType(eventType)
-                           .cast(eventType)
-                           .compose(this::handle)
+                           .cast(eventType).transform(this::handle)
                            .onErrorContinue((ex, value) -> log.warn("Unexpected error while handling {}", value, ex))
                            .subscribe();
     }

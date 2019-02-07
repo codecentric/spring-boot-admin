@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,6 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
     private Duration statusLifetime = Duration.ofSeconds(10);
     @Nullable
     private Disposable intervalSubscription;
-    private Scheduler statusMonitorScheduler;
-    private Scheduler statusUpdaterScheduler;
 
     public StatusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> publisher) {
         super(publisher, InstanceEvent.class);
@@ -54,28 +52,26 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 
     @Override
     public void start() {
-        assert statusMonitorScheduler == null;
-        statusMonitorScheduler = Schedulers.newSingle("status-monitor");
-        assert statusUpdaterScheduler == null;
-        statusUpdaterScheduler = Schedulers.newSingle("status-updater");
         super.start();
+        Scheduler scheduler = Schedulers.newSingle("status-monitor");
         intervalSubscription = Flux.interval(updateInterval)
                                    .doOnSubscribe(s -> log.debug("Scheduled status update every {}", updateInterval))
-                                   .log(log.getName(), Level.FINEST)
-                                   .subscribeOn(statusMonitorScheduler)
+                                   .log(log.getName(), Level.FINEST).subscribeOn(scheduler)
                                    .concatMap(i -> this.updateStatusForAllInstances())
                                    .onErrorContinue((ex, value) -> log.warn("Unexpected error while updating statuses",
                                        ex
-                                   ))
+                                   )).doFinally(s -> scheduler.dispose())
                                    .subscribe();
     }
 
     @Override
     protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
-        return publisher.subscribeOn(statusUpdaterScheduler)
+        Scheduler scheduler = Schedulers.newSingle("status-updater");
+        return publisher.subscribeOn(scheduler)
                         .filter(event -> event instanceof InstanceRegisteredEvent ||
                                          event instanceof InstanceRegistrationUpdatedEvent)
-                        .flatMap(event -> updateStatus(event.getInstance()));
+                        .flatMap(event -> updateStatus(event.getInstance()))
+                        .doFinally(s -> scheduler.dispose());
     }
 
     @Override
@@ -83,14 +79,6 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
         super.stop();
         if (intervalSubscription != null) {
             intervalSubscription.dispose();
-        }
-        if (statusUpdaterScheduler != null) {
-            statusUpdaterScheduler.dispose();
-            statusUpdaterScheduler = null;
-        }
-        if (statusMonitorScheduler != null) {
-            statusMonitorScheduler.dispose();
-            statusMonitorScheduler = null;
         }
     }
 

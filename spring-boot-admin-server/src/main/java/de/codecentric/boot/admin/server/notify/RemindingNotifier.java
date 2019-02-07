@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,6 @@ public class RemindingNotifier extends AbstractEventNotifier {
     private String[] reminderStatuses = {"DOWN", "OFFLINE"};
     @Nullable
     private Disposable subscription;
-    private Scheduler scheduler;
 
     public RemindingNotifier(Notifier delegate, InstanceRepository repository) {
         super(repository);
@@ -72,8 +71,7 @@ public class RemindingNotifier extends AbstractEventNotifier {
     }
 
     public void start() {
-        assert scheduler == null;
-        scheduler = Schedulers.newSingle("reminders");
+        Scheduler scheduler = Schedulers.newSingle("reminders");
         this.subscription = Flux.interval(this.checkReminderInverval, scheduler)
                                 .log(log.getName(), Level.FINEST)
                                 .doOnSubscribe(s -> log.debug("Started reminders"))
@@ -81,7 +79,7 @@ public class RemindingNotifier extends AbstractEventNotifier {
                                 .onErrorContinue((ex, value) -> log.warn(
                                     "Unexpected error while sending reminders",
                                     ex
-                                ))
+                                )).doFinally(s -> scheduler.dispose())
                                 .subscribe();
     }
 
@@ -89,10 +87,6 @@ public class RemindingNotifier extends AbstractEventNotifier {
         if (this.subscription != null && !this.subscription.isDisposed()) {
             log.debug("stopped reminders");
             this.subscription.dispose();
-        }
-        if (scheduler != null) {
-            scheduler.dispose();
-            scheduler = null;
         }
     }
 
