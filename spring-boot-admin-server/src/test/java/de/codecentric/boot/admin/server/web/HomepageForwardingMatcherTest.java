@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HomepageForwardingMatcherTest {
     private final HomepageForwardingMatcher matcher = new HomepageForwardingMatcher("");
     private final HomepageForwardingMatcher matcherWithBasePath = new HomepageForwardingMatcher("/base");
-    private final List<MediaType> htmlMediaType = Collections.singletonList(MediaType.TEXT_HTML);
+    private final List<MediaType> htmlMediaType = Arrays.asList(MediaType.TEXT_HTML, MediaType.APPLICATION_XHTML_XML);
 
     @Test
     public void should_match_for_get_request_with_html_accept_header() {
@@ -51,7 +52,6 @@ public class HomepageForwardingMatcherTest {
     public void should_not_match_for_ignored_path() {
         assertThat(matcher.match(HttpMethod.GET, "/login", htmlMediaType)).isFalse();
         assertThat(matcherWithBasePath.match(HttpMethod.GET, "/base/login", htmlMediaType)).isFalse();
-
         assertThat(matcher.match(HttpMethod.GET, "/instances/xxx/actuator/heapdump", htmlMediaType)).isFalse();
         assertThat(matcherWithBasePath.match(HttpMethod.GET, "/base/instances/xxx/actuator/heapdump", htmlMediaType)).isFalse();
     }

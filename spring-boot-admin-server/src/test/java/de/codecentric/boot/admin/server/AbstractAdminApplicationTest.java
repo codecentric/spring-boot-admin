@@ -16,22 +16,25 @@
 
 package de.codecentric.boot.admin.server;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
 import de.codecentric.boot.admin.server.domain.values.Registration;
-import reactor.core.publisher.Flux;
-import reactor.test.StepVerifier;
-
-import java.net.URI;
-import java.time.Duration;
-import java.util.concurrent.atomic.AtomicReference;
+import de.codecentric.boot.admin.server.web.AdminController;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
+import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
+
+import java.net.URI;
+import java.time.Duration;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,12 +52,14 @@ public abstract class AbstractAdminApplicationTest {
     @Test
     public void lifecycle() {
         AtomicReference<URI> location = new AtomicReference<>();
+        AtomicReference<byte[]> homepageResponseBody = new AtomicReference<>();
 
         StepVerifier.create(getEventStream().log())
                     .expectSubscription()
                     .then(() -> {
                         listEmptyInstances();
                         location.set(registerInstance());
+                        homepageResponseBody.set(accessHomepage());
                     })
                     .assertNext((event) -> assertThat(event.opt("type")).isEqualTo("REGISTERED"))
                     .assertNext((event) -> assertThat(event.opt("type")).isEqualTo("STATUS_CHANGED"))
@@ -62,6 +67,7 @@ public abstract class AbstractAdminApplicationTest {
                     .assertNext((event) -> assertThat(event.opt("type")).isEqualTo("INFO_CHANGED"))
                     .then(() -> {
                         getInstance(location.get());
+                        accessInstanceDeepLink(location.get(), homepageResponseBody.get());
                         listInstances();
                         deregisterInstance(location.get());
                     })
@@ -91,6 +97,16 @@ public abstract class AbstractAdminApplicationTest {
         //@formatter:on
     }
 
+    protected byte[] accessHomepage() {
+        //@formatter:off
+        return webClient.get().uri("/").accept(MediaType.TEXT_HTML, MediaType.APPLICATION_XHTML_XML)
+            .exchange()
+            .expectStatus().isOk()
+            .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
+            .returnResult(String.class).getResponseBodyContent();
+        //@formatter:on
+    }
+
     protected void getInstance(URI uri) {
         //@formatter:off
         webClient.get().uri(uri).accept(MediaType.APPLICATION_JSON_UTF8)
@@ -100,6 +116,16 @@ public abstract class AbstractAdminApplicationTest {
                 .jsonPath("$.registration.name").isEqualTo("Test-Instance")
                 .jsonPath("$.statusInfo.status").isEqualTo("UP")
                 .jsonPath("$.info.test").isEqualTo("foobar");
+        //@formatter:on
+    }
+
+    protected void accessInstanceDeepLink(URI uri, byte[] expectedResponseBody) {
+        //@formatter:off
+        webClient.get().uri(uri).accept(MediaType.TEXT_HTML, MediaType.APPLICATION_XHTML_XML)
+            .exchange()
+            .expectStatus().isOk()
+            .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
+            .expectBody(byte[].class).isEqualTo(expectedResponseBody);
         //@formatter:on
     }
 
@@ -155,5 +181,15 @@ public abstract class AbstractAdminApplicationTest {
 
     public WebTestClient getWebClient() {
         return webClient;
+    }
+
+    @AdminController
+    @ResponseBody
+    static class MockUiController {
+
+        @GetMapping(path = "/", produces = MediaType.TEXT_HTML_VALUE)
+        public String mockHomepage() {
+            return "mock content";
+        }
     }
 }

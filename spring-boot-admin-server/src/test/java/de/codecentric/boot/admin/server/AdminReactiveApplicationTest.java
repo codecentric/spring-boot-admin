@@ -59,5 +59,9 @@ public class AdminReactiveApplicationTest extends AbstractAdminApplicationTest {
             return http.authorizeExchange().anyExchange().permitAll().and().csrf().disable().build();
         }
 
+        @Bean
+        public MockUiController mockUiController() {
+            return new MockUiController();
+        }
     }
 }

@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
  */
 public class HomepageForwardingMatcher {
     private static final List<String> DEFAULT_IGNORED_PATHS = Arrays.asList("/login", "/**/actuator/**");
+    private static final List<MediaType> REQUIRED_ACCEPT_HEADERS = Arrays.asList(MediaType.TEXT_HTML,
+        MediaType.APPLICATION_XHTML_XML);
 
     private final String homepagePath;
     private final List<String> ignoredPaths;
@@ -53,6 +55,6 @@ public class HomepageForwardingMatcher {
             return false;
         }
 
-        return acceptHeaderTypes.contains(MediaType.TEXT_HTML);
+        return acceptHeaderTypes.containsAll(REQUIRED_ACCEPT_HEADERS);
     }
 }

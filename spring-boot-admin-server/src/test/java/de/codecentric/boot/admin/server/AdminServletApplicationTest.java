@@ -25,6 +25,7 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -58,6 +59,11 @@ public class AdminServletApplicationTest extends AbstractAdminApplicationTest {
                 http.authorizeRequests().anyRequest().permitAll()//
                     .and().csrf().disable();
             }
+        }
+
+        @Bean
+        public MockUiController mockUiController() {
+            return new MockUiController();
         }
     }
 }

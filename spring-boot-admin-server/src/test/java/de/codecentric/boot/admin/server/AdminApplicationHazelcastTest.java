@@ -153,5 +153,10 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
             tcpIpConfig.setMembers(singletonList("127.0.0.1"));
             return config;
         }
+
+        @Bean
+        public MockUiController mockUiController() {
+            return new MockUiController();
+        }
     }
 }
