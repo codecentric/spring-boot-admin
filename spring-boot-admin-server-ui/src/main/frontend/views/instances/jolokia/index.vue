@@ -107,7 +107,7 @@
   import fromPairs from 'lodash/fromPairs';
   import isEmpty from 'lodash/isEmpty';
   import sortBy from 'lodash/sortBy';
-  import {directive as onClickaway} from 'vue-clickaway';
+  import {directive as onClickaway} from 'vue-clickaway2';
   import mBeanAttributes from './m-bean-attributes';
   import mBeanOperations from './m-bean-operations';
 

@@ -90,7 +90,7 @@
   import groupBy from 'lodash/groupBy';
   import sortBy from 'lodash/sortBy';
   import transform from 'lodash/transform';
-  import {directive as onClickaway} from 'vue-clickaway';
+  import {directive as onClickaway} from 'vue-clickaway2';
   import ApplicationsListItem from './applications-list-item';
   import applicationsStats from './applications-stats';
   import handle from './handle';

@@ -24,7 +24,7 @@
 </template>
 
 <script>
-  import {directive as onClickaway} from 'vue-clickaway';
+  import {directive as onClickaway} from 'vue-clickaway2';
 
   export default {
     directives: {onClickaway},
