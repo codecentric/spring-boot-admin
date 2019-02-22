@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {SpringBootAdminApplication.class})
-public class SpringBootAdminApplicationTest {
+@SpringBootTest(classes = {SpringBootAdminConsulApplication.class}, properties = {"spring.cloud.consul.enabled=false"})
+public class SpringBootAdminConsulApplicationTest {
     @Test
     public void contextLoads() {
     }

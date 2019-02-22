@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,10 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 @EnableAutoConfiguration
 @EnableDiscoveryClient
 @EnableAdminServer
-public class SpringBootAdminApplication {
+public class SpringBootAdminEurekaApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(SpringBootAdminEurekaApplication.class, args);
+    }
 
     @Profile("insecure")
     @Configuration
@@ -85,10 +88,6 @@ public class SpringBootAdminApplication {
                 .ignoringAntMatchers(adminContextPath + "/instances", adminContextPath + "/actuator/**");
             // @formatter:on
         }
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(SpringBootAdminApplication.class, args);
     }
 
 }

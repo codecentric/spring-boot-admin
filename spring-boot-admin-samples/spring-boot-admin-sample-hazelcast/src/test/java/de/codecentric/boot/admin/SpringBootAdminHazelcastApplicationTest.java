@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {SpringBootAdminApplication.class}, properties = {"spring.cloud.zookeeper.enabled=false"})
-public class SpringBootAdminApplicationTest {
+@SpringBootTest(classes = {SpringBootAdminHazelcastApplication.class})
+public class SpringBootAdminHazelcastApplicationTest {
     @Test
     public void contextLoads() {
     }

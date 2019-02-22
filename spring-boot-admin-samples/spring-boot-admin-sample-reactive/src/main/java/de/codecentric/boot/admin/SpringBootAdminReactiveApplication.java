@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,15 +32,15 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @Configuration
 @EnableAutoConfiguration
 @EnableAdminServer
-public class SpringBootAdminApplication {
+public class SpringBootAdminReactiveApplication {
     private final String adminContextPath;
 
-    public SpringBootAdminApplication(AdminServerProperties adminServerProperties) {
+    public SpringBootAdminReactiveApplication(AdminServerProperties adminServerProperties) {
         this.adminContextPath = adminServerProperties.getContextPath();
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringBootAdminApplication.class, args);
+        SpringApplication.run(SpringBootAdminReactiveApplication.class, args);
     }
 
     @Bean
