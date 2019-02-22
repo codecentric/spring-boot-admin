@@ -27,6 +27,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
+import reactor.retry.Retry;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -76,10 +77,12 @@ public class RemindingNotifier extends AbstractEventNotifier {
                                 .log(log.getName(), Level.FINEST)
                                 .doOnSubscribe(s -> log.debug("Started reminders"))
                                 .flatMap(i -> this.sendReminders())
-                                .onErrorContinue((ex, value) -> log.warn(
-                                    "Unexpected error while sending reminders",
-                                    ex
-                                )).doFinally(s -> scheduler.dispose())
+                                .retryWhen(Retry.any()
+                                                .retryMax(Long.MAX_VALUE)
+                                                .doOnRetry(ctx -> log.warn("Unexpected error when sending reminders",
+                                                    ctx.exception()
+                                                )))
+                                .doFinally(s -> scheduler.dispose())
                                 .subscribe();
     }
 
@@ -103,7 +106,8 @@ public class RemindingNotifier extends AbstractEventNotifier {
     protected boolean shouldStartReminder(InstanceEvent event) {
         if (event instanceof InstanceStatusChangedEvent) {
             return Arrays.binarySearch(reminderStatuses,
-                ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()) >= 0;
+                ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()
+            ) >= 0;
         }
         return false;
     }
@@ -114,7 +118,8 @@ public class RemindingNotifier extends AbstractEventNotifier {
         }
         if (event instanceof InstanceStatusChangedEvent) {
             return Arrays.binarySearch(reminderStatuses,
-                ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()) < 0;
+                ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()
+            ) < 0;
         }
         return false;
     }

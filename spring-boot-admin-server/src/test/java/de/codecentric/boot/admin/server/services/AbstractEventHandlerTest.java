@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
+import reactor.core.publisher.Mono;
 import reactor.core.publisher.UnicastProcessor;
 import reactor.test.StepVerifier;
 import reactor.test.publisher.TestPublisher;
@@ -90,7 +91,7 @@ public class AbstractEventHandlerTest {
         private final FluxSink<InstanceEvent> sink;
         private final Flux<InstanceEvent> flux;
 
-        protected TestEventHandler(Publisher<InstanceEvent> publisher) {
+        private TestEventHandler(Publisher<InstanceEvent> publisher) {
             super(publisher, InstanceRegisteredEvent.class);
             UnicastProcessor<InstanceEvent> processor = UnicastProcessor.create();
             this.sink = processor.sink();
@@ -99,14 +100,15 @@ public class AbstractEventHandlerTest {
 
         @Override
         protected Publisher<Void> handle(Flux<InstanceRegisteredEvent> publisher) {
-            return publisher.doOnNext(event -> {
+            return publisher.flatMap(event -> {
                 if (event.equals(errorEvent)) {
-                    throw new IllegalStateException("Error");
+                    throw (new IllegalStateException("Error"));
                 } else {
                     log.info("Event {}", event);
                     sink.next(event);
+                    return Mono.empty();
                 }
-            }).then();
+            });
         }
 
         public Flux<InstanceEvent> getFlux() {

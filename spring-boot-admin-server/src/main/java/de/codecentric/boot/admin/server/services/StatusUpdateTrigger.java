@@ -25,6 +25,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
+import reactor.retry.Retry;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -56,11 +57,15 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
         Scheduler scheduler = Schedulers.newSingle("status-monitor");
         intervalSubscription = Flux.interval(updateInterval)
                                    .doOnSubscribe(s -> log.debug("Scheduled status update every {}", updateInterval))
-                                   .log(log.getName(), Level.FINEST).subscribeOn(scheduler)
+                                   .log(log.getName(), Level.FINEST)
+                                   .subscribeOn(scheduler)
                                    .concatMap(i -> this.updateStatusForAllInstances())
-                                   .onErrorContinue((ex, value) -> log.warn("Unexpected error while updating statuses",
-                                       ex
-                                   )).doFinally(s -> scheduler.dispose())
+                                   .retryWhen(Retry.any()
+                                                   .retryMax(Long.MAX_VALUE)
+                                                   .doOnRetry(ctx -> log.warn("Unexpected error when updating statuses",
+                                                       ctx.exception()
+                                                   )))
+                                   .doFinally(s -> scheduler.dispose())
                                    .subscribe();
     }
 

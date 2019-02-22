@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.services;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
+import reactor.retry.Retry;
 
 import java.util.logging.Level;
 import javax.annotation.Nullable;
@@ -43,8 +44,11 @@ public abstract class AbstractEventHandler<T extends InstanceEvent> {
                            .log(log.getName(), Level.FINEST)
                            .doOnSubscribe(s -> log.debug("Subscribed to {} events", eventType))
                            .ofType(eventType)
-                           .cast(eventType).transform(this::handle)
-                           .onErrorContinue((ex, value) -> log.warn("Unexpected error while handling {}", value, ex))
+                           .cast(eventType)
+                           .transform(this::handle)
+                           .retryWhen(Retry.any()
+                                           .retryMax(Long.MAX_VALUE)
+                                           .doOnRetry(ctx -> log.warn("Unexpected error", ctx.exception())))
                            .subscribe();
     }
 
