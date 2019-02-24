@@ -63,7 +63,7 @@ public class NotificationFilterController {
             filteringNotifier.addFilter(filter);
             return ResponseEntity.ok(filter);
         } else {
-            return ResponseEntity.badRequest().body("Either 'id' or 'name' must be set");
+            return ResponseEntity.badRequest().body("Either 'instanceId' or 'applicationName' must be set");
         }
     }
 
