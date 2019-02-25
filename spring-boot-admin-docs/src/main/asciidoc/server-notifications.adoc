@@ -42,7 +42,7 @@ This notifier is useful if you don't want recieve notifications when deploying y
 .How to configure filtering
 [source,java,indent=0]
 ----
-include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/SpringBootAdminApplication.java[tags=configuration-filtering-notifier]
+include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/SpringBootAdminServletApplication.java[tags=configuration-filtering-notifier]
 ----
 <1> Add the `FilteringNotifier` bean using a delegate (e.g. `MailNotifier` when configured)
 <2> Add the `RemindingNotifier` as primary bean using the `FilteringNotifier` as delegate.
