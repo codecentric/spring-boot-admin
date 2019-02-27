@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,168 +23,134 @@ import junit.framework.AssertionFailedError;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public abstract class AbstractInstanceRepositoryTest<T extends InstanceRepository> {
-    protected final T repository;
+public abstract class AbstractInstanceRepositoryTest {
+    private final Instance instance1 = Instance.create(InstanceId.of("app-1"))
+                                               .register(Registration.create("app", "http://health").build());
+    private final Instance instance2 = Instance.create(InstanceId.of("app-2"))
+                                               .register(Registration.create("app", "http://health").build());
+    private final Instance instance3 = Instance.create(InstanceId.of("other-1"))
+                                               .register(Registration.create("other", "http://health").build());
+    private InstanceRepository repository;
 
-    protected AbstractInstanceRepositoryTest(T repository) {
+    public void setUp(InstanceRepository repository) {
         this.repository = repository;
     }
 
     @Test
-    public void save() {
-        //given
-        Instance instance = Instance.create(InstanceId.of("foo"))
-                                    .register(Registration.create("name", "http://health").build());
-
-        StepVerifier.create(repository.save(instance)).expectNext(instance).verifyComplete();
-
-        //when/then
-        StepVerifier.create(repository.find(instance.getId())).assertNext(loaded -> {
-            assertThat(loaded.getId()).isEqualTo(instance.getId());
-            assertThat(loaded.getVersion()).isEqualTo(instance.getVersion());
-            assertThat(loaded.getRegistration()).isEqualTo(instance.getRegistration());
-            assertThat(loaded.getInfo()).isEqualTo(instance.getInfo());
-            assertThat(loaded.getStatusInfo()).isEqualTo(instance.getStatusInfo());
-        }).verifyComplete();
+    public void should_save() {
+        //when
+        StepVerifier.create(this.repository.save(this.instance1)).expectNext(this.instance1).verifyComplete();
+        //then
+        StepVerifier.create(this.repository.find(this.instance1.getId())).expectNext(this.instance1).verifyComplete();
     }
 
     @Test
-    public void find_methods() {
+    public void should_find_instances() {
         //given
-        Instance instance1 = Instance.create(InstanceId.of("foo.1"))
-                                     .register(Registration.create("foo", "http://health").build());
-        Instance instance2 = Instance.create(InstanceId.of("foo.2"))
-                                     .register(Registration.create("foo", "http://health").build());
-        Instance instance3 = Instance.create(InstanceId.of("bar"))
-                                     .register(Registration.create("bar", "http://health").build());
-
-        StepVerifier.create(repository.save(instance1)).expectNextCount(1).verifyComplete();
-        StepVerifier.create(repository.save(instance2)).expectNextCount(1).verifyComplete();
-        StepVerifier.create(repository.save(instance3)).expectNextCount(1).verifyComplete();
+        StepVerifier.create(this.repository.save(this.instance1)).expectNextCount(1).verifyComplete();
+        StepVerifier.create(this.repository.save(this.instance2)).expectNextCount(1).verifyComplete();
+        StepVerifier.create(this.repository.save(this.instance3)).expectNextCount(1).verifyComplete();
 
         //when/then
-        StepVerifier.create(repository.find(instance2.getId()))
-                    .assertNext(loaded2 -> assertThat(loaded2.getId()).isEqualTo(instance2.getId()))
+        StepVerifier.create(this.repository.find(this.instance2.getId())).expectNext(this.instance2).verifyComplete();
+
+        StepVerifier.create(this.repository.findByName("app").collectList())
+                    .assertNext(v -> assertThat(v).containsExactlyInAnyOrder(this.instance1, this.instance2))
                     .verifyComplete();
 
-        StepVerifier.create(repository.findByName("foo"))
-                    .recordWith(ArrayList::new)
-                    .thenConsumeWhile(a -> true)
-                    .consumeRecordedWith(appsByName -> {
-                        assertThat(appsByName.stream()
-                                             .map(Instance::getId)
-                                             .collect(Collectors.toList())).containsExactlyInAnyOrder(instance1.getId(),
-                            instance2.getId()
-                        );
-                    })
-                    .verifyComplete();
-
-        StepVerifier.create(repository.findAll())
-                    .recordWith(ArrayList::new)
-                    .thenConsumeWhile(a -> true)
-                    .consumeRecordedWith(allApps -> {
-                        assertThat(allApps.stream()
-                                          .map(Instance::getId)
-                                          .collect(Collectors.toList())).containsExactlyInAnyOrder(instance1.getId(),
-                            instance2.getId(),
-                            instance3.getId()
-                        );
-                    })
+        StepVerifier.create(this.repository.findAll().collectList())
+                    .assertNext(v -> assertThat(v).containsExactlyInAnyOrder(this.instance1,
+                        this.instance2,
+                        this.instance3
+                    ))
                     .verifyComplete();
     }
 
     @Test
-    public void should_retry_computeIfPresent() {
+    public void should_computeIfPresent() {
         AtomicLong counter = new AtomicLong(3L);
+        Endpoints infoEndpoint = Endpoints.single("info", "info");
+
         //given
-        Instance instance1 = Instance.create(InstanceId.of("foo.1"))
-                                     .register(Registration.create("foo", "http://health").build());
-        StepVerifier.create(repository.save(instance1)).expectNextCount(1).verifyComplete();
+        StepVerifier.create(this.repository.save(this.instance1)).expectNextCount(1).verifyComplete();
 
         //when
-        StepVerifier.create(repository.computeIfPresent(instance1.getId(),
-            (key, application) -> counter.getAndDecrement() >
-                                  0L ? Mono.just(instance1) : Mono.just(application.withEndpoints(Endpoints.single(
-                "info",
-                "info"
-            )))
-        )).expectNext(instance1.withEndpoints(Endpoints.single("info", "info"))).verifyComplete();
+        StepVerifier.create(this.repository.computeIfPresent(this.instance1.getId(), (key, value) -> {
+            if (counter.getAndDecrement() > 0L) {
+                return Mono.just(this.instance1); // causes OptimistickLockException
+            } else {
+                return Mono.just(value.withEndpoints(infoEndpoint));
+            }
+        })).expectNext(this.instance1.withEndpoints(infoEndpoint)).verifyComplete();
 
         //then
-        StepVerifier.create(repository.find(instance1.getId()))
-                    .assertNext(loaded -> assertThat(loaded.getEndpoints()).isEqualTo(Endpoints.single("info", "info")
-                                                                                               .withEndpoint(
-                                                                                                   "health",
-                                                                                                   "http://health"
-                                                                                               )))
+        StepVerifier.create(this.repository.find(this.instance1.getId()))
+                    .expectNext(this.instance1.withEndpoints(infoEndpoint))
                     .verifyComplete();
     }
 
     @Test
-    public void computeIfPresent_should_not_save_if_not_present() {
+    public void should_not_compute_if_not_present() {
         //given
-        InstanceId instanceId = InstanceId.of("foo");
+        InstanceId instanceId = InstanceId.of("not-existent");
 
         //when
-        StepVerifier.create(repository.computeIfPresent(instanceId,
+        StepVerifier.create(this.repository.computeIfPresent(
+            instanceId,
             (key, application) -> Mono.error(new AssertionFailedError("Should not call any computation"))
         ))
                     .verifyComplete();
 
         //then
-        StepVerifier.create(repository.find(instanceId)).verifyComplete();
+        StepVerifier.create(this.repository.find(instanceId)).verifyComplete();
     }
 
     @Test
     public void should_run_compute_with_null() {
+        InstanceId instanceId = InstanceId.of("app-1");
+        Registration registration = Registration.create("app", "http://health").build();
+
         //when
-        InstanceId instanceId = InstanceId.of("foo");
-        StepVerifier.create(repository.compute(instanceId, (key, application) -> {
+        StepVerifier.create(this.repository.compute(this.instance1.getId(), (key, application) -> {
             assertThat(application).isNull();
-            return Mono.just(Instance.create(key).register(Registration.create("foo", "http://health").build()));
-        }))
-                    .expectNext(Instance.create(instanceId)
-                                        .register(Registration.create("foo", "http://health").build()))
-                    .verifyComplete();
+            return Mono.just(Instance.create(key).register(registration));
+        })).assertNext(v -> {
+            assertThat(v.getId()).isEqualTo(instanceId);
+            assertThat(v.getRegistration()).isEqualTo(registration);
+        }).verifyComplete();
 
         //then
-        StepVerifier.create(repository.find(instanceId))
-                    .assertNext(loaded -> assertThat(loaded.getId()).isEqualTo(instanceId))
-                    .verifyComplete();
+        StepVerifier.create(this.repository.find(instanceId)).assertNext(v -> {
+            assertThat(v.getId()).isEqualTo(instanceId);
+            assertThat(v.getRegistration()).isEqualTo(registration);
+        }).verifyComplete();
     }
 
     @Test
     public void should_retry_compute() {
         AtomicLong counter = new AtomicLong(3L);
+        Endpoints infoEndpoint = Endpoints.single("info", "info");
+
         //given
-        Instance instance = Instance.create(InstanceId.of("foo.1"))
-                                    .register(Registration.create("foo", "http://health").build());
-        StepVerifier.create(repository.save(instance)).expectNextCount(1).verifyComplete();
+        StepVerifier.create(this.repository.save(this.instance1)).expectNextCount(1).verifyComplete();
 
         //when
-        StepVerifier.create(repository.compute(
-            instance.getId(),
-            (key, application) -> counter.getAndDecrement() >
-                                  0L ? Mono.just(instance) : Mono.just(application.withEndpoints(Endpoints.single(
-                "info",
-                "info"
-            )))
-        )).expectNext(instance.withEndpoints(Endpoints.single("info", "info"))).verifyComplete();
+        StepVerifier.create(this.repository.compute(this.instance1.getId(), (key, value) -> {
+            if (counter.getAndDecrement() > 0L) {
+                return Mono.just(this.instance1); // causes OptimistickLockException
+            } else {
+                return Mono.just(value.withEndpoints(infoEndpoint));
+            }
+        })).expectNext(this.instance1.withEndpoints(infoEndpoint)).verifyComplete();
 
         //then
-        StepVerifier.create(repository.find(instance.getId()))
-                    .assertNext(loaded -> assertThat(loaded.getEndpoints()).isEqualTo(Endpoints.single("info", "info")
-                                                                                               .withEndpoint(
-                                                                                                   "health",
-                                                                                                   "http://health"
-                                                                                               )))
+        StepVerifier.create(this.repository.find(this.instance1.getId()))
+                    .expectNext(this.instance1.withEndpoints(infoEndpoint))
                     .verifyComplete();
     }
 }

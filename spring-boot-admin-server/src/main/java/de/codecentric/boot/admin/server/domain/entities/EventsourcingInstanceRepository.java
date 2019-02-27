@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.retry.Retry;
 
-import java.time.Duration;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -39,12 +38,12 @@ import org.slf4j.LoggerFactory;
 public class EventsourcingInstanceRepository implements InstanceRepository {
     private static final Logger log = LoggerFactory.getLogger(EventsourcingInstanceRepository.class);
     private final InstanceEventStore eventStore;
-    private final Retry<?> retryOnOptimisticLockException = Retry.anyOf(OptimisticLockingException.class)
-                                                                 .fixedBackoff(Duration.ofMillis(50L))
-                                                                 .retryMax(10)
-                                                                 .doOnRetry(ctx -> log.debug(
-                                                                     "Retrying after OptimisticLockingException",
-                                                                     ctx.exception()));
+    private final Retry<?> retryOptimisticLockException = Retry.anyOf(OptimisticLockingException.class)
+                                                               .retryMax(10)
+                                                               .doOnRetry(ctx -> log.debug(
+                                                                   "Retrying after OptimisticLockingException",
+                                                                   ctx.exception()
+                                                               ));
 
     public EventsourcingInstanceRepository(InstanceEventStore eventStore) {
         this.eventStore = eventStore;
@@ -52,20 +51,21 @@ public class EventsourcingInstanceRepository implements InstanceRepository {
 
     @Override
     public Mono<Instance> save(Instance instance) {
-        return eventStore.append(instance.getUnsavedEvents()).then(Mono.just(instance.clearUnsavedEvents()));
+        return this.eventStore.append(instance.getUnsavedEvents()).then(Mono.just(instance.clearUnsavedEvents()));
     }
 
     @Override
     public Flux<Instance> findAll() {
-        return eventStore.findAll()
-                         .groupBy(InstanceEvent::getInstance)
-                         .flatMap(f -> f.reduce(Instance.create(f.key()), Instance::apply));
+        return this.eventStore.findAll()
+                              .groupBy(InstanceEvent::getInstance)
+                              .flatMap(f -> f.reduce(Instance.create(f.key()), Instance::apply));
     }
 
     @Override
     public Mono<Instance> find(InstanceId id) {
         //hmm a simple reduce doesn't return empty when not found...
-        return eventStore.find(id).collect((Supplier<AtomicReference<Instance>>) AtomicReference::new, (ref, event) -> {
+        return this.eventStore.find(id)
+                              .collect((Supplier<AtomicReference<Instance>>) AtomicReference::new, (ref, event) -> {
             Instance instance = ref.get() != null ? ref.get() : Instance.create(id);
             ref.set(instance.apply(event));
         }).flatMap(ref -> Mono.justOrEmpty(ref.get()));
@@ -82,7 +82,7 @@ public class EventsourcingInstanceRepository implements InstanceRepository {
                    .flatMap(application -> remappingFunction.apply(id, application))
                    .switchIfEmpty(Mono.defer(() -> remappingFunction.apply(id, null)))
                    .flatMap(this::save)
-                   .retryWhen(retryOnOptimisticLockException);
+                   .retryWhen(this.retryOptimisticLockException);
     }
 
     @Override
@@ -91,10 +91,6 @@ public class EventsourcingInstanceRepository implements InstanceRepository {
         return this.find(id)
                    .flatMap(application -> remappingFunction.apply(id, application))
                    .flatMap(this::save)
-                   .retryWhen(retryOnOptimisticLockException);
-    }
-
-    protected final InstanceEventStore getEventStore() {
-        return eventStore;
+                   .retryWhen(this.retryOptimisticLockException);
     }
 }

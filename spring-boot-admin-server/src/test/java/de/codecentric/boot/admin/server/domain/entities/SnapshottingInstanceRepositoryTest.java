@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,11 @@
 
 package de.codecentric.boot.admin.server.domain.entities;
 
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
-import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -30,21 +28,26 @@ import reactor.test.StepVerifier;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.reactivestreams.Subscriber;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class SnapshottingInstanceRepositoryTest extends AbstractInstanceRepositoryTest<SnapshottingInstanceRepository> {
-    public SnapshottingInstanceRepositoryTest() {
-        super(new SnapshottingInstanceRepository(new InMemoryEventStore()));
-    }
+public class SnapshottingInstanceRepositoryTest extends AbstractInstanceRepositoryTest {
+    private final Instance instance = Instance.create(InstanceId.of("app-1"))
+                                              .register(Registration.create("app", "http://health").build());
+    private InMemoryEventStore eventStore = spy(new InMemoryEventStore());
+    private SnapshottingInstanceRepository repository;
 
     @Before
     public void setUp() {
+        this.repository = new SnapshottingInstanceRepository(this.eventStore);
         this.repository.start();
+        super.setUp(this.repository);
     }
 
     @After
@@ -52,46 +55,65 @@ public class SnapshottingInstanceRepositoryTest extends AbstractInstanceReposito
         this.repository.stop();
     }
 
+
     @Test
-    public void should_recover_after_faulty_event_order() {
-        //given a registered known instance 'foo'
-        Instance instanceFoo = Instance.create(InstanceId.of("foo"))
-                                       .register(Registration.create("name", "http://health").build())
-                                       .withStatusInfo(StatusInfo.ofDown());
-        InstanceEventStore eventStore = mock(InstanceEventStore.class);
-        when(eventStore.findAll()).thenReturn(Flux.fromIterable(instanceFoo.getUnsavedEvents()));
-        when(eventStore.find(instanceFoo.getId())).thenReturn(Flux.fromIterable(instanceFoo.getUnsavedEvents()));
+    public void should_return_instance_from_cache() {
+        //given
+        StepVerifier.create(this.repository.save(this.instance)).expectNext(this.instance).verifyComplete();
+        //when
+        reset(this.eventStore);
+        StepVerifier.create(this.repository.find(this.instance.getId())).expectNext(this.instance).verifyComplete();
+        //then
+        verify(this.eventStore, never()).find(any());
+    }
 
-        //and a second not known instance 'bar'
-        Instance instanceBar = Instance.create(InstanceId.of("bar"))
-                                       .register(Registration.create("second", "http://second/health").build());
+    @Test
+    public void should_return_all_instances_from_cache() {
+        //given
+        StepVerifier.create(this.repository.save(this.instance)).expectNext(this.instance).verifyComplete();
+        //when
+        reset(this.eventStore);
+        StepVerifier.create(this.repository.findAll()).expectNext(this.instance).verifyComplete();
+        //then
+        verify(this.eventStore, never()).findAll();
+    }
 
-        //when recieving a duplicated event for instance 'foo'
-        //and a events for instance 'bar'
-        doAnswer(invocation -> {
-            Mono.just((InstanceEvent) new InstanceStatusChangedEvent(instanceFoo.getId(),
-                instanceFoo.getVersion(),
-                StatusInfo.ofOffline()
-            ))
-                .concatWith(Flux.fromIterable(instanceBar.getUnsavedEvents()))
-                .subscribe(invocation.<Subscriber<InstanceEvent>>getArgument(0));
-            return null;
-        }).when(eventStore).subscribe(any());
+    @Test
+    public void should_update_cache_after_error() {
+        //given
+        this.repository.stop();
+        when(this.eventStore.findAll()).thenReturn(Flux.just(new InstanceRegisteredEvent(InstanceId.of("broken"),
+                0L,
+                this.instance.getRegistration()
+            ),
+            new InstanceRegisteredEvent(InstanceId.of("broken"), 0L, this.instance.getRegistration()),
+            new InstanceRegisteredEvent(this.instance.getId(), 0L, this.instance.getRegistration()),
+            new InstanceRegisteredEvent(InstanceId.of("broken"), 1L, this.instance.getRegistration())
+        ));
+        //when
+        this.repository.start();
+        //then
+        reset(this.eventStore);
+        StepVerifier.create(this.repository.find(this.instance.getId())).expectNext(this.instance).verifyComplete();
+        StepVerifier.create(this.repository.find(InstanceId.of("broken")))
+                    .assertNext(i -> assertThat(i.getVersion()).isEqualTo(1L))
+                    .verifyComplete();
+    }
 
-        SnapshottingInstanceRepository repositoryWithMock = new SnapshottingInstanceRepository(eventStore);
-        repositoryWithMock.start();
-
-        try {
-            //then the snapshot for instance 'foo'
-            StepVerifier.create(repositoryWithMock.find(instanceFoo.getId()))
-                        .expectNext(instanceFoo.clearUnsavedEvents())
-                        .verifyComplete();
-            //and bar are available
-            StepVerifier.create(repositoryWithMock.find(instanceBar.getId()))
-                        .expectNext(instanceBar.clearUnsavedEvents())
-                        .verifyComplete();
-        } finally {
-            repositoryWithMock.stop();
-        }
+    @Test
+    public void should_refresh_snapshots_eagerly_on_optimistick_lock_exception() {
+        //given
+        StepVerifier.create(this.repository.save(this.instance)).expectNextCount(1L).verifyComplete();
+        this.repository.stop();
+        StepVerifier.create(this.repository.save(this.instance.clearUnsavedEvents()
+                                                              .withStatusInfo(StatusInfo.ofDown())))
+                    .expectNextCount(1L)
+                    .verifyComplete();
+        //when
+        StepVerifier.create(this.repository.computeIfPresent(this.instance.getId(),
+            (id, i) -> Mono.just(i.withStatusInfo(StatusInfo.ofUp()))
+        ))
+                    .expectNextCount(1L)
+                    .verifyComplete();
     }
 }
