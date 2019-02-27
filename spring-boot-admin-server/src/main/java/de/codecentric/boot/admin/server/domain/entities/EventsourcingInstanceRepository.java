@@ -24,9 +24,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.retry.Retry;
 
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
-import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,12 +61,7 @@ public class EventsourcingInstanceRepository implements InstanceRepository {
 
     @Override
     public Mono<Instance> find(InstanceId id) {
-        //hmm a simple reduce doesn't return empty when not found...
-        return this.eventStore.find(id)
-                              .collect((Supplier<AtomicReference<Instance>>) AtomicReference::new, (ref, event) -> {
-            Instance instance = ref.get() != null ? ref.get() : Instance.create(id);
-            ref.set(instance.apply(event));
-        }).flatMap(ref -> Mono.justOrEmpty(ref.get()));
+        return this.eventStore.find(id).collectList().filter(e -> !e.isEmpty()).map(e -> Instance.create(id).apply(e));
     }
 
     @Override
