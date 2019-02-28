@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,15 @@
 
 package de.codecentric.boot.admin.server.web.client;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
-import de.codecentric.boot.admin.server.web.client.exception.ResolveInstanceException;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
@@ -37,20 +34,16 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
-import org.springframework.web.reactive.function.client.ExchangeFunction;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V1_MEDIATYPE;
-import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V2_MEDIATYPE;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 public final class InstanceExchangeFilterFunctions {
     private static final Logger log = LoggerFactory.getLogger(InstanceExchangeFilterFunctions.class);
-    public static final String ATTRIBUTE_INSTANCE = "instance";
     public static final String ATTRIBUTE_ENDPOINT = "endpointId";
     private static final List<MediaType> DEFAULT_ACCEPT_MEDIATYPES = asList(MediaType.parseMediaType(ActuatorMediaType.V2_JSON),
         MediaType.parseMediaType(ActuatorMediaType.V1_JSON),
@@ -63,76 +56,55 @@ public final class InstanceExchangeFilterFunctions {
     private InstanceExchangeFilterFunctions() {
     }
 
-    public static ExchangeFilterFunction setInstance(Instance instance) {
-        return setInstance(Mono.just(instance));
-    }
-
-    public static ExchangeFilterFunction setInstance(Mono<Instance> instance) {
-        return (request, next) -> instance.map(i -> ClientRequest.from(request)
-                                                                 .attribute(ATTRIBUTE_INSTANCE, i)
-                                                                 .build())
-                                          .switchIfEmpty(request.url().isAbsolute() ? Mono.just(request) : Mono.error(
-                                              new ResolveInstanceException("Could not resolve Instance")))
-                                          .flatMap(next::exchange);
-    }
-
-    public static ExchangeFilterFunction addHeaders(HttpHeadersProvider httpHeadersProvider) {
-        return toExchangeFilterFunction((instance, request, next) -> {
+    public static InstanceExchangeFilterFunction addHeaders(HttpHeadersProvider httpHeadersProvider) {
+        return (instance, request, next) -> {
             ClientRequest newRequest = ClientRequest.from(request)
                                                     .headers(headers -> headers.addAll(httpHeadersProvider.getHeaders(
                                                         instance)))
                                                     .build();
             return next.exchange(newRequest);
-        });
-    }
-
-    public static ExchangeFilterFunction toExchangeFilterFunction(InstanceExchangeFilterFunction delegate) {
-        return (request, next) -> {
-            Optional<?> instance = request.attribute(ATTRIBUTE_INSTANCE);
-            if (instance.isPresent() && instance.get() instanceof Instance) {
-                return delegate.exchange((Instance) instance.get(), request, next);
-            }
-            return next.exchange(request);
         };
     }
 
-    public static ExchangeFilterFunction rewriteEndpointUrl() {
-        return toExchangeFilterFunction((instance, request, next) -> {
+    public static InstanceExchangeFilterFunction rewriteEndpointUrl() {
+        return (instance, request, next) -> {
             if (request.url().isAbsolute()) {
                 log.trace("Absolute URL '{}' for instance {} not rewritten", request.url(), instance.getId());
                 if (request.url().toString().equals(instance.getRegistration().getManagementUrl())) {
                     return next.exchange(ClientRequest.from(request)
                                                       .attribute(ATTRIBUTE_ENDPOINT, Endpoint.ACTUATOR_INDEX)
                                                       .build());
+                } else {
+                    return next.exchange(request);
                 }
-                return next.exchange(request);
             }
 
-            UriComponents oldUrl = UriComponentsBuilder.fromUri(request.url()).build();
-            if (oldUrl.getPathSegments().isEmpty()) {
+            UriComponents requestUrl = UriComponentsBuilder.fromUri(request.url()).build();
+            if (requestUrl.getPathSegments().isEmpty()) {
                 return Mono.error(new ResolveEndpointException("No endpoint specified"));
             }
 
-            String endpointId = oldUrl.getPathSegments().get(0);
+            String endpointId = requestUrl.getPathSegments().get(0);
             Optional<Endpoint> endpoint = instance.getEndpoints().get(endpointId);
 
             if (!endpoint.isPresent()) {
                 return Mono.error(new ResolveEndpointException("Endpoint '" + endpointId + "' not found"));
             }
 
-            URI newUrl = rewriteUrl(oldUrl, endpoint.get().getUrl());
-            log.trace("URL '{}' for Endpoint {} of instance {} rewritten to {}",
-                oldUrl,
+            URI rewrittenUrl = rewriteUrl(requestUrl, endpoint.get().getUrl());
+            log.trace(
+                "URL '{}' for Endpoint {} of instance {} rewritten to {}",
+                requestUrl,
                 endpoint.get().getId(),
                 instance.getId(),
-                newUrl
+                rewrittenUrl
             );
             ClientRequest newRequest = ClientRequest.from(request)
                                                     .attribute(ATTRIBUTE_ENDPOINT, endpoint.get().getId())
-                                                    .url(newUrl)
+                                                    .url(rewrittenUrl)
                                                     .build();
             return next.exchange(newRequest);
-        });
+        };
     }
 
     private static URI rewriteUrl(UriComponents oldUrl, String targetUrl) {
@@ -146,38 +118,45 @@ public final class InstanceExchangeFilterFunctions {
                                    .toUri();
     }
 
-    public static ExchangeFilterFunction convertLegacyEndpoint(LegacyEndpointConverter converter) {
-        return (ClientRequest request, ExchangeFunction next) -> {
+    public static InstanceExchangeFilterFunction convertLegacyEndpoints(List<LegacyEndpointConverter> converters) {
+        return (instance, request, next) -> {
             Mono<ClientResponse> clientResponse = next.exchange(request);
-            if (request.attribute(ATTRIBUTE_ENDPOINT).map(converter::canConvert).orElse(false)) {
-                return clientResponse.flatMap(response -> {
-                    if (response.headers()
-                                .contentType()
-                                .map(t -> ACTUATOR_V1_MEDIATYPE.isCompatibleWith(t) ||
-                                          APPLICATION_JSON.isCompatibleWith(t))
-                                .orElse(false)) {
-                        return convertClientResponse(converter::convert, ACTUATOR_V2_MEDIATYPE).apply(response);
-                    }
-                    return Mono.just(response);
-                });
+
+            Optional<Object> endpoint = request.attribute(ATTRIBUTE_ENDPOINT);
+            if (!endpoint.isPresent()) {
+                return clientResponse;
+            }
+
+            for (LegacyEndpointConverter converter : converters) {
+                if (converter.canConvert(endpoint.get())) {
+                    return clientResponse.map(response -> {
+                        if (isLegacyResponse(response)) {
+                            return convertLegacyResponse(converter, response);
+                        }
+                        return response;
+                    });
+                }
             }
             return clientResponse;
         };
     }
 
-    private static Function<ClientResponse, Mono<ClientResponse>> convertClientResponse(Function<Flux<DataBuffer>, Flux<DataBuffer>> bodConverter,
-                                                                                        MediaType contentType) {
-        return response -> {
-            ClientResponse convertedResponse = ClientResponse.from(response).headers(headers -> {
-                headers.replace(HttpHeaders.CONTENT_TYPE, singletonList(contentType.toString()));
-                headers.remove(HttpHeaders.CONTENT_LENGTH);
-            }).body(response.bodyToFlux(DataBuffer.class).transform(bodConverter)).build();
-            return Mono.just(convertedResponse);
-        };
+    private static Boolean isLegacyResponse(ClientResponse response) {
+        return response.headers()
+                       .contentType()
+                       .map(t -> ACTUATOR_V1_MEDIATYPE.isCompatibleWith(t) || APPLICATION_JSON.isCompatibleWith(t))
+                       .orElse(false);
     }
 
-    public static ExchangeFilterFunction setDefaultAcceptHeader() {
-        return (request, next) -> {
+    private static ClientResponse convertLegacyResponse(LegacyEndpointConverter converter, ClientResponse response) {
+        return ClientResponse.from(response).headers(headers -> {
+            headers.replace(HttpHeaders.CONTENT_TYPE, singletonList(ActuatorMediaType.V2_JSON));
+            headers.remove(HttpHeaders.CONTENT_LENGTH);
+        }).body(response.bodyToFlux(DataBuffer.class).transform(converter::convert)).build();
+    }
+
+    public static InstanceExchangeFilterFunction setDefaultAcceptHeader() {
+        return (instance, request, next) -> {
             if (request.headers().getAccept().isEmpty()) {
                 Boolean isRequestForLogfile = request.attribute(ATTRIBUTE_ENDPOINT)
                                                      .map(Endpoint.LOGFILE::equals)
@@ -191,8 +170,8 @@ public final class InstanceExchangeFilterFunctions {
         };
     }
 
-    public static ExchangeFilterFunction retry(int defaultRetries, Map<String, Integer> retriesPerEndpoint) {
-        return (request, next) -> {
+    public static InstanceExchangeFilterFunction retry(int defaultRetries, Map<String, Integer> retriesPerEndpoint) {
+        return (instance, request, next) -> {
             int retries = 0;
             if (!request.method().equals(HttpMethod.DELETE) &&
                 !request.method().equals(HttpMethod.PATCH) &&
@@ -201,6 +180,16 @@ public final class InstanceExchangeFilterFunctions {
                 retries = request.attribute(ATTRIBUTE_ENDPOINT).map(retriesPerEndpoint::get).orElse(defaultRetries);
             }
             return next.exchange(request).retry(retries);
+        };
+    }
+
+    public static InstanceExchangeFilterFunction timeout(Duration defaultTimeout,
+                                                         Map<String, Duration> timeoutPerEndpoint) {
+        return (instance, request, next) -> {
+            Duration timeout = request.attribute(ATTRIBUTE_ENDPOINT)
+                                      .map(timeoutPerEndpoint::get)
+                                      .orElse(defaultTimeout);
+            return next.exchange(request).timeout(timeout);
         };
     }
 }

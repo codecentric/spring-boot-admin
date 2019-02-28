@@ -39,6 +39,7 @@
         <spring-cloud.version>Hoxton.BUILD-SNAPSHOT</spring-cloud.version>
         <hazelcast-tests.version>3.11.2</hazelcast-tests.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
+        <junit-jupiter.version>5.4.0</junit-jupiter.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>

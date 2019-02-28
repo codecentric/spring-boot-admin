@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import de.codecentric.boot.admin.server.domain.values.Registration;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -39,31 +41,33 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AdminServerDiscoveryAutoConfigurationTest {
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
         AutoConfigurations.of(UtilAutoConfiguration.class,
+            ClientHttpConnectorAutoConfiguration.class,
+            WebClientAutoConfiguration.class,
             AdminServerAutoConfiguration.class,
             AdminServerDiscoveryAutoConfiguration.class
         )).withUserConfiguration(AdminServerMarkerConfiguration.class);
 
     @Test
     public void defaultServiceInstanceConverter() {
-        contextRunner.withUserConfiguration(SimpleDiscoveryClientAutoConfiguration.class)
-                     .run(context -> assertThat(context.getBean(ServiceInstanceConverter.class)).isInstanceOf(
+        this.contextRunner.withUserConfiguration(SimpleDiscoveryClientAutoConfiguration.class)
+                          .run(context -> assertThat(context.getBean(ServiceInstanceConverter.class)).isInstanceOf(
                          DefaultServiceInstanceConverter.class));
     }
 
     @Test
     public void eurekaServiceInstanceConverter() {
-        contextRunner.withUserConfiguration(EurekaClientConfig.class)
-                     .run(context -> assertThat(context).getBean(ServiceInstanceConverter.class)
+        this.contextRunner.withUserConfiguration(EurekaClientConfig.class)
+                          .run(context -> assertThat(context).getBean(ServiceInstanceConverter.class)
                                                         .isInstanceOf(EurekaServiceInstanceConverter.class));
     }
 
     @Test
     public void customServiceInstanceConverter() {
-        contextRunner.withUserConfiguration(SimpleDiscoveryClientAutoConfiguration.class,
+        this.contextRunner.withUserConfiguration(
+            SimpleDiscoveryClientAutoConfiguration.class,
             TestCustomServiceInstanceConverterConfig.class
-        )
-                     .run(context -> assertThat(context).getBean(ServiceInstanceConverter.class)
-                                                        .isInstanceOf(CustomServiceInstanceConverter.class));
+        ).run(context -> assertThat(context).getBean(ServiceInstanceConverter.class)
+                                            .isInstanceOf(CustomServiceInstanceConverter.class));
     }
 
     static class TestCustomServiceInstanceConverterConfig {

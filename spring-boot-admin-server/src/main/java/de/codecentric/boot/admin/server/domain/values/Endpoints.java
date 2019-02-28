@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,16 +43,16 @@ public class Endpoints implements Iterable<Endpoint>, Serializable {
     }
 
     public Optional<Endpoint> get(String id) {
-        return Optional.ofNullable(endpoints.get(id));
+        return Optional.ofNullable(this.endpoints.get(id));
     }
 
     public boolean isPresent(String id) {
-        return endpoints.containsKey(id);
+        return this.endpoints.containsKey(id);
     }
 
     @Override
     public Iterator<Endpoint> iterator() {
-        return new UnmodifiableIterator<>(endpoints.values().iterator());
+        return new UnmodifiableIterator<>(this.endpoints.values().iterator());
     }
 
     public static Endpoints empty() {
@@ -86,12 +86,12 @@ public class Endpoints implements Iterable<Endpoint>, Serializable {
 
         @Override
         public boolean hasNext() {
-            return delegate.hasNext();
+            return this.delegate.hasNext();
         }
 
         @Override
         public T next() {
-            return delegate.next();
+            return this.delegate.next();
         }
     }
 }

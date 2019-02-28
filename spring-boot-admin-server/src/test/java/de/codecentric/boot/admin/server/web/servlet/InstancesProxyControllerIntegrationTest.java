@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,20 +29,21 @@ public class InstancesProxyControllerIntegrationTest extends AbstractInstancesPr
     private ConfigurableApplicationContext context;
 
     @Before
-    public void setUpCpntext() {
-        context = new SpringApplicationBuilder().sources(AdminServletApplicationTest.TestAdminApplication.class)
-                                                .web(WebApplicationType.SERVLET)
-                                                .run("--server.port=0",
+    public void setUpContext() {
+        this.context = new SpringApplicationBuilder().sources(AdminServletApplicationTest.TestAdminApplication.class)
+                                                     .web(WebApplicationType.SERVLET)
+                                                     .run(
+                                                         "--server.port=0",
                                                     "--eureka.client.enabled=false",
-                                                    "--spring.boot.admin.monitor.read-timeout=5000"
+                                                         "--spring.boot.admin.monitor.default-timeout=5000"
                                                 );
-        this.setUpClient(context);
+        this.setUpClient(this.context);
     }
 
     @After
     public void tearDownContext() {
-        if (context != null) {
-            context.close();
+        if (this.context != null) {
+            this.context.close();
         }
     }
 }

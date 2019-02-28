@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,175 +16,449 @@
 
 package de.codecentric.boot.admin.server.web.client;
 
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.values.Endpoint;
+import de.codecentric.boot.admin.server.domain.values.Endpoints;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.domain.values.Registration;
+import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
-import org.junit.Test;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
 
 import static de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunctions.ATTRIBUTE_ENDPOINT;
+import static de.codecentric.boot.admin.server.web.client.InstanceWebClient.ATTRIBUTE_INSTANCE;
 import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.springframework.http.HttpHeaders.CONTENT_LENGTH;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-public class InstanceExchangeFilterFunctionsTest {
-    private static final DefaultDataBufferFactory BUFFER_FACTORY = new DefaultDataBufferFactory();
-    private static final DataBuffer ORIGINAL = BUFFER_FACTORY.wrap("ORIGINAL".getBytes(StandardCharsets.UTF_8));
-    private static final DataBuffer CONVERTED = BUFFER_FACTORY.wrap("CONVERTED".getBytes(StandardCharsets.UTF_8));
+class InstanceExchangeFilterFunctionsTest {
+    private static final Instance INSTANCE = Instance.create(InstanceId.of("i"));
 
-    @Test
-    public void should_convert_v1_actuator() {
-        ExchangeFilterFunction filter = InstanceExchangeFilterFunctions.convertLegacyEndpoint(new TestLegacyEndpointConverter());
+    @Nested
+    class ConvertLegacyEndpoints {
+        private final DefaultDataBufferFactory bufferFactory = new DefaultDataBufferFactory();
+        private final DataBuffer original = this.bufferFactory.wrap("ORIGINAL".getBytes(StandardCharsets.UTF_8));
+        private final DataBuffer converted = this.bufferFactory.wrap("CONVERTED".getBytes(StandardCharsets.UTF_8));
+        private final InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.convertLegacyEndpoints(
+            singletonList(new LegacyEndpointConverter("test", from -> Flux.just(this.converted)) {
+            }));
 
-        ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
-                                             .attribute(ATTRIBUTE_ENDPOINT, "test")
-                                             .build();
-        ClientResponse response = ClientResponse.create(HttpStatus.OK)
-                                                .header(CONTENT_TYPE, ActuatorMediaType.V1_JSON)
-                                                .body(Flux.just(ORIGINAL))
-                                                .build();
+        @Test
+        void should_convert_v1_actuator() {
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
+                                                 .attribute(ATTRIBUTE_ENDPOINT, "test")
+                                                 .build();
+            ClientResponse legacyResponse = ClientResponse.create(HttpStatus.OK)
+                                                          .header(CONTENT_TYPE, ActuatorMediaType.V1_JSON)
+                                                          .header(CONTENT_LENGTH,
+                                                              Integer.toString(this.original.readableByteCount())
+                                                          )
+                                                          .body(Flux.just(this.original))
+                                                          .build();
 
-        Mono<ClientResponse> convertedResponse = filter.filter(request, r -> Mono.just(response));
+            Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, r -> Mono.just(legacyResponse));
 
-        StepVerifier.create(convertedResponse)
-                    .assertNext(r -> StepVerifier.create(r.body(BodyExtractors.toDataBuffers()))
-                                                 .expectNext(CONVERTED)
-                                                 .verifyComplete())
-                    .verifyComplete();
+            StepVerifier.create(response).assertNext(r -> {
+                assertThat(r.headers().contentType()).hasValue(MediaType.valueOf(ActuatorMediaType.V2_JSON));
+                assertThat(r.headers().contentLength()).isEmpty();
+                StepVerifier.create(r.body(BodyExtractors.toDataBuffers())).expectNext(this.converted).verifyComplete();
+            }).verifyComplete();
+        }
+
+        @Test
+        void should_convert_json() {
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
+                                                 .attribute(ATTRIBUTE_ENDPOINT, "test")
+                                                 .build();
+            ClientResponse legacyResponse = ClientResponse.create(HttpStatus.OK)
+                                                          .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                                                          .header(CONTENT_LENGTH,
+                                                              Integer.toString(this.original.readableByteCount())
+                                                          )
+                                                          .body(Flux.just(this.original))
+                                                          .build();
+
+            Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, r -> Mono.just(legacyResponse));
+
+            StepVerifier.create(response).assertNext(r -> {
+                assertThat(r.headers().contentType()).hasValue(MediaType.valueOf(ActuatorMediaType.V2_JSON));
+                assertThat(r.headers().contentLength()).isEmpty();
+                StepVerifier.create(r.body(BodyExtractors.toDataBuffers())).expectNext(this.converted).verifyComplete();
+            }).verifyComplete();
+        }
+
+        @Test
+        void should_not_convert_v2_actuator() {
+            InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.convertLegacyEndpoints(singletonList(
+                new LegacyEndpointConverter("test", from -> Flux.just(this.converted)) {
+                }));
+
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
+                                                 .attribute(ATTRIBUTE_ENDPOINT, "test")
+                                                 .build();
+            ClientResponse response = ClientResponse.create(HttpStatus.OK)
+                                                    .header(CONTENT_TYPE, ActuatorMediaType.V2_JSON)
+                                                    .header(CONTENT_LENGTH,
+                                                        Integer.toString(this.original.readableByteCount())
+                                                    )
+                                                    .body(Flux.just(this.original))
+                                                    .build();
+
+            Mono<ClientResponse> convertedResponse = filter.filter(INSTANCE, request, r -> Mono.just(response));
+
+            StepVerifier.create(convertedResponse).assertNext(r -> {
+                assertThat(r.headers().contentType()).hasValue(MediaType.valueOf(ActuatorMediaType.V2_JSON));
+                assertThat(r.headers().contentLength()).hasValue(this.original.readableByteCount());
+                StepVerifier.create(r.body(BodyExtractors.toDataBuffers())).expectNext(this.original).verifyComplete();
+            }).verifyComplete();
+        }
+
+        @Test
+        void should_not_convert_unknown_endpoint() {
+            InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.convertLegacyEndpoints(singletonList(
+                new LegacyEndpointConverter("test", from -> Flux.just(this.converted)) {
+                }));
+
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test")).build();
+            ClientResponse response = ClientResponse.create(HttpStatus.OK)
+                                                    .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                                                    .header(CONTENT_LENGTH,
+                                                        Integer.toString(this.original.readableByteCount())
+                                                    )
+                                                    .body(Flux.just(this.original))
+                                                    .build();
+
+            Mono<ClientResponse> convertedResponse = filter.filter(INSTANCE, request, r -> Mono.just(response));
+
+            StepVerifier.create(convertedResponse).assertNext(r -> {
+                assertThat(r.headers().contentType()).hasValue(MediaType.APPLICATION_JSON);
+                assertThat(r.headers().contentLength()).hasValue(this.original.readableByteCount());
+                StepVerifier.create(r.body(BodyExtractors.toDataBuffers())).expectNext(this.original).verifyComplete();
+            }).verifyComplete();
+        }
+
+        @Test
+        void should_not_convert_without_converter() {
+            InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.convertLegacyEndpoints(singletonList(
+                new LegacyEndpointConverter("test", from -> Flux.just(this.converted)) {
+                }));
+
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/unknown"))
+                                                 .attribute(ATTRIBUTE_ENDPOINT, "unknown")
+                                                 .build();
+            ClientResponse response = ClientResponse.create(HttpStatus.OK)
+                                                    .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                                                    .header(CONTENT_LENGTH,
+                                                        Integer.toString(this.original.readableByteCount())
+                                                    )
+                                                    .body(Flux.just(this.original))
+                                                    .build();
+
+            Mono<ClientResponse> convertedResponse = filter.filter(INSTANCE, request, r -> Mono.just(response));
+
+            StepVerifier.create(convertedResponse).assertNext(r -> {
+                assertThat(r.headers().contentType()).hasValue(MediaType.APPLICATION_JSON);
+                assertThat(r.headers().contentLength()).hasValue(this.original.readableByteCount());
+                StepVerifier.create(r.body(BodyExtractors.toDataBuffers())).expectNext(this.original).verifyComplete();
+            }).verifyComplete();
+        }
     }
 
-    @Test
-    public void should_convert_json() {
-        ExchangeFilterFunction filter = InstanceExchangeFilterFunctions.convertLegacyEndpoint(new TestLegacyEndpointConverter());
+    @Nested
+    class Retry {
+        @Test
+        void should_retry_using_default() {
+            InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.retry(1, emptyMap());
 
-        ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
-                                             .attribute(ATTRIBUTE_ENDPOINT, "test")
-                                             .build();
-        ClientResponse response = ClientResponse.create(HttpStatus.OK)
-                                                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                                                .body(Flux.just(ORIGINAL))
-                                                .build();
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test")).build();
+            ClientResponse response = ClientResponse.create(HttpStatus.OK).build();
 
-        Mono<ClientResponse> convertedResponse = filter.filter(request, r -> Mono.just(response));
+            AtomicLong invocationCount = new AtomicLong(0L);
+            ExchangeFunction exchange = r -> Mono.fromSupplier(() -> {
+                if (invocationCount.getAndIncrement() == 0) {
+                    throw new IllegalStateException("Test");
+                }
+                return response;
+            });
 
-        StepVerifier.create(convertedResponse)
-                    .assertNext(r -> StepVerifier.create(r.body(BodyExtractors.toDataBuffers()))
-                                                 .expectNext(CONVERTED)
-                                                 .verifyComplete())
-                    .verifyComplete();
-    }
+            StepVerifier.create(filter.filter(INSTANCE, request, exchange)).expectNext(response).verifyComplete();
+            assertThat(invocationCount.get()).isEqualTo(2);
+        }
 
-    @Test
-    public void should_not_convert_v2_actuator() {
-        ExchangeFilterFunction filter = InstanceExchangeFilterFunctions.convertLegacyEndpoint(new TestLegacyEndpointConverter());
+        @Test
+        void should_retry_using_endpoint_value_default() {
+            InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.retry(0, singletonMap("test", 1));
 
-        ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
-                                             .attribute(ATTRIBUTE_ENDPOINT, "test")
-                                             .build();
-        ClientResponse response = ClientResponse.create(HttpStatus.OK)
-                                                .header(CONTENT_TYPE, ActuatorMediaType.V2_JSON)
-                                                .body(Flux.just(ORIGINAL))
-                                                .build();
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
+                                                 .attribute(ATTRIBUTE_ENDPOINT, "test")
+                                                 .build();
+            ClientResponse response = ClientResponse.create(HttpStatus.OK).build();
 
-        Mono<ClientResponse> convertedResponse = filter.filter(request, r -> Mono.just(response));
+            AtomicLong invocationCount = new AtomicLong(0L);
+            ExchangeFunction exchange = r -> Mono.fromSupplier(() -> {
+                if (invocationCount.getAndIncrement() == 0) {
+                    throw new IllegalStateException("Test");
+                }
+                return response;
+            });
 
-        StepVerifier.create(convertedResponse)
-                    .assertNext(r -> StepVerifier.create(r.body(BodyExtractors.toDataBuffers()))
-                                                 .expectNext(ORIGINAL)
-                                                 .verifyComplete())
-                    .verifyComplete();
-    }
+            StepVerifier.create(filter.filter(INSTANCE, request, exchange)).expectNext(response).verifyComplete();
+            assertThat(invocationCount.get()).isEqualTo(2);
+        }
 
-    @Test
-    public void should_retry_using_default() {
-        ExchangeFilterFunction filter = InstanceExchangeFilterFunctions.retry(1, emptyMap());
 
-        ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test")).build();
-        ClientResponse response = mock(ClientResponse.class);
+        @Test
+        void should_not_retry_for_put_post_patch_delete() {
+            InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.retry(1, emptyMap());
 
-        AtomicLong invocationCount = new AtomicLong(0L);
-        ExchangeFunction exchange = r -> Mono.fromSupplier(() -> {
-            if (invocationCount.getAndIncrement() == 0) {
+            AtomicLong invocationCount = new AtomicLong(0L);
+            ExchangeFunction exchange = r -> Mono.fromSupplier(() -> {
+                invocationCount.incrementAndGet();
                 throw new IllegalStateException("Test");
-            }
-            return response;
-        });
+            });
 
-        StepVerifier.create(filter.filter(request, exchange)).expectNext(response).verifyComplete();
-        assertThat(invocationCount.get()).isEqualTo(2);
+            ClientRequest patchRequest = ClientRequest.create(HttpMethod.PATCH, URI.create("/test")).build();
+            StepVerifier.create(filter.filter(INSTANCE, patchRequest, exchange))
+                        .verifyError(IllegalStateException.class);
+            assertThat(invocationCount.get()).isEqualTo(1);
+
+            invocationCount.set(0L);
+            ClientRequest putRequest = ClientRequest.create(HttpMethod.PUT, URI.create("/test")).build();
+            StepVerifier.create(filter.filter(INSTANCE, putRequest, exchange)).verifyError(IllegalStateException.class);
+            assertThat(invocationCount.get()).isEqualTo(1);
+
+            invocationCount.set(0L);
+            ClientRequest postRequest = ClientRequest.create(HttpMethod.POST, URI.create("/test")).build();
+            StepVerifier.create(filter.filter(INSTANCE, postRequest, exchange))
+                        .verifyError(IllegalStateException.class);
+            assertThat(invocationCount.get()).isEqualTo(1);
+
+            invocationCount.set(0L);
+            ClientRequest deleteRequest = ClientRequest.create(HttpMethod.DELETE, URI.create("/test")).build();
+            StepVerifier.create(filter.filter(INSTANCE, deleteRequest, exchange))
+                        .verifyError(IllegalStateException.class);
+            assertThat(invocationCount.get()).isEqualTo(1);
+        }
     }
 
-    @Test
-    public void should_retry_using_endpoint_value_default() {
-        ExchangeFilterFunction filter = InstanceExchangeFilterFunctions.retry(0, singletonMap("test", 1));
-
-        ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
-                                             .attribute(ATTRIBUTE_ENDPOINT, "test")
-                                             .build();
-        ClientResponse response = mock(ClientResponse.class);
-
-        AtomicLong invocationCount = new AtomicLong(0L);
-        ExchangeFunction exchange = r -> Mono.fromSupplier(() -> {
-            if (invocationCount.getAndIncrement() == 0) {
-                throw new IllegalStateException("Test");
-            }
-            return response;
+    @Nested
+    class AddHeaders {
+        private InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.addHeaders(i -> {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("X-INSTANCE-ID", i.getId().getValue());
+            return headers;
         });
 
-        StepVerifier.create(filter.filter(request, exchange)).expectNext(response).verifyComplete();
-        assertThat(invocationCount.get()).isEqualTo(2);
+        @Test
+        void should_add_headers_from_provider() {
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
+                                                 .attribute(ATTRIBUTE_INSTANCE, INSTANCE)
+                                                 .build();
+
+            Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (req) -> {
+                assertThat(req.headers().get("X-INSTANCE-ID")).containsExactly(INSTANCE.getId().getValue());
+                return Mono.just(ClientResponse.create(HttpStatus.OK).build());
+            });
+
+            StepVerifier.create(response).expectNextCount(1).verifyComplete();
+        }
+    }
+
+    @Nested
+    class AddDefaultHeaders {
+        private final InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.setDefaultAcceptHeader();
+
+        @Test
+        void should_add_default_accept_headers() {
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test")).build();
+
+            Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (req) -> {
+                assertThat(req.headers().getAccept()).containsExactly(MediaType.valueOf(ActuatorMediaType.V2_JSON),
+                    MediaType.valueOf(ActuatorMediaType.V1_JSON),
+                    MediaType.APPLICATION_JSON
+                );
+                return Mono.just(ClientResponse.create(HttpStatus.OK).build());
+            });
+
+            StepVerifier.create(response).expectNextCount(1).verifyComplete();
+        }
+
+        @Test
+        void should_not_add_default_accept_headers() {
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
+                                                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_XML_VALUE)
+                                                 .build();
+
+            Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (req) -> {
+                assertThat(req.headers().getAccept()).containsExactly(MediaType.APPLICATION_XML);
+                return Mono.just(ClientResponse.create(HttpStatus.OK).build());
+            });
+
+            StepVerifier.create(response).expectNextCount(1).verifyComplete();
+        }
+
+        @Test
+        void should_add_default_logfile_accept_headers() {
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
+                                                 .attribute(ATTRIBUTE_ENDPOINT, Endpoint.LOGFILE)
+                                                 .build();
+
+            Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (req) -> {
+                assertThat(req.headers().getAccept()).containsExactly(MediaType.TEXT_PLAIN, MediaType.ALL);
+                return Mono.just(ClientResponse.create(HttpStatus.OK).build());
+            });
+
+            StepVerifier.create(response).expectNextCount(1).verifyComplete();
+        }
+    }
+
+    @Nested
+    class RewriteEndpointUrl {
+        private final InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.rewriteEndpointUrl();
+        private final Registration registration = Registration.create("R", "http://test/actuator/health")
+                                                              .managementUrl("http://test/actuator")
+                                                              .build();
+        private final Endpoints endpoints = Endpoints.single(Endpoint.ENV, "http://test/actuator/env");
+        private final Instance instance = Instance.create(InstanceId.of("R"))
+                                                  .register(this.registration)
+                                                  .withEndpoints(this.endpoints);
+
+        @Test
+        void should_rewirte_url_and_add_endpoint_attribute() {
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("health/database"))
+                                                 .attribute(ATTRIBUTE_INSTANCE, this.instance)
+                                                 .build();
+
+            Mono<ClientResponse> response = this.filter.filter(this.instance, request, (req) -> {
+                assertThat(req.url()).isEqualTo(URI.create(this.registration.getHealthUrl() + "/database"));
+                assertThat(req.attribute(ATTRIBUTE_ENDPOINT)).hasValue(Endpoint.HEALTH);
+                return Mono.just(ClientResponse.create(HttpStatus.OK).build());
+            });
+
+            StepVerifier.create(response).expectNextCount(1).verifyComplete();
+        }
+
+        @Test
+        void should_not_rewrite_absolute_url() {
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("http://test/actuator/unknown"))
+                                                 .attribute(ATTRIBUTE_INSTANCE, this.instance)
+                                                 .build();
+
+            Mono<ClientResponse> response = this.filter.filter(this.instance, request, (req) -> {
+                assertThat(req.url()).isEqualTo(URI.create("http://test/actuator/unknown"));
+                assertThat(req.attribute(ATTRIBUTE_ENDPOINT)).isEmpty();
+                return Mono.just(ClientResponse.create(HttpStatus.OK).build());
+            });
+
+            StepVerifier.create(response).expectNextCount(1).verifyComplete();
+        }
+
+        @Test
+        void should_set_endpoint_attribute_for_management_url() {
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("http://test/actuator"))
+                                                 .attribute(ATTRIBUTE_INSTANCE, this.instance)
+                                                 .build();
+
+            Mono<ClientResponse> response = this.filter.filter(this.instance, request, (req) -> {
+                assertThat(req.attribute(ATTRIBUTE_ENDPOINT)).hasValue(Endpoint.ACTUATOR_INDEX);
+                return Mono.just(ClientResponse.create(HttpStatus.OK).build());
+            });
+
+            StepVerifier.create(response).expectNextCount(1).verifyComplete();
+        }
+
+        @Test
+        void should_error_on_unspecified_endpoint() {
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create(""))
+                                                 .attribute(ATTRIBUTE_INSTANCE, this.instance)
+                                                 .build();
+
+            Mono<ClientResponse> response = this.filter.filter(this.instance,
+                request,
+                (req) -> Mono.just(ClientResponse.create(HttpStatus.OK).build())
+            );
+
+            StepVerifier.create(response)
+                        .verifyErrorSatisfies(e -> assertThat(e).isInstanceOf(ResolveEndpointException.class)
+                                                                .hasMessage("No endpoint specified"));
+        }
+
+        @Test
+        void should_error_on_unknown_endpoint() {
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("unknown"))
+                                                 .attribute(ATTRIBUTE_INSTANCE, this.instance)
+                                                 .build();
+
+            Mono<ClientResponse> response = this.filter.filter(this.instance,
+                request,
+                (req) -> Mono.just(ClientResponse.create(HttpStatus.OK).build())
+            );
+
+            StepVerifier.create(response)
+                        .verifyErrorSatisfies(e -> assertThat(e).isInstanceOf(ResolveEndpointException.class)
+                                                                .hasMessage("Endpoint 'unknown' not found"));
+        }
     }
 
 
-    @Test
-    public void should_not_retry_for_put_post_patch_delete() {
-        ExchangeFilterFunction filter = InstanceExchangeFilterFunctions.retry(1, emptyMap());
+    @Nested
+    class Timeout {
+        @Test
+        void should_timeout_using_default() {
+            InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.timeout(Duration.ofSeconds(1),
+                emptyMap()
+            );
 
-        AtomicLong invocationCount = new AtomicLong(0L);
-        ExchangeFunction exchange = r -> Mono.fromSupplier(() -> {
-            invocationCount.incrementAndGet();
-            throw new IllegalStateException("Test");
-        });
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test")).build();
 
-        ClientRequest patchRequest = ClientRequest.create(HttpMethod.PATCH, URI.create("/test")).build();
-        StepVerifier.create(filter.filter(patchRequest, exchange)).expectError(IllegalStateException.class).verify();
-        assertThat(invocationCount.get()).isEqualTo(1);
+            Mono<ClientResponse> response = filter.filter(INSTANCE,
+                request,
+                (req) -> Mono.just(ClientResponse.create(HttpStatus.OK).build()).delayElement(Duration.ofSeconds(10))
+            );
 
-        invocationCount.set(0L);
-        ClientRequest putRequest = ClientRequest.create(HttpMethod.PUT, URI.create("/test")).build();
-        StepVerifier.create(filter.filter(putRequest, exchange)).expectError(IllegalStateException.class).verify();
-        assertThat(invocationCount.get()).isEqualTo(1);
+            StepVerifier.create(response).expectError(TimeoutException.class).verify(Duration.ofSeconds(2));
+        }
 
-        invocationCount.set(0L);
-        ClientRequest postRequest = ClientRequest.create(HttpMethod.POST, URI.create("/test")).build();
-        StepVerifier.create(filter.filter(postRequest, exchange)).expectError(IllegalStateException.class).verify();
-        assertThat(invocationCount.get()).isEqualTo(1);
+        @Test
+        void should_timeout_using_endpoint_value_default() {
+            InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.timeout(Duration.ofSeconds(10),
+                singletonMap("test", Duration.ofSeconds(1))
+            );
 
-        invocationCount.set(0L);
-        ClientRequest deleteRequest = ClientRequest.create(HttpMethod.DELETE, URI.create("/test")).build();
-        StepVerifier.create(filter.filter(deleteRequest, exchange)).expectError(IllegalStateException.class).verify();
-        assertThat(invocationCount.get()).isEqualTo(1);
-    }
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
+                                                 .attribute(ATTRIBUTE_ENDPOINT, "test")
+                                                 .build();
 
-    static class TestLegacyEndpointConverter extends LegacyEndpointConverter {
-        TestLegacyEndpointConverter() {
-            super("test", from -> Flux.just(CONVERTED));
+            Mono<ClientResponse> response = filter.filter(INSTANCE,
+                request,
+                (req) -> Mono.just(ClientResponse.create(HttpStatus.OK).build()).delayElement(Duration.ofSeconds(10))
+            );
+
+            StepVerifier.create(response).expectError(TimeoutException.class).verify(Duration.ofSeconds(2));
         }
     }
 }

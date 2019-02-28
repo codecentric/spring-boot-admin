@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,11 @@ import io.netty.handler.timeout.ReadTimeoutException;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -59,7 +59,8 @@ public class AbstractInstancesProxyController {
 
     public AbstractInstancesProxyController(String adminContextPath,
                                             Set<String> ignoredHeaders,
-                                            InstanceRegistry registry, InstanceWebClient instanceWebClient) {
+                                            InstanceRegistry registry,
+                                            InstanceWebClient instanceWebClient) {
         this.ignoredHeaders = Stream.concat(ignoredHeaders.stream(), Arrays.stream(HOP_BY_HOP_HEADERS))
                                     .map(String::toLowerCase)
                                     .collect(Collectors.toSet());
@@ -75,9 +76,11 @@ public class AbstractInstancesProxyController {
                                            Supplier<BodyInserter<?, ? super ClientHttpRequest>> bodyInserter) {
         log.trace("Proxy-Request for instance {} with URL '{}'", instanceId, uri);
 
-        return registry.getInstance(InstanceId.of(instanceId))
-                       .flatMap(instance -> forward(instance, uri, method, headers, bodyInserter))
-                       .switchIfEmpty(Mono.fromSupplier(() -> ClientResponse.create(HttpStatus.SERVICE_UNAVAILABLE, strategies).build()));
+        return this.registry.getInstance(InstanceId.of(instanceId))
+                            .flatMap(instance -> forward(instance, uri, method, headers, bodyInserter))
+                            .switchIfEmpty(Mono.fromSupplier(() -> ClientResponse.create(HttpStatus.SERVICE_UNAVAILABLE,
+                                this.strategies
+                            ).build()));
     }
 
     private Mono<ClientResponse> forward(Instance instance,
@@ -85,10 +88,10 @@ public class AbstractInstancesProxyController {
                                          HttpMethod method,
                                          HttpHeaders headers,
                                          Supplier<BodyInserter<?, ? super ClientHttpRequest>> bodyInserter) {
-        WebClient.RequestBodySpec bodySpec = instanceWebClient.instance(instance)
-                                                              .method(method)
-                                                              .uri(uri)
-                                                              .headers(h -> h.addAll(filterHeaders(headers)));
+        WebClient.RequestBodySpec bodySpec = this.instanceWebClient.instance(instance)
+                                                                   .method(method)
+                                                                   .uri(uri)
+                                                                   .headers(h -> h.addAll(filterHeaders(headers)));
 
         WebClient.RequestHeadersSpec<?> headersSpec = bodySpec;
         if (requiresBody(method)) {
@@ -99,19 +102,31 @@ public class AbstractInstancesProxyController {
             }
         }
 
-        return headersSpec.exchange().onErrorResume(ReadTimeoutException.class, ex -> Mono.fromSupplier(() -> {
-            log.trace("Timeout for Proxy-Request for instance {} with URL '{}'", instance.getId(), uri);
-            return ClientResponse.create(HttpStatus.GATEWAY_TIMEOUT, strategies).build();
-        })).onErrorResume(ResolveEndpointException.class, ex -> Mono.fromSupplier(() -> {
-            log.trace("No Endpoint found for Proxy-Request for instance {} with URL '{}'", instance.getId(), uri);
-            return ClientResponse.create(HttpStatus.NOT_FOUND, strategies).build();
-        })).onErrorResume(IOException.class, ex -> Mono.fromSupplier(() -> {
-            log.trace("Proxy-Request for instance {} with URL '{}' errored", instance.getId(), uri, ex);
-            return ClientResponse.create(HttpStatus.BAD_GATEWAY, strategies).build();
-        })).onErrorResume(ConnectException.class, ex -> Mono.fromSupplier(() -> {
-            log.trace("Connect for Proxy-Request for instance {} with URL '{}' failed", instance.getId(), uri, ex);
-            return ClientResponse.create(HttpStatus.BAD_GATEWAY, strategies).build();
-        }));
+        return headersSpec.exchange()
+                          .onErrorResume(ex -> ex instanceof ReadTimeoutException || ex instanceof TimeoutException,
+                              ex -> Mono.fromSupplier(() -> {
+                                  log.trace("Timeout for Proxy-Request for instance {} with URL '{}'",
+                                      instance.getId(),
+                                      uri
+                                  );
+                                  return ClientResponse.create(HttpStatus.GATEWAY_TIMEOUT, this.strategies).build();
+                              })
+                          )
+                          .onErrorResume(ResolveEndpointException.class, ex -> Mono.fromSupplier(() -> {
+                              log.trace("No Endpoint found for Proxy-Request for instance {} with URL '{}'",
+                                  instance.getId(),
+                                  uri
+                              );
+                              return ClientResponse.create(HttpStatus.NOT_FOUND, this.strategies).build();
+                          }))
+                          .onErrorResume(IOException.class, ex -> Mono.fromSupplier(() -> {
+                              log.trace("Proxy-Request for instance {} with URL '{}' errored",
+                                  instance.getId(),
+                                  uri,
+                                  ex
+                              );
+                              return ClientResponse.create(HttpStatus.BAD_GATEWAY, this.strategies).build();
+                          }));
     }
 
     protected String getEndpointLocalPath(String pathWithinApplication) {
@@ -128,7 +143,7 @@ public class AbstractInstancesProxyController {
     }
 
     private boolean includeHeader(String header) {
-        return !ignoredHeaders.contains(header.toLowerCase());
+        return !this.ignoredHeaders.contains(header.toLowerCase());
     }
 
     private boolean requiresBody(HttpMethod method) {

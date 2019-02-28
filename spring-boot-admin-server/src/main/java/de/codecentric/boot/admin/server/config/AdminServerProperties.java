@@ -87,19 +87,7 @@ public class AdminServerProperties {
         private Duration infoLifetime = Duration.ofMinutes(1L);
 
         /**
-         * Connect timeout when querying the instances' status and info.
-         */
-        @DurationUnit(ChronoUnit.MILLIS)
-        private Duration connectTimeout = Duration.ofMillis(2_000L);
-
-        /**
-         * read timeout when querying the instances' status and info.
-         */
-        @DurationUnit(ChronoUnit.MILLIS)
-        private Duration readTimeout = Duration.ofMillis(10_000L);
-
-        /**
-         * Default number of retries for failed requests.
+         * Default number of retries for failed requests. Individual values for specific endpoints can be overriden using `spring.boot.admin.monitor.retries.*`.
          */
         private int defaultRetries = 0;
 
@@ -107,6 +95,18 @@ public class AdminServerProperties {
          * Number of retries per endpointId. Defaults to default-retry.
          */
         private Map<String, Integer> retries = new HashMap<>();
+
+        /**
+         * Default timeout when making requests. Individual values for specific endpoints can be overriden using `spring.boot.admin.monitor.timeout.*`.
+         */
+        @DurationUnit(ChronoUnit.MILLIS)
+        private Duration defaultTimeout = Duration.ofMillis(10_000L);
+
+        /**
+         * timeout per endpointId. Defaults to default-timeout.
+         */
+        @DurationUnit(ChronoUnit.MILLIS)
+        private Map<String, Duration> timeout = new HashMap<>();
 
         /**
          * @deprecated in favor of statusInterval

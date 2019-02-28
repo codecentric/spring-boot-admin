@@ -20,6 +20,20 @@
         "level": "warning",
         "replacement": "spring.boot.admin.monitor.status-interval"
       }
+    },
+    {
+      "name": "spring.boot.admin.monitor.read-timeout",
+      "deprecation": {
+        "replacement": "spring.boot.admin.monitor.default-timeout",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.boot.admin.monitor.connect-timeout",
+      "deprecation": {
+        "replacement": "spring.boot.admin.monitor.default-timeout",
+        "level": "error"
+      }
     }
   ]
 }

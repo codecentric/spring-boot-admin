@@ -79,3 +79,22 @@ protected void configure(HttpSecurity http) throws Exception {
         .ignoringAntMatchers("/actuator/**");
 }
 ----
+
+
+=== Using Mutual TLS ===
+
+SBA Server can also use client certificates to authenticate when accessing the actuator endpoints.
+If a custom configured `ClientHttpConnector` bean is present, Spring Boot will automatically configure a `WebClient.Builder` using it, which will be used by Spring Boot Admin.
+
+[source,java]
+----
+@Bean
+public ClientHttpConnector customHttpClient() {
+    SslContextBuilder sslContext = SslContextBuilder.forClient();
+    //Your sslContext customizations go here
+    HttpClient httpClient = HttpClient.create().secure(
+        ssl -> ssl.sslContext(sslContext)
+    );
+    return new ReactorClientHttpConnector(httpClient);
+}
+----

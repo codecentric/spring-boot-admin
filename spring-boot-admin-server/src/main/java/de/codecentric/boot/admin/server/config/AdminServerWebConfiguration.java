@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,8 @@ public class AdminServerWebConfiguration {
     public SimpleModule adminJacksonModule() {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(Registration.class, new RegistrationDeserializer());
-        module.setSerializerModifier(new RegistrationBeanSerializerModifier(new SanitizingMapSerializer(
-            adminServerProperties.getMetadataKeysToSanitize())));
+        module.setSerializerModifier(new RegistrationBeanSerializerModifier(new SanitizingMapSerializer(this.adminServerProperties
+            .getMetadataKeysToSanitize())));
         return module;
     }
 
@@ -81,12 +81,12 @@ public class AdminServerWebConfiguration {
         @ConditionalOnMissingBean
         public de.codecentric.boot.admin.server.web.reactive.InstancesProxyController instancesProxyController(
             InstanceRegistry instanceRegistry,
-            InstanceWebClient instanceWebClient) {
+            InstanceWebClient.Builder instanceWebClientBuilder) {
             return new de.codecentric.boot.admin.server.web.reactive.InstancesProxyController(
-                adminServerProperties.getContextPath(),
-                adminServerProperties.getInstanceProxy().getIgnoredHeaders(),
+                this.adminServerProperties.getContextPath(),
+                this.adminServerProperties.getInstanceProxy().getIgnoredHeaders(),
                 instanceRegistry,
-                instanceWebClient
+                instanceWebClientBuilder.build()
             );
         }
 
@@ -94,7 +94,7 @@ public class AdminServerWebConfiguration {
         public org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping adminHandlerMapping(
             RequestedContentTypeResolver webFluxContentTypeResolver) {
             org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping mapping = new de.codecentric.boot.admin.server.web.reactive.AdminControllerHandlerMapping(
-                adminServerProperties.getContextPath());
+                this.adminServerProperties.getContextPath());
             mapping.setOrder(0);
             mapping.setContentTypeResolver(webFluxContentTypeResolver);
             return mapping;
@@ -114,12 +114,12 @@ public class AdminServerWebConfiguration {
         @Bean
         @ConditionalOnMissingBean
         public InstancesProxyController instancesProxyController(InstanceRegistry instanceRegistry,
-                                                                 InstanceWebClient instanceWebClient) {
+                                                                 InstanceWebClient.Builder instanceWebClientBuilder) {
             return new InstancesProxyController(
-                adminServerProperties.getContextPath(),
-                adminServerProperties.getInstanceProxy().getIgnoredHeaders(),
+                this.adminServerProperties.getContextPath(),
+                this.adminServerProperties.getInstanceProxy().getIgnoredHeaders(),
                 instanceRegistry,
-                instanceWebClient
+                instanceWebClientBuilder.build()
             );
         }
 
@@ -127,7 +127,7 @@ public class AdminServerWebConfiguration {
         public org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping adminHandlerMapping(
             ContentNegotiationManager contentNegotiationManager) {
             org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping mapping = new de.codecentric.boot.admin.server.web.servlet.AdminControllerHandlerMapping(
-                adminServerProperties.getContextPath());
+                this.adminServerProperties.getContextPath());
             mapping.setOrder(0);
             mapping.setContentNegotiationManager(contentNegotiationManager);
             return mapping;

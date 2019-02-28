@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 
@@ -34,6 +36,8 @@ public class AdminServerCloudFoundryAutoConfigurationTest {
     private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
         AutoConfigurations.of(
             RestTemplateAutoConfiguration.class,
+            ClientHttpConnectorAutoConfiguration.class,
+            WebClientAutoConfiguration.class,
             HazelcastAutoConfiguration.class,
             WebMvcAutoConfiguration.class,
             AdminServerAutoConfiguration.class,

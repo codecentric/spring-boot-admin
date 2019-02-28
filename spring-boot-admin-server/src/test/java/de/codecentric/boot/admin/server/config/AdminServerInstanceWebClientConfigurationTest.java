@@ -16,58 +16,55 @@
 
 package de.codecentric.boot.admin.server.config;
 
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.domain.entities.SnapshottingInstanceRepository;
-import de.codecentric.boot.admin.server.eventstore.ConcurrentMapEventStore;
-import de.codecentric.boot.admin.server.eventstore.HazelcastEventStore;
-import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
-import de.codecentric.boot.admin.server.notify.MailNotifier;
+import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider;
+import de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunction;
+import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
+import de.codecentric.boot.admin.server.web.client.LegacyEndpointConverter;
 
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
-import com.hazelcast.config.Config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AdminServerAutoConfigurationTest {
+public class AdminServerInstanceWebClientConfigurationTest {
     private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
         AutoConfigurations.of(
             RestTemplateAutoConfiguration.class,
             ClientHttpConnectorAutoConfiguration.class,
             WebClientAutoConfiguration.class,
-            HazelcastAutoConfiguration.class,
             WebMvcAutoConfiguration.class,
-            AdminServerHazelcastAutoConfiguration.class,
-            AdminServerAutoConfiguration.class
+            AdminServerAutoConfiguration.class,
+            AdminServerInstanceWebClientConfiguration.class
         )).withUserConfiguration(AdminServerMarkerConfiguration.class);
 
     @Test
     public void simpleConfig() {
         this.contextRunner.run(context -> {
-            assertThat(context).getBean(InstanceRepository.class).isInstanceOf(SnapshottingInstanceRepository.class);
-            assertThat(context).doesNotHaveBean(MailNotifier.class);
-            assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(ConcurrentMapEventStore.class);
+            assertThat(context).hasSingleBean(InstanceWebClient.Builder.class);
+            assertThat(context).hasBean("filterInstanceWebClientCustomizer");
+            assertThat(context).hasSingleBean(BasicAuthHttpHeaderProvider.class);
+            assertThat(context).getBeanNames(InstanceExchangeFilterFunction.class).containsExactly(
+                "addHeadersInstanceExchangeFilter",
+                "rewriteEndpointUrlInstanceExchangeFilter",
+                "setDefaultAcceptHeaderInstanceExchangeFilter",
+                "legacyEndpointConverterInstanceExchangeFilter",
+                "retryInstanceExchangeFilter",
+                "timeoutInstanceExchangeFilter"
+            );
+            assertThat(context).getBeanNames(LegacyEndpointConverter.class).containsExactly(
+                "healthLegacyEndpointConverter",
+                "infoLegacyEndpointConverter",
+                "envLegacyEndpointConverter",
+                "httptraceLegacyEndpointConverter",
+                "threaddumpLegacyEndpointConverter",
+                "liquibaseLegacyEndpointConverter",
+                "flywayLegacyEndpointConverter"
+            );
         });
-    }
-
-    @Test
-    public void hazelcastConfig() {
-        this.contextRunner.withUserConfiguration(TestHazelcastConfig.class)
-                          .run(context -> assertThat(context).getBean(InstanceEventStore.class)
-                                                        .isInstanceOf(HazelcastEventStore.class));
-    }
-
-    static class TestHazelcastConfig {
-        @Bean
-        public Config config() {
-            return new Config();
-        }
     }
 }
