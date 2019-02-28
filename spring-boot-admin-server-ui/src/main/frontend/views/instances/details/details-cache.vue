@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2019 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@
         </div>
       </div>
       <div class="level cache-current" v-if="current">
-        <div class="level-item has-text-centered">
+        <div v-if="current.hit !== undefined" class="level-item has-text-centered">
           <div>
             <p class="heading has-bullet has-bullet-info">
               Hits
@@ -35,7 +35,7 @@
             <p v-text="current.hit" />
           </div>
         </div>
-        <div class="level-item has-text-centered">
+        <div v-if="current.miss !== undefined" class="level-item has-text-centered">
           <div>
             <p class="heading has-bullet has-bullet-warning">
               Misses
@@ -43,7 +43,7 @@
             <p v-text="current.miss" />
           </div>
         </div>
-        <div class="level-item has-text-centered">
+        <div v-if="ratio !== undefined" class="level-item has-text-centered">
           <div>
             <p class="heading">
               Hit ratio
@@ -51,7 +51,7 @@
             <p v-text="ratio" />
           </div>
         </div>
-        <div v-if="current.size" class="level-item has-text-centered">
+        <div v-if="current.size !== undefined" class="level-item has-text-centered">
           <div>
             <p class="heading">
               Size
@@ -89,39 +89,65 @@
       hasLoaded: false,
       error: null,
       current: null,
-      disableSize: false,
+      shouldFetchCacheSize: true,
+      shouldFetchCacheHits: true,
+      shouldFetchCacheMisses: true,
       chartData: [],
     }),
     computed: {
       ratio() {
-        if (this.current.total > 0) {
-          return (this.current.hit / this.current.total * 100).toFixed(2) + '%';
+        if (Number.isFinite(this.current.hit) && Number.isFinite(this.current)) {
+          const total = this.current.hit + this.current.miss;
+          return total > 0 ? (this.current.hit / total * 100).toFixed(2) + '%' : '-';
         }
-        return '-';
+        return undefined;
       }
     },
     methods: {
       async fetchMetrics() {
-        const responseHit = this.instance.fetchMetric('cache.gets', {name: this.cacheName, result: 'hit'});
-        const responseMiss = this.instance.fetchMetric('cache.gets', {name: this.cacheName, result: 'miss'});
-        let size = undefined;
-        if (!this.disableSize) {
-          const responsSize = this.instance.fetchMetric('cache.size', {name: this.cacheName});
-          try {
-            size = (await responsSize).data.measurements[0].value;
-          } catch (error) {
-            this.disableSize = true;
-            console.warn('Fetching cache size failed - error is ignored', error)
-          }
-        }
-        const hit = (await responseHit).data.measurements[0].value;
-        const miss = (await responseMiss).data.measurements[0].value;
+        const [hit, miss, size] = await Promise.all([this.fetchCacheHits(), this.fetchCacheMisses(), this.fetchCacheSize()]);
         return {
-          hit,
-          miss,
-          total: hit + miss,
+          hit: hit,
+          miss: miss,
+          total: hit + (miss || 0),
           size
         };
+      },
+      async fetchCacheHits() {
+        if (this.shouldFetchCacheHits) {
+          try {
+            const response = await this.instance.fetchMetric('cache.gets', {name: this.cacheName, result: 'hit'});
+            return response.data.measurements[0].value;
+          } catch (error) {
+            this.shouldFetchCacheHits = false;
+            console.warn(`Fetching cache ${this.cacheName} hits failed - error is ignored`, error);
+            return undefined;
+          }
+        }
+      },
+      async fetchCacheMisses() {
+        if (this.shouldFetchCacheMisses) {
+          try {
+            const response = await this.instance.fetchMetric('cache.gets', {name: this.cacheName, result: 'miss'});
+            return response.data.measurements[0].value;
+          } catch (error) {
+            this.shouldFetchCacheMisses = false;
+            console.warn(`Fetching cache ${this.cacheName} misses failed - error is ignored`, error);
+            return undefined;
+          }
+        }
+      },
+      async fetchCacheSize() {
+        if (this.shouldFetchCacheSize) {
+          try {
+            const response = await this.instance.fetchMetric('cache.size', {name: this.cacheName});
+            return response.data.measurements[0].value;
+          } catch (error) {
+            this.shouldFetchCacheSize = false;
+            console.warn(`Fetching cache ${this.cacheName} size failed - error is ignored`, error);
+            return undefined;
+          }
+        }
       },
       createSubscription() {
         const vm = this;
