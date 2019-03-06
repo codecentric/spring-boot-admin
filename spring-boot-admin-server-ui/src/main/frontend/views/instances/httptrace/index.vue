@@ -32,6 +32,10 @@
             <p class="control is-expanded">
               <input class="input" type="number" placeholder="trace limit" v-model="limit">
             </p>
+          </div>
+        </div>
+        <div class="field-body">
+          <div class="field has-addons">
             <p class="control is-expanded">
               <input class="input" type="search" placeholder="path filter" v-model="filter">
             </p>
