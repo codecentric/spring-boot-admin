@@ -30,7 +30,7 @@
         <div class="field-body">
           <div class="field has-addons">
             <p class="control is-expanded">
-              <input class="input" type="text" placeholder="trace limit" v-model="limit">
+              <input class="input" type="number" placeholder="trace limit" v-model="limit">
             </p>
             <p class="control is-expanded">
               <input class="input" type="search" placeholder="path filter" v-model="filter">
