@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2019 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -20,32 +20,37 @@
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
             Fetching traces failed.
           </strong>
-          <p v-text="error.message"/>
+          <p v-text="error.message" />
         </div>
       </div>
-      <template v-if="traces">
-        <div class="field-body">
-          <div class="field">
-            <p class="control is-expanded">
-              <input class="input" type="number" placeholder="trace limit" v-model="limit">
-            </p>
-          </div>
-        </div>
-        <div class="field-body">
-          <div class="field has-addons">
-            <p class="control is-expanded">
-              <input class="input" type="search" placeholder="path filter" v-model="filter">
-            </p>
-            <p class="control">
-              <span class="button is-static">
-                <span v-text="filteredTraces.length"/>
-                /
-                <span v-text="traces.length"/>
-              </span>
-            </p>
+      <template v-if="hasLoaded">
+        <div class="field is-horizontal">
+          <div class="field-body">
+            <div class="field has-addons">
+              <p class="control is-expanded">
+                <input class="input" type="search" placeholder="path filter" v-model="filter">
+              </p>
+              <p class="control">
+                <span class="button is-static">
+                  <span v-text="filteredTraces.length" />
+                  /
+                  <span v-text="traces.length" />
+                </span>
+              </p>
+            </div>
+            <div class="field is-narrow has-addons">
+              <p class="control">
+                <span class="button is-static">
+                  limit
+                </span>
+              </p>
+              <p class="control">
+                <input class="input httptraces__limit" min="0" type="number" placeholder="trace limit" v-model="limit">
+              </p>
+            </div>
           </div>
         </div>
         <div class="field-body">
@@ -77,13 +82,13 @@
             <div class="control">
               <label class="checkbox">
                 <input type="checkbox" v-model="excludeActuator">
-                exclude <span v-text="actuatorPath"/>/**
+                exclude <span v-text="actuatorPath" />/**
               </label>
             </div>
           </div>
         </div>
-        <sba-traces-chart :traces="filteredTraces" @selected="(d) => selection = d"/>
-        <sba-traces-list :traces="selectedTraces"/>
+        <sba-traces-chart :traces="filteredTraces" @selected="d => selection = d" />
+        <sba-traces-list :traces="selectedTraces" />
       </template>
     </template>
   </section>
@@ -160,7 +165,7 @@
     data: () => ({
       hasLoaded: false,
       error: null,
-      traces: null,
+      traces: [],
       filter: null,
       limit: 1000,
       excludeActuator: true,
@@ -189,30 +194,34 @@
         }
         const [start, end] = this.selection;
         return this.filteredTraces.filter(trace => !trace.timestamp.isBefore(start) && !trace.timestamp.isAfter(end));
+      },
+      lastTimestamp() {
+        return this.traces.length > 0 ? this.traces[0].timestamp : moment(0);
+      }
+    },
+    watch: {
+      limit(value) {
+        if (this.traces.length > value) {
+          this.traces = this.traces.slice(0, value);
+        }
       }
     },
     methods: {
       async fetchHttptrace() {
         const response = await this.instance.fetchHttptrace();
-        const traces = response.data.traces.slice(0, this.limit).map(trace => new Trace(trace)).filter(
-          trace => trace.timestamp.isAfter(this.lastTimestamp)
-        );
+        const traces = response.data.traces.map(trace => new Trace(trace))
+          .filter(trace => trace.timestamp.isAfter(this.lastTimestamp));
         traces.sort((a, b) => -1 * a.compareTo(b));
-        if (traces.length > 0) {
-          this.lastTimestamp = traces[0].timestamp;
-        }
         return traces;
       },
       createSubscription() {
         const vm = this;
-        vm.lastTimestamp = moment(0);
-        vm.error = null;
         return timer(0, 5000)
           .pipe(concatMap(vm.fetchHttptrace))
           .subscribe({
             next: traces => {
               vm.hasLoaded = true;
-              vm.traces = vm.traces ? traces.concat(vm.traces) : traces;
+              vm.traces = [...traces, ...vm.traces].slice(0, vm.limit);
             },
             error: error => {
               vm.hasLoaded = true;
@@ -256,3 +265,10 @@
     }
   }
 </script>
+<style lang="scss">
+  @import "~@/assets/css/utilities";
+
+  .httptraces__limit {
+    width: 5em;
+  }
+</style>
