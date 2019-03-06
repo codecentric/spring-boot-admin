@@ -28,7 +28,7 @@
       </div>
       <template v-if="traces">
         <div class="field-body">
-          <div class="field has-addons">
+          <div class="field">
             <p class="control is-expanded">
               <input class="input" type="number" placeholder="trace limit" v-model="limit">
             </p>
