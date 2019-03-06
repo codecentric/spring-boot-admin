@@ -28,6 +28,13 @@
       </div>
       <template v-if="traces">
         <div class="field-body">
+          <div class="field">
+            <p class="control is-expanded">
+              <input class="input" type="number" placeholder="trace limit" v-model="limit">
+            </p>
+          </div>
+        </div>
+        <div class="field-body">
           <div class="field has-addons">
             <p class="control is-expanded">
               <input class="input" type="search" placeholder="path filter" v-model="filter">
@@ -155,6 +162,7 @@
       error: null,
       traces: null,
       filter: null,
+      limit: 1000,
       excludeActuator: true,
       showSuccess: true,
       showClientErrors: true,
@@ -186,7 +194,7 @@
     methods: {
       async fetchHttptrace() {
         const response = await this.instance.fetchHttptrace();
-        const traces = response.data.traces.map(trace => new Trace(trace)).filter(
+        const traces = response.data.traces.slice(0, this.limit).map(trace => new Trace(trace)).filter(
           trace => trace.timestamp.isAfter(this.lastTimestamp)
         );
         traces.sort((a, b) => -1 * a.compareTo(b));
