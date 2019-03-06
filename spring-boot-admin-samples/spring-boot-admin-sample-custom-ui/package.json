@@ -11,11 +11,11 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.4.0",
-    "@vue/cli-plugin-eslint": "^3.4.0",
-    "@vue/cli-service": "^3.4.0",
+    "@vue/cli-plugin-babel": "^3.4.1",
+    "@vue/cli-plugin-eslint": "^3.4.1",
+    "@vue/cli-service": "^3.4.1",
     "@vue/eslint-config-standard": "^4.0.0",
-    "vue-template-compiler": "^2.6.6"
+    "vue-template-compiler": "^2.6.8"
   },
   "eslintConfig": {
     "root": true,
