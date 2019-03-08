@@ -525,7 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.1.4-SNAPSHOT,</span>
-<span id="revdate">06.03.2019</span>
+<span id="revdate">08.03.2019</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -1170,14 +1170,24 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.monitor.period</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Time interval in ms to update the status of applications with expired status-information.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">10,000</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.monitor.status-interval</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Time interval to check the status of instances.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">10,000ms</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.monitor.status-lifetime</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Lifetime of application statuses in ms. The applications /health-endpoint will not be queried until the lifetime has expired.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">10,000</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Lifetime of status. The status won&#8217;t be updated as long the last status isn&#8217;t expired.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">10,000ms</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.monitor.info-interval</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Time interval to check the info of instances.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1m</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.monitor.info-lifetime</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Lifetime of info. The info won&#8217;t be updated as long the last info isn&#8217;t expired.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1m</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.monitor.connect-timeout</p></td>
@@ -1247,18 +1257,6 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 <h3 id="spring-cloud-discovery-support"><a class="anchor" href="#spring-cloud-discovery-support"></a><a class="link" href="#spring-cloud-discovery-support">4.3. Spring Cloud Discovery</a></h3>
 <div class="paragraph">
 <p>The Spring Boot Admin Server can use Spring Clouds <code>DiscoveryClient</code> to discover applications. The advantage is that the clients don&#8217;t have to include the <code>spring-boot-admin-starter-client</code>. You just have to add a <code>DiscoveryClient</code> implementation to your admin server - everything else is done by AutoConfiguration.</p>
-</div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-Spring Boot Admin will only update the info and available endpoints when a application changes status or when the registration changes. If you want to trigger an update with every new deployment, you can add a key value pair that changes with every restart (e.g. <code>eureka.instance.metadata-map.startup: ${random.int}</code>).
-</td>
-</tr>
-</table>
 </div>
 <div class="sect3">
 <h4 id="spring-cloud-discovery-static-config"><a class="anchor" href="#spring-cloud-discovery-static-config"></a><a class="link" href="#spring-cloud-discovery-static-config">4.3.1. Static Configuration using SimpleDiscoveryClient</a></h4>
