@@ -20,19 +20,23 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEndpointsDetectedE
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdatedEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
+import java.time.Duration;
 import org.reactivestreams.Publisher;
 
 public class InfoUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
     private final InfoUpdater infoUpdater;
+    private final IntervalCheck intervalCheck;
 
     public InfoUpdateTrigger(InfoUpdater infoUpdater, Publisher<InstanceEvent> publisher) {
         super(publisher, InstanceEvent.class);
         this.infoUpdater = infoUpdater;
+        this.intervalCheck = new IntervalCheck("info", this::updateInfo, Duration.ofMinutes(5), Duration.ofMinutes(1));
     }
 
     @Override
@@ -42,11 +46,31 @@ public class InfoUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
                         .filter(event -> event instanceof InstanceEndpointsDetectedEvent ||
                                          event instanceof InstanceStatusChangedEvent ||
                                          event instanceof InstanceRegistrationUpdatedEvent)
-                        .flatMap(this::updateInfo)
+                        .flatMap(event -> this.updateInfo(event.getInstance()))
                         .doFinally(s -> scheduler.dispose());
     }
 
-    protected Mono<Void> updateInfo(InstanceEvent event) {
-        return infoUpdater.updateInfo(event.getInstance());
+    protected Mono<Void> updateInfo(InstanceId instanceId) {
+        return this.infoUpdater.updateInfo(instanceId).doFinally(s -> this.intervalCheck.markAsChecked(instanceId));
+    }
+
+    @Override
+    public void start() {
+        super.start();
+        this.intervalCheck.start();
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
+        this.intervalCheck.stop();
+    }
+
+    public void setInterval(Duration updateInterval) {
+        this.intervalCheck.setInterval(updateInterval);
+    }
+
+    public void setLifetime(Duration infoLifetime) {
+        this.intervalCheck.setMinRetention(infoLifetime);
     }
 }

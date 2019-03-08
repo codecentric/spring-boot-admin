@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,19 +19,23 @@ package de.codecentric.boot.admin.server.services;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.events.InstanceEndpointsDetectedEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceInfoChangedEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdatedEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
-import de.codecentric.boot.admin.server.domain.values.Endpoints;
+import de.codecentric.boot.admin.server.domain.values.Info;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import reactor.core.publisher.Mono;
 import reactor.test.publisher.TestPublisher;
 
+import java.time.Duration;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -42,47 +46,107 @@ import static org.mockito.Mockito.when;
 public class InfoUpdateTriggerTest {
     private final Instance instance = Instance.create(InstanceId.of("id-1"))
                                               .register(Registration.create("foo", "http://health-1").build());
+    private final InfoUpdater updater = mock(InfoUpdater.class);
+    private final TestPublisher<InstanceEvent> events = TestPublisher.create();
+    private InfoUpdateTrigger trigger;
 
-    @Test
-    public void should_update_on_event() throws InterruptedException {
-        //given
-        InfoUpdater updater = mock(InfoUpdater.class);
-        when(updater.updateInfo(any(InstanceId.class))).thenReturn(Mono.empty());
+    @Before
+    public void setUp() throws Exception {
+        when(this.updater.updateInfo(any(InstanceId.class))).thenReturn(Mono.empty());
 
-        TestPublisher<InstanceEvent> events = TestPublisher.create();
-        InfoUpdateTrigger trigger = new InfoUpdateTrigger(updater, events.flux());
-        trigger.start();
+        this.trigger = new InfoUpdateTrigger(this.updater, this.events.flux());
+        this.trigger.start();
         Thread.sleep(50L); //wait for subscription
-
-        //when some non-status-change event is emitted
-        events.next(new InstanceRegisteredEvent(instance.getId(), instance.getVersion(), instance.getRegistration()));
-        //then should not update
-        verify(updater, never()).updateInfo(instance.getId());
-
-        //when status-change event is emitted
-        events.next(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown()));
-        //then should update
-        verify(updater, times(1)).updateInfo(instance.getId());
-
-        //when endpoints-detected event is emitted
-        clearInvocations(updater);
-        events.next(new InstanceEndpointsDetectedEvent(instance.getId(), instance.getVersion(), Endpoints.empty()));
-        //then should update
-        verify(updater, times(1)).updateInfo(instance.getId());
-
-        //when registration updated event is emitted
-        clearInvocations(updater);
-        events.next(
-            new InstanceRegistrationUpdatedEvent(instance.getId(), instance.getVersion(), instance.getRegistration()));
-        //then should update
-        verify(updater, times(1)).updateInfo(instance.getId());
-
-        //when registered event is emitted but the trigger has been stopped
-        trigger.stop();
-        clearInvocations(updater);
-        events.next(new InstanceRegisteredEvent(instance.getId(), instance.getVersion(), instance.getRegistration()));
-        //then should not update
-        verify(updater, never()).updateInfo(instance.getId());
     }
 
+    @Test
+    public void should_start_and_stop_monitor() throws Exception {
+        //given
+        this.trigger.stop();
+        this.trigger.setInterval(Duration.ofMillis(10));
+        this.trigger.setLifetime(Duration.ofMillis(10));
+        this.trigger.start();
+        Thread.sleep(50L); //wait for subscription
+
+        this.events.next(new InstanceStatusChangedEvent(this.instance.getId(),
+            this.instance.getVersion(),
+            StatusInfo.ofDown()
+        ));
+
+        Thread.sleep(50L);
+        //then it should start updating one time for registration and at least once for monitor
+        verify(this.updater, atLeast(2)).updateInfo(this.instance.getId());
+
+        //given long lifetime
+        this.trigger.setLifetime(Duration.ofSeconds(10));
+        Thread.sleep(50L);
+        clearInvocations(this.updater);
+        //when the lifetime is not expired
+        Thread.sleep(50L);
+        //should never update
+        verify(this.updater, never()).updateInfo(any(InstanceId.class));
+
+        //when trigger ist destroyed
+        this.trigger.setLifetime(Duration.ofMillis(10));
+        this.trigger.stop();
+        clearInvocations(this.updater);
+        Thread.sleep(15L);
+
+        // it should stop updating
+        verify(this.updater, never()).updateInfo(any(InstanceId.class));
+    }
+
+    @Test
+    public void should_not_update_when_stopped() {
+        //when registered event is emitted but the trigger has been stopped
+        this.trigger.stop();
+        clearInvocations(this.updater);
+        this.events.next(new InstanceRegisteredEvent(this.instance.getId(),
+            this.instance.getVersion(),
+            this.instance.getRegistration()
+        ));
+        //then should not update
+        verify(this.updater, never()).updateInfo(this.instance.getId());
+    }
+
+    @Test
+    public void should_update_on_endpoints_detectes_event() {
+        //when registered event is emitted
+        this.events.next(new InstanceEndpointsDetectedEvent(this.instance.getId(),
+            this.instance.getVersion(),
+            this.instance.getEndpoints()
+        ));
+        //then should update
+        verify(this.updater, times(1)).updateInfo(this.instance.getId());
+    }
+
+    @Test
+    public void should_update_on_status_changed_event() {
+        //when registered event is emitted
+        this.events.next(new InstanceStatusChangedEvent(this.instance.getId(),
+            this.instance.getVersion(),
+            StatusInfo.ofDown()
+        ));
+        //then should update
+        verify(this.updater, times(1)).updateInfo(this.instance.getId());
+    }
+
+    @Test
+    public void should_update_on_instance_registration_update_event() {
+        //when registered event is emitted
+        this.events.next(new InstanceRegistrationUpdatedEvent(this.instance.getId(),
+            this.instance.getVersion(),
+            this.instance.getRegistration()
+        ));
+        //then should update
+        verify(this.updater, times(1)).updateInfo(this.instance.getId());
+    }
+
+    @Test
+    public void should_not_update_on_non_relevant_event() {
+        //when some non-registered event is emitted
+        this.events.next(new InstanceInfoChangedEvent(this.instance.getId(), this.instance.getVersion(), Info.empty()));
+        //then should not update
+        verify(this.updater, never()).updateInfo(this.instance.getId());
+    }
 }

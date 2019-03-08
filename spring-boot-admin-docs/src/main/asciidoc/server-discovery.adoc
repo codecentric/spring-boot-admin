@@ -3,8 +3,6 @@
 
 The Spring Boot Admin Server can use Spring Clouds `DiscoveryClient` to discover applications. The advantage is that the clients don't have to include the `spring-boot-admin-starter-client`. You just have to add a `DiscoveryClient` implementation to your admin server - everything else is done by AutoConfiguration.
 
-TIP: Spring Boot Admin will only update the info and available endpoints when a application changes status or when the registration changes. If you want to trigger an update with every new deployment, you can add a key value pair that changes with every restart (e.g. `eureka.instance.metadata-map.startup: ${random.int}`).
-
 [[spring-cloud-discovery-static-config]]
 ==== Static Configuration using SimpleDiscoveryClient ====
 

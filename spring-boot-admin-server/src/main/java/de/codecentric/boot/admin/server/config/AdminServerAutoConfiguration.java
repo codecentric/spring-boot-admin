@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,8 +101,8 @@ public class AdminServerAutoConfiguration {
     @ConditionalOnMissingBean
     public StatusUpdateTrigger statusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> events) {
         StatusUpdateTrigger trigger = new StatusUpdateTrigger(statusUpdater, events);
-        trigger.setUpdateInterval(adminServerProperties.getMonitor().getPeriod());
-        trigger.setStatusLifetime(adminServerProperties.getMonitor().getStatusLifetime());
+        trigger.setInterval(this.adminServerProperties.getMonitor().getStatusInterval());
+        trigger.setLifetime(this.adminServerProperties.getMonitor().getStatusLifetime());
         return trigger;
     }
 
@@ -112,7 +112,7 @@ public class AdminServerAutoConfiguration {
                                              InstanceWebClient instanceWebClient) {
         ChainingStrategy strategy = new ChainingStrategy(
             new QueryIndexEndpointStrategy(instanceWebClient),
-            new ProbeEndpointsStrategy(instanceWebClient, adminServerProperties.getProbedEndpoints())
+            new ProbeEndpointsStrategy(instanceWebClient, this.adminServerProperties.getProbedEndpoints())
         );
         return new EndpointDetector(instanceRepository, strategy);
     }
@@ -133,7 +133,10 @@ public class AdminServerAutoConfiguration {
     @Bean(initMethod = "start", destroyMethod = "stop")
     @ConditionalOnMissingBean
     public InfoUpdateTrigger infoUpdateTrigger(InfoUpdater infoUpdater, Publisher<InstanceEvent> events) {
-        return new InfoUpdateTrigger(infoUpdater, events);
+        InfoUpdateTrigger trigger = new InfoUpdateTrigger(infoUpdater, events);
+        trigger.setInterval(this.adminServerProperties.getMonitor().getInfoInterval());
+        trigger.setLifetime(this.adminServerProperties.getMonitor().getInfoLifetime());
+        return trigger;
     }
 
     @Bean
@@ -154,10 +157,10 @@ public class AdminServerAutoConfiguration {
                                                ObjectProvider<List<InstanceExchangeFilterFunction>> filtersProvider) {
         List<InstanceExchangeFilterFunction> additionalFilters = filtersProvider.getIfAvailable(Collections::emptyList);
         return InstanceWebClient.builder()
-                                .connectTimeout(adminServerProperties.getMonitor().getConnectTimeout())
-                                .readTimeout(adminServerProperties.getMonitor().getReadTimeout())
-                                .defaultRetries(adminServerProperties.getMonitor().getDefaultRetries())
-                                .retries(adminServerProperties.getMonitor().getRetries())
+                                .connectTimeout(this.adminServerProperties.getMonitor().getConnectTimeout())
+                                .readTimeout(this.adminServerProperties.getMonitor().getReadTimeout())
+                                .defaultRetries(this.adminServerProperties.getMonitor().getDefaultRetries())
+                                .retries(this.adminServerProperties.getMonitor().getRetries())
                                 .httpHeadersProvider(httpHeadersProvider)
                                 .filters(filters -> filters.addAll(additionalFilters))
                                 .build();

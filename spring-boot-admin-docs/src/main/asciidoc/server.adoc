@@ -14,13 +14,21 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 | The context-path prefixes the path where the Admin Server's statics assets and API should be served. Relative to the Dispatcher-Servlet.
 |
 
-| spring.boot.admin.monitor.period
-| Time interval in ms to update the status of applications with expired status-information.
-| 10,000
+| spring.boot.admin.monitor.status-interval
+| Time interval to check the status of instances.
+| 10,000ms
 
 | spring.boot.admin.monitor.status-lifetime
-| Lifetime of application statuses in ms. The applications /health-endpoint will not be queried until the lifetime has expired.
-| 10,000
+| Lifetime of status. The status won't be updated as long the last status isn't expired.
+| 10,000ms
+
+| spring.boot.admin.monitor.info-interval
+| Time interval to check the info of instances.
+| 1m
+
+| spring.boot.admin.monitor.info-lifetime
+| Lifetime of info. The info won't be updated as long the last info isn't expired.
+| 1m
 
 | spring.boot.admin.monitor.connect-timeout
 | Connect timeout in ms when querying the applications' status and info.

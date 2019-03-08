@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,10 +61,10 @@ public class AdminServerProperties {
     @lombok.Data
     public static class MonitorProperties {
         /**
-         * Time interval to update the status of instances with expired statusInfo
+         * Time interval to check the status of instances.
          */
         @DurationUnit(ChronoUnit.MILLIS)
-        private Duration period = Duration.ofMillis(10_000L);
+        private Duration statusInterval = Duration.ofMillis(10_000L);
 
         /**
          * Lifetime of status. The status won't be updated as long the last status isn't
@@ -72,6 +72,19 @@ public class AdminServerProperties {
          */
         @DurationUnit(ChronoUnit.MILLIS)
         private Duration statusLifetime = Duration.ofMillis(10_000L);
+
+        /**
+         * Time interval to check the info of instances,
+         */
+        @DurationUnit(ChronoUnit.MILLIS)
+        private Duration infoInterval = Duration.ofMinutes(1L);
+
+        /**
+         * Lifetime of info. The info won't be updated as long the last info isn't
+         * expired.
+         */
+        @DurationUnit(ChronoUnit.MILLIS)
+        private Duration infoLifetime = Duration.ofMinutes(1L);
 
         /**
          * Connect timeout when querying the instances' status and info.
@@ -94,6 +107,22 @@ public class AdminServerProperties {
          * Number of retries per endpointId. Defaults to default-retry.
          */
         private Map<String, Integer> retries = new HashMap<>();
+
+        /**
+         * @deprecated in favor of statusInterval
+         */
+        @Deprecated
+        public void setPeriod(Duration period) {
+            this.setStatusInterval(period);
+        }
+
+        /**
+         * @deprecated in favor of statusInterval
+         */
+        @Deprecated
+        public Duration getPeriod() {
+            return this.getStatusInterval();
+        }
     }
 
     @lombok.Data
