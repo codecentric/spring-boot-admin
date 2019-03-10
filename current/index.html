@@ -1202,7 +1202,7 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.monitor.default-retries</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default number of retries for failed requests. Individual values for specific endpoints can be overriden using <code>spring.boot.admin.monitor.retries.*</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default number of retries for failed requests. Modyfing requests (<code>PUT</code>, <code>POST</code>, <code>PATCH</code>, <code>DELETE</code>) are never retried. Individual values for specific endpoints can be overriden using <code>spring.boot.admin.monitor.retries.*</code>.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 </tr>
 <tr>
