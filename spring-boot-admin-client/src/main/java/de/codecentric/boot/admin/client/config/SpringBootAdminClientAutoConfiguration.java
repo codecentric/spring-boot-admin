@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,11 @@ package de.codecentric.boot.admin.client.config;
 
 import de.codecentric.boot.admin.client.registration.ApplicationFactory;
 import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
+import de.codecentric.boot.admin.client.registration.BlockingRegistrationClient;
 import de.codecentric.boot.admin.client.registration.DefaultApplicationFactory;
+import de.codecentric.boot.admin.client.registration.ReactiveRegistrationClient;
 import de.codecentric.boot.admin.client.registration.RegistrationApplicationListener;
+import de.codecentric.boot.admin.client.registration.RegistrationClient;
 import de.codecentric.boot.admin.client.registration.ServletApplicationFactory;
 import de.codecentric.boot.admin.client.registration.metadata.CompositeMetadataContributor;
 import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
@@ -34,10 +37,12 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointPr
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -45,16 +50,17 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
 
 @Configuration
 @ConditionalOnWebApplication
 @Conditional(SpringBootAdminClientEnabledCondition.class)
-@AutoConfigureAfter({WebEndpointAutoConfiguration.class, RestTemplateAutoConfiguration.class})
+@AutoConfigureAfter({WebEndpointAutoConfiguration.class, RestTemplateAutoConfiguration.class, WebClientAutoConfiguration.class})
 @EnableConfigurationProperties({ClientProperties.class, InstanceProperties.class, ServerProperties.class, ManagementServerProperties.class})
 public class SpringBootAdminClientAutoConfiguration {
 
@@ -70,7 +76,7 @@ public class SpringBootAdminClientAutoConfiguration {
                                                      ServletContext servletContext,
                                                      PathMappedEndpoints pathMappedEndpoints,
                                                      WebEndpointProperties webEndpoint,
-                                                     MetadataContributor metadataContributor,
+                                                     ObjectProvider<List<MetadataContributor>> metadataContributors,
                                                      DispatcherServletPath dispatcherServletPath) {
             return new ServletApplicationFactory(instance,
                 management,
@@ -78,7 +84,7 @@ public class SpringBootAdminClientAutoConfiguration {
                 servletContext,
                 pathMappedEndpoints,
                 webEndpoint,
-                metadataContributor,
+                new CompositeMetadataContributor(metadataContributors.getIfAvailable(Collections::emptyList)),
                 dispatcherServletPath
             );
         }
@@ -94,30 +100,60 @@ public class SpringBootAdminClientAutoConfiguration {
                                                      ServerProperties server,
                                                      PathMappedEndpoints pathMappedEndpoints,
                                                      WebEndpointProperties webEndpoint,
-                                                     MetadataContributor metadataContributor) {
+                                                     ObjectProvider<List<MetadataContributor>> metadataContributors) {
             return new DefaultApplicationFactory(instance,
                 management,
                 server,
                 pathMappedEndpoints,
                 webEndpoint,
-                metadataContributor
+                new CompositeMetadataContributor(metadataContributors.getIfAvailable(Collections::emptyList))
             );
+        }
+    }
+
+    @Configuration
+    @ConditionalOnBean(RestTemplateBuilder.class)
+    static class BlockingRegistrationClientConfig {
+        @Bean
+        @ConditionalOnMissingBean
+        public BlockingRegistrationClient registrationClient(ClientProperties client,
+                                                             RestTemplateBuilder restTemplate) {
+            restTemplate.messageConverters(new MappingJackson2HttpMessageConverter())
+                        .requestFactory(SimpleClientHttpRequestFactory.class)
+                        .setConnectTimeout(client.getConnectTimeout())
+                        .setReadTimeout(client.getReadTimeout());
+            if (client.getUsername() != null && client.getPassword() != null) {
+                restTemplate = restTemplate.basicAuthentication(client.getUsername(), client.getPassword());
+            }
+            return new BlockingRegistrationClient(restTemplate.build());
+        }
+    }
+
+    @Configuration
+    @ConditionalOnBean(WebClient.Builder.class)
+    @ConditionalOnMissingBean(RestTemplateBuilder.class)
+    static class ReactiveRegistrationClientConfig {
+        @Bean
+        @ConditionalOnMissingBean
+        public ReactiveRegistrationClient registrationClient(ClientProperties client, WebClient.Builder webClient) {
+            if (client.getUsername() != null && client.getPassword() != null) {
+                webClient = webClient.filter(basicAuthentication(client.getUsername(), client.getPassword()));
+            }
+            return new ReactiveRegistrationClient(webClient.build(), client.getReadTimeout());
         }
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ApplicationRegistrator registrator(ClientProperties client,
-                                              ApplicationFactory applicationFactory,
-                                              RestTemplateBuilder restTemplBuilder) {
-        RestTemplateBuilder builder = restTemplBuilder.messageConverters(new MappingJackson2HttpMessageConverter())
-                                                      .requestFactory(SimpleClientHttpRequestFactory.class)
-                                                      .setConnectTimeout(client.getConnectTimeout())
-                                                      .setReadTimeout(client.getReadTimeout());
-        if (client.getUsername() != null) {
-            builder = builder.basicAuthentication(client.getUsername(), client.getPassword());
-        }
-        return new ApplicationRegistrator(builder.build(), client, applicationFactory);
+    public ApplicationRegistrator registrator(RegistrationClient registrationClient,
+                                              ClientProperties client,
+                                              ApplicationFactory applicationFactory) {
+
+        return new ApplicationRegistrator(applicationFactory,
+            registrationClient,
+            client.getAdminUrl(),
+            client.isRegisterOnce()
+        );
     }
 
     @Bean
@@ -129,14 +165,6 @@ public class SpringBootAdminClientAutoConfiguration {
         listener.setAutoDeregister(client.isAutoDeregistration());
         listener.setRegisterPeriod(client.getPeriod());
         return listener;
-    }
-
-    @Bean
-    @Primary
-    @ConditionalOnMissingBean
-    public CompositeMetadataContributor metadataContributor(ObjectProvider<List<MetadataContributor>> contributorProvider) {
-        List<MetadataContributor> contributors = contributorProvider.getIfAvailable(Collections::emptyList);
-        return new CompositeMetadataContributor(contributors);
     }
 
     @Bean

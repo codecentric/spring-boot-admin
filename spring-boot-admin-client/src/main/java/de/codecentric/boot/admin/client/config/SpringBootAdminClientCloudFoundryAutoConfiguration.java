@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,12 @@ package de.codecentric.boot.admin.client.config;
 
 import de.codecentric.boot.admin.client.registration.CloudFoundryApplicationFactory;
 import de.codecentric.boot.admin.client.registration.metadata.CloudFoundryMetadataContributor;
+import de.codecentric.boot.admin.client.registration.metadata.CompositeMetadataContributor;
 import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
 
+import java.util.Collections;
+import java.util.List;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
@@ -54,9 +58,16 @@ public class SpringBootAdminClientCloudFoundryAutoConfiguration {
                                                              ServerProperties server,
                                                              PathMappedEndpoints pathMappedEndpoints,
                                                              WebEndpointProperties webEndpoint,
-                                                             MetadataContributor metadataContributor,
+                                                             ObjectProvider<List<MetadataContributor>> metadataContributors,
                                                              CloudFoundryApplicationProperties cfApplicationProperties) {
-        return new CloudFoundryApplicationFactory(instance, management, server, pathMappedEndpoints, webEndpoint,
-            metadataContributor, cfApplicationProperties);
+        return new CloudFoundryApplicationFactory(
+            instance,
+            management,
+            server,
+            pathMappedEndpoints,
+            webEndpoint,
+            new CompositeMetadataContributor(metadataContributors.getIfAvailable(Collections::emptyList)),
+            cfApplicationProperties
+        );
     }
 }
