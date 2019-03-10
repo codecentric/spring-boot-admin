@@ -589,6 +589,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_csrf_on_actuator_endpoints">5.2.1. CSRF on Actuator Endpoints</a></li>
 </ul>
 </li>
+<li><a href="#_using_mutual_tls">5.3. Using Mutual TLS</a></li>
 </ul>
 </li>
 <li><a href="#customizing">6. Customizing</a>
@@ -1190,18 +1191,18 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 <td class="tableblock halign-left valign-top"><p class="tableblock">1m</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.monitor.connect-timeout</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Connect timeout in ms when querying the applications' status and info.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">2,000</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.monitor.read-timeout</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Read timeout in ms when querying the applications' status and info.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.monitor.default-timeout</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default timeout when making requests. Individual values for specific endpoints can be overriden using <code>spring.boot.admin.monitor.timeout.*</code>.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">10,000</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.monitor.timeout.*</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Key-Value-Pairs with the timeout per endpointId. Defaults to default-timeout.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.monitor.default-retries</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default number of retries for failed requests. Modyfing requests (<code>PUT</code>, <code>POST</code>, <code>PATCH</code>, <code>DELETE</code>) are never retried.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default number of retries for failed requests. Individual values for specific endpoints can be overriden using <code>spring.boot.admin.monitor.retries.*</code>.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 </tr>
 <tr>
@@ -2372,6 +2373,26 @@ When using this approach the SBA Server decides whether or not the user can acce
         .ignoringAntMatchers(<span class="string"><span class="delimiter">&quot;</span><span class="content">/actuator/**</span><span class="delimiter">&quot;</span></span>);
 }</code></pre>
 </div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_using_mutual_tls"><a class="anchor" href="#_using_mutual_tls"></a><a class="link" href="#_using_mutual_tls">5.3. Using Mutual TLS</a></h3>
+<div class="paragraph">
+<p>SBA Server can also use client certificates to authenticate when accessing the actuator endpoints.
+If a custom configured <code>ClientHttpConnector</code> bean is present, Spring Boot will automatically configure a <code>WebClient.Builder</code> using it, which will be used by Spring Boot Admin.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Bean</span>
+<span class="directive">public</span> ClientHttpConnector customHttpClient() {
+    SslContextBuilder sslContext = SslContextBuilder.forClient();
+    <span class="comment">//Your sslContext customizations go here</span>
+    HttpClient httpClient = HttpClient.create().secure(
+        ssl -&gt; ssl.sslContext(sslContext)
+    );
+    <span class="keyword">return</span> <span class="keyword">new</span> ReactorClientHttpConnector(httpClient);
+}</code></pre>
 </div>
 </div>
 </div>
