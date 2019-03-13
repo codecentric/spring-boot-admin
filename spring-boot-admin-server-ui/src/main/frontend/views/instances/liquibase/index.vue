@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2019 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -20,14 +20,14 @@
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
             Fetching Liquibase migrations failed.
           </strong>
-          <p v-text="error.message"/>
+          <p v-text="error.message" />
         </div>
       </div>
       <template v-for="(context, ctxName) in contexts">
-        <h3 class="title" v-text="ctxName" :key="ctxName"/>
+        <h3 class="title" v-text="ctxName" :key="ctxName" />
         <template v-for="(report, name) in context.liquibaseBeans">
           <sba-panel :key="`${ctxName}-${name}`" :title="`name`" class="change-set"
                      :header-sticks-below="['#navigation']">
@@ -46,16 +46,16 @@
                 <template v-for="changeSet in report.changeSets">
                   <tr :key="`${ctxName}-${name}-${changeSet.id}`" class="is-selectable"
                       @click="showDetails[changeSet.checksum] ? $delete(showDetails, changeSet.checksum) : $set(showDetails, changeSet.checksum, true)">
-                    <td v-text="changeSet.id"/>
+                    <td v-text="changeSet.id" />
                     <td>
-                      <span v-text="changeSet.execType" class="tag" :class="execClass(execType)"/>
+                      <span v-text="changeSet.execType" class="tag" :class="execClass(execType)" />
                     </td>
-                    <td v-text="changeSet.description"/>
-                    <td v-text="changeSet.tag"/>
-                    <td v-text="changeSet.contexts.join(', ')"/>
+                    <td class="is-breakable" v-text="changeSet.description" />
+                    <td v-text="changeSet.tag" />
+                    <td v-text="changeSet.contexts.join(', ')" />
                     <td>
                       <span v-for="label in changeSet.labels" :key="`${ctxName}-${name}-${changeSet.id}-${label}`"
-                            class="tag is-info" v-text="label"/>
+                            class="tag is-info" v-text="label" />
                     </td>
                   </tr>
                   <tr v-if="showDetails[changeSet.checksum]" :key="`${ctxName}-${name}-${changeSet.id}-details`">
@@ -63,23 +63,23 @@
                       <table class="table is-fullwidth">
                         <tr>
                           <th>Changelog</th>
-                          <td colspan="3" v-text="changeSet.changeLog"/>
+                          <td colspan="3" v-text="changeSet.changeLog" />
                           <th>Author</th>
-                          <td v-text="changeSet.author"/>
+                          <td v-text="changeSet.author" />
                         </tr>
                         <tr>
                           <th>Checksum</th>
-                          <td v-text="changeSet.checksum"/>
+                          <td v-text="changeSet.checksum" />
                           <th>Comments</th>
-                          <td colspan="3" v-text="changeSet.comments"/>
+                          <td colspan="3" v-text="changeSet.comments" />
                         </tr>
                         <tr>
                           <th>Execution Order</th>
-                          <td v-text="changeSet.orderExecuted"/>
+                          <td v-text="changeSet.orderExecuted" />
                           <th>ExecutionDate</th>
-                          <td v-text="changeSet.dateExecuted"/>
+                          <td v-text="changeSet.dateExecuted" />
                           <th>DeploymentId</th>
-                          <td v-text="changeSet.deploymentId"/>
+                          <td v-text="changeSet.deploymentId" />
                         </tr>
                       </table>
                     </td>

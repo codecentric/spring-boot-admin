@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2019 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -20,18 +20,18 @@
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle"/>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
             Fetching Flyway reports failed.
           </strong>
-          <p v-text="error.message"/>
+          <p v-text="error.message" />
         </div>
       </div>
       <template v-for="(context, ctxName) in contexts">
-        <h3 class="title" v-text="ctxName" :key="ctxName"/>
+        <h3 class="title" v-text="ctxName" :key="ctxName" />
         <sba-panel v-for="(report, name) in context.flywayBeans" :key="`${ctxName}-${name}`" :title="name"
                    :header-sticks-below="['#navigation']"
                    class="migration">
-          <table class="table">
+          <table class="table is-fullwidth">
             <thead>
               <tr>
                 <th>Type</th>
@@ -48,17 +48,17 @@
             </thead>
             <tbody>
               <tr v-for="migration in report.migrations" :key="migration.checksum">
-                <td v-text="migration.type"/>
-                <td v-text="migration.checksum"/>
-                <td v-text="migration.version"/>
-                <td v-text="migration.description"/>
-                <td v-text="migration.script"/>
+                <td v-text="migration.type" />
+                <td v-text="migration.checksum" />
+                <td v-text="migration.version" />
+                <td class="is-breakable" v-text="migration.description" />
+                <td class="is-breakable" v-text="migration.script" />
                 <td><span v-text="migration.state" class="tag"
-                          :class="stateClass(migration.state)"/></td>
-                <td v-text="migration.installedBy"/>
-                <td v-text="migration.installedOn"/>
-                <td v-text="migration.installedRank"/>
-                <td v-text="`${migration.executionTime}ms`"/>
+                          :class="stateClass(migration.state)" /></td>
+                <td v-text="migration.installedBy" />
+                <td v-text="migration.installedOn" />
+                <td v-text="migration.installedRank" />
+                <td v-text="`${migration.executionTime}ms`" />
               </tr>
             </tbody>
           </table>
