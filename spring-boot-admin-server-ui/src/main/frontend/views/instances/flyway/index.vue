@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2019 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@
                    :header-sticks-below="['#navigation']"
                    class="migration"
         >
-          <table class="table">
+          <table class="table is-fullwidth">
             <thead>
               <tr>
                 <th>Type</th>
@@ -52,8 +52,8 @@
                 <td v-text="migration.type" />
                 <td v-text="migration.checksum" />
                 <td v-text="migration.version" />
-                <td v-text="migration.description" />
-                <td v-text="migration.script" />
+                <td class="is-breakable"v-text="migration.description" />
+                <td class="is-breakable"v-text="migration.script" />
                 <td>
                   <span v-text="migration.state" class="tag"
                         :class="stateClass(migration.state)"
