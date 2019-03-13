@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 import {concat, EMPTY, of, throwError} from '@/utils/rxjs';
-import {delay, doFirst, doOnSubscribe, listen} from './rxjs';
+import {delay, doOnSubscribe, listen} from './rxjs';
 
 describe('doOnSubscribe', () => {
   it('should call callback when subscribing', done => {
@@ -24,39 +24,12 @@ describe('doOnSubscribe', () => {
       doOnSubscribe(cb)
     ).subscribe({
       complete: () => {
-          expect(cb).toHaveBeenCalledTimes(1);
-        done();
-      }
-    });
-  });
-});
-
-describe('doFirst', () => {
-  it('should not call callback when empty', done => {
-    const cb = jest.fn();
-    EMPTY.pipe(
-      doFirst(cb)
-    ).subscribe({
-      complete: () => {
-        expect(cb).not.toBeCalled();
-        done();
-      }
-    });
-  });
-
-  it('should call callback on first item', done => {
-    const cb = jest.fn();
-    of(1,2,3).pipe(
-      doFirst(cb)
-    ).subscribe({
-      complete: () => {
         expect(cb).toHaveBeenCalledTimes(1);
         done();
       }
     });
   });
 });
-
 
 describe('listen', () => {
   it('should call callback with complete', done => {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import Application from '@/services/application';
-import {bufferTime, concat, concatMap, defer, delay, doFirst, filter, map, retryWhen, tap} from '@/utils/rxjs';
+import {bufferTime, concat, concatMap, defer, delay, filter, map, retryWhen, tap} from '@/utils/rxjs';
 
 export default class {
   constructor() {
@@ -64,14 +64,19 @@ export default class {
   }
 
   start() {
-    //TODO: make this a single request
     const list = defer(() => Application.list())
-      .pipe(concatMap(message => message.data));
+      .pipe(
+        tap(
+          undefined,
+          undefined,
+          () => this._dispatchEvent('connected')
+        ),
+        concatMap(message => message.data)
+      );
     const stream = Application.getStream()
       .pipe(map(message => message.data));
     this.subscription = concat(list, stream)
       .pipe(
-        doFirst(() => this._dispatchEvent('connected')),
         retryWhen(errors => errors.pipe(
           tap(error => this._dispatchEvent('error', error)),
           delay(5000)
