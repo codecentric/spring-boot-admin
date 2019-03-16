@@ -52,8 +52,8 @@
                 <td v-text="migration.type" />
                 <td v-text="migration.checksum" />
                 <td v-text="migration.version" />
-                <td class="is-breakable"v-text="migration.description" />
-                <td class="is-breakable"v-text="migration.script" />
+                <td class="is-breakable" v-text="migration.description" />
+                <td class="is-breakable" v-text="migration.script" />
                 <td>
                   <span v-text="migration.state" class="tag"
                         :class="stateClass(migration.state)"
