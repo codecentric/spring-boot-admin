@@ -51,9 +51,11 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.CONTENT_LENGTH;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 
 class InstanceExchangeFilterFunctionsTest {
     private static final Instance INSTANCE = Instance.create(InstanceId.of("i"));
@@ -328,7 +330,7 @@ class InstanceExchangeFilterFunctionsTest {
                                                  .build();
 
             Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (req) -> {
-                assertThat(req.headers().getAccept()).containsExactly(MediaType.TEXT_PLAIN, MediaType.ALL);
+                assertThat(req.headers().getAccept()).containsExactly(MediaType.TEXT_PLAIN);
                 return Mono.just(ClientResponse.create(HttpStatus.OK).build());
             });
 
@@ -459,6 +461,41 @@ class InstanceExchangeFilterFunctionsTest {
             );
 
             StepVerifier.create(response).expectError(TimeoutException.class).verify(Duration.ofSeconds(2));
+        }
+    }
+
+    @Nested
+    class LogfileAcceptWorkaround {
+        InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.logfileAcceptWorkaround();
+
+        @Test
+        void should_add_accept_all_to_headers_for_logfile() {
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
+                                                 .attribute(ATTRIBUTE_ENDPOINT, Endpoint.LOGFILE)
+                                                 .header(ACCEPT, TEXT_PLAIN_VALUE)
+                                                 .build();
+
+            Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (req) -> {
+                assertThat(req.headers().getAccept()).containsExactly(MediaType.TEXT_PLAIN, MediaType.ALL);
+                return Mono.just(ClientResponse.create(HttpStatus.OK).build());
+            });
+
+            StepVerifier.create(response).expectNextCount(1).verifyComplete();
+        }
+
+        @Test
+        void should_not_add_accept_all_to_headers_for_non_logfile() {
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
+                                                 .attribute(ATTRIBUTE_ENDPOINT, Endpoint.HTTPTRACE)
+                                                 .header(ACCEPT, APPLICATION_JSON_VALUE)
+                                                 .build();
+
+            Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (req) -> {
+                assertThat(req.headers().getAccept()).containsExactly(MediaType.APPLICATION_JSON);
+                return Mono.just(ClientResponse.create(HttpStatus.OK).build());
+            });
+
+            StepVerifier.create(response).expectNextCount(1).verifyComplete();
         }
     }
 }

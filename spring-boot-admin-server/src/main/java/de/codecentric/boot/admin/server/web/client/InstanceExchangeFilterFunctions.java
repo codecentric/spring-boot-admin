@@ -25,6 +25,8 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
@@ -49,20 +51,17 @@ public final class InstanceExchangeFilterFunctions {
         MediaType.parseMediaType(ActuatorMediaType.V1_JSON),
         MediaType.APPLICATION_JSON
     );
-    private static final List<MediaType> DEFAULT_LOGFILE_ACCEPT_MEDIATYPES = asList(MediaType.TEXT_PLAIN,
-        MediaType.ALL
-    );
+    private static final List<MediaType> DEFAULT_LOGFILE_ACCEPT_MEDIATYPES = singletonList(MediaType.TEXT_PLAIN);
 
     private InstanceExchangeFilterFunctions() {
     }
 
     public static InstanceExchangeFilterFunction addHeaders(HttpHeadersProvider httpHeadersProvider) {
         return (instance, request, next) -> {
-            ClientRequest newRequest = ClientRequest.from(request)
-                                                    .headers(headers -> headers.addAll(httpHeadersProvider.getHeaders(
-                                                        instance)))
-                                                    .build();
-            return next.exchange(newRequest);
+            request = ClientRequest.from(request)
+                                   .headers(headers -> headers.addAll(httpHeadersProvider.getHeaders(instance)))
+                                   .build();
+            return next.exchange(request);
         };
     }
 
@@ -71,12 +70,11 @@ public final class InstanceExchangeFilterFunctions {
             if (request.url().isAbsolute()) {
                 log.trace("Absolute URL '{}' for instance {} not rewritten", request.url(), instance.getId());
                 if (request.url().toString().equals(instance.getRegistration().getManagementUrl())) {
-                    return next.exchange(ClientRequest.from(request)
-                                                      .attribute(ATTRIBUTE_ENDPOINT, Endpoint.ACTUATOR_INDEX)
-                                                      .build());
-                } else {
-                    return next.exchange(request);
+                    request = ClientRequest.from(request)
+                                           .attribute(ATTRIBUTE_ENDPOINT, Endpoint.ACTUATOR_INDEX)
+                                           .build();
                 }
+                return next.exchange(request);
             }
 
             UriComponents requestUrl = UriComponentsBuilder.fromUri(request.url()).build();
@@ -99,11 +97,11 @@ public final class InstanceExchangeFilterFunctions {
                 instance.getId(),
                 rewrittenUrl
             );
-            ClientRequest newRequest = ClientRequest.from(request)
-                                                    .attribute(ATTRIBUTE_ENDPOINT, endpoint.get().getId())
-                                                    .url(rewrittenUrl)
-                                                    .build();
-            return next.exchange(newRequest);
+            request = ClientRequest.from(request)
+                                   .attribute(ATTRIBUTE_ENDPOINT, endpoint.get().getId())
+                                   .url(rewrittenUrl)
+                                   .build();
+            return next.exchange(request);
         };
     }
 
@@ -162,9 +160,7 @@ public final class InstanceExchangeFilterFunctions {
                                                      .map(Endpoint.LOGFILE::equals)
                                                      .orElse(false);
                 List<MediaType> acceptedHeaders = isRequestForLogfile ? DEFAULT_LOGFILE_ACCEPT_MEDIATYPES : DEFAULT_ACCEPT_MEDIATYPES;
-                return next.exchange(ClientRequest.from(request)
-                                                  .headers(headers -> headers.setAccept(acceptedHeaders))
-                                                  .build());
+                request = ClientRequest.from(request).headers(headers -> headers.setAccept(acceptedHeaders)).build();
             }
             return next.exchange(request);
         };
@@ -190,6 +186,20 @@ public final class InstanceExchangeFilterFunctions {
                                       .map(timeoutPerEndpoint::get)
                                       .orElse(defaultTimeout);
             return next.exchange(request).timeout(timeout);
+        };
+    }
+
+    // Accept header is broken on /logfile. We need to add "*/*" for old clients
+    // see https://github.com/spring-projects/spring-boot/issues/16188
+    public static InstanceExchangeFilterFunction logfileAcceptWorkaround() {
+        return (instance, request, next) -> {
+            if (request.attribute(ATTRIBUTE_ENDPOINT).map(Endpoint.LOGFILE::equals).orElse(false)) {
+                List<MediaType> newAcceptHeaders = Stream.concat(request.headers().getAccept().stream(),
+                    Stream.of(MediaType.ALL)
+                ).collect(Collectors.toList());
+                request = ClientRequest.from(request).headers(h -> h.setAccept(newAcceptHeaders)).build();
+            }
+            return next.exchange(request);
         };
     }
 }

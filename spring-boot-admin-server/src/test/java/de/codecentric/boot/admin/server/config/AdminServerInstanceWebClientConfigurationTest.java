@@ -52,7 +52,7 @@ public class AdminServerInstanceWebClientConfigurationTest {
                 "addHeadersInstanceExchangeFilter",
                 "rewriteEndpointUrlInstanceExchangeFilter",
                 "setDefaultAcceptHeaderInstanceExchangeFilter",
-                "legacyEndpointConverterInstanceExchangeFilter",
+                "legacyEndpointConverterInstanceExchangeFilter", "logfileAcceptWorkaround",
                 "retryInstanceExchangeFilter",
                 "timeoutInstanceExchangeFilter"
             );

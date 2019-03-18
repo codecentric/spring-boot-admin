@@ -96,6 +96,13 @@ public class AdminServerInstanceWebClientConfiguration {
             }
 
             @Bean
+            @Order(40)
+            @ConditionalOnMissingBean(name = "logfileAcceptWorkaround")
+            public InstanceExchangeFilterFunction logfileAcceptWorkaround() {
+                return InstanceExchangeFilterFunctions.logfileAcceptWorkaround();
+            }
+
+            @Bean
             @Order(100)
             @ConditionalOnMissingBean(name = "retryInstanceExchangeFilter")
             public InstanceExchangeFilterFunction retryInstanceExchangeFilter(AdminServerProperties adminServerProperties) {
