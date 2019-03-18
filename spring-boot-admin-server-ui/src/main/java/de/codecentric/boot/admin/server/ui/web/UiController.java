@@ -20,7 +20,6 @@ import de.codecentric.boot.admin.server.ui.extensions.UiExtension;
 import de.codecentric.boot.admin.server.web.AdminController;
 
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -39,19 +38,11 @@ public class UiController {
     private final String publicUrl;
     private final List<UiExtension> cssExtensions;
     private final List<UiExtension> jsExtensions;
-    private final Map<String, Object> uiSettings;
+    private final Settings uiSettings;
 
-    public UiController(String publicUrl, String title, String brand, String favicon,
-                        String faviconDanger,
-                        List<UiExtension> uiExtensions,
-                        boolean notificationFilterEnabled) {
+    public UiController(String publicUrl, List<UiExtension> uiExtensions, Settings uiSettings) {
         this.publicUrl = publicUrl;
-        this.uiSettings = new HashMap<>();
-        this.uiSettings.put("title", title);
-        this.uiSettings.put("brand", brand);
-        this.uiSettings.put("favicon", favicon);
-        this.uiSettings.put("faviconDanger", faviconDanger);
-        this.uiSettings.put("notificationFilterEnabled", notificationFilterEnabled);
+        this.uiSettings = uiSettings;
         this.cssExtensions = uiExtensions.stream()
                                          .filter(e -> e.getResourcePath().endsWith(".css"))
                                          .collect(Collectors.toList());
@@ -62,7 +53,7 @@ public class UiController {
 
     @ModelAttribute(value = "baseUrl", binding = false)
     public String getBaseUrl(UriComponentsBuilder uriBuilder) {
-        UriComponents publicComponents = UriComponentsBuilder.fromUriString(publicUrl).build();
+        UriComponents publicComponents = UriComponentsBuilder.fromUriString(this.publicUrl).build();
         if (publicComponents.getScheme() != null) {
             uriBuilder.scheme(publicComponents.getScheme());
         }
@@ -79,18 +70,18 @@ public class UiController {
     }
 
     @ModelAttribute(value = "uiSettings", binding = false)
-    public Map<String, Object> getUiSettings() {
-        return uiSettings;
+    public Settings getUiSettings() {
+        return this.uiSettings;
     }
 
     @ModelAttribute(value = "cssExtensions", binding = false)
     public List<UiExtension> getCssExtensions() {
-        return cssExtensions;
+        return this.cssExtensions;
     }
 
     @ModelAttribute(value = "jsExtensions", binding = false)
     public List<UiExtension> getJsExtensions() {
-        return jsExtensions;
+        return this.jsExtensions;
     }
 
     @ModelAttribute(value = "user", binding = false)
@@ -109,5 +100,16 @@ public class UiController {
     @GetMapping(path = "/login", produces = MediaType.TEXT_HTML_VALUE)
     public String login() {
         return "login";
+    }
+
+    @lombok.Data
+    @lombok.Builder
+    public static class Settings {
+        private final String title;
+        private final String brand;
+        private final String favicon;
+        private final String faviconDanger;
+        private final boolean notificationFilterEnabled;
+        private final List<String> routes;
     }
 }

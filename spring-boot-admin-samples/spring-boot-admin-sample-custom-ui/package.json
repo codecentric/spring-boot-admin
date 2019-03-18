@@ -15,6 +15,7 @@
     "@vue/cli-plugin-eslint": "^3.5.1",
     "@vue/cli-service": "^3.5.1",
     "@vue/eslint-config-standard": "^4.0.0",
+    "copy-webpack-plugin": "^5.0.1",
     "vue-template-compiler": "^2.6.9"
   },
   "eslintConfig": {

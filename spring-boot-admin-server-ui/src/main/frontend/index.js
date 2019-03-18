@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,18 @@ installables.forEach(view => view.install({
   vue: Vue
 }));
 
+if (global.SBA && global.SBA.uiSettings && global.SBA.uiSettings.routes) {
+  const routesKnownToBackend = global.SBA.uiSettings.routes;
+  const routesKnownToBackendAsRegex = routesKnownToBackend.map(r => new RegExp(`^${r.replace('/**', '(/.*)?')}$`));
+  const unknownRoutes = viewRegistry.routes.filter(vr => vr.path !== '/' && !routesKnownToBackendAsRegex.some(br => br.test(vr.path)));
+  if (unknownRoutes.length > 0) {
+    console.warn(`The routes ${JSON.stringify(unknownRoutes.map(r => r.path))} aren't known to the backend and may be not properly routed!`)
+  }
+}
+
 new Vue({
   router: new VueRouter({
+    mode: 'history',
     linkActiveClass: 'is-active',
     routes: viewRegistry.routes
   }),
