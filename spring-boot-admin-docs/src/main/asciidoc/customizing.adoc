@@ -44,6 +44,8 @@ The {github-src}/spring-boot-admin-samples/spring-boot-admin-sample-custom-ui/[s
 The custom extension registers itself by calling `SBA.use()` and need to expose a `install()` function, which is called by the ui when setting up the routes.
 The `install()` function receives a parameter object referencing the {github-src}/spring-boot-admin-server-ui/src/main/frontend/viewRegistry.js[viewRegistry] and the {github-src}/spring-boot-admin-server-ui/src/main/frontend/store.js[applicationStore] in order to register views and/or callbacks.
 
+If new top level routes are added to the frontend, they also must be known to the backend. Add a `/META-INF/spring-boot-admin-server-ui/extensions/{name}/routes.txt` with all your new toplevel routes (one route per line).
+
 [[customizing-custom-views-top-level]]
 ==== Adding a Top-Level View ====
 
@@ -66,6 +68,12 @@ include::{samples-dir}/spring-boot-admin-sample-custom-ui/src/index.js[tags=cust
 <3> The imported custom component, which will be rendered on the route.
 <4> The label for the custom view to be shown in the top navigation bar.
 <5> Order for the view. Views in the top navigation bar are sorted by ascending order.
+
+The `routes.txt` config with the added route:
+[source,text]
+----
+include::{samples-dir}/spring-boot-admin-sample-custom-ui/src/routes.txt[]
+----
 
 [[customizing-custom-views-instance]]
 ==== Visualizing a Custom Endpoint ====
