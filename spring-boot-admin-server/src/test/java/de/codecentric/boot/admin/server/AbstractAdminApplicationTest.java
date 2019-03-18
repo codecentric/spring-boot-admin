@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,68 +73,74 @@ public abstract class AbstractAdminApplicationTest {
 
     protected Flux<JSONObject> getEventStream() {
         //@formatter:off
-        return webClient.get().uri("/instances/events").accept(MediaType.TEXT_EVENT_STREAM)
-                        .exchange()
-                        .expectStatus().isOk()
-                        .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM)
-                        .returnResult(JSONObject.class).getResponseBody();
+        return this.webClient.get().uri("/instances/events")
+                             .accept(MediaType.TEXT_EVENT_STREAM)
+                             .exchange()
+                             .expectStatus().isOk()
+                             .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM)
+                             .returnResult(JSONObject.class).getResponseBody();
         //@formatter:on
     }
 
     protected URI registerInstance() {
         //@formatter:off
-        return webClient.post().uri("/instances").contentType(MediaType.APPLICATION_JSON).syncBody(createRegistration())
-                        .exchange()
-                        .expectStatus().isCreated()
-                        .expectHeader().valueMatches("location", "^http://localhost:" + port + "/instances/[a-f0-9]+$")
-                        .returnResult(Void.class).getResponseHeaders().getLocation();
+        return this.webClient.post().uri("/instances")
+                             .contentType(MediaType.APPLICATION_JSON)
+                             .syncBody(createRegistration())
+                             .exchange()
+                             .expectStatus().isCreated()
+                             .expectHeader().valueMatches("location", "^http://localhost:" + this.port + "/instances/[a-f0-9]+$")
+                             .returnResult(Void.class).getResponseHeaders().getLocation();
         //@formatter:on
     }
 
     protected void getInstance(URI uri) {
         //@formatter:off
-        webClient.get().uri(uri).accept(MediaType.APPLICATION_JSON_UTF8)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody()
-                .jsonPath("$.registration.name").isEqualTo("Test-Instance")
-                .jsonPath("$.statusInfo.status").isEqualTo("UP")
-                .jsonPath("$.info.test").isEqualTo("foobar");
+        this.webClient.get().uri(uri)
+                      .accept(MediaType.APPLICATION_JSON_UTF8)
+                      .exchange()
+                      .expectStatus().isOk()
+                      .expectBody()
+                      .jsonPath("$.registration.name").isEqualTo("Test-Instance")
+                      .jsonPath("$.statusInfo.status").isEqualTo("UP")
+                      .jsonPath("$.info.test").isEqualTo("foobar");
         //@formatter:on
     }
 
     protected void listInstances() {
         //@formatter:off
-        webClient.get().uri("/instances").accept(MediaType.APPLICATION_JSON_UTF8)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody()
-                    .jsonPath("$[0].registration.name").isEqualTo("Test-Instance")
-                    .jsonPath("$[0].statusInfo.status").isEqualTo("UP")
-                    .jsonPath("$[0].info.test").isEqualTo("foobar");
+        this.webClient.get().uri("/instances")
+                      .accept(MediaType.APPLICATION_JSON_UTF8)
+                      .exchange()
+                      .expectStatus().isOk()
+                      .expectBody()
+                           .jsonPath("$[0].registration.name").isEqualTo("Test-Instance")
+                           .jsonPath("$[0].statusInfo.status").isEqualTo("UP")
+                           .jsonPath("$[0].info.test").isEqualTo("foobar");
         //@formatter:on
     }
 
     protected void listEmptyInstances() {
         //@formatter:off
-        webClient.get().uri("/instances").accept(MediaType.APPLICATION_JSON_UTF8)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody().json("[]");
+        this.webClient.get().uri("/instances")
+                      .accept(MediaType.APPLICATION_JSON_UTF8)
+                      .exchange()
+                      .expectStatus().isOk()
+                      .expectBody().json("[]");
         //@formatter:on
     }
 
     protected void deregisterInstance(URI uri) {
-        webClient.delete().uri(uri).exchange().expectStatus().isNoContent();
+        this.webClient.delete().uri(uri).exchange().expectStatus().isNoContent();
     }
 
 
     private Registration createRegistration() {
         return Registration.builder()
                            .name("Test-Instance")
-                           .healthUrl("http://localhost:" + port + "/mgmt/health")
-                           .managementUrl("http://localhost:" + port + "/mgmt")
-                           .serviceUrl("http://localhost:" + port)
+                           .healthUrl("http://localhost:" + this.port + "/mgmt/health")
+                           .managementUrl("http://localhost:" + this.port + "/mgmt")
+                           .serviceUrl("http://localhost:" + this.port)
                            .build();
     }
 
@@ -150,10 +156,10 @@ public abstract class AbstractAdminApplicationTest {
     }
 
     public int getPort() {
-        return port;
+        return this.port;
     }
 
     public WebTestClient getWebClient() {
-        return webClient;
+        return this.webClient;
     }
 }

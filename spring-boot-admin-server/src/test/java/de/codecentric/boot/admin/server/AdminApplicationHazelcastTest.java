@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,31 +59,29 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
     @Before
     public void setUp() {
         System.setProperty("hazelcast.wait.seconds.before.join", "0");
-        instance1 = new SpringApplicationBuilder().sources(TestAdminApplication.class)
-                                                  .web(WebApplicationType.REACTIVE)
-                                                  .run(
-                                                      "--server.port=0",
-                                                      "--management.endpoints.web.base-path=/mgmt",
-                                                      "--endpoints.health.enabled=true",
-                                                      "--info.test=foobar",
-                                                      "--spring.jmx.enabled=false",
-                                                      "--eureka.client.enabled=false"
-                                                  );
+        this.instance1 = new SpringApplicationBuilder().sources(TestAdminApplication.class)
+                                                       .web(WebApplicationType.REACTIVE)
+                                                       .run(
+                                                           "--server.port=0",
+                                                           "--management.endpoints.web.base-path=/mgmt",
+                                                           "--endpoints.health.enabled=true",
+                                                           "--info.test=foobar",
+                                                           "--spring.jmx.enabled=false"
+                                                       );
 
-        instance2 = new SpringApplicationBuilder().sources(TestAdminApplication.class)
-                                                  .web(WebApplicationType.REACTIVE)
-                                                  .run(
-                                                      "--server.port=0",
-                                                      "--management.endpoints.web.base-path=/mgmt",
-                                                      "--endpoints.health.enabled=true",
-                                                      "--info.test=foobar",
-                                                      "--spring.jmx.enabled=false",
-                                                      "--eureka.client.enabled=false"
-                                                  );
+        this.instance2 = new SpringApplicationBuilder().sources(TestAdminApplication.class)
+                                                       .web(WebApplicationType.REACTIVE)
+                                                       .run(
+                                                           "--server.port=0",
+                                                           "--management.endpoints.web.base-path=/mgmt",
+                                                           "--endpoints.health.enabled=true",
+                                                           "--info.test=foobar",
+                                                           "--spring.jmx.enabled=false"
+                                                       );
 
-        super.setUp(instance1.getEnvironment().getProperty("local.server.port", Integer.class, 0));
-        this.webClient2 = createWebClient(instance2.getEnvironment()
-                                                   .getProperty("local.server.port", Integer.class, 0));
+        super.setUp(this.instance1.getEnvironment().getProperty("local.server.port", Integer.class, 0));
+        this.webClient2 = createWebClient(this.instance2.getEnvironment()
+                                                        .getProperty("local.server.port", Integer.class, 0));
     }
 
 
@@ -102,15 +100,15 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
                                              .getResponseBody()
                                              .collect(Collectors.joining());
 
-        Mono<String> events2 = webClient2.get()
-                                         .uri("/instances/events")
-                                         .accept(MediaType.APPLICATION_JSON)
-                                         .exchange()
-                                         .expectStatus()
-                                         .isOk()
-                                         .returnResult(String.class)
-                                         .getResponseBody()
-                                         .collect(Collectors.joining());
+        Mono<String> events2 = this.webClient2.get()
+                                              .uri("/instances/events")
+                                              .accept(MediaType.APPLICATION_JSON)
+                                              .exchange()
+                                              .expectStatus()
+                                              .isOk()
+                                              .returnResult(String.class)
+                                              .getResponseBody()
+                                              .collect(Collectors.joining());
 
         StepVerifier.create(events1.zipWith(events2))
                     .assertNext(t -> assertThat(t.getT1()).isEqualTo(t.getT2()))
@@ -119,8 +117,8 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
 
     @After
     public void shutdown() {
-        instance1.close();
-        instance2.close();
+        this.instance1.close();
+        this.instance2.close();
     }
 
     @SpringBootConfiguration
