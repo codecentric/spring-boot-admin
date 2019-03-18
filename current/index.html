@@ -2428,6 +2428,9 @@ The <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring
 <p>The custom extension registers itself by calling <code>SBA.use()</code> and need to expose a <code>install()</code> function, which is called by the ui when setting up the routes.
 The <code>install()</code> function receives a parameter object referencing the <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-server-ui/src/main/frontend/viewRegistry.js">viewRegistry</a> and the <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-server-ui/src/main/frontend/store.js">applicationStore</a> in order to register views and/or callbacks.</p>
 </div>
+<div class="paragraph">
+<p>If new top level routes are added to the frontend, they also must be known to the backend. Add a <code>/META-INF/spring-boot-admin-server-ui/extensions/{name}/routes.txt</code> with all your new toplevel routes (one route per line).</p>
+</div>
 <div class="sect3">
 <h4 id="customizing-custom-views-top-level"><a class="anchor" href="#customizing-custom-views-top-level"></a><a class="link" href="#customizing-custom-views-top-level">6.4.1. Adding a Top-Level View</a></h4>
 <div class="paragraph">
@@ -2515,6 +2518,14 @@ There are some helpful methods on the application and instances object available
 <td>Order for the view. Views in the top navigation bar are sorted by ascending order.</td>
 </tr>
 </table>
+</div>
+<div class="paragraph">
+<p>The <code>routes.txt</code> config with the added route:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="text">/custom/**</code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">
