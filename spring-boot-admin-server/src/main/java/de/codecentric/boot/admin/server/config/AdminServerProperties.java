@@ -58,6 +58,13 @@ public class AdminServerProperties {
         this.contextPath = PathUtils.normalizePath(contextPath);
     }
 
+    /**
+     * @return the given path within the admin context-path
+     */
+    public String path(String path) {
+        return this.contextPath + path;
+    }
+
     @lombok.Data
     public static class MonitorProperties {
         /**

@@ -58,10 +58,10 @@ public class SpringBootAdminServletApplication {
     @Profile("insecure")
     @Configuration
     public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
-        private final String adminContextPath;
+        private final AdminServerProperties adminServer;
 
-        public SecurityPermitAllConfig(AdminServerProperties adminServerProperties) {
-            this.adminContextPath = adminServerProperties.getContextPath();
+        public SecurityPermitAllConfig(AdminServerProperties adminServer) {
+            this.adminServer = adminServer;
         }
 
         @Override
@@ -72,7 +72,7 @@ public class SpringBootAdminServletApplication {
                 .and()
                 .csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringAntMatchers(adminContextPath + "/instances", adminContextPath + "/actuator/**");
+                .ignoringAntMatchers(this.adminServer.path("/instances"), this.adminServer.path("/actuator/**"));
         }
     }
 
@@ -80,10 +80,10 @@ public class SpringBootAdminServletApplication {
     // tag::configuration-spring-security[]
     @Configuration
     public static class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
-        private final String adminContextPath;
+        private final AdminServerProperties adminServer;
 
-        public SecuritySecureConfig(AdminServerProperties adminServerProperties) {
-            this.adminContextPath = adminServerProperties.getContextPath();
+        public SecuritySecureConfig(AdminServerProperties adminServer) {
+            this.adminServer = adminServer;
         }
 
         @Override
@@ -91,21 +91,21 @@ public class SpringBootAdminServletApplication {
             // @formatter:off
             SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
             successHandler.setTargetUrlParameter("redirectTo");
-            successHandler.setDefaultTargetUrl(adminContextPath + "/");
+            successHandler.setDefaultTargetUrl(this.adminServer.path("/"));
 
             http.authorizeRequests()
-                .antMatchers(adminContextPath + "/assets/**").permitAll() // <1>
-                .antMatchers(adminContextPath + "/login").permitAll()
+                .antMatchers(this.adminServer.path("/assets/**")).permitAll() // <1>
+                .antMatchers(this.adminServer.path("/login")).permitAll()
                 .anyRequest().authenticated() // <2>
                 .and()
-            .formLogin().loginPage(adminContextPath + "/login").successHandler(successHandler).and() // <3>
-            .logout().logoutUrl(adminContextPath + "/logout").and()
+            .formLogin().loginPage(this.adminServer.path("/login")).successHandler(successHandler).and() // <3>
+            .logout().logoutUrl(this.adminServer.path("/logout")).and()
             .httpBasic().and() // <4>
             .csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())  // <5>
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // <5>
                 .ignoringAntMatchers(
-                    adminContextPath + "/instances",   // <6>
-                    adminContextPath + "/actuator/**"  // <7>
+                    this.adminServer.path("/instances"), // <6>
+                    this.adminServer.path("/actuator/**") // <7>
                 );
             // @formatter:on
         }
@@ -137,7 +137,7 @@ public class SpringBootAdminServletApplication {
     // tag::customization-http-headers-providers[]
     @Bean
     public HttpHeadersProvider customHttpHeadersProvider() {
-        return  instance -> {
+        return instance -> {
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add("X-CUSTOM", "My Custom Value");
             return httpHeaders;
@@ -159,14 +159,14 @@ public class SpringBootAdminServletApplication {
 
         @Bean
         public FilteringNotifier filteringNotifier() { // <1>
-            CompositeNotifier delegate = new CompositeNotifier(otherNotifiers.getIfAvailable(Collections::emptyList));
-            return new FilteringNotifier(delegate, repository);
+            CompositeNotifier delegate = new CompositeNotifier(this.otherNotifiers.getIfAvailable(Collections::emptyList));
+            return new FilteringNotifier(delegate, this.repository);
         }
 
         @Primary
         @Bean(initMethod = "start", destroyMethod = "stop")
         public RemindingNotifier remindingNotifier() { // <2>
-            RemindingNotifier notifier = new RemindingNotifier(filteringNotifier(), repository);
+            RemindingNotifier notifier = new RemindingNotifier(filteringNotifier(), this.repository);
             notifier.setReminderPeriod(Duration.ofMinutes(10));
             notifier.setCheckReminderInverval(Duration.ofSeconds(10));
             return notifier;

@@ -33,10 +33,10 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableAutoConfiguration
 @EnableAdminServer
 public class SpringBootAdminReactiveApplication {
-    private final String adminContextPath;
+    private final AdminServerProperties adminServer;
 
-    public SpringBootAdminReactiveApplication(AdminServerProperties adminServerProperties) {
-        this.adminContextPath = adminServerProperties.getContextPath();
+    public SpringBootAdminReactiveApplication(AdminServerProperties adminServer) {
+        this.adminServer = adminServer;
     }
 
     public static void main(String[] args) {
@@ -56,12 +56,12 @@ public class SpringBootAdminReactiveApplication {
     public SecurityWebFilterChain securityWebFilterChainSecure(ServerHttpSecurity http) {
         // @formatter:off
         return http.authorizeExchange()
-                .pathMatchers(adminContextPath + "/assets/**").permitAll()
-                .pathMatchers(adminContextPath + "/login").permitAll()
+                .pathMatchers(this.adminServer.path("/assets/**")).permitAll()
+                .pathMatchers(this.adminServer.path("/login")).permitAll()
                 .anyExchange().authenticated()
                 .and()
-            .formLogin().loginPage(adminContextPath + "/login").and()
-            .logout().logoutUrl(adminContextPath + "/logout").and()
+            .formLogin().loginPage(this.adminServer.path("/login")).and()
+            .logout().logoutUrl(this.adminServer.path("/logout")).and()
             .httpBasic().and()
             .csrf().disable()
             .build();
