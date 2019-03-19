@@ -45,8 +45,7 @@ public class EndpointDetector {
 
     private Mono<Instance> doDetectEndpoints(Instance instance) {
         if (!StringUtils.hasText(instance.getRegistration().getManagementUrl()) ||
-            instance.getStatusInfo().isOffline() ||
-            instance.getStatusInfo().isUnknown()) {
+            !instance.getStatusInfo().isUp()) {
             return Mono.empty();
         }
         log.debug("Detect endpoints for {}", instance);

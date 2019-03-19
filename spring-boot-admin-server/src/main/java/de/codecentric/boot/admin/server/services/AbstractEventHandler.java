@@ -49,6 +49,7 @@ public abstract class AbstractEventHandler<T extends InstanceEvent> {
                            .retryWhen(Retry.any()
                                            .retryMax(Long.MAX_VALUE)
                                            .doOnRetry(ctx -> log.warn("Unexpected error", ctx.exception())))
+                           .onErrorContinue((ex, value) -> log.warn("Unexpected error while handling {}", value, ex))
                            .subscribe();
     }
 
