@@ -149,4 +149,23 @@ public class InfoUpdateTriggerTest {
         //then should not update
         verify(this.updater, never()).updateInfo(this.instance.getId());
     }
+
+    @Test
+    public void should_continue_update_after_error() throws InterruptedException {
+        //when status-change event is emitted and an error is emitted
+        when(this.updater.updateInfo(any())).thenReturn(Mono.error(IllegalStateException::new))
+                                            .thenReturn(Mono.empty());
+
+        this.events.next(new InstanceStatusChangedEvent(this.instance.getId(),
+            this.instance.getVersion(),
+            StatusInfo.ofDown()
+        ));
+        this.events.next(new InstanceStatusChangedEvent(this.instance.getId(),
+            this.instance.getVersion(),
+            StatusInfo.ofUp()
+        ));
+
+        //then should update
+        verify(this.updater, times(2)).updateInfo(this.instance.getId());
+    }
 }

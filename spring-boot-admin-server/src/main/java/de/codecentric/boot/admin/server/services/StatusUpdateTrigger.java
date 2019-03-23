@@ -27,8 +27,11 @@ import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
 import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
+    private static final Logger log = LoggerFactory.getLogger(StatusUpdateTrigger.class);
     private final StatusUpdater statusUpdater;
     private final IntervalCheck intervalCheck;
 
@@ -49,7 +52,10 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
     }
 
     protected Mono<Void> updateStatus(InstanceId instanceId) {
-        return this.statusUpdater.updateStatus(instanceId).doFinally(s -> this.intervalCheck.markAsChecked(instanceId));
+        return this.statusUpdater.updateStatus(instanceId).onErrorResume(e -> {
+            log.warn("Unexpected error while updating status for {}", instanceId, e);
+            return Mono.empty();
+        }).doFinally(s -> this.intervalCheck.markAsChecked(instanceId));
     }
 
     @Override

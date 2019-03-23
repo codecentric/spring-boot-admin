@@ -28,8 +28,11 @@ import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
 import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InfoUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
+    private static final Logger log = LoggerFactory.getLogger(InfoUpdateTrigger.class);
     private final InfoUpdater infoUpdater;
     private final IntervalCheck intervalCheck;
 
@@ -51,7 +54,10 @@ public class InfoUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
     }
 
     protected Mono<Void> updateInfo(InstanceId instanceId) {
-        return this.infoUpdater.updateInfo(instanceId).doFinally(s -> this.intervalCheck.markAsChecked(instanceId));
+        return this.infoUpdater.updateInfo(instanceId).onErrorResume(e -> {
+            log.warn("Unexpected error while updating info for {}", instanceId, e);
+            return Mono.empty();
+        }).doFinally(s -> this.intervalCheck.markAsChecked(instanceId));
     }
 
     @Override
