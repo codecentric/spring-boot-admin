@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.services.endpoints;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 import lombok.Data;
 import reactor.core.publisher.Flux;
@@ -53,35 +54,64 @@ public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
 
     @Override
     public Mono<Endpoints> detectEndpoints(Instance instance) {
-        return Flux.fromIterable(endpoints)
+        if (instance.getRegistration().getManagementUrl() == null) {
+            log.debug("Endpoint probe for instance {} omitted. No management-url registered.", instance.getId());
+            return Mono.empty();
+        }
+
+        return Flux.fromIterable(this.endpoints)
                    .flatMap(endpoint -> detectEndpoint(instance, endpoint))
                    .collectList()
                    .flatMap(this::convert);
     }
 
     private Mono<DetectedEndpoint> detectEndpoint(Instance instance, EndpointDefinition endpoint) {
-        String managementUrl = instance.getRegistration().getManagementUrl();
-        if (managementUrl == null) {
-            return Mono.empty();
-        }
-        URI uri = UriComponentsBuilder.fromUriString(managementUrl)
+        URI uri = UriComponentsBuilder.fromUriString(instance.getRegistration().getManagementUrl())
                                       .path("/")
                                       .path(endpoint.getPath())
                                       .build()
                                       .toUri();
-        return instanceWebClient.instance(instance).options().uri(uri).exchange().flatMap(this.convert(endpoint, uri));
+        return this.instanceWebClient.instance(instance)
+                                     .options()
+                                     .uri(uri)
+                                     .exchange()
+                                     .flatMap(this.convert(instance.getId(), endpoint, uri))
+                                     .onErrorResume(e -> {
+                                         log.warn(
+                                             "Endpoint probe for instance {} on endpoint '{}' failed: {}",
+                                             instance.getId(),
+                                             uri,
+                                             e.getMessage()
+                                         );
+                                         log.debug(
+                                             "Endpoint probe for instance {} on endpoint '{}' failed.",
+                                             instance.getId(),
+                                             uri,
+                                             e
+                                         );
+                                         return Mono.empty();
+                                     });
     }
 
-    private Function<ClientResponse, Mono<DetectedEndpoint>> convert(EndpointDefinition endpointDefinition, URI uri) {
+    private Function<ClientResponse, Mono<DetectedEndpoint>> convert(InstanceId instanceId,
+                                                                     EndpointDefinition endpointDefinition,
+                                                                     URI uri) {
         return response -> {
             Mono<DetectedEndpoint> endpoint = Mono.empty();
             if (response.statusCode().is2xxSuccessful()) {
                 endpoint = Mono.just(DetectedEndpoint.of(endpointDefinition, uri.toString()));
+                log.debug("Endpoint probe for instance {} on endpoint '{}' successful.", instanceId, uri);
+            } else {
+                log.debug(
+                    "Endpoint probe for instance {} on endpoint '{}' failed with status {}.",
+                    instanceId,
+                    uri,
+                    response.rawStatusCode()
+                );
             }
             return response.bodyToMono(Void.class).then(endpoint);
         };
     }
-
 
     private Mono<Endpoints> convert(List<DetectedEndpoint> endpoints) {
         if (endpoints.isEmpty()) {
