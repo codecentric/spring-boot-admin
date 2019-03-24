@@ -25,8 +25,11 @@ import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EndpointDetectionTrigger extends AbstractEventHandler<InstanceEvent> {
+    private static final Logger log = LoggerFactory.getLogger(EndpointDetectionTrigger.class);
     private final EndpointDetector endpointDetector;
 
     public EndpointDetectionTrigger(EndpointDetector endpointDetector, Publisher<InstanceEvent> publisher) {
@@ -45,6 +48,9 @@ public class EndpointDetectionTrigger extends AbstractEventHandler<InstanceEvent
     }
 
     protected Mono<Void> detectEndpoints(InstanceEvent event) {
-        return endpointDetector.detectEndpoints(event.getInstance());
+        return this.endpointDetector.detectEndpoints(event.getInstance()).onErrorResume(e -> {
+            log.warn("Unexpected error while detecting endpoints for {}", event.getInstance(), e);
+            return Mono.empty();
+        });
     }
 }

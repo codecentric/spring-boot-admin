@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,44 +47,74 @@ public class EndpointDetectionTriggerTest {
 
     @Before
     public void setUp() throws Exception {
-        when(detector.detectEndpoints(any(InstanceId.class))).thenReturn(Mono.empty());
-        trigger = new EndpointDetectionTrigger(detector, events.flux());
-        trigger.start();
+        when(this.detector.detectEndpoints(any(InstanceId.class))).thenReturn(Mono.empty());
+        this.trigger = new EndpointDetectionTrigger(this.detector, this.events.flux());
+        this.trigger.start();
         Thread.sleep(50L); //wait for subscription
     }
 
     @Test
     public void should_detect_on_status_changed() {
         //when status-change event is emitted
-        events.next(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown()));
+        this.events.next(new InstanceStatusChangedEvent(this.instance.getId(),
+            this.instance.getVersion(),
+            StatusInfo.ofDown()
+        ));
         //then should update
-        verify(detector, times(1)).detectEndpoints(instance.getId());
+        verify(this.detector, times(1)).detectEndpoints(this.instance.getId());
     }
 
     @Test
     public void should_detect_on_registration_updated() {
         //when status-change event is emitted
-        events.next(
-            new InstanceRegistrationUpdatedEvent(instance.getId(), instance.getVersion(), instance.getRegistration()));
+        this.events.next(new InstanceRegistrationUpdatedEvent(this.instance.getId(),
+            this.instance.getVersion(),
+            this.instance.getRegistration()
+        ));
         //then should update
-        verify(detector, times(1)).detectEndpoints(instance.getId());
+        verify(this.detector, times(1)).detectEndpoints(this.instance.getId());
     }
 
     @Test
     public void should_not_detect_on_non_relevant_event() {
         //when some non-status-change event is emitted
-        events.next(new InstanceRegisteredEvent(instance.getId(), instance.getVersion(), instance.getRegistration()));
+        this.events.next(new InstanceRegisteredEvent(this.instance.getId(),
+            this.instance.getVersion(),
+            this.instance.getRegistration()
+        ));
         //then should not update
-        verify(detector, never()).detectEndpoints(instance.getId());
+        verify(this.detector, never()).detectEndpoints(this.instance.getId());
     }
 
     @Test
     public void should_not_detect_on_trigger_stopped() {
         //when registered event is emitted but the trigger has been stopped
-        trigger.stop();
-        clearInvocations(detector);
-        events.next(new InstanceRegisteredEvent(instance.getId(), instance.getVersion(), instance.getRegistration()));
+        this.trigger.stop();
+        clearInvocations(this.detector);
+        this.events.next(new InstanceRegisteredEvent(this.instance.getId(),
+            this.instance.getVersion(),
+            this.instance.getRegistration()
+        ));
         //then should not update
-        verify(detector, never()).detectEndpoints(instance.getId());
+        verify(this.detector, never()).detectEndpoints(this.instance.getId());
+    }
+
+    @Test
+    public void should_continue_detection_after_error() throws InterruptedException {
+        //when status-change event is emitted and an error is emitted
+        when(this.detector.detectEndpoints(any())).thenReturn(Mono.error(IllegalStateException::new))
+                                                  .thenReturn(Mono.empty());
+
+        this.events.next(new InstanceStatusChangedEvent(this.instance.getId(),
+            this.instance.getVersion(),
+            StatusInfo.ofDown()
+        ));
+        this.events.next(new InstanceStatusChangedEvent(this.instance.getId(),
+            this.instance.getVersion(),
+            StatusInfo.ofUp()
+        ));
+
+        //then should update
+        verify(this.detector, times(2)).detectEndpoints(this.instance.getId());
     }
 }

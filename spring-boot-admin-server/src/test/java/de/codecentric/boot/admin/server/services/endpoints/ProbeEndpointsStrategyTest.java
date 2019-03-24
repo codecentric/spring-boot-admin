@@ -30,12 +30,14 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import com.github.tomakehurst.wiremock.core.Options;
+import com.github.tomakehurst.wiremock.http.Fault;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.notFound;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.options;
+import static com.github.tomakehurst.wiremock.client.WireMock.serverError;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunctions.retry;
@@ -49,7 +51,7 @@ public class ProbeEndpointsStrategyTest {
 
     private InstanceWebClient instanceWebClient = InstanceWebClient.builder()
                                                                    .filter(retry(1, emptyMap()))
-                                                                   .filter(timeout(Duration.ofSeconds(2), emptyMap()))
+                                                                   .filter(timeout(Duration.ofSeconds(1), emptyMap()))
                                                                    .build();
 
     @BeforeClass
@@ -82,10 +84,12 @@ public class ProbeEndpointsStrategyTest {
         this.wireMock.stubFor(options(urlEqualTo("/mgmt/stats")).willReturn(ok()));
         this.wireMock.stubFor(options(urlEqualTo("/mgmt/info")).willReturn(ok()));
         this.wireMock.stubFor(options(urlEqualTo("/mgmt/non-exist")).willReturn(notFound()));
+        this.wireMock.stubFor(options(urlEqualTo("/mgmt/error")).willReturn(serverError()));
+        this.wireMock.stubFor(options(urlEqualTo("/mgmt/exception")).willReturn(aResponse().withFault(Fault.EMPTY_RESPONSE)));
 
         ProbeEndpointsStrategy strategy = new ProbeEndpointsStrategy(
             this.instanceWebClient,
-            new String[]{"metrics:stats", "metrics", "info", "non-exist"}
+            new String[]{"metrics:stats", "metrics", "info", "non-exist", "error", "exception"}
         );
 
         //when

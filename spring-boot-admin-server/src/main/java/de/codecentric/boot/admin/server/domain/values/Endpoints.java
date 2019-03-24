@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
 import static java.util.stream.Collectors.toMap;
@@ -75,6 +76,10 @@ public class Endpoints implements Iterable<Endpoint>, Serializable {
         HashMap<String, Endpoint> newEndpoints = new HashMap<>(this.endpoints);
         newEndpoints.put(endpoint.getId(), endpoint);
         return new Endpoints(newEndpoints.values());
+    }
+
+    public Stream<Endpoint> stream() {
+        return this.endpoints.values().stream();
     }
 
     private static class UnmodifiableIterator<T> implements Iterator<T> {
