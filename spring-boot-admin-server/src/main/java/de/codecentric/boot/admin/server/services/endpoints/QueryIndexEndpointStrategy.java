@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.services.endpoints;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 import lombok.Data;
@@ -62,12 +63,14 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
                                      .exchange()
                                      .flatMap(this.convert(instance, managementUrl))
                                      .onErrorResume(e -> {
-                                         log.warn("Querying actuator-index for instance {} on '{}' failed: {}",
+                                         log.warn(
+                                             "Querying actuator-index for instance {} on '{}' failed: {}",
                                              instance.getId(),
                                              managementUrl,
                                              e.getMessage()
                                          );
-                                         log.debug("Querying actuator-index for instance {} on '{}' failed.",
+                                         log.debug(
+                                             "Querying actuator-index for instance {} on '{}' failed.",
                                              instance.getId(),
                                              managementUrl,
                                              e
@@ -76,27 +79,56 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
                                      });
     }
 
-    private Function<ClientResponse, Mono<Endpoints>> convert(Instance instance, String managementUrl) {
+    protected Function<ClientResponse, Mono<Endpoints>> convert(Instance instance, String managementUrl) {
         return response -> {
-            if (response.statusCode().is2xxSuccessful() &&
-                response.headers().contentType().map(actuatorMediaType::isCompatibleWith).orElse(false)) {
-                log.debug("Querying actuator-index for instance {} on '{}' successful.",
-                    instance.getId(),
-                    managementUrl
-                );
-                return response.bodyToMono(Response.class).flatMap(this::convertResponse);
-            } else {
-                log.debug("Querying actuator-index for instance {} on '{}' failed with status {}.",
+            if (!response.statusCode().is2xxSuccessful()) {
+                log.debug(
+                    "Querying actuator-index for instance {} on '{}' failed with status {}.",
                     instance.getId(),
                     managementUrl,
                     response.rawStatusCode()
                 );
                 return response.bodyToMono(Void.class).then(Mono.empty());
             }
+
+            if (!response.headers().contentType().map(actuatorMediaType::isCompatibleWith).orElse(false)) {
+                log.debug(
+                    "Querying actuator-index for instance {} on '{}' failed with incompatible Content-Type '{}'.",
+                    instance.getId(),
+                    managementUrl,
+                    response.headers().contentType().map(Objects::toString).orElse("(missing)")
+                );
+                return response.bodyToMono(Void.class).then(Mono.empty());
+            }
+
+            log.debug("Querying actuator-index for instance {} on '{}' successful.", instance.getId(), managementUrl);
+            return response.bodyToMono(Response.class)
+                           .flatMap(this::convertResponse)
+                           .map(this.alignWithManagementUrl(instance.getId(), managementUrl));
         };
     }
 
-    private Mono<Endpoints> convertResponse(Response response) {
+    protected Function<Endpoints, Endpoints> alignWithManagementUrl(InstanceId instanceId, String managementUrl) {
+        return endpoints -> {
+            if (!managementUrl.startsWith("https:")) {
+                return endpoints;
+            }
+            if (endpoints.stream().noneMatch(e -> e.getUrl().startsWith("http:"))) {
+                return endpoints;
+            }
+            log.warn(
+                "Endpoints for instance {} queried from {} are falsely using http. Rewritten to https. Consider configuring this instance to use 'server.use-forward-headers=true'.",
+                instanceId,
+                managementUrl
+            );
+
+            return Endpoints.of(endpoints.stream()
+                                         .map(e -> Endpoint.of(e.getId(), e.getUrl().replaceFirst("http:", "https:")))
+                                         .collect(Collectors.toList()));
+        };
+    }
+
+    protected Mono<Endpoints> convertResponse(Response response) {
         List<Endpoint> endpoints = response.getLinks()
                                            .entrySet()
                                            .stream()
@@ -107,12 +139,12 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
     }
 
     @Data
-    static class Response {
+    protected static class Response {
         @JsonProperty("_links")
         private Map<String, EndpointRef> links = new HashMap<>();
 
         @Data
-        static class EndpointRef {
+        protected static class EndpointRef {
             private final String href;
             private final boolean templated;
 

@@ -22,13 +22,20 @@ import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
+import io.netty.channel.ChannelOption;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import reactor.netty.ConnectionObserver;
+import reactor.netty.http.client.HttpClient;
 import reactor.test.StepVerifier;
 
+import java.util.concurrent.TimeUnit;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.http.MediaType;
-import com.github.tomakehurst.wiremock.core.Options;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import com.github.tomakehurst.wiremock.http.Fault;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
@@ -39,15 +46,18 @@ import static com.github.tomakehurst.wiremock.client.WireMock.notFound;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static java.util.Collections.singletonMap;
 
 public class QueryIndexEndpointStrategyTest {
 
     @Rule
-    public WireMockRule wireMock = new WireMockRule(Options.DYNAMIC_PORT);
+    public WireMockRule wireMock = new WireMockRule(wireMockConfig().dynamicHttpsPort());
 
     private InstanceWebClient instanceWebClient = InstanceWebClient.builder()
+                                                                   .webClientCustomizer(wc -> wc.clientConnector(
+                                                                       httpConnector()))
                                                                    .retries(singletonMap(Endpoint.ACTUATOR_INDEX, 1))
                                                                    .build();
 
@@ -59,7 +69,16 @@ public class QueryIndexEndpointStrategyTest {
                                                           .managementUrl(this.wireMock.url("/mgmt"))
                                                           .build());
 
-        String body = "{\"_links\":{\"metrics-requiredMetricName\":{\"templated\":true,\"href\":\"\\/mgmt\\/metrics\\/{requiredMetricName}\"},\"self\":{\"templated\":false,\"href\":\"\\/mgmt\"},\"metrics\":{\"templated\":false,\"href\":\"\\/mgmt\\/stats\"},\"info\":{\"templated\":false,\"href\":\"\\/mgmt\\/info\"}}}";
+        String host = "https://localhost:" + this.wireMock.httpsPort();
+        String body = "{\"_links\":{\"metrics-requiredMetricName\":{\"templated\":true,\"href\":\"" +
+                      host +
+                      "/mgmt/metrics/{requiredMetricName}\"},\"self\":{\"templated\":false,\"href\":\"" +
+                      host +
+                      "/mgmt\"},\"metrics\":{\"templated\":false,\"href\":\"" +
+                      host +
+                      "/mgmt/stats\"},\"info\":{\"templated\":false,\"href\":\"" +
+                      host +
+                      "/mgmt/info\"}}}";
 
         this.wireMock.stubFor(get("/mgmt").willReturn(ok(body).withHeader("Content-Type", ActuatorMediaType.V2_JSON)
                                                               .withHeader("Content-Length",
@@ -71,7 +90,43 @@ public class QueryIndexEndpointStrategyTest {
         //when
         StepVerifier.create(strategy.detectEndpoints(instance))
                     //then
-                    .expectNext(Endpoints.single("metrics", "/mgmt/stats").withEndpoint("info", "/mgmt/info"))//
+                    .expectNext(Endpoints.single("metrics", host + "/mgmt/stats")
+                                         .withEndpoint("info", host + "/mgmt/info"))//
+                    .verifyComplete();
+    }
+
+    @Test
+    public void should_return_endpoints_with_aligned_scheme() {
+        //given
+        Instance instance = Instance.create(InstanceId.of("id"))
+                                    .register(Registration.create("test", this.wireMock.url("/mgmt/health"))
+                                                          .managementUrl(this.wireMock.url("/mgmt"))
+                                                          .build());
+
+        String host = "http://localhost:" + this.wireMock.httpsPort();
+        String body = "{\"_links\":{\"metrics-requiredMetricName\":{\"templated\":true,\"href\":\"" +
+                      host +
+                      "/mgmt/metrics/{requiredMetricName}\"},\"self\":{\"templated\":false,\"href\":\"" +
+                      host +
+                      "/mgmt\"},\"metrics\":{\"templated\":false,\"href\":\"" +
+                      host +
+                      "/mgmt/stats\"},\"info\":{\"templated\":false,\"href\":\"" +
+                      host +
+                      "/mgmt/info\"}}}";
+
+        this.wireMock.stubFor(get("/mgmt").willReturn(ok(body).withHeader("Content-Type", ActuatorMediaType.V2_JSON)
+                                                              .withHeader("Content-Length",
+                                                                  Integer.toString(body.length())
+                                                              )));
+
+        QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
+
+        //when
+        String secureHost = "https://localhost:" + this.wireMock.httpsPort();
+        StepVerifier.create(strategy.detectEndpoints(instance))
+                    //then
+                    .expectNext(Endpoints.single("metrics", secureHost + "/mgmt/stats")
+                                         .withEndpoint("info", secureHost + "/mgmt/info"))//
                     .verifyComplete();
     }
 
@@ -180,7 +235,7 @@ public class QueryIndexEndpointStrategyTest {
                                                           .managementUrl(this.wireMock.url("/mgmt"))
                                                           .build());
 
-        String body = "{\"_links\":{\"metrics-requiredMetricName\":{\"templated\":true,\"href\":\"\\/mgmt\\/metrics\\/{requiredMetricName}\"},\"self\":{\"templated\":false,\"href\":\"\\/mgmt\"},\"metrics\":{\"templated\":false,\"href\":\"\\/mgmt\\/stats\"},\"info\":{\"templated\":false,\"href\":\"\\/mgmt\\/info\"}}}";
+        String body = "{\"_links\":{\"metrics-requiredMetricName\":{\"templated\":true,\"href\":\"/mgmt/metrics/{requiredMetricName}\"},\"self\":{\"templated\":false,\"href\":\"/mgmt\"},\"metrics\":{\"templated\":false,\"href\":\"/mgmt/stats\"},\"info\":{\"templated\":false,\"href\":\"/mgmt/info\"}}}";
 
         this.wireMock.stubFor(get("/mgmt").inScenario("retry")
                                           .whenScenarioStateIs(STARTED)
@@ -201,5 +256,25 @@ public class QueryIndexEndpointStrategyTest {
                     //then
                     .expectNext(Endpoints.single("metrics", "/mgmt/stats").withEndpoint("info", "/mgmt/info"))//
                     .verifyComplete();
+    }
+
+    private ReactorClientHttpConnector httpConnector() {
+        SslContextBuilder sslCtx = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE);
+
+        HttpClient client = HttpClient.create()
+                                      .secure(ssl -> ssl.sslContext(sslCtx))
+                                      .compress(true)
+                                      .tcpConfiguration(tcp -> tcp.bootstrap(bootstrap -> bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,
+                                          2000
+                                      ))
+                                                                  .observe((connection, newState) -> {
+                                                                      if (ConnectionObserver.State.CONNECTED.equals(
+                                                                          newState)) {
+                                                                          connection.addHandlerLast(new ReadTimeoutHandler(2000L,
+                                                                              TimeUnit.MILLISECONDS
+                                                                          ));
+                                                                      }
+                                                                  }));
+        return new ReactorClientHttpConnector(client);
     }
 }

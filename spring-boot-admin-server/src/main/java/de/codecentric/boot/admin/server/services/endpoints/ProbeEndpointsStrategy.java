@@ -65,7 +65,7 @@ public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
                    .flatMap(this::convert);
     }
 
-    private Mono<DetectedEndpoint> detectEndpoint(Instance instance, EndpointDefinition endpoint) {
+    protected Mono<DetectedEndpoint> detectEndpoint(Instance instance, EndpointDefinition endpoint) {
         URI uri = UriComponentsBuilder.fromUriString(instance.getRegistration().getManagementUrl())
                                       .path("/")
                                       .path(endpoint.getPath())
@@ -93,9 +93,9 @@ public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
                                      });
     }
 
-    private Function<ClientResponse, Mono<DetectedEndpoint>> convert(InstanceId instanceId,
-                                                                     EndpointDefinition endpointDefinition,
-                                                                     URI uri) {
+    protected Function<ClientResponse, Mono<DetectedEndpoint>> convert(InstanceId instanceId,
+                                                                       EndpointDefinition endpointDefinition,
+                                                                       URI uri) {
         return response -> {
             Mono<DetectedEndpoint> endpoint = Mono.empty();
             if (response.statusCode().is2xxSuccessful()) {
@@ -113,7 +113,7 @@ public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
         };
     }
 
-    private Mono<Endpoints> convert(List<DetectedEndpoint> endpoints) {
+    protected Mono<Endpoints> convert(List<DetectedEndpoint> endpoints) {
         if (endpoints.isEmpty()) {
             return Mono.empty();
         }
@@ -135,7 +135,7 @@ public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
     }
 
     @Data
-    private static class DetectedEndpoint {
+    protected static class DetectedEndpoint {
         private final EndpointDefinition definition;
         private final Endpoint endpoint;
 
@@ -145,7 +145,7 @@ public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
     }
 
     @Data
-    private static class EndpointDefinition {
+    protected static class EndpointDefinition {
         private final String id;
         private final String path;
 
