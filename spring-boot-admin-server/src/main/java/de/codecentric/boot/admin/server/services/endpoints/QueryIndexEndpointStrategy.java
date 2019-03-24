@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,13 +28,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.http.MediaType;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
+    private static final Logger log = LoggerFactory.getLogger(QueryIndexEndpointStrategy.class);
     private final InstanceWebClient instanceWebClient;
     private static final MediaType actuatorMediaType = MediaType.parseMediaType(ActuatorMediaType.V2_JSON);
 
@@ -47,39 +52,58 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
         Registration registration = instance.getRegistration();
         String managementUrl = registration.getManagementUrl();
         if (managementUrl == null || Objects.equals(registration.getServiceUrl(), managementUrl)) {
+            log.debug("Querying actuator-index for instance {} omitted.", instance.getId());
             return Mono.empty();
         }
 
-        return instanceWebClient.instance(instance)
-                                .get()
-                                .uri(managementUrl)
-                                .exchange()
-                                .flatMap(response -> {
-                                    if (response.statusCode().is2xxSuccessful() &&
-                                        response.headers()
-                                                .contentType()
-                                                .map(actuatorMediaType::isCompatibleWith)
-                                                .orElse(false)) {
-                                        return response.bodyToMono(Response.class);
-                                    } else {
-                                        return response.bodyToMono(Void.class).then(Mono.empty());
-                                    }
-                                })
-                                .flatMap(this::convert);
+        return this.instanceWebClient.instance(instance)
+                                     .get()
+                                     .uri(managementUrl)
+                                     .exchange()
+                                     .flatMap(this.convert(instance, managementUrl))
+                                     .onErrorResume(e -> {
+                                         log.warn("Querying actuator-index for instance {} on '{}' failed: {}",
+                                             instance.getId(),
+                                             managementUrl,
+                                             e.getMessage()
+                                         );
+                                         log.debug("Querying actuator-index for instance {} on '{}' failed.",
+                                             instance.getId(),
+                                             managementUrl,
+                                             e
+                                         );
+                                         return Mono.empty();
+                                     });
     }
 
-    private Mono<Endpoints> convert(Response response) {
+    private Function<ClientResponse, Mono<Endpoints>> convert(Instance instance, String managementUrl) {
+        return response -> {
+            if (response.statusCode().is2xxSuccessful() &&
+                response.headers().contentType().map(actuatorMediaType::isCompatibleWith).orElse(false)) {
+                log.debug("Querying actuator-index for instance {} on '{}' successful.",
+                    instance.getId(),
+                    managementUrl
+                );
+                return response.bodyToMono(Response.class).flatMap(this::convertResponse);
+            } else {
+                log.debug("Querying actuator-index for instance {} on '{}' failed with status {}.",
+                    instance.getId(),
+                    managementUrl,
+                    response.rawStatusCode()
+                );
+                return response.bodyToMono(Void.class).then(Mono.empty());
+            }
+        };
+    }
+
+    private Mono<Endpoints> convertResponse(Response response) {
         List<Endpoint> endpoints = response.getLinks()
                                            .entrySet()
                                            .stream()
                                            .filter(e -> !e.getKey().equals("self") && !e.getValue().isTemplated())
                                            .map(e -> Endpoint.of(e.getKey(), e.getValue().getHref()))
                                            .collect(Collectors.toList());
-        if (endpoints.isEmpty()) {
-            return Mono.empty();
-        } else {
-            return Mono.just(Endpoints.of(endpoints));
-        }
+        return endpoints.isEmpty() ? Mono.empty() : Mono.just(Endpoints.of(endpoints));
     }
 
     @Data
