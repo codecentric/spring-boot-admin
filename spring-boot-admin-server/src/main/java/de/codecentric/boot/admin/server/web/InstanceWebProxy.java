@@ -26,58 +26,47 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.reactive.ClientHttpRequest;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import static java.util.stream.Collectors.toMap;
-
-public class AbstractInstancesProxyController {
-    protected static final String REQUEST_MAPPING_PATH = "/instances/{instanceId}/actuator/**";
-    protected static final String[] HOP_BY_HOP_HEADERS = new String[]{"Host", "Connection", "Keep-Alive", "Proxy-Authenticate", "Proxy-Authorization", "TE", "Trailer", "Transfer-Encoding", "Upgrade", "X-Application-Context"};
-    private static final Logger log = LoggerFactory.getLogger(AbstractInstancesProxyController.class);
-    private final String realRequestMappingPath;
+/**
+ * Forwards a request to a single instances endpoint and will respond with:
+ * - 502 (Bad Gateway) when any error occurs during the request
+ * - 503 (Service unavailable) when the instance is not found
+ * - 504 (Gateway timeout) when the request exceeds the timeout
+ *
+ * @author Johannes Edmeier
+ */
+public class InstanceWebProxy {
+    private static final Logger log = LoggerFactory.getLogger(InstanceWebProxy.class);
     private final InstanceRegistry registry;
     private final InstanceWebClient instanceWebClient;
-    private final Set<String> ignoredHeaders;
     private final ExchangeStrategies strategies = ExchangeStrategies.withDefaults();
 
-    public AbstractInstancesProxyController(String adminContextPath,
-                                            Set<String> ignoredHeaders,
-                                            InstanceRegistry registry,
-                                            InstanceWebClient instanceWebClient) {
-        this.ignoredHeaders = Stream.concat(ignoredHeaders.stream(), Arrays.stream(HOP_BY_HOP_HEADERS))
-                                    .map(String::toLowerCase)
-                                    .collect(Collectors.toSet());
+    public InstanceWebProxy(InstanceRegistry registry, InstanceWebClient instanceWebClient) {
         this.registry = registry;
         this.instanceWebClient = instanceWebClient;
-        this.realRequestMappingPath = adminContextPath + REQUEST_MAPPING_PATH;
     }
 
-    protected Mono<ClientResponse> forward(String instanceId,
-                                           URI uri,
-                                           HttpMethod method,
-                                           HttpHeaders headers,
-                                           Supplier<BodyInserter<?, ? super ClientHttpRequest>> bodyInserter) {
+    public Mono<ClientResponse> forward(String instanceId,
+                                        URI uri,
+                                        HttpMethod method,
+                                        HttpHeaders headers,
+                                        Supplier<BodyInserter<?, ? super ClientHttpRequest>> bodyInserter) {
         log.trace("Proxy-Request for instance {} with URL '{}'", instanceId, uri);
 
         return this.registry.getInstance(InstanceId.of(instanceId))
-                            .flatMap(instance -> forward(instance, uri, method, headers, bodyInserter))
+                            .flatMap(instance -> this.forward(instance, uri, method, headers, bodyInserter))
                             .switchIfEmpty(Mono.fromSupplier(() -> ClientResponse.create(HttpStatus.SERVICE_UNAVAILABLE,
                                 this.strategies
                             ).build()));
@@ -91,7 +80,7 @@ public class AbstractInstancesProxyController {
         WebClient.RequestBodySpec bodySpec = this.instanceWebClient.instance(instance)
                                                                    .method(method)
                                                                    .uri(uri)
-                                                                   .headers(h -> h.addAll(filterHeaders(headers)));
+                                                                   .headers(h -> h.addAll(headers));
 
         WebClient.RequestHeadersSpec<?> headersSpec = bodySpec;
         if (requiresBody(method)) {
@@ -127,23 +116,6 @@ public class AbstractInstancesProxyController {
                               );
                               return ClientResponse.create(HttpStatus.BAD_GATEWAY, this.strategies).build();
                           }));
-    }
-
-    protected String getEndpointLocalPath(String pathWithinApplication) {
-        return new AntPathMatcher().extractPathWithinPattern(this.realRequestMappingPath, pathWithinApplication);
-    }
-
-    protected HttpHeaders filterHeaders(HttpHeaders headers) {
-        HttpHeaders filtered = new HttpHeaders();
-        filtered.putAll(headers.entrySet()
-                               .stream()
-                               .filter(e -> this.includeHeader(e.getKey()))
-                               .collect(toMap(Map.Entry::getKey, Map.Entry::getValue)));
-        return filtered;
-    }
-
-    private boolean includeHeader(String header) {
-        return !this.ignoredHeaders.contains(header.toLowerCase());
     }
 
     private boolean requiresBody(HttpMethod method) {

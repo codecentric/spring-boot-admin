@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,9 @@
 package de.codecentric.boot.admin.server.web.servlet;
 
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
-import de.codecentric.boot.admin.server.web.AbstractInstancesProxyController;
 import de.codecentric.boot.admin.server.web.AdminController;
+import de.codecentric.boot.admin.server.web.HttpHeaderFilter;
+import de.codecentric.boot.admin.server.web.InstanceWebProxy;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -37,6 +38,8 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpResponse;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -51,26 +54,31 @@ import org.springframework.web.util.UriComponentsBuilder;
  * Http Handler for proxied requests
  */
 @AdminController
-public class InstancesProxyController extends AbstractInstancesProxyController {
+public class InstancesProxyController {
+    private static final String MAPPED_PATH = "/instances/{instanceId}/actuator/**";
     private final DataBufferFactory bufferFactory = new DefaultDataBufferFactory();
+    private final PathMatcher pathMatcher = new AntPathMatcher();
+    private final InstanceWebProxy instanceWebProxy;
+    private final String endpointPathPattern;
+    private final HttpHeaderFilter httpHeadersFilter;
 
     public InstancesProxyController(String adminContextPath,
                                     Set<String> ignoredHeaders,
                                     InstanceRegistry registry,
                                     InstanceWebClient instanceWebClient) {
-        super(adminContextPath, ignoredHeaders, registry, instanceWebClient);
+        this.endpointPathPattern = adminContextPath + MAPPED_PATH;
+        this.instanceWebProxy = new InstanceWebProxy(registry, instanceWebClient);
+        this.httpHeadersFilter = new HttpHeaderFilter(ignoredHeaders);
     }
 
     @ResponseBody
-    @RequestMapping(path = REQUEST_MAPPING_PATH, method = {RequestMethod.GET, RequestMethod.HEAD, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS})
+    @RequestMapping(path = MAPPED_PATH, method = {RequestMethod.GET, RequestMethod.HEAD, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS})
     public Mono<Void> endpointProxy(@PathVariable("instanceId") String instanceId,
                                     HttpServletRequest servletRequest,
                                     HttpServletResponse servletResponse) throws IOException {
         ServerHttpRequest request = new ServletServerHttpRequest(servletRequest);
 
-        String pathWithinApplication = UriComponentsBuilder.fromPath(servletRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE)
-                                                                                   .toString()).toUriString();
-        String endpointLocalPath = getEndpointLocalPath(pathWithinApplication);
+        String endpointLocalPath = this.getEndpointLocalPath(servletRequest);
 
         URI uri = UriComponentsBuilder.fromPath(endpointLocalPath)
                                       .query(request.getURI().getRawQuery())
@@ -79,10 +87,8 @@ public class InstancesProxyController extends AbstractInstancesProxyController {
 
         //We need to explicitly block until the headers are recieved and write them before the async dispatch.
         //otherwise the FrameworkServlet will add wrong Allow header for OPTIONS request
-        ClientResponse clientResponse = super.forward(instanceId,
-            uri,
-            request.getMethod(),
-            request.getHeaders(),
+        ClientResponse clientResponse = this.instanceWebProxy.forward(instanceId,
+            uri, request.getMethod(), this.httpHeadersFilter.filterHeaders(request.getHeaders()),
             () -> BodyInserters.fromDataBuffers(DataBufferUtils.readInputStream(request::getBody,
                 this.bufferFactory,
                 4096
@@ -91,7 +97,7 @@ public class InstancesProxyController extends AbstractInstancesProxyController {
 
         ServerHttpResponse response = new ServletServerHttpResponse(servletResponse);
         response.setStatusCode(clientResponse.statusCode());
-        response.getHeaders().addAll(filterHeaders(clientResponse.headers().asHttpHeaders()));
+        response.getHeaders().addAll(this.httpHeadersFilter.filterHeaders(clientResponse.headers().asHttpHeaders()));
         OutputStream responseBody = response.getBody();
         response.flush();
 
@@ -99,6 +105,12 @@ public class InstancesProxyController extends AbstractInstancesProxyController {
                              .window(1)
                              .concatMap(body -> writeAndFlush(body, responseBody))
                              .then();
+    }
+
+    private String getEndpointLocalPath(HttpServletRequest servletRequest) {
+        String pathWithinApplication = UriComponentsBuilder.fromPath(servletRequest.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE)
+                                                                                   .toString()).toUriString();
+        return this.pathMatcher.extractPathWithinPattern(this.endpointPathPattern, pathWithinApplication);
     }
 
     private Mono<Void> writeAndFlush(Flux<DataBuffer> body, OutputStream responseBody) {

@@ -34,9 +34,8 @@ public class InstancesProxyControllerIntegrationTest extends AbstractInstancesPr
                                                      .web(WebApplicationType.REACTIVE)
                                                      .run(
                                                          "--server.port=0",
-                                                    "--eureka.client.enabled=false",
                                                          "--spring.boot.admin.monitor.default-timeout=5000"
-                                                );
+                                                     );
         this.setUpClient(this.context);
     }
 
