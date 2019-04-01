@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,12 @@ import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
-import de.codecentric.boot.admin.server.eventstore.InstanceEventPublisher;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+import reactor.test.publisher.TestPublisher;
 
 import java.time.Duration;
-import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,26 +42,38 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class RemindingNotifierTest {
-    private final Instance instance1 = Instance.create(InstanceId.of("id-1"))
-                                               .register(Registration.create("App", "http://health").build())
-                                               .withStatusInfo(StatusInfo.ofDown());
-    private final Instance instance2 = Instance.create(InstanceId.of("id-2"))
-                                               .register(Registration.create("App", "http://health").build())
-                                               .withStatusInfo(StatusInfo.ofDown());
-    private final InstanceEvent appDown = new InstanceStatusChangedEvent(instance1.getId(), 0L, StatusInfo.ofDown());
-    private final InstanceEvent appUp = new InstanceStatusChangedEvent(instance1.getId(), 0L, StatusInfo.ofUp());
-    private final InstanceEvent appEndpointsDiscovered = new InstanceEndpointsDetectedEvent(instance1.getId(), 0L,
-        Endpoints.empty());
-    private final InstanceEvent appDeregister = new InstanceDeregisteredEvent(instance1.getId(), 0L);
-    private final InstanceEvent otherAppUp = new InstanceStatusChangedEvent(instance2.getId(), 0L, StatusInfo.ofUp());
+    private static final Instance instance1 = Instance.create(InstanceId.of("id-1"))
+                                                      .register(Registration.create("App", "http://health").build())
+                                                      .withStatusInfo(StatusInfo.ofDown());
+    private static final Instance instance2 = Instance.create(InstanceId.of("id-2"))
+                                                      .register(Registration.create("App", "http://health").build())
+                                                      .withStatusInfo(StatusInfo.ofDown());
+    private static final InstanceEvent appDown = new InstanceStatusChangedEvent(instance1.getId(),
+        0L,
+        StatusInfo.ofDown()
+    );
+    private static final InstanceEvent appUp = new InstanceStatusChangedEvent(instance1.getId(), 0L, StatusInfo.ofUp());
+    private static final InstanceEvent appEndpointsDiscovered = new InstanceEndpointsDetectedEvent(instance1.getId(),
+        0L,
+        Endpoints.empty()
+    );
+    private static final InstanceEvent appDeregister = new InstanceDeregisteredEvent(instance1.getId(), 0L);
+    private static final InstanceEvent otherAppUp = new InstanceStatusChangedEvent(instance2.getId(),
+        0L,
+        StatusInfo.ofUp()
+    );
+    private static final InstanceEndpointsDetectedEvent errorTriggeringEvent = new InstanceEndpointsDetectedEvent(instance1.getId(),
+        999L,
+        Endpoints.empty()
+    );
     private InstanceRepository repository;
 
     @Before
     public void setUp() {
-        repository = mock(InstanceRepository.class);
-        when(repository.find(any())).thenReturn(Mono.empty());
-        when(repository.find(instance1.getId())).thenReturn(Mono.just(instance1));
-        when(repository.find(instance2.getId())).thenReturn(Mono.just(instance2));
+        this.repository = mock(InstanceRepository.class);
+        when(this.repository.find(any())).thenReturn(Mono.empty());
+        when(this.repository.find(instance1.getId())).thenReturn(Mono.just(instance1));
+        when(this.repository.find(instance2.getId())).thenReturn(Mono.just(instance2));
     }
 
     @Test
@@ -72,7 +84,7 @@ public class RemindingNotifierTest {
     @Test
     public void should_remind_only_down_events() throws InterruptedException {
         TestNotifier notifier = new TestNotifier();
-        RemindingNotifier reminder = new RemindingNotifier(notifier, repository);
+        RemindingNotifier reminder = new RemindingNotifier(notifier, this.repository);
         reminder.setReminderPeriod(Duration.ZERO);
 
         StepVerifier.create(reminder.notify(appDown)).verifyComplete();
@@ -83,15 +95,18 @@ public class RemindingNotifierTest {
         Thread.sleep(10);
         StepVerifier.create(reminder.sendReminders()).verifyComplete();
 
-        assertThat(notifier.getEvents()).containsExactlyInAnyOrder(appDown, appEndpointsDiscovered, otherAppUp, appDown,
-            appDown);
-
+        assertThat(notifier.getEvents()).containsExactlyInAnyOrder(appDown,
+            appEndpointsDiscovered,
+            otherAppUp,
+            appDown,
+            appDown
+        );
     }
 
     @Test
     public void should_not_remind_remind_after_up() {
         TestNotifier notifier = new TestNotifier();
-        RemindingNotifier reminder = new RemindingNotifier(notifier, repository);
+        RemindingNotifier reminder = new RemindingNotifier(notifier, this.repository);
         reminder.setReminderPeriod(Duration.ZERO);
 
         StepVerifier.create(reminder.notify(appDown)).verifyComplete();
@@ -105,7 +120,7 @@ public class RemindingNotifierTest {
     @Test
     public void should_not_remind_remind_after_deregister() {
         TestNotifier notifier = new TestNotifier();
-        RemindingNotifier reminder = new RemindingNotifier(notifier, repository);
+        RemindingNotifier reminder = new RemindingNotifier(notifier, this.repository);
         reminder.setReminderPeriod(Duration.ZERO);
 
         StepVerifier.create(reminder.notify(appDown)).verifyComplete();
@@ -118,7 +133,7 @@ public class RemindingNotifierTest {
     @Test
     public void should_not_remind_remind_before_period_ends() {
         TestNotifier notifier = new TestNotifier();
-        RemindingNotifier reminder = new RemindingNotifier(notifier, repository);
+        RemindingNotifier reminder = new RemindingNotifier(notifier, this.repository);
         reminder.setReminderPeriod(Duration.ofHours(24));
 
         StepVerifier.create(reminder.notify(appDown)).verifyComplete();
@@ -129,41 +144,32 @@ public class RemindingNotifierTest {
 
     @Test
     public void should_resubscribe_after_error() {
-        FluxNotifier notifier = new FluxNotifier();
+        TestPublisher<InstanceEvent> eventPublisher = TestPublisher.create();
 
-        RemindingNotifier reminder = new RemindingNotifier(notifier, repository);
-        reminder.setCheckReminderInverval(Duration.ofMillis(1));
-        reminder.setReminderPeriod(Duration.ofMillis(1));
-        reminder.start();
+        Flux<InstanceEvent> emittedNotifications = Flux.create(emitter -> {
+            Notifier notifier = (event) -> {
+                emitter.next(event);
+                if (event.equals(errorTriggeringEvent)) {
+                    return Mono.error(new IllegalArgumentException("TEST-ERROR"));
+                }
+                return Mono.empty();
+            };
 
-        StepVerifier.create(notifier)
+            RemindingNotifier reminder = new RemindingNotifier(notifier, this.repository);
+            eventPublisher.flux().flatMap(reminder::notify).subscribe();
+            reminder.setCheckReminderInverval(Duration.ofMillis(10));
+            reminder.setReminderPeriod(Duration.ofMillis(10));
+            reminder.start();
+        });
+
+        StepVerifier.create(emittedNotifications)
                     .expectSubscription()
-                    .then(() -> StepVerifier.create(reminder.notify(appDown)).verifyComplete())
-                    .expectNext(appDown)
-                    .expectNext(appDown)
-                    .then(() -> StepVerifier.create(
-                        reminder.notify(new InstanceDeregisteredEvent(InstanceId.of("ERROR"), 0L))).verifyComplete())
-                    .expectNext(appDown)
-                    .expectNext(appDown)
-                    .then(reminder::stop)
-                    .expectNoEvent(Duration.ofMillis(100))
+                    .then(() -> eventPublisher.next(appDown))
+                    .expectNext(appDown, appDown)
+                    .then(() -> eventPublisher.next(errorTriggeringEvent))
+                    .thenConsumeWhile(e -> !e.equals(errorTriggeringEvent))
+                    .expectNext(errorTriggeringEvent, appDown, appDown)
                     .thenCancel()
                     .verify();
-
-        reminder.stop();
     }
-
-
-    private static class FluxNotifier extends InstanceEventPublisher implements Notifier {
-
-        @Override
-        public Mono<Void> notify(InstanceEvent event) {
-            if (event.getInstance().getValue().equals("ERROR")) {
-                throw new IllegalArgumentException("TEST-ERROR");
-            }
-            this.publish(Collections.singletonList(event));
-            return Mono.empty();
-        }
-    }
-
 }

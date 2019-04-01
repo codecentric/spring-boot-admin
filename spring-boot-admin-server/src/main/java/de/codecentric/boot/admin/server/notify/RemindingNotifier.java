@@ -62,13 +62,13 @@ public class RemindingNotifier extends AbstractEventNotifier {
 
     @Override
     public Mono<Void> doNotify(InstanceEvent event, Instance instance) {
-        return delegate.notify(event).onErrorResume(error -> Mono.empty()).then(Mono.fromRunnable(() -> {
+        return this.delegate.notify(event).doFinally(s -> {
             if (shouldEndReminder(event)) {
-                reminders.remove(event.getInstance());
+                this.reminders.remove(event.getInstance());
             } else if (shouldStartReminder(event)) {
-                reminders.putIfAbsent(event.getInstance(), new Reminder(event));
+                this.reminders.putIfAbsent(event.getInstance(), new Reminder(event));
             }
-        }));
+        }).onErrorResume(e -> Mono.empty());
     }
 
     public void start() {
@@ -97,15 +97,16 @@ public class RemindingNotifier extends AbstractEventNotifier {
         Instant now = Instant.now();
 
         return Flux.fromIterable(this.reminders.values())
-                   .filter(reminder -> reminder.getLastNotification().plus(reminderPeriod).isBefore(now))
-                   .flatMap(reminder -> delegate.notify(reminder.getEvent())
-                                                .doOnSuccess(signal -> reminder.setLastNotification(now)))
+                   .filter(reminder -> reminder.getLastNotification().plus(this.reminderPeriod).isBefore(now))
+                   .flatMap(reminder -> this.delegate.notify(reminder.getEvent())
+                                                     .doOnSuccess(signal -> reminder.setLastNotification(now)))
                    .then();
     }
 
     protected boolean shouldStartReminder(InstanceEvent event) {
         if (event instanceof InstanceStatusChangedEvent) {
-            return Arrays.binarySearch(reminderStatuses,
+            return Arrays.binarySearch(
+                this.reminderStatuses,
                 ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()
             ) >= 0;
         }
@@ -117,7 +118,8 @@ public class RemindingNotifier extends AbstractEventNotifier {
             return true;
         }
         if (event instanceof InstanceStatusChangedEvent) {
-            return Arrays.binarySearch(reminderStatuses,
+            return Arrays.binarySearch(
+                this.reminderStatuses,
                 ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()
             ) < 0;
         }
@@ -138,7 +140,7 @@ public class RemindingNotifier extends AbstractEventNotifier {
         this.checkReminderInverval = checkReminderInverval;
     }
 
-    private static class Reminder {
+    protected static class Reminder {
         private final InstanceEvent event;
         private Instant lastNotification;
 
@@ -152,11 +154,11 @@ public class RemindingNotifier extends AbstractEventNotifier {
         }
 
         public Instant getLastNotification() {
-            return lastNotification;
+            return this.lastNotification;
         }
 
         public InstanceEvent getEvent() {
-            return event;
+            return this.event;
         }
     }
 }
