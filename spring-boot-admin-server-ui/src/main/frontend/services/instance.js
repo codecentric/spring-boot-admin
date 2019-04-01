@@ -19,7 +19,6 @@ import waitForPolyfill from '@/utils/eventsource-polyfill';
 import logtail from '@/utils/logtail';
 import {concat, from, ignoreElements, Observable} from '@/utils/rxjs';
 import uri from '@/utils/uri';
-import transform from 'lodash/transform';
 
 const actuatorMimeTypes = [
   'application/vnd.spring-boot.actuator.v2+json',
@@ -52,7 +51,9 @@ class Instance {
   }
 
   async unregister() {
-    return this.axios.delete('');
+    return this.axios.delete('', {
+      headers: {'Accept': 'application/json'}
+    });
   }
 
   async fetchInfo() {
@@ -157,13 +158,11 @@ class Instance {
   }
 
   async fetchLoggers() {
-    return this.axios.get(uri`actuator/loggers`, {
-      transformResponse: Instance._toLoggers
-    });
+    return this.axios.get(uri`actuator/loggers`);
   }
 
   async configureLogger(name, level) {
-    return this.axios.post(uri`actuator/loggers/${name}`, {configuredLevel: level}, {
+    await this.axios.post(uri`actuator/loggers/${name}`, {configuredLevel: level}, {
       headers: {'Content-Type': 'application/json'}
     });
   }
@@ -258,7 +257,9 @@ class Instance {
   }
 
   static async fetchEvents() {
-    return axios.get('instances/events');
+    return axios.get(uri`instances/events`, {
+      headers: {'Accept': 'application/json'}
+    });
   }
 
   static getEventStream() {
@@ -280,6 +281,7 @@ class Instance {
 
   static async get(id) {
     return axios.get(uri`instances/${id}`, {
+      headers: {'Accept': 'application/json'},
       transformResponse(data) {
         if (!data) {
           return data;
@@ -288,17 +290,6 @@ class Instance {
         return new Instance(instance);
       }
     });
-  }
-
-  static _toLoggers(data) {
-    if (!data) {
-      return data;
-    }
-    const raw = JSON.parse(data);
-    const loggers = transform(raw.loggers, (result, value, key) => {
-      return result.push({name: key, ...value});
-    }, []);
-    return {levels: raw.levels, loggers};
   }
 
   static _toMBeans(data) {

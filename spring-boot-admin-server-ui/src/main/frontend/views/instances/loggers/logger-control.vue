@@ -30,7 +30,7 @@
       <button
         class="button is-light"
         :class="{ 'is-loading' : getStatusForLevel(null) === 'executing' }"
-        :disabled="!configured || !allowReset"
+        :disabled="!isConfigured || !allowReset"
         @click.stop="selectLevel(null)"
       >
         Reset
@@ -42,13 +42,9 @@
 <script>
   export default {
     props: {
-      effectiveLevel: {
-        type: String,
+      value: {
+        type: Array,
         required: true
-      },
-      configuredLevel: {
-        type: String,
-        default: null
       },
       levelOptions: {
         type: Array,
@@ -64,14 +60,17 @@
       }
     },
     computed: {
-      level() {
-        return this.configuredLevel || this.effectiveLevel;
+      isConfigured() {
+        return this.value.some(l => Boolean(l.configuredLevel))
       },
-      configured() {
-        return Boolean(this.configuredLevel);
-      }
     },
     methods: {
+      hasEffectiveLevel(level) {
+        return this.value.some(l => l.effectiveLevel === level)
+      },
+      hasConfiguredLevel(level) {
+        return this.value.some(l => l.configuredLevel === level)
+      },
       selectLevel(level) {
         this.$emit('input', level);
       },
@@ -82,13 +81,13 @@
       },
       cssClass(level) {
         return {
-          'logger-control__level--inherited': this.level === level && !this.configured,
-          'is-active is-danger': this.level === level && this.level === 'TRACE',
-          'is-active is-warning': this.level === level && this.level === 'DEBUG',
-          'is-active is-info': this.level === level && this.level === 'INFO',
-          'is-active is-success': this.level === level && this.level === 'WARN',
-          'is-active is-light': this.level === level && this.level === 'ERROR',
-          'is-active is-black': this.level === level && this.level === 'OFF',
+          'logger-control__level--inherited': !this.hasConfiguredLevel(level),
+          'is-active is-danger': level === 'TRACE' && this.hasEffectiveLevel('TRACE'),
+          'is-active is-warning': level === 'DEBUG' && this.hasEffectiveLevel('DEBUG'),
+          'is-active is-info': level === 'INFO' && this.hasEffectiveLevel('INFO'),
+          'is-active is-success': level === 'WARN' && this.hasEffectiveLevel('WARN'),
+          'is-active is-light': level === 'ERROR' && this.hasEffectiveLevel('ERROR'),
+          'is-active is-black': level === 'OFF' && this.hasEffectiveLevel('OFF'),
           'is-loading': this.getStatusForLevel(level) === 'executing'
         };
       }

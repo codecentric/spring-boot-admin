@@ -25,6 +25,8 @@ import {faBell} from '@fortawesome/free-solid-svg-icons/faBell';
 import {faBellSlash} from '@fortawesome/free-solid-svg-icons/faBellSlash';
 import {faBook} from '@fortawesome/free-solid-svg-icons/faBook';
 import {faCheck} from '@fortawesome/free-solid-svg-icons/faCheck';
+import {faCube} from '@fortawesome/free-solid-svg-icons/faCube';
+import {faCubes} from '@fortawesome/free-solid-svg-icons/faCubes';
 import {faDownload} from '@fortawesome/free-solid-svg-icons/faDownload';
 import {faExclamation} from '@fortawesome/free-solid-svg-icons/faExclamation';
 import {faExclamationTriangle} from '@fortawesome/free-solid-svg-icons/faExclamationTriangle';
@@ -71,12 +73,15 @@ library.add(
   faSearch,
   faMapMarkerAlt,
   faFilter,
-//regular,
+  faCube,
+  faCubes,
+//regular
   farTimesCircle,
 //brands
   faGithub,
   faStackOverflow,
   faGitter
-);
+)
+;
 
 export default FontAwesomeIcon;

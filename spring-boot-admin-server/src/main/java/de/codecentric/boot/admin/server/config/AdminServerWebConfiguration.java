@@ -26,7 +26,6 @@ import de.codecentric.boot.admin.server.utils.jackson.SanitizingMapSerializer;
 import de.codecentric.boot.admin.server.web.ApplicationsController;
 import de.codecentric.boot.admin.server.web.InstancesController;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
-import de.codecentric.boot.admin.server.web.servlet.InstancesProxyController;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -113,9 +112,10 @@ public class AdminServerWebConfiguration {
 
         @Bean
         @ConditionalOnMissingBean
-        public InstancesProxyController instancesProxyController(InstanceRegistry instanceRegistry,
-                                                                 InstanceWebClient.Builder instanceWebClientBuilder) {
-            return new InstancesProxyController(
+        public de.codecentric.boot.admin.server.web.servlet.InstancesProxyController instancesProxyController(
+            InstanceRegistry instanceRegistry,
+            InstanceWebClient.Builder instanceWebClientBuilder) {
+            return new de.codecentric.boot.admin.server.web.servlet.InstancesProxyController(
                 this.adminServerProperties.getContextPath(),
                 this.adminServerProperties.getInstanceProxy().getIgnoredHeaders(),
                 instanceRegistry,
@@ -133,5 +133,4 @@ public class AdminServerWebConfiguration {
             return mapping;
         }
     }
-
 }
