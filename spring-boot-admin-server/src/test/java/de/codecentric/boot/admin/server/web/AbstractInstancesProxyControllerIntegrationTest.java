@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
+import static com.github.tomakehurst.wiremock.client.WireMock.deleteRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
@@ -95,6 +96,8 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
         String actuatorIndex = "{ \"_links\": { " +
                                "\"env\": { \"href\": \"" + managementUrl + "/env\", \"templated\": false }," +
                                "\"test\": { \"href\": \"" + managementUrl + "/test\", \"templated\": false }," +
+                               "\"post\": { \"href\": \"" + managementUrl + "/post\", \"templated\": false }," +
+                               "\"delete\": { \"href\": \"" + managementUrl + "/delete\", \"templated\": false }," +
                                "\"invalid\": { \"href\": \"" + managementUrl + "/invalid\", \"templated\": false }," +
                                "\"timeout\": { \"href\": \"" + managementUrl + "/timeout\", \"templated\": false }" +
                                " } }";
@@ -125,8 +128,8 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
         )));
         this.wireMock.stubFor(get(urlEqualTo("/mgmt/test/has%20spaces")).willReturn(ok(
             "{ \"foo\" : \"bar-with-spaces\" }").withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
-        this.wireMock.stubFor(post(urlEqualTo("/mgmt/test")).willReturn(ok()));
-        this.wireMock.stubFor(delete(urlEqualTo("/mgmt/test")).willReturn(serverError().withBody(
+        this.wireMock.stubFor(post(urlEqualTo("/mgmt/post")).willReturn(ok()));
+        this.wireMock.stubFor(delete(urlEqualTo("/mgmt/delete")).willReturn(serverError().withBody(
             "{\"error\": \"You're doing it wrong!\"}").withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
 
         this.instanceId = registerInstance(managementUrl);
@@ -190,24 +193,22 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
                    .expectBody(String.class)
                    .isEqualTo("{ \"foo\" : \"bar\" }");
 
-        this.client.post()
-                   .uri("/instances/{instanceId}/actuator/test", this.instanceId)
+        this.client.post().uri("/instances/{instanceId}/actuator/post", this.instanceId)
                    .syncBody("PAYLOAD")
                    .exchange()
                    .expectStatus()
                    .isEqualTo(HttpStatus.OK);
 
-        this.wireMock.verify(postRequestedFor(urlEqualTo("/mgmt/test")).withRequestBody(equalTo("PAYLOAD")));
+        this.wireMock.verify(postRequestedFor(urlEqualTo("/mgmt/post")).withRequestBody(equalTo("PAYLOAD")));
 
-        this.client.delete()
-                   .uri("/instances/{instanceId}/actuator/test", this.instanceId)
+        this.client.delete().uri("/instances/{instanceId}/actuator/delete", this.instanceId)
                    .exchange()
                    .expectStatus()
                    .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
                    .expectBody(String.class)
                    .isEqualTo("{\"error\": \"You're doing it wrong!\"}");
 
-        this.wireMock.verify(postRequestedFor(urlEqualTo("/mgmt/test")).withRequestBody(equalTo("PAYLOAD")));
+        this.wireMock.verify(deleteRequestedFor(urlEqualTo("/mgmt/delete")));
     }
 
     @Test

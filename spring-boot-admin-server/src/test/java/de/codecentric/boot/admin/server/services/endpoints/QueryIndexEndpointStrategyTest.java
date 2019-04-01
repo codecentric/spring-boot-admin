@@ -55,14 +55,13 @@ import static java.util.Collections.singletonMap;
 public class QueryIndexEndpointStrategyTest {
 
     @Rule
-    public WireMockRule wireMock = new WireMockRule(wireMockConfig().dynamicHttpsPort());
+    public WireMockRule wireMock = new WireMockRule(wireMockConfig().dynamicPort().dynamicHttpsPort());
 
     private InstanceWebClient instanceWebClient = InstanceWebClient.builder()
                                                                    .webClient(WebClient.builder()
                                                                                        .clientConnector(httpConnector()))
-                                                                   .filter(rewriteEndpointUrl())
-                                                                   .filter(retry(
-                                                                       0,
+                                                                   .filter(rewriteEndpointUrl()).filter(retry(
+            0,
                                                                        singletonMap(Endpoint.ACTUATOR_INDEX, 1)
                                                                    ))
                                                                    .filter(timeout(Duration.ofSeconds(1), emptyMap()))
@@ -87,10 +86,7 @@ public class QueryIndexEndpointStrategyTest {
                       host +
                       "/mgmt/info\"}}}";
 
-        this.wireMock.stubFor(get("/mgmt").willReturn(ok(body).withHeader("Content-Type", ActuatorMediaType.V2_JSON)
-                                                              .withHeader("Content-Length",
-                                                                  Integer.toString(body.length())
-                                                              )));
+        this.wireMock.stubFor(get("/mgmt").willReturn(ok(body).withHeader("Content-Type", ActuatorMediaType.V2_JSON)));
 
         QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
 
@@ -121,10 +117,7 @@ public class QueryIndexEndpointStrategyTest {
                       host +
                       "/mgmt/info\"}}}";
 
-        this.wireMock.stubFor(get("/mgmt").willReturn(ok(body).withHeader("Content-Type", ActuatorMediaType.V2_JSON)
-                                                              .withHeader("Content-Length",
-                                                                  Integer.toString(body.length())
-                                                              )));
+        this.wireMock.stubFor(get("/mgmt").willReturn(ok(body).withHeader("Content-Type", ActuatorMediaType.V2_JSON)));
 
         QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
 
@@ -146,10 +139,9 @@ public class QueryIndexEndpointStrategyTest {
                                                           .build());
 
         String body = "{\"_links\":{}}";
-        this.wireMock.stubFor(get("/mgmt").willReturn(okJson(body).withHeader("Content-Type", ActuatorMediaType.V2_JSON)
-                                                                  .withHeader("Content-Length",
-                                                                      Integer.toString(body.length())
-                                                                  )));
+        this.wireMock.stubFor(get("/mgmt").willReturn(okJson(body).withHeader("Content-Type",
+            ActuatorMediaType.V2_JSON
+        )));
 
         QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
 
@@ -205,10 +197,7 @@ public class QueryIndexEndpointStrategyTest {
                                                           .build());
 
         String body = "HELLOW WORLD";
-        this.wireMock.stubFor(get("/mgmt").willReturn(ok(body).withHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE)
-                                                              .withHeader("Content-Length",
-                                                                  Integer.toString(body.length())
-                                                              )));
+        this.wireMock.stubFor(get("/mgmt").willReturn(ok(body).withHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE)));
 
         QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
 
@@ -246,15 +235,12 @@ public class QueryIndexEndpointStrategyTest {
 
         this.wireMock.stubFor(get("/mgmt").inScenario("retry")
                                           .whenScenarioStateIs(STARTED)
-                                          .willReturn(aResponse().withFixedDelay(5000))
+                                          .willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER))
                                           .willSetStateTo("recovered"));
 
         this.wireMock.stubFor(get("/mgmt").inScenario("retry")
                                           .whenScenarioStateIs("recovered")
-                                          .willReturn(ok(body).withHeader("Content-Type", ActuatorMediaType.V2_JSON)
-                                                              .withHeader("Content-Length",
-                                                                  Integer.toString(body.length())
-                                                              )));
+                                          .willReturn(ok(body).withHeader("Content-Type", ActuatorMediaType.V2_JSON)));
 
         QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
 
@@ -267,7 +253,6 @@ public class QueryIndexEndpointStrategyTest {
 
     private ReactorClientHttpConnector httpConnector() {
         SslContextBuilder sslCtx = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE);
-
         HttpClient client = HttpClient.create().secure(ssl -> ssl.sslContext(sslCtx));
         return new ReactorClientHttpConnector(client);
     }
