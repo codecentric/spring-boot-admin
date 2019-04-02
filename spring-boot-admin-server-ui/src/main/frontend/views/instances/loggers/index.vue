@@ -16,90 +16,96 @@
 
 <template>
   <section class="section" :class="{ 'is-loading' : !hasLoaded }">
-    <template v-if="hasLoaded">
-      <div v-if="error" class="message is-danger">
-        <div class="message-body">
-          <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            Fetching loggers failed.
-          </strong>
-          <p v-text="error.message" />
+    <div v-if="error" class="message is-danger">
+      <div class="message-body">
+        <strong>
+          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
+          Fetching loggers failed.
+        </strong>
+        <p v-text="error.message" />
+      </div>
+    </div>
+    <div class="loggers__filters" v-sticks-below="['#navigation']" v-if="loggerConfig">
+      <div class="field-body">
+        <div class="field has-addons">
+          <p class="control is-expanded has-icons-left">
+            <input
+              class="input"
+              type="search"
+              v-model="filter.name"
+            >
+            <span class="icon is-small is-left">
+              <font-awesome-icon icon="filter" />
+            </span>
+          </p>
+          <p class="control">
+            <span class="button is-static">
+              <span v-text="filteredLoggers.length" /> / <span v-text="loggerConfig.loggers.length" />
+            </span>
+          </p>
         </div>
       </div>
-      <template v-if="loggerConfig">
-        <div class="field-body">
-          <div class="field has-addons">
-            <p class="control is-expanded has-icons-left">
-              <input
-                class="input"
-                type="search"
-                v-model="filter"
-              >
-              <span class="icon is-small is-left">
-                <font-awesome-icon icon="filter" />
-              </span>
-            </p>
-            <p class="control">
-              <span class="button is-static">
-                <span v-text="filteredLoggers.length" />
-                /
-                <span v-text="loggerConfig.loggers.length" />
-              </span>
-            </p>
+      <div class="field-body">
+        <div class="field is-narrow">
+          <div class="control">
+            <label class="checkbox">
+              <input type="checkbox" v-model="filter.classOnly">
+              class only
+            </label>
           </div>
         </div>
-        <div class="field-body">
-          <div class="field is-narrow">
-            <div class="control">
-              <label class="checkbox">
-                <input type="checkbox" v-model="showClassLoggersOnly">
-                class only
-              </label>
-            </div>
-          </div>
-          <div class="field is-narrow">
-            <div class="control">
-              <label class="checkbox">
-                <input type="checkbox" v-model="showConfiguredLoggersOnly">
-                configured
-              </label>
-            </div>
+        <div class="field is-narrow">
+          <div class="control">
+            <label class="checkbox">
+              <input type="checkbox" v-model="filter.configuredOnly">
+              configured
+            </label>
           </div>
         </div>
-      </template>
-      <table v-if="loggerConfig" class="table is-hoverable is-fullwidth">
-        <tbody>
-          <tr v-for="logger in limitedLoggers" :key="logger.name">
-            <td>
-              <span class="is-breakable" v-text="logger.name" />
-              <span class="has-text-danger" v-if="logger.name in failed">
-                <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-                <span v-text="`Configuring ${failed[logger.name]} failed.`" />
-              </span>
-              <sba-logger-control class="is-pulled-right"
-                                  :level-options="levels"
-                                  :effective-level="logger.effectiveLevel"
-                                  :configured-level="logger.configuredLevel"
-                                  :is-loading="loading[logger.name]"
-                                  :has-failed="failed[logger.name]"
-                                  :allow-reset="logger.name !== 'ROOT'"
-                                  @input="level => configureLogger(logger, level)"
-              />
-            </td>
-          </tr>
-          <tr v-if="limitedLoggers.length === 0">
-            <td class="is-muted" colspan="5">
-              No loggers found.
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </template>
+      </div>
+    </div>
+    <table v-if="loggerConfig" class="table is-hoverable is-fullwidth">
+      <tbody>
+        <tr v-for="logger in this.filteredLoggers.slice(0, this.visibleLimit)" :key="logger.name">
+          <td>
+            <span class="is-breakable" v-text="logger.name" />
+
+            <sba-logger-control class="is-pulled-right"
+                                :level-options="levels"
+                                :effective-level="logger.effectiveLevel"
+                                :configured-level="logger.configuredLevel"
+                                :status="loggerStatus[logger.name]"
+                                :allow-reset="logger.name !== 'ROOT'"
+                                @input="level => configureLogger(logger, level)"
+            />
+
+            <p
+              class="has-text-danger"
+              v-if="loggerStatus[logger.name] && loggerStatus[logger.name].status === 'failed'"
+            >
+              <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
+              <span v-text="`Setting ${logger.name} to '${loggerStatus[logger.name].level}' failed.`" />
+            </p>
+          </td>
+        </tr>
+        <tr v-if="filteredLoggers.length === 0">
+          <td class="is-muted" colspan="5">
+            No loggers found.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <infinite-loading ref="infinite" v-if="loggerConfig" @infinite="increaseScroll">
+      <div slot="no-results" />
+    </infinite-loading>
   </section>
 </template>
 
 <script>
+  import sticksBelow from '@/directives/sticks-below';
   import Instance from '@/services/instance';
+  import {finalize, from, listen} from '@/utils/rxjs';
+  import InfiniteLoading from 'vue-infinite-loading';
   import sbaLoggerControl from './logger-control';
 
   const isClassName = name => /\.[A-Z]/.test(name);
@@ -110,7 +116,8 @@
       : (val, key) => oldFilter(val, key) && addedFilter(val, key);
 
   export default {
-    components: {sbaLoggerControl},
+    components: {sbaLoggerControl, InfiniteLoading},
+    directives: {sticksBelow},
     props: {
       instance: {
         type: Instance,
@@ -121,47 +128,42 @@
       hasLoaded: false,
       error: null,
       loggerConfig: null,
-      filter: '',
-      showClassLoggersOnly: false,
-      showConfiguredLoggersOnly: false,
-      visibleLimit: 25,
-      loading: {},
-      failed: {}
+      filter: {
+        name: '',
+        classOnly: false,
+        configuredOnly: false,
+      },
+      visibleLimit: 20,
+      loggerStatus: {}
     }),
     computed: {
       levels() {
         return this.loggerConfig.levels;
-      },
-      limitedLoggers() {
-        if (this.visibleLimit > 0) {
-          return this.filteredLoggers.slice(0, this.visibleLimit);
-        } else {
-          return this.filteredLoggers;
-        }
       },
       filteredLoggers() {
         let filterFn = this.getFilterFn();
         return filterFn ? this.loggerConfig.loggers.filter(filterFn) : this.loggerConfig.loggers;
       }
     },
+    watch: {
+      filter: {
+        deep: true,
+        handler() {
+          this.$refs.infinite.stateChanger.reset();
+        }
+      }
+    },
     methods: {
-      async configureLogger(logger, level) {
+      configureLogger(logger, level) {
         const vm = this;
-        const setLoadingHandle = setTimeout(() => vm.$set(vm.loading, logger.name, level), 150);
-        try {
-          await this.instance.configureLogger(logger.name, level);
-          vm.$delete(vm.failed, logger.name, level)
-        } catch (error) {
-          console.warn(`Configuring logger '${logger.name}' failed:`, error);
-          vm.$set(vm.failed, logger.name, level);
-        }
-
-        try {
-          await this.fetchLoggers();
-        } finally {
-          vm.$delete(vm.loading, logger.name);
-          clearTimeout(setLoadingHandle);
-        }
+        from(vm.instance.configureLogger(logger.name, level))
+          .pipe(
+            listen(status => vm.$set(vm.loggerStatus, logger.name, {level, status})),
+            finalize(() => vm.fetchLoggers())
+          )
+          .subscribe({
+            error: (error) => console.warn(`Configuring logger '${logger.name}' failed:`, error)
+          });
       },
       async fetchLoggers() {
         this.error = null;
@@ -174,24 +176,27 @@
         }
         this.hasLoaded = true;
       },
-      onScroll() {
-        if (this.loggerConfig && this.$el.getBoundingClientRect().bottom - 400 <= window.innerHeight && this.visibleLimit < this.filteredLoggers.length) {
+      increaseScroll(state) {
+        if (this.visibleLimit < this.filteredLoggers.length) {
           this.visibleLimit += 25;
+          state.loaded();
+        } else {
+          state.complete();
         }
       },
       getFilterFn() {
         let filterFn = null;
 
-        if (this.showClassLoggersOnly) {
+        if (this.filter.classOnly) {
           filterFn = addToFilter(filterFn, logger => isClassName(logger.name));
         }
 
-        if (this.showConfiguredLoggersOnly) {
-          filterFn = addToFilter(filterFn, logger => !!logger.configuredLevel);
+        if (this.filter.configuredOnly) {
+          filterFn = addToFilter(filterFn, logger => Boolean(logger.configuredLevel));
         }
 
-        if (this.filter) {
-          const normalizedFilter = this.filter.toLowerCase();
+        if (this.filter.name) {
+          const normalizedFilter = this.filter.name.toLowerCase();
           filterFn = addToFilter(filterFn, logger => logger.name.toLowerCase().includes(normalizedFilter));
         }
 
@@ -200,12 +205,6 @@
     },
     created() {
       this.fetchLoggers();
-    },
-    mounted() {
-      window.addEventListener('scroll', this.onScroll);
-    },
-    beforeDestroy() {
-      window.removeEventListener('scroll', this.onScroll);
     },
     install({viewRegistry}) {
       viewRegistry.addView({
@@ -223,4 +222,11 @@
 </script>
 
 <style lang="scss">
+  @import "~@/assets/css/utilities";
+
+  .loggers__filters {
+    background-color: $white;
+    z-index: 10;
+    padding: 0.5em 1em;
+  }
 </style>

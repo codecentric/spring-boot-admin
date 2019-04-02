@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2019 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -27,8 +27,11 @@
       />
     </div>
     <div class="control">
-      <button class="button is-light" :class="{ 'is-loading' : isLoading === null }"
-              :disabled="!configured || !allowReset" @click.stop="selectLevel(null)"
+      <button
+        class="button is-light"
+        :class="{ 'is-loading' : getStatusForLevel(null) === 'executing' }"
+        :disabled="!configured || !allowReset"
+        @click.stop="selectLevel(null)"
       >
         Reset
       </button>
@@ -55,9 +58,9 @@
         type: Boolean,
         default: true
       },
-      isLoading: {
-        type: String,
-        default: undefined
+      status: {
+        type: Object,
+        default: null
       }
     },
     computed: {
@@ -65,12 +68,17 @@
         return this.configuredLevel || this.effectiveLevel;
       },
       configured() {
-        return !!this.configuredLevel;
+        return Boolean(this.configuredLevel);
       }
     },
     methods: {
       selectLevel(level) {
         this.$emit('input', level);
+      },
+      getStatusForLevel(level) {
+        if (this.status && this.status.level === level) {
+          return this.status.status;
+        }
       },
       cssClass(level) {
         return {
@@ -81,7 +89,7 @@
           'is-active is-success': this.level === level && this.level === 'WARN',
           'is-active is-light': this.level === level && this.level === 'ERROR',
           'is-active is-black': this.level === level && this.level === 'OFF',
-          'is-loading': this.isLoading === level
+          'is-loading': this.getStatusForLevel(level) === 'executing'
         };
       }
     }
@@ -93,6 +101,7 @@
     &__level {
       &--inherited {
         opacity: 0.5;
+
         &:hover {
           opacity: 1;
         }
