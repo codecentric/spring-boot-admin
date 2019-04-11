@@ -41,7 +41,7 @@
                 <form action="logout" method="post">
                   <input v-if="csrfToken" type="hidden" :name="csrfParameterName" :value="csrfToken">
                   <button class="button is-icon" type="submit" value="logout">
-                    <font-awesome-icon icon="sign-out-alt" />&nbsp;Log out
+                    <font-awesome-icon icon="sign-out-alt" />&nbsp;{{ $t('navbar::Log out') }}
                   </button>
                 </form>
               </a>
@@ -55,6 +55,7 @@
 
 <script>
   import {compareBy} from '@/utils/collections';
+  import {AVAILABLE_LOCALES} from '../i18n';
 
   const readCookie = (name) => {
     const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));

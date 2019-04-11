@@ -15,13 +15,13 @@
   -->
 
 <template>
-  <sba-panel title="Garbage Collection Pauses" v-if="hasLoaded">
+  <sba-panel :title="$t('instances::gc::title')" v-if="hasLoaded">
     <div>
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            Fetching GC metrics failed.
+            {{ $t('instances::gc::Fetching GC metrics failed.') }}
           </strong>
           <p v-text="error.message" />
         </div>
@@ -30,7 +30,7 @@
         <div class="level-item has-text-centered">
           <div>
             <p class="heading">
-              Count
+              {{ $t('instances::gc::Count') }}
             </p>
             <p v-text="current.count" />
           </div>
@@ -38,7 +38,7 @@
         <div class="level-item has-text-centered">
           <div>
             <p class="heading">
-              Total time spent
+              {{ $t('instances::gc::Total time spent') }}
             </p>
             <p v-text="`${current.total_time.asSeconds().toFixed(4)}s`" />
           </div>
@@ -46,7 +46,7 @@
         <div class="level-item has-text-centered">
           <div>
             <p class="heading">
-              Max time spent
+              {{ $t('instances::gc::Max time spent') }}
             </p>
             <p v-text="`${current.max.asSeconds().toFixed(4)}s`" />
           </div>

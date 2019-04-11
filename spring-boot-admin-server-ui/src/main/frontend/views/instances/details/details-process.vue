@@ -15,13 +15,13 @@
   -->
 
 <template>
-  <sba-panel title="Process" v-if="hasLoaded">
+  <sba-panel :title="$t('instances::process::title')" v-if="hasLoaded">
     <div>
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            Fetching process metrics failed.
+            {{ $t('instances::process::fetch_failed.') }}
           </strong>
           <p v-text="error.message" />
         </div>
@@ -30,7 +30,7 @@
         <div class="level-item has-text-centered" v-if="pid">
           <div>
             <p class="heading">
-              PID
+             {{ $t('instances::process::PID') }}
             </p>
             <p v-text="pid" />
           </div>
@@ -38,7 +38,7 @@
         <div class="level-item has-text-centered" v-if="uptime">
           <div>
             <p class="heading">
-              Uptime
+             {{ $t('instances::process::Uptime') }}
             </p>
             <p>
               <process-uptime :value="toMillis(uptime.value, uptime.baseUnit)" />
@@ -48,7 +48,7 @@
         <div class="level-item has-text-centered" v-if="processCpuLoad">
           <div>
             <p class="heading">
-              Process CPU Usage
+              {{ $t('instances::process::Process CPU Usage') }}
             </p>
             <p v-text="processCpuLoad.toFixed(2)" />
           </div>
@@ -56,7 +56,7 @@
         <div class="level-item has-text-centered" v-if="systemCpuLoad">
           <div>
             <p class="heading">
-              System CPU Usage
+              {{ $t('instances::process::System CPU Usage') }}
             </p>
             <p v-text="systemCpuLoad.toFixed(2)" />
           </div>
@@ -64,7 +64,7 @@
         <div class="level-item has-text-centered" v-if="systemCpuCount">
           <div>
             <p class="heading">
-              CPUs
+              {{ $t('instances::process::CPUs') }}
             </p>
             <p v-text="systemCpuCount" />
           </div>

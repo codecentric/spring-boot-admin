@@ -42,7 +42,7 @@
       <div class="message-body">
         <strong>
           <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-          Fetching metrics index failed.
+          {{ $t('instances::fetching_failed') }}
         </strong>
         <p v-text="error.message" />
       </div>

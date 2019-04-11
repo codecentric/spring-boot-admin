@@ -15,13 +15,13 @@
   -->
 
 <template>
-  <sba-panel :title="`Memory: ${name}`" v-if="hasLoaded">
+  <sba-panel :title="$t('instances::memory::title') + `: ${name}`" v-if="hasLoaded">
     <div>
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            Fetching memory metrics failed.
+            {{ $t('instances::memory::fetch_failed') }}
           </strong>
           <p v-text="error.message" />
         </div>
@@ -30,7 +30,7 @@
         <div class="level-item has-text-centered" v-if="current.metaspace">
           <div>
             <p class="heading has-bullet has-bullet-primary">
-              Metaspace
+              {{ $t('instances::memory::Metaspace') }}
             </p>
             <p v-text="prettyBytes(current.metaspace)" />
           </div>
@@ -38,7 +38,7 @@
         <div class="level-item has-text-centered">
           <div>
             <p class="heading has-bullet has-bullet-info">
-              Used
+              {{ $t('instances::memory::Used') }}
             </p>
             <p v-text="prettyBytes(current.used)" />
           </div>
@@ -46,7 +46,7 @@
         <div class="level-item has-text-centered">
           <div>
             <p class="heading has-bullet has-bullet-warning">
-              Size
+              {{ $t('instances::memory::Size') }}
             </p>
             <p v-text="prettyBytes(current.committed)" />
           </div>
@@ -54,7 +54,7 @@
         <div class="level-item has-text-centered" v-if="current.max >= 0">
           <div>
             <p class="heading">
-              Max
+              {{ $t('instances::memory::Max') }}
             </p>
             <p v-text="prettyBytes(current.max)" />
           </div>

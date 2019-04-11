@@ -19,18 +19,21 @@
     <p v-if="!applicationsInitialized" class="is-muted is-loading">
       Loading applications...
     </p>
-    <hex-mesh v-if="applicationsInitialized" :items="applications" :class-for-item="classForApplication" @click="select">
+    <hex-mesh v-if="applicationsInitialized"
+      :items="applications"
+      :class-for-item="classForApplication"
+      @click="select">
       <div class="hex__body application" slot="item" slot-scope="{item: application}" :key="application.name">
         <div class="application__header application__time-ago is-muted">
-          <sba-time-ago :date="application.statusTimestamp" />
+          <sba-time-ago :date="application.statusTimestamp"/>
         </div>
         <div class="application__body">
-          <h1 class="application__name" v-text="application.name" />
+          <h1 class="application__name" v-text="application.name"/>
           <p class="application__instances is-muted">
-            <span v-text="application.instances.length" /> instances
+            {{ $t('wallboard::instances', { count: application.instances.length }) }}
           </p>
         </div>
-        <h2 class="application__footer application__version" v-text="application.buildVersion" />
+        <h2 class="application__footer application__version" v-text="application.buildVersion"/>
       </div>
     </hex-mesh>
   </section>
@@ -44,7 +47,7 @@
     props: {
       applications: {
         type: Array,
-        default: () => [],
+        default: () => []
       },
       error: {
         type: Error,
@@ -83,7 +86,7 @@
         } else {
           this.$router.push({name: 'applications', params: {selected: application.name}});
         }
-      },
+      }
     },
     install({viewRegistry}) {
       viewRegistry.addView({
@@ -135,6 +138,7 @@
         width: 90%;
         margin-bottom: 0.5em;
       }
+
       &__footer {
         width: 90%;
         margin-top: 0.5em;

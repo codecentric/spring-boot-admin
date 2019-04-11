@@ -18,13 +18,13 @@
   <section class="section">
     <div class="container">
       <p v-if="!applicationsInitialized" class="is-muted is-loading">
-        Loading applications...
+       {{ $('Loading applications...') }}
       </p>
       <div v-if="error" class="message is-warning">
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-warning" icon="exclamation-triangle" />
-            Server connection failed.
+            {{ $('Server connection failed.') }}
           </strong>
           <p v-text="error.message" />
         </div>
@@ -50,7 +50,7 @@
           v-for="group in statusGroups"
           :key="group.status"
         >
-          <p class="heading" v-text="group.status" />
+          <p class="heading">{{ $t('applications::'+group.status) }}</p>
           <div class="applications-list">
             <applications-list-item v-for="application in group.applications"
                                     :key="application.name"
@@ -67,7 +67,7 @@
           </div>
         </div>
         <p v-if="applications.length === 0" class="is-muted">
-          No applications registered.
+          {{ $t('application::No applications registered.') }}
         </p>
         <notification-filter-settings v-if="showNotificationFilterSettingsObject"
                                       v-popper="`nf-settings-${showNotificationFilterSettingsObject.id || showNotificationFilterSettingsObject.name}`"
