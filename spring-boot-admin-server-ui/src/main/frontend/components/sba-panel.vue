@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2019 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -17,17 +17,19 @@
 <template>
   <div class="card panel">
     <header
-      v-if="title || $slots['header']"
+      v-if="title"
       class="card-header"
       :class="{'panel__header--sticky': headerSticksBelow}"
       v-sticks-below="headerSticksBelow"
     >
       <p class="card-header-title">
         <span v-text="title" />
-        <slot name="header" />
       </p>
-      <div class="panel__close">
-        <sba-icon-button v-if="closeable" :icon="['far', 'times-circle']" @click.stop="close" />
+      <div class="card-header-icon" v-if="$slots['actions']">
+        <slot name="actions" />
+      </div>
+      <div class="panel__close" v-if="closeable">
+        <sba-icon-button :icon="['far', 'times-circle']" @click.stop="close" />
       </div>
     </header>
     <div v-if="$slots['default']" class="card-content">

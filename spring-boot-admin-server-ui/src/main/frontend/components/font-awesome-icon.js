@@ -32,6 +32,7 @@ import {faExclamation} from '@fortawesome/free-solid-svg-icons/faExclamation';
 import {faExclamationTriangle} from '@fortawesome/free-solid-svg-icons/faExclamationTriangle';
 import {faFilter} from '@fortawesome/free-solid-svg-icons/faFilter';
 import {faHeartbeat} from '@fortawesome/free-solid-svg-icons/faHeartbeat';
+import {faHistory} from '@fortawesome/free-solid-svg-icons/faHistory';
 import {faHome} from '@fortawesome/free-solid-svg-icons/faHome';
 import {faMapMarkerAlt} from '@fortawesome/free-solid-svg-icons/faMapMarkerAlt';
 import {faMinusCircle} from '@fortawesome/free-solid-svg-icons/faMinusCircle';
@@ -49,38 +50,39 @@ import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
 
 library.add(
 //solid
-  faTrash,
-  faDownload,
-  faStepForward,
-  faStepBackward,
-  faCheck,
-  faQuestionCircle,
+  faAngleDoubleRight,
   faBan,
-  faTimesCircle,
-  faMinusCircle,
-  faExclamation,
-  faBook,
-  faSignOutAlt,
-  faExclamationTriangle,
-  faPencilAlt,
   faBell,
   faBellSlash,
-  faUserCircle,
-  faHeartbeat,
-  faHome,
-  faWrench,
-  faAngleDoubleRight,
-  faSearch,
-  faMapMarkerAlt,
-  faFilter,
+  faBook,
+  faCheck,
   faCube,
   faCubes,
+  faDownload,
+  faExclamation,
+  faExclamationTriangle,
+  faFilter,
+  faHeartbeat,
+  faHistory,
+  faHome,
+  faMapMarkerAlt,
+  faMinusCircle,
+  faPencilAlt,
+  faQuestionCircle,
+  faSearch,
+  faSignOutAlt,
+  faStepBackward,
+  faStepForward,
+  faTimesCircle,
+  faTrash,
+  faUserCircle,
+  faWrench,
 //regular
   farTimesCircle,
 //brands
   faGithub,
-  faStackOverflow,
-  faGitter
+  faGitter,
+  faStackOverflow
 )
 ;
 

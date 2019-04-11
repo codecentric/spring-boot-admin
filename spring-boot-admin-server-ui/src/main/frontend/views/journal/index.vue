@@ -20,6 +20,16 @@
       <h1 class="title">
         Event Journal
       </h1>
+      <h2
+        v-if="filter.application"
+        v-text="filter.application"
+        class="subtitle"
+      />
+      <h1
+        v-else-if="filter.instanceId"
+        v-text="`${getName(filter.instanceId)} (${filter.instanceId})`"
+        class="subtitle"
+      />
       <div v-if="error" class="message is-warning">
         <div class="message-body">
           <strong>
@@ -29,7 +39,7 @@
           <p v-text="error.message" />
         </div>
       </div>
-      <table class="table is-fullwidth is-hoverable">
+      <table class="journal table is-fullwidth is-hoverable">
         <thead>
           <tr>
             <th>Application</th>
@@ -38,18 +48,26 @@
             <th>Event</th>
           </tr>
         </thead>
-        <tbody>
-          <template v-for="event in events">
+        <transition-group tag="tbody" name="fade-in">
+          <tr key="new-events" v-if="newEventsCount > 0">
+            <td
+              colspan="4"
+              class="has-text-primary has-text-centered is-selectable"
+              v-text="`${newEventsCount} new events`"
+              @click="showNewEvents"
+            />
+          </tr>
+          <template v-for="event in filteredEvents">
             <tr class="is-selectable" :key="event.key"
                 @click="showPayload[event.key] ? $delete(showPayload, event.key) : $set(showPayload, event.key, true)"
             >
-              <td v-text="instanceNames[event.instance] || '?'" />
+              <td v-text="getName(event.instance)" />
               <td v-text="event.instance" />
               <td v-text="event.timestamp.format('L HH:mm:ss.SSS')" />
               <td>
                 <span v-text="event.type" /> <span v-if="event.type === 'STATUS_CHANGED'"
                                                    v-text="`(${event.payload.statusInfo.status})`"
-                />
+              />
               </td>
             </tr>
             <tr :key="`${event.key}-detail`" v-if="showPayload[event.key]">
@@ -58,7 +76,7 @@
               </td>
             </tr>
           </template>
-        </tbody>
+        </transition-group>
       </table>
     </div>
   </div>
@@ -68,16 +86,17 @@
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
   import {compareBy} from '@/utils/collections';
-  import omit from 'lodash/omit';
+  import isEqual from 'lodash/isEqual';
+  import uniq from 'lodash/uniq';
   import moment from 'moment';
 
   class Event {
-    constructor(event) {
-      this.instance = event.instance;
-      this.version = event.version;
-      this.type = event.type;
-      this.timestamp = moment(event.timestamp);
-      this.payload = omit(event, ['instance', 'version', 'timestamp', 'type']);
+    constructor({instance, version, type, timestamp, ...payload}) {
+      this.instance = instance;
+      this.version = version;
+      this.type = type;
+      this.timestamp = moment(timestamp);
+      this.payload = payload;
     }
 
     get key() {
@@ -89,30 +108,59 @@
     mixins: [subscribing],
     data: () => ({
       events: [],
+      newEvents: [],
       showPayload: {},
-      instanceNames: {},
-      error: null
+      error: null,
+      filter: {
+        application: undefined,
+        instanceId: undefined
+      }
     }),
+    computed: {
+      instanceNames() {
+        return this.events.filter(event => event.type === 'REGISTERED').reduce((names, event) => {
+          names[event.instance] = event.payload.registration.name;
+          return names;
+        }, {});
+      },
+      filteredEvents() {
+        return this.filterEvents(this.events);
+      },
+      newEventsCount() {
+        return this.filterEvents(this.newEvents).length;
+      }
+    },
     methods: {
       toJson(obj) {
         return JSON.stringify(obj, null, 4);
       },
-      addEvents(data) {
-        const converted = data.map(event => new Event(event));
-        converted.reverse();
-        this.events = converted.concat(this.events);
-
-        const newInstanceNames = converted.filter(event => event.type === 'REGISTERED').reduce((names, event) => ({
-          ...names,
-          [event.instance]: event.payload.registration.name
-        }), {});
-        Object.assign(this.instanceNames, newInstanceNames);
+      getName(instanceId) {
+        return this.instanceNames[instanceId] || '?'
+      },
+      getInstances(application) {
+        return uniq(Object.entries(this.instanceNames)
+          .filter(([, name]) => application === name)
+          .map(([instanceId]) => instanceId));
+      },
+      showNewEvents() {
+        this.events = Object.freeze([...this.newEvents, ...this.events]);
+        this.newEvents = [];
+      },
+      filterEvents(events) {
+        if (this.filter.application) {
+          const instances = this.getInstances(this.filter.application);
+          return events.filter(e => instances.includes(e.instance))
+        }
+        if (this.filter.instanceId) {
+          return events.filter(e => e.instance === this.filter.instanceId);
+        }
+        return events;
       },
       createSubscription() {
         return Instance.getEventStream().subscribe({
           next: message => {
             this.error = null;
-            this.addEvents([message.data])
+            this.newEvents = [new Event(message.data), ...this.newEvents];
           },
           error: error => {
             console.warn('Listening for events failed:', error);
@@ -121,10 +169,32 @@
         });
       }
     },
+    watch: {
+      '$route.query': {
+        immediate: true,
+        handler() {
+          this.filter = this.$route.query
+        }
+      },
+      filter: {
+        deep: true,
+        immediate: true,
+        handler() {
+          if (!isEqual(this.filter, this.$route.query)) {
+            this.$router.replace({
+              name: 'journal',
+              query: this.filter
+            });
+          }
+        }
+      }
+    },
     async created() {
       try {
         const response = await Instance.fetchEvents();
-        this.addEvents(response.data.sort(compareBy(v => v.timestamp)));
+        const events = response.data.sort(compareBy(v => v.timestamp)).reverse().map(e => new Event(e));
+        this.events = Object.freeze(events);
+
         this.error = null;
       } catch (error) {
         console.warn('Fetching events failed:', error);

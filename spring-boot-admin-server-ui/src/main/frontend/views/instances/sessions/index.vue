@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2019 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -141,11 +141,11 @@
         deep: true,
         immediate: true,
         handler() {
-          const query = {[this.filter.type]: this.filter.value};
-          if (!isEqual(query, !this.$route.query)) {
+          const oldQuery = {[this.filter.type]: this.filter.value};
+          if (!isEqual(oldQuery, this.$route.query)) {
             this.$router.replace({
               name: 'instances/sessions',
-              query: query
+              query: oldQuery
             });
           }
           this.fetch();
