@@ -33,7 +33,7 @@
         :disabled="!isConfigured || !allowReset"
         @click.stop="selectLevel(null)"
       >
-        Reset
+        {{ $t('instances.loggers.reset') }}
       </button>
     </div>
   </div>

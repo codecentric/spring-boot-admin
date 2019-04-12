@@ -98,6 +98,20 @@
     "logfile": {
       "fetch_failed": "Fetching logfile failed.",
       "download": "Download"
+    },
+    "loggers": {
+      "fetch_failed": "Fetching loggers failed.",
+      "no_loggers_found": "No loggers found.",
+      "application": "Application",
+      "instance": "Instance",
+      "reset": "Reset",
+      "setting_loglevel_failed": "Setting {logger} to {loglevel} failed.",
+      "affects_this_instance_only": "Affects this instance only",
+      "affects_all_instances": "Affects all {count} instances",
+      "filter": {
+        "class_only": "class only",
+        "configured": "configured"
+      }
     }
   },
   "navbar": {
