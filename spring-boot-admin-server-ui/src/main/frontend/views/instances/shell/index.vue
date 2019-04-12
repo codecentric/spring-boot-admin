@@ -19,6 +19,7 @@
     <div class="instances__body">
       <div class="instances__sidebar">
         <instance-sidebar
+          v-if="instance"
           :views="views"
           :instance="instance"
           :application="application"
@@ -74,6 +75,10 @@
 </script>
 
 <style lang="scss">
+  @import "~@/assets/css/utilities";
+
+  $sidebar-width-px: 220px;
+
   .instances {
     display: flex;
     flex-grow: 1;
@@ -91,12 +96,19 @@
 
     &__sidebar {
       z-index: 20;
+      position: fixed;
+      top: $navbar-height-px;
+      bottom: 0;
+      left: 0;
+      width: $sidebar-width-px;
     }
+
     &__view {
       flex-grow: 1;
       flex-shrink: 1;
       z-index: 10;
-      max-width: calc(100vw - 175px); /*sidebar-width*/
+      max-width: 100%;
+      padding-left: $sidebar-width-px;
     }
   }
 </style>
