@@ -20,7 +20,7 @@
       <div class="message-body">
         <strong>
           <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-          Fetching JMX Beans failed.
+          {{ $t('instances.jolokia.fetch_failed') }}
         </strong>
         <p v-text="error.message" />
       </div>
@@ -28,7 +28,7 @@
     <div class="columns">
       <div class="column" v-if="selectedDomain">
         <h1 class="heading">
-          MBeans
+          {{ $t('instances.jolokia.mbeans') }}
         </h1>
         <div class="m-bean card" :class="{'is-active': mBean === selectedMBean}"
              v-for="mBean in selectedDomain.mBeans" :key="mBean.descriptor.raw" :id="mBean.descriptor.raw"
@@ -59,12 +59,12 @@
               <ul>
                 <li v-if="mBean.attr" :class="{'is-active' : selected.view === 'attributes' }">
                   <a @click.stop="select(selectedDomain, selectedMBean, 'attributes')">
-                    Attributes
+                    {{ $t('term.attributes') }}
                   </a>
                 </li>
                 <li v-if="mBean.op" :class="{'is-active' : selected.view === 'operations' }">
                   <a @click.stop="select(selectedDomain, selectedMBean, 'operations')">
-                    Operations
+                    {{ $t('term.operations') }}
                   </a>
                 </li>
               </ul>
@@ -84,7 +84,7 @@
       <div class="column is-narrow">
         <nav class="menu" v-sticks-below="['#navigation']">
           <p class="menu-label">
-            domains
+            {{ $t('instances.jolokia.domains') }}
           </p>
           <ul class="menu-list">
             <li>

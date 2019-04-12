@@ -48,12 +48,12 @@
     </div>
     <div class="control" v-if="editing">
       <button class="button is-light is-small" @click="cancel">
-        Cancel
+        {{ $t('term.cancel') }}
       </button>
       <button class="button is-primary is-small" :class="{'is-loading' : saving}" @click="save"
               :disabled="value === input"
       >
-        Save
+        {{ $t('term.save') }}
       </button>
     </div>
   </div>

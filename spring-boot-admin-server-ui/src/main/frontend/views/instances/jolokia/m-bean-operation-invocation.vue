@@ -50,7 +50,7 @@
         <template v-else-if="state === 'executing'">
           <section class="modal-card-body">
             <section class="section is-loading">
-              <p>Executing...</p>
+              <p>{{ $t('term.executing') }}</p>
             </section>
           </section>
         </template>
@@ -59,7 +59,7 @@
           <section class="modal-card-body">
             <div class="message is-success">
               <div class="message-body">
-                <strong>Execution successful.</strong>
+                <strong>{{ $t('term.execution_successful') }}</strong>
               </div>
             </div>
             <pre v-if="descriptor.ret !== 'void'" v-text="prettyPrintedResult" />
@@ -68,7 +68,7 @@
             <div class="field is-grouped is-grouped-right">
               <div class="control">
                 <button class="button is-light" @click="abort">
-                  Close
+                  {{ $t('term.close') }}
                 </button>
               </div>
             </div>
@@ -83,7 +83,7 @@
                   <font-awesome-icon class="has-text-danger"
                                      icon="exclamation-triangle"
                   />
-                  Execution failed.
+                  {{ $t('term.execution_failed') }}
                 </strong>
                 <p v-text="error.message" />
               </div>
@@ -99,7 +99,7 @@
             <div class="field is-grouped is-grouped-right">
               <div class="control">
                 <button class="button is-light" @click="abort">
-                  Close
+                  {{ $t('term.close') }}
                 </button>
               </div>
             </div>

@@ -112,6 +112,14 @@
         "class_only": "class only",
         "configured": "configured"
       }
+    },
+    "jolokia": {
+      "fetch_failed": "Fetching JMX Beans failed.",
+      "domains": "Domains",
+      "mbeans": "MBeans",
+      "mbean": {
+        "fetch_failed": "Fetching attributes failed."
+      }
     }
   },
   "navbar": {
@@ -181,10 +189,18 @@
     "server_connection_failed": "Server connection failed.  "
   },
   "term": {
+    "attributes": "Attributes",
     "application": "Application",
     "instances": "Instances",
     "event": "Event",
-    "time": "Time"
+    "executing": "Executing...",
+    "execution_successful": "Execution successful.",
+    "execution_failed": "Execution failed.",
+    "time": "Time",
+    "close": "Close",
+    "operations": "Operations",
+    "save": "Save",
+    "cancel": "Cancel"
   }
 }
 
