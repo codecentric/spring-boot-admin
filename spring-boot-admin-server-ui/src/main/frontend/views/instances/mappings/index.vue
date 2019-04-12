@@ -21,14 +21,14 @@
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            Fetching mappings failed.
+            {{ $t('instances.mappings.fetch_failed') }}
           </strong>
           <p v-text="error.message" />
         </div>
       </div>
       <div v-if="isOldMetrics" class="message is-warning">
         <div class="message-body">
-          Mappings are not supported for Spring Boot 1.x applications.
+          {{ $t('instances.mappings.mappings_not_supported_spring_boot_1') }}
         </div>
       </div>
       <template v-for="(context, ctxName) in contexts">

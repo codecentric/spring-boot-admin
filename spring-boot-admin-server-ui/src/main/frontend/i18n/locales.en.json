@@ -134,10 +134,24 @@
       "thread_details_lock_owner_id": "Lock owner id",
       "thread_details_lock_owner_name": "Lock owner name"
     },
-    "heapdump":{
+    "heapdump": {
       "download": "Download Heap Dump",
       "warn_sensitive_data": "A heap dump may contain <strong>sensitive data</strong>. Please handle with care.",
       "warn_dump_expensive": "Dumping the heap may be expensive in terms of cpu and disk space."
+    },
+    "mappings": {
+      "fetch_failed": "Fetching mappings failed.",
+      "http-verb": "Method",
+      "consumes": "Consumes",
+      "produces": "Produces",
+      "parameters": "Parameters",
+      "headers": "Headers",
+      "handler": "Handler",
+      "url_pattern": "Url Pattern",
+      "servlet_name": "Servlet Name",
+      "filter_name": "Filter Name",
+      "class": "Class",
+      "mappings_not_supported_spring_boot_1": "Mappings are not supported for Spring Boot 1.x applications."
     }
   },
   "navbar": {

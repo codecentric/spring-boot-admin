@@ -19,9 +19,9 @@
     <table class="table is-fullwidth" v-if="servlets.length">
       <thead>
         <tr>
-          <th>Url Pattern</th>
-          <th>Servlet Name</th>
-          <th>Class</th>
+          <th>{{ $t('instances.mappings.url_pattern') }}</th>
+          <th>{{ $t('instances.mappings.servlet_name') }}</th>
+          <th>{{ $t('instances.mappings.class') }}</th>
         </tr>
       </thead>
       <tbody>
