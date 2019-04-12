@@ -19,7 +19,7 @@
     <thead>
       <tr>
         <th class="threads__thread-name">
-          Name
+          {{ $t('terms.name') }}
         </th>
         <th class="threads__timeline">
           <svg class="threads__scale" height="24px" />
@@ -45,49 +45,49 @@
           <td colspan="2">
             <table class="threads__thread-details table is-narrow is-fullwidth has-background-white-ter">
               <tr>
-                <td>Thread Id</td>
+                <td v-t="`instances.threaddump.thread_id`">Thread Id</td>
                 <td v-text="thread.threadId" />
               </tr>
               <tr>
-                <td>Thread name</td>
+                <td v-t="`instances.threaddump.thread_name`">Thread name</td>
                 <td v-text="thread.threadName" />
               </tr>
               <tr>
-                <td>Thread state</td>
+                <td v-t="`instances.threaddump.thread_state`">Thread state</td>
                 <td v-text="thread.threadState" />
               </tr>
               <template v-if="thread.details !== null">
                 <tr>
-                  <td>Blocked count</td>
+                  <td v-t="`instances.threaddump.thread_details_blocked_count`">Blocked count</td>
                   <td v-text="thread.details.blockedCount" />
                 </tr>
                 <tr>
-                  <td>Blocked time</td>
+                  <td v-t="`instances.threaddump.thread_details_blocked_time`">Blocked time</td>
                   <td v-text="thread.details.blockedTime" />
                 </tr>
                 <tr>
-                  <td>Waited count</td>
+                  <td v-t="`instances.threaddump.thread_details_waited_count`">Waited count</td>
                   <td v-text="thread.details.waitedCount" />
                 </tr>
                 <tr>
-                  <td>Waited time</td>
+                  <td v-t="`instances.threaddump.thread_details_waited_time`">Waited time</td>
                   <td v-text="thread.details.waitedTime" />
                 </tr>
                 <tr>
-                  <td>Lock name</td>
+                  <td v-t="`instances.threaddump.thread_details_lock_name`">Lock name</td>
                   <td v-text="thread.details.lockName" />
                 </tr>
                 <tr>
-                  <td>Lock owner id</td>
+                  <td v-t="`instances.threaddump.thread_details_lock_owner_id`">Lock owner id</td>
                   <td v-text="thread.details.lockOwnerId" />
                 </tr>
                 <tr>
-                  <td>Lock owner name</td>
+                  <td v-t="`instances.threaddump.thread_details_lock_owner_name`">Lock owner name</td>
                   <td v-text="thread.details.lockOwnerName" />
                 </tr>
                 <tr v-if="thread.details.stackTrace.length > 0">
                   <td colspan="2">
-                    Stacktrace
+                    {{ $t('term.stacktrace') }}
                     <pre class="threads__thread-stacktrace"><template
                       v-for="(frame, idx) in thread.details.stackTrace"
                     ><span

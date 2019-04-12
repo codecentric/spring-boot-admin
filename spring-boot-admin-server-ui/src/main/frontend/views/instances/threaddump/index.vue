@@ -21,7 +21,7 @@
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            Fetching threaddump failed.
+            {{ $t('instances.threaddump.fetch_failed') }}
           </strong>
           <p v-text="error.message" />
         </div>

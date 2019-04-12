@@ -120,6 +120,19 @@
       "mbean": {
         "fetch_failed": "Fetching attributes failed."
       }
+    },
+    "threaddump": {
+      "fetch_failed": "Fetching threaddump failed.",
+      "thread_id": "Thread Id",
+      "thread_name": "Thread name",
+      "thread_state": "Thread state",
+      "thread_details_blocked_count": "Blocked count",
+      "thread_details_blocked_time": "Blocked time",
+      "thread_details_waited_count": "Waited count",
+      "thread_details_waited_time": "Waited time",
+      "thread_details_lock_name": "Lock name",
+      "thread_details_lock_owner_id": "Lock owner id",
+      "thread_details_lock_owner_name": "Lock owner name"
     }
   },
   "navbar": {
@@ -193,7 +206,9 @@
     "application": "Application",
     "instances": "Instances",
     "event": "Event",
+    "stacktrace": "Stacktrafe",
     "executing": "Executing...",
+    "name": "Name",
     "execution_successful": "Execution successful.",
     "execution_failed": "Execution failed.",
     "time": "Time",
