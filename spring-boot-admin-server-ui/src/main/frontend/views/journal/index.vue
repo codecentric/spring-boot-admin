@@ -18,13 +18,13 @@
   <div class="section">
     <div class="container">
       <h1 class="title">
-        Event Journal
+        {{ $t('journal.title') }}
       </h1>
       <div v-if="error" class="message is-warning">
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-warning" icon="exclamation-triangle" />
-            Server connection failed.
+            {{ $t('error.server_connection_failed') }}
           </strong>
           <p v-text="error.message" />
         </div>
@@ -32,10 +32,10 @@
       <table class="table is-fullwidth is-hoverable">
         <thead>
           <tr>
-            <th>Application</th>
-            <th>Instance</th>
-            <th>Time</th>
-            <th>Event</th>
+            <th>{{ $t('term.application') }}</th>
+            <th>{{ $t('term.instances') }}</th>
+            <th>{{ $t('term.time') }}</th>
+            <th>{{ $t('term.event') }}</th>
           </tr>
         </thead>
         <tbody>

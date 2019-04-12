@@ -15,13 +15,13 @@
   -->
 
 <template>
-  <sba-panel :title="$t('instances::threads::title')" v-if="hasLoaded">
+  <sba-panel :title="$t('instances.details.threads.title')" v-if="hasLoaded">
     <div>
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            {{ $t('instances::threads::Fetching threads metrics failed.') }}
+            {{ $t('instances.details.threads.fetching_failed') }}
           </strong>
           <p v-text="error.message" />
         </div>
@@ -30,7 +30,7 @@
         <div class="level-item has-text-centered">
           <div>
             <p class="heading has-bullet has-bullet-warning">
-              {{ $t('instances::threads::Live') }}
+              {{ $t('instances.details.threads.live') }}
             </p>
             <p v-text="current.live" />
           </div>
@@ -38,7 +38,7 @@
         <div class="level-item has-text-centered">
           <div>
             <p class="heading  has-bullet has-bullet-info">
-              {{ $t('instances::threads::Daemon') }}
+              {{ $t('instances.details.threads.daemon') }}
             </p>
             <p v-text="current.daemon" />
           </div>
@@ -46,7 +46,7 @@
         <div class="level-item has-text-centered">
           <div>
             <p class="heading">
-              {{ $t('instances::threads::Peak Live') }}
+              {{ $t('instances.details.threads.peak_live') }}
             </p>
             <p v-text="current.peak" />
           </div>

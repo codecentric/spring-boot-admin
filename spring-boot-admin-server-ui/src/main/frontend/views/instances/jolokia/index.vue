@@ -110,6 +110,7 @@
   import {directive as onClickaway} from 'vue-clickaway2';
   import mBeanAttributes from './m-bean-attributes';
   import mBeanOperations from './m-bean-operations';
+  import {VIEW_GROUP} from '../../index';
 
   const getOperationName = (name, descriptor) => {
     const params = descriptor.args.map(arg => arg.type).join(',');
@@ -242,8 +243,7 @@
         parent: 'instances',
         path: 'jolokia',
         component: this,
-        label: 'JMX',
-        group: 'JVM',
+        group: VIEW_GROUP.JVM,
         order: 350,
         isEnabled: ({instance}) => instance.hasEndpoint('jolokia')
       });

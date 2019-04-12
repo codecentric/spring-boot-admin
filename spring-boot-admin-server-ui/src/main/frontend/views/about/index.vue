@@ -18,7 +18,7 @@
   <div class="section">
     <div class="container">
       <h1 class="title">
-        About Spring Boot Admin
+        {{ $t('about.title') }}
       </h1>
       <h2 class="subtitle" v-if="version" v-text="`Version ${version}`" />
       <div class="content">
@@ -113,7 +113,6 @@
       viewRegistry.addView({
         path: '/about',
         name: 'about',
-        label: 'About',
         order: 200,
         component: this
       });

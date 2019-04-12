@@ -56,6 +56,7 @@
   import isEqual from 'lodash/isEqual';
   import moment from 'moment'
   import sbaSessionsList from './sessions-list'
+  import {VIEW_GROUP} from '../../index';
 
   const regexUuid = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/;
 
@@ -158,8 +159,7 @@
         parent: 'instances',
         path: 'sessions',
         component: this,
-        label: 'Sessions',
-        group: 'Security',
+        group: VIEW_GROUP.SECURITY,
         order: 700,
         isEnabled: ({instance}) => instance.hasEndpoint('sessions')
       });

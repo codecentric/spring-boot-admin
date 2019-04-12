@@ -29,7 +29,7 @@
       <div class="navbar-menu" :class="{'is-active' : showMenu}">
         <div class="navbar-end">
           <router-link class="navbar-item" v-for="view in enabledViews" :to="{name: view.name}" :key="view.name">
-            <component :is="view.handle" :applications="applications" :error="error" />
+            <component :is="view.handle" :title="$t('navbar.' + view.id + '.title')" :applications="applications" :error="error" />
           </router-link>
 
           <div class="navbar-item has-dropdown is-hoverable" v-if="userName">
@@ -41,10 +41,18 @@
                 <form action="logout" method="post">
                   <input v-if="csrfToken" type="hidden" :name="csrfParameterName" :value="csrfToken">
                   <button class="button is-icon" type="submit" value="logout">
-                    <font-awesome-icon icon="sign-out-alt" />&nbsp;{{ $t('navbar::Log out') }}
+                    <font-awesome-icon icon="sign-out-alt" />&nbsp;{{ $t('navbar.logout') }}
                   </button>
                 </form>
               </a>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">
+              <span v-text="currentLanguage" />
+            </a>
+            <div class="navbar-dropdown">
+              <a class="navbar-item" @click="changeLanguage(language.id)" v-for="language in availableLanguages" :key="language.locale" v-text="language.name" />
             </div>
           </div>
         </div>
@@ -55,7 +63,7 @@
 
 <script>
   import {compareBy} from '@/utils/collections';
-  import {AVAILABLE_LOCALES} from '../i18n';
+  import i18n, {AVAILABLE_LANGUAGES, getReadableLanguage} from '../i18n';
 
   const readCookie = (name) => {
     const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
@@ -68,7 +76,9 @@
       brand: '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>',
       userName: null,
       csrfToken: null,
-      csrfParameterName: null
+      csrfParameterName: null,
+      availableLanguages: [],
+      currentLanguage: null
     }),
     props: {
       views: {
@@ -91,6 +101,12 @@
         ).sort(compareBy(v => v.order));
       }
     },
+    methods: {
+      changeLanguage(lang) {
+        this.$i18n.i18next.changeLanguage(lang);
+        this.currentLanguage = getReadableLanguage(lang);
+      }
+    },
     created() {
       if (global.SBA) {
         if (global.SBA.uiSettings) {
@@ -103,6 +119,8 @@
       }
       this.csrfToken = readCookie('XSRF-TOKEN');
       this.csrfParameterName = (global.SBA && global.SBA.csrf && global.SBA.csrf.parameterName) || '_csrf';
+      this.availableLanguages = AVAILABLE_LANGUAGES;
+      this.currentLanguage = getReadableLanguage(i18n.languages[0]);
     },
     mounted() {
       document.documentElement.classList.add('has-navbar-fixed-top');

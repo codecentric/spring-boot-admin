@@ -95,6 +95,7 @@
   import AuditeventsList from '@/views/instances/auditevents/auditevents-list';
   import uniqBy from 'lodash/uniqBy';
   import moment from 'moment';
+  import {VIEW_GROUP} from '../../index';
 
   class Auditevent {
     constructor({timestamp, ...event}) {
@@ -204,8 +205,7 @@
         parent: 'instances',
         path: 'auditevents',
         component: this,
-        label: 'Audit Log',
-        group: 'Security',
+        group: VIEW_GROUP.SECURITY,
         order: 600,
         isEnabled: ({instance}) => instance.hasEndpoint('auditevents')
       });

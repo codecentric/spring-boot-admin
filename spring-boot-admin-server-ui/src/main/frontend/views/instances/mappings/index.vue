@@ -62,6 +62,7 @@
   import ServletFilterMappings from '@/views/instances/mappings/ServletFilterMappings';
   import ServletMappings from '@/views/instances/mappings/ServletMappings';
   import isEmpty from 'lodash/isEmpty';
+  import {VIEW_GROUP} from '../../index';
 
   export default {
     components: {DispatcherMappings, ServletMappings, ServletFilterMappings},
@@ -104,9 +105,8 @@
         name: 'instances/mappings',
         parent: 'instances',
         path: 'mappings',
-        group: 'Web',
+        group: VIEW_GROUP.WEB,
         component: this,
-        label: 'Mappings',
         order: 450,
         isEnabled: ({instance}) => instance.hasEndpoint('mappings')
       });

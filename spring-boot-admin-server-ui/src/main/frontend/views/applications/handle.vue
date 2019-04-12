@@ -20,7 +20,7 @@
       <font-awesome-icon icon="exclamation-triangle" />
     </span>
     <span :class="{ 'badge is-badge-danger' : downCount > 0 }" :data-badge="downCount">
-      Applications
+      {{ $t('navbar.applications.title') }}
     </span>
   </span>
 </template>

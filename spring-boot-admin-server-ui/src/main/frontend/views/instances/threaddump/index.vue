@@ -38,6 +38,7 @@
   import remove from 'lodash/remove';
   import moment from 'moment-shortformat';
   import threadsList from './threads-list';
+  import {VIEW_GROUP} from '../../index';
 
   export default {
     props: {
@@ -130,8 +131,7 @@
         parent: 'instances',
         path: 'threaddump',
         component: this,
-        label: 'Threads',
-        group: 'JVM',
+        group: VIEW_GROUP.JVM,
         order: 400,
         isEnabled: ({instance}) => instance.hasEndpoint('threaddump')
       });

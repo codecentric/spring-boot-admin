@@ -15,13 +15,13 @@
   -->
 
 <template>
-  <sba-panel :title="$t('instances::gc::title')" v-if="hasLoaded">
+  <sba-panel :title="$t('instances.details.gc.title')" v-if="hasLoaded">
     <div>
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            {{ $t('instances::gc::Fetching GC metrics failed.') }}
+            {{ $t('instances.details.gc.Fetching GC metrics failed.') }}
           </strong>
           <p v-text="error.message" />
         </div>
@@ -30,7 +30,7 @@
         <div class="level-item has-text-centered">
           <div>
             <p class="heading">
-              {{ $t('instances::gc::Count') }}
+              {{ $t('instances.details.gc.count') }}
             </p>
             <p v-text="current.count" />
           </div>
@@ -38,7 +38,7 @@
         <div class="level-item has-text-centered">
           <div>
             <p class="heading">
-              {{ $t('instances::gc::Total time spent') }}
+              {{ $t('instances.details.gc.time_spent_total') }}
             </p>
             <p v-text="`${current.total_time.asSeconds().toFixed(4)}s`" />
           </div>
@@ -46,7 +46,7 @@
         <div class="level-item has-text-centered">
           <div>
             <p class="heading">
-              {{ $t('instances::gc::Max time spent') }}
+              {{ $t('instances.details.gc.time_spent_max') }}
             </p>
             <p v-text="`${current.max.asSeconds().toFixed(4)}s`" />
           </div>

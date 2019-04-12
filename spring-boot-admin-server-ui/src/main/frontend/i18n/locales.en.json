@@ -1,0 +1,172 @@
+{
+  "about": {
+    "title": "About"
+  },
+  "applications": {
+    "title": "Applications",
+    "instances": "Instances",
+    "loading_applications": "Loading applications...",
+    "server_connection_failed": "Server connection failed.",
+    "status": "Status",
+    "all_up": "all up",
+    "up": "up",
+    "restricted": "restricted",
+    "instances_down": "instances down",
+    "no_applications_registered": "No applications registered."
+  },
+  "custom": {
+    "title": "Custom"
+  },
+  "wallboard": {
+    "title": "Wallboard",
+    "instances_count": "One instance",
+    "instances_count_plural": "{{count}} instances"
+  },
+  "journal": {
+    "title": "Event Journal"
+  },
+  "instances": {
+    "details": {
+      "fetching_failed": "Fetching metrics failed.",
+      "process": {
+        "title": "Process",
+        "pid": "PID",
+        "uptime": "Uptime",
+        "cpus": "CPUs",
+        "process_cpu_usage": "Process CPU Usage",
+        "system_cpu_usage": "System CPU Usage",
+        "fetch_failed": "Fetching process metrics failed."
+      },
+      "gc": {
+        "title": "Garbage Collection Pausen",
+        "count": "Count",
+        "time_spent_total": "Total time spent",
+        "time_spent_max": "Max time spent"
+      },
+      "info": {
+        "fetch_failed": "Fetching live info failed. This is the last known information.",
+        "title": "Info"
+      },
+      "memory": {
+        "title": "Memory",
+        "fetch_failed": "Fetching memory metrics failed.",
+        "used": "Used",
+        "size": "Size",
+        "metaspace": "Metaspace",
+        "max": "Max"
+      },
+      "metadata": {
+        "title": "Metadata",
+        "no_data_provided": "No metadata provided."
+      },
+      "health": {
+        "title": "Health"
+      },
+      "threads": {
+        "title": "Threads",
+        "daemon": "Daemon",
+        "live": "Live",
+        "peak_live": "Peak Live"
+      }
+    },
+    "env": {
+      "active_profile": "Profile",
+      "fetch_failed": "Fetching environment failed.",
+      "no_properties": "No properties set"
+    },
+    "scheduledtasks": {
+      "fetch_failed": "Fetching scheduled tasks failed.",
+      "cron": {
+        "title": "Cron",
+        "runnable": "Runnable",
+        "expression": "Expression",
+        "no_scheduledtasks": "No scheduled tasks present."
+      },
+      "fixed_delay": {
+        "title": "Fixed Delay",
+        "runnable": "Runnable",
+        "initial_delay_ms": "Initial Delay (ms)",
+        "interval_ms": "Interval (ms)"
+      },
+      "fixed_rate": {
+        "title": "Fixed Rate",
+        "runnable": "Runnable",
+        "initial_delay_ms": "Initial Delay (ms)",
+        "interval_ms": "Interval (ms)"
+      }
+    }
+  },
+  "navbar": {
+    "applications": {
+      "title": "Applications"
+    },
+    "wallboard": {
+      "title": "Wallboard"
+    },
+    "journal": {
+      "title": "Journal"
+    },
+    "about": {
+      "title": "About"
+    },
+    "custom": {
+      "title": "Custom"
+    },
+    "logout": "Log out"
+  },
+  "sidebar": {
+    "instances_caches": {
+      "title": "Caches"
+    },
+    "instances_custom": {
+      "title": "Custom"
+    },
+    "insights": {
+      "title": "Insights",
+      "details": "Details",
+      "metrics": "Metric",
+      "env": "Env",
+      "beans": "Beans",
+      "configprops": "Configuration Properties",
+      "scheduledtasks": "Scheduled Tasks"
+    },
+    "logging": {
+      "title": "Logging",
+      "logfile": "Logfile",
+      "loggers": "Loggers"
+    },
+    "data": {
+      "title": "Data",
+      "liquibase": "Liquibase",
+      "flyway": "Flyway",
+      "caches": "Caches"
+    },
+    "jvm": {
+      "title": "JVM",
+      "jolokia": "Jolokia",
+      "threaddump": "Threads",
+      "heapdump": "Heap Dump"
+    },
+    "web": {
+      "title": "Web",
+      "mappings": "Mappings",
+      "gateway": "Gateway",
+      "httptrace": "HTTP traces"
+    },
+    "security": {
+      "title": "Security",
+      "auditevents": "Audit log",
+      "sessions": "Sessions"
+    }
+  },
+  "error": {
+    "server_connection_failed": "Server connection failed.  "
+  },
+  "term": {
+    "application": "Application",
+    "instances": "Instances",
+    "event": "Event",
+    "time": "Time"
+  }
+}
+

@@ -15,13 +15,13 @@
   -->
 
 <template>
-  <sba-panel :title="$t('instances::info::title')">
+  <sba-panel :title="$t('instances.details.info.title')">
     <div>
       <div v-if="error" class="message is-warning">
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-warning" icon="exclamation-triangle" />
-            {{ $t('instances::info::fetch_failed') }}
+            {{ $t('instances.details.info.fetch_failed') }}
           </strong>
           <p v-text="error.message" />
         </div>

@@ -62,6 +62,7 @@
   import isEmpty from 'lodash/isEmpty';
   import mapKeys from 'lodash/mapKeys';
   import pickBy from 'lodash/pickBy';
+  import {VIEW_GROUP} from '../../index';
 
   const filterProperty = (needle) => (value, name) => {
     return name.toString().toLowerCase().includes(needle) || value.toString().toLowerCase().includes(needle);
@@ -171,8 +172,7 @@
         parent: 'instances',
         path: 'configprops',
         component: this,
-        label: 'Configuration Properties',
-        group: 'Insights',
+        group: VIEW_GROUP.INSIGHTS,
         order: 110,
         isEnabled: ({instance}) => instance.hasEndpoint('configprops')
       });

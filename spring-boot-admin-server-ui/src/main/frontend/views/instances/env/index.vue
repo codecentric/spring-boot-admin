@@ -20,7 +20,7 @@
       <div class="message-body">
         <strong>
           <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-          Fetching environment failed.
+          {{ $t('instances.env.fetch_failed') }}
         </strong>
         <p v-text="error.message" />
       </div>
@@ -29,7 +29,7 @@
       <div class="control" v-for="profile in env.activeProfiles" :key="profile">
         <div class="tags has-addons">
           <span class="tag is-medium is-primary">
-            Profile
+            {{ $t('instances.env.active_profile') }}
           </span>
           <span class="tag is-medium" v-text="profile" />
         </div>
@@ -67,7 +67,7 @@
         </tr>
       </table>
       <p class="is-muted" v-else>
-        No properties set
+        {{ $t('instances.env.no_properties') }}
       </p>
     </sba-panel>
   </section>
@@ -77,6 +77,7 @@
   import Instance from '@/services/instance';
   import pickBy from 'lodash/pickBy';
   import sbaEnvManager from './env-manager';
+  import {VIEW_GROUP} from '../../index';
 
   const filterProperty = (needle) => (property, name) => {
     return name.toString().toLowerCase().includes(needle) || property.value.toString().toLowerCase().includes(needle);
@@ -151,8 +152,7 @@
         parent: 'instances',
         path: 'env',
         component: this,
-        label: 'Environment',
-        group: 'Insights',
+        group: VIEW_GROUP.INSIGHTS,
         order: 100,
         isEnabled: ({instance}) => instance.hasEndpoint('env')
       });

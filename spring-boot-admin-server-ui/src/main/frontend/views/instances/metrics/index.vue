@@ -93,6 +93,7 @@
   import Instance from '@/services/instance';
   import sortBy from 'lodash/sortBy';
   import Metric from './metric';
+  import {VIEW_GROUP} from '../../index';
 
   export default {
     components: {Metric},
@@ -209,12 +210,12 @@
     },
     install({viewRegistry}) {
       viewRegistry.addView({
+        id: 'metrics',
         name: 'instances/metrics',
         parent: 'instances',
         path: 'metrics',
         component: this,
-        label: 'Metrics',
-        group: 'Insights',
+        group: VIEW_GROUP.INSIGHTS,
         order: 50,
         isEnabled: ({instance}) => instance.hasEndpoint('metrics')
       });

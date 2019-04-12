@@ -19,7 +19,7 @@
     <div class="level-item has-text-centered">
       <div>
         <p class="heading">
-          {{ $t('applications::Applications') }}
+          {{ $t('applications.title') }}
         </p>
         <p class="title" v-text="applicationsCount">
           1
@@ -29,7 +29,7 @@
     <div class="level-item has-text-centered">
       <div>
         <p class="heading">
-          {{ $t('applications::Instances') }}
+          {{ $t('applications.instances') }}
         </p>
         <p class="title" v-text="instancesCount">
           1
@@ -39,15 +39,15 @@
     <div class="level-item has-text-centered">
       <div v-if="downCount === 0">
         <p class="heading">
-          {{ $t('applications::Status') }}
+          {{ $t('applications.status') }}
         </p>
         <p class="title has-text-success">
-          {{ $t('applications::all up') }}
+          {{ $t('applications.all_up') }}
         </p>
       </div>
       <div v-else>
         <p class="heading">
-          {{ $t('applications::instances down') }}
+          {{ $t('applications.instances_down') }}
         </p>
         <p class="title has-text-danger" v-text="downCount" />
       </div>

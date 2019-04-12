@@ -99,6 +99,7 @@
 
 <script>
   import Instance from '@/services/instance';
+  import {VIEW_GROUP} from '../../index';
 
   export default {
     props: {
@@ -151,8 +152,7 @@
         parent: 'instances',
         path: 'liquibase',
         component: this,
-        label: 'Liquibase',
-        group: 'Data',
+        group: VIEW_GROUP.DATA,
         order: 900,
         isEnabled: ({instance}) => instance.hasEndpoint('liquibase')
       });

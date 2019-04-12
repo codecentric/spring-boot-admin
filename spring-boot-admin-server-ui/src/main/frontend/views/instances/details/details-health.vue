@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <sba-panel :title="$t('instances::health::title')">
+  <sba-panel :title="$t('instances.details.health.title')">
     <div>
       <div v-if="error" class="message is-warning">
         <div class="message-body">

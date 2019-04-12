@@ -15,13 +15,13 @@
   -->
 
 <template>
-  <sba-panel :title="$t('instances::memory::title') + `: ${name}`" v-if="hasLoaded">
+  <sba-panel :title="$t('instances.details.memory.title') + `: ${name}`" v-if="hasLoaded">
     <div>
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            {{ $t('instances::memory::fetch_failed') }}
+            {{ $t('instances.details.memory.fetch_failed') }}
           </strong>
           <p v-text="error.message" />
         </div>
@@ -30,7 +30,7 @@
         <div class="level-item has-text-centered" v-if="current.metaspace">
           <div>
             <p class="heading has-bullet has-bullet-primary">
-              {{ $t('instances::memory::Metaspace') }}
+              {{ $t('instances.details.memory.metaspace') }}
             </p>
             <p v-text="prettyBytes(current.metaspace)" />
           </div>
@@ -38,7 +38,7 @@
         <div class="level-item has-text-centered">
           <div>
             <p class="heading has-bullet has-bullet-info">
-              {{ $t('instances::memory::Used') }}
+              {{ $t('instances.details.memory.used') }}
             </p>
             <p v-text="prettyBytes(current.used)" />
           </div>
@@ -46,7 +46,7 @@
         <div class="level-item has-text-centered">
           <div>
             <p class="heading has-bullet has-bullet-warning">
-              {{ $t('instances::memory::Size') }}
+              {{ $t('instances.details.memory.size') }}
             </p>
             <p v-text="prettyBytes(current.committed)" />
           </div>
@@ -54,7 +54,7 @@
         <div class="level-item has-text-centered" v-if="current.max >= 0">
           <div>
             <p class="heading">
-              {{ $t('instances::memory::Max') }}
+              {{ $t('instances.details.memory.max') }}
             </p>
             <p v-text="prettyBytes(current.max)" />
           </div>

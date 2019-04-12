@@ -36,6 +36,7 @@
 
 <script>
   import Instance from '@/services/instance';
+  import {VIEW_GROUP} from '../../index';
 
   export default {
     props: {
@@ -50,8 +51,7 @@
         parent: 'instances',
         path: 'heapdump',
         component: this,
-        label: 'Heap Dump',
-        group: 'JVM',
+        group: VIEW_GROUP.JVM,
         order: 800,
         isEnabled: ({instance}) => instance.hasEndpoint('heapdump')
       });

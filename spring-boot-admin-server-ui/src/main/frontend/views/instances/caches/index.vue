@@ -65,6 +65,7 @@
   import CachesList from '@/views/instances/caches/caches-list';
   import flatMap from 'lodash/flatMap';
   import isEmpty from 'lodash/isEmpty';
+  import {VIEW_GROUP} from '../../index';
 
   const flattenCaches = cacheData => {
     if (isEmpty(cacheData.cacheManagers)) {
@@ -129,9 +130,8 @@
         name: 'instances/caches',
         parent: 'instances',
         path: 'caches',
-        group: 'Data',
+        group: VIEW_GROUP.DATA,
         component: this,
-        label: 'Caches',
         order: 970,
         isEnabled: ({instance}) => instance.hasEndpoint('caches')
       });

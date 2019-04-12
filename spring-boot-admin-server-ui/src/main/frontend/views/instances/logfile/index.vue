@@ -51,6 +51,7 @@
   import AnsiUp from 'ansi_up';
   import chunk from 'lodash/chunk';
   import prettyBytes from 'pretty-bytes';
+  import {VIEW_GROUP} from '../../index';
 
   export default {
     props: {
@@ -127,8 +128,7 @@
         parent: 'instances',
         path: 'logfile',
         component: this,
-        label: 'Logfile',
-        group: 'Logging',
+        group: VIEW_GROUP.LOGGING,
         order: 200,
         isEnabled: ({instance}) => instance.hasEndpoint('logfile')
       });

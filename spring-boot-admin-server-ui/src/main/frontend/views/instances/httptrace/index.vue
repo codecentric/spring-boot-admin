@@ -109,6 +109,7 @@
   import moment from 'moment';
   import sbaTracesChart from './traces-chart';
   import sbaTracesList from './traces-list';
+  import {VIEW_GROUP} from '../../index';
 
   const addToFilter = (oldFilter, addedFilter) =>
     !oldFilter
@@ -263,8 +264,7 @@
         parent: 'instances',
         path: 'httptrace',
         component: this,
-        label: 'Http Traces',
-        group: 'Web',
+        group: VIEW_GROUP.WEB,
         order: 500,
         isEnabled: ({instance}) => instance.hasEndpoint('httptrace')
       });
