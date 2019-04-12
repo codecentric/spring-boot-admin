@@ -133,6 +133,11 @@
       "thread_details_lock_name": "Lock name",
       "thread_details_lock_owner_id": "Lock owner id",
       "thread_details_lock_owner_name": "Lock owner name"
+    },
+    "heapdump":{
+      "download": "Download Heap Dump",
+      "warn_sensitive_data": "A heap dump may contain <strong>sensitive data</strong>. Please handle with care.",
+      "warn_dump_expensive": "Dumping the heap may be expensive in terms of cpu and disk space."
     }
   },
   "navbar": {
