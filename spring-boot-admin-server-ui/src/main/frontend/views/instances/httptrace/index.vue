@@ -34,7 +34,7 @@
                 <input
                   class="input"
                   type="search"
-                  v-model="filter"
+                  v-model="filter.uri"
                   placeholder="Path"
                 >
                 <span class="icon is-small is-left">
@@ -65,7 +65,7 @@
           <div class="field is-narrow">
             <div class="control">
               <label class="checkbox">
-                <input type="checkbox" v-model="showSuccess">
+                <input type="checkbox" v-model="filter.showSuccess">
                 success
               </label>
             </div>
@@ -73,7 +73,7 @@
           <div class="field is-narrow">
             <div class="control">
               <label class="checkbox">
-                <input type="checkbox" v-model="showClientErrors">
+                <input type="checkbox" v-model="filter.showClientErrors">
                 client errors
               </label>
             </div>
@@ -81,7 +81,7 @@
           <div class="field is-narrow">
             <div class="control">
               <label class="checkbox">
-                <input type="checkbox" v-model="showServerErrors">
+                <input type="checkbox" v-model="filter.showServerErrors">
                 server errors
               </label>
             </div>
@@ -89,14 +89,18 @@
           <div class="field is-narrow" v-if="actuatorPath">
             <div class="control">
               <label class="checkbox">
-                <input type="checkbox" v-model="excludeActuator">
+                <input type="checkbox" v-model="filter.excludeActuator">
                 exclude <span v-text="actuatorPath" />/**
               </label>
             </div>
           </div>
         </div>
-        <sba-traces-chart :traces="filteredTraces" @selected="d => selection = d" />
-        <sba-traces-list :traces="selectedTraces" />
+        <sba-traces-chart :traces="filteredTraces" @selected="updateSelection" />
+        <sba-traces-list
+          :new-traces-count="newTracesCount"
+          :traces="listedTraces"
+          @show-new-traces="showNewTraces"
+        />
       </template>
     </template>
   </section>
@@ -106,6 +110,7 @@
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
   import {concatMap, timer} from '@/utils/rxjs';
+  import debounce from 'lodash/debounce';
   import moment from 'moment';
   import sbaTracesChart from './traces-chart';
   import sbaTracesList from './traces-list';
@@ -122,7 +127,7 @@
     }
 
     get key() {
-      return `${this.timestamp}-${this.request.method}-${this.request.uri}`;
+      return `${this.timestamp.valueOf()}-${this.request.method}-${this.request.uri}`;
     }
 
     get contentLength() {
@@ -172,12 +177,15 @@
       hasLoaded: false,
       error: null,
       traces: [],
-      filter: null,
+      listOffset: 0,
+      filter: {
+        excludeActuator: true,
+        showSuccess: true,
+        showClientErrors: true,
+        showServerErrors: true,
+        uri: null
+      },
       limit: 1000,
-      excludeActuator: true,
-      showSuccess: true,
-      showClientErrors: true,
-      showServerErrors: true,
       selection: null
     }),
     computed: {
@@ -191,28 +199,38 @@
         return null;
       },
       filteredTraces() {
-        const filterFn = this.getFilterFn();
-        return filterFn ? this.traces.filter(filterFn) : this.traces;
+        return this.filterTraces(this.traces);
       },
-      selectedTraces() {
-        if (this.selection === null) {
-          return this.filteredTraces;
+      newTracesCount() {
+        return this.selection ? 0 : this.filterTraces(this.traces.slice(0, this.listOffset)).length;
+      },
+      listedTraces() {
+        const traces = this.filterTraces(this.traces.slice(this.listOffset));
+        if (!this.selection) {
+          return traces;
         }
         const [start, end] = this.selection;
-        return this.filteredTraces.filter(trace => !trace.timestamp.isBefore(start) && !trace.timestamp.isAfter(end));
+        return traces.filter(trace => !trace.timestamp.isBefore(start) && !trace.timestamp.isAfter(end));
       },
       lastTimestamp() {
         return this.traces.length > 0 ? this.traces[0].timestamp : moment(0);
       }
     },
     watch: {
-      limit(value) {
+      limit: debounce(function (value) {
         if (this.traces.length > value) {
-          this.traces = this.traces.slice(0, value);
+          this.traces = Object.freeze(this.traces.slice(0, value));
         }
-      }
+      }, 250)
     },
     methods: {
+      updateSelection(selection) {
+        this.selection = selection;
+        this.showNewTraces();
+      },
+      showNewTraces() {
+        this.listOffset = 0;
+      },
       async fetchHttptrace() {
         const response = await this.instance.fetchHttptrace();
         const traces = response.data.traces.map(trace => new Trace(trace))
@@ -227,6 +245,9 @@
           .subscribe({
             next: traces => {
               vm.hasLoaded = true;
+              if (vm.traces.length > 0) {
+                vm.listOffset += traces.length;
+              }
               vm.traces = [...traces, ...vm.traces].slice(0, vm.limit);
             },
             error: error => {
@@ -236,25 +257,25 @@
             }
           });
       },
-      getFilterFn() {
+      filterTraces(traces) {
         let filterFn = null;
-        if (this.actuatorPath !== null && this.excludeActuator) {
+        if (this.actuatorPath !== null && this.filter.excludeActuator) {
           filterFn = addToFilter(filterFn, (trace) => !trace.request.uri.includes(this.actuatorPath));
         }
-        if (this.filter) {
-          const normalizedFilter = this.filter.toLowerCase();
+        if (this.filter.uri) {
+          const normalizedFilter = this.filter.uri.toLowerCase();
           filterFn = addToFilter(filterFn, (trace) => trace.request.uri.toLowerCase().includes(normalizedFilter));
         }
-        if (!this.showSuccess) {
+        if (!this.filter.showSuccess) {
           filterFn = addToFilter(filterFn, (trace) => !trace.isSuccess());
         }
-        if (!this.showClientErrors) {
+        if (!this.filter.showClientErrors) {
           filterFn = addToFilter(filterFn, (trace) => !trace.isClientError());
         }
-        if (!this.showServerErrors) {
+        if (!this.filter.showServerErrors) {
           filterFn = addToFilter(filterFn, (trace) => !trace.isServerError());
         }
-        return filterFn;
+        return filterFn ? traces.filter(filterFn) : traces;
       }
     },
     install({viewRegistry}) {

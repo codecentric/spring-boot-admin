@@ -57,7 +57,7 @@
               @click="showNewEvents"
             />
           </tr>
-          <template v-for="event in filteredEvents">
+          <template v-for="event in listedEvents">
             <tr class="is-selectable" :key="event.key"
                 @click="showPayload[event.key] ? $delete(showPayload, event.key) : $set(showPayload, event.key, true)"
             >
@@ -108,7 +108,7 @@
     mixins: [subscribing],
     data: () => ({
       events: [],
-      newEvents: [],
+      listOffset: 0,
       showPayload: {},
       error: null,
       filter: {
@@ -123,11 +123,11 @@
           return names;
         }, {});
       },
-      filteredEvents() {
-        return this.filterEvents(this.events);
+      listedEvents() {
+        return this.filterEvents(this.events.slice(this.listOffset));
       },
       newEventsCount() {
-        return this.filterEvents(this.newEvents).length;
+        return this.filterEvents(this.events.slice(0, this.listOffset)).length;
       }
     },
     methods: {
@@ -143,8 +143,7 @@
           .map(([instanceId]) => instanceId));
       },
       showNewEvents() {
-        this.events = Object.freeze([...this.newEvents, ...this.events]);
-        this.newEvents = [];
+        this.listOffset = 0;
       },
       filterEvents(events) {
         if (this.filter.application) {
@@ -160,7 +159,8 @@
         return Instance.getEventStream().subscribe({
           next: message => {
             this.error = null;
-            this.newEvents = [new Event(message.data), ...this.newEvents];
+            this.events = Object.freeze([new Event(message.data), ...this.events]);
+            this.listOffset += 1;
           },
           error: error => {
             console.warn('Listening for events failed:', error);
@@ -194,7 +194,6 @@
         const response = await Instance.fetchEvents();
         const events = response.data.sort(compareBy(v => v.timestamp)).reverse().map(e => new Event(e));
         this.events = Object.freeze(events);
-
         this.error = null;
       } catch (error) {
         console.warn('Fetching events failed:', error);
