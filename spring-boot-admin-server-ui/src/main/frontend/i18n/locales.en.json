@@ -94,6 +94,10 @@
         "initial_delay_ms": "Initial Delay (ms)",
         "interval_ms": "Interval (ms)"
       }
+    },
+    "logfile": {
+      "fetch_failed": "Fetching logfile failed.",
+      "download": "Download"
     }
   },
   "navbar": {

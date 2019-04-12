@@ -20,7 +20,7 @@
       <div class="message-body">
         <strong>
           <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-          Fetching logfile failed.
+          {{ $t('instances.logfile.fetch_failed') }}
         </strong>
         <p v-text="error.message" />
       </div>
@@ -35,7 +35,7 @@
         />
       </div>
       <a class="button" :href="`instances/${instance.id}/actuator/logfile`" target="_blank">
-        <font-awesome-icon icon="download" />&nbsp;Download
+        <font-awesome-icon icon="download" />&nbsp;{{ $t('instances.logfile.download') }}
       </a>
     </div>
     <p v-if="skippedBytes" v-text="`skipped ${prettyBytes(skippedBytes)}`" />
