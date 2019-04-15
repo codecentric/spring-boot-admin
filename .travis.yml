@@ -1,4 +1,6 @@
 language: java
+dist: xenial
+jdk: openjdk8
 
 env:
   - TRAVIS_NODE_VERSION="lts/*"
