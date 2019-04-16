@@ -50,6 +50,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -159,10 +160,11 @@ public class SpringBootAdminClientAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public RegistrationApplicationListener registrationListener(ClientProperties client,
-                                                                ApplicationRegistrator registrator) {
+                                                                ApplicationRegistrator registrator,
+                                                                Environment environment) {
         RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator);
         listener.setAutoRegister(client.isAutoRegistration());
-        listener.setAutoDeregister(client.isAutoDeregistration());
+        listener.setAutoDeregister(client.isAutoDeregistration(environment));
         listener.setRegisterPeriod(client.getPeriod());
         return listener;
     }
