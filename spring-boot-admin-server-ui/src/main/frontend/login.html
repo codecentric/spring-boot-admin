@@ -43,29 +43,29 @@
                                th:name="${_csrf.parameterName}"
                                th:value="${_csrf.token}"/>
                         <div class="field">
-                            <p class="is-medium has-text-danger" th:unless="${param.error == null}">
+                            <p class="is-medium has-text-danger" th:unless="${param.error == null}" data-i18n="login.invalid_username_or_password">
                                 Invalid username or password
                             </p>
-                            <p class="is-medium" th:unless="${param.logout == null}">
+                            <p class="is-medium" th:unless="${param.logout == null}" data-i18n="login.logout_successful">
                                 Logout successful
                             </p>
                         </div>
                         <div class="field">
                             <div class="control">
                                 <input class="input is-medium" type="input" name="username" placeholder="Username"
-                                       autofocus th:classappend="${param.error != null} ? is-danger">
+                                    data-i18n="placeholder:login.placeholder.username" autofocus th:classappend="${param.error != null} ? is-danger">
                             </div>
                         </div>
                         <div class="field">
                             <div class="control">
-                                <input class="input is-medium" type="password" name="password"
-                                       placeholder="Password" th:classappend="${param.error != null} ? is-danger">
+                                <input class="input is-medium" type="password" name="password" placeholder="Password"
+                                    data-i18n="placeholder:login.placeholder.password" th:classappend="${param.error != null} ? is-danger">
                             </div>
                         </div>
                         <div class="field">
                             <div class="control">
                                 <input type="submit" class="button is-block is-primary is-medium is-fullwidth"
-                                       value="Login">
+                                       value="Login" data-i18n="value:login.button_login">
                             </div>
                         </div>
                     </form>
