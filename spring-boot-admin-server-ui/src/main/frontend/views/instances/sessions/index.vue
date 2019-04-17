@@ -21,10 +21,10 @@
         <span class="select">
           <select v-model="filter.type">
             <option value="username">
-              Username
+              {{ $t('term.username') }}
             </option>
             <option value="sessionId">
-              SessionId
+              {{ $t('instances.sessions.session_id') }}
             </option>
           </select>
         </span>
@@ -39,7 +39,7 @@
       <div class="message-body">
         <strong>
           <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-          Fetching sessions failed.
+          {{ $t('instances.sessions.fetch_failed') }}
         </strong>
         <p v-text="error.message" />
       </div>

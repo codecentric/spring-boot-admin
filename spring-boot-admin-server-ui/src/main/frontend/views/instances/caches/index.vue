@@ -29,7 +29,7 @@
               class="has-text-danger"
               icon="exclamation-triangle"
             />
-            Fetching caches failed.
+            {{ $t('instances.caches.fetch_failed') }}
           </strong>
           <p v-text="error.message" />
         </div>

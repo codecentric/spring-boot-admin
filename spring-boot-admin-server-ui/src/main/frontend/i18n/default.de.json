@@ -1,0 +1,288 @@
+{
+  "about": {
+    "title": "Über"
+  },
+  "applications": {
+    "all_up": "OK",
+    "instances": "Instanzen",
+    "instances_down": "Instanzen fehlerhaft",
+    "loading_applications": "Anwendungen werden geladen ...",
+    "no_applications_registered": "Keine Anwendungen registriert.",
+    "restricted": "eingeschränkt",
+    "server_connection_failed": "Verbindung zum Server fehlgeschlagen.",
+    "status": "Status",
+    "title": "Applikationen",
+    "up": "OK"
+  },
+  "custom": {
+    "title": "Anpassen"
+  },
+  "error": {
+    "server_connection_failed": "Verbindung zum Server fehlgeschlagen."
+  },
+  "instances": {
+    "auditevents": {
+      "audit_log_not_supported_spring_boot_1": "Spring Boot 1.x Anwendungen unterstützen keine Audit-Logs.",
+      "event": "Ereignis",
+      "fetch_failed": "Das Laden der Audit-Events ist fehlgeschlagen.",
+      "loading_audit_events": "Audit-Events werden geladen...",
+      "no_audit_events_found": "Keine Audit-Events vorhanden.",
+      "principal": "Prinzipal",
+      "remote_address": "Remote address",
+      "session_id": "Session Id",
+      "timestamp": "Zeitstempel",
+      "type": "Typ"
+    },
+    "caches": {
+      "cache_manager": "Cache Manager",
+      "fetch_failed": "Das Laden des Caches ist fehlgeschlagen.",
+      "loading_caches": "Cache-Infiormationen werden geladen...",
+      "name": "Name",
+      "no_caches_found": "Keine Cache-Informationen gefunden."
+    },
+    "details": {
+      "fetching_failed": "Das Laden der Metriken ist fehlgeschlagen.",
+      "gc": {
+        "count": "Anzahl",
+        "time_spent_max": "Max. Zeitdauer",
+        "time_spent_total": "Gesamtzeit",
+        "title": "GC Pausen"
+      },
+      "health": {
+        "title": "Zustand"
+      },
+      "info": {
+        "fetch_failed": "Das Laden der Live-Informationen ist fehlgeschlagen. Keine weiteren Informationen verfügbar.",
+        "title": "Info"
+      },
+      "memory": {
+        "fetch_failed": "Das Laden der Speicher-Metriken ist fehlgeschlagen.",
+        "max": "Max",
+        "metaspace": "Metaspace",
+        "size": "Größe",
+        "title": "Speicher",
+        "used": "In Verwendung"
+      },
+      "metadata": {
+        "no_data_provided": "Keine Metadaten vorhanden",
+        "title": "Metadaten"
+      },
+      "process": {
+        "cpus": "CPUs",
+        "fetch_failed": "Das Laden der Prozess-Metriken ist fehlgeschlagen.",
+        "pid": "PID",
+        "process_cpu_usage": "CPU-Auslastung (%)",
+        "system_cpu_usage": "System-Auslastung (%)",
+        "title": "Prozess",
+        "uptime": "Uptime"
+      },
+      "threads": {
+        "daemon": "Daemon",
+        "live": "Live",
+        "peak_live": "Peak Live",
+        "title": "Threads"
+      }
+    },
+    "env": {
+      "active_profile": "Profile",
+      "fetch_failed": "Das Laden der Umgebungsinformationen ist fehlgeschlagen.",
+      "no_properties": "Keine Eigenschaften gesetzt"
+    },
+    "heapdump": {
+      "download": "Heap-Dump herunterladen",
+      "warn_dump_expensive": "Das Erzeugen eines Heap-Dumps belastet die CPU und Festplatte stark und kann zu Seiteneffekten führen.",
+      "warn_sensitive_data": "Ein Heap-Dump kann <strong>sensitive Daten</strong> enthalten. "
+    },
+    "httptrace": {
+      "fetching_failed": "Das Laden der Tracing-Informationen ist fehlgeschlagen.",
+      "label": {
+        "client_errors": "Client-Fehler",
+        "exclude_actuator": "ignoriere  {{- actuator}}/**",
+        "limit": "Limit",
+        "server_errors": "Server-Fehler",
+        "success": "erfolgreich"
+      }
+    },
+    "jolokia": {
+      "domains": "Domains",
+      "fetch_failed": "Das Laden der JMX-Beans ist fehlgeschlagen.",
+      "mbean": {
+        "fetch_failed": "Das Laden der Attribute ist fehlgeschlagen."
+      },
+      "mbeans": "MBeans"
+    },
+    "logfile": {
+      "download": "Herunterladen",
+      "fetch_failed": "Das Laden des Logfiles ist fehlgeschlagen."
+    },
+    "loggers": {
+      "affects_all_instances": "Betrifft alle {count} Instanzen",
+      "affects_this_instance_only": "Betrifft nur diese Instanz",
+      "application": "Anwendung",
+      "fetch_failed": "Das Laden der Log-Informationen ist fehlgeschlagen.",
+      "filter": {
+        "class_only": "nur Klassen",
+        "configured": "konfiguriert"
+      },
+      "instance": "Instanz",
+      "no_loggers_found": "Keine Logger gefunden.",
+      "reset": "Zurücksetzen",
+      "setting_loglevel_failed": "Fehler beim Setzen des Loglevels '{loglevel}' für den Logger '{logger}'."
+    },
+    "mappings": {
+      "class": "Klasse",
+      "consumes": "Erwartet",
+      "fetch_failed": "Das Laden der Mappings ist fehlgeschlagen.",
+      "filter_name": "Filtername",
+      "handler": "Handler",
+      "headers": "Headers",
+      "http-verb": "HTTP-Verb",
+      "mappings_not_supported_spring_boot_1": "Spring Boot 1.x Anwendungen unterstützen keine Mappings.",
+      "parameters": "Parameter",
+      "produces": "Produziert",
+      "servlet_name": "Servletname",
+      "url_pattern": "Url-Muster"
+    },
+    "scheduledtasks": {
+      "cron": {
+        "expression": "Expression",
+        "no_scheduledtasks": "Keine geplanten Aufgaben.",
+        "runnable": "Runnable",
+        "title": "Cron"
+      },
+      "fetch_failed": "Das Laden der geplanten Aufgaben ist fehlgeschlagen.",
+      "fixed_delay": {
+        "initial_delay_ms": "Verzögerung (ms)",
+        "interval_ms": "Intervall (ms)",
+        "runnable": "Runnable",
+        "title": "Feste Verzögerung"
+      },
+      "fixed_rate": {
+        "initial_delay_ms": "Verzögerung (ms)",
+        "interval_ms": "Intervall (ms)",
+        "runnable": "Runnable",
+        "title": "Fixed Rate"
+      }
+    },
+    "sessions": {
+      "attributes": "Attribute",
+      "created_at": "Erstellt am",
+      "expired": "Abgelaufen",
+      "expiry": "Verfällt",
+      "fetch_failed": "Das Laden der Sitzungen ist fehlgeschlagen.",
+      "last_accessed_at": "Letzter Zugriff",
+      "loading_sessions": "Sitzungen laden...",
+      "max_inactive_interval": "Max. Inaktivitäts-<br>intervall",
+      "no_sessions_found": "Keine Sitzungen gefunden",
+      "session_id": "Session Id",
+      "unlimited": "Unendlich"
+    },
+    "threaddump": {
+      "fetch_failed": "Das Laden des Thread-Dumps ist fehlgeschlagen.",
+      "thread_details_blocked_count": "Blocked-Count",
+      "thread_details_blocked_time": "Blocked-Time",
+      "thread_details_lock_name": "Lock-Name",
+      "thread_details_lock_owner_id": "Lock-Besitzer-Id",
+      "thread_details_lock_owner_name": "Lock-Besitzer-Name",
+      "thread_details_waited_count": "Warteperioden",
+      "thread_details_waited_time": "gewartete Dauer",
+      "thread_id": "Thread-Id",
+      "thread_name": "Thread-Name",
+      "thread_state": "Thread-Status"
+    }
+  },
+  "journal": {
+    "title": "Event-Journal"
+  },
+  "navbar": {
+    "about": {
+      "title": "Über"
+    },
+    "applications": {
+      "title": "Anwendungen"
+    },
+    "custom": {
+      "title": "Custom"
+    },
+    "journal": {
+      "title": "Journal"
+    },
+    "logout": "Abmelden",
+    "wallboard": {
+      "title": "Übersicht"
+    }
+  },
+  "sidebar": {
+    "data": {
+      "caches": "Caches",
+      "flyway": "Flyway",
+      "liquibase": "Liquibase",
+      "title": "Daten"
+    },
+    "insights": {
+      "beans": "Beans",
+      "configprops": "Konfigurationseinstellungen",
+      "details": "Details",
+      "env": "Umgebungsvariablen",
+      "metrics": "Metriken",
+      "scheduledtasks": "Geplante Aufgaben",
+      "title": "Insights"
+    },
+    "instances_caches": {
+      "title": "Caches"
+    },
+    "instances_custom": {
+      "title": "Benutzerdefiniert"
+    },
+    "jvm": {
+      "heapdump": "Heap-Dump",
+      "jolokia": "Jolokia",
+      "threaddump": "Threads",
+      "title": "JVM"
+    },
+    "logging": {
+      "logfile": "Logdatei",
+      "loggers": "Loggers",
+      "title": "Logging"
+    },
+    "security": {
+      "auditevents": "Audit-Log",
+      "sessions": "Sitzungen",
+      "title": "Sicherheit"
+    },
+    "web": {
+      "gateway": "Gateway",
+      "httptrace": "HTTP-Traces",
+      "mappings": "Mappings",
+      "title": "Web"
+    }
+  },
+  "term": {
+    "application": "Anwendung",
+    "attributes": "Attribute",
+    "cancel": "Abbrechen",
+    "clear": "Leeren",
+    "cleared": "Geleert",
+    "close": "Schließen",
+    "confirm": "Bestätigen",
+    "delete": "Löschen",
+    "deleted": "Gelöscht",
+    "event": "Ereignis",
+    "executing": "Wird ausgeführt...",
+    "execution_failed": "Ausführung fehlgeschlagen.",
+    "execution_successful": "Ausführung erfolgreich.",
+    "failed": "Fehlgeschlagen",
+    "instances": "Instanzen",
+    "name": "Name",
+    "operations": "Operationen",
+    "save": "Speichern",
+    "stacktrace": "Stacktrace",
+    "time": "Zeit",
+    "username": "Username"
+  },
+  "wallboard": {
+    "instances_count": "Eine Instanz",
+    "instances_count_plural": "{{count}} Instanzen",
+    "title": "Übersicht"
+  }
+}

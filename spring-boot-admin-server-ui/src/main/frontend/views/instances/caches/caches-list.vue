@@ -18,8 +18,8 @@
   <table class="caches table is-fullwidth">
     <thead>
       <tr>
-        <th>Name</th>
-        <th>Cache Manager</th>
+        <th v-html="$t('instances.caches.name')"/>
+        <th v-html="$t('instances.caches.cache_manager')"/>
         <th class="is-narrow">
           <sba-confirm-button
             class="button"
@@ -28,13 +28,13 @@
             @click="clearCaches"
           >
             <span v-if="clearingAll === 'completed'">
-              Cleared
+              {{ $t('term.cleared') }}
             </span>
             <span v-else-if="clearingAll === 'failed'">
-              Failed
+              {{ $t('term.failed') }}
             </span>
             <span v-else>
-              <font-awesome-icon icon="trash" />&nbsp;Clear
+              <font-awesome-icon icon="trash" />&nbsp;{{ $t('term.clear') }}
             </span>
           </sba-confirm-button>
         </th>
@@ -63,10 +63,10 @@
                   :disabled="cache.name in clearing" @click="clearCache(cache.name)"
           >
             <span v-if="clearing[cache.name] === 'completed'">
-              Cleared
+              {{ $t('term.cleared') }}
             </span>
             <span v-else-if="clearing[cache.name] === 'failed'">
-              Failed
+              {{ $t('term.failed') }}
             </span>
             <span v-else>
               <font-awesome-icon icon="trash" />&nbsp;Clear
@@ -77,10 +77,10 @@
       <tr v-if="caches.length === 0">
         <td class="is-muted" colspan="3 ">
           <p v-if="isLoading" class="is-loading">
-            Loading Caches...
+            {{ $t('instances.caches.loading') }}
           </p>
           <p v-else>
-            No caches found.
+            {{ $t('instances.caches.no_caches_found') }}
           </p>
         </td>
       </tr>

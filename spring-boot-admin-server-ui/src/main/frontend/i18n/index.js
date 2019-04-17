@@ -1,11 +1,12 @@
 import i18n from 'i18next';
 import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
 
-import localesEN from './locales.en';
+import localesEN from './default.en';
+import localesDE from './default.de';
 
 let resources = {
-  // en: {name: 'English', locale: 'en_GB', translation: localesEN},
-  de: {name: 'Deutsch', locale: 'de_DE', translation: {}}
+  en: {name: 'English', locale: 'en', translation: localesEN},
+  de: {name: 'Deutsch', locale: 'de', translation: localesDE}
 };
 
 i18n

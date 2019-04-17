@@ -21,7 +21,7 @@
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            Fetching traces failed.
+            {{ $t('instances.httptrace.fetching_failed') }}
           </strong>
           <p v-text="error.message" />
         </div>
@@ -52,7 +52,7 @@
             <div class="field is-narrow has-addons">
               <p class="control">
                 <span class="button is-static">
-                  limit
+                  {{ $t('instances.httptrace.label.limit') }}
                 </span>
               </p>
               <p class="control">
@@ -66,7 +66,7 @@
             <div class="control">
               <label class="checkbox">
                 <input type="checkbox" v-model="showSuccess">
-                success
+                {{ $t('instances.httptrace.label.success') }}
               </label>
             </div>
           </div>
@@ -74,7 +74,7 @@
             <div class="control">
               <label class="checkbox">
                 <input type="checkbox" v-model="showClientErrors">
-                client errors
+                {{ $t('instances.httptrace.label.client_errors') }}
               </label>
             </div>
           </div>
@@ -82,7 +82,7 @@
             <div class="control">
               <label class="checkbox">
                 <input type="checkbox" v-model="showServerErrors">
-                server errors
+                {{ $t('instances.httptrace.label.server_errors') }}
               </label>
             </div>
           </div>
@@ -90,7 +90,7 @@
             <div class="control">
               <label class="checkbox">
                 <input type="checkbox" v-model="excludeActuator">
-                exclude <span v-text="actuatorPath" />/**
+                {{ $t('instances.httptrace.label.exclude_actuator', {actuator: actuatorPath}) }}
               </label>
             </div>
           </div>
