@@ -45,44 +45,64 @@
           <td colspan="2">
             <table class="threads__thread-details table is-narrow is-fullwidth has-background-white-ter">
               <tr>
-                <td v-t="`instances.threaddump.thread_id`">Thread Id</td>
+                <td v-t="`instances.threaddump.thread_id`">
+                  Thread Id
+                </td>
                 <td v-text="thread.threadId" />
               </tr>
               <tr>
-                <td v-t="`instances.threaddump.thread_name`">Thread name</td>
+                <td v-t="`instances.threaddump.thread_name`">
+                  Thread name
+                </td>
                 <td v-text="thread.threadName" />
               </tr>
               <tr>
-                <td v-t="`instances.threaddump.thread_state`">Thread state</td>
+                <td v-t="`instances.threaddump.thread_state`">
+                  Thread state
+                </td>
                 <td v-text="thread.threadState" />
               </tr>
               <template v-if="thread.details !== null">
                 <tr>
-                  <td v-t="`instances.threaddump.thread_details_blocked_count`">Blocked count</td>
+                  <td v-t="`instances.threaddump.thread_details_blocked_count`">
+                    Blocked count
+                  </td>
                   <td v-text="thread.details.blockedCount" />
                 </tr>
                 <tr>
-                  <td v-t="`instances.threaddump.thread_details_blocked_time`">Blocked time</td>
+                  <td v-t="`instances.threaddump.thread_details_blocked_time`">
+                    Blocked time
+                  </td>
                   <td v-text="thread.details.blockedTime" />
                 </tr>
                 <tr>
-                  <td v-t="`instances.threaddump.thread_details_waited_count`">Waited count</td>
+                  <td v-t="`instances.threaddump.thread_details_waited_count`">
+                    Waited count
+                  </td>
                   <td v-text="thread.details.waitedCount" />
                 </tr>
                 <tr>
-                  <td v-t="`instances.threaddump.thread_details_waited_time`">Waited time</td>
+                  <td v-t="`instances.threaddump.thread_details_waited_time`">
+                    Waited time
+                  </td>
                   <td v-text="thread.details.waitedTime" />
                 </tr>
                 <tr>
-                  <td v-t="`instances.threaddump.thread_details_lock_name`">Lock name</td>
+                  <td v-t="`instances.threaddump.thread_details_lock_name`">
+                    Lock name
+                  </td>
                   <td v-text="thread.details.lockName" />
                 </tr>
                 <tr>
-                  <td v-t="`instances.threaddump.thread_details_lock_owner_id`">Lock owner id</td>
+                  <td v-t="`instances.threaddump.thread_details_lock_owner_id`">
+                    Lock owner id
+                  </td>
                   <td v-text="thread.details.lockOwnerId" />
                 </tr>
                 <tr>
-                  <td v-t="`instances.threaddump.thread_details_lock_owner_name`">Lock owner name</td>
+                  <td v-t="`instances.threaddump.thread_details_lock_owner_name`">
+                    Lock owner name
+                  </td>
                   <td v-text="thread.details.lockOwnerName" />
                 </tr>
                 <tr v-if="thread.details.stackTrace.length > 0">

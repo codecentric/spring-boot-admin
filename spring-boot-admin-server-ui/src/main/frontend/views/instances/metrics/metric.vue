@@ -31,11 +31,11 @@
               <option :value="undefined">
                 -
               </option>
-              <option value="integer" v-text="$t('term.integer')"/>
-              <option value="float" v-text="$t('term.float')"/>
-              <option value="duration" v-text="$t('term.duration')"/>
-              <option value="millis" v-text="$t('term.milliseconds')"/>
-              <option value="bytes" v-text="$t('term.bytes')"/>
+              <option value="integer" v-text="$t('term.integer')" />
+              <option value="float" v-text="$t('term.float')" />
+              <option value="duration" v-text="$t('term.duration')" />
+              <option value="millis" v-text="$t('term.milliseconds')" />
+              <option value="bytes" v-text="$t('term.bytes')" />
             </select>
           </div>
         </th>

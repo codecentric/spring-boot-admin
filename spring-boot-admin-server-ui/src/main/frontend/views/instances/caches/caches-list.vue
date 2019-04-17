@@ -18,8 +18,8 @@
   <table class="caches table is-fullwidth">
     <thead>
       <tr>
-        <th v-html="$t('instances.caches.name')"/>
-        <th v-html="$t('instances.caches.cache_manager')"/>
+        <th v-html="$t('instances.caches.name')" />
+        <th v-html="$t('instances.caches.cache_manager')" />
         <th class="is-narrow">
           <sba-confirm-button
             class="button"

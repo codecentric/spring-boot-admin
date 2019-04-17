@@ -18,12 +18,12 @@
   <table class="sessions table is-fullwidth">
     <thead>
       <tr>
-        <th v-html="$t('instances.sessions.session_id')"/>
-        <th v-html="$t('instances.sessions.created_at')"/>
-        <th v-html="$t('instances.sessions.last_accessed_at')"/>
-        <th v-html="$t('instances.sessions.expiry')"/>
-        <th v-html="$t('instances.sessions.max_inactive_interval')"/>
-        <th v-html="$t('instances.sessions.attributes')"/>
+        <th v-html="$t('instances.sessions.session_id')" />
+        <th v-html="$t('instances.sessions.created_at')" />
+        <th v-html="$t('instances.sessions.last_accessed_at')" />
+        <th v-html="$t('instances.sessions.expiry')" />
+        <th v-html="$t('instances.sessions.max_inactive_interval')" />
+        <th v-html="$t('instances.sessions.attributes')" />
         <th>
           <sba-confirm-button class="button"
                               :class="{ 'is-loading' : deletingAll === 'executing', 'is-info' : deletingAll === 'completed', 'is-danger' : deletingAll === 'failed' }"

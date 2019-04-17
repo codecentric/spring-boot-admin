@@ -56,7 +56,7 @@
               :key="view.name"
             >
               <router-link :to="{ name: view.name, params: { 'instanceId' : instance.id } }">
-                <component :is="view.handle" :title="$t('sidebar.' + group.id + '.' + view.path)"/>
+                <component :is="view.handle" :title="$t('sidebar.' + group.id + '.' + view.path)" />
               </router-link>
             </li>
           </ul>

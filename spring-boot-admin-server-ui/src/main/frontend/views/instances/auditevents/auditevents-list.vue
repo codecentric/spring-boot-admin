@@ -18,11 +18,11 @@
   <table class="auditevents table is-hoverable is-fullwidth">
     <thead>
       <tr>
-        <th v-html="$t('instances.auditevents.timestamp')"/>
-        <th v-html="$t('instances.auditevents.event')"/>
-        <th v-html="$t('instances.auditevents.principal')"/>
-        <th v-html="$t('instances.auditevents.remote_address')"/>
-        <th v-html="$t('instances.auditevents.session_id')"/>
+        <th v-html="$t('instances.auditevents.timestamp')" />
+        <th v-html="$t('instances.auditevents.event')" />
+        <th v-html="$t('instances.auditevents.principal')" />
+        <th v-html="$t('instances.auditevents.remote_address')" />
+        <th v-html="$t('instances.auditevents.session_id')" />
       </tr>
     </thead>
     <tbody>

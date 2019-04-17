@@ -75,7 +75,7 @@
         v-if="isOldAuditevents"
         class="message is-warning"
       >
-        <div class="message-body" v-html="$t('instances.auditevents.audit_log_not_supported_spring_boot_1')"/>
+        <div class="message-body" v-html="$t('instances.auditevents.audit_log_not_supported_spring_boot_1')" />
       </div>
       <auditevents-list
         :instance="instance"

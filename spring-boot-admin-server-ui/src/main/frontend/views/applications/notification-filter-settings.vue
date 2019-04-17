@@ -19,7 +19,7 @@
     <template v-if="!activeFilter">
       <div class="field">
         <p class="control has-inline-text">
-          <span v-html="$t('applications.suppress_notifications_on', {name: object.id || object.name})"/>&nbsp;
+          <span v-html="$t('applications.suppress_notifications_on', {name: object.id || object.name})" />&nbsp;
           <span class="select">
             <select v-model="ttl" @click.stop>
               <option v-for="option in ttlOptions"

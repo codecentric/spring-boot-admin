@@ -26,7 +26,7 @@
       </div>
     </div>
     <div v-if="isOldMetrics" class="message is-warning">
-      <div class="message-body" v-text="$t('instances.metrics.metrics_not_supported_spring_boot_1')"/>
+      <div class="message-body" v-text="$t('instances.metrics.metrics_not_supported_spring_boot_1')" />
     </div>
     <form @submit.prevent="handleSubmit" class="field" v-else-if="availableMetrics.length > 0">
       <div class="field">
@@ -39,7 +39,7 @@
         </div>
       </div>
       <div>
-        <p v-if="stateFetchingTags === 'executing'" class="is-loading" v-text="$t('instances.metrics.fetching_tags')"/>
+        <p v-if="stateFetchingTags === 'executing'" class="is-loading" v-text="$t('instances.metrics.fetching_tags')" />
 
         <div class="box" v-if="availableTags">
           <div class="field is-horizontal" v-for="tag in availableTags" :key="tag.tag">
@@ -59,10 +59,10 @@
               </div>
             </div>
           </div>
-          <p v-if="availableTags && availableTags.length === 0" v-text="$t('instances.metrics.no_tags_available')"/>
+          <p v-if="availableTags && availableTags.length === 0" v-text="$t('instances.metrics.no_tags_available')" />
           <div class="field is-grouped is-grouped-right">
             <div class="control">
-              <button type="submit" class="button is-primary" v-text="$t('instances.metrics.add_metric')"/>
+              <button type="submit" class="button is-primary" v-text="$t('instances.metrics.add_metric')" />
             </div>
           </div>
         </div>
