@@ -240,7 +240,7 @@
       "title": "Caches"
     },
     "instances_custom": {
-      "title": "Benutzerdefiniert"
+      "title": "Custom"
     },
     "jvm": {
       "heapdump": "Heap-Dump",

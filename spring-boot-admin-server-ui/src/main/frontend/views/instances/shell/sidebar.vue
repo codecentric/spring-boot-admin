@@ -175,6 +175,8 @@
       }
 
       &__name {
+        max-width: 175px;
+        margin: 0 auto;
         font-weight: $weight-semibold;
         font-size: $size-5;
       }
@@ -212,6 +214,8 @@
     a {
       border-radius: $radius-small;
       color: $text;
+      overflow: hidden;
+      text-overflow: ellipsis;
       display: block;
       padding: 0.5em 0.75em;
 
