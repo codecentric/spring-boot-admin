@@ -1,4 +1,5 @@
 import i18n from 'i18next';
+import * as moment from 'moment';
 import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
 
 import localesEN from './default.en';
@@ -11,6 +12,7 @@ let resources = {
 
 i18n
   .use(I18nextBrowserLanguageDetector)
+  .on('languageChanged', (lang) => moment.locale(lang))
   .init({
     saveMissing: true,
     fallbackLng: 'en',
