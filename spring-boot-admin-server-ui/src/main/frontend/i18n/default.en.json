@@ -143,6 +143,14 @@
       "servlet_name": "Servlet Name",
       "url_pattern": "Url Pattern"
     },
+    "metrics":{
+      "add_metric": "Add Metric",
+      "fetch_failed": "Fetching metrics failed.",
+      "fetching_tags": "Fetching available tags",
+      "no_tags": "(no tags)",
+      "no_tags_available": "No tags available.",
+      "metrics_not_supported_spring_boot_1": "Metrics are not supported for Spring Boot 1.x applications."
+    },
     "scheduledtasks": {
       "cron": {
         "expression": "Expression",
@@ -259,7 +267,8 @@
   },
   "term": {
     "application": "Application",
-    "attributes": "Attributes",
+    "attributes": "Attributes",^
+    "bytes": "Bytes",
     "cancel": "Cancel",
     "clear": "Clear",
     "cleared": "Cleared",
@@ -267,12 +276,16 @@
     "confirm": "Confirm",
     "delete": "Delete",
     "deleted": "Deleted",
+    "duration": "Duration",
     "event": "Event",
     "executing": "Executing...",
     "execution_failed": "Execution failed.",
     "execution_successful": "Execution successful.",
     "failed": "Failed",
+    "float": "Float",
     "instances": "Instances",
+    "integer": "Integer",
+    "milliseconds": "Milliseconds",
     "name": "Name",
     "operations": "Operations",
     "save": "Save",

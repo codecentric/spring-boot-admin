@@ -143,6 +143,14 @@
       "servlet_name": "Servletname",
       "url_pattern": "Url-Muster"
     },
+    "metrics":{
+      "add_metric": "Metrik hinzufügen",
+      "fetch_failed": "Das Laden der Metriken ist fehlgeschlagen.",
+      "fetching_tags": "Verfügbare Tags werden geladen",
+      "no_tags": "(keine Tags)",
+      "no_tags_available": "Keine Tags verfügbar.",
+      "metrics_not_supported_spring_boot_1": "Spring Boot 1.x Anwendungen unterstützen keine Metriken."
+    },
     "scheduledtasks": {
       "cron": {
         "expression": "Expression",
@@ -260,6 +268,7 @@
   "term": {
     "application": "Anwendung",
     "attributes": "Attribute",
+    "bytes": "Bytes",
     "cancel": "Abbrechen",
     "clear": "Leeren",
     "cleared": "Geleert",
@@ -267,12 +276,16 @@
     "confirm": "Bestätigen",
     "delete": "Löschen",
     "deleted": "Gelöscht",
+    "duration": "Dauer",
     "event": "Ereignis",
     "executing": "Wird ausgeführt...",
     "execution_failed": "Ausführung fehlgeschlagen.",
     "execution_successful": "Ausführung erfolgreich.",
     "failed": "Fehlgeschlagen",
+    "float": "Float",
     "instances": "Instanzen",
+    "integer": "Integer",
+    "milliseconds": "Millisekunden",
     "name": "Name",
     "operations": "Operationen",
     "save": "Speichern",
