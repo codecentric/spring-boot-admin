@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2019 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <button type="button" class="icon-button" :disabled="disabled" v-on="$listeners">
+  <button class="button icon-button" v-on="$listeners">
     <font-awesome-icon :icon="icon" :size="size" :class="iconClass" />
   </button>
 </template>
@@ -23,10 +23,6 @@
 <script>
   export default {
     props: {
-      disabled: {
-        type: Boolean,
-        default: false,
-      },
       icon: {
         type: [String, Array],
         required: true,

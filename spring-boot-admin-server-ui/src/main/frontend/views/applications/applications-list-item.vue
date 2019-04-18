@@ -19,15 +19,23 @@
     <header class="hero application-list-item__header" :class="headerClass" v-on="$listeners">
       <application-summary v-if="!isExpanded" :application="application" />
       <h1 v-else class="title is-size-5" v-text="application.name" />
-      <div class="application-list-item__header__actions">
-        <sba-icon-button :id="`nf-settings-${application.name}`"
-                         v-if="hasNotificationFiltersSupport"
-                         @click.stop="$emit('toggle-notification-filter-settings', application)"
-                         :icon="hasActiveNotificationFilter(application) ? 'bell-slash' : 'bell'"
+      <div class="application-list-item__header__actions" @click.stop="">
+        <router-link
+          class="button icon-button"
+          :to="{ name: 'journal', query: { 'application' : application.name } }"
+        >
+          <font-awesome-icon icon="history" />
+        </router-link>
+        <sba-icon-button
+          :id="`nf-settings-${application.name}`"
+          v-if="hasNotificationFiltersSupport"
+          @click="$emit('toggle-notification-filter-settings', application)"
+          :icon="hasActiveNotificationFilter(application) ? 'bell-slash' : 'bell'"
         />
-        <sba-icon-button icon="trash"
-                         v-if="application.isUnregisterable"
-                         @click.stop="$emit('unregister', application)"
+        <sba-icon-button
+          icon="trash"
+          v-if="application.isUnregisterable"
+          @click="$emit('unregister', application)"
         />
       </div>
     </header>

@@ -38,7 +38,7 @@ services:
     networks:
       - "discovery"
     environment:
-      - EUREKA_SERVICE_URL=http://10.10.47.225:8761
+      - EUREKA_SERVICE_URL=http://eureka:8761
       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
 
   customers:

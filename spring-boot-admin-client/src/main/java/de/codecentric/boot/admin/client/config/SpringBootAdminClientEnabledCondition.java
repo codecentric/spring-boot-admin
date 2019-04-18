@@ -55,7 +55,7 @@ public class SpringBootAdminClientEnabledCondition extends SpringBootCondition {
     }
 
     private ClientProperties getClientProperties(ConditionContext context) {
-        ClientProperties clientProperties = new ClientProperties(context.getEnvironment());
+        ClientProperties clientProperties = new ClientProperties();
         Binder.get(context.getEnvironment()).bind("spring.boot.admin.client", Bindable.ofInstance(clientProperties));
         return clientProperties;
     }

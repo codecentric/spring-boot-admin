@@ -35,10 +35,10 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>2.2.0.M1</spring-boot.version>
+        <spring-boot.version>2.2.0.M2</spring-boot.version>
         <spring-cloud.version>Hoxton.BUILD-SNAPSHOT</spring-cloud.version>
         <wiremock.version>2.22.0</wiremock.version>
-        <hazelcast-tests.version>3.11.2</hazelcast-tests.version>
+        <hazelcast-tests.version>3.12</hazelcast-tests.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
         <junit-jupiter.version>5.4.0</junit-jupiter.version>
 

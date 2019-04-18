@@ -27,14 +27,14 @@ public class ClientPropertiesTest {
     public void should_default_autoDeregister_to_false() {
         MockEnvironment env = new MockEnvironment();
 
-        ClientProperties clientProperties = new ClientProperties(env);
-        assertThat(clientProperties.isAutoDeregistration()).isFalse();
+        ClientProperties clientProperties = new ClientProperties();
+        assertThat(clientProperties.isAutoDeregistration(env)).isFalse();
 
         clientProperties.setAutoDeregistration(false);
-        assertThat(clientProperties.isAutoDeregistration()).isFalse();
+        assertThat(clientProperties.isAutoDeregistration(env)).isFalse();
 
         clientProperties.setAutoDeregistration(true);
-        assertThat(clientProperties.isAutoDeregistration()).isTrue();
+        assertThat(clientProperties.isAutoDeregistration(env)).isTrue();
     }
 
     @Test
@@ -42,20 +42,20 @@ public class ClientPropertiesTest {
         MockEnvironment env = new MockEnvironment();
         env.setProperty("VCAP_APPLICATION", "");
 
-        ClientProperties clientProperties = new ClientProperties(env);
-        assertThat(clientProperties.isAutoDeregistration()).isTrue();
+        ClientProperties clientProperties = new ClientProperties();
+        assertThat(clientProperties.isAutoDeregistration(env)).isTrue();
 
         clientProperties.setAutoDeregistration(false);
-        assertThat(clientProperties.isAutoDeregistration()).isFalse();
+        assertThat(clientProperties.isAutoDeregistration(env)).isFalse();
 
         clientProperties.setAutoDeregistration(true);
-        assertThat(clientProperties.isAutoDeregistration()).isTrue();
+        assertThat(clientProperties.isAutoDeregistration(env)).isTrue();
     }
 
 
     @Test
     public void should_return_all_admiUrls() {
-        ClientProperties clientProperties = new ClientProperties(new MockEnvironment());
+        ClientProperties clientProperties = new ClientProperties();
         clientProperties.setApiPath("register");
         clientProperties.setUrl(new String[]{"http://first", "http://second"});
 

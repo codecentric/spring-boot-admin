@@ -23,7 +23,6 @@ import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.core.env.Environment;
-import org.springframework.util.Assert;
 
 @lombok.Data
 @ConfigurationProperties(prefix = "spring.boot.admin.client")
@@ -92,22 +91,15 @@ public class ClientProperties {
     private boolean enabled = true;
 
 
-    private final Environment environment;
-
-    public ClientProperties(Environment environment) {
-        Assert.notNull(environment, "Environment must not be null");
-        this.environment = environment;
-    }
-
     public String[] getAdminUrl() {
-        String[] adminUrls = url.clone();
+        String[] adminUrls = this.url.clone();
         for (int i = 0; i < adminUrls.length; i++) {
-            adminUrls[i] += "/" + apiPath;
+            adminUrls[i] += "/" + this.apiPath;
         }
         return adminUrls;
     }
 
-    public boolean isAutoDeregistration() {
-        return this.autoDeregistration != null ? autoDeregistration : CloudPlatform.getActive(environment) != null;
+    public boolean isAutoDeregistration(Environment environment) {
+        return this.autoDeregistration != null ? this.autoDeregistration : CloudPlatform.getActive(environment) != null;
     }
 }

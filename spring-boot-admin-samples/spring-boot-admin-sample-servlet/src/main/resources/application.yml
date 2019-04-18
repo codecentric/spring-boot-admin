@@ -31,7 +31,6 @@ spring:
   profiles:
     active:
       - secure
-      - dev
 
 ---
 spring:
