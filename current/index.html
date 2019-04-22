@@ -525,7 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.2.0-SNAPSHOT,</span>
-<span id="revdate">16.04.2019</span>
+<span id="revdate">22.04.2019</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -597,14 +597,15 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#customizing-notifiers">6.1. Custom Notifiers</a></li>
 <li><a href="#customizing-headers">6.2. Injecting Custom HTTP Headers</a></li>
 <li><a href="#customizing-instance-filter">6.3. Intercepting Requests And Responses</a></li>
-<li><a href="#customizing-custom-views">6.4. Custom Views</a>
+<li><a href="#customizing-external-views">6.4. Linking / Embedding External Pages</a></li>
+<li><a href="#customizing-custom-views">6.5. Custom Views</a>
 <ul class="sectlevel3">
-<li><a href="#customizing-custom-views-top-level">6.4.1. Adding a Top-Level View</a></li>
-<li><a href="#customizing-custom-views-instance">6.4.2. Visualizing a Custom Endpoint</a></li>
+<li><a href="#customizing-custom-views-top-level">6.5.1. Adding a Top-Level View</a></li>
+<li><a href="#customizing-custom-views-instance">6.5.2. Visualizing a Custom Endpoint</a></li>
 </ul>
 </li>
-<li><a href="#_customizing_header_logo_and_title">6.5. Customizing Header Logo and Title</a></li>
-<li><a href="#_customizing_favicon">6.6. Customizing Favicon</a></li>
+<li><a href="#_customizing_header_logo_and_title">6.6. Customizing Header Logo and Title</a></li>
+<li><a href="#_customizing_favicon">6.7. Customizing Favicon</a></li>
 </ul>
 </li>
 <li><a href="#monitoring-spring-boot-1.5.x">7. Monitoring Spring Boot 1.5.x</a></li>
@@ -2416,7 +2417,25 @@ This can be useful for auditing or adding some extra security checks.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="customizing-custom-views"><a class="anchor" href="#customizing-custom-views"></a><a class="link" href="#customizing-custom-views">6.4. Custom Views</a></h3>
+<h3 id="customizing-external-views"><a class="anchor" href="#customizing-external-views"></a><a class="link" href="#customizing-external-views">6.4. Linking / Embedding External Pages</a></h3>
+<div class="paragraph">
+<p>You can very simply add a link to external pages via configuration or even embed them (adding the <code>iframe=true</code>):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">spring</span>:
+  <span class="key">boot</span>:
+    <span class="key">admin</span>:
+      <span class="key">ui</span>:
+        <span class="key">external-views</span>:
+          - <span class="string"><span class="content">label: &quot;🚀&quot;</span></span>
+            <span class="key">url</span>: <span class="string"><span class="content">http://codecentric.de</span></span>
+            <span class="key">order</span>: <span class="string"><span class="content">2000</span></span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="customizing-custom-views"><a class="anchor" href="#customizing-custom-views"></a><a class="link" href="#customizing-custom-views">6.5. Custom Views</a></h3>
 <div class="paragraph">
 <p>It is possible to add custom views to the ui. The views must be implemented as <a href="https://vuejs.org/">Vue.js</a> components.</p>
 </div>
@@ -2432,7 +2451,7 @@ The <code>install()</code> function receives a parameter object referencing the 
 <p>If new top level routes are added to the frontend, they also must be known to the backend. Add a <code>/META-INF/spring-boot-admin-server-ui/extensions/{name}/routes.txt</code> with all your new toplevel routes (one route per line).</p>
 </div>
 <div class="sect3">
-<h4 id="customizing-custom-views-top-level"><a class="anchor" href="#customizing-custom-views-top-level"></a><a class="link" href="#customizing-custom-views-top-level">6.4.1. Adding a Top-Level View</a></h4>
+<h4 id="customizing-custom-views-top-level"><a class="anchor" href="#customizing-custom-views-top-level"></a><a class="link" href="#customizing-custom-views-top-level">6.5.1. Adding a Top-Level View</a></h4>
 <div class="paragraph">
 <p>Here is a simple top level view just listing all registered applications:</p>
 </div>
@@ -2529,7 +2548,7 @@ There are some helpful methods on the application and instances object available
 </div>
 </div>
 <div class="sect3">
-<h4 id="customizing-custom-views-instance"><a class="anchor" href="#customizing-custom-views-instance"></a><a class="link" href="#customizing-custom-views-instance">6.4.2. Visualizing a Custom Endpoint</a></h4>
+<h4 id="customizing-custom-views-instance"><a class="anchor" href="#customizing-custom-views-instance"></a><a class="link" href="#customizing-custom-views-instance">6.5.2. Visualizing a Custom Endpoint</a></h4>
 <div class="paragraph">
 <p>Here is a view to show a custom endpoint:</p>
 </div>
@@ -2615,7 +2634,7 @@ There are some helpful methods on the application and instances object available
 </div>
 </div>
 <div class="sect2">
-<h3 id="_customizing_header_logo_and_title"><a class="anchor" href="#_customizing_header_logo_and_title"></a><a class="link" href="#_customizing_header_logo_and_title">6.5. Customizing Header Logo and Title</a></h3>
+<h3 id="_customizing_header_logo_and_title"><a class="anchor" href="#_customizing_header_logo_and_title"></a><a class="link" href="#_customizing_header_logo_and_title">6.6. Customizing Header Logo and Title</a></h3>
 <div class="paragraph">
 <p>You can set custom information in the header (i.e. displaying staging information or company name) by using following configuration properties:</p>
 </div>
@@ -2635,7 +2654,7 @@ or you must ensure yourself that the image gets served correctly (e.g. by regist
 </div>
 </div>
 <div class="sect2">
-<h3 id="_customizing_favicon"><a class="anchor" href="#_customizing_favicon"></a><a class="link" href="#_customizing_favicon">6.6. Customizing Favicon</a></h3>
+<h3 id="_customizing_favicon"><a class="anchor" href="#_customizing_favicon"></a><a class="link" href="#_customizing_favicon">6.7. Customizing Favicon</a></h3>
 <div class="paragraph">
 <p>It is possible to use a custom favicon, which is also used for desktop notifications. Spring Boot Admin uses a different icon when one or more application is down.</p>
 </div>
