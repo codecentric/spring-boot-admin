@@ -33,6 +33,16 @@ This can be useful for auditing or adding some extra security checks.
 include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/SpringBootAdminServletApplication.java[tags=customization-instance-exchange-filter-function]
 ----
 
+[[customizing-external-views]]
+=== Linking / Embedding External Pages ===
+
+You can very simply add a link to external pages via configuration or even embed them (adding the `iframe=true`):
+
+[source,yaml,indent=0]
+----
+include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/resources/application.yml[tags=customization-external-views]
+----
+
 [[customizing-custom-views]]
 === Custom Views ===
 

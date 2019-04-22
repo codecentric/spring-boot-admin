@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import sbaConfig from '@/sba-config'
 import axios from 'axios';
 
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-if (global.SBA && global.SBA.csrf && global.SBA.csrf.headerName) {
-  axios.defaults.xsrfHeaderName = global.SBA.csrf.headerName;
-}
+axios.defaults.xsrfHeaderName = sbaConfig.csrf.headerName;
 
 export const redirectOn401 = (predicate = () => true) => error => {
   if (error.response && error.response.status === 401 && predicate(error)) {

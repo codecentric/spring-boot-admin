@@ -25,10 +25,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.springframework.http.MediaType;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
@@ -111,5 +114,36 @@ public class UiController {
         private final String faviconDanger;
         private final boolean notificationFilterEnabled;
         private final List<String> routes;
+        private final List<ExternalView> externalViews;
+    }
+
+    @lombok.Data
+    @JsonInclude(Include.NON_EMPTY)
+    public static class ExternalView {
+        /**
+         * Label to be shown in the navbar.
+         */
+        private final String label;
+        /**
+         * Url for the external view to be linked
+         */
+        private final String url;
+        /**
+         * Order in the navbar.
+         */
+        private final Integer order;
+        /**
+         * Should the page shown as an iframe or open in a new window.
+         */
+        private final boolean iframe;
+
+        public ExternalView(String label, String url, Integer order, boolean iframe) {
+            Assert.hasText(label, "'label' must not be empty");
+            Assert.hasText(url, "'url' must not be empty");
+            this.label = label;
+            this.url = url;
+            this.order = order;
+            this.iframe = iframe;
+        }
     }
 }

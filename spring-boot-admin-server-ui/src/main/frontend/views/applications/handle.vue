@@ -26,9 +26,11 @@
 </template>
 
 <script>
+  import sbaConfig from '@/sba-config'
+
   export default {
-     data: () => ({
-       favicon: 'assets/img/favicon.png',
+    data: () => ({
+      favicon: 'assets/img/favicon.png',
       faviconDanger: 'assets/img/favicon-danger.png',
     }),
     props: {
@@ -49,14 +51,8 @@
       }
     },
     created() {
-      if (global.SBA && global.SBA.uiSettings) {
-        if (global.SBA.uiSettings.favicon) {
-          this.favicon = global.SBA.uiSettings.favicon
-        }
-        if (global.SBA.uiSettings.faviconDanger) {
-          this.faviconDanger = global.SBA.uiSettings.faviconDanger
-        }
-      }
+      this.favicon = sbaConfig.uiSettings.favicon;
+      this.faviconDanger = sbaConfig.uiSettings.faviconDanger;
     },
     watch: {
       downCount(newVal, oldVal) {

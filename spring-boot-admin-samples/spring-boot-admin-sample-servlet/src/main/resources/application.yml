@@ -4,7 +4,8 @@ info:
   build-url: "https://travis-ci.org/codecentric/spring-boot-admin"
 
 logging:
-  file: "target/boot-admin-sample-servlet.log"
+  file:
+    name: "target/boot-admin-sample-servlet.log"
   pattern:
     file: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID}){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
 
@@ -20,6 +21,9 @@ management:
 spring:
   application:
     name: spring-boot-admin-sample-servlet
+  profiles:
+    active:
+      - secure
   boot:
     admin:
       client:
@@ -28,9 +32,18 @@ spring:
           metadata:
             tags:
               environment: test
-  profiles:
-    active:
-      - secure
+---
+
+# tag::customization-external-views[]
+spring:
+  boot:
+    admin:
+      ui:
+        external-views:
+          - label: "🚀"
+            url: http://codecentric.de
+            order: 2000
+# end::customization-external-views[]
 
 ---
 spring:

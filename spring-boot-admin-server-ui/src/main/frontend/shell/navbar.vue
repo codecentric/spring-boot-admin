@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2019 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -28,9 +28,26 @@
       </div>
       <div class="navbar-menu" :class="{'is-active' : showMenu}">
         <div class="navbar-end">
-          <router-link class="navbar-item" v-for="view in enabledViews" :to="{name: view.name}" :key="view.name">
-            <component :is="view.handle" :applications="applications" :error="error" />
-          </router-link>
+          <template v-for="view in enabledViews">
+            <router-link
+              v-if="view.name"
+              :key="view.name"
+              :to="{name: view.name}"
+              class="navbar-item"
+            >
+              <component :is="view.handle" :applications="applications" :error="error" />
+            </router-link>
+            <a
+              v-else
+              :key="view.href"
+              :href="view.href"
+              class="navbar-item"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <component :is="view.handle" />
+            </a>
+          </template>
 
           <div class="navbar-item has-dropdown is-hoverable" v-if="userName">
             <a class="navbar-link">
@@ -54,6 +71,7 @@
 </template>
 
 <script>
+  import sbaConfig from '@/sba-config'
   import {compareBy} from '@/utils/collections';
 
   const readCookie = (name) => {
@@ -85,23 +103,16 @@
     },
     computed: {
       enabledViews() {
-        return [...this.views].filter(
+        return this.views.filter(
           view => view.handle && (typeof view.isEnabled === 'undefined' || view.isEnabled())
         ).sort(compareBy(v => v.order));
-      }
+      },
     },
     created() {
-      if (global.SBA) {
-        if (global.SBA.uiSettings) {
-          this.brand = global.SBA.uiSettings.brand || this.brand;
-        }
-
-        if (global.SBA.user) {
-          this.userName = global.SBA.user.name;
-        }
-      }
+      this.brand = sbaConfig.uiSettings.brand;
+      this.userName = sbaConfig.user ? sbaConfig.user.name : null;
       this.csrfToken = readCookie('XSRF-TOKEN');
-      this.csrfParameterName = (global.SBA && global.SBA.csrf && global.SBA.csrf.parameterName) || '_csrf';
+      this.csrfParameterName = sbaConfig.csrf.parameterName;
     },
     mounted() {
       document.documentElement.classList.add('has-navbar-fixed-top');

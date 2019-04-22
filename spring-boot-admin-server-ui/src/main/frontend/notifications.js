@@ -13,25 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import sbaConfig from '@/sba-config'
 import {bufferTime, filter, Subject} from '@/utils/rxjs';
 import groupBy from 'lodash/groupBy';
 import values from 'lodash/values';
 
 let granted = false;
-
-const config = {
-  favicon: 'assets/img/favicon.png',
-  faviconDanger: 'assets/img/favicon-danger.png',
-};
-
-if (global.SBA && global.SBA.uiSettings) {
-  if (global.SBA.uiSettings.favicon) {
-    config.favicon = global.SBA.uiSettings.favicon
-  }
-  if (global.SBA.uiSettings.faviconDanger) {
-    config.faviconDanger = global.SBA.uiSettings.faviconDanger
-  }
-}
 
 const requestPermissions = async () => {
   if ('Notification' in window) {
@@ -48,7 +35,7 @@ const notifyForSingleChange = (application, oldApplication) => {
     tag: `${application.name}-${application.status}`,
     lang: 'en',
     body: `was ${oldApplication.status}.`,
-    icon: application.status === 'UP' ? config.favicon : config.faviconDanger,
+    icon: application.status === 'UP' ? sbaConfig.uiSettings.favicon : sbaConfig.uiSettings.faviconDanger,
     renotify: true,
     timeout: 5000
   });
@@ -58,7 +45,7 @@ const notifyForBulkChange = ({count, status, oldStatus}) => {
   return createNotification(`${count} applications are now ${status}`, {
     lang: 'en',
     body: `was ${oldStatus}.`,
-    icon: status === 'UP' ? config.favicon : config.faviconDanger,
+    icon: status === 'UP' ? sbaConfig.uiSettings.favicon : sbaConfig.uiSettings.faviconDanger,
     timeout: 5000
   });
 };

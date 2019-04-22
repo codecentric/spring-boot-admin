@@ -67,7 +67,7 @@
               <td>
                 <span v-text="event.type" /> <span v-if="event.type === 'STATUS_CHANGED'"
                                                    v-text="`(${event.payload.statusInfo.status})`"
-              />
+                />
               </td>
             </tr>
             <tr :key="`${event.key}-detail`" v-if="showPayload[event.key]">

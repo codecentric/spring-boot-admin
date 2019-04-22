@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ export default class ViewRegistry {
 
   get routes() {
     return [
-      ...this._toRoutes(this._views, v => !v.parent),
+      ...this._toRoutes(this._views, v => v.path && !v.parent),
       ...this._redirects
     ]
   }
@@ -43,8 +43,12 @@ export default class ViewRegistry {
     views.forEach(view => this._addView(view));
   }
 
-  addRedirect(path, redirectToView) {
-    this._redirects.push({path, redirect: {name: redirectToView}});
+  addRedirect(path, redirect) {
+    if (typeof redirect === 'string') {
+      this._redirects.push({path, redirect: {name: redirect}});
+    } else {
+      this._redirects.push({path, redirect});
+    }
   }
 
   _addView(view) {

@@ -37,12 +37,12 @@
     "vue": "^2.6.10",
     "vue-clickaway2": "^2.3.1",
     "vue-infinite-loading": "^2.4.4",
-    "vue-router": "^3.0.4"
+    "vue-router": "^3.0.6"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.6.0",
     "@vue/cli-plugin-eslint": "^3.6.0",
-    "@vue/cli-plugin-unit-jest": "^3.6.0",
+    "@vue/cli-plugin-unit-jest": "^3.6.3",
     "@vue/cli-service": "^3.6.0",
     "@vue/eslint-config-standard": "^4.0.0",
     "@vue/test-utils": "^1.0.0-beta.29",
@@ -108,9 +108,6 @@
     "not ie <= 8"
   ],
   "jest": {
-    "setupFiles": [
-      "<rootDir>/src/test/frontend/globals.js"
-    ],
     "moduleFileExtensions": [
       "js",
       "json",

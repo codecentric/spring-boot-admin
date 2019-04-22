@@ -4,7 +4,8 @@ info:
   build-url: "https://travis-ci.org/codecentric/spring-boot-admin"
 
 logging:
-  file: "target/boot-admin-sample-reactive.log"
+  file:
+    name: "target/boot-admin-sample-reactive.log"
 
 management:
   endpoints:
