@@ -59,7 +59,7 @@
 </template>
 <script>
   import NotificationFilter from '@/services/notification-filter';
-  import i18n from '../../i18n';
+  import i18n from '@/i18n';
 
   export default {
     props: {

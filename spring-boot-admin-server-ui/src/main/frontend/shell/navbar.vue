@@ -63,7 +63,7 @@
 
 <script>
   import {compareBy} from '@/utils/collections';
-  import {AVAILABLE_LANGUAGES, getReadableLanguage} from '../i18n';
+  import {AVAILABLE_LANGUAGES, getReadableLanguage} from '@/i18n';
 
   const readCookie = (name) => {
     const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));

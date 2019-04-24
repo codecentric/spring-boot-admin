@@ -43,7 +43,7 @@
           <td colspan="2">
             <table class="threads__thread-details table is-narrow is-fullwidth has-background-white-ter">
               <tr>
-                <td v-text="$t('instances.threaddump.thread_id')"/>
+                <td v-text="$t('instances.threaddump.thread_id')" />
                 <td v-text="thread.threadId" />
               </tr>
               <tr>
