@@ -1,0 +1,38 @@
+{
+  "error": {
+    "server_connection_failed": "Verbindung zum Server fehlgeschlagen."
+  },
+  "term": {
+    "application": "Anwendung",
+    "attributes": "Attribute",
+    "bytes": "Bytes",
+    "cancel": "Abbrechen",
+    "clear": "Leeren",
+    "cleared": "Geleert",
+    "close": "Schließen",
+    "confirm": "Bestätigen",
+    "delete": "Löschen",
+    "deleted": "Gelöscht",
+    "duration": "Dauer",
+    "event": "Ereignis",
+    "ever": "immer",
+    "executing": "Wird ausgeführt...",
+    "execution_failed": "Ausführung fehlgeschlagen.",
+    "execution_successful": "Ausführung erfolgreich.",
+    "failed": "Fehlgeschlagen",
+    "float": "Float",
+    "hours": "{count} Stunde | {count} Stunden",
+    "instances": "Instanzen",
+    "integer": "Integer",
+    "milliseconds": "Millisekunden",
+    "minutes": "{count} Minute | {count} Minuten",
+    "name": "Name",
+    "operations": "Operationen",
+    "save": "Speichern",
+    "stacktrace": "Stacktrace",
+    "suppress": "Unterdrücken",
+    "time": "Zeit",
+    "unsuppress": "Reaktivieren",
+    "username": "Username"
+  }
+}

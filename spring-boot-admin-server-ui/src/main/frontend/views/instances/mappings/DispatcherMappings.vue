@@ -42,7 +42,7 @@
                   :key="`${dispatcherName}_${idx}_methods`"
               >
                 <th class="is-narrow">
-                  <small>{{ $t('instances.mappings.http-verb') }}</small>
+                  <small v-text="$t('instances.mappings.http-verb')" />
                 </th>
                 <td class="monospaced is-breakable" v-text="mapping.details.requestMappingConditions.methods.join(', ')" />
               </tr>
@@ -51,7 +51,7 @@
                   :key="`${dispatcherName}_${idx}_consumes`"
               >
                 <th class="is-narrow">
-                  <small>{{ $t('instances.mappings.consumes') }}</small>
+                  <small v-text="$t('instances.mappings.consumes')" />
                 </th>
                 <td class="monospaced is-breakable" v-text="mediaTypePredicates(mapping.details.requestMappingConditions.consumes)" />
               </tr>
@@ -60,7 +60,7 @@
                   :key="`${dispatcherName}_${idx}_produces`"
               >
                 <th class="is-narrow">
-                  <small>{{ $t('instances.mappings.produces') }}</small>
+                  <small v-text="$t('instances.mappings.produces')" />
                 </th>
                 <td class="monospaced is-breakable" v-text="mediaTypePredicates(mapping.details.requestMappingConditions.produces)" />
               </tr>
@@ -69,7 +69,7 @@
                   :key="`${dispatcherName}_${idx}_params`"
               >
                 <th class="is-narrow">
-                  <small>{{ $t('instances.mappings.parameters') }}</small>
+                  <small v-text="$t('instances.mappings.parameters')" />
                 </th>
                 <td class="monospaced is-breakable" v-text="paramPredicates(mapping.details.requestMappingConditions.params)" />
               </tr>
@@ -78,14 +78,14 @@
                   :key="`${dispatcherName}_${idx}_headers`"
               >
                 <th class="is-narrow">
-                  <small>{{ $t('instances.mappings.headers') }}</small>
+                  <small v-text="$t('instances.mappings.headers')" />
                 </th>
                 <td class="monospaced is-breakable" v-text="paramPredicates(mapping.details.requestMappingConditions.headers)" />
               </tr>
 
               <tr :key="`${dispatcherName}_${idx}_handler`">
                 <th class="is-narrow">
-                  <small>{{ $t('instances.mappings.handler') }}</small>
+                  <small v-text="$t('instances.mappings.handler')" />
                 </th>
                 <td class="is-breakable" v-text="mapping.handler" />
               </tr>
@@ -93,7 +93,7 @@
             <tr v-else :key="`${dispatcherName}_${idx}`">
               <td><code v-text="mapping.predicate" /></td>
               <th class="is-narrow is-breakable">
-                <small>{{ $t('instances.mappings.handler') }}</small>
+                <small v-text="$t('instances.mappings.handler')" />
               </th>
               <td v-text="mapping.handler" colspan="4" />
             </tr>

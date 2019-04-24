@@ -20,7 +20,7 @@
       <div class="message-body">
         <strong>
           <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-          {{ $t('instances.loggers.fetch_failed') }}
+          <span v-text="$t('instances.loggers.fetch_failed')" />
         </strong>
         <p v-text="error.message" />
       </div>
@@ -35,23 +35,21 @@
                 class="loggers__toggle-scope button is-primary is-active"
                 @click="$emit('changeScope', 'instance')"
               >
-                <font-awesome-icon icon="cubes" />&nbsp;{{ $t('instances.loggers.application') }}
+                <font-awesome-icon icon="cubes" />&nbsp;
+                <span v-text="$t('instances.loggers.application')" />
               </button>
               <button
                 v-else
                 class="loggers__toggle-scope button"
                 @click="$emit('changeScope', 'application')"
               >
-                <font-awesome-icon icon="cube" />&nbsp;{{ $t('instances.loggers.instance') }}
+                <font-awesome-icon icon="cube" />&nbsp;&nbsp;
+                <span v-text="$t('instances.loggers.instance')" />
               </button>
             </div>
             <p class="help has-text-centered">
-              <span v-if="scope === 'application'">
-                {{ $t('instances.loggers.affects_all_instances', {count: instanceCount}) }}
-              </span>
-              <span v-else>
-                {{ $t('instances.loggers.affects_this_instance_only') }}
-              </span>
+              <span v-if="scope === 'application'" v-text="$t('instances.loggers.affects_all_instances', {count: instanceCount})" />
+              <span v-else v-text="$t('instances.loggers.affects_this_instance_only')" />
             </p>
           </div>
 
@@ -76,13 +74,13 @@
                 <div class="control">
                   <label class="checkbox">
                     <input type="checkbox" v-model="filter.classOnly">
-                    {{ $t('instances.loggers.filter.class_only') }}
+                    <span v-text="$t('instances.loggers.filter.class_only')" />
                   </label>
                 </div>
                 <div class="control">
                   <label class="checkbox">
                     <input type="checkbox" v-model="filter.configuredOnly">
-                    {{ $t('instances.loggers.filter.configured') }}
+                    <span v-text="$t('instances.loggers.filter.configured')" />
                   </label>
                 </div>
               </div>

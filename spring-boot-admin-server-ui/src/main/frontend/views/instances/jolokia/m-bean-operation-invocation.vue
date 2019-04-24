@@ -50,7 +50,7 @@
         <template v-else-if="state === 'executing'">
           <section class="modal-card-body">
             <section class="section is-loading">
-              <p>{{ $t('term.executing') }}</p>
+              <p v-text="$t('term.executing')" />
             </section>
           </section>
         </template>
@@ -59,7 +59,7 @@
           <section class="modal-card-body">
             <div class="message is-success">
               <div class="message-body">
-                <strong>{{ $t('term.execution_successful') }}</strong>
+                <strong v-text="$t('term.execution_successful')" />
               </div>
             </div>
             <pre v-if="descriptor.ret !== 'void'" v-text="prettyPrintedResult" />
@@ -67,9 +67,7 @@
           <footer class="modal-card-foot">
             <div class="field is-grouped is-grouped-right">
               <div class="control">
-                <button class="button is-light" @click="abort">
-                  {{ $t('term.close') }}
-                </button>
+                <button class="button is-light" @click="abort" v-text="$t('term.close')" />
               </div>
             </div>
           </footer>
@@ -83,7 +81,7 @@
                   <font-awesome-icon class="has-text-danger"
                                      icon="exclamation-triangle"
                   />
-                  {{ $t('term.execution_failed') }}
+                  <span v-text="$t('term.execution_failed')" />
                 </strong>
                 <p v-text="error.message" />
               </div>
@@ -98,9 +96,7 @@
           <footer class="modal-card-foot">
             <div class="field is-grouped is-grouped-right">
               <div class="control">
-                <button class="button is-light" @click="abort">
-                  {{ $t('term.close') }}
-                </button>
+                <button class="button is-light" @click="abort" v-text="$t('term.close')" />
               </div>
             </div>
           </footer>

@@ -21,7 +21,7 @@
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-warning" icon="exclamation-triangle" />
-            {{ $t('instances.details.info.fetch_failed') }}
+            <span v-text="$t('instances.details.info.fetch_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>
@@ -35,9 +35,7 @@
             </td>
           </tr>
         </table>
-        <p v-else class="is-muted">
-          No info provided.
-        </p>
+        <p v-else class="is-muted" v-text="$('instances.details.info.no_info_provided')" />
       </div>
     </div>
   </sba-panel>

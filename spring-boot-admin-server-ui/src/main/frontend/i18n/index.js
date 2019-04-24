@@ -1,37 +1,36 @@
-import i18n from 'i18next';
-import * as moment from 'moment';
-import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
+import _ from 'lodash';
+import langs from 'langs';
+import Vue from 'vue';
+import VueI18n from 'vue-i18n';
 
-import localesEN from './default.en';
-import localesDE from './default.de';
+Vue.use(VueI18n);
 
-let resources = {
-  en: {name: 'English', locale: 'en', translation: localesEN},
-  de: {name: 'Deutsch', locale: 'de', translation: localesDE}
-};
+const context = require.context('../', true, /^\.\/*\/.*i18n\.?([^/]*)\.json$/);
+const messages = context.keys()
+  .map(key => {
+    const localeFromFile = /^\.\/*\/.*i18n\.?([^/]*)\.json$/.exec(key);
+    const messages = context(key);
+    if (localeFromFile[1]) {
+      return {
+        [localeFromFile[1]]: messages
+      }
+    } else {
+      return messages;
+    }
+  })
+  .reduce((prev, cur) => _.merge(prev, cur), {});
 
-i18n
-  .use(I18nextBrowserLanguageDetector)
-  .on('languageChanged', (lang) => moment.locale(lang))
-  .init({
-    saveMissing: true,
-    fallbackLng: 'en',
-    debug: true,
-    resources: resources
-  });
+const i18n = new VueI18n({
+  fallbackLocale: 'en',
+  locale: 'en',
+  messages
+});
 
-export const AVAILABLE_LANGUAGES = Object.keys(resources).map(lang => ({
-  id: lang,
-  name: resources[lang].name,
-  locale: resources[lang].locale
-}));
 
 export function getReadableLanguage(locale) {
-  let language = AVAILABLE_LANGUAGES.find(lang => lang.locale === locale || lang.id === locale);
-  if (language) {
-    return language.name;
-  }
-  return locale;
+  return langs.where('1', locale.toLowerCase().split('-')[0]).local;
 }
+
+export const AVAILABLE_LANGUAGES = Object.keys(messages);
 
 export default i18n;

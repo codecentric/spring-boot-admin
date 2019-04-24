@@ -1,0 +1,17 @@
+{
+  "instances": {
+    "threaddump": {
+      "fetch_failed": "Das Laden des Thread-Dumps ist fehlgeschlagen.",
+      "thread_details_blocked_count": "Blocked-Count",
+      "thread_details_blocked_time": "Blocked-Time",
+      "thread_details_lock_name": "Lock-Name",
+      "thread_details_lock_owner_id": "Lock-Besitzer-Id",
+      "thread_details_lock_owner_name": "Lock-Besitzer-Name",
+      "thread_details_waited_count": "Warteperioden",
+      "thread_details_waited_time": "gewartete Dauer",
+      "thread_id": "Thread-Id",
+      "thread_name": "Thread-Name",
+      "thread_state": "Thread-Status"
+    }
+  }
+}

@@ -20,12 +20,8 @@
       <div class="control">
         <span class="select">
           <select v-model="filter.type">
-            <option value="username">
-              {{ $t('term.username') }}
-            </option>
-            <option value="sessionId">
-              {{ $t('instances.sessions.session_id') }}
-            </option>
+            <option value="username" v-text="$t('term.username')" />
+            <option value="sessionId" v-text="$t('instances.sessions.session_id')" />
           </select>
         </span>
       </div>
@@ -39,7 +35,7 @@
       <div class="message-body">
         <strong>
           <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-          {{ $t('instances.sessions.fetch_failed') }}
+          <span v-text="$t('instances.sessions.fetch_failed')" />
         </strong>
         <p v-text="error.message" />
       </div>

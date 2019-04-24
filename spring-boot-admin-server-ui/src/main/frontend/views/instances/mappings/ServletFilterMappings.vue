@@ -19,10 +19,10 @@
     <table class="table is-fullwidth" v-if="servletFilters.length">
       <thead>
         <tr>
-          <th>{{ $t('instances.mappings.url_pattern') }}</th>
-          <th>{{ $t('instances.mappings.servlet_name') }}</th>
-          <th>{{ $t('instances.mappings.filter_name') }}</th>
-          <th>{{ $t('instances.mappings.class') }}</th>
+          <th v-text="$t('instances.mappings.url_pattern')" />
+          <th v-text="$t('instances.mappings.servlet_name')" />
+          <th v-text="$t('instances.mappings.filter_name')" />
+          <th v-text="$t('instances.mappings.class')" />
         </tr>
       </thead>
       <tbody>

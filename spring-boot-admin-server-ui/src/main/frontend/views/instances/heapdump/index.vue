@@ -18,17 +18,14 @@
   <section class="section heapdump">
     <div>
       <div class="message is-warning">
-        <div class="message-body" v-html="$t('instances.heapdump.warn_sensitive_data')">
-          A heap dump may contain <strong>sensitive data</strong>. Please handle with care.
-        </div>
+        <div class="message-body" v-html="$t('instances.heapdump.warn_sensitive_data')" />
       </div>
       <div class="message is-warning">
-        <div class="message-body" v-html="$t('instances.heapdump.warn_dump_expensive')">
-          Dumping the heap may be expensive in terms of cpu and disk space.
-        </div>
+        <div class="message-body" v-html="$t('instances.heapdump.warn_dump_expensive')" />
       </div>
       <a class="button is-primary" :href="`instances/${instance.id}/actuator/heapdump`" target="_blank">
-        <font-awesome-icon icon="download" />&nbsp;{{ $t('instances.heapdump.download') }}
+        <font-awesome-icon icon="download" />&nbsp;
+        <span v-text="$t('instances.heapdump.download')" />
       </a>
     </div>
   </section>

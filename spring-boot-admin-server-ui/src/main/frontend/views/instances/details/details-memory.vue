@@ -21,7 +21,7 @@
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            {{ $t('instances.details.memory.fetch_failed') }}
+            <span v-text="$t('instances.details.memory.fetch_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>
@@ -29,33 +29,25 @@
       <div class="level memory-current" v-if="current">
         <div class="level-item has-text-centered" v-if="current.metaspace">
           <div>
-            <p class="heading has-bullet has-bullet-primary">
-              {{ $t('instances.details.memory.metaspace') }}
-            </p>
+            <p class="heading has-bullet has-bullet-primary" v-text="$t('instances.details.memory.metaspace')" />
             <p v-text="prettyBytes(current.metaspace)" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading has-bullet has-bullet-info">
-              {{ $t('instances.details.memory.used') }}
-            </p>
+            <p class="heading has-bullet has-bullet-info" v-text="$t('instances.details.memory.used')" />
             <p v-text="prettyBytes(current.used)" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading has-bullet has-bullet-warning">
-              {{ $t('instances.details.memory.size') }}
-            </p>
+            <p class="heading has-bullet has-bullet-warning" v-text="$t('instances.details.memory.size')" />
             <p v-text="prettyBytes(current.committed)" />
           </div>
         </div>
         <div class="level-item has-text-centered" v-if="current.max >= 0">
           <div>
-            <p class="heading">
-              {{ $t('instances.details.memory.max') }}
-            </p>
+            <p class="heading" v-text="$t('instances.details.memory.max')" />
             <p v-text="prettyBytes(current.max)" />
           </div>
         </div>

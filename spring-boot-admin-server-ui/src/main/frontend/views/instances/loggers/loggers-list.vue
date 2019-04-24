@@ -34,14 +34,12 @@
             v-if="loggersStatus[logger.name] && loggersStatus[logger.name].status === 'failed'"
           >
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            {{ $t('instances.loggers.setting_loglevel_failed', {logger: logger.name, loglevel: loggersStatus[logger.name].level}) }}
+            <span v-text="$t('instances.loggers.setting_loglevel_failed', {logger: logger.name, loglevel: loggersStatus[logger.name].level})" />
           </p>
         </td>
       </tr>
       <tr v-if="loggers.length === 0">
-        <td class="is-muted" colspan="5">
-          {{ $t('instances.loggers.no_loggers_found') }}
-        </td>
+        <td class="is-muted" colspan="5" v-text="$t('instances.loggers.no_loggers_found')" />
       </tr>
     </tbody>
     <infinite-loading ref="infinite" @infinite="increaseScroll">

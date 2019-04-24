@@ -1,0 +1,48 @@
+{
+  "instances": {
+    "details": {
+      "fetching_failed": "Fetching metrics failed.",
+      "gc": {
+        "count": "Count",
+        "time_spent_max": "Max time spent",
+        "time_spent_total": "Total time spent",
+        "title": "Garbage Collection Pausen"
+      },
+      "health": {
+        "title": "Health"
+      },
+      "info": {
+        "fetch_failed": "Fetching live info failed. This is the last known information.",
+        "no_info_provided": "No info provided.",
+        "title": "Info"
+      },
+      "memory": {
+        "fetch_failed": "Fetching memory metrics failed.",
+        "max": "Max",
+        "metaspace": "Metaspace",
+        "size": "Size",
+        "title": "Memory",
+        "used": "Used"
+      },
+      "metadata": {
+        "no_data_provided": "No metadata provided.",
+        "title": "Metadata"
+      },
+      "process": {
+        "cpus": "CPUs",
+        "fetch_failed": "Fetching process metrics failed.",
+        "pid": "PID",
+        "process_cpu_usage": "Process CPU Usage",
+        "system_cpu_usage": "System CPU Usage",
+        "title": "Process",
+        "uptime": "Uptime"
+      },
+      "threads": {
+        "daemon": "Daemon",
+        "live": "Live",
+        "peak_live": "Peak Live",
+        "title": "Threads"
+      }
+    }
+  }
+}

@@ -32,9 +32,8 @@
         :class="{ 'is-loading' : getStatusForLevel(null) === 'executing' }"
         :disabled="!isConfigured || !allowReset"
         @click.stop="selectLevel(null)"
-      >
-        {{ $t('instances.loggers.reset') }}
-      </button>
+        v-text="$t('instances.loggers.reset')"
+      />
     </div>
   </div>
 </template>

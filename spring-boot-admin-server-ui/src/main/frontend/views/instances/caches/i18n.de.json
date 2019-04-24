@@ -1,0 +1,11 @@
+{
+  "instances": {
+    "caches": {
+      "cache_manager": "Cache Manager",
+      "fetch_failed": "Das Laden des Caches ist fehlgeschlagen.",
+      "loading_caches": "Cache-Infiormationen werden geladen...",
+      "name": "Name",
+      "no_caches_found": "Keine Cache-Informationen gefunden."
+    }
+  }
+}

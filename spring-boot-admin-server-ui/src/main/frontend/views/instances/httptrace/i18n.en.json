@@ -1,0 +1,14 @@
+{
+  "instances": {
+    "httptrace": {
+      "fetching_failed": "Fetching traces failed.",
+      "label": {
+        "client_errors": "client errors",
+        "exclude_actuator": "exclude {actuator}/**",
+        "limit": "limit",
+        "server_errors": "server errors",
+        "success": "success"
+      }
+    }
+  }
+}

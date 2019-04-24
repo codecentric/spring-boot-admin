@@ -66,7 +66,7 @@
               class="has-text-danger"
               icon="exclamation-triangle"
             />
-            {{ $t('instances.auditevents.fetch_failed') }}
+            <span v-text="$t('instances.auditevents.fetch_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>

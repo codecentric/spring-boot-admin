@@ -1,0 +1,9 @@
+{
+  "instances": {
+    "env": {
+      "active_profile": "Profile",
+      "fetch_failed": "Fetching environment failed.",
+      "no_properties": "No properties set"
+    }
+  }
+}

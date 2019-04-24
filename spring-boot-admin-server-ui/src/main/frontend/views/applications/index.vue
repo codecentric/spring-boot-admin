@@ -17,14 +17,12 @@
 <template>
   <section class="section">
     <div class="container">
-      <p v-if="!applicationsInitialized" class="is-muted is-loading">
-        {{ $t('applications.loading_applications') }}
-      </p>
+      <p v-if="!applicationsInitialized" class="is-muted is-loading" v-text="$t('applications.loading_applications')" />
       <div v-if="error" class="message is-warning">
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-warning" icon="exclamation-triangle" />
-            {{ $t('applications.server_connection_failed') }}
+            <span v-text="$t('applications.server_connection_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>
@@ -50,9 +48,7 @@
           v-for="group in statusGroups"
           :key="group.status"
         >
-          <p class="heading">
-            {{ $t('applications.' + group.statusKey) }}
-          </p>
+          <p class="heading" v-text="$t('applications.' + group.statusKey)" />
           <div class="applications-list">
             <applications-list-item v-for="application in group.applications"
                                     :key="application.name"
@@ -68,9 +64,7 @@
             />
           </div>
         </div>
-        <p v-if="applications.length === 0" class="is-muted">
-          {{ $t('applications.no_applications_registered') }}
-        </p>
+        <p v-if="applications.length === 0" class="is-muted" v-text="$t('applications.no_applications_registered')" />
         <notification-filter-settings v-if="showNotificationFilterSettingsObject"
                                       v-popper="`nf-settings-${showNotificationFilterSettingsObject.id || showNotificationFilterSettingsObject.name}`"
                                       :notification-filters="notificationFilters"

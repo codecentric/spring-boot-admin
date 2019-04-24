@@ -21,7 +21,7 @@
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            {{ $t('instances.httptrace.fetching_failed') }}
+            <span v-text="$t('instances.httptrace.fetching_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>
@@ -51,9 +51,7 @@
             </div>
             <div class="field is-narrow has-addons">
               <p class="control">
-                <span class="button is-static">
-                  {{ $t('instances.httptrace.label.limit') }}
-                </span>
+                <span class="button is-static" v-text="$t('instances.httptrace.label.limit')" />
               </p>
               <p class="control">
                 <input class="input httptraces__limit" min="0" type="number" placeholder="trace limit" v-model="limit">
@@ -66,7 +64,7 @@
             <div class="control">
               <label class="checkbox">
                 <input type="checkbox" v-model="filter.showSuccess">
-                {{ $t('instances.httptrace.label.success') }}
+                <span v-text="$t('instances.httptrace.label.success')" />
               </label>
             </div>
           </div>
@@ -74,7 +72,7 @@
             <div class="control">
               <label class="checkbox">
                 <input type="checkbox" v-model="filter.showClientErrors">
-                {{ $t('instances.httptrace.label.client_errors') }}
+                <span v-text="$t('instances.httptrace.label.client_errors')" />
               </label>
             </div>
           </div>
@@ -82,7 +80,7 @@
             <div class="control">
               <label class="checkbox">
                 <input type="checkbox" v-model="filter.showServerErrors">
-                {{ $t('instances.httptrace.label.server_errors') }}
+                <span v-text="$t('instances.httptrace.label.server_errors')" />
               </label>
             </div>
           </div>
@@ -90,7 +88,7 @@
             <div class="control">
               <label class="checkbox">
                 <input type="checkbox" v-model="filter.excludeActuator">
-                {{ $t('instances.httptrace.label.exclude_actuator', {actuator: actuatorPath}) }}
+                <span v-text="$t('instances.httptrace.label.exclude_actuator', {actuator: actuatorPath})" />
               </label>
             </div>
           </div>

@@ -35,7 +35,7 @@
           <button class="button is-warning" :class="{'is-loading' : actionState === 'executing'}"
                   @click.stop="addFilter"
           >
-            <font-awesome-icon icon="bell-slash" />&nbsp;{{ $t('term.suppress') }}
+            <font-awesome-icon icon="bell-slash" />&nbsp;<span v-text="$t('term.suppress')" />
           </button>
         </div>
       </div>
@@ -50,7 +50,7 @@
       <div class="field is-grouped is-grouped-right">
         <div class="control">
           <button class="button" :class="{'is-loading' : actionState === 'executing'}" @click.stop="deleteActiveFilter">
-            <font-awesome-icon icon="bell" />&nbsp;{{ $t('term.unsuppress') }}
+            <font-awesome-icon icon="bell" />&nbsp;<span v-text="$t('term.unsuppress')" />
           </button>
         </div>
       </div>
@@ -75,14 +75,14 @@
     data: () => ({
       ttl: 5 * 60 * 1000,
       ttlOptions: [
-        {label: i18n.t('term.minutes', {count: 5}), value: 5 * 60 * 1000},
-        {label: i18n.t('term.minutes', {count: 15}), value: 15 * 60 * 1000},
-        {label: i18n.t('term.minutes', {count: 30}), value: 30 * 60 * 1000},
-        {label: i18n.t('term.hours', {count: 1}), value: 60 * 60 * 1000},
-        {label: i18n.t('term.hours', {count: 3}), value: 3 * 60 * 60 * 1000},
-        {label: i18n.t('term.hours', {count: 8}), value: 8 * 60 * 60 * 1000},
-        {label: i18n.t('term.hours', {count: 24}), value: 24 * 60 * 60 * 1000},
-        {label: i18n.t('term.ever'), value: -1}
+        {label: i18n.tc('term.minutes', 5, {count: 5}), value: 5 * 60 * 1000},
+        {label: i18n.tc('term.minutes', 15, {count: 15}), value: 15 * 60 * 1000},
+        {label: i18n.tc('term.minutes', 30, {count: 30}), value: 30 * 60 * 1000},
+        {label: i18n.tc('term.hours', 1, {count: 1}), value: 60 * 60 * 1000},
+        {label: i18n.tc('term.hours', 3, {count: 3}), value: 3 * 60 * 60 * 1000},
+        {label: i18n.tc('term.hours', 8, {count: 8}), value: 8 * 60 * 60 * 1000},
+        {label: i18n.tc('term.hours', 24, {count: 24}), value: 24 * 60 * 60 * 1000},
+        {label: i18n.tc('term.ever'), value: -1}
       ],
       actionState: null
     }),
@@ -91,7 +91,7 @@
         return this.notificationFilters.find(f => f.affects(this.object));
       },
       currentLocale() {
-        return i18n.languages[0];
+        return this.$i18n.locale;
       }
     },
     methods: {

@@ -29,7 +29,7 @@
               class="has-text-danger"
               icon="exclamation-triangle"
             />
-            {{ $t('instances.caches.fetch_failed') }}
+            <span v-text="$t('instances.caches.fetch_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>

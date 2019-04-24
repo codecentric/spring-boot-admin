@@ -69,7 +69,6 @@
   import {concatMap, from, timer} from '@/utils/rxjs';
   import moment from 'moment';
   import prettyBytes from 'pretty-bytes';
-  import i18n from '../../../i18n';
 
   const formatDuration = (value, baseUnit) => {
     const duration = moment.duration(toMillis(value, baseUnit));
@@ -151,7 +150,8 @@
       getLabel(tags) {
         return Object.entries(tags).filter(([, value]) => typeof value !== 'undefined')
           .map(pair => pair.join(':'))
-          .join('\n') || i18n.t('instances.metrics.no_tags');
+          .join('\n')
+          //|| i18n.t('instances.metrics.no_tags');
       },
       async fetchMetric(tags, idx) {
         try {

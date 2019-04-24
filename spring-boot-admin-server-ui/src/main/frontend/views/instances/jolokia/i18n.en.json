@@ -1,0 +1,12 @@
+{
+  "instances": {
+    "jolokia": {
+      "domains": "Domains",
+      "fetch_failed": "Fetching JMX Beans failed.",
+      "mbean": {
+        "fetch_failed": "Fetching attributes failed."
+      },
+      "mbeans": "MBeans"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "applications": {
+    "all_up": "Alle OK",
+    "instances": "Instanzen",
+    "instances_down": "Instanzen fehlerhaft",
+    "loading_applications": "Anwendungen werden geladen ...",
+    "no_applications_registered": "Keine Anwendungen registriert.",
+    "notifications_suppressed_for": "Benachrichtigungen für <code>{name}</code> werden unterdrückt für",
+    "restricted": "eingeschränkt",
+    "server_connection_failed": "Verbindung zum Server fehlgeschlagen.",
+    "suppress_notifications_on": "Benachrichtungen für <code>{name}</code> für",
+    "status": "Status",
+    "title": "Applikationen",
+    "up": "OK"
+  }
+}

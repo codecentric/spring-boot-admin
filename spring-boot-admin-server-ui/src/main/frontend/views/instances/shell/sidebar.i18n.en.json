@@ -1,0 +1,47 @@
+{
+  "sidebar": {
+    "data": {
+      "caches": "Caches",
+      "flyway": "Flyway",
+      "liquibase": "Liquibase",
+      "title": "Data"
+    },
+    "insights": {
+      "beans": "Beans",
+      "configprops": "Configuration Properties",
+      "details": "Details",
+      "env": "Env",
+      "metrics": "Metric",
+      "scheduledtasks": "Scheduled Tasks",
+      "title": "Insights"
+    },
+    "instances_caches": {
+      "title": "Caches"
+    },
+    "instances_custom": {
+      "title": "Custom"
+    },
+    "jvm": {
+      "heapdump": "Heap Dump",
+      "jolokia": "Jolokia",
+      "threaddump": "Threads",
+      "title": "JVM"
+    },
+    "logging": {
+      "logfile": "Logfile",
+      "loggers": "Loggers",
+      "title": "Logging"
+    },
+    "security": {
+      "auditevents": "Audit log",
+      "sessions": "Sessions",
+      "title": "Security"
+    },
+    "web": {
+      "gateway": "Gateway",
+      "httptrace": "HTTP traces",
+      "mappings": "Mappings",
+      "title": "Web"
+    }
+  }
+}

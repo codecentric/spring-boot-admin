@@ -21,7 +21,7 @@
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            {{ $t('instances.details.process.fetch_failed.') }}
+            <span v-text="$t('instances.details.process.fetch_failed.')" />
           </strong>
           <p v-text="error.message" />
         </div>
@@ -29,17 +29,13 @@
       <div class="level">
         <div class="level-item has-text-centered" v-if="pid">
           <div>
-            <p class="heading">
-              {{ $t('instances.details.process.pid') }}
-            </p>
+            <p class="heading" v-text="$t('instances.details.process.pid')" />
             <p v-text="pid" />
           </div>
         </div>
         <div class="level-item has-text-centered" v-if="uptime">
           <div>
-            <p class="heading">
-              {{ $t('instances.details.process.uptime') }}
-            </p>
+            <p class="heading" v-text="$t('instances.details.process.uptime')" />
             <p>
               <process-uptime :value="toMillis(uptime.value, uptime.baseUnit)" />
             </p>
@@ -47,25 +43,19 @@
         </div>
         <div class="level-item has-text-centered" v-if="processCpuLoad">
           <div>
-            <p class="heading">
-              {{ $t('instances.details.process.process_cpu_usage') }}
-            </p>
+            <p class="heading" v-text="$t('instances.details.process.process_cpu_usage')" />
             <p v-text="processCpuLoad.toFixed(2)" />
           </div>
         </div>
         <div class="level-item has-text-centered" v-if="systemCpuLoad">
           <div>
-            <p class="heading">
-              {{ $t('instances.details.process.system_cpu_usage') }}
-            </p>
+            <p class="heading" v-text="$t('instances.details.process.system_cpu_usage')" />
             <p v-text="systemCpuLoad.toFixed(2)" />
           </div>
         </div>
         <div class="level-item has-text-centered" v-if="systemCpuCount">
           <div>
-            <p class="heading">
-              {{ $t('instances.details.process.cpus') }}
-            </p>
+            <p class="heading" v-text="$t('instances.details.process.cpus')" />
             <p v-text="systemCpuCount" />
           </div>
         </div>

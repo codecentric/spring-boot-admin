@@ -1,0 +1,9 @@
+{
+  "instances": {
+    "env": {
+      "active_profile": "Profile",
+      "fetch_failed": "Das Laden der Umgebungsinformationen ist fehlgeschlagen.",
+      "no_properties": "Keine Eigenschaften gesetzt"
+    }
+  }
+}

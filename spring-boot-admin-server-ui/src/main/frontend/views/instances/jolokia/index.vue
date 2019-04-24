@@ -20,16 +20,14 @@
       <div class="message-body">
         <strong>
           <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-          {{ $t('instances.jolokia.fetch_failed') }}
+          <span v-text="$t('instances.jolokia.fetch_failed')" />
         </strong>
         <p v-text="error.message" />
       </div>
     </div>
     <div class="columns">
       <div class="column" v-if="selectedDomain">
-        <h1 class="heading">
-          {{ $t('instances.jolokia.mbeans') }}
-        </h1>
+        <h1 class="heading" v-text="$t('instances.jolokia.mbeans')" />
         <div class="m-bean card" :class="{'is-active': mBean === selectedMBean}"
              v-for="mBean in selectedDomain.mBeans" :key="mBean.descriptor.raw" :id="mBean.descriptor.raw"
              v-on-clickaway="() => mBean === selectedMBean && select(selectedDomain)"
@@ -58,14 +56,10 @@
             <div class="hero-foot tabs is-boxed" v-if="mBean === selectedMBean">
               <ul>
                 <li v-if="mBean.attr" :class="{'is-active' : selected.view === 'attributes' }">
-                  <a @click.stop="select(selectedDomain, selectedMBean, 'attributes')">
-                    {{ $t('term.attributes') }}
-                  </a>
+                  <a @click.stop="select(selectedDomain, selectedMBean, 'attributes')" v-text="$t('term.attributes')" />
                 </li>
                 <li v-if="mBean.op" :class="{'is-active' : selected.view === 'operations' }">
-                  <a @click.stop="select(selectedDomain, selectedMBean, 'operations')">
-                    {{ $t('term.operations') }}
-                  </a>
+                  <a @click.stop="select(selectedDomain, selectedMBean, 'operations')" v-text="$t('term.operations')" />
                 </li>
               </ul>
             </div>
@@ -83,9 +77,7 @@
       </div>
       <div class="column is-narrow">
         <nav class="menu" v-sticks-below="['#navigation']">
-          <p class="menu-label">
-            {{ $t('instances.jolokia.domains') }}
-          </p>
+          <p class="menu-label" v-text="$t('instances.jolokia.domains')" />
           <ul class="menu-list">
             <li>
               <a class="" v-for="domain in domains" :key="domain.domain"

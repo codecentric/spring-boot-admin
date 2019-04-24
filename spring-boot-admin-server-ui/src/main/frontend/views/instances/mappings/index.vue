@@ -21,15 +21,13 @@
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            {{ $t('instances.mappings.fetch_failed') }}
+            <span v-text="$t('instances.mappings.fetch_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>
       </div>
       <div v-if="isOldMetrics" class="message is-warning">
-        <div class="message-body">
-          {{ $t('instances.mappings.mappings_not_supported_spring_boot_1') }}
-        </div>
+        <div class="message-body" v-text="$t('instances.mappings.mappings_not_supported_spring_boot_1')" />
       </div>
       <template v-for="(context, ctxName) in contexts">
         <h3 class="title" v-text="ctxName" :key="ctxName" />

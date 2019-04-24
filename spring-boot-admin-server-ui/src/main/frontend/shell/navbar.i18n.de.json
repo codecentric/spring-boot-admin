@@ -1,0 +1,20 @@
+{
+  "navbar": {
+    "about": {
+      "title": "Über"
+    },
+    "applications": {
+      "title": "Anwendungen"
+    },
+    "custom": {
+      "title": "Custom"
+    },
+    "journal": {
+      "title": "Journal"
+    },
+    "logout": "Abmelden",
+    "wallboard": {
+      "title": "Übersicht"
+    }
+  }
+}

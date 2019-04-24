@@ -15,20 +15,16 @@
  */
 
 import '@/assets/css/base.scss';
-import moment from 'moment';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import VueI18Next from '@panter/vue-i18next';
-import i18n from './i18n';
 import components from './components';
 import Notifications from './notifications';
 import sbaShell from './shell';
 import Store from './store';
 import ViewRegistry from './viewRegistry';
 import views from './views';
+import i18n from './i18n';
 
-moment.locale(window.navigator.language);
-Vue.use(VueI18Next);
 Vue.use(VueRouter);
 Vue.use(components);
 
@@ -41,7 +37,6 @@ const installables = [
   ...global.SBA.extensions
 ];
 
-let vueI18Next = new VueI18Next(i18n);
 
 installables.forEach(view => view.install({
   viewRegistry,
@@ -59,7 +54,7 @@ if (global.SBA && global.SBA.uiSettings && global.SBA.uiSettings.routes) {
 }
 
 new Vue({
-  i18n: vueI18Next,
+  i18n,
   router: new VueRouter({
     mode: 'history',
     linkActiveClass: 'is-active',

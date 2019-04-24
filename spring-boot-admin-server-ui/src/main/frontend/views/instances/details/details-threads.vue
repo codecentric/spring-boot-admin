@@ -21,7 +21,7 @@
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            {{ $t('instances.details.threads.fetching_failed') }}
+            <span v-text="$t('instances.details.threads.fetching_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>
@@ -29,25 +29,19 @@
       <div class="level threads-current" v-if="current">
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading has-bullet has-bullet-warning">
-              {{ $t('instances.details.threads.live') }}
-            </p>
+            <p class="heading has-bullet has-bullet-warning" v-text="$t('instances.details.threads.live')" />
             <p v-text="current.live" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading  has-bullet has-bullet-info">
-              {{ $t('instances.details.threads.daemon') }}
-            </p>
+            <p class="heading  has-bullet has-bullet-info" v-text="$t('instances.details.threads.daemon')" />
             <p v-text="current.daemon" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading">
-              {{ $t('instances.details.threads.peak_live') }}
-            </p>
+            <p class="heading" v-text="$t('instances.details.threads.peak_live')" />
             <p v-text="current.peak" />
           </div>
         </div>

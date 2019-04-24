@@ -30,14 +30,11 @@
                               :disabled="deletingAll !== null"
                               v-if="sessions.length > 1" @click="deleteAllSessions()"
           >
-            <span v-if="deletingAll === 'completed'">
-              {{ $t('term.deleted') }}
-            </span>
-            <span v-else-if="deletingAll === 'failed'">
-              {{ $t('term.failed') }}
-            </span>
+            <span v-if="deletingAll === 'completed'" v-text="$t('term.deleted')" />
+            <span v-else-if="deletingAll === 'failed'" v-text="$t('term.failed')" />
             <span v-else>
-              <font-awesome-icon icon="trash" />&nbsp;{{ $t('term.delete') }}
+              <font-awesome-icon icon="trash" />&nbsp;
+              <span v-text="$t('term.delete')" />
             </span>
           </sba-confirm-button>
         </th>
@@ -52,15 +49,11 @@
       <td v-text="session.creationTime.format('L HH:mm:ss.SSS')" />
       <td v-text="session.lastAccessedTime.format('L HH:mm:ss.SSS')" />
       <td>
-        <span v-if="session.expired" class="tag is-info">
-          {{ $t('instances.sessions.expired') }}
-        </span>
+        <span v-if="session.expired" class="tag is-info" v-text="$t('instances.sessions.expired')" />
       </td>
       <td>
         <span v-if="session.maxInactiveInterval >= 0" v-text="`${session.maxInactiveInterval}s`" />
-        <span v-else>
-          {{ $t('instances.sessions.unlimited') }}
-        </span>
+        <span v-else v-text="$t('instances.sessions.unlimited')" />
       </td>
       <td>
         <span class="tag" v-for="name in session.attributeNames" :key="`${session.id}-${name}`"
@@ -72,26 +65,19 @@
                 :class="{ 'is-loading' : deleting[session.id] === 'executing', 'is-info' : deleting[session.id] === 'completed', 'is-danger' : deleting[session.id] === 'failed' }"
                 :disabled="session.id in deleting" @click="deleteSession(session.id)"
         >
-          <span v-if="deleting[session.id] === 'completed'">
-            {{ $t('term.deleted') }}
-          </span>
-          <span v-else-if="deleting[session.id] === 'failed'">
-            {{ $t('term.failed') }}
-          </span>
+          <span v-if="deleting[session.id] === 'completed'" v-text="$t('term.deleted')" />
+          <span v-else-if="deleting[session.id] === 'failed'" v-text="$t('term.failed')" />
           <span v-else>
-            <font-awesome-icon icon="trash" />&nbsp;{{ $t('term.delete') }}
+            <font-awesome-icon icon="trash" />&nbsp;
+            <span v-text="$t('term.delete')" />
           </span>
         </button>
       </td>
     </tr>
     <tr v-if="sessions.length === 0">
       <td class="is-muted" colspan="7">
-        <p v-if="isLoading" class="is-loading">
-          {{ $t('instances.sessions.loading_sessions') }}
-        </p>
-        <p v-else>
-          {{ $t('instances.sessions.no_sessions_found') }}
-        </p>
+        <p v-if="isLoading" class="is-loading" v-text="$t('instances.sessions.loading_sessions')" />
+        <p v-else v-text="$t('instances.sessions.no_sessions_found')" />
       </td>
     </tr>
   </table>

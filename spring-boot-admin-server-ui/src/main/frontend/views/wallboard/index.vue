@@ -30,9 +30,7 @@
         </div>
         <div class="application__body">
           <h1 class="application__name" v-text="application.name" />
-          <p class="application__instances is-muted">
-            {{ $t('wallboard.instances_count', { count: application.instances.length }) }}
-          </p>
+          <p class="application__instances is-muted" v-text="$tc('wallboard.instances_count', application.instances.length)" />
         </div>
         <h2 class="application__footer application__version" v-text="application.buildVersion" />
       </div>

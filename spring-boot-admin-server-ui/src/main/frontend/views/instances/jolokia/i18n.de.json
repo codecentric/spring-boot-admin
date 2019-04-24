@@ -1,0 +1,12 @@
+{
+  "instances": {
+    "jolokia": {
+      "domains": "Domains",
+      "fetch_failed": "Das Laden der JMX-Beans ist fehlgeschlagen.",
+      "mbean": {
+        "fetch_failed": "Das Laden der Attribute ist fehlgeschlagen."
+      },
+      "mbeans": "MBeans"
+    }
+  }
+}

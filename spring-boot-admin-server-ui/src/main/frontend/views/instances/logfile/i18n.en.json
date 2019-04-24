@@ -1,0 +1,8 @@
+{
+  "instances": {
+    "logfile": {
+      "download": "Download",
+      "fetch_failed": "Fetching logfile failed."
+    }
+  }
+}

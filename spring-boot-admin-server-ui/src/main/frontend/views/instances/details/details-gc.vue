@@ -21,7 +21,7 @@
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            {{ $t('instances.details.gc.Fetching GC metrics failed.') }}
+            <span v-text="$t('instances.details.gc.Fetching GC metrics failed.')" />
           </strong>
           <p v-text="error.message" />
         </div>
@@ -29,25 +29,19 @@
       <div class="level" v-if="current">
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading">
-              {{ $t('instances.details.gc.count') }}
-            </p>
+            <p class="heading" v-text="$t('instances.details.gc.count')" />
             <p v-text="current.count" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading">
-              {{ $t('instances.details.gc.time_spent_total') }}
-            </p>
+            <p class="heading" v-text="$t('instances.details.gc.time_spent_total')" />
             <p v-text="`${current.total_time.asSeconds().toFixed(4)}s`" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading">
-              {{ $t('instances.details.gc.time_spent_max') }}
-            </p>
+            <p class="heading" v-text="$t('instances.details.gc.time_spent_max')" />
             <p v-text="`${current.max.asSeconds().toFixed(4)}s`" />
           </div>
         </div>

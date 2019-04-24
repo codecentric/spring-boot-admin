@@ -25,9 +25,7 @@
           </td>
         </tr>
       </table>
-      <p v-else class="is-muted">
-        {{ $t('instances.details.metadata.No metadata provided.') }}
-      </p>
+      <p v-else class="is-muted" v-text="$t('instances.details.metadata.No metadata provided.')" />
     </div>
   </sba-panel>
 </template>

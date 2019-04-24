@@ -41,7 +41,7 @@
                 <form action="logout" method="post">
                   <input v-if="csrfToken" type="hidden" :name="csrfParameterName" :value="csrfToken">
                   <button class="button is-icon" type="submit" value="logout">
-                    <font-awesome-icon icon="sign-out-alt" />&nbsp;{{ $t('navbar.logout') }}
+                    <font-awesome-icon icon="sign-out-alt" />&nbsp;<span v-text="$t('navbar.logout')" />
                   </button>
                 </form>
               </a>
@@ -52,7 +52,7 @@
               <span v-text="currentLanguage" />
             </a>
             <div class="navbar-dropdown">
-              <a class="navbar-item" @click="changeLanguage(language.id)" v-for="language in availableLanguages" :key="language.locale" v-text="language.name" />
+              <a class="navbar-item" @click="changeLanguage(language.locale)" v-for="language in availableLanguages" :key="language.locale" v-text="language.name" />
             </div>
           </div>
         </div>
@@ -63,7 +63,7 @@
 
 <script>
   import {compareBy} from '@/utils/collections';
-  import i18n, {AVAILABLE_LANGUAGES, getReadableLanguage} from '../i18n';
+  import {AVAILABLE_LANGUAGES, getReadableLanguage} from '../i18n';
 
   const readCookie = (name) => {
     const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
@@ -103,7 +103,7 @@
     },
     methods: {
       changeLanguage(lang) {
-        this.$i18n.i18next.changeLanguage(lang);
+        this.$i18n.locale = lang;
         this.currentLanguage = getReadableLanguage(lang);
       }
     },
@@ -119,8 +119,11 @@
       }
       this.csrfToken = readCookie('XSRF-TOKEN');
       this.csrfParameterName = (global.SBA && global.SBA.csrf && global.SBA.csrf.parameterName) || '_csrf';
-      this.availableLanguages = AVAILABLE_LANGUAGES;
-      this.currentLanguage = getReadableLanguage(i18n.languages[0]);
+      this.availableLanguages = AVAILABLE_LANGUAGES.map(locale => ({
+        name: getReadableLanguage(locale),
+        locale
+      }));
+      this.currentLanguage = getReadableLanguage(this.$i18n.locale);
     },
     mounted() {
       document.documentElement.classList.add('has-navbar-fixed-top');

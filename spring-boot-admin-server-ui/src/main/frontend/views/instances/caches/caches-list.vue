@@ -27,14 +27,11 @@
             :disabled="clearingAll !== null"
             @click="clearCaches"
           >
-            <span v-if="clearingAll === 'completed'">
-              {{ $t('term.cleared') }}
-            </span>
-            <span v-else-if="clearingAll === 'failed'">
-              {{ $t('term.failed') }}
-            </span>
+            <span v-if="clearingAll === 'completed'" v-text="$t('term.cleared')" />
+            <span v-else-if="clearingAll === 'failed'" v-text="$t('term.failed')" />
             <span v-else>
-              <font-awesome-icon icon="trash" />&nbsp;{{ $t('term.clear') }}
+              <font-awesome-icon icon="trash" />&nbsp;
+              <span v-text="$t('term.clear')" />
             </span>
           </sba-confirm-button>
         </th>
@@ -62,26 +59,19 @@
                   :class="{ 'is-loading' : clearing[cache.name] === 'executing', 'is-info' : clearing[cache.name] === 'completed', 'is-danger' : clearing[cache.name] === 'failed' }"
                   :disabled="cache.name in clearing" @click="clearCache(cache.name)"
           >
-            <span v-if="clearing[cache.name] === 'completed'">
-              {{ $t('term.cleared') }}
-            </span>
-            <span v-else-if="clearing[cache.name] === 'failed'">
-              {{ $t('term.failed') }}
-            </span>
+            <span v-if="clearing[cache.name] === 'completed'" v-text="$t('term.cleared')" />
+            <span v-else-if="clearing[cache.name] === 'failed'" v-text="$t('term.failed')" />
             <span v-else>
-              <font-awesome-icon icon="trash" />&nbsp;Clear
+              <font-awesome-icon icon="trash" />
+              <span v-text="$t('term.clear')" />
             </span>
           </button>
         </td>
       </tr>
       <tr v-if="caches.length === 0">
         <td class="is-muted" colspan="3 ">
-          <p v-if="isLoading" class="is-loading">
-            {{ $t('instances.caches.loading') }}
-          </p>
-          <p v-else>
-            {{ $t('instances.caches.no_caches_found') }}
-          </p>
+          <p v-if="isLoading" class="is-loading" v-text="$t('instances.caches.loading')" />
+          <p v-else v-text="$t('instances.caches.no_caches_found')" />
         </td>
       </tr>
     </tbody>
