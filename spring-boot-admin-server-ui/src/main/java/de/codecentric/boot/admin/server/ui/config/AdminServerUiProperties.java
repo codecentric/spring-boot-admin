@@ -16,8 +16,12 @@
 
 package de.codecentric.boot.admin.server.ui.config;
 
+import de.codecentric.boot.admin.server.ui.web.UiController;
+
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -63,7 +67,7 @@ public class AdminServerUiProperties {
     /**
      * Brand to be shown in then navbar.
      */
-    private String brand = "<img src=\"assets/img/icon-spring-boot-admin.svg\"><span>Spring Boot Admin</span>";
+    private String brand = "<img src=\"assets/img/icon-spring-boot-admin.svg\"><span>Spring Boot Admin</span></img>";
 
     /**
      * If running behind a reverse proxy (using path rewriting) this can be used to output correct self references.
@@ -77,7 +81,15 @@ public class AdminServerUiProperties {
      */
     private boolean cacheTemplates = true;
 
-    private final Cache cache = new Cache();
+    /**
+     * Cache-Http-Header settings.
+     */
+    private Cache cache = new Cache();
+
+    /**
+     * External views shown in the navbar.
+     */
+    private List<UiController.ExternalView> externalViews = new ArrayList<>();
 
     @lombok.Data
     public static class Cache {
@@ -112,5 +124,4 @@ public class AdminServerUiProperties {
             return CacheControl.empty();
         }
     }
-
 }

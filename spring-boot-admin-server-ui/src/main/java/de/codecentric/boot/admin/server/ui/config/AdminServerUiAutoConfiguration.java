@@ -59,7 +59,8 @@ public class AdminServerUiAutoConfiguration {
         "/applications/**",
         "/instances/**",
         "/journal/**",
-        "/wallboard/**"
+        "/wallboard/**",
+        "/external/**"
     );
     private final AdminServerUiProperties adminUi;
     private final AdminServerProperties adminServer;
@@ -88,6 +89,7 @@ public class AdminServerUiAutoConfiguration {
                                       .notificationFilterEnabled(!this.applicationContext.getBeansOfType(
                                           NotificationFilterController.class).isEmpty())
                                       .routes(routes)
+                                      .externalViews(this.adminUi.getExternalViews())
                                       .build();
 
         String publicUrl = this.adminUi.getPublicUrl() !=
