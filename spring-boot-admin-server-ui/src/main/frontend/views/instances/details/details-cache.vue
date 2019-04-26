@@ -29,25 +29,25 @@
       <div class="level cache-current" v-if="current">
         <div v-if="current.hit !== undefined" class="level-item has-text-centered">
           <div>
-            <p class="heading has-bullet has-bullet-info" v-text="$t('instances.details.cache.hits')"/>
+            <p class="heading has-bullet has-bullet-info" v-text="$t('instances.details.cache.hits')" />
             <p v-text="current.hit" />
           </div>
         </div>
         <div v-if="current.miss !== undefined" class="level-item has-text-centered">
           <div>
-            <p class="heading has-bullet has-bullet-warning" v-text="$t('instances.details.cache.misses')"/>
+            <p class="heading has-bullet has-bullet-warning" v-text="$t('instances.details.cache.misses')" />
             <p v-text="current.miss" />
           </div>
         </div>
         <div v-if="ratio !== undefined" class="level-item has-text-centered">
           <div>
-            <p class="heading" v-text="$t('instances.details.cache.hit_ratio')"/>
+            <p class="heading" v-text="$t('instances.details.cache.hit_ratio')" />
             <p v-text="ratio" />
           </div>
         </div>
         <div v-if="current.size !== undefined" class="level-item has-text-centered">
           <div>
-            <p class="heading" v-text="$t('instances.details.cache.size')"/>
+            <p class="heading" v-text="$t('instances.details.cache.size')" />
             <p v-text="current.size" />
           </div>
         </div>

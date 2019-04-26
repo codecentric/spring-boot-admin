@@ -50,7 +50,7 @@
           <td class="is-breakable" v-text="value" />
         </tr>
       </table>
-      <p class="is-muted" v-else v-text="$t('instances.configprops.fetch_failed')"/>
+      <p class="is-muted" v-else v-text="$t('instances.configprops.fetch_failed')" />
     </sba-panel>
   </section>
 </template>

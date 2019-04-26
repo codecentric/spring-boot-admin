@@ -60,8 +60,8 @@
       </template>
       <tr v-if="events.length === 0">
         <td class="is-muted" colspan="5">
-          <p v-if="isLoading" class="is-loading" v-html="$t('instances.auditevents.loading_audit_events')"/>
-          <p v-else v-html="$t('instances.auditevents.no_audit_events_found')"/>
+          <p v-if="isLoading" class="is-loading" v-html="$t('instances.auditevents.loading_audit_events')" />
+          <p v-else v-html="$t('instances.auditevents.no_audit_events_found')" />
         </td>
       </tr>
     </tbody>

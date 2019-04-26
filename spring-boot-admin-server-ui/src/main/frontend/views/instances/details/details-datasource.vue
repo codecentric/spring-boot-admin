@@ -29,21 +29,21 @@
       <div class="level datasource-current" v-if="current">
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading has-bullet has-bullet-info" v-text="$t('instances.details.datasource.active_connections')"/>
+            <p class="heading has-bullet has-bullet-info" v-text="$t('instances.details.datasource.active_connections')" />
             <p v-text="current.active" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading" v-text="$t('instances.details.datasource.min_connections')"/>
+            <p class="heading" v-text="$t('instances.details.datasource.min_connections')" />
             <p v-text="current.min" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading" v-text="$t('instances.details.datasource.max_connections')"/>
+            <p class="heading" v-text="$t('instances.details.datasource.max_connections')" />
             <p v-if="current.max >= 0" v-text="current.max" />
-            <p v-else v-text="$t('instances.details.datasource.unlimited')"/>
+            <p v-else v-text="$t('instances.details.datasource.unlimited')" />
           </div>
         </div>
       </div>
