@@ -16,7 +16,7 @@
 
 <template>
   <div class="custom">
-    <p>Instancessss: <span v-text="instance.id" /></p>
+    <p>Instances: <span v-text="instance.id" /></p>
     <p>Output: <span v-text="text" /></p>
     <p>i18n: <span v-text="$t('my.custom.i18n', {prop: 'inline'})" /></p>
     <p>i18n: <span v-text="i18nProperty" /></p>

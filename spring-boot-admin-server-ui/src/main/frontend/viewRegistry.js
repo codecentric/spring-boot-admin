@@ -64,31 +64,6 @@ export default class ViewRegistry {
     if (!view.group) {
       view.group = VIEW_GROUP.NONE;
     }
-    if(!view.i18n) {
-      view.i18n = {};
-      view.i18n.messages = {
-        'en-US': {
-          'navbar': {
-            'about': {
-              'title': 'About'
-            },
-            'applications': {
-              'title': 'Applications'
-            },
-            'custom': {
-              'title': 'Custom'
-            },
-            'journal': {
-              'title': 'Journal'
-            },
-            'logout': 'Log out',
-            'wallboard': {
-              'title': 'Wallboard'
-            }
-          }
-
-        }      };
-    }
 
     this._views.push(view);
   }
