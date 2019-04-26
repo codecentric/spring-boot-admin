@@ -35,7 +35,7 @@
                   class="input"
                   type="search"
                   v-model="filter.uri"
-                  placeholder="Path"
+                  :placeholder="$t('instances.httptrace.uri')"
                 >
                 <span class="icon is-small is-left">
                   <font-awesome-icon icon="filter" />

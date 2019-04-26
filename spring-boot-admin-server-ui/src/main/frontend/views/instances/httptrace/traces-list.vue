@@ -18,27 +18,13 @@
   <table class="httptraces table is-hoverable is-fullwidth">
     <thead>
       <tr>
-        <th class="httptraces__trace-timestamp">
-          Timestamp
-        </th>
-        <th class="httptraces__trace-method">
-          Method
-        </th>
-        <th class="httptraces__trace-uri">
-          Path
-        </th>
-        <th class="httptraces__trace-status">
-          Status
-        </th>
-        <th class="httptraces__trace-contentType">
-          Content-Type
-        </th>
-        <th class="httptraces__trace-contentLength">
-          Length
-        </th>
-        <th class="httptraces__trace-timeTaken">
-          Time
-        </th>
+        <th class="httptraces__trace-timestamp" v-text="$t('instances.httptrace.timestamp')" />
+        <th class="httptraces__trace-method" v-text="$t('instances.httptrace.method')" />
+        <th class="httptraces__trace-uri" v-text="$t('instances.httptrace.uri')" />
+        <th class="httptraces__trace-status" v-text="$t('instances.httptrace.status')" />
+        <th class="httptraces__trace-contentType" v-text="$t('instances.httptrace.content_type')" />
+        <th class="httptraces__trace-contentLength" v-text="$t('instances.httptrace.length')" />
+        <th class="httptraces__trace-timeTaken" v-text="$t('instances.httptrace.time')" />
       </tr>
     </thead>
     <transition-group tag="tbody" name="fade-in">
@@ -79,9 +65,7 @@
         </tr>
       </template>
       <tr key="no-traces" v-if="traces.length === 0">
-        <td class="is-muted" colspan="7">
-          No traces found.
-        </td>
+        <td class="is-muted" colspan="7" v-text="$t('instances.httptrace.no_traces_found')" />
       </tr>
     </transition-group>
   </table>
