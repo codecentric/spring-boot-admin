@@ -1,7 +1,21 @@
 {
   "instances": {
     "details": {
-      "fetching_failed": "Das Laden der Metriken ist fehlgeschlagen.",
+      "fetch_failed": "Das Laden der Metriken ist fehlgeschlagen.",
+      "cache":{
+        "fetch_failed": "Das Laden der Cache-Metriken ist fehlgeschlagen.",
+        "hit_ratio": "Treffer-Rate",
+        "hits": "Treffer",
+        "size": "Größe"
+      },
+      "datasource": {
+        "fetch_failed": "Das Laden der Datenquellen-Metriken ist fehlgeschlagen.",
+        "active_connections": "Aktive Verbindungen",
+        "min_connections": "Min. Verbindungen",
+        "max_connections": "Max. Verbindungen",
+        "title": "Datenquelle: {datasource}",
+        "unlimited": "unlimitiert"
+      },
       "gc": {
         "count": "Anzahl",
         "time_spent_max": "Max. Zeitdauer",
@@ -9,6 +23,7 @@
         "title": "GC Pausen"
       },
       "health": {
+        "fetch_failed": "Das Laden der Zustands-Informationen ist fehlgeschlagen.",
         "title": "Zustand"
       },
       "info": {
@@ -39,6 +54,7 @@
       },
       "threads": {
         "daemon": "Daemon",
+        "fetch_failed": "Fetching threads metrics failed.",
         "live": "Live",
         "peak_live": "Peak Live",
         "title": "Threads"

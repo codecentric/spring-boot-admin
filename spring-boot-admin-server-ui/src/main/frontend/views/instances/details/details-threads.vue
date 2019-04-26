@@ -21,7 +21,7 @@
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            <span v-text="$t('instances.details.threads.fetching_failed')" />
+            <span v-text="$t('instances.details.threads.fetch_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>

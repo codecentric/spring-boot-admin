@@ -1,7 +1,21 @@
 {
   "instances": {
     "details": {
-      "fetching_failed": "Fetching metrics failed.",
+      "fetch_failed": "Fetching metrics failed.",
+      "cache":{
+        "fetch_failed": "Fetching cache metrics failed.",
+        "hit_ratio": "Hit ratio",
+        "hits": "Hits",
+        "size": "Size"
+      },
+      "datasource": {
+        "fetch_failed": "Fetching datasource metrics failed.",
+        "active_connections": "Active connections",
+        "min_connections": "Min connections",
+        "max_connections": "Max connections",
+        "title": "Datasource: {datasource}",
+        "unlimited": "unlimited"
+      },
       "gc": {
         "count": "Count",
         "time_spent_max": "Max time spent",
@@ -9,6 +23,7 @@
         "title": "Garbage Collection Pausen"
       },
       "health": {
+        "fetch_failed": "Fetching live health status failed. This is the last known information.",
         "title": "Health"
       },
       "info": {
@@ -39,6 +54,7 @@
       },
       "threads": {
         "daemon": "Daemon",
+        "fetch_failed": "Fetching threads metrics failed.",
         "live": "Live",
         "peak_live": "Peak Live",
         "title": "Threads"
