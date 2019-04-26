@@ -18,8 +18,8 @@
   <table class="table routes is-fullwidth is-hoverable">
     <thead>
       <tr>
-        <th>Id</th>
-        <th>Order</th>
+        <th v-text="$t('instances.gateway.route.id')" />
+        <th v-text="$t('instances.gateway.route.order')" />
         <th />
       </tr>
     </thead>
@@ -37,14 +37,11 @@
                                 :disabled="deleting[route.route_id] === 'executing'"
                                 @click.stop="deleteRoute(route.route_id)"
             >
-              <span v-if="deleting[route.route_id] === 'completed'">
-                Deleted
-              </span>
-              <span v-else-if="deleting[route.route_id] === 'failed'">
-                Failed
-              </span>
+              <span v-if="deleting[route.route_id] === 'completed'" v-text="$t('instances.gateway.route.deleted')" />
+              <span v-else-if="deleting[route.route_id] === 'failed'" v-text="$t('instances.gateway.route.delete_failed')" />
               <span v-else>
-                <font-awesome-icon icon="trash" />&nbsp;Delete
+                <font-awesome-icon icon="trash" />
+                <span v-text="$t('instances.gateway.route.delete')" />
               </span>
             </sba-confirm-button>
           </td>
@@ -63,20 +60,15 @@
             <span
               v-else
               class="is-muted"
-            >
-              No Route Definition provided.
-            </span>
+              v-text="$t('instances.gateway.route.no_definition_provided')"
+            />
           </td>
         </tr>
       </template>
       <tr v-if="routes.length === 0">
         <td class="is-muted" colspan="3">
-          <p v-if="isLoading" class="is-loading">
-            Loading Routes...
-          </p>
-          <p v-else>
-            No Routes found.
-          </p>
+          <p v-if="isLoading" class="is-loading" v-text="$t('instances.gateway.route.loading')" />
+          <p v-else v-text="$t('instances.gateway.route.no_routes_found')" />
         </td>
       </tr>
     </tbody>

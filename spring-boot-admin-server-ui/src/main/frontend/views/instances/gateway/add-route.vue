@@ -20,52 +20,42 @@
       <div class="message-body">
         <strong>
           <font-awesome-icon class="has-text-warning" icon="exclamation-triangle" />
-          Adding route failed.
+          <span v-text="$t('instances.gateway.route.adding_failed')" />
         </strong>
         <p v-text="error.message" />
       </div>
     </div>
 
     <div class="field">
-      <label class="label" for="routeId">
-        Id
-      </label>
+      <label class="label" for="routeId" v-text="$t('instances.gateway.route.id')" />
       <p class="control">
         <input class="input" id="routeId" v-model="routeId" required>
       </p>
     </div>
 
     <div class="field">
-      <label class="label" for="order">
-        Order
-      </label>
+      <label class="label" for="order" v-text="$t('instances.gateway.route.order')" />
       <p class="control">
         <input class="input" id="order" placeholder="0" v-model="routeOrder" type="number">
       </p>
     </div>
 
     <div class="field">
-      <label class="label" for="predicates">
-        Predicates
-      </label>
+      <label class="label" for="predicates" v-text="$t('instances.gateway.route.predicates')" />
       <p class="control">
         <textarea rows="4" class="textarea" id="predicates" placeholder="[]" v-model="routePredicates" required />
       </p>
     </div>
 
     <div class="field">
-      <label class="label" for="filters">
-        Filters
-      </label>
+      <label class="label" for="filters" v-text="$t('instances.gateway.route.filters')" />
       <p class="control">
         <textarea rows="4" class="textarea" id="filters" placeholder="[]" v-model="routeFilters" />
       </p>
     </div>
 
     <div class="field">
-      <label class="label" for="routeUri">
-        URI
-      </label>
+      <label class="label" for="routeUri" v-text="$t('instances.gateway.route.uri')" />
       <p class="control">
         <input class="input" id="routeUri" placeholder="http://example.com" v-model="routeUri" required>
       </p>
@@ -73,9 +63,7 @@
 
     <div class="field is-grouped is-grouped-right">
       <div class="control">
-        <button class="button is-primary" :disabled="!isAddingRoutePossible" @click="addRoute">
-          Add route
-        </button>
+        <button class="button is-primary" :disabled="!isAddingRoutePossible" @click="addRoute" v-text="$t('instances.gateway.route.add_route')" />
       </div>
     </div>
   </div>

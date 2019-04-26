@@ -22,15 +22,9 @@
               :disabled="refreshingRouteCache === 'executing'"
               @click="refreshRoutesCache"
       >
-        <span v-if="refreshingRouteCache === 'completed'">
-          Routes Cache refreshed
-        </span>
-        <span v-else-if="refreshingRouteCache === 'failed'">
-          Failed
-        </span>
-        <span v-else>
-          Refresh Routes Cache
-        </span>
+        <span v-if="refreshingRouteCache === 'completed'" v-text="$t('instances.gateway.route.cache_refreshed')" />
+        <span v-else-if="refreshingRouteCache === 'failed'" v-text="$t('instances.gateway.route.cache_refresh_failed')" />
+        <span v-else v-text="$t('instances.gateway.route.refresh')" />
       </button>
     </div>
   </div>
