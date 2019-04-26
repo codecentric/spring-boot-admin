@@ -1,0 +1,7 @@
+{
+  "my": {
+    "custom": {
+      "i18n": "This string is translated via: {prop}"
+    }
+  }
+}

@@ -16,8 +16,10 @@
 
 <template>
   <div class="custom">
-    <p>Instance: <span v-text="instance.id" /></p>
+    <p>Instancessss: <span v-text="instance.id" /></p>
     <p>Output: <span v-text="text" /></p>
+    <p>i18n: <span v-text="$t('my.custom.i18n', {prop: 'inline'})" /></p>
+    <p>i18n: <span v-text="i18nProperty" /></p>
   </div>
 </template>
 
@@ -29,9 +31,19 @@
         required: true
       }
     },
+    i18n: {
+      messages: {
+        en: require('./i18n.en')
+      }
+    },
     data: () => ({
       text: ''
     }),
+    computed: {
+      i18nProperty() {
+        return this.$i18n.t('my.custom.i18n', {prop: 'computed'})
+      }
+    },
     async created() {
       const response = await this.instance.axios.get('actuator/custom'); //<2>
       this.text = response.data;
