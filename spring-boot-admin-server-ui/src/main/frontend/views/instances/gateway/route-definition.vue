@@ -72,7 +72,7 @@
     <div class="route-definition">
       <div class="route-definition-header">
         <font-awesome-icon icon="map-marker-alt" />&nbsp;
-        <span v-text="$t('instances.gateway.route.uri')"/>
+        <span v-text="$t('instances.gateway.route.uri')" />
       </div>
       <div
         class="route-definition-content"
