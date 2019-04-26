@@ -1,0 +1,8 @@
+{
+  "instances": {
+    "configprops": {
+      "fetch_failed": "Das Laden der Konfigurationseinstellungen ist fehlgeschlagen...",
+      "no_properties_set": "Keine Konfigurationseinstellungen gefunden."
+    }
+  }
+}
