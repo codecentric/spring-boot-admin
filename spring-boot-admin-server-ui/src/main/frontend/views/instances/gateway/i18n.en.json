@@ -18,18 +18,15 @@
         "no_routes_found": "No Routes found.",
         "order": "Order",
         "predicates": "Predicates",
-        "uri": "URI",
-        "": ""
+        "uri": "URI"
       },
       "filters": {
         "fetch_failed": "Fetching Global Filters failed.",
         "filter_name": "Filter name",
         "loading": "Loading Global Filters...",
         "no_filters_found": "No Global Filters found.",
-        "order": "Order",
-        "": ""
-      },
-      "": ""
+        "order": "Order"
+      }
     }
   }
 }
