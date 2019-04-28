@@ -1,1 +1,34 @@
-https://github.com/Farden/spring-boot-admin/tree/master/spring-boot-admin-samples
+pipeline {
+  agent any
+  stages {
+    stage('scm checout') {
+      steps {
+        git(url: 'https://github.com/Farden/spring-boot-admin/tree/master/spring-boot-admin-samples', branch: 'master', credentialsId: 'gitlab')
+      }
+    }
+    stage('Build') {
+      parallel {
+        stage('Build') {
+          steps {
+            sh 'mvn clean'
+          }
+        }
+        stage('clean') {
+          steps {
+            sh 'mvn clean'
+          }
+        }
+        stage('compile') {
+          steps {
+            sh 'mvn compile'
+          }
+        }
+        stage('package') {
+          steps {
+            sh 'mvn package'
+          }
+        }
+      }
+    }
+  }
+}
