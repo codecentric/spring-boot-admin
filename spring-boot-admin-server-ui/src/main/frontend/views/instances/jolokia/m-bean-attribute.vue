@@ -47,14 +47,10 @@
       </div>
     </div>
     <div class="control" v-if="editing">
-      <button class="button is-light is-small" @click="cancel">
-        Cancel
-      </button>
+      <button class="button is-light is-small" @click="cancel" v-text="$t('term.cancel')" />
       <button class="button is-primary is-small" :class="{'is-loading' : saving}" @click="save"
-              :disabled="value === input"
-      >
-        Save
-      </button>
+              :disabled="value === input" v-text="$t('term.save')"
+      />
     </div>
   </div>
 </template>

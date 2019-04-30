@@ -17,14 +17,12 @@
 <template>
   <section class="section">
     <div class="container">
-      <p v-if="!applicationsInitialized" class="is-muted is-loading">
-        Loading applications...
-      </p>
+      <p v-if="!applicationsInitialized" class="is-muted is-loading" v-text="$t('applications.loading_applications')" />
       <div v-if="error" class="message is-warning">
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-warning" icon="exclamation-triangle" />
-            Server connection failed.
+            <span v-text="$t('applications.server_connection_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>
@@ -50,7 +48,7 @@
           v-for="group in statusGroups"
           :key="group.status"
         >
-          <p class="heading" v-text="group.status" />
+          <p class="heading" v-text="$t('applications.' + group.statusKey)" />
           <div class="applications-list">
             <applications-list-item v-for="application in group.applications"
                                     :key="application.name"
@@ -66,9 +64,7 @@
             />
           </div>
         </div>
-        <p v-if="applications.length === 0" class="is-muted">
-          No applications registered.
-        </p>
+        <p v-if="applications.length === 0" class="is-muted" v-text="$t('applications.no_applications_registered')" />
         <notification-filter-settings v-if="showNotificationFilterSettingsObject"
                                       v-popper="`nf-settings-${showNotificationFilterSettingsObject.id || showNotificationFilterSettingsObject.name}`"
                                       :notification-filters="notificationFilters"
@@ -237,7 +233,8 @@
         const filteredApplications = this.filterInstances(this.applications);
         const applicationsByStatus = groupBy(filteredApplications, application => application.status);
         const list = transform(applicationsByStatus, (result, applications, status) => {
-          result.push({status: status, applications: sortBy(applications, [application => application.name])})
+          const statusKey = status.replace(/[^\w]/gi, '').toLowerCase();
+          result.push({statusKey, status: status, applications: sortBy(applications, [application => application.name])})
         }, []);
         return sortBy(list, [item => item.status]);
       }
@@ -247,7 +244,7 @@
         path: '/applications/:selected?',
         props: true,
         name: 'applications',
-        label: 'Applications',
+        label: 'applications.title',
         handle,
         order: 0,
         component: this

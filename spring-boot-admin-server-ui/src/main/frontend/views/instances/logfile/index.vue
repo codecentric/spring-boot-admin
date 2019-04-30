@@ -20,7 +20,7 @@
       <div class="message-body">
         <strong>
           <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-          Fetching logfile failed.
+          <span v-text="$t('instances.logfile.fetch_failed')" />
         </strong>
         <p v-text="error.message" />
       </div>
@@ -35,7 +35,8 @@
         />
       </div>
       <a class="button" :href="`instances/${instance.id}/actuator/logfile`" target="_blank">
-        <font-awesome-icon icon="download" />&nbsp;Download
+        <font-awesome-icon icon="download" />&nbsp;
+        <span v-text="$t('instances.logfile.download')" />
       </a>
     </div>
     <p v-if="skippedBytes" v-text="`skipped ${prettyBytes(skippedBytes)}`" />
@@ -51,6 +52,7 @@
   import AnsiUp from 'ansi_up';
   import chunk from 'lodash/chunk';
   import prettyBytes from 'pretty-bytes';
+  import {VIEW_GROUP} from '../../index';
 
   export default {
     props: {
@@ -127,8 +129,7 @@
         parent: 'instances',
         path: 'logfile',
         component: this,
-        label: 'Logfile',
-        group: 'Logging',
+        group: VIEW_GROUP.LOGGING,
         order: 200,
         isEnabled: ({instance}) => instance.hasEndpoint('logfile')
       });

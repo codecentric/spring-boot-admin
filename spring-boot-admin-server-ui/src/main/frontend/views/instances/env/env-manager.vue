@@ -16,9 +16,7 @@
 
 <template>
   <div class="box">
-    <h1 class="is-size-6">
-      Environment Manager
-    </h1>
+    <h1 class="is-size-6" v-text="$t('instances.env.title')" />
     <datalist id="allPropertyNames">
       <option v-for="name in allPropertyNames" :key="name" v-text="name" />
     </datalist>
@@ -59,15 +57,9 @@
                                 :disabled="refreshStatus === 'executing'"
                                 @click="refreshContext"
             >
-              <span v-if="refreshStatus === 'completed'">
-                Context refreshed
-              </span>
-              <span v-else-if="refreshStatus === 'failed'">
-                Failed
-              </span>
-              <span v-else>
-                Refresh Context
-              </span>
+              <span v-if="refreshStatus === 'completed'" v-text="$t('instances.env.context_refreshed')" />
+              <span v-else-if="refreshStatus === 'failed'" v-text="$t('instances.env.context_refresh_failed')" />
+              <span v-else v-text="$t('instances.env.context_refresh')" />
             </sba-confirm-button>
           </div>
         </div>
@@ -80,15 +72,9 @@
                     :disabled="!hasManagedProperty || resetStatus === 'executing'"
                     @click="resetEnvironment"
             >
-              <span v-if="resetStatus === 'completed'">
-                Resetted
-              </span>
-              <span v-else-if="resetStatus === 'failed'">
-                Failed
-              </span>
-              <span v-else>
-                Reset
-              </span>
+              <span v-if="resetStatus === 'completed'" v-text="$t('instances.env.context_resetted')" />
+              <span v-else-if="resetStatus === 'failed'" v-text="$t('instances.env.context_reset_failed')" />
+              <span v-else v-text="$t('instances.env.context_reset')" />
             </button>
           </div>
           <div class="control">
@@ -97,15 +83,9 @@
                     :disabled="hasErrorProperty || !hasChangedProperty || updateStatus === 'executing'"
                     @click="updateEnvironment"
             >
-              <span v-if="updateStatus === 'completed'">
-                Updated
-              </span>
-              <span v-else-if="updateStatus === 'failed'">
-                Failed
-              </span>
-              <span v-else>
-                Update
-              </span>
+              <span v-if="updateStatus === 'completed'" v-text="$t('instances.env.context_updated')" />
+              <span v-else-if="updateStatus === 'failed'" v-text="$t('instances.env.context_update_failed')" />
+              <span v-else v-text="$t('instances.env.context_updated')" />
             </button>
           </div>
         </div>

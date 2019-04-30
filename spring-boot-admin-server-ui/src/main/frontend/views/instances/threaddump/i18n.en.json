@@ -1,0 +1,17 @@
+{
+  "instances": {
+    "threaddump": {
+      "fetch_failed": "Fetching threaddump failed.",
+      "thread_details_blocked_count": "Blocked count",
+      "thread_details_blocked_time": "Blocked time",
+      "thread_details_lock_name": "Lock name",
+      "thread_details_lock_owner_id": "Lock owner id",
+      "thread_details_lock_owner_name": "Lock owner name",
+      "thread_details_waited_count": "Waited count",
+      "thread_details_waited_time": "Waited time",
+      "thread_id": "Thread Id",
+      "thread_name": "Thread name",
+      "thread_state": "Thread state"
+    }
+  }
+}

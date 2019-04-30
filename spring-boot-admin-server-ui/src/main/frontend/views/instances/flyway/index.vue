@@ -21,7 +21,7 @@
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            Fetching Flyway reports failed.
+            <span v-text="$t('instances.flyway.fetch_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>
@@ -35,16 +35,16 @@
           <table class="table is-fullwidth">
             <thead>
               <tr>
-                <th>Type</th>
-                <th>Checksum</th>
-                <th>Version</th>
-                <th>Description</th>
-                <th>Script</th>
-                <th>State</th>
-                <th>Installed by</th>
-                <th>Installed on</th>
-                <th>Installed rank</th>
-                <th>Execution Time</th>
+                <th v-text="$t('instances.flyway.type')" />
+                <th v-text="$t('instances.flyway.checksum')" />
+                <th v-text="$t('instances.flyway.version')" />
+                <th v-text="$t('instances.flyway.description')" />
+                <th v-text="$t('instances.flyway.script')" />
+                <th v-text="$t('instances.flyway.state')" />
+                <th v-text="$t('instances.flyway.installed_by')" />
+                <th v-text="$t('instances.flyway.installed_on')" />
+                <th v-text="$t('instances.flyway.installed_rank')" />
+                <th v-text="$t('instances.flyway.execution_time')" />
               </tr>
             </thead>
             <tbody>
@@ -74,6 +74,7 @@
 
 <script>
   import Instance from '@/services/instance';
+  import {VIEW_GROUP} from '../../index';
 
   export default {
     props: {
@@ -132,8 +133,7 @@
         parent: 'instances',
         path: 'flyway',
         component: this,
-        label: 'Flyway',
-        group: 'Data',
+        group: VIEW_GROUP.DATA,
         order: 900,
         isEnabled: ({instance}) => instance.hasEndpoint('flyway')
       });

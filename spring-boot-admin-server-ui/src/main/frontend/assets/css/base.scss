@@ -65,7 +65,7 @@ pre.is-breakable {
   border-color: currentColor;
 }
 
-.navbar .has-badge {
+.navbar .badge {
   z-index: 10;
   &[data-badge]::after {
     box-shadow: 0 0 0 $badge-border-size $navbar-background-color;

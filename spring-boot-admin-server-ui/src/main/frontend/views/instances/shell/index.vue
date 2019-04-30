@@ -68,7 +68,10 @@
         name: 'instances',
         path: '/instances/:instanceId',
         component: this,
-        props: true
+        props: true,
+        isEnabled() {
+          return false;
+        }
       });
     }
   }

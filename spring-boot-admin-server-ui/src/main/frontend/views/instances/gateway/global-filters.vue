@@ -20,7 +20,7 @@
       <div class="message-body">
         <strong>
           <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-          Fetching Global Filters failed.
+          <span v-text="$t('instances.gateway.filters.fetch_failed')" />
         </strong>
         <p v-text="error.message" />
       </div>
@@ -43,8 +43,8 @@
       <table class="table is-fullwidth">
         <thead>
           <tr>
-            <th>Filter name</th>
-            <th>Order</th>
+            <th v-text="$t('instances.gateway.filters.filter_name')" />
+            <th v-text="$t('instances.gateway.filters.order')" />
           </tr>
         </thead>
         <tbody>
@@ -63,12 +63,8 @@
           </tr>
           <tr v-if="globalFilters.length === 0">
             <td class="is-muted" colspan="7 ">
-              <p v-if="isLoading" class="is-loading">
-                Loading Global Filters...
-              </p>
-              <p v-else>
-                No Global Filters found.
-              </p>
+              <p v-if="isLoading" class="is-loading" v-text="$t('instances.gateway.filters.loading')" />
+              <p v-else v-text="$t('instances.gateway.filters.no_filters_found')" />
             </td>
           </tr>
         </tbody>

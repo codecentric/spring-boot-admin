@@ -20,7 +20,7 @@
       <div class="message-body">
         <strong>
           <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-          Fetching attributes failed.
+          <span v-text="$t('instances.jolokia.mbean.fetch_failed')" />
         </strong>
         <p v-text="error.message" />
       </div>

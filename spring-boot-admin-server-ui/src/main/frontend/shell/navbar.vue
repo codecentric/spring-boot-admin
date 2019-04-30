@@ -35,7 +35,7 @@
               :to="{name: view.name}"
               class="navbar-item"
             >
-              <component :is="view.handle" :applications="applications" :error="error" />
+              <component :is="view.handle" :title="$t('navbar.' + view.id + '.title')" :applications="applications" :error="error" />
             </router-link>
             <a
               v-else
@@ -58,10 +58,18 @@
                 <form action="logout" method="post">
                   <input v-if="csrfToken" type="hidden" :name="csrfParameterName" :value="csrfToken">
                   <button class="button is-icon" type="submit" value="logout">
-                    <font-awesome-icon icon="sign-out-alt" />&nbsp;Log out
+                    <font-awesome-icon icon="sign-out-alt" />&nbsp;<span v-text="$t('navbar.logout')" />
                   </button>
                 </form>
               </a>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">
+              <span v-text="currentLanguage" />
+            </a>
+            <div class="navbar-dropdown">
+              <a class="navbar-item" @click="changeLanguage(language.locale)" v-for="language in availableLanguages" :key="language.locale" v-text="language.name" />
             </div>
           </div>
         </div>
@@ -73,6 +81,7 @@
 <script>
   import sbaConfig from '@/sba-config'
   import {compareBy} from '@/utils/collections';
+  import {AVAILABLE_LANGUAGES, getReadableLanguage} from '@/i18n';
 
   const readCookie = (name) => {
     const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
@@ -85,7 +94,9 @@
       brand: '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>',
       userName: null,
       csrfToken: null,
-      csrfParameterName: null
+      csrfParameterName: null,
+      availableLanguages: [],
+      currentLanguage: null
     }),
     props: {
       views: {
@@ -106,13 +117,24 @@
         return this.views.filter(
           view => view.handle && (typeof view.isEnabled === 'undefined' || view.isEnabled())
         ).sort(compareBy(v => v.order));
-      },
+      }
+    },
+    methods: {
+      changeLanguage(lang) {
+        this.$i18n.locale = lang;
+        this.currentLanguage = getReadableLanguage(lang);
+      }
     },
     created() {
       this.brand = sbaConfig.uiSettings.brand;
       this.userName = sbaConfig.user ? sbaConfig.user.name : null;
       this.csrfToken = readCookie('XSRF-TOKEN');
       this.csrfParameterName = sbaConfig.csrf.parameterName;
+      this.availableLanguages = AVAILABLE_LANGUAGES.map(locale => ({
+        name: getReadableLanguage(locale),
+        locale
+      }));
+      this.currentLanguage = getReadableLanguage(this.$i18n.locale);
     },
     mounted() {
       document.documentElement.classList.add('has-navbar-fixed-top');

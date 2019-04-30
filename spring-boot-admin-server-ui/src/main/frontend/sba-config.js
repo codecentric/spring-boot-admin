@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import _ from 'lodash';
+
 const DEFAULT_CONFIG = {
   uiSettings: {
-    brand: '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>',
+    brand: '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span></img>',
     externalViews: [],
     favicon: 'assets/img/favicon.png',
     faviconDanger: 'assets/img/favicon-danger.png',
@@ -25,6 +27,7 @@ const DEFAULT_CONFIG = {
   },
   user: null,
   extensions: [],
+  externalViews: [],
   csrf: {
     parameterName: '_csrf',
     headerName: 'X-XSRF-TOKEN'
@@ -34,4 +37,4 @@ const DEFAULT_CONFIG = {
   }
 };
 
-export default (global.SBA || DEFAULT_CONFIG);
+export default _.merge(DEFAULT_CONFIG, global.SBA)

@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <sba-panel title="Health">
+  <sba-panel :title="$t('instances.details.health.title')">
     <template v-slot:actions>
       <router-link
         class="button icon-button"
@@ -29,7 +29,7 @@
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-warning" icon="exclamation-triangle" />
-            Fetching live health status failed. This is the last known information.
+            <span v-text="$t('instances.details.health.fetch_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>

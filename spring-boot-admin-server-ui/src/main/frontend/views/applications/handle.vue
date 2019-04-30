@@ -19,9 +19,7 @@
     <span class="has-text-warning" v-if="error">
       <font-awesome-icon icon="exclamation-triangle" />
     </span>
-    <span :class="{ 'has-badge has-badge-rounded has-badge-danger' : downCount > 0 }" :data-badge="downCount > 0 ? downCount : undefined">
-      Applications
-    </span>
+    <span :class="{ 'badge is-badge-danger' : downCount > 0 }" :data-badge="downCount" v-text="$t('navbar.applications.title')" />
   </span>
 </template>
 

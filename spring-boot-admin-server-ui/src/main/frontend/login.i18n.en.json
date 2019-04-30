@@ -1,0 +1,11 @@
+{
+  "login": {
+    "button_login": "Login",
+    "invalid_username_or_password": "Invalid username or password",
+    "logout_successful": "Logout successful",
+    "placeholder": {
+      "username": "Username",
+      "password": "Password"
+    }
+  }
+}

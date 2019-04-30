@@ -1,0 +1,25 @@
+{
+  "instances": {
+    "scheduledtasks": {
+      "cron": {
+        "expression": "Expression",
+        "no_scheduledtasks": "No scheduled tasks present.",
+        "runnable": "Runnable",
+        "title": "Cron"
+      },
+      "fetch_failed": "Fetching scheduled tasks failed.",
+      "fixed_delay": {
+        "initial_delay_ms": "Initial Delay (ms)",
+        "interval_ms": "Interval (ms)",
+        "runnable": "Runnable",
+        "title": "Fixed Delay"
+      },
+      "fixed_rate": {
+        "initial_delay_ms": "Initial Delay (ms)",
+        "interval_ms": "Interval (ms)",
+        "runnable": "Runnable",
+        "title": "Fixed Rate"
+      }
+    }
+  }
+}

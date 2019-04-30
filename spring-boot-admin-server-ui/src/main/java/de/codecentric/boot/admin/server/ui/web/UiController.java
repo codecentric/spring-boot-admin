@@ -100,11 +100,6 @@ public class UiController {
         return "index";
     }
 
-    @GetMapping(path = "/sba-settings.js", produces = "text/javascript")
-    public String sbaSettings() {
-        return "sba-settings.js";
-    }
-
     @GetMapping(path = "/login", produces = MediaType.TEXT_HTML_VALUE)
     public String login() {
         return "login";

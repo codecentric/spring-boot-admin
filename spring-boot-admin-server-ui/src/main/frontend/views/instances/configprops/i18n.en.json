@@ -1,0 +1,8 @@
+{
+  "instances": {
+    "configprops": {
+      "fetch_failed": "Fetching configuration properties failed..",
+      "no_properties_set": "No properties set"
+    }
+  }
+}

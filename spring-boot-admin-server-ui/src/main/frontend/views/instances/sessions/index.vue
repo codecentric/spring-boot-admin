@@ -20,12 +20,8 @@
       <div class="control">
         <span class="select">
           <select v-model="filter.type">
-            <option value="username">
-              Username
-            </option>
-            <option value="sessionId">
-              SessionId
-            </option>
+            <option value="username" v-text="$t('term.username')" />
+            <option value="sessionId" v-text="$t('instances.sessions.session_id')" />
           </select>
         </span>
       </div>
@@ -39,7 +35,7 @@
       <div class="message-body">
         <strong>
           <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-          Fetching sessions failed.
+          <span v-text="$t('instances.sessions.fetch_failed')" />
         </strong>
         <p v-text="error.message" />
       </div>
@@ -56,6 +52,7 @@
   import isEqual from 'lodash/isEqual';
   import moment from 'moment'
   import sbaSessionsList from './sessions-list'
+  import {VIEW_GROUP} from '../../index';
 
   const regexUuid = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/;
 
@@ -158,8 +155,7 @@
         parent: 'instances',
         path: 'sessions',
         component: this,
-        label: 'Sessions',
-        group: 'Security',
+        group: VIEW_GROUP.SECURITY,
         order: 700,
         isEnabled: ({instance}) => instance.hasEndpoint('sessions')
       });

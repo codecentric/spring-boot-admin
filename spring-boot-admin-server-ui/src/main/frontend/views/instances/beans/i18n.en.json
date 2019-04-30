@@ -1,0 +1,11 @@
+{
+  "instances": {
+    "beans": {
+      "name": "Name",
+      "aliases": "Aliases",
+      "type": "Type",
+      "resource": "Resource",
+      "dependencies": "Dependencies"
+    }
+  }
+}

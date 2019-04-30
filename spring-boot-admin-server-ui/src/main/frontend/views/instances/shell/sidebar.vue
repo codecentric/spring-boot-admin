@@ -41,7 +41,7 @@
       >
         <router-link
           :to="{ name: group.views[0].name, params: { 'instanceId' : instance.id } }"
-          v-text="hasMultipleViews(group) ? group.name : group.views[0].label"
+          v-text="hasMultipleViews(group) ? $t('sidebar.' + group.id + '.title') : $t('sidebar.' + group.views[0].id + '.title')"
           active-class=""
           exact-active-class=""
           :class="{'is-active' : isActiveGroup(group) }"
@@ -55,7 +55,7 @@
             :key="view.name"
           >
             <router-link :to="{ name: view.name, params: { 'instanceId' : instance.id } }">
-              <component :is="view.handle" />
+              <component :is="view.handle" :title="$t('sidebar.' + group.id + '.' + view.path)" />
             </router-link>
           </li>
         </ul>
@@ -102,9 +102,9 @@
       enabledGroupedViews() {
         const groups = new Map();
         this.enabledViews.forEach(view => {
-            const groupName = view.group || view.label;
+            const groupName = view.group;
             const group = groups.get(groupName) || {
-              name: groupName,
+              id: groupName,
               order: Number.MAX_SAFE_INTEGER,
               views: []
             };
@@ -174,6 +174,8 @@
       }
 
       &__name {
+        max-width: 175px;
+        margin: 0 auto;
         font-weight: $weight-semibold;
         font-size: $size-5;
       }
@@ -211,6 +213,8 @@
     a {
       border-radius: $radius-small;
       color: $text;
+      overflow: hidden;
+      text-overflow: ellipsis;
       display: block;
       padding: 0.5em 0.75em;
 

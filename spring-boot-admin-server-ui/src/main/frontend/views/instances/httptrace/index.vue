@@ -21,7 +21,7 @@
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            Fetching traces failed.
+            <span v-text="$t('instances.httptrace.fetching_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>
@@ -35,7 +35,7 @@
                   class="input"
                   type="search"
                   v-model="filter.uri"
-                  placeholder="Path"
+                  :placeholder="$t('instances.httptrace.uri')"
                 >
                 <span class="icon is-small is-left">
                   <font-awesome-icon icon="filter" />
@@ -51,9 +51,7 @@
             </div>
             <div class="field is-narrow has-addons">
               <p class="control">
-                <span class="button is-static">
-                  limit
-                </span>
+                <span class="button is-static" v-text="$t('instances.httptrace.label.limit')" />
               </p>
               <p class="control">
                 <input class="input httptraces__limit" min="0" type="number" placeholder="trace limit" v-model="limit">
@@ -66,7 +64,7 @@
             <div class="control">
               <label class="checkbox">
                 <input type="checkbox" v-model="filter.showSuccess">
-                success
+                <span v-text="$t('instances.httptrace.label.success')" />
               </label>
             </div>
           </div>
@@ -74,7 +72,7 @@
             <div class="control">
               <label class="checkbox">
                 <input type="checkbox" v-model="filter.showClientErrors">
-                client errors
+                <span v-text="$t('instances.httptrace.label.client_errors')" />
               </label>
             </div>
           </div>
@@ -82,7 +80,7 @@
             <div class="control">
               <label class="checkbox">
                 <input type="checkbox" v-model="filter.showServerErrors">
-                server errors
+                <span v-text="$t('instances.httptrace.label.server_errors')" />
               </label>
             </div>
           </div>
@@ -90,7 +88,7 @@
             <div class="control">
               <label class="checkbox">
                 <input type="checkbox" v-model="filter.excludeActuator">
-                exclude <span v-text="actuatorPath" />/**
+                <span v-text="$t('instances.httptrace.label.exclude_actuator', {actuator: actuatorPath})" />
               </label>
             </div>
           </div>
@@ -114,6 +112,7 @@
   import moment from 'moment';
   import sbaTracesChart from './traces-chart';
   import sbaTracesList from './traces-list';
+  import {VIEW_GROUP} from '../../index';
 
   const addToFilter = (oldFilter, addedFilter) =>
     !oldFilter
@@ -284,8 +283,7 @@
         parent: 'instances',
         path: 'httptrace',
         component: this,
-        label: 'Http Traces',
-        group: 'Web',
+        group: VIEW_GROUP.WEB,
         order: 500,
         isEnabled: ({instance}) => instance.hasEndpoint('httptrace')
       });

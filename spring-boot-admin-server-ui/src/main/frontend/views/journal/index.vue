@@ -17,9 +17,7 @@
 <template>
   <div class="section">
     <div class="container">
-      <h1 class="title">
-        Event Journal
-      </h1>
+      <h1 class="title" v-text="$t('journal.title')" />
       <h2
         v-if="filter.application"
         v-text="filter.application"
@@ -34,7 +32,7 @@
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-warning" icon="exclamation-triangle" />
-            Server connection failed.
+            <span v-text="$t('error.server_connection_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>
@@ -42,10 +40,10 @@
       <table class="journal table is-fullwidth is-hoverable">
         <thead>
           <tr>
-            <th>Application</th>
-            <th>Instance</th>
-            <th>Time</th>
-            <th>Event</th>
+            <th v-text="$t('term.application')" />
+            <th v-text="$t('term.instances')" />
+            <th v-text="$t('term.time')" />
+            <th v-text="$t('term.event')" />
           </tr>
         </thead>
         <transition-group tag="tbody" name="fade-in">

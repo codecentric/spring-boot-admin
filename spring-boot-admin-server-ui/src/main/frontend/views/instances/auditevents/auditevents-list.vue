@@ -18,11 +18,11 @@
   <table class="auditevents table is-hoverable is-fullwidth">
     <thead>
       <tr>
-        <th>Timestamp</th>
-        <th>Event</th>
-        <th>Principal</th>
-        <th>Remote address</th>
-        <th>Session Id</th>
+        <th v-html="$t('instances.auditevents.timestamp')" />
+        <th v-html="$t('instances.auditevents.event')" />
+        <th v-html="$t('instances.auditevents.principal')" />
+        <th v-html="$t('instances.auditevents.remote_address')" />
+        <th v-html="$t('instances.auditevents.session_id')" />
       </tr>
     </thead>
     <tbody>
@@ -60,12 +60,8 @@
       </template>
       <tr v-if="events.length === 0">
         <td class="is-muted" colspan="5">
-          <p v-if="isLoading" class="is-loading">
-            Loading Audit Events...
-          </p>
-          <p v-else>
-            No Audit Events found.
-          </p>
+          <p v-if="isLoading" class="is-loading" v-html="$t('instances.auditevents.loading_audit_events')" />
+          <p v-else v-html="$t('instances.auditevents.no_audit_events_found')" />
         </td>
       </tr>
     </tbody>

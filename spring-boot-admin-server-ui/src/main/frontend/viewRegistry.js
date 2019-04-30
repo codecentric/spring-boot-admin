@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-const createTextVNode = label => {
+import {VIEW_GROUP} from './views';
+
+const createTextVNode = () => {
   return {
-    render() {
-      return this._v(label)
+    props: ['title'],
+    render(createElement) {
+      return createElement('span', this.title);
     }
   }
 };
@@ -52,9 +55,16 @@ export default class ViewRegistry {
   }
 
   _addView(view) {
-    if (view.label && !view.handle) {
-      view.handle = createTextVNode(view.label);
+    if (!view.id) {
+      view.id = (view.name && view.name.replace(/[^\w]/gi, '_')) || 'unknown_view_id';
     }
+    if (view.id && !view.handle) {
+      view.handle = createTextVNode();
+    }
+    if (!view.group) {
+      view.group = VIEW_GROUP.NONE;
+    }
+
     this._views.push(view);
   }
 

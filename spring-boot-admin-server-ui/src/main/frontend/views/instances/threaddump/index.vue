@@ -21,7 +21,7 @@
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            Fetching threaddump failed.
+            <span v-text="$t('instances.threaddump.fetch_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>
@@ -38,6 +38,7 @@
   import remove from 'lodash/remove';
   import moment from 'moment-shortformat';
   import threadsList from './threads-list';
+  import {VIEW_GROUP} from '../../index';
 
   export default {
     props: {
@@ -130,8 +131,7 @@
         parent: 'instances',
         path: 'threaddump',
         component: this,
-        label: 'Threads',
-        group: 'JVM',
+        group: VIEW_GROUP.JVM,
         order: 400,
         isEnabled: ({instance}) => instance.hasEndpoint('threaddump')
       });

@@ -25,6 +25,7 @@
   import Instance from '@/services/instance';
   import globalFilters from './global-filters';
   import routes from './routes';
+  import {VIEW_GROUP} from '../../index';
 
   export default {
     components: {
@@ -43,8 +44,7 @@
         parent: 'instances',
         path: 'gateway',
         component: this,
-        label: 'Gateway',
-        group: 'Web',
+        group: VIEW_GROUP.WEB,
         order: 960,
         isEnabled: ({instance}) => instance.hasEndpoint('gateway')
       });

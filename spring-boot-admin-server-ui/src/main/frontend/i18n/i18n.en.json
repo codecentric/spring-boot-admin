@@ -1,0 +1,38 @@
+{
+  "error": {
+    "server_connection_failed": "Server connection failed.  "
+  },
+  "term": {
+    "application": "Application",
+    "attributes": "Attributes",
+    "bytes": "Bytes",
+    "cancel": "Cancel",
+    "clear": "Clear",
+    "cleared": "Cleared",
+    "close": "Close",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "deleted": "Deleted",
+    "duration": "Duration",
+    "event": "Event",
+    "ever": "ever",
+    "executing": "Executing...",
+    "execution_failed": "Execution failed.",
+    "execution_successful": "Execution successful.",
+    "failed": "Failed",
+    "float": "Float",
+    "hours": "{count} hour | {count} hours",
+    "instances": "Instances",
+    "integer": "Integer",
+    "milliseconds": "Milliseconds",
+    "minutes": "{count} minute | {count} minutes",
+    "name": "Name",
+    "operations": "Operations",
+    "save": "Save",
+    "stacktrace": "Stacktrace",
+    "suppress": "Suppress",
+    "time": "Time",
+    "unsuppress": "Unsuppress",
+    "username": "Username"
+  }
+}

@@ -15,7 +15,6 @@
  */
 
 import '@/assets/css/base.scss';
-import moment from 'moment';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import components from './components';
@@ -25,8 +24,8 @@ import sbaShell from './shell';
 import Store from './store';
 import ViewRegistry from './viewRegistry';
 import views from './views';
+import i18n from './i18n';
 
-moment.locale(window.navigator.language);
 Vue.use(VueRouter);
 Vue.use(components);
 
@@ -38,6 +37,7 @@ const installables = [
   ...views,
   ...sbaConfig.extensions
 ];
+
 
 installables.forEach(view => view.install({
   viewRegistry,
@@ -52,6 +52,7 @@ if (unknownRoutes.length > 0) {
 }
 
 new Vue({
+  i18n,
   router: new VueRouter({
     mode: 'history',
     linkActiveClass: 'is-active',

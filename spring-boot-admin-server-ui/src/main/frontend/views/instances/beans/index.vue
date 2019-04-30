@@ -56,6 +56,7 @@
   import shortenClassname from '@/utils/shortenClassname';
   import BeansList from '@/views/instances/beans/beans-list';
   import isEmpty from 'lodash/isEmpty';
+  import {VIEW_GROUP} from '../../index';
 
   class Bean {
     constructor(name, bean) {
@@ -137,9 +138,8 @@
         name: 'instances/beans',
         parent: 'instances',
         path: 'beans',
-        group: 'Insights',
+        group: VIEW_GROUP.INSIGHTS,
         component: this,
-        label: 'Beans',
         order: 110,
         isEnabled: ({instance}) => instance.hasEndpoint('beans')
       });

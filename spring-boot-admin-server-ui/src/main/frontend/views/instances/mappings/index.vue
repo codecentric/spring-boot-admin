@@ -21,15 +21,13 @@
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            Fetching mappings failed.
+            <span v-text="$t('instances.mappings.fetch_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>
       </div>
       <div v-if="isOldMetrics" class="message is-warning">
-        <div class="message-body">
-          Mappings are not supported for Spring Boot 1.x applications.
-        </div>
+        <div class="message-body" v-text="$t('instances.mappings.mappings_not_supported_spring_boot_1')" />
       </div>
       <template v-for="(context, ctxName) in contexts">
         <h3 class="title" v-text="ctxName" :key="ctxName" />
@@ -62,6 +60,7 @@
   import ServletFilterMappings from '@/views/instances/mappings/ServletFilterMappings';
   import ServletMappings from '@/views/instances/mappings/ServletMappings';
   import isEmpty from 'lodash/isEmpty';
+  import {VIEW_GROUP} from '../../index';
 
   export default {
     components: {DispatcherMappings, ServletMappings, ServletFilterMappings},
@@ -104,9 +103,8 @@
         name: 'instances/mappings',
         parent: 'instances',
         path: 'mappings',
-        group: 'Web',
+        group: VIEW_GROUP.WEB,
         component: this,
-        label: 'Mappings',
         order: 450,
         isEnabled: ({instance}) => instance.hasEndpoint('mappings')
       });
