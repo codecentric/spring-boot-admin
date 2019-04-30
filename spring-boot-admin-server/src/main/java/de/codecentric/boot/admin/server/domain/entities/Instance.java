@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -158,8 +158,7 @@ public class Instance implements Serializable {
 
     public Instance withEndpoints(Endpoints endpoints) {
         Assert.notNull(endpoints, "'endpoints' must not be null");
-        Endpoints endpointsWithHealth = this.registration != null ? endpoints.withEndpoint(
-            Endpoint.HEALTH,
+        Endpoints endpointsWithHealth = this.registration != null ? endpoints.withEndpoint(Endpoint.HEALTH,
             this.registration.getHealthUrl()
         ) : endpoints;
         if (Objects.equals(this.endpoints, endpointsWithHealth)) {
@@ -189,8 +188,7 @@ public class Instance implements Serializable {
             this.registration,
             this.registered,
             this.statusInfo,
-            this.statusTimestamp,
-            info,
+            this.statusTimestamp, this.info,
             this.endpoints,
             this.buildVersion,
             this.tags,
@@ -214,8 +212,8 @@ public class Instance implements Serializable {
     private Instance apply(InstanceEvent event, boolean isNewEvent) {
         Assert.notNull(event, "'event' must not be null");
         Assert.isTrue(this.id.equals(event.getInstance()), "'event' must refer the same instance");
-        Assert.isTrue(this.nextVersion() == event.getVersion(),
-            () -> "Event " + event.getVersion() + " doesn't match exptected version " + this.nextVersion()
+        Assert.isTrue(event.getVersion() >= this.nextVersion(),
+            () -> "Event " + event.getVersion() + " must be greater or equal to " + this.nextVersion()
         );
 
         List<InstanceEvent> unsavedEvents = appendToEvents(event, isNewEvent);
