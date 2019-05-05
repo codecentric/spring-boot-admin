@@ -16,7 +16,7 @@
 
 const DEFAULT_CONFIG = {
   uiSettings: {
-    brand: '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span></img>',
+    brand: '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>',
     externalViews: [],
     favicon: 'assets/img/favicon.png',
     faviconDanger: 'assets/img/favicon-danger.png',
