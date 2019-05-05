@@ -525,7 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.2.0-SNAPSHOT,</span>
-<span id="revdate">02.05.2019</span>
+<span id="revdate">05.05.2019</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -2406,12 +2406,11 @@ This can be useful for auditing or adding some extra security checks.</p>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Bean</span>
 <span class="directive">public</span> InstanceExchangeFilterFunction auditLog() {
-    <span class="keyword">return</span> (instance, request, next) -&gt; {
+    <span class="keyword">return</span> (instance, request, next) -&gt; next.exchange(request).doOnSubscribe(s -&gt; {
         <span class="keyword">if</span> (HttpMethod.DELETE.equals(request.method()) || HttpMethod.POST.equals(request.method())) {
             log.info(<span class="string"><span class="delimiter">&quot;</span><span class="content">{} for {} on {}</span><span class="delimiter">&quot;</span></span>, request.method(), instance.getId(), request.url());
         }
-        <span class="keyword">return</span> next.exchange(request);
-    };
+    });
 }</code></pre>
 </div>
 </div>
