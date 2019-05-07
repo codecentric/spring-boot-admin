@@ -51,8 +51,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
@@ -117,16 +115,13 @@ public class SpringBootAdminClientAutoConfiguration {
     static class BlockingRegistrationClientConfig {
         @Bean
         @ConditionalOnMissingBean
-        public BlockingRegistrationClient registrationClient(ClientProperties client,
-                                                             RestTemplateBuilder restTemplate) {
-            restTemplate.messageConverters(new MappingJackson2HttpMessageConverter())
-                        .requestFactory(SimpleClientHttpRequestFactory.class)
-                        .setConnectTimeout(client.getConnectTimeout())
-                        .setReadTimeout(client.getReadTimeout());
+        public BlockingRegistrationClient registrationClient(ClientProperties client) {
+            RestTemplateBuilder builder = new RestTemplateBuilder().setConnectTimeout(client.getConnectTimeout())
+                                                                   .setReadTimeout(client.getReadTimeout());
             if (client.getUsername() != null && client.getPassword() != null) {
-                restTemplate = restTemplate.basicAuthentication(client.getUsername(), client.getPassword());
+                builder = builder.basicAuthentication(client.getUsername(), client.getPassword());
             }
-            return new BlockingRegistrationClient(restTemplate.build());
+            return new BlockingRegistrationClient(builder.build());
         }
     }
 
