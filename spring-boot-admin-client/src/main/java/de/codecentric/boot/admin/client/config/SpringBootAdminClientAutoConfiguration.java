@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,8 +46,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 
@@ -107,13 +105,9 @@ public class SpringBootAdminClientAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ApplicationRegistrator registrator(ClientProperties client,
-                                              ApplicationFactory applicationFactory,
-                                              RestTemplateBuilder restTemplBuilder) {
-        RestTemplateBuilder builder = restTemplBuilder.messageConverters(new MappingJackson2HttpMessageConverter())
-                                                      .requestFactory(SimpleClientHttpRequestFactory.class)
-                                                      .setConnectTimeout(client.getConnectTimeout())
-                                                      .setReadTimeout(client.getReadTimeout());
+    public ApplicationRegistrator registrator(ClientProperties client, ApplicationFactory applicationFactory) {
+        RestTemplateBuilder builder = new RestTemplateBuilder().setConnectTimeout(client.getConnectTimeout())
+                                                               .setReadTimeout(client.getReadTimeout());
         if (client.getUsername() != null) {
             builder = builder.basicAuthentication(client.getUsername(), client.getPassword());
         }
