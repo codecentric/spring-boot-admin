@@ -42,22 +42,7 @@
 
 <div id="app"></div>
 
-<script th:inline="javascript">
-    var SBA = {
-        uiSettings: /*[[${uiSettings}]]*/ {},
-        user: /*[[${user}]]*/ null,
-        extensions: [],
-        /*[#th:block th:if="${_csrf}"]*/
-        csrf: {
-            parameterName: /*[[${_csrf.parameterName}]]*/ null,
-            headerName: /*[[${_csrf.headerName}]]*/ null
-        },
-        /*[/th:block]*/
-        use: function (ext) {
-            this.extensions.push(ext);
-        }
-    }
-</script>
+<script lang="javascript" src="sba-settings.js"></script>
 <!-- include extensions -->
 <th:block th:each="jsFile : ${jsExtensions}">
     <script lang="javascript" th:src="${jsFile.resourcePath}"></script>
