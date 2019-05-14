@@ -9,7 +9,7 @@ By default `spring-boot-admin-server-ui` provides a login page and a logout butt
 A Spring Security configuration for your server could look like this:
 [source,java,indent=0]
 ----
-include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/SpringBootAdminServletApplication.java[tags=configuration-spring-security]
+include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/SecuritySecureConfig.java[tags=configuration-spring-security]
 ----
 <1> Grants public access to all static assets and the login page.
 <2> Every other request must be authenticated.
