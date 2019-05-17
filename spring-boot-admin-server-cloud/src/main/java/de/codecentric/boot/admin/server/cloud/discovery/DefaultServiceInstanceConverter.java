@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,39 +72,58 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
     }
 
     protected URI getHealthUrl(ServiceInstance instance) {
-        String healthPath = instance.getMetadata().get(KEY_HEALTH_PATH);
-        if (isEmpty(healthPath)) {
-            healthPath = healthEndpointPath;
-        }
+        return UriComponentsBuilder.fromUri(getManagementUrl(instance))
+                                   .path("/")
+                                   .path(getHealthPath(instance))
+                                   .build()
+                                   .toUri();
+    }
 
-        return UriComponentsBuilder.fromUri(getManagementUrl(instance)).path("/").path(healthPath).build().toUri();
+    protected String getHealthPath(ServiceInstance instance) {
+        String healthPath = instance.getMetadata().get(KEY_HEALTH_PATH);
+        if (!isEmpty(healthPath)) {
+            return healthPath;
+        }
+        return this.healthEndpointPath;
     }
 
     protected URI getManagementUrl(ServiceInstance instance) {
-        String managementPath = instance.getMetadata().get(KEY_MANAGEMENT_PATH);
-        if (isEmpty(managementPath)) {
-            managementPath = managementContextPath;
-        }
-
-        URI serviceUrl = getServiceUrl(instance);
-
-        String managementServerAddress = instance.getMetadata().get(KEY_MANAGEMENT_ADDRESS);
-        if (isEmpty(managementServerAddress)) {
-            managementServerAddress = serviceUrl.getHost();
-        }
-
-        String managementPort = instance.getMetadata().get(KEY_MANAGEMENT_PORT);
-        if (isEmpty(managementPort)) {
-            managementPort = String.valueOf(serviceUrl.getPort());
-        }
-
-        return UriComponentsBuilder.fromUri(serviceUrl)
-                                   .host(managementServerAddress)
-                                   .port(managementPort)
+        return UriComponentsBuilder.newInstance()
+                                   .scheme(getManagementScheme(instance))
+                                   .host(getManagementHost(instance))
+                                   .port(getManagementPort(instance))
                                    .path("/")
-                                   .path(managementPath)
+                                   .path(getManagementPath(instance))
                                    .build()
                                    .toUri();
+    }
+
+    private String getManagementScheme(ServiceInstance instance) {
+        return this.getServiceUrl(instance).getScheme();
+    }
+
+    protected String getManagementHost(ServiceInstance instance) {
+        String managementServerHost = instance.getMetadata().get(KEY_MANAGEMENT_ADDRESS);
+        if (!isEmpty(managementServerHost)) {
+            return managementServerHost;
+        }
+        return getServiceUrl(instance).getHost();
+    }
+
+    protected String getManagementPort(ServiceInstance instance) {
+        String managementPort = instance.getMetadata().get(KEY_MANAGEMENT_PORT);
+        if (!isEmpty(managementPort)) {
+            return managementPort;
+        }
+        return String.valueOf(getServiceUrl(instance).getPort());
+    }
+
+    protected String getManagementPath(ServiceInstance instance) {
+        String managementPath = instance.getMetadata().get(DefaultServiceInstanceConverter.KEY_MANAGEMENT_PATH);
+        if (!isEmpty(managementPath)) {
+            return managementPath;
+        }
+        return this.managementContextPath;
     }
 
     protected URI getServiceUrl(ServiceInstance instance) {
@@ -115,13 +134,12 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
         return instance.getMetadata() != null ? instance.getMetadata() : emptyMap();
     }
 
-
     public void setManagementContextPath(String managementContextPath) {
         this.managementContextPath = managementContextPath;
     }
 
     public String getManagementContextPath() {
-        return managementContextPath;
+        return this.managementContextPath;
     }
 
     public void setHealthEndpointPath(String healthEndpointPath) {
@@ -129,6 +147,6 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
     }
 
     public String getHealthEndpointPath() {
-        return healthEndpointPath;
+        return this.healthEndpointPath;
     }
 }

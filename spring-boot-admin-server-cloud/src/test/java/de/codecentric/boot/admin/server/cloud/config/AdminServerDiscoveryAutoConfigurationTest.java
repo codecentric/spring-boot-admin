@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.cloud.config;
 
 import de.codecentric.boot.admin.server.cloud.discovery.DefaultServiceInstanceConverter;
 import de.codecentric.boot.admin.server.cloud.discovery.EurekaServiceInstanceConverter;
+import de.codecentric.boot.admin.server.cloud.discovery.KubernetesServiceInstanceConverter;
 import de.codecentric.boot.admin.server.cloud.discovery.ServiceInstanceConverter;
 import de.codecentric.boot.admin.server.config.AdminServerAutoConfiguration;
 import de.codecentric.boot.admin.server.config.AdminServerMarkerConfiguration;
@@ -33,6 +34,7 @@ import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration;
 import org.springframework.cloud.commons.util.UtilAutoConfiguration;
+import org.springframework.cloud.kubernetes.discovery.KubernetesDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import com.netflix.discovery.EurekaClient;
 
@@ -59,6 +61,13 @@ public class AdminServerDiscoveryAutoConfigurationTest {
         this.contextRunner.withUserConfiguration(EurekaClientConfig.class)
                           .run(context -> assertThat(context).getBean(ServiceInstanceConverter.class)
                                                         .isInstanceOf(EurekaServiceInstanceConverter.class));
+    }
+
+    @Test
+    public void kubernetesServiceInstanceConverter() {
+        this.contextRunner.withUserConfiguration(KubernetesClientConfig.class)
+                          .run(context -> assertThat(context).getBean(ServiceInstanceConverter.class)
+                                                             .isInstanceOf(KubernetesServiceInstanceConverter.class));
     }
 
     @Test
@@ -93,6 +102,13 @@ public class AdminServerDiscoveryAutoConfigurationTest {
         @Bean
         public DiscoveryClient discoveryClient() {
             return Mockito.mock(DiscoveryClient.class);
+        }
+    }
+
+    static class KubernetesClientConfig {
+        @Bean
+        public KubernetesDiscoveryClient eurekaClient() {
+            return Mockito.mock(KubernetesDiscoveryClient.class);
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,6 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
 
@@ -60,15 +59,19 @@ public class AdminApplicationDiscoveryTest {
 
     @Before
     public void setUp() {
-        instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
-                                                 .web(WebApplicationType.REACTIVE)
-                                                 .run("--server.port=0", "--management.endpoints.web.base-path=/mgmt",
-                                                     "--endpoints.health.enabled=true", "--info.test=foobar",
-                                                     "--eureka.client.enabled=false");
+        this.instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
+                                                      .web(WebApplicationType.REACTIVE)
+                                                      .run("--server.port=0",
+                                                     "--management.endpoints.web.base-path=/mgmt",
+                                                     "--endpoints.health.enabled=true",
+                                                     "--info.test=foobar",
+                                                     "--eureka.client.enabled=false",
+                                                     "--spring.cloud.kubernetes.discovery.enabled=false"
+                                                 );
 
-        simpleDiscovery = instance.getBean(SimpleDiscoveryProperties.class);
+        this.simpleDiscovery = this.instance.getBean(SimpleDiscoveryProperties.class);
 
-        this.port = instance.getEnvironment().getProperty("local.server.port", Integer.class, 0);
+        this.port = this.instance.getEnvironment().getProperty("local.server.port", Integer.class, 0);
         this.webClient = createWebClient(this.port);
     }
 
@@ -102,36 +105,36 @@ public class AdminApplicationDiscoveryTest {
         //InstanceRegisteredEvent that makes sure the instance gets registered.
         SimpleDiscoveryProperties.SimpleServiceInstance serviceInstance = new SimpleDiscoveryProperties.SimpleServiceInstance();
         serviceInstance.setServiceId("Test-Instance");
-        serviceInstance.setUri(URI.create("http://localhost:" + port));
+        serviceInstance.setUri(URI.create("http://localhost:" + this.port));
         serviceInstance.getMetadata().put("management.context-path", "/mgmt");
-        simpleDiscovery.getInstances().put("Test-Application", singletonList(serviceInstance));
+        this.simpleDiscovery.getInstances().put("Test-Application", singletonList(serviceInstance));
 
-        instance.publishEvent(new InstanceRegisteredEvent<>(new Object(), null));
+        this.instance.publishEvent(new InstanceRegisteredEvent<>(new Object(), null));
 
         //To get the location of the registered instances we fetch the instance with the name.
-        List<JSONObject> applications = webClient.get()
-                                                 .uri("/instances?name=Test-Instance")
-                                                 .accept(MediaType.APPLICATION_JSON)
-                                                 .exchange()
-                                                 .expectStatus()
-                                                 .isOk()
-                                                 .returnResult(JSONObject.class)
-                                                 .getResponseBody()
-                                                 .collectList()
-                                                 .block();
+        List<JSONObject> applications = this.webClient.get()
+                                                      .uri("/instances?name=Test-Instance")
+                                                      .accept(MediaType.APPLICATION_JSON)
+                                                      .exchange()
+                                                      .expectStatus()
+                                                      .isOk()
+                                                      .returnResult(JSONObject.class)
+                                                      .getResponseBody()
+                                                      .collectList()
+                                                      .block();
         assertThat(applications).hasSize(1);
-        return URI.create("http://localhost:" + port + "/instances/" + applications.get(0).optString("id"));
+        return URI.create("http://localhost:" + this.port + "/instances/" + applications.get(0).optString("id"));
     }
 
     private void deregisterInstance() {
-        simpleDiscovery.getInstances().clear();
-        instance.publishEvent(new InstanceRegisteredEvent<>(new Object(), null));
+        this.simpleDiscovery.getInstances().clear();
+        this.instance.publishEvent(new InstanceRegisteredEvent<>(new Object(), null));
     }
 
 
     private Flux<JSONObject> getEventStream() {
         //@formatter:off
-        return webClient.get().uri("/instances/events").accept(MediaType.TEXT_EVENT_STREAM)
+        return this.webClient.get().uri("/instances/events").accept(MediaType.TEXT_EVENT_STREAM)
                         .exchange()
                         .expectStatus().isOk()
                         .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM)
@@ -141,7 +144,7 @@ public class AdminApplicationDiscoveryTest {
 
     private void getInstance(URI uri) {
         //@formatter:off
-        webClient.get().uri(uri).accept(MediaType.APPLICATION_JSON_UTF8)
+        this.webClient.get().uri(uri).accept(MediaType.APPLICATION_JSON_UTF8)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -153,7 +156,7 @@ public class AdminApplicationDiscoveryTest {
 
     private void listInstances() {
         //@formatter:off
-        webClient.get().uri("/instances").accept(MediaType.APPLICATION_JSON_UTF8)
+        this.webClient.get().uri("/instances").accept(MediaType.APPLICATION_JSON_UTF8)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -165,7 +168,7 @@ public class AdminApplicationDiscoveryTest {
 
     private void listEmptyInstances() {
         //@formatter:off
-        webClient.get().uri("/instances").accept(MediaType.APPLICATION_JSON_UTF8)
+        this.webClient.get().uri("/instances").accept(MediaType.APPLICATION_JSON_UTF8)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody().json("[]");
@@ -185,7 +188,7 @@ public class AdminApplicationDiscoveryTest {
 
     @After
     public void shutdown() {
-        instance.close();
+        this.instance.close();
     }
 
     @EnableAdminServer
