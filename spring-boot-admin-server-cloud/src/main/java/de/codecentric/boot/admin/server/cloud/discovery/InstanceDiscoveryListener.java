@@ -68,8 +68,14 @@ public class InstanceDiscoveryListener {
      */
     private Set<String> services = new HashSet<>(Collections.singletonList("*"));
 
+    /**
+     * Map of metadata that has to be matched by service instance that is to be registered. (e.g. "discoverable=true")
+     */
     private Map<String, String> instancesMetadata = new HashMap<>();
 
+    /**
+     * Map of metadata that has to be matched by service instance that is to be ignored. (e.g. "discoverable=false")
+     */
     private Map<String, String> ignoredInstancesMetadata = new HashMap<>();
 
     public InstanceDiscoveryListener(DiscoveryClient discoveryClient,

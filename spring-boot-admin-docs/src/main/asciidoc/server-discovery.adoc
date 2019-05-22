@@ -96,6 +96,14 @@ user.password
 | spring.boot.admin.discovery.services
 | This services will be included when using discovery and registered as application. Supports simple patterns (e.g. +++"foo*"+++, +++"*bar"+++, +++"foo*bar*"+++).
 | `"*"`
+
+| spring.boot.admin.discovery.ignored-instances-metadata
+| Instances of services will be ignored if they contain at least one metadata item that matches this list. (e.g. +++"discoverable=false"+++)
+|
+
+| spring.boot.admin.discovery.instances-metadata
+| Instances of services will be included if they contain at least one metadata item that matches this list. (e.g. +++"discoverable=true"+++)
+|
 |===
 
 ==== CloudFoundry ====
