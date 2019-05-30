@@ -1,6 +1,7 @@
 {
   "instances": {
     "threaddump": {
+      "label": "Thread Dump",
       "fetch_failed": "Fetching threaddump failed.",
       "thread_details_blocked_count": "Blocked count",
       "thread_details_blocked_time": "Blocked time",

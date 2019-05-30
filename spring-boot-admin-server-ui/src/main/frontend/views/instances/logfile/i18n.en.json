@@ -1,6 +1,7 @@
 {
   "instances": {
     "logfile": {
+      "label": "Logfile",
       "download": "Download",
       "fetch_failed": "Fetching logfile failed."
     }

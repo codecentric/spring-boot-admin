@@ -1,6 +1,7 @@
 {
   "instances": {
     "sessions": {
+      "label": "Sessions",
       "attributes": "Attributes",
       "created_at": "Created At",
       "expired": "Expired",

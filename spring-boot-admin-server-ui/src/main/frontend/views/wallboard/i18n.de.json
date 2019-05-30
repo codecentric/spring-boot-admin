@@ -1,6 +1,6 @@
 {
   "wallboard": {
     "instances_count": "{count} Instanz | {count} Instanzen",
-    "title": "Übersicht"
+    "label": "Wallboard"
   }
 }

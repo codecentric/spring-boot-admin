@@ -1,5 +1,4 @@
-import _ from 'lodash';
-import langs from 'langs';
+import merge from 'lodash/merge';
 import Vue from 'vue';
 import VueI18n from 'vue-i18n';
 
@@ -18,19 +17,18 @@ const messages = context.keys()
       return messages;
     }
   })
-  .reduce((prev, cur) => _.merge(prev, cur), {});
+  .reduce((prev, cur) => merge(prev, cur), {});
+
+export const AVAILABLE_LANGUAGES = Object.keys(messages);
+
+const browserLanguage = navigator.language.split('-')[0];
 
 const i18n = new VueI18n({
   fallbackLocale: 'en',
-  locale: 'en',
+  locale:  AVAILABLE_LANGUAGES.includes(browserLanguage) ? browserLanguage : 'en',
+  silentFallbackWarn: process.env.NODE_ENV === 'production',
+  silentTranslationWarn: process.env.NODE_ENV === 'production',
   messages
 });
-
-
-export function getReadableLanguage(locale) {
-  return langs.where('1', locale.toLowerCase().split('-')[0]).local;
-}
-
-export const AVAILABLE_LANGUAGES = Object.keys(messages);
 
 export default i18n;

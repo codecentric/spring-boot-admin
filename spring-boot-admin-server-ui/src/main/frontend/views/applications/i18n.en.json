@@ -1,6 +1,7 @@
 {
   "applications": {
     "all_up": "all up",
+    "applications": "Applications",
     "instances": "Instances",
     "instances_down": "instances down",
     "loading_applications": "Loading applications...",
@@ -10,7 +11,7 @@
     "server_connection_failed": "Server connection failed.",
     "suppress_notifications_on": "Suppress notifications on <code>{name}</code> for",
     "status": "Status",
-    "title": "Applications",
+    "label": "Applications",
     "up": "up"
   }
 }

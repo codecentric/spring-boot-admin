@@ -133,6 +133,7 @@
         parent: 'instances',
         path: 'flyway',
         component: this,
+        label: 'instances.flyway.label',
         group: VIEW_GROUP.DATA,
         order: 900,
         isEnabled: ({instance}) => instance.hasEndpoint('flyway')

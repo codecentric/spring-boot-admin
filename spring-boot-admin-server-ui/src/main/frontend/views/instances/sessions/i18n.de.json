@@ -1,6 +1,7 @@
 {
   "instances": {
     "sessions": {
+      "label": "Sitzungen",
       "attributes": "Attribute",
       "created_at": "Erstellt am",
       "expired": "Abgelaufen",

@@ -1,6 +1,6 @@
 {
   "wallboard": {
-    "instances_count": "no instances | one instance | {count} instances",
-    "title": "Wallboard"
+    "instances_count": "no instances | {count} instance | {count} instances",
+    "label": "Wallboard"
   }
 }

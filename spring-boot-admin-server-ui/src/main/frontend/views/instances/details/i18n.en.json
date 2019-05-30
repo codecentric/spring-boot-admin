@@ -1,6 +1,7 @@
 {
   "instances": {
     "details": {
+      "label": "Details",
       "fetch_failed": "Fetching metrics failed.",
       "cache":{
         "fetch_failed": "Fetching cache metrics failed.",

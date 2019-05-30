@@ -67,7 +67,7 @@ public class AdminServerUiProperties {
     /**
      * Brand to be shown in then navbar.
      */
-    private String brand = "<img src=\"assets/img/icon-spring-boot-admin.svg\"><span>Spring Boot Admin</span></img>";
+    private String brand = "<img src=\"assets/img/icon-spring-boot-admin.svg\"><span>Spring Boot Admin</span>";
 
     /**
      * If running behind a reverse proxy (using path rewriting) this can be used to output correct self references.

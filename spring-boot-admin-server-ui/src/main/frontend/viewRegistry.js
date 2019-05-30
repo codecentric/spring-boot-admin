@@ -16,11 +16,10 @@
 
 import {VIEW_GROUP} from './views';
 
-const createTextVNode = () => {
+const createTextVNode = (label) => {
   return {
-    props: ['title'],
-    render(createElement) {
-      return createElement('span', this.title);
+    render() {
+      return this._v(this.$t(label))
     }
   }
 };
@@ -55,11 +54,8 @@ export default class ViewRegistry {
   }
 
   _addView(view) {
-    if (!view.id) {
-      view.id = (view.name && view.name.replace(/[^\w]/gi, '_')) || 'unknown_view_id';
-    }
-    if (view.id && !view.handle) {
-      view.handle = createTextVNode();
+    if (view.label && !view.handle) {
+      view.handle = createTextVNode(view.label);
     }
     if (!view.group) {
       view.group = VIEW_GROUP.NONE;

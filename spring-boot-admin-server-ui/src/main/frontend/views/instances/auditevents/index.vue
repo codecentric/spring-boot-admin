@@ -203,6 +203,7 @@
         parent: 'instances',
         path: 'auditevents',
         component: this,
+        label: 'instances.auditevents.label',
         group: VIEW_GROUP.SECURITY,
         order: 600,
         isEnabled: ({instance}) => instance.hasEndpoint('auditevents')

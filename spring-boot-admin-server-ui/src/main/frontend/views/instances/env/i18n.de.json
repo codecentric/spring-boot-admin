@@ -1,17 +1,19 @@
 {
   "instances": {
     "env": {
+      "label": "Umgebungskonfiguration",
+      "manager": "Umgebungskonfiguration anpassen",
       "active_profile": "Profil",
-      "context_refresh": "Context neuladen",
+      "context_refresh": "Kontext neuladen",
       "context_refresh_failed": "Fehlgeschlagen",
-      "context_refreshed": "Context neu geladen",
+      "context_refreshed": "Kontext neu geladen",
       "context_reset": "Zurücksetzen",
       "context_reset_failed": "Fehlgeschlagen",
       "context_resetted": "Zurückgesetzt",
       "context_update": "Aktualisieren",
       "context_update_failed": "Fehlgeschlagen",
       "context_updated": "Aktualisiert",
-      "fetch_failed": "Das Laden der Umgebungsinformationen ist fehlgeschlagen.",
+      "fetch_failed": "Das Laden der Umgebungskonfiguration ist fehlgeschlagen.",
       "no_properties": "Keine Eigenschaften gesetzt"
     }
   }

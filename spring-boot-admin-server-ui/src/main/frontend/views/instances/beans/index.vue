@@ -138,6 +138,7 @@
         name: 'instances/beans',
         parent: 'instances',
         path: 'beans',
+        label: 'instances.beans.label',
         group: VIEW_GROUP.INSIGHTS,
         component: this,
         order: 110,

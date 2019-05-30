@@ -147,6 +147,7 @@
         parent: 'instances',
         path: 'scheduledtasks',
         component: this,
+        label: 'instances.scheduledtasks.label',
         group: VIEW_GROUP.INSIGHTS,
         order: 950,
         isEnabled: ({instance}) => instance.hasEndpoint('scheduledtasks')

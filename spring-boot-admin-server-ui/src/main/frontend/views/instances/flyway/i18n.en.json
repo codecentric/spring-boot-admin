@@ -1,6 +1,7 @@
 {
   "instances": {
     "flyway": {
+      "label": "Flyway",
       "fetch_failed": "Fetching Flyway reports failed.",
       "type": "Type",
       "checksum": "Checksum",
@@ -11,8 +12,7 @@
       "installed_by": "Installed by",
       "installed_on": "Installed on",
       "installed_rank": "Installed rank",
-      "execution_time": "Execution Time",
-      "": ""
+      "execution_time": "Execution Time"
     }
   }
 }

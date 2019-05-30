@@ -155,6 +155,7 @@
         parent: 'instances',
         path: 'sessions',
         component: this,
+        label: 'instances.sessions.label',
         group: VIEW_GROUP.SECURITY,
         order: 700,
         isEnabled: ({instance}) => instance.hasEndpoint('sessions')

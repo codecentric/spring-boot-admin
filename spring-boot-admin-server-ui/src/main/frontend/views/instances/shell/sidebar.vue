@@ -41,7 +41,7 @@
       >
         <router-link
           :to="{ name: group.views[0].name, params: { 'instanceId' : instance.id } }"
-          v-text="hasMultipleViews(group) ? $t('sidebar.' + group.id + '.title') : $t('sidebar.' + group.views[0].id + '.title')"
+          v-text="hasMultipleViews(group) ? $t('sidebar.' + group.id + '.title') : ($t(group.views[0].label))"
           active-class=""
           exact-active-class=""
           :class="{'is-active' : isActiveGroup(group) }"
@@ -55,7 +55,7 @@
             :key="view.name"
           >
             <router-link :to="{ name: view.name, params: { 'instanceId' : instance.id } }">
-              <component :is="view.handle" :title="$t('sidebar.' + group.id + '.' + view.path)" />
+              <component :is="view.handle" />
             </router-link>
           </li>
         </ul>

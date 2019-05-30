@@ -48,6 +48,7 @@
         parent: 'instances',
         path: 'heapdump',
         component: this,
+        label: 'instances.heapdump.label',
         group: VIEW_GROUP.JVM,
         order: 800,
         isEnabled: ({instance}) => instance.hasEndpoint('heapdump')

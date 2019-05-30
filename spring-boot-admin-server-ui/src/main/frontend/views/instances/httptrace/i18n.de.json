@@ -1,6 +1,7 @@
 {
   "instances": {
     "httptrace": {
+      "label": "HTTP-Traces",
       "chart": {
         "avg_time": "ø Dauer",
         "max_time": "Max. Dauer",
@@ -11,10 +12,10 @@
       },
       "content_type": "Content-Type",
       "fetching_failed": "Das Laden der Tracing-Informationen ist fehlgeschlagen.",
-      "label": {
+      "limit": "Limit",
+      "filter": {
         "client_errors": "Client-Fehler",
         "exclude_actuator": "ignoriere  {actuator}/**",
-        "limit": "Limit",
         "server_errors": "Server-Fehler",
         "success": "erfolgreich"
       },

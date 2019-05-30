@@ -10,7 +10,8 @@
       "remote_address": "Remote address",
       "session_id": "Session Id",
       "timestamp": "Zeitstempel",
-      "type": "Typ"
+      "type": "Typ",
+      "label": "Audit-Protokoll"
     }
   }
 }

@@ -44,6 +44,7 @@
         parent: 'instances',
         path: 'gateway',
         component: this,
+        label: 'instances.gateway.label',
         group: VIEW_GROUP.WEB,
         order: 960,
         isEnabled: ({instance}) => instance.hasEndpoint('gateway')

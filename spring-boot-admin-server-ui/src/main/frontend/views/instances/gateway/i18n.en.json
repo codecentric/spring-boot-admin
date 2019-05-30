@@ -1,6 +1,7 @@
 {
   "instances": {
     "gateway": {
+      "label": "Gateway",
       "route":{
         "add_route": "Add route",
         "adding_failed": "Adding route failed.",

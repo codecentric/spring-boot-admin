@@ -1,6 +1,7 @@
 {
   "instances": {
     "httptrace": {
+      "label": "HTTP Traces",
       "chart": {
         "avg_time": "ø duration",
         "max_time": "max duration",
@@ -11,10 +12,10 @@
       },
       "content_type": "Content-Type",
       "fetching_failed": "Fetching traces failed.",
-      "label": {
+      "limit": "limit",
+      "filter": {
         "client_errors": "client errors",
         "exclude_actuator": "exclude {actuator}/**",
-        "limit": "limit",
         "server_errors": "server errors",
         "success": "success"
       },

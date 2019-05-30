@@ -16,7 +16,7 @@
 
 <template>
   <div class="box">
-    <h1 class="is-size-6" v-text="$t('instances.env.title')" />
+    <h1 class="is-size-6" v-text="$t('instances.env.manager')" />
     <datalist id="allPropertyNames">
       <option v-for="name in allPropertyNames" :key="name" v-text="name" />
     </datalist>

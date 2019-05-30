@@ -1,6 +1,7 @@
 {
   "instances": {
     "liquibase": {
+      "label": "Liquibase",
       "author": "Autor",
       "changelog": "Changelog",
       "checksum": "Prüfsumme",

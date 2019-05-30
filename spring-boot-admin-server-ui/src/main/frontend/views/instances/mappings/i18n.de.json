@@ -1,6 +1,7 @@
 {
   "instances": {
     "mappings": {
+      "label": "Mappings",
       "class": "Klasse",
       "consumes": "Erwartet",
       "fetch_failed": "Das Laden der Mappings ist fehlgeschlagen.",

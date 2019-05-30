@@ -15,6 +15,8 @@
  */
 
 import '@/assets/css/base.scss';
+import moment from 'moment';
+import 'moment/locale/de';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import components from './components';
@@ -26,6 +28,7 @@ import ViewRegistry from './viewRegistry';
 import views from './views';
 import i18n from './i18n';
 
+moment.locale(navigator.language.split('-')[0]);
 Vue.use(VueRouter);
 Vue.use(components);
 
@@ -37,7 +40,6 @@ const installables = [
   ...views,
   ...sbaConfig.extensions
 ];
-
 
 installables.forEach(view => view.install({
   viewRegistry,

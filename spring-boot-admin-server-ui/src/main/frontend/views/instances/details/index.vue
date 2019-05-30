@@ -175,6 +175,7 @@
         parent: 'instances',
         path: 'details',
         component: this,
+        label: 'instances.details.label',
         group: VIEW_GROUP.INSIGHTS,
         order: 0
       });

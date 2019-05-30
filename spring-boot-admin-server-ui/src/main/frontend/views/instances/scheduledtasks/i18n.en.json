@@ -1,6 +1,7 @@
 {
   "instances": {
     "scheduledtasks": {
+      "label" : "Scheduled Tasks",
       "cron": {
         "expression": "Expression",
         "no_scheduledtasks": "No scheduled tasks present.",

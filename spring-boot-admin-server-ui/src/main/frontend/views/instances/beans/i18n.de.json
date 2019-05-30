@@ -1,6 +1,7 @@
 {
   "instances": {
     "beans": {
+      "label": "Beans",
       "name": "Name",
       "aliases": "Aliase",
       "type": "Typ",

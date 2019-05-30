@@ -1,6 +1,7 @@
 {
   "instances": {
     "loggers": {
+      "label": "Logger",
       "affects_all_instances": "Betrifft alle {count} Instanzen",
       "affects_this_instance_only": "Betrifft nur diese Instanz",
       "application": "Anwendung",

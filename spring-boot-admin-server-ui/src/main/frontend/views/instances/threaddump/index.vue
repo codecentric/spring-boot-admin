@@ -130,6 +130,7 @@
         name: 'instances/threaddump',
         parent: 'instances',
         path: 'threaddump',
+        label: 'instances.threaddump.label',
         component: this,
         group: VIEW_GROUP.JVM,
         order: 400,

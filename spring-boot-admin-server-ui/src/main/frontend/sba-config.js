@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import _ from 'lodash';
+import merge from 'lodash/merge';
 
 const DEFAULT_CONFIG = {
   uiSettings: {
-    brand: '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span></img>',
+    brand: '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>',
     externalViews: [],
     favicon: 'assets/img/favicon.png',
     faviconDanger: 'assets/img/favicon-danger.png',
@@ -37,4 +37,4 @@ const DEFAULT_CONFIG = {
   }
 };
 
-export default _.merge(DEFAULT_CONFIG, global.SBA)
+export default merge(DEFAULT_CONFIG, global.SBA)

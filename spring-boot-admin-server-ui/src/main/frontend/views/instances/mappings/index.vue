@@ -103,6 +103,7 @@
         name: 'instances/mappings',
         parent: 'instances',
         path: 'mappings',
+        label: 'instances.mappings.label',
         group: VIEW_GROUP.WEB,
         component: this,
         order: 450,

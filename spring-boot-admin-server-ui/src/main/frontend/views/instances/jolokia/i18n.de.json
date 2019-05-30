@@ -1,6 +1,7 @@
 {
   "instances": {
     "jolokia": {
+      "label": "JMX",
       "close": "Schließen",
       "domains": "Domains",
       "execute": "Execute",

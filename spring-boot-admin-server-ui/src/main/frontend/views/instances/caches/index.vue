@@ -130,6 +130,7 @@
         name: 'instances/caches',
         parent: 'instances',
         path: 'caches',
+        label: 'instances.caches.label',
         group: VIEW_GROUP.DATA,
         component: this,
         order: 970,

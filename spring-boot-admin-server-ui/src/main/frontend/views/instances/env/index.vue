@@ -148,6 +148,7 @@
         parent: 'instances',
         path: 'env',
         component: this,
+        label: 'instances.env.label',
         group: VIEW_GROUP.INSIGHTS,
         order: 100,
         isEnabled: ({instance}) => instance.hasEndpoint('env')

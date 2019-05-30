@@ -234,6 +234,7 @@
         name: 'instances/jolokia',
         parent: 'instances',
         path: 'jolokia',
+        label: 'instances.jolokia.label',
         component: this,
         group: VIEW_GROUP.JVM,
         order: 350,

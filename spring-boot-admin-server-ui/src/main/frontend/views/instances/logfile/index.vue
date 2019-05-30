@@ -129,6 +129,7 @@
         parent: 'instances',
         path: 'logfile',
         component: this,
+        label: 'instances.logfile.label',
         group: VIEW_GROUP.LOGGING,
         order: 200,
         isEnabled: ({instance}) => instance.hasEndpoint('logfile')

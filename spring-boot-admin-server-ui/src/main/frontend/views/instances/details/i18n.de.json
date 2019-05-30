@@ -1,6 +1,7 @@
 {
   "instances": {
     "details": {
+      "label": "Details",
       "fetch_failed": "Das Laden der Metriken ist fehlgeschlagen.",
       "cache":{
         "fetch_failed": "Das Laden der Cache-Metriken ist fehlgeschlagen.",

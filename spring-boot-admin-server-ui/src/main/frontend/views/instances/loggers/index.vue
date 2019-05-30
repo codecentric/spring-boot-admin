@@ -59,6 +59,7 @@
         name: 'instances/loggers',
         parent: 'instances',
         path: 'loggers',
+        label: 'instances.loggers.label',
         component: this,
         group: VIEW_GROUP.LOGGING,
         order: 300,

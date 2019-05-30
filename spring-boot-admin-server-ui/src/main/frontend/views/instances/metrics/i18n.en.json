@@ -1,6 +1,7 @@
 {
   "instances": {
     "metrics": {
+      "label": "Metrics",
       "add_metric": "Add Metric",
       "fetch_failed": "Fetching metrics failed.",
       "fetching_tags": "Fetching available tags",

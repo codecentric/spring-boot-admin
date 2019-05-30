@@ -152,6 +152,7 @@
         parent: 'instances',
         path: 'liquibase',
         component: this,
+        label: 'instances.liquibase.label',
         group: VIEW_GROUP.DATA,
         order: 900,
         isEnabled: ({instance}) => instance.hasEndpoint('liquibase')

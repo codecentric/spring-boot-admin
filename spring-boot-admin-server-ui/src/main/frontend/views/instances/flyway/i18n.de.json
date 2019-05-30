@@ -1,7 +1,8 @@
 {
   "instances": {
     "flyway": {
-      "fetch_failed": "Das Laden der Flyway reports ist fehlgeschlagen.",
+      "label": "Flyway",
+      "fetch_failed": "Das Laden des Flyway-Reports ist fehlgeschlagen.",
       "type": "Typ",
       "checksum": "Prüfsumme",
       "version": "Version",
@@ -11,8 +12,7 @@
       "installed_by": "Installiert von",
       "installed_on": "Installiert am",
       "installed_rank": "Reihenfolge",
-      "execution_time": "Ausführungszeit",
-      "": ""
+      "execution_time": "Ausführungszeit"
     }
   }
 }

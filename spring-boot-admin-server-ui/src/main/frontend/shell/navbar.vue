@@ -35,7 +35,7 @@
               :to="{name: view.name}"
               class="navbar-item"
             >
-              <component :is="view.handle" :title="$t('navbar.' + view.id + '.title')" :applications="applications" :error="error" />
+              <component :is="view.handle" :applications="applications" :error="error" />
             </router-link>
             <a
               v-else
@@ -69,7 +69,7 @@
               <span v-text="currentLanguage" />
             </a>
             <div class="navbar-dropdown">
-              <a class="navbar-item" @click="changeLanguage(language.locale)" v-for="language in availableLanguages" :key="language.locale" v-text="language.name" />
+              <a class="navbar-item" @click="changeLanguage(language)" v-for="language in availableLanguages" :key="language" v-text="language" />
             </div>
           </div>
         </div>
@@ -81,7 +81,8 @@
 <script>
   import sbaConfig from '@/sba-config'
   import {compareBy} from '@/utils/collections';
-  import {AVAILABLE_LANGUAGES, getReadableLanguage} from '@/i18n';
+  import {AVAILABLE_LANGUAGES} from '@/i18n';
+  import moment from 'moment';
 
   const readCookie = (name) => {
     const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
@@ -122,7 +123,8 @@
     methods: {
       changeLanguage(lang) {
         this.$i18n.locale = lang;
-        this.currentLanguage = getReadableLanguage(lang);
+        this.currentLanguage = lang;
+        moment.locale(lang);
       }
     },
     created() {
@@ -130,11 +132,8 @@
       this.userName = sbaConfig.user ? sbaConfig.user.name : null;
       this.csrfToken = readCookie('XSRF-TOKEN');
       this.csrfParameterName = sbaConfig.csrf.parameterName;
-      this.availableLanguages = AVAILABLE_LANGUAGES.map(locale => ({
-        name: getReadableLanguage(locale),
-        locale
-      }));
-      this.currentLanguage = getReadableLanguage(this.$i18n.locale);
+      this.availableLanguages = AVAILABLE_LANGUAGES;
+      this.currentLanguage = this.$i18n.locale;
     },
     mounted() {
       document.documentElement.classList.add('has-navbar-fixed-top');

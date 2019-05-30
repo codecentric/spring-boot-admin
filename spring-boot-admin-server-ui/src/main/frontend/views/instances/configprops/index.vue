@@ -170,6 +170,7 @@
         parent: 'instances',
         path: 'configprops',
         component: this,
+        label: 'instances.configprops.label',
         group: VIEW_GROUP.INSIGHTS,
         order: 110,
         isEnabled: ({instance}) => instance.hasEndpoint('configprops')

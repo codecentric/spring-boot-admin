@@ -111,6 +111,7 @@
       viewRegistry.addView({
         path: '/about',
         name: 'about',
+        label: 'about.label',
         order: 200,
         component: this
       });

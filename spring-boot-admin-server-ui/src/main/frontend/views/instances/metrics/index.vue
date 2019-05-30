@@ -207,6 +207,7 @@
         parent: 'instances',
         path: 'metrics',
         component: this,
+        label: 'instances.metrics.label',
         group: VIEW_GROUP.INSIGHTS,
         order: 50,
         isEnabled: ({instance}) => instance.hasEndpoint('metrics')

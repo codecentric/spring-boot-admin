@@ -51,7 +51,7 @@
             </div>
             <div class="field is-narrow has-addons">
               <p class="control">
-                <span class="button is-static" v-text="$t('instances.httptrace.label.limit')" />
+                <span class="button is-static" v-text="$t('instances.httptrace.limit')" />
               </p>
               <p class="control">
                 <input class="input httptraces__limit" min="0" type="number" placeholder="trace limit" v-model="limit">
@@ -64,7 +64,7 @@
             <div class="control">
               <label class="checkbox">
                 <input type="checkbox" v-model="filter.showSuccess">
-                <span v-text="$t('instances.httptrace.label.success')" />
+                <span v-text="$t('instances.httptrace.filter.success')" />
               </label>
             </div>
           </div>
@@ -72,7 +72,7 @@
             <div class="control">
               <label class="checkbox">
                 <input type="checkbox" v-model="filter.showClientErrors">
-                <span v-text="$t('instances.httptrace.label.client_errors')" />
+                <span v-text="$t('instances.httptrace.filter.client_errors')" />
               </label>
             </div>
           </div>
@@ -80,7 +80,7 @@
             <div class="control">
               <label class="checkbox">
                 <input type="checkbox" v-model="filter.showServerErrors">
-                <span v-text="$t('instances.httptrace.label.server_errors')" />
+                <span v-text="$t('instances.httptrace.filter.server_errors')" />
               </label>
             </div>
           </div>
@@ -88,7 +88,7 @@
             <div class="control">
               <label class="checkbox">
                 <input type="checkbox" v-model="filter.excludeActuator">
-                <span v-text="$t('instances.httptrace.label.exclude_actuator', {actuator: actuatorPath})" />
+                <span v-text="$t('instances.httptrace.filter.exclude_actuator', {actuator: actuatorPath})" />
               </label>
             </div>
           </div>
@@ -283,6 +283,7 @@
         parent: 'instances',
         path: 'httptrace',
         component: this,
+        label: 'instances.httptrace.label',
         group: VIEW_GROUP.WEB,
         order: 500,
         isEnabled: ({instance}) => instance.hasEndpoint('httptrace')
