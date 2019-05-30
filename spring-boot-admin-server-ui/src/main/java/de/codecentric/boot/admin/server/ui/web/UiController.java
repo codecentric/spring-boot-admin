@@ -106,7 +106,7 @@ public class UiController {
         return "index";
     }
 
-    @GetMapping(path = "/sba-settings.js", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/sba-settings.js", produces = "text/javascript")
     public String sbaSettings() {
         return "sba-settings.js";
     }
