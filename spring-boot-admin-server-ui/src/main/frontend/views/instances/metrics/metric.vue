@@ -139,9 +139,9 @@
           case 'float':
             return measurement.value.toFixed(4);
           case 'duration':
-            return formatDuration(measurement.value);
+            return formatDuration(measurement.value, this.baseUnit);
           case 'millis':
-            return formatMillis(measurement.value);
+            return formatMillis(measurement.value, this.baseUnit);
           case 'bytes':
             return prettyBytes(measurement.value);
           default:
