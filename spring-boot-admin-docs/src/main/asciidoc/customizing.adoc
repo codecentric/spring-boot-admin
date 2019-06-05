@@ -53,6 +53,7 @@ The {github-src}/spring-boot-admin-samples/spring-boot-admin-sample-custom-ui/[s
 
 The custom extension registers itself by calling `SBA.use()` and need to expose a `install()` function, which is called by the ui when setting up the routes.
 The `install()` function receives the folliwing parameters in order to register views and/or callbacks:
+
 * Object referencing the {github-src}/spring-boot-admin-server-ui/src/main/frontend/viewRegistry.js[viewRegistry]
 
 * Object referencing the {github-src}/spring-boot-admin-server-ui/src/main/frontend/store.js[applicationStore]
