@@ -16,6 +16,7 @@
 
 import '@/assets/css/base.scss';
 import moment from 'moment';
+import axios from '@/utils/axios';
 import 'moment/locale/de';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
@@ -44,7 +45,8 @@ const installables = [
 installables.forEach(view => view.install({
   viewRegistry,
   applicationStore,
-  vue: Vue
+  vue: Vue,
+  axios
 }));
 
 const routesKnownToBackend = sbaConfig.uiSettings.routes.map(r => new RegExp(`^${r.replace('/**', '(/.*)?')}$`));
