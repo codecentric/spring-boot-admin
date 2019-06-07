@@ -525,7 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.2.0-SNAPSHOT,</span>
-<span id="revdate">04.06.2019</span>
+<span id="revdate">07.06.2019</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -2509,7 +2509,23 @@ The <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring
 </div>
 <div class="paragraph">
 <p>The custom extension registers itself by calling <code>SBA.use()</code> and need to expose a <code>install()</code> function, which is called by the ui when setting up the routes.
-The <code>install()</code> function receives a parameter object referencing the <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-server-ui/src/main/frontend/viewRegistry.js">viewRegistry</a> and the <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-server-ui/src/main/frontend/store.js">applicationStore</a> in order to register views and/or callbacks.</p>
+The <code>install()</code> function receives the folliwing parameters in order to register views and/or callbacks:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Object referencing the <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-server-ui/src/main/frontend/viewRegistry.js">viewRegistry</a></p>
+</li>
+<li>
+<p>Object referencing the <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-server-ui/src/main/frontend/store.js">applicationStore</a></p>
+</li>
+<li>
+<p>Object referencing the the global Vue[Vue]</p>
+</li>
+<li>
+<p>Object referencing the <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-server-ui/src/main/frontend/utils/axios.js">axios</a></p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
 <p>If new top level routes are added to the frontend, they also must be known to the backend. Add a <code>/META-INF/spring-boot-admin-server-ui/extensions/{name}/routes.txt</code> with all your new toplevel routes (one route per line).</p>
