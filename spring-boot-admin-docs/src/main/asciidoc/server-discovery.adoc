@@ -66,7 +66,7 @@ user.password
 
 | management.context-path
 | The path is appended to the service URL and will be used for accessing the actuator endpoints.
-| `${spring.boot.admin.discovery.converter.mangement-context-path}`
+| `${spring.boot.admin.discovery.converter.management-context-path}`
 
 | health.path
 | The path is appended to the service URL and will be used for the health-checking. Ignored by the `EurekaServiceInstanceConverter`.

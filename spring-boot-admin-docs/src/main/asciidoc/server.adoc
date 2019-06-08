@@ -31,7 +31,7 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 | 1m
 
 | spring.boot.admin.monitor.default-timeout
-| Default timeout when making requests. Individual values for specific endpoints can be overriden using `spring.boot.admin.monitor.timeout.*`.
+| Default timeout when making requests. Individual values for specific endpoints can be overridden using `spring.boot.admin.monitor.timeout.*`.
 | 10,000
 
 | spring.boot.admin.monitor.timeout.*
@@ -39,11 +39,11 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 |
 
 | spring.boot.admin.monitor.default-retries
-| Default number of retries for failed requests. Modyfing requests (`PUT`, `POST`, `PATCH`, `DELETE`) are never retried. Individual values for specific endpoints can be overriden using `spring.boot.admin.monitor.retries.*`.
+| Default number of retries for failed requests. Modifying requests (`PUT`, `POST`, `PATCH`, `DELETE`) are never retried. Individual values for specific endpoints can be overridden using `spring.boot.admin.monitor.retries.*`.
 | 0
 
 | spring.boot.admin.monitor.retries.*
-| Key-Value-Pairs with the number of retries per endpointId. Defaults to default-retries. Modyfing requests (`PUT`, `POST`, `PATCH`, `DELETE`) are never retried.
+| Key-Value-Pairs with the number of retries per endpointId. Defaults to default-retries. Modifying requests (`PUT`, `POST`, `PATCH`, `DELETE`) are never retried.
 |
 
 | spring.boot.admin.metadata-keys-to-sanitize
