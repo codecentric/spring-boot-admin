@@ -22,7 +22,7 @@ As some of the actuator endpoints changed with the Spring Boot 2 release not all
 === UI
 * Rewritten ui using vue.js
 * Integrated ui-login module into the main ui module
-* Removed ui-activiti module, as it was only used rarely
+* Removed ui-activity module, as it was only used rarely
 * Removed Hystrix-Dashboard integration (subject to change)
 * Added support for the session endpoint
 * Added display of the (sanitized) metadata
@@ -31,7 +31,7 @@ As some of the actuator endpoints changed with the Spring Boot 2 release not all
 
 === Backend
 * Moved all classes to the `spring.boot.admin.server` package
-* Spring cloud related extenstions moved to `spring-boot-admin-server-cloud`.
+* Spring cloud related extensions moved to `spring-boot-admin-server-cloud`.
 * Redesigned backend using event sourcing principles
 * Added concept of applications (consisting of 1 to n instances)
 * Moved endpoint detection to the backend by querying the `/actuator`-index or by probing via OPTIONS request

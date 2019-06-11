@@ -48,11 +48,11 @@ include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/resources/appli
 
 It is possible to add custom views to the ui. The views must be implemented as https://vuejs.org/[Vue.js] components.
 
-The Javascript-Bundle and Css-Stlysheet must be placed on the classpath at `/META-INF/spring-boot-admin-server-ui/extensions/{name}/` so the server can pick them up.
+The JavaScript-Bundle and CSS-Stylesheet must be placed on the classpath at `/META-INF/spring-boot-admin-server-ui/extensions/{name}/` so the server can pick them up.
 The {github-src}/spring-boot-admin-samples/spring-boot-admin-sample-custom-ui/[spring-boot-admin-sample-custom-ui] module contains a sample which has the necessary maven setup to build such a module.
 
 The custom extension registers itself by calling `SBA.use()` and need to expose a `install()` function, which is called by the ui when setting up the routes.
-The `install()` function receives the folliwing parameters in order to register views and/or callbacks:
+The `install()` function receives the following parameters in order to register views and/or callbacks:
 
 * Object referencing the {github-src}/spring-boot-admin-server-ui/src/main/frontend/viewRegistry.js[viewRegistry]
 

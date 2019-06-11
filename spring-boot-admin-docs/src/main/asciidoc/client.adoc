@@ -82,7 +82,7 @@ info.tags.environment=test
 
 The Spring Boot Admin Client registers the application at the admin server. This is done by periodically doing a HTTP post request to the SBA Server providing information about the application. It also adds Jolokia to your application, so that JMX-beans are accessible via HTTP.
 
-TIP: There are plenty of properties to influence the way how the SBA Client registers your application. In case that doesn't fit your needs, you can provide your own `AppliationFactory` implementation.
+TIP: There are plenty of properties to influence the way how the SBA Client registers your application. In case that doesn't fit your needs, you can provide your own `ApplicationFactory` implementation.
 
 .Spring Boot Admin Client configuration options
 |===
