@@ -525,7 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.2.0-SNAPSHOT,</span>
-<span id="revdate">07.06.2019</span>
+<span id="revdate">11.06.2019</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -996,7 +996,7 @@ info.tags.environment=test</pre>
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-There are plenty of properties to influence the way how the SBA Client registers your application. In case that doesn&#8217;t fit your needs, you can provide your own <code>AppliationFactory</code> implementation.
+There are plenty of properties to influence the way how the SBA Client registers your application. In case that doesn&#8217;t fit your needs, you can provide your own <code>ApplicationFactory</code> implementation.
 </td>
 </tr>
 </table>
@@ -1193,7 +1193,7 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.monitor.default-timeout</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default timeout when making requests. Individual values for specific endpoints can be overriden using <code>spring.boot.admin.monitor.timeout.*</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default timeout when making requests. Individual values for specific endpoints can be overridden using <code>spring.boot.admin.monitor.timeout.*</code>.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">10,000</p></td>
 </tr>
 <tr>
@@ -1203,12 +1203,12 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.monitor.default-retries</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default number of retries for failed requests. Modyfing requests (<code>PUT</code>, <code>POST</code>, <code>PATCH</code>, <code>DELETE</code>) are never retried. Individual values for specific endpoints can be overriden using <code>spring.boot.admin.monitor.retries.*</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default number of retries for failed requests. Modifying requests (<code>PUT</code>, <code>POST</code>, <code>PATCH</code>, <code>DELETE</code>) are never retried. Individual values for specific endpoints can be overridden using <code>spring.boot.admin.monitor.retries.*</code>.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.monitor.retries.*</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Key-Value-Pairs with the number of retries per endpointId. Defaults to default-retries. Modyfing requests (<code>PUT</code>, <code>POST</code>, <code>PATCH</code>, <code>DELETE</code>) are never retried.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Key-Value-Pairs with the number of retries per endpointId. Defaults to default-retries. Modifying requests (<code>PUT</code>, <code>POST</code>, <code>PATCH</code>, <code>DELETE</code>) are never retried.</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
@@ -1363,7 +1363,7 @@ user.password</p></td>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">management.context-path</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The path is appended to the service URL and will be used for accessing the actuator endpoints.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>${spring.boot.admin.discovery.converter.mangement-context-path}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>${spring.boot.admin.discovery.converter.management-context-path}</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">health.path</p></td>
@@ -1567,7 +1567,7 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <p>If you add a <code>FilteringNotifier</code> to your <code>ApplicationContext</code> a RESTful interface on <code>notifications/filter</code> gets available.</p>
 </div>
 <div class="paragraph">
-<p>This notifier is useful if you don&#8217;t want recieve notifications when deploying your applications. Before stopping the application you can add an (expiring) filter either via a <code>POST</code> request.</p>
+<p>This notifier is useful if you don&#8217;t want receive notifications when deploying your applications. Before stopping the application you can add an (expiring) filter either via a <code>POST</code> request.</p>
 </div>
 <div class="listingblock">
 <div class="title">How to configure filtering</div>
@@ -1702,7 +1702,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.mail.template</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Resource path to the Thymelef template used for rendering.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resource path to the Thymeleaf template used for rendering.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>"classpath:/META-INF/spring-boot-admin-server/mail/status-changed.html"</code></p></td>
 </tr>
 <tr>
@@ -2102,7 +2102,7 @@ account and configure it appropriately.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.telegram.auth-token</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The token identifiying und authorizing your Telegram bot (e.g. <code>123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11</code>).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The token identifying und authorizing your Telegram bot (e.g. <code>123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11</code>).</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
@@ -2256,11 +2256,11 @@ By default <code>spring-boot-admin-server-ui</code> provides a login page and a 
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
-<td>Disables CRSF-Protection the endpoint the Spring Boot Admin Client uses to register.</td>
+<td>Disables CSRF-Protection for the endpoint the Spring Boot Admin Client uses to register.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="7"></i><b>7</b></td>
-<td>Disables CRSF-Protection for the actuator endpoints.</td>
+<td>Disables CSRF-Protection for the actuator endpoints.</td>
 </tr>
 </table>
 </div>
@@ -2504,12 +2504,12 @@ This can be useful for auditing or adding some extra security checks.</p>
 <p>It is possible to add custom views to the ui. The views must be implemented as <a href="https://vuejs.org/">Vue.js</a> components.</p>
 </div>
 <div class="paragraph">
-<p>The Javascript-Bundle and Css-Stlysheet must be placed on the classpath at <code>/META-INF/spring-boot-admin-server-ui/extensions/{name}/</code> so the server can pick them up.
+<p>The JavaScript-Bundle and CSS-Stylesheet must be placed on the classpath at <code>/META-INF/spring-boot-admin-server-ui/extensions/{name}/</code> so the server can pick them up.
 The <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-custom-ui/">spring-boot-admin-sample-custom-ui</a> module contains a sample which has the necessary maven setup to build such a module.</p>
 </div>
 <div class="paragraph">
 <p>The custom extension registers itself by calling <code>SBA.use()</code> and need to expose a <code>install()</code> function, which is called by the ui when setting up the routes.
-The <code>install()</code> function receives the folliwing parameters in order to register views and/or callbacks:</p>
+The <code>install()</code> function receives the following parameters in order to register views and/or callbacks:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -2808,7 +2808,7 @@ able to register at a newer server. Since the API has slight changes, you need t
 <p>Integrated ui-login module into the main ui module</p>
 </li>
 <li>
-<p>Removed ui-activiti module, as it was only used rarely</p>
+<p>Removed ui-activity module, as it was only used rarely</p>
 </li>
 <li>
 <p>Removed Hystrix-Dashboard integration (subject to change)</p>
@@ -2836,7 +2836,7 @@ able to register at a newer server. Since the API has slight changes, you need t
 <p>Moved all classes to the <code>spring.boot.admin.server</code> package</p>
 </li>
 <li>
-<p>Spring cloud related extenstions moved to <code>spring-boot-admin-server-cloud</code>.</p>
+<p>Spring cloud related extensions moved to <code>spring-boot-admin-server-cloud</code>.</p>
 </li>
 <li>
 <p>Redesigned backend using event sourcing principles</p>
