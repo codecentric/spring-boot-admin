@@ -144,7 +144,7 @@ public class AdminApplicationDiscoveryTest {
 
     private void getInstance(URI uri) {
         //@formatter:off
-        this.webClient.get().uri(uri).accept(MediaType.APPLICATION_JSON_UTF8)
+        this.webClient.get().uri(uri).accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -156,7 +156,7 @@ public class AdminApplicationDiscoveryTest {
 
     private void listInstances() {
         //@formatter:off
-        this.webClient.get().uri("/instances").accept(MediaType.APPLICATION_JSON_UTF8)
+        this.webClient.get().uri("/instances").accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -168,7 +168,7 @@ public class AdminApplicationDiscoveryTest {
 
     private void listEmptyInstances() {
         //@formatter:off
-        this.webClient.get().uri("/instances").accept(MediaType.APPLICATION_JSON_UTF8)
+        this.webClient.get().uri("/instances").accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody().json("[]");

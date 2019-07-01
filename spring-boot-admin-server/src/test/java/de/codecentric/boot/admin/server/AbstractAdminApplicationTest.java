@@ -97,7 +97,7 @@ public abstract class AbstractAdminApplicationTest {
     protected void getInstance(URI uri) {
         //@formatter:off
         this.webClient.get().uri(uri)
-                      .accept(MediaType.APPLICATION_JSON_UTF8)
+                      .accept(MediaType.APPLICATION_JSON)
                       .exchange()
                       .expectStatus().isOk()
                       .expectBody()
@@ -110,7 +110,7 @@ public abstract class AbstractAdminApplicationTest {
     protected void listInstances() {
         //@formatter:off
         this.webClient.get().uri("/instances")
-                      .accept(MediaType.APPLICATION_JSON_UTF8)
+                      .accept(MediaType.APPLICATION_JSON)
                       .exchange()
                       .expectStatus().isOk()
                       .expectBody()
@@ -123,7 +123,7 @@ public abstract class AbstractAdminApplicationTest {
     protected void listEmptyInstances() {
         //@formatter:off
         this.webClient.get().uri("/instances")
-                      .accept(MediaType.APPLICATION_JSON_UTF8)
+                      .accept(MediaType.APPLICATION_JSON)
                       .exchange()
                       .expectStatus().isOk()
                       .expectBody().json("[]");
