@@ -43,7 +43,7 @@ public class InstanceRegistry {
      * Register instance.
      *
      * @param registration instance to be registered.
-     * @return the if of the registered instance.
+     * @return the id of the registered instance.
      */
     public Mono<InstanceId> register(Registration registration) {
         Assert.notNull(registration, "'registration' must not be null");
