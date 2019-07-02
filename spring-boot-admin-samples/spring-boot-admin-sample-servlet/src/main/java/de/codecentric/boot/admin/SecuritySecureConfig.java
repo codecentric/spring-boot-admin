@@ -18,8 +18,12 @@ package de.codecentric.boot.admin;
 
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 
+import java.util.UUID;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -31,8 +35,19 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 public class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
     private final AdminServerProperties adminServer;
 
+    @Value("${spring.security.remember-me.timeout:1209600}")
+    private int REMEMBER_ME_TIMEOUT;
+
+    @Value("${spring.security.remember-me.token:#{rememberMeTokenGenerator}}")
+    private String REMEMBER_ME_TOKEN;
+
     public SecuritySecureConfig(AdminServerProperties adminServer) {
         this.adminServer = adminServer;
+    }
+
+    @Bean
+    public String rememberMeTokenGenerator() {
+        return UUID.randomUUID().toString();
     }
 
     @Override
@@ -55,8 +70,19 @@ public class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
             .ignoringAntMatchers(
                 this.adminServer.path("/instances"), // <6>
                 this.adminServer.path("/actuator/**") // <7>
-            );
+            )
+        .and()
+        .rememberMe().key(REMEMBER_ME_TOKEN).tokenValiditySeconds(REMEMBER_ME_TIMEOUT);
         // @formatter:on
+    }
+
+    // Required to provide UserDetailsService for "remember functionality"
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication()
+                .withUser("user")
+                .password("{noop}password")
+                .roles("USER");
     }
 }
 // end::configuration-spring-security[]
