@@ -82,7 +82,7 @@ public class Registration implements Serializable {
     }
 
     public Map<String, String> getMetadata() {
-        return Collections.unmodifiableMap(metadata);
+        return Collections.unmodifiableMap(this.metadata);
     }
 
     /**
