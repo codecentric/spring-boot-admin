@@ -118,6 +118,7 @@ public class UiController {
         private final String favicon;
         private final String faviconDanger;
         private final boolean notificationFilterEnabled;
+        private final boolean rememberMeEnabled;
         private final List<String> routes;
         private final List<ExternalView> externalViews;
     }

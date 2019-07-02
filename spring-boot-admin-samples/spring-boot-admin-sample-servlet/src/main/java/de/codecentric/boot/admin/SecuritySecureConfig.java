@@ -18,8 +18,11 @@ package de.codecentric.boot.admin;
 
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 
+import java.util.UUID;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -55,8 +58,19 @@ public class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
             .ignoringAntMatchers(
                 this.adminServer.path("/instances"), // <6>
                 this.adminServer.path("/actuator/**") // <7>
-            );
+            )
+        .and()
+        .rememberMe().key(UUID.randomUUID().toString()).tokenValiditySeconds(1209600);
         // @formatter:on
+    }
+
+    // Required to provide UserDetailsService for "remember functionality"
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication()
+                .withUser("user")
+                .password("{noop}password")
+                .roles("USER");
     }
 }
 // end::configuration-spring-security[]

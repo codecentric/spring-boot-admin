@@ -62,6 +62,14 @@
                                     data-i18n="placeholder:login.placeholder.password" th:classappend="${param.error != null} ? is-danger">
                             </div>
                         </div>
+                        <div class="field" th:if="${uiSettings.rememberMeEnabled}">
+                            <div class="control">
+                                <label class="checkbox">
+                                    <input type="checkbox" name="remember-me">
+                                    <span data-i18n="login.remember_me"></span>
+                                </label>
+                            </div>
+                        </div>
                         <div class="field">
                             <div class="control">
                                 <input type="submit" class="button is-block is-primary is-medium is-fullwidth"
