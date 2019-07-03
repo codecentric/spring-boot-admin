@@ -37,17 +37,10 @@ import org.slf4j.LoggerFactory;
 public class AbstractEventHandlerTest {
     private static final Logger log = LoggerFactory.getLogger(AbstractEventHandlerTest.class);
     private static final Registration registration = Registration.create("foo", "http://health").build();
-    private static final InstanceRegisteredEvent event = new InstanceRegisteredEvent(InstanceId.of("id"),
-        0L,
-        registration
-    );
-    private static final InstanceRegisteredEvent errorEvent = new InstanceRegisteredEvent(InstanceId.of("err"),
-        0L,
-        registration
-    );
-    private static final InstanceDeregisteredEvent ignoredEvent = new InstanceDeregisteredEvent(InstanceId.of("id"),
-        1L
-    );
+    private static final InstanceRegisteredEvent firstEvent = new InstanceRegisteredEvent(InstanceId.of("id"), 0L, registration);
+    private static final InstanceRegisteredEvent secondEvent = new InstanceRegisteredEvent(InstanceId.of("id"), 1L, registration);
+    private static final InstanceRegisteredEvent errorEvent = new InstanceRegisteredEvent(InstanceId.of("err"), 2L, registration);
+    private static final InstanceDeregisteredEvent ignoredEvent = new InstanceDeregisteredEvent(InstanceId.of("id"), 2L);
 
     @Test
     public void should_resubscribe_after_error() {
@@ -58,14 +51,10 @@ public class AbstractEventHandlerTest {
 
         StepVerifier.create(eventHandler.getFlux())
                     .expectSubscription()
-                    .then(() -> testPublisher.next(event))
-                    .expectNext(event)
-                    .then(() -> testPublisher.next(errorEvent))
-                    .expectNoEvent(Duration.ofMillis(100L))
-                    .then(() -> testPublisher.next(event))
-                    .expectNext(event)
+                    .then(() -> testPublisher.next(firstEvent, errorEvent, secondEvent))
+                    .expectNext(firstEvent, secondEvent)
                     .thenCancel()
-                    .verify(Duration.ofSeconds(5));
+                    .verify(Duration.ofSeconds(1));
 
     }
 
@@ -78,12 +67,10 @@ public class AbstractEventHandlerTest {
 
         StepVerifier.create(eventHandler.getFlux())
                     .expectSubscription()
-                    .then(() -> testPublisher.next(event))
-                    .expectNext(event)
-                    .then(() -> testPublisher.next(ignoredEvent))
-                    .expectNoEvent(Duration.ofMillis(100L))
+                    .then(() -> testPublisher.next(firstEvent, ignoredEvent, secondEvent))
+                    .expectNext(firstEvent, secondEvent)
                     .thenCancel()
-                    .verify(Duration.ofSeconds(5));
+                    .verify(Duration.ofSeconds(1));
     }
 
 
