@@ -34,20 +34,11 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 @Configuration
 public class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
     private final AdminServerProperties adminServer;
-
-    @Value("${spring.security.remember-me.timeout:1209600}")
-    private int REMEMBER_ME_TIMEOUT;
-
-    @Value("${spring.security.remember-me.token:#{rememberMeTokenGenerator}}")
-    private String REMEMBER_ME_TOKEN;
+    private final int REMEMBER_ME_TIMEOUT = 1209600;
+    private final String REMEMBER_ME_TOKEN = UUID.randomUUID().toString();
 
     public SecuritySecureConfig(AdminServerProperties adminServer) {
         this.adminServer = adminServer;
-    }
-
-    @Bean
-    public String rememberMeTokenGenerator() {
-        return UUID.randomUUID().toString();
     }
 
     @Override
