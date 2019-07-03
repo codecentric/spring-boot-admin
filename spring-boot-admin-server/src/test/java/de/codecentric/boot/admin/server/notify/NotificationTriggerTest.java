@@ -23,15 +23,18 @@ import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
+import reactor.core.publisher.Mono;
 import reactor.test.publisher.TestPublisher;
 
 import org.junit.Test;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class NotificationTriggerTest {
     private final Instance instance = Instance.create(InstanceId.of("id-1"))
@@ -47,8 +50,10 @@ public class NotificationTriggerTest {
         Thread.sleep(500L); //wait for subscription
 
         //when registered event is emitted
-        InstanceStatusChangedEvent event = new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(),
-            StatusInfo.ofDown());
+        InstanceStatusChangedEvent event = new InstanceStatusChangedEvent(this.instance.getId(),
+            this.instance.getVersion(),
+            StatusInfo.ofDown()
+        );
         events.next(event);
         //then should notify
         verify(notifier, times(1)).notify(event);
@@ -56,8 +61,33 @@ public class NotificationTriggerTest {
         //when registered event is emitted but the trigger has been stopped
         trigger.stop();
         clearInvocations(notifier);
-        events.next(new InstanceRegisteredEvent(instance.getId(), instance.getVersion(), instance.getRegistration()));
+        events.next(new InstanceRegisteredEvent(this.instance.getId(), this.instance.getVersion(), this.instance.getRegistration()));
         //then should not notify
         verify(notifier, never()).notify(event);
     }
+
+    @Test
+    public void should_resume_on_exceptopn() throws InterruptedException {
+        //given
+        Notifier notifier = mock(Notifier.class);
+        TestPublisher<InstanceEvent> events = TestPublisher.create();
+        NotificationTrigger trigger = new NotificationTrigger(notifier, events);
+        trigger.start();
+        Thread.sleep(500L); //wait for subscription
+
+
+        when(notifier.notify(any())).thenReturn(Mono.error(new IllegalStateException("Test"))).thenReturn(Mono.empty());
+
+        //when exception for the first event is thrown and a subsequent event is fired
+        InstanceStatusChangedEvent event = new InstanceStatusChangedEvent(this.instance.getId(),
+            this.instance.getVersion(),
+            StatusInfo.ofDown()
+        );
+        events.next(event);
+        events.next(event);
+
+        //the notifier was after the exception
+        verify(notifier, times(2)).notify(event);
+    }
+
 }
