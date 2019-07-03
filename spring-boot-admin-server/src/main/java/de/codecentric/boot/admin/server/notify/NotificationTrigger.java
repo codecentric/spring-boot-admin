@@ -24,8 +24,11 @@ import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NotificationTrigger extends AbstractEventHandler<InstanceEvent> {
+    private static final Logger log = LoggerFactory.getLogger(NotificationTrigger.class);
     private final Notifier notifier;
 
     public NotificationTrigger(Notifier notifier, Publisher<InstanceEvent> publisher) {
@@ -40,6 +43,8 @@ public class NotificationTrigger extends AbstractEventHandler<InstanceEvent> {
     }
 
     protected Mono<Void> sendNotifications(InstanceEvent event) {
-        return notifier.notify(event);
+        return this.notifier.notify(event)
+                            .doOnError(e -> log.warn("Couldn't notify for event {} ", event, e))
+                            .onErrorResume(e -> Mono.empty());
     }
 }

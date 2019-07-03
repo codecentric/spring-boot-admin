@@ -40,23 +40,23 @@ public abstract class AbstractEventHandler<T extends InstanceEvent> {
     }
 
     public void start() {
-        subscription = Flux.from(publisher)
-                           .log(log.getName(), Level.FINEST)
-                           .doOnSubscribe(s -> log.debug("Subscribed to {} events", eventType))
-                           .ofType(eventType)
-                           .cast(eventType)
-                           .transform(this::handle)
-                           .retryWhen(Retry.any()
-                                           .retryMax(Long.MAX_VALUE)
-                                           .doOnRetry(ctx -> log.warn("Unexpected error", ctx.exception())))
-                           .subscribe();
+        this.subscription = Flux.from(this.publisher)
+                                .log(this.log.getName(), Level.FINEST)
+                                .doOnSubscribe(s -> this.log.debug("Subscribed to {} events", this.eventType))
+                                .ofType(this.eventType)
+                                .cast(this.eventType)
+                                .transform(this::handle)
+                                .retryWhen(Retry.any()
+                                                .retryMax(Long.MAX_VALUE)
+                                                .doOnRetry(ctx -> this.log.warn("Unexpected error", ctx.exception())))
+                                .subscribe();
     }
 
     protected abstract Publisher<Void> handle(Flux<T> publisher);
 
     public void stop() {
-        if (subscription != null) {
-            subscription.dispose();
+        if (this.subscription != null) {
+            this.subscription.dispose();
         }
     }
 }
