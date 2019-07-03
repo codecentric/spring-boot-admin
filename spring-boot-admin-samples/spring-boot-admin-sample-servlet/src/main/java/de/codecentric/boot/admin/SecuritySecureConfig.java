@@ -19,8 +19,7 @@ package de.codecentric.boot.admin;
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -34,8 +33,6 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 @Configuration
 public class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
     private final AdminServerProperties adminServer;
-    private final int REMEMBER_ME_TIMEOUT = 1209600;
-    private final String REMEMBER_ME_TOKEN = UUID.randomUUID().toString();
 
     public SecuritySecureConfig(AdminServerProperties adminServer) {
         this.adminServer = adminServer;
@@ -63,7 +60,7 @@ public class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
                 this.adminServer.path("/actuator/**") // <7>
             )
         .and()
-        .rememberMe().key(REMEMBER_ME_TOKEN).tokenValiditySeconds(REMEMBER_ME_TIMEOUT);
+        .rememberMe().key(UUID.randomUUID().toString()).tokenValiditySeconds(1209600);
         // @formatter:on
     }
 

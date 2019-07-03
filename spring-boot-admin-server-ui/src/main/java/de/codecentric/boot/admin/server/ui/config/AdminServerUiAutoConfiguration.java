@@ -89,6 +89,7 @@ public class AdminServerUiAutoConfiguration {
                                       .notificationFilterEnabled(!this.applicationContext.getBeansOfType(
                                           NotificationFilterController.class).isEmpty())
                                       .routes(routes)
+                                      .rememberMeEnabled(this.adminUi.isRememberMeEnabled())
                                       .externalViews(this.adminUi.getExternalViews())
                                       .build();
 
