@@ -36,7 +36,7 @@
                     <figure class="image is-128x128 login--logo">
                         <img src="assets/img/icon-spring-boot-admin.svg">
                     </figure>
-                    <h1 class="title has-text-primary">Spring Boot Admin</h1>
+                    <h1 class="title has-text-primary" th:text="${uiSettings.title}">Spring Boot Admin</h1>
                     <form method="post">
                         <input type="hidden"
                                th:if="${_csrf}"
