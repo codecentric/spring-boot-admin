@@ -1252,6 +1252,11 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 <td class="tableblock halign-left valign-top"><p class="tableblock">Icon used as favicon when one or more service is down and for desktop notifications.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>"assets/img/favicon-danger.png"</code></p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.ui.remember-me-enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Switch to show/hide the remember-me checkbox on the login page.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -2226,8 +2231,19 @@ By default <code>spring-boot-admin-server-ui</code> provides a login page and a 
             .ignoringAntMatchers(
                 <span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/instances</span><span class="delimiter">&quot;</span></span>), <i class="conum" data-value="6"></i><b>(6)</b>
                 <span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/actuator/**</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="7"></i><b>(7)</b>
-            );
+            )
+        .and()
+        .rememberMe().key(<span class="predefined-type">UUID</span>.randomUUID().toString()).tokenValiditySeconds(<span class="integer">1209600</span>);
         <span class="comment">// @formatter:on</span>
+    }
+
+    <span class="comment">// Required to provide UserDetailsService for &quot;remember functionality&quot;</span>
+    <span class="annotation">@Override</span>
+    <span class="directive">protected</span> <span class="type">void</span> configure(AuthenticationManagerBuilder auth) <span class="directive">throws</span> <span class="exception">Exception</span> {
+        auth.inMemoryAuthentication()
+                .withUser(<span class="string"><span class="delimiter">&quot;</span><span class="content">user</span><span class="delimiter">&quot;</span></span>)
+                .password(<span class="string"><span class="delimiter">&quot;</span><span class="content">{noop}password</span><span class="delimiter">&quot;</span></span>)
+                .roles(<span class="string"><span class="delimiter">&quot;</span><span class="content">USER</span><span class="delimiter">&quot;</span></span>);
     }
 }</code></pre>
 </div>
