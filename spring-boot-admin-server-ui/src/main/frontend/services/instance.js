@@ -24,7 +24,7 @@ const actuatorMimeTypes = [
   'application/vnd.spring-boot.actuator.v2+json',
   'application/vnd.spring-boot.actuator.v1+json',
   'application/json'
-];
+].join(',');
 
 const isInstanceActuatorRequest = url => url.match(/^instances[/][^/]+[/]actuator([/].*)?$/);
 
