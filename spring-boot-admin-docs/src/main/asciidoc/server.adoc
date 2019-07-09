@@ -79,6 +79,10 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 | Icon used as favicon when one or more service is down and for desktop notifications.
 | `"assets/img/favicon-danger.png"`
 
+| spring.boot.admin.ui.remember-me-enabled
+| Switch to show/hide the remember-me checkbox on the login page.
+| `true`
+
 |===
 
 include::server-discovery.adoc[]
