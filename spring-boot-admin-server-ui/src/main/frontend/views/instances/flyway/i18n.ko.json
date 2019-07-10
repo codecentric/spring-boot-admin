@@ -1,0 +1,18 @@
+{
+  "instances": {
+    "flyway": {
+      "label": "Flyway",
+      "fetch_failed": "Flyway 리포트를 가져오는데 실패했습니다.",
+      "type": "타입",
+      "checksum": "체크섬",
+      "version": "버전",
+      "description": "설명",
+      "script": "스크립트",
+      "state": "상태",
+      "installed_by": "에 의해 설치",
+      "installed_on": "에 설치된",
+      "installed_rank": "설치 순위",
+      "execution_time": "실행시간"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "instances": {
+    "mappings": {
+      "label": "매핑",
+      "class": "클래스",
+      "consumes": "Consumes",
+      "fetch_failed": "매핑 정보를 가져오는데 실패했습니다.",
+      "filter_name": "필터 이름",
+      "handler": "핸들러",
+      "headers": "헤더",
+      "http-verb": "메서드",
+      "mappings_not_supported_spring_boot_1": "매핑은 스프링부트 1.x 버전에서는 지원하지 않습니다.",
+      "parameters": "파라미터",
+      "produces": "Produces",
+      "servlet_name": "서블릿 이름",
+      "url_pattern": "Url 패턴"
+    }
+  }
+}

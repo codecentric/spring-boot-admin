@@ -1,0 +1,18 @@
+{
+  "instances": {
+    "threaddump": {
+      "label": "스레드 덤프",
+      "fetch_failed": "스레드 덤프 정보를 가져오는데 실패했습니다.",
+      "thread_details_blocked_count": "블롯된 횟수",
+      "thread_details_blocked_time": "블록된 시간",
+      "thread_details_lock_name": "잠김 이름",
+      "thread_details_lock_owner_id": "잠김 소유자 id",
+      "thread_details_lock_owner_name": "잠김 소유자명",
+      "thread_details_waited_count": "대기 횟수",
+      "thread_details_waited_time": "대기 시간",
+      "thread_id": "스레드 Id",
+      "thread_name": "스레드 명",
+      "thread_state": "스레드 상태"
+    }
+  }
+}

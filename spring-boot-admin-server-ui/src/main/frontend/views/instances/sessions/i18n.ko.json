@@ -1,0 +1,18 @@
+{
+  "instances": {
+    "sessions": {
+      "label": "세션",
+      "attributes": "속성",
+      "created_at": "생성시간",
+      "expired": "만료됨",
+      "expiry": "만기",
+      "fetch_failed": "세션 정보를 가져오는데 실패했습니다.",
+      "last_accessed_at": "마지막 접근시간",
+      "loading_sessions": "세션 로딩...",
+      "max_inactive_interval": "최대 비활성<br>간격",
+      "no_sessions_found": "세션이 없습니다.",
+      "session_id": "세션 Id",
+      "unlimited": "무제한"
+    }
+  }
+}

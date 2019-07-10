@@ -1,0 +1,21 @@
+{
+  "instances": {
+    "env": {
+      "label": "환경",
+      "manager": "환경 관리자",
+      "active_profile": "프로파일",
+      "context_refresh": "컨텍스트 갱신",
+      "context_refresh_failed": "실패",
+      "context_refreshed": "컨텍스트가 갱신되었습니다.",
+      "context_reset": "초기화",
+      "context_reset_failed": "실패",
+      "context_resetted": "초기화됨",
+      "context_update": "갱신",
+      "context_update_failed": "갱신실패",
+      "context_updated": "갱신됨",
+      "fetch_failed": "환경 정보를 가져오는데 실패했습니다.",
+      "no_properties": "프로퍼티 없음",
+      "title": "환경 관리자"
+    }
+  }
+}
