@@ -1,0 +1,10 @@
+{
+  "instances": {
+    "heapdump": {
+      "label": "힙 덤프",
+      "download": "힙 덤프 다운로드",
+      "warn_dump_expensive": "힙 덤프는 CPU와 디스크 공간 측면에서 비용이 많이 들 수 있습니다.",
+      "warn_sensitive_data": "힙 덤프에는 <strong>민감한 데이터</strong>가 포함될 가능성이 있습니다. 주의해서 취급하시기 바랍니다."
+    }
+  }
+}

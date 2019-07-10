@@ -1,0 +1,21 @@
+{
+  "instances": {
+    "liquibase": {
+      "label": "리퀴베이스",
+      "author": "작성자",
+      "changelog": "변경이력",
+      "checksum": "체크섬",
+      "comments": "코멘트",
+      "contexts": "컨텍스트",
+      "deployment_id": "배포 Id",
+      "description": "비고",
+      "execution": "실행",
+      "execution_date": "실행 일시",
+      "execution_order": "실행 순서",
+      "fetch_failed": "리퀴베이스 마이그레이션 정보를 가져오는데 실패했습니다.",
+      "id": "아이디",
+      "labels": "라벨",
+      "tag": "태그"
+    }
+  }
+}

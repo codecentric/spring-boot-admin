@@ -1,0 +1,12 @@
+{
+  "instances": {
+    "caches": {
+      "label": "캐시",
+      "cache_manager": "캐시 관리자",
+      "fetch_failed": "캐시 정보를 가져오는데 실패했습니다.",
+      "loading": "캐시 정보 로딩...",
+      "name": "이름",
+      "no_caches_found": "캐시 정보를 찾을 수 없습니다."
+    }
+  }
+}

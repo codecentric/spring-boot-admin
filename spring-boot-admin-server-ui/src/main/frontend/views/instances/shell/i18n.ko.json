@@ -1,0 +1,25 @@
+{
+  "sidebar": {
+    "data": {
+      "title": "데이타"
+    },
+    "insights": {
+      "title": "개요"
+    },
+    "instances_caches": {
+      "title": "캐시"
+    },
+    "jvm": {
+      "title": "JVM"
+    },
+    "logging": {
+      "title": "로그"
+    },
+    "security": {
+      "title": "보안"
+    },
+    "web": {
+      "title": "웹"
+    }
+  }
+}
