@@ -1,0 +1,6 @@
+{
+  "wallboard": {
+    "instances_count": "pas d'instances | {count} instance | {count} instances",
+    "label": "Tableau de bord"
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "instances": {
+    "details": {
+      "label": "Détails",
+      "fetch_failed": "Echec de la récupération des métriques.",
+      "cache":{
+        "fetch_failed": "Echec de la récupération des métriques de cache.",
+        "hit_ratio": "Hit ratio",
+        "hits": "Hits",
+        "size": "Taille"
+      },
+      "datasource": {
+        "fetch_failed": "Echec de la récupération des métriques sur la datasource.",
+        "active_connections": "Connexions actives",
+        "min_connections": "Connexions min",
+        "max_connections": "Connexions max",
+        "title": "Datasource: {datasource}",
+        "unlimited": "illimité"
+      },
+      "gc": {
+        "count": "Count",
+        "time_spent_max": "Temps max passé",
+        "time_spent_total": "Total du temps passé",
+        "title": "Pauses du Garbage Collector"
+      },
+      "health": {
+        "fetch_failed": "Echec de la récupération du l'état de l'instance. Ceci est la dernière information connue.",
+        "title": "État"
+      },
+      "info": {
+        "fetch_failed": "Echec de la récupération des infos. Ceci est la dernière information connue",
+        "no_info_provided": "Aucune infos fournies.",
+        "title": "Info"
+      },
+      "memory": {
+        "fetch_failed": "Echec de la récupération des métriques mémoire",
+        "max": "Max",
+        "metaspace": "Métaspace",
+        "size": "Taille",
+        "title": "Memoire",
+        "used": "Utilisé"
+      },
+      "metadata": {
+        "no_data_provided": "Aucune métadonnées fournies.",
+        "title": "Métadonnées"
+      },
+      "process": {
+        "cpus": "CPUs",
+        "fetch_failed": "Echec de la récupération des métriques CPU.",
+        "pid": "PID",
+        "process_cpu_usage": "Usage processus du CPU",
+        "system_cpu_usage": "Usage Système du CPU",
+        "title": "Processus",
+        "uptime": "Disponibilité"
+      },
+      "threads": {
+        "daemon": "Démon",
+        "fetch_failed": "Echec de la récupération des métriques sur les threads.",
+        "live": "Actifs",
+        "peak_live": "max actifs",
+        "title": "Threads"
+      }
+    }
+  }
+}

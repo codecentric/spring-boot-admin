@@ -1,0 +1,13 @@
+{
+  "instances": {
+    "metrics": {
+      "label": "Metriques",
+      "add_metric": "Ajouter une metrique",
+      "fetch_failed": "Echec de la récupération des métriques.",
+      "fetching_tags": "Récupération des tags disponibles",
+      "no_tags": "(aucun tags)",
+      "no_tags_available": "Aucun tags disponibles.",
+      "metrics_not_supported_spring_boot_1": "Les métriques ne sont pas supportés par les applications Spring Boot 1.x."
+    }
+  }
+}

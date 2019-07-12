@@ -1,0 +1,9 @@
+{
+  "instances": {
+    "configprops": {
+      "label": "Propriétés de configuration",
+      "fetch_failed": "Echec de la récupération des propriétés de configuration..",
+      "no_properties_set": "Aucune propriétés définies"
+    }
+  }
+}

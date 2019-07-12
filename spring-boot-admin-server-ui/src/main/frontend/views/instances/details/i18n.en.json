@@ -21,7 +21,7 @@
         "count": "Count",
         "time_spent_max": "Max time spent",
         "time_spent_total": "Total time spent",
-        "title": "Garbage Collection Pausen"
+        "title": "Garbage Collection Pauses"
       },
       "health": {
         "fetch_failed": "Fetching live health status failed. This is the last known information.",
