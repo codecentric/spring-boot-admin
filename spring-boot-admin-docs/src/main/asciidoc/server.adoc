@@ -71,6 +71,10 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 | Page-Title to be shown.
 | `"Spring Boot Admin"`
 
+| spring.boot.admin.ui.login-icon
+| Icon used as image on login page.
+| `"assets/img/icon-spring-boot-admin.svg"`
+
 | spring.boot.admin.ui.favicon
 | Icon used as default favicon and icon for desktop notifications.
 | `"assets/img/favicon.png"`

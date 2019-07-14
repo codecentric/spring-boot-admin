@@ -115,6 +115,7 @@ public class UiController {
     public static class Settings {
         private final String title;
         private final String brand;
+        private final String loginIcon;
         private final String favicon;
         private final String faviconDanger;
         private final boolean notificationFilterEnabled;
