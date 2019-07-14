@@ -84,6 +84,7 @@ public class AdminServerUiAutoConfiguration {
         Settings uiSettings = Settings.builder()
                                       .brand(this.adminUi.getBrand())
                                       .title(this.adminUi.getTitle())
+                                      .loginIcon(this.adminUi.getLoginIcon())
                                       .favicon(this.adminUi.getFavicon())
                                       .faviconDanger(this.adminUi.getFaviconDanger())
                                       .notificationFilterEnabled(!this.applicationContext.getBeansOfType(
