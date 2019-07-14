@@ -18,7 +18,7 @@
   <div class="level">
     <div class="level-item has-text-centered">
       <div>
-        <p class="heading" v-text="$t('applications.title')" />
+        <p class="heading" v-text="$t('applications.applications')" />
         <p class="title" v-text="applicationsCount">
           1
         </p>
