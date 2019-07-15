@@ -50,7 +50,7 @@ public class AdminServerUiProperties {
     private String templateLocation = CLASSPATH_RESOURCE_LOCATIONS[0];
 
     /**
-     * Icon used as default image on login page
+     * Icon used as image on login page
      */
     private String loginIcon = "assets/img/icon-spring-boot-admin.svg";
 
