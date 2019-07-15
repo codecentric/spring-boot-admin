@@ -3,7 +3,7 @@
     "server_connection_failed": "서버 연결에 실패했습니다.  "
   },
   "term": {
-    "application": "어플리케이션",
+    "application": "애플리케이션",
     "attributes": "속성",
     "bytes": "Bytes",
     "cancel": "취소",

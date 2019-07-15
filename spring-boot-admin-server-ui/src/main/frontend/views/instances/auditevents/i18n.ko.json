@@ -1,7 +1,7 @@
 {
   "instances": {
     "auditevents": {
-      "audit_log_not_supported_spring_boot_1": "감사(Audit) 로그는 Spring Boot 1.x 버전의 어플리케이션은 지원하지 않습니다.",
+      "audit_log_not_supported_spring_boot_1": "감사(Audit) 로그는 Spring Boot 1.x 버전의 애플리케이션은 지원하지 않습니다.",
       "event": "이벤트",
       "fetch_failed": "감사(Audit) 이벤트 가져오는 중 실패함.",
       "loading_audit_events": "감사(Audit) 이벤트 로딩...",
