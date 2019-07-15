@@ -1,0 +1,17 @@
+{
+  "applications": {
+    "all_up": "전체 정상",
+    "applications": "애플리케이션",
+    "instances": "인스턴스",
+    "instances_down": "인스턴스 종료",
+    "loading_applications": "애플리케이션 로딩..",
+    "no_applications_registered": "등록된 애플리케이션이 없습니다.",
+    "notifications_suppressed_for": "<code>{name}</code>에 대한 알림이 억제됩니다.",
+    "restricted": "제한됨",
+    "server_connection_failed": "서버 연결에 실패하였습니다.",
+    "suppress_notifications_on": "<code>{name}</code>에 대한 알림",
+    "status": "상태",
+    "label": "애플리케이션",
+    "up": "정상"
+  }
+}

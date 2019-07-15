@@ -1,0 +1,9 @@
+{
+  "instances": {
+    "logfile": {
+      "label": "로그파일",
+      "download": "다운로드",
+      "fetch_failed": "로그파일 정보를 가져오는데 실패했습니다."
+    }
+  }
+}

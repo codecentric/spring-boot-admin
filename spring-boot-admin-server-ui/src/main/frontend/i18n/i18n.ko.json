@@ -1,0 +1,38 @@
+{
+  "error": {
+    "server_connection_failed": "서버 연결에 실패했습니다.  "
+  },
+  "term": {
+    "application": "애플리케이션",
+    "attributes": "속성",
+    "bytes": "Bytes",
+    "cancel": "취소",
+    "clear": "초기화",
+    "cleared": "초기화됨",
+    "close": "닫기",
+    "confirm": "확인",
+    "delete": "삭제",
+    "deleted": "삭제됨",
+    "duration": "기간",
+    "event": "이벤트",
+    "ever": "ever",
+    "executing": "실행 중...",
+    "execution_failed": "실행 실패.",
+    "execution_successful": "실행 성공.",
+    "failed": "실패했습니다",
+    "float": "Float",
+    "hours": "{count} 시간 | {count} 시간",
+    "instances": "인스턴스",
+    "integer": "Integer",
+    "milliseconds": "Milliseconds",
+    "minutes": "{count} 분 | {count} 분",
+    "name": "이름",
+    "operations": "Operations",
+    "save": "저장",
+    "stacktrace": "Stacktrace",
+    "suppress": "비활성화",
+    "time": "시간",
+    "unsuppress": "활성화",
+    "username": "사용자명"
+  }
+}

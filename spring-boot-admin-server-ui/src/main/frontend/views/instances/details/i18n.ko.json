@@ -1,0 +1,65 @@
+{
+  "instances": {
+    "details": {
+      "label": "상세",
+      "fetch_failed": "분석 정보를 가져오는데 실패했습니다.",
+      "cache":{
+        "fetch_failed": "캐시 분석 정보를 가져오는데 실패했습니다.",
+        "hit_ratio": "히트율",
+        "hits": "히트",
+        "size": "사이즈"
+      },
+      "datasource": {
+        "fetch_failed": "데이터베이스 분석 정보를 가져오는데 실패했습니다.",
+        "active_connections": "활성 커넥션",
+        "min_connections": "최소 커넥션",
+        "max_connections": "최대 커넥션",
+        "title": "데이터소스: {datasource}",
+        "unlimited": "무제한"
+      },
+      "gc": {
+        "count": "횟수",
+        "time_spent_max": "최대 소요 시간",
+        "time_spent_total": "전체 소요 시간",
+        "title": "가비지 컬렉션 유휴시간"
+      },
+      "health": {
+        "fetch_failed": "실시간 상태를 가져오는데 실패했습니다. 여기까지가 마지막으로 확인된 정보입니다.",
+        "title": "상태"
+      },
+      "info": {
+        "fetch_failed": "실시간 정보를 가져오는데 실패했습니다. 여기까지가 마지막으로 확인된 정보입니다.",
+        "no_info_provided": "정보가 제공되지 않습니다.",
+        "title": "정보"
+      },
+      "memory": {
+        "fetch_failed": "메모리 정보를 가져오는데 실패했습니다.",
+        "max": "최대",
+        "metaspace": "메타스페이스",
+        "size": "사이즈",
+        "title": "메모리",
+        "used": "사용됨"
+      },
+      "metadata": {
+        "no_data_provided": "메타데이터가 제공되지 않습니다.",
+        "title": "메타데이터"
+      },
+      "process": {
+        "cpus": "CPU",
+        "fetch_failed": "프로세스 정보를 가져오는데 실패했습니다.",
+        "pid": "PID",
+        "process_cpu_usage": "프로세스 CPU 사용량",
+        "system_cpu_usage": "시스템 CPU 사용량",
+        "title": "프로세",
+        "uptime": "가동시간"
+      },
+      "threads": {
+        "daemon": "데몬",
+        "fetch_failed": "스레드 정보를 가져오는데 실패했습니다.",
+        "live": "활성",
+        "peak_live": "최대 활성",
+        "title": "스레드"
+      }
+    }
+  }
+}

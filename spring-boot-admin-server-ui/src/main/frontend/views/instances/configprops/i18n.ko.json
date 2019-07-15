@@ -1,0 +1,9 @@
+{
+  "instances": {
+    "configprops": {
+      "label": "구성 속성(Configuration Properties)",
+      "fetch_failed": "구성 속성 정보를 가져오는데 실패했습니다.",
+      "no_properties_set": "설정된 구성 속성 정보가 없습니다."
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "instances": {
+    "gateway": {
+      "label": "게이트웨이",
+      "route":{
+        "add_route": "라우트 추가",
+        "adding_failed": "라우트 추가 실패했습니다.",
+        "cache_refreshed": "라우트 캐시가 갱신되었습니다.",
+        "cache_refresh": "라우트 캐시 갱신",
+        "cache_refresh_failed": "갱신 실패함",
+        "deleted": "삭제됨",
+        "delete": "삭제",
+        "delete_failed": "삭제실패",
+        "fetch_failed": "게이트웨이 라우트 정보를 가져오는데 실패했습니다.",
+        "filters": "필터",
+        "id": "Id",
+        "loading": "라우트 로딩...",
+        "no_definition_provided": "라우트 정의가 제공되지 않습니다.",
+        "no_routes_found": "라우트가 없습니다.",
+        "order": "순서",
+        "predicates": "Predicates",
+        "uri": "URI"
+      },
+      "filters": {
+        "fetch_failed": "글로벌 필터 정보를 가져오는데 실패했습니다.",
+        "filter_name": "필터명",
+        "loading": "글로벌 필터 로깅...",
+        "no_filters_found": "글로벌 필터를 찾을 수 없습니다.",
+        "order": "순서"
+      }
+    }
+  }
+}
