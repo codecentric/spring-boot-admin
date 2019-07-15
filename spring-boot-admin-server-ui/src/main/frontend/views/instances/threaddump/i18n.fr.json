@@ -1,0 +1,18 @@
+{
+  "instances": {
+    "threaddump": {
+      "label": "Thread Dump",
+      "fetch_failed": "Echec de la récupération des threaddump.",
+      "thread_details_blocked_count": "Nombre de blockés",
+      "thread_details_blocked_time": "Temps de blocage",
+      "thread_details_lock_name": "Nom du Lock",
+      "thread_details_lock_owner_id": "Id du propriétaire du Lock",
+      "thread_details_lock_owner_name": "Nom du propriétaire du Lock",
+      "thread_details_waited_count": "Nombre en attente",
+      "thread_details_waited_time": "Temps attendu",
+      "thread_id": "Thread Id",
+      "thread_name": "Nom du Thread",
+      "thread_state": "État du Thread"
+    }
+  }
+}
