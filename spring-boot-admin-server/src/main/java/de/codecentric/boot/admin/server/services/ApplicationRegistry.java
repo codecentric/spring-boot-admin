@@ -56,7 +56,7 @@ public class ApplicationRegistry {
     }
 
     /**
-     * Get a list of all registered instances.
+     * Get a list of all registered applications.
      *
      * @return List of all the applications.
      */
@@ -67,6 +67,9 @@ public class ApplicationRegistry {
             .flatMap(grouped -> toApplication(grouped.key(), grouped), Integer.MAX_VALUE);
     }
 
+    /**
+     * Get a specific application instance.
+     */
     public Mono<Application> getApplication(String name) {
         return this.toApplication(name, instanceRegistry.getInstances(name).filter(Instance::isRegistered))
             .filter(a -> !a.getInstances().isEmpty());
