@@ -23,7 +23,7 @@
     "float": "浮点型",
     "hours": "{count} 小时 | {count} 小时",
     "instances": "实例",
-    "integer": "整数",
+    "integer": "整型",
     "milliseconds": "毫秒",
     "minutes": "{count} 分钟 | {count} 分钟",
     "name": "名称",
