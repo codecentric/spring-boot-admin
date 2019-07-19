@@ -20,7 +20,9 @@ import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.entities.SnapshottingInstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
+import de.codecentric.boot.admin.server.eventstore.InstanceEventPublisher;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
+import de.codecentric.boot.admin.server.services.ApplicationRegistry;
 import de.codecentric.boot.admin.server.services.EndpointDetectionTrigger;
 import de.codecentric.boot.admin.server.services.EndpointDetector;
 import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
@@ -62,6 +64,13 @@ public class AdminServerAutoConfiguration {
     public InstanceRegistry instanceRegistry(InstanceRepository instanceRepository,
                                              InstanceIdGenerator instanceIdGenerator) {
         return new InstanceRegistry(instanceRepository, instanceIdGenerator);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ApplicationRegistry applicationRegistry(InstanceRegistry instanceRegistry,
+                                                   InstanceEventPublisher instanceEventPublisher) {
+        return new ApplicationRegistry(instanceRegistry, instanceEventPublisher);
     }
 
     @Bean
