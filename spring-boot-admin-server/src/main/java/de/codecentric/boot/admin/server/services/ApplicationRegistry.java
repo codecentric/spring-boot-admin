@@ -41,6 +41,8 @@ import static java.util.stream.Collectors.toMap;
 /**
  * Registry for all applications that should be managed/administrated by the Spring Boot Admin
  * server. Backed by an InstanceRegistry for persistence and an InstanceEventPublisher for events
+ *
+ * @author Dean de Bree
  */
 public class ApplicationRegistry {
 
@@ -82,12 +84,12 @@ public class ApplicationRegistry {
             .flatMap(instance -> instanceRegistry.deregister(instance.getId()));
     }
 
-    private Tuple2<String, Flux<Instance>> getApplicationForInstance(Instance instance) {
+    protected Tuple2<String, Flux<Instance>> getApplicationForInstance(Instance instance) {
         String name = instance.getRegistration().getName();
         return Tuples.of(name, instanceRegistry.getInstances(name).filter(Instance::isRegistered));
     }
 
-    private Mono<Application> toApplication(String name, Flux<Instance> instances) {
+    protected Mono<Application> toApplication(String name, Flux<Instance> instances) {
         return instances.collectList().map(instanceList -> {
             Application group = new Application(name);
             group.setInstances(instanceList);
@@ -100,7 +102,7 @@ public class ApplicationRegistry {
     }
 
     @Nullable
-    private BuildVersion getBuildVersion(List<Instance> instances) {
+    protected BuildVersion getBuildVersion(List<Instance> instances) {
         List<BuildVersion> versions = instances.stream()
             .map(Instance::getBuildVersion)
             .filter(Objects::nonNull)
@@ -146,7 +148,7 @@ public class ApplicationRegistry {
             .orElse(Tuples.of(STATUS_UNKNOWN, Instant.EPOCH));
     }
 
-    private Instant getMax(Instant t1, Instant t2) {
+    protected Instant getMax(Instant t1, Instant t2) {
         return t1.compareTo(t2) >= 0 ? t1 : t2;
     }
 
