@@ -56,7 +56,7 @@ public class ApplicationRegistry {
     /**
      * Get a list of all registered instances.
      *
-     * @return List of all instances.
+     * @return List of all the applications.
      */
     public Flux<Application> getApplications() {
         return instanceRegistry.getInstances()
