@@ -31,6 +31,9 @@
           <tr class="health-details__detail" v-for="detail in details" :key="detail.name">
             <td v-text="detail.name" />
             <td v-if="name === 'diskSpace'" v-text="prettyBytes(detail.value)" />
+            <td v-else-if="typeof detail.value == 'object'">
+                <pre class="is-breakable">{{ JSON.stringify(detail.value, null, 2) }}</pre>
+            </td>
             <td class="is-breakable" v-else v-text="detail.value" />
           </tr>
         </table>
