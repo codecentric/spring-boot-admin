@@ -5,7 +5,7 @@
 === Custom Notifiers ===
 
 You can add your own Notifiers by adding Spring Beans which implement the `Notifier` interface, at best by extending
-`AbstractEventNotifier` or `AbstractStatusChangeNotifier`
+`AbstractEventNotifier` or `AbstractStatusChangeNotifier`.
 
 [source,java,indent=0]
 ----
@@ -123,12 +123,11 @@ or you must ensure yourself that the image gets served correctly (e.g. by regist
 - **spring.boot.admin.ui.title**: Use this option to customize the browsers window title.
 
 === Customizing Login Logo ===
-You can set a custom image to  be displayed on the login page.
-
+You can set a custom image to be displayed on the login page.
 
 1. Put the image in a resource location which is served via http (e.g. `/META-INF/spring-boot-admin-server-ui/assets/img/`).
 2. Configure the icons to use using the following property:
-  - **spring.boot.admin.ui.login-icon**: Used as icon on login page. (e.g `assets/img/custom-login-icon.svg`
+  - **spring.boot.admin.ui.login-icon**: Used as icon on login page. (e.g `assets/img/custom-login-icon.svg`)
 
 === Customizing Favicon ===
 It is possible to use a custom favicon, which is also used for desktop notifications. Spring Boot Admin uses a different icon when one or more application is down.
