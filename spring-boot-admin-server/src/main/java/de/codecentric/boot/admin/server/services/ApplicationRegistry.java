@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,11 @@ import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
-import javax.annotation.Nullable;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import javax.annotation.Nullable;
 
 import static de.codecentric.boot.admin.server.domain.values.StatusInfo.STATUS_UNKNOWN;
 import static java.util.Comparator.naturalOrder;
@@ -61,46 +61,47 @@ public class ApplicationRegistry {
      * @return List of all the applications.
      */
     public Flux<Application> getApplications() {
-        return instanceRegistry.getInstances()
-            .filter(Instance::isRegistered)
-            .groupBy(instance -> instance.getRegistration().getName())
-            .flatMap(grouped -> toApplication(grouped.key(), grouped), Integer.MAX_VALUE);
+        return this.instanceRegistry.getInstances()
+                                    .filter(Instance::isRegistered)
+                                    .groupBy(instance -> instance.getRegistration().getName())
+                                    .flatMap(grouped -> toApplication(grouped.key(), grouped), Integer.MAX_VALUE);
     }
 
     /**
      * Get a specific application instance.
      */
     public Mono<Application> getApplication(String name) {
-        return this.toApplication(name, instanceRegistry.getInstances(name).filter(Instance::isRegistered))
+        return this.toApplication(name, this.instanceRegistry.getInstances(name).filter(Instance::isRegistered))
             .filter(a -> !a.getInstances().isEmpty());
     }
 
     public Flux<Application> getApplicationStream() {
-        return Flux.from(instanceEventPublisher)
-            .flatMap(event -> instanceRegistry.getInstance(event.getInstance()))
+        return Flux.from(this.instanceEventPublisher)
+            .flatMap(event -> this.instanceRegistry.getInstance(event.getInstance()))
             .map(this::getApplicationForInstance)
             .flatMap(group -> toApplication(group.getT1(), group.getT2()));
     }
 
     public Flux<InstanceId> deregister(String name) {
-        return instanceRegistry.getInstances(name)
-            .flatMap(instance -> instanceRegistry.deregister(instance.getId()));
+        return this.instanceRegistry.getInstances(name)
+                                    .flatMap(instance -> this.instanceRegistry.deregister(instance.getId()));
     }
 
     protected Tuple2<String, Flux<Instance>> getApplicationForInstance(Instance instance) {
         String name = instance.getRegistration().getName();
-        return Tuples.of(name, instanceRegistry.getInstances(name).filter(Instance::isRegistered));
+        return Tuples.of(name, this.instanceRegistry.getInstances(name).filter(Instance::isRegistered));
     }
 
     protected Mono<Application> toApplication(String name, Flux<Instance> instances) {
         return instances.collectList().map(instanceList -> {
-            Application group = new Application(name);
-            group.setInstances(instanceList);
-            group.setBuildVersion(getBuildVersion(instanceList));
             Tuple2<String, Instant> status = getStatus(instanceList);
-            group.setStatus(status.getT1());
-            group.setStatusTimestamp(status.getT2());
-            return group;
+            return Application
+                .create(name)
+                .instances(instanceList)
+                .buildVersion(getBuildVersion(instanceList))
+                .status(status.getT1())
+                .statusTimestamp(status.getT2())
+                .build();
         });
     }
 
@@ -154,5 +155,4 @@ public class ApplicationRegistry {
     protected Instant getMax(Instant t1, Instant t2) {
         return t1.compareTo(t2) >= 0 ? t1 : t2;
     }
-
 }
