@@ -31,10 +31,10 @@
           <tr class="health-details__detail" v-for="detail in details" :key="detail.name">
             <td v-text="detail.name" />
             <td v-if="name === 'diskSpace'" v-text="prettyBytes(detail.value)" />
-            <td v-else-if="typeof detail.value == 'object'">
-                <pre class="is-breakable">{{ JSON.stringify(detail.value, null, 2) }}</pre>
+            <td v-else-if="typeof detail.value === 'object'">
+              <pre class="is-breakable" v-text="toJson(detail.value)" />
             </td>
-            <td class="is-breakable" v-else v-text="detail.value" />
+            <td v-else class="is-breakable" v-text="detail.value" />
           </tr>
         </table>
       </td>
@@ -68,7 +68,10 @@
       }
     },
     methods: {
-      prettyBytes
+      prettyBytes,
+      toJson(obj) {
+        return JSON.stringify(obj, null, 2);
+      }
     },
     computed: {
       details() {
@@ -96,10 +99,11 @@
 
   td.health-details__nested {
     padding: 0 0 0 0.75em;
+    border-bottom: 0;
   }
 
-  td.health-details__nested {
-    border-bottom: 0;
+  td.health-details__nested pre {
+    padding: 0.5em 0.75em;
   }
 
   .health-details__nested .table {
