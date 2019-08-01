@@ -1,0 +1,33 @@
+{
+  "instances": {
+    "gateway": {
+      "label": "网关",
+      "route":{
+        "add_route": "添加路由",
+        "adding_failed": "添加路由失败。",
+        "cache_refreshed": "路由缓存已刷新",
+        "cache_refresh": "刷新路由缓存",
+        "cache_refresh_failed": "刷新失败",
+        "deleted": "已删除",
+        "delete": "删除",
+        "delete_failed": "删除失败",
+        "fetch_failed": "获取网关路由失败。",
+        "filters": "过滤器",
+        "id": "Id",
+        "loading": "加载路由中...",
+        "no_definition_provided": "没有提供路由定义。",
+        "no_routes_found": "未找到路由。",
+        "order": "列表",
+        "predicates": "谓语",
+        "uri": "URI"
+      },
+      "filters": {
+        "fetch_failed": "获取全局过滤器失败。",
+        "filter_name": "过滤器名称",
+        "loading": "加载全局过滤器中...",
+        "no_filters_found": "未找到全局过滤器。",
+        "order": "列表"
+      }
+    }
+  }
+}
