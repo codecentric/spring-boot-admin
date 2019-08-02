@@ -1,0 +1,18 @@
+{
+  "instances": {
+    "jolokia": {
+      "label": "Java管理扩展",
+      "close": "关闭",
+      "domains": "域",
+      "execute": "运行",
+      "executing": "运行中...",
+      "execution_failed": "运行失败。",
+      "execution_successful": "运行成功。",
+      "fetch_failed": "未找到Java管理扩展类。",
+      "mbean": {
+        "fetch_failed": "获取属性失败。"
+      },
+      "mbeans": "可管理资源"
+    }
+  }
+}

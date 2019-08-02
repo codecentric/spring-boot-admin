@@ -1,0 +1,38 @@
+{
+  "error": {
+    "server_connection_failed": "服务连接失败。"
+  },
+  "term": {
+    "application": "应用",
+    "attributes": "属性",
+    "bytes": "字节",
+    "cancel": "取消",
+    "clear": "清除",
+    "cleared": "已清除",
+    "close": "关闭",
+    "confirm": "确认",
+    "delete": "删除",
+    "deleted": "已删除",
+    "duration": "持续时间",
+    "event": "事件",
+    "ever": "ever",
+    "executing": "执行中...",
+    "execution_failed": "执行失败。",
+    "execution_successful": "执行成功。",
+    "failed": "失败",
+    "float": "浮点型",
+    "hours": "{count} 小时 | {count} 小时",
+    "instances": "实例",
+    "integer": "整型",
+    "milliseconds": "毫秒",
+    "minutes": "{count} 分钟 | {count} 分钟",
+    "name": "名称",
+    "operations": "操作",
+    "save": "保存",
+    "stacktrace": "堆栈信息",
+    "suppress": "Suppress",
+    "time": "时间",
+    "unsuppress": "Unsuppress",
+    "username": "用户名"
+  }
+}

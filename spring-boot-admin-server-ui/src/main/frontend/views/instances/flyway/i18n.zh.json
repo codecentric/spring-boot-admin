@@ -1,0 +1,18 @@
+{
+  "instances": {
+    "flyway": {
+      "label": "Flyway",
+      "fetch_failed": "获取Flyway报告失败。",
+      "type": "类型",
+      "checksum": "校验码",
+      "version": "版本",
+      "description": "描述",
+      "script": "脚本",
+      "state": "状态",
+      "installed_by": "安装人",
+      "installed_on": "安装位置",
+      "installed_rank": "安装等级",
+      "execution_time": "执行时间"
+    }
+  }
+}

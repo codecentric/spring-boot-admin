@@ -1,0 +1,65 @@
+{
+  "instances": {
+    "details": {
+      "label": "细节",
+      "fetch_failed": "获取指标失败。",
+      "cache":{
+        "fetch_failed": "获取缓存指标失败。",
+        "hit_ratio": "命中率",
+        "hits": "命中次数",
+        "size": "粒度"
+      },
+      "datasource": {
+        "fetch_failed": "获取数据源指标失败。",
+        "active_connections": "活动连接数",
+        "min_connections": "最小连接数",
+        "max_connections": "最大连接数",
+        "title": "数据源: {datasource}",
+        "unlimited": "unlimited"
+      },
+      "gc": {
+        "count": "总计",
+        "time_spent_max": "最大耗时",
+        "time_spent_total": "总耗时",
+        "title": "垃圾回收"
+      },
+      "health": {
+        "fetch_failed": "获取实例实时健康信息状态失败。这是最后的信息。",
+        "title": "健康"
+      },
+      "info": {
+        "fetch_failed": "获取实时信息失败。这是最后的信息。",
+        "no_info_provided": "未提供任何信息。",
+        "title": "信息"
+      },
+      "memory": {
+        "fetch_failed": "获取内存数据失败。",
+        "max": "最大",
+        "metaspace": "初始空间",
+        "size": "当前可用",
+        "title": "内存",
+        "used": "已用"
+      },
+      "metadata": {
+        "no_data_provided": "未提供元数据。",
+        "title": "元数据"
+      },
+      "process": {
+        "cpus": "CPU核心数",
+        "fetch_failed": "获取进程数据失败。",
+        "pid": "进程ID",
+        "process_cpu_usage": "进程CPU使用率",
+        "system_cpu_usage": "系统CPU使用率",
+        "title": "进程",
+        "uptime": "运行时间"
+      },
+      "threads": {
+        "daemon": "守护进程",
+        "fetch_failed": "获取线程指标失败。",
+        "live": "活动线程",
+        "peak_live": "线程峰值",
+        "title": "线程"
+      }
+    }
+  }
+}

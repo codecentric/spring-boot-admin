@@ -1,0 +1,18 @@
+{
+  "instances": {
+    "sessions": {
+      "label": "Sessions",
+      "attributes": "属性",
+      "created_at": "创建于",
+      "expired": "已过期",
+      "expiry": "到期",
+      "fetch_failed": "获取Session失败",
+      "last_accessed_at": "最后访问时间",
+      "loading_sessions": "加载Sessions中...",
+      "max_inactive_interval": "Max Inactive<br>Interval",
+      "no_sessions_found": "未找到Session",
+      "session_id": "Session Id",
+      "unlimited": "Unlimited"
+    }
+  }
+}
