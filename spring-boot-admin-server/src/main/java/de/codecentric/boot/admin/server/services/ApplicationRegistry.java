@@ -58,7 +58,7 @@ public class ApplicationRegistry {
     /**
      * Get a list of all registered applications.
      *
-     * @return List of all the applications.
+     * @return Flux of all the applications.
      */
     public Flux<Application> getApplications() {
         return this.instanceRegistry.getInstances()
@@ -69,6 +69,8 @@ public class ApplicationRegistry {
 
     /**
      * Get a specific application instance.
+     * @param name the name of the application to find.
+     * @return Mono with the application or an empty Mono if not found.
      */
     public Mono<Application> getApplication(String name) {
         return this.toApplication(name, this.instanceRegistry.getInstances(name).filter(Instance::isRegistered))

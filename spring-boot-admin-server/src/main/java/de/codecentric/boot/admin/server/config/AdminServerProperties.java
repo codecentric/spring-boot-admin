@@ -59,7 +59,8 @@ public class AdminServerProperties {
     }
 
     /**
-     * @return the given path within the admin context-path
+     * @param path the partial path within the admin context-path
+     * @return the full path within the admin context-path
      */
     public String path(String path) {
         return this.contextPath + path;
@@ -114,22 +115,6 @@ public class AdminServerProperties {
          */
         @DurationUnit(ChronoUnit.MILLIS)
         private Map<String, Duration> timeout = new HashMap<>();
-
-        /**
-         * @deprecated in favor of statusInterval
-         */
-        @Deprecated
-        public void setPeriod(Duration period) {
-            this.setStatusInterval(period);
-        }
-
-        /**
-         * @deprecated in favor of statusInterval
-         */
-        @Deprecated
-        public Duration getPeriod() {
-            return this.getStatusInterval();
-        }
     }
 
     @lombok.Data
