@@ -32,7 +32,7 @@ For *non-Spring Boot* applications you can either add a `version` or `build.vers
 === JMX-Bean Management ===
 
 To interact with JMX-beans in the admin UI you have to include https://jolokia.org/[Jolokia] in your application. As Jolokia is servlet based there is no support for reactive applications.
-In case you are using the `spring-boot-admin-starter-client` it will be pulled in for you, if not add Jolokia to your dependencies:
+In case you are using the `spring-boot-admin-starter-client` it will be pulled in for you, if not add Jolokia to your dependencies. With Spring Boot 2.2.0 you might want to set `spring.jmx.enabled=true` if you want to expose Spring beans via JMX.
 
 [source,xml]
 .pom.xml
