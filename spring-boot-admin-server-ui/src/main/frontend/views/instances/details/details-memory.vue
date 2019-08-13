@@ -82,8 +82,7 @@
       hasLoaded: false,
       error: null,
       current: null,
-      chartData: [],
-      memoryIds: []
+      chartData: []
     }),
     computed: {
       name() {
@@ -97,24 +96,13 @@
         }
       }
     },
-    created() {
-      this.fetchMemoryIds();
-    },
     methods: {
       prettyBytes,
-      hasMemoryId(id) {
-        return this.memoryIds && this.memoryIds.includes(id);
-      },
-      async fetchMemoryIds() {
-        const response = await this.instance.fetchMetric('jvm.memory.used');
-        this.memoryIds = response.data.availableTags
-          .find((availableTag) => availableTag.tag === "id")
-          .values;
-      },
       async fetchMetrics() {
         const responseMax = this.instance.fetchMetric('jvm.memory.max', {area: this.type});
         const responseUsed = this.instance.fetchMetric('jvm.memory.used', {area: this.type});
-        const responeMetaspace = this.type === 'nonheap' && this.hasMemoryId('Metaspace')
+        const hasMetaspace = (await responseUsed).data.availableTags.some(tag => tag.tag === 'id' && tag.values.includes('Metaspace'));
+        const responeMetaspace = this.type === 'nonheap' && hasMetaspace
           ? this.instance.fetchMetric('jvm.memory.used', {area: this.type, id: 'Metaspace'})
           : null;
         const responseCommitted = this.instance.fetchMetric('jvm.memory.committed', {area: this.type});
