@@ -928,7 +928,7 @@ You can include the Spring Boot Admin Server to your Eureka server. Setup everyt
 <h3 id="jmx-bean-management"><a class="anchor" href="#jmx-bean-management"></a><a class="link" href="#jmx-bean-management">3.2. JMX-Bean Management</a></h3>
 <div class="paragraph">
 <p>To interact with JMX-beans in the admin UI you have to include <a href="https://jolokia.org/">Jolokia</a> in your application. As Jolokia is servlet based there is no support for reactive applications.
-In case you are using the <code>spring-boot-admin-starter-client</code> it will be pulled in for you, if not add Jolokia to your dependencies:</p>
+In case you are using the <code>spring-boot-admin-starter-client</code> it will be pulled in for you, if not add Jolokia to your dependencies. With Spring Boot 2.2.0 you might want to set <code>spring.jmx.enabled=true</code> if you want to expose Spring Beand via JMX.</p>
 </div>
 <div class="listingblock">
 <div class="title">pom.xml</div>
