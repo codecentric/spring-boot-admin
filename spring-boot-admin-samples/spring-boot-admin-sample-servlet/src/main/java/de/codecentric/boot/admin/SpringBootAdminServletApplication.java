@@ -24,6 +24,10 @@ import de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunctio
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.audit.AuditEventRepository;
+import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
+import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
+import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,7 +38,11 @@ import org.springframework.http.HttpMethod;
 @Configuration
 @EnableAutoConfiguration
 @EnableAdminServer
-@Import({SecurityPermitAllConfig.class, SecuritySecureConfig.class, NotifierConfig.class})
+@Import({
+    SecurityPermitAllConfig.class,
+    SecuritySecureConfig.class,
+    NotifierConfig.class
+})
 public class SpringBootAdminServletApplication {
     private static final Logger log = LoggerFactory.getLogger(SpringBootAdminServletApplication.class);
 
@@ -74,4 +82,13 @@ public class SpringBootAdminServletApplication {
     }
     // end::customization-http-headers-providers[]
 
+    @Bean
+    public HttpTraceRepository httpTraceRepository() {
+        return new InMemoryHttpTraceRepository();
+    }
+
+    @Bean
+    public AuditEventRepository auditEventRepository() {
+        return new InMemoryAuditEventRepository();
+    }
 }
