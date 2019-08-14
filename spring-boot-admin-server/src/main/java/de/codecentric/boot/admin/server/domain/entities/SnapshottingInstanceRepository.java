@@ -68,8 +68,7 @@ public class SnapshottingInstanceRepository extends EventsourcingInstanceReposit
 
     @Override
     public Mono<Instance> save(Instance instance) {
-        return super.save(instance)
-                    .doOnError(OptimisticLockingException.class, e -> this.oudatedSnapshots.add(instance.getId()));
+        return super.save(instance).doOnError(OptimisticLockingException.class, e -> this.oudatedSnapshots.add(instance.getId()));
     }
 
     public void start() {
@@ -85,7 +84,7 @@ public class SnapshottingInstanceRepository extends EventsourcingInstanceReposit
     protected Mono<Instance> rehydrateSnapshot(InstanceId id) {
         return super.find(id).map(instance -> this.snapshots.compute(id, (key, snapshot) -> {
             //check if the loaded version hasn't been already outdated by a snapshot
-            if (snapshot == null || instance.getVersion() > snapshot.getVersion()) {
+            if (snapshot == null || instance.getVersion() >= snapshot.getVersion()) {
                 return instance;
             } else {
                 return snapshot;
@@ -97,7 +96,10 @@ public class SnapshottingInstanceRepository extends EventsourcingInstanceReposit
         try {
             this.snapshots.compute(event.getInstance(), (key, old) -> {
                 Instance instance = old != null ? old : Instance.create(key);
-                return instance.apply(event);
+                if (event.getVersion() > instance.getVersion()) {
+                    return instance.apply(event);
+                }
+                return instance;
             });
         } catch (Exception ex) {
             log.warn("Error while updating the snapshot with event {}", event, ex);
