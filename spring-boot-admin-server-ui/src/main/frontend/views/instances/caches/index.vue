@@ -29,7 +29,7 @@
               class="has-text-danger"
               icon="exclamation-triangle"
             />
-            Fetching caches failed.
+            <span v-text="$t('instances.caches.fetch_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>
@@ -65,6 +65,7 @@
   import CachesList from '@/views/instances/caches/caches-list';
   import flatMap from 'lodash/flatMap';
   import isEmpty from 'lodash/isEmpty';
+  import {VIEW_GROUP} from '../../index';
 
   const flattenCaches = cacheData => {
     if (isEmpty(cacheData.cacheManagers)) {
@@ -129,9 +130,9 @@
         name: 'instances/caches',
         parent: 'instances',
         path: 'caches',
-        group: 'Data',
+        label: 'instances.caches.label',
+        group: VIEW_GROUP.DATA,
         component: this,
-        label: 'Caches',
         order: 970,
         isEnabled: ({instance}) => instance.hasEndpoint('caches')
       });

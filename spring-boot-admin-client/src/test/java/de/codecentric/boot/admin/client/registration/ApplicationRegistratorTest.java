@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,155 +16,155 @@
 
 package de.codecentric.boot.admin.client.registration;
 
-import de.codecentric.boot.admin.client.config.ClientProperties;
-
-import java.util.Collections;
-import java.util.Map;
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mock.env.MockEnvironment;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
-import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class ApplicationRegistratorTest {
-    private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
-    };
-    private ClientProperties client;
-    private ApplicationRegistrator registrator;
-    private RestTemplate restTemplate;
-    private HttpHeaders headers;
-
-    @Before
-    public void setup() {
-        restTemplate = mock(RestTemplate.class);
-
-        client = new ClientProperties(new MockEnvironment());
-        client.setUrl(new String[]{"http://sba:8080", "http://sba2:8080"});
-
-        ApplicationFactory factory = mock(ApplicationFactory.class);
-        when(factory.createApplication()).thenReturn(Application.create("AppName")
-                                                                .managementUrl("http://localhost:8080/mgmt")
-                                                                .healthUrl("http://localhost:8080/health")
-                                                                .serviceUrl("http://localhost:8080")
-                                                                .build());
-
-        registrator = new ApplicationRegistrator(restTemplate, client, factory);
-
-        headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-    }
+    private final Application application = Application.create("AppName")
+                                                       .managementUrl("http://localhost:8080/mgmt")
+                                                       .healthUrl("http://localhost:8080/health")
+                                                       .serviceUrl("http://localhost:8080")
+                                                       .build();
+    private final RegistrationClient registrationClient = mock(RegistrationClient.class);
 
     @Test
-    public void register_successful() {
-        when(restTemplate.exchange(isA(String.class), eq(HttpMethod.POST), isA(HttpEntity.class),
-            eq(RESPONSE_TYPE))).thenReturn(new ResponseEntity<>(singletonMap("id", "-id-"), HttpStatus.CREATED));
+    public void register_should_return_true_when_successful() {
+        ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application,
+            this.registrationClient,
+            new String[]{"http://sba:8080/instances", "http://sba2:8080/instances"},
+            true
+        );
 
+        when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
         assertThat(registrator.register()).isTrue();
-
-        Application applicationRef = Application.create("AppName")
-                                                .healthUrl("http://localhost:8080/health")
-                                                .managementUrl("http://localhost:8080/mgmt")
-                                                .serviceUrl("http://localhost:8080")
-                                                .build();
-        verify(restTemplate).exchange(eq("http://sba:8080/instances"), eq(HttpMethod.POST),
-            eq(new HttpEntity<>(applicationRef, headers)), eq(RESPONSE_TYPE));
+        assertThat(registrator.getRegisteredId()).isEqualTo("-id-");
     }
 
 
     @Test
-    public void register_failed() {
-        when(restTemplate.exchange(isA(String.class), eq(HttpMethod.POST), isA(HttpEntity.class),
-            eq(RESPONSE_TYPE))).thenThrow(new RestClientException("Error"));
+    public void register_should_return_false_when_failed() {
+        ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application,
+            this.registrationClient,
+            new String[]{"http://sba:8080/instances", "http://sba2:8080/instances"},
+            true
+        );
+
+        when(this.registrationClient.register(any(), eq(this.application))).thenThrow(new RestClientException("Error"));
 
         assertThat(registrator.register()).isFalse();
+        assertThat(registrator.register()).isFalse();
+        assertThat(registrator.getRegisteredId()).isNull();
     }
 
     @Test
-    public void register_retry() {
-        when(restTemplate.exchange(isA(String.class), eq(HttpMethod.POST), isA(HttpEntity.class),
-            eq(RESPONSE_TYPE))).thenThrow(new RestClientException("Error"));
-        when(restTemplate.exchange(isA(String.class), eq(HttpMethod.POST), isA(HttpEntity.class),
-            eq(RESPONSE_TYPE))).thenReturn(new ResponseEntity<>(singletonMap("id", "-id-"), HttpStatus.CREATED));
+    public void register_should_try_next_on_error() {
+        ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application,
+            this.registrationClient,
+            new String[]{"http://sba:8080/instances", "http://sba2:8080/instances"},
+            true
+        );
+
+        when(this.registrationClient.register("http://sba:8080/instances",
+            this.application
+        )).thenThrow(new RestClientException("Error"));
+        when(this.registrationClient.register("http://sba2:8080/instances", this.application)).thenReturn("-id-");
 
         assertThat(registrator.register()).isTrue();
+        assertThat(registrator.getRegisteredId()).isEqualTo("-id-");
     }
 
     @Test
-    public void deregister() {
-        when(restTemplate.exchange(isA(String.class), eq(HttpMethod.POST), isA(HttpEntity.class),
-            eq(RESPONSE_TYPE))).thenReturn(new ResponseEntity<>(singletonMap("id", "-id-"), HttpStatus.CREATED));
+    public void deregister_should_deregister_at_server() {
+        ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application,
+            this.registrationClient,
+            new String[]{"http://sba:8080/instances", "http://sba2:8080/instances"},
+            true
+        );
+
+        when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
+
         registrator.register();
-        assertThat(registrator.getRegisteredId()).isEqualTo("-id-");
         registrator.deregister();
         assertThat(registrator.getRegisteredId()).isNull();
 
-        verify(restTemplate).delete("http://sba:8080/instances/-id-");
+        verify(this.registrationClient).deregister("http://sba:8080/instances", "-id-");
     }
 
     @Test
-    public void register_multiple() {
-        client.setRegisterOnce(false);
+    public void deregister_should_not_deregister_when_not_registered() {
+        ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application,
+            this.registrationClient,
+            new String[]{"http://sba:8080/instances", "http://sba2:8080/instances"},
+            true
+        );
 
-        when(restTemplate.exchange(isA(String.class), eq(HttpMethod.POST), isA(HttpEntity.class),
-            eq(RESPONSE_TYPE))).thenReturn(new ResponseEntity<>(singletonMap("id", "-id-"), HttpStatus.CREATED));
+        registrator.deregister();
+
+        verify(this.registrationClient, never()).deregister(any(), any());
+    }
+
+    @Test
+    public void deregister_should_try_next_on_error() {
+        ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application,
+            this.registrationClient,
+            new String[]{"http://sba:8080/instances", "http://sba2:8080/instances"},
+            true
+        );
+
+        when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
+        doThrow(new RestClientException("Error")).when(this.registrationClient)
+                                                 .deregister("http://sba:8080/instances", "-id-");
+
+        registrator.register();
+        registrator.deregister();
+        assertThat(registrator.getRegisteredId()).isNull();
+
+        verify(this.registrationClient).deregister("http://sba:8080/instances", "-id-");
+        verify(this.registrationClient).deregister("http://sba2:8080/instances", "-id-");
+    }
+
+    @Test
+    public void register_should_register_on_multiple_servers() {
+        ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application,
+            this.registrationClient,
+            new String[]{"http://sba:8080/instances", "http://sba2:8080/instances"},
+            false
+        );
+
+        when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
 
         assertThat(registrator.register()).isTrue();
+        assertThat(registrator.getRegisteredId()).isEqualTo("-id-");
 
-        Application applicationRef = Application.create("AppName")
-                                                .healthUrl("http://localhost:8080/health")
-                                                .managementUrl("http://localhost:8080/mgmt")
-                                                .serviceUrl("http://localhost:8080")
-                                                .build();
-        verify(restTemplate).exchange(eq("http://sba:8080/instances"), eq(HttpMethod.POST),
-            eq(new HttpEntity<>(applicationRef, headers)), eq(RESPONSE_TYPE));
-        verify(restTemplate).exchange(eq("http://sba2:8080/instances"), eq(HttpMethod.POST),
-            eq(new HttpEntity<>(applicationRef, headers)), eq(RESPONSE_TYPE));
+        verify(this.registrationClient).register("http://sba:8080/instances", this.application);
+        verify(this.registrationClient).register("http://sba2:8080/instances", this.application);
     }
 
-    @Test
-    public void register_multiple_one_failure() {
-        client.setRegisterOnce(false);
-
-        when(restTemplate.exchange(isA(String.class), eq(HttpMethod.POST), isA(HttpEntity.class),
-            eq(RESPONSE_TYPE))).thenReturn(new ResponseEntity<>(singletonMap("id", "-id-"), HttpStatus.CREATED))
-                               .thenThrow(new RestClientException("Error"));
-
-        assertThat(registrator.register()).isTrue();
-
-        Application applicationRef = Application.create("AppName")
-                                                .healthUrl("http://localhost:8080/health")
-                                                .managementUrl("http://localhost:8080/mgmt")
-                                                .serviceUrl("http://localhost:8080")
-                                                .build();
-        verify(restTemplate).exchange(eq("http://sba:8080/instances"), eq(HttpMethod.POST),
-            eq(new HttpEntity<>(applicationRef, headers)), eq(RESPONSE_TYPE));
-        verify(restTemplate).exchange(eq("http://sba2:8080/instances"), eq(HttpMethod.POST),
-            eq(new HttpEntity<>(applicationRef, headers)), eq(RESPONSE_TYPE));
-    }
 
     @Test
-    public void register_multiple_all_failures() {
-        client.setRegisterOnce(false);
+    public void deregister_should_deregister_on_multiple_servers() {
+        ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application,
+            this.registrationClient,
+            new String[]{"http://sba:8080/instances", "http://sba2:8080/instances"},
+            false
+        );
 
-        when(restTemplate.exchange(isA(String.class), eq(HttpMethod.POST), isA(HttpEntity.class),
-            eq(RESPONSE_TYPE))).thenThrow(new RestClientException("Error"));
+        when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
 
-        assertThat(registrator.register()).isFalse();
+        registrator.register();
+        registrator.deregister();
+        assertThat(registrator.getRegisteredId()).isNull();
+
+        verify(this.registrationClient).deregister("http://sba:8080/instances", "-id-");
+        verify(this.registrationClient).deregister("http://sba2:8080/instances", "-id-");
     }
 }

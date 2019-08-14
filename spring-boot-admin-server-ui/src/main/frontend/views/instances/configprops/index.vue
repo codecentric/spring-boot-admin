@@ -20,7 +20,7 @@
       <div class="message-body">
         <strong>
           <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-          Fetching configuration properties failed.
+          <span v-text="$t('instances.configprops.fetch_failed')" />
         </strong>
         <p v-text="error.message" />
       </div>
@@ -50,9 +50,7 @@
           <td class="is-breakable" v-text="value" />
         </tr>
       </table>
-      <p class="is-muted" v-else>
-        No properties set
-      </p>
+      <p class="is-muted" v-else v-text="$t('instances.configprops.fetch_failed')" />
     </sba-panel>
   </section>
 </template>
@@ -62,6 +60,7 @@
   import isEmpty from 'lodash/isEmpty';
   import mapKeys from 'lodash/mapKeys';
   import pickBy from 'lodash/pickBy';
+  import {VIEW_GROUP} from '../../index';
 
   const filterProperty = (needle) => (value, name) => {
     return name.toString().toLowerCase().includes(needle) || value.toString().toLowerCase().includes(needle);
@@ -171,8 +170,8 @@
         parent: 'instances',
         path: 'configprops',
         component: this,
-        label: 'Configuration Properties',
-        group: 'Insights',
+        label: 'instances.configprops.label',
+        group: VIEW_GROUP.INSIGHTS,
         order: 110,
         isEnabled: ({instance}) => instance.hasEndpoint('configprops')
       });

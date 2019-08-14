@@ -1,0 +1,31 @@
+{
+  "instances": {
+    "httptrace": {
+      "label": "HTTP-Traces",
+      "chart": {
+        "avg_time": "ø Dauer",
+        "max_time": "Max. Dauer",
+        "status_4xx": "Status 4xx",
+        "status_5xx": "Status 5xx",
+        "successful_requests": "Erfolgreiche Anfragen",
+        "total_requests": "Anfragen insgesamt"
+      },
+      "content_type": "Content-Type",
+      "fetching_failed": "Das Laden der Tracing-Informationen ist fehlgeschlagen.",
+      "limit": "Limit",
+      "filter": {
+        "client_errors": "Client-Fehler",
+        "exclude_actuator": "ignoriere  {actuator}/**",
+        "server_errors": "Server-Fehler",
+        "success": "erfolgreich"
+      },
+      "length": "Größe",
+      "method": "Methode",
+      "no_traces_found": "Keine Traces gefunden.",
+      "status": "Status",
+      "time": "Dauer",
+      "timestamp": "Zeitstempel",
+      "uri": "Pfad"
+    }
+  }
+}

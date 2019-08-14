@@ -1,0 +1,25 @@
+{
+  "sidebar": {
+    "data": {
+      "title": "Data"
+    },
+    "insights": {
+      "title": "Insights"
+    },
+    "instances_caches": {
+      "title": "Caches"
+    },
+    "jvm": {
+      "title": "JVM"
+    },
+    "logging": {
+      "title": "Logging"
+    },
+    "security": {
+      "title": "Security"
+    },
+    "web": {
+      "title": "Web"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "instances": {
+    "auditevents": {
+      "audit_log_not_supported_spring_boot_1": "Audit Log is not supported for Spring Boot 1.x applications.",
+      "event": "Event",
+      "fetch_failed": "Fetching audit events failed.",
+      "loading_audit_events": "Loading Audit Events...",
+      "no_audit_events_found": "No Audit Events found.",
+      "principal": "Principal",
+      "remote_address": "Remote address",
+      "session_id": "Session Id",
+      "timestamp": "Timestamp",
+      "type": "Type",
+      "label": "Audit Log"
+    }
+  }
+}

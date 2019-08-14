@@ -1,0 +1,65 @@
+{
+  "instances": {
+    "details": {
+      "label": "Details",
+      "fetch_failed": "Fetching metrics failed.",
+      "cache":{
+        "fetch_failed": "Fetching cache metrics failed.",
+        "hit_ratio": "Hit ratio",
+        "hits": "Hits",
+        "size": "Size"
+      },
+      "datasource": {
+        "fetch_failed": "Fetching datasource metrics failed.",
+        "active_connections": "Active connections",
+        "min_connections": "Min connections",
+        "max_connections": "Max connections",
+        "title": "Datasource: {datasource}",
+        "unlimited": "unlimited"
+      },
+      "gc": {
+        "count": "Count",
+        "time_spent_max": "Max time spent",
+        "time_spent_total": "Total time spent",
+        "title": "Garbage Collection Pauses"
+      },
+      "health": {
+        "fetch_failed": "Fetching live health status failed. This is the last known information.",
+        "title": "Health"
+      },
+      "info": {
+        "fetch_failed": "Fetching live info failed. This is the last known information.",
+        "no_info_provided": "No info provided.",
+        "title": "Info"
+      },
+      "memory": {
+        "fetch_failed": "Fetching memory metrics failed.",
+        "max": "Max",
+        "metaspace": "Metaspace",
+        "size": "Size",
+        "title": "Memory",
+        "used": "Used"
+      },
+      "metadata": {
+        "no_data_provided": "No metadata provided.",
+        "title": "Metadata"
+      },
+      "process": {
+        "cpus": "CPUs",
+        "fetch_failed": "Fetching process metrics failed.",
+        "pid": "PID",
+        "process_cpu_usage": "Process CPU Usage",
+        "system_cpu_usage": "System CPU Usage",
+        "title": "Process",
+        "uptime": "Uptime"
+      },
+      "threads": {
+        "daemon": "Daemon",
+        "fetch_failed": "Fetching threads metrics failed.",
+        "live": "Live",
+        "peak_live": "Peak Live",
+        "title": "Threads"
+      }
+    }
+  }
+}

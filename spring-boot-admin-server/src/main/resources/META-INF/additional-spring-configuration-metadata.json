@@ -13,6 +13,27 @@
       "type": "java.lang.String",
       "description": "Name of backing Hazelcast-Map for storing the instance events.",
       "defaultValue": "spring-boot-admin-application-store"
+    },
+    {
+      "name": "spring.boot.admin.monitor.period",
+      "deprecation": {
+        "level": "warning",
+        "replacement": "spring.boot.admin.monitor.status-interval"
+      }
+    },
+    {
+      "name": "spring.boot.admin.monitor.read-timeout",
+      "deprecation": {
+        "replacement": "spring.boot.admin.monitor.default-timeout",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.boot.admin.monitor.connect-timeout",
+      "deprecation": {
+        "replacement": "spring.boot.admin.monitor.default-timeout",
+        "level": "error"
+      }
     }
   ]
 }

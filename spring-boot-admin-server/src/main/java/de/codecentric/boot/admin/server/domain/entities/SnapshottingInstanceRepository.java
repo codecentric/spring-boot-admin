@@ -83,14 +83,14 @@ public class SnapshottingInstanceRepository extends EventsourcingInstanceReposit
     }
 
     protected Mono<Instance> rehydrateSnapshot(InstanceId id) {
-        Instance outdatedSnapshot = this.snapshots.get(id);
-        return super.find(id).map(instance -> {
-            if (this.snapshots.replace(id, outdatedSnapshot, instance)) {
+        return super.find(id).map(instance -> this.snapshots.compute(id, (key, snapshot) -> {
+            //check if the loaded version hasn't been already outdated by a snapshot
+            if (snapshot == null || instance.getVersion() > snapshot.getVersion()) {
                 return instance;
             } else {
-                return this.snapshots.get(id);
+                return snapshot;
             }
-        });
+        }));
     }
 
     protected void updateSnapshot(InstanceEvent event) {

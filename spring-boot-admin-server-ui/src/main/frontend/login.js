@@ -15,3 +15,19 @@
  */
 
 import '@/assets/css/base.scss';
+import i18n from './i18n'
+
+document.querySelectorAll('[data-i18n]')
+  .forEach(t => {
+    let [attribute, key] = t.getAttribute('data-i18n').split(':');
+    if (!key) {
+      key = attribute;
+      attribute = undefined;
+    }
+
+    if (attribute) {
+      t.setAttribute(attribute, i18n.t(key));
+    } else {
+      t.innerHTML = i18n.t(key);
+    }
+  });

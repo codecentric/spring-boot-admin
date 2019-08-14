@@ -1,0 +1,12 @@
+{
+  "login": {
+    "button_login": "로그인",
+    "invalid_username_or_password": "잘못된 사용자명 또는 암호 입니다.",
+    "logout_successful": "로그아웃을 성공했습니다.",
+    "remember_me": "사용자 기억",
+    "placeholder": {
+      "username": "사용자명",
+      "password": "암호"
+    }
+  }
+}

@@ -37,10 +37,10 @@ public class SpringBootAdminZookeeperApplication {
     @Profile("insecure")
     @Configuration
     public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
-        private final String adminContextPath;
+        private final AdminServerProperties adminServer;
 
-        public SecurityPermitAllConfig(AdminServerProperties adminServerProperties) {
-            this.adminContextPath = adminServerProperties.getContextPath();
+        public SecurityPermitAllConfig(AdminServerProperties adminServer) {
+            this.adminServer = adminServer;
         }
 
         @Override
@@ -51,17 +51,17 @@ public class SpringBootAdminZookeeperApplication {
                 .and()
                 .csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringAntMatchers(adminContextPath + "/instances", adminContextPath + "/actuator/**");
+                .ignoringAntMatchers(this.adminServer.path("/instances"), this.adminServer.path("/actuator/**"));
         }
     }
 
     @Profile("secure")
     @Configuration
     public static class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
-        private final String adminContextPath;
+        private final AdminServerProperties adminServer;
 
-        public SecuritySecureConfig(AdminServerProperties adminServerProperties) {
-            this.adminContextPath = adminServerProperties.getContextPath();
+        public SecuritySecureConfig(AdminServerProperties adminServer) {
+            this.adminServer = adminServer;
         }
 
         @Override
@@ -69,19 +69,19 @@ public class SpringBootAdminZookeeperApplication {
             // @formatter:off
             SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
             successHandler.setTargetUrlParameter("redirectTo");
-            successHandler.setDefaultTargetUrl(adminContextPath + "/");
+            successHandler.setDefaultTargetUrl(this.adminServer.path("/"));
 
             http.authorizeRequests()
-                .antMatchers(adminContextPath + "/assets/**").permitAll()
-                .antMatchers(adminContextPath + "/login").permitAll()
+                .antMatchers(this.adminServer.path("/assets/**")).permitAll()
+                .antMatchers(this.adminServer.path("/login")).permitAll()
                 .anyRequest().authenticated()
                 .and()
-            .formLogin().loginPage(adminContextPath + "/login").successHandler(successHandler).and()
-            .logout().logoutUrl(adminContextPath + "/logout").and()
+            .formLogin().loginPage(this.adminServer.path("/login")).successHandler(successHandler).and()
+            .logout().logoutUrl(this.adminServer.path("/logout")).and()
             .httpBasic().and()
             .csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringAntMatchers(adminContextPath + "/instances", adminContextPath + "/actuator/**");
+                .ignoringAntMatchers(this.adminServer.path("/instances"), this.adminServer.path("/actuator/**"));
             // @formatter:on
         }
     }

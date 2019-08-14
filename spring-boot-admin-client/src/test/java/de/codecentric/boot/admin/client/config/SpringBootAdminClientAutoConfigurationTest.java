@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,10 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +36,6 @@ public class SpringBootAdminClientAutoConfigurationTest {
         AutoConfigurations.of(
             EndpointAutoConfiguration.class,
             WebEndpointAutoConfiguration.class,
-            WebMvcAutoConfiguration.class,
             DispatcherServletAutoConfiguration.class,
             RestTemplateAutoConfiguration.class,
             SpringBootAdminClientAutoConfiguration.class
@@ -43,21 +43,21 @@ public class SpringBootAdminClientAutoConfigurationTest {
 
     @Test
     public void not_active() {
-        contextRunner.run(context -> assertThat(context).doesNotHaveBean(ApplicationRegistrator.class));
+        this.contextRunner.run(context -> assertThat(context).doesNotHaveBean(ApplicationRegistrator.class));
     }
 
     @Test
     public void active() {
-        contextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
-                     .run(context -> assertThat(context).hasSingleBean(ApplicationRegistrator.class));
+        this.contextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
+                          .run(context -> assertThat(context).hasSingleBean(ApplicationRegistrator.class));
     }
 
     @Test
     public void disabled() {
-        contextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081",
+        this.contextRunner.withPropertyValues(
+            "spring.boot.admin.client.url:http://localhost:8081",
             "spring.boot.admin.client.enabled:false"
-        )
-                     .run(context -> assertThat(context).doesNotHaveBean(ApplicationRegistrator.class));
+        ).run(context -> assertThat(context).doesNotHaveBean(ApplicationRegistrator.class));
     }
 
     @Test
@@ -65,9 +65,21 @@ public class SpringBootAdminClientAutoConfigurationTest {
         ApplicationContextRunner nonWebcontextRunner = new ApplicationContextRunner().withConfiguration(
             AutoConfigurations.of(SpringBootAdminClientAutoConfiguration.class));
 
-        nonWebcontextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081",
-            "spring.boot.admin.client.enabled:true"
-        )
+        nonWebcontextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
                            .run(context -> assertThat(context).doesNotHaveBean(ApplicationRegistrator.class));
+    }
+
+
+    @Test
+    public void reactiveEnvironment() {
+        ReactiveWebApplicationContextRunner reactiveContextRunner = new ReactiveWebApplicationContextRunner().withConfiguration(
+            AutoConfigurations.of(
+                EndpointAutoConfiguration.class,
+                WebEndpointAutoConfiguration.class,
+                WebClientAutoConfiguration.class,
+                SpringBootAdminClientAutoConfiguration.class
+            ));
+        reactiveContextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
+                             .run(context -> assertThat(context).hasSingleBean(ApplicationRegistrator.class));
     }
 }

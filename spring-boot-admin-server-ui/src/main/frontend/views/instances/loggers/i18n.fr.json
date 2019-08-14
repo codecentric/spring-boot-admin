@@ -1,0 +1,18 @@
+{
+  "instances": {
+    "loggers": {
+      "label": "Loggers",
+      "affects_all_instances": "Affecter les {count} instances",
+      "affects_this_instance_only": "Affecter cette instance seulement",
+      "application": "Application",
+      "fetch_failed": "Echec de la récupération des loggers.",
+      "filter": {
+        "class_only": "class uniquement",
+        "configured": "configuré"
+      },
+      "instance": "Instance",
+      "no_loggers_found": "Aucun loggers trouvé.",
+      "reset": "Réinitialiser",
+      "setting_loglevel_failed": "Echec de la modification d'état du {logger} vers {loglevel}."
+    }    }
+}

@@ -1,0 +1,31 @@
+{
+  "instances": {
+    "httptrace": {
+      "label": "HTTP Traces",
+      "chart": {
+        "avg_time": "ø duration",
+        "max_time": "max duration",
+        "status_4xx": "status 4xx",
+        "status_5xx": "status 5xx",
+        "successful_requests": "successful requests",
+        "total_requests": "total requests"
+      },
+      "content_type": "Content-Type",
+      "fetching_failed": "Fetching traces failed.",
+      "limit": "limit",
+      "filter": {
+        "client_errors": "client errors",
+        "exclude_actuator": "exclude {actuator}/**",
+        "server_errors": "server errors",
+        "success": "success"
+      },
+      "length": "Length",
+      "method": "Method",
+      "no_traces_found": "No traces found.",
+      "status": "Status",
+      "time": "Time",
+      "timestamp": "Timestamp",
+      "uri": "Path"
+    }
+  }
+}

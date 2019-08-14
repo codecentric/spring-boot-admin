@@ -18,17 +18,14 @@
   <section class="section heapdump">
     <div>
       <div class="message is-warning">
-        <div class="message-body">
-          A heap dump may contain <strong>sensitive data</strong>. Please handle with care.
-        </div>
+        <div class="message-body" v-html="$t('instances.heapdump.warn_sensitive_data')" />
       </div>
       <div class="message is-warning">
-        <div class="message-body">
-          Dumping the heap may be expensive in terms of cpu and disk space.
-        </div>
+        <div class="message-body" v-html="$t('instances.heapdump.warn_dump_expensive')" />
       </div>
       <a class="button is-primary" :href="`instances/${instance.id}/actuator/heapdump`" target="_blank">
-        <font-awesome-icon icon="download" />&nbsp;Download Heap Dump
+        <font-awesome-icon icon="download" />&nbsp;
+        <span v-text="$t('instances.heapdump.download')" />
       </a>
     </div>
   </section>
@@ -36,6 +33,7 @@
 
 <script>
   import Instance from '@/services/instance';
+  import {VIEW_GROUP} from '../../index';
 
   export default {
     props: {
@@ -50,8 +48,8 @@
         parent: 'instances',
         path: 'heapdump',
         component: this,
-        label: 'Heap Dump',
-        group: 'JVM',
+        label: 'instances.heapdump.label',
+        group: VIEW_GROUP.JVM,
         order: 800,
         isEnabled: ({instance}) => instance.hasEndpoint('heapdump')
       });

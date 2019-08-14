@@ -21,7 +21,7 @@
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            Fetching cache metrics failed.
+            <span v-text="$t('instances.details.cache.fetch_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>
@@ -29,33 +29,25 @@
       <div class="level cache-current" v-if="current">
         <div v-if="current.hit !== undefined" class="level-item has-text-centered">
           <div>
-            <p class="heading has-bullet has-bullet-info">
-              Hits
-            </p>
+            <p class="heading has-bullet has-bullet-info" v-text="$t('instances.details.cache.hits')" />
             <p v-text="current.hit" />
           </div>
         </div>
         <div v-if="current.miss !== undefined" class="level-item has-text-centered">
           <div>
-            <p class="heading has-bullet has-bullet-warning">
-              Misses
-            </p>
+            <p class="heading has-bullet has-bullet-warning" v-text="$t('instances.details.cache.misses')" />
             <p v-text="current.miss" />
           </div>
         </div>
         <div v-if="ratio !== undefined" class="level-item has-text-centered">
           <div>
-            <p class="heading">
-              Hit ratio
-            </p>
+            <p class="heading" v-text="$t('instances.details.cache.hit_ratio')" />
             <p v-text="ratio" />
           </div>
         </div>
         <div v-if="current.size !== undefined" class="level-item has-text-centered">
           <div>
-            <p class="heading">
-              Size
-            </p>
+            <p class="heading" v-text="$t('instances.details.cache.size')" />
             <p v-text="current.size" />
           </div>
         </div>

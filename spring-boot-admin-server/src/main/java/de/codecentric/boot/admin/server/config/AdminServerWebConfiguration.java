@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 package de.codecentric.boot.admin.server.config;
 
 import de.codecentric.boot.admin.server.domain.values.Registration;
-import de.codecentric.boot.admin.server.eventstore.InstanceEventPublisher;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
+import de.codecentric.boot.admin.server.services.ApplicationRegistry;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
 import de.codecentric.boot.admin.server.utils.jackson.RegistrationBeanSerializerModifier;
 import de.codecentric.boot.admin.server.utils.jackson.RegistrationDeserializer;
@@ -26,7 +26,6 @@ import de.codecentric.boot.admin.server.utils.jackson.SanitizingMapSerializer;
 import de.codecentric.boot.admin.server.web.ApplicationsController;
 import de.codecentric.boot.admin.server.web.InstancesController;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
-import de.codecentric.boot.admin.server.web.servlet.InstancesProxyController;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -50,8 +49,8 @@ public class AdminServerWebConfiguration {
     public SimpleModule adminJacksonModule() {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(Registration.class, new RegistrationDeserializer());
-        module.setSerializerModifier(new RegistrationBeanSerializerModifier(new SanitizingMapSerializer(
-            adminServerProperties.getMetadataKeysToSanitize())));
+        module.setSerializerModifier(new RegistrationBeanSerializerModifier(new SanitizingMapSerializer(this.adminServerProperties
+            .getMetadataKeysToSanitize())));
         return module;
     }
 
@@ -63,9 +62,8 @@ public class AdminServerWebConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ApplicationsController applicationsController(InstanceRegistry instanceRegistry,
-                                                         InstanceEventPublisher eventPublisher) {
-        return new ApplicationsController(instanceRegistry, eventPublisher);
+    public ApplicationsController applicationsController(ApplicationRegistry applicationRegistry) {
+        return new ApplicationsController(applicationRegistry);
     }
 
     @Configuration
@@ -81,12 +79,12 @@ public class AdminServerWebConfiguration {
         @ConditionalOnMissingBean
         public de.codecentric.boot.admin.server.web.reactive.InstancesProxyController instancesProxyController(
             InstanceRegistry instanceRegistry,
-            InstanceWebClient instanceWebClient) {
+            InstanceWebClient.Builder instanceWebClientBuilder) {
             return new de.codecentric.boot.admin.server.web.reactive.InstancesProxyController(
-                adminServerProperties.getContextPath(),
-                adminServerProperties.getInstanceProxy().getIgnoredHeaders(),
+                this.adminServerProperties.getContextPath(),
+                this.adminServerProperties.getInstanceProxy().getIgnoredHeaders(),
                 instanceRegistry,
-                instanceWebClient
+                instanceWebClientBuilder.build()
             );
         }
 
@@ -94,7 +92,7 @@ public class AdminServerWebConfiguration {
         public org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping adminHandlerMapping(
             RequestedContentTypeResolver webFluxContentTypeResolver) {
             org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping mapping = new de.codecentric.boot.admin.server.web.reactive.AdminControllerHandlerMapping(
-                adminServerProperties.getContextPath());
+                this.adminServerProperties.getContextPath());
             mapping.setOrder(0);
             mapping.setContentTypeResolver(webFluxContentTypeResolver);
             return mapping;
@@ -113,13 +111,14 @@ public class AdminServerWebConfiguration {
 
         @Bean
         @ConditionalOnMissingBean
-        public InstancesProxyController instancesProxyController(InstanceRegistry instanceRegistry,
-                                                                 InstanceWebClient instanceWebClient) {
-            return new InstancesProxyController(
-                adminServerProperties.getContextPath(),
-                adminServerProperties.getInstanceProxy().getIgnoredHeaders(),
+        public de.codecentric.boot.admin.server.web.servlet.InstancesProxyController instancesProxyController(
+            InstanceRegistry instanceRegistry,
+            InstanceWebClient.Builder instanceWebClientBuilder) {
+            return new de.codecentric.boot.admin.server.web.servlet.InstancesProxyController(
+                this.adminServerProperties.getContextPath(),
+                this.adminServerProperties.getInstanceProxy().getIgnoredHeaders(),
                 instanceRegistry,
-                instanceWebClient
+                instanceWebClientBuilder.build()
             );
         }
 
@@ -127,11 +126,10 @@ public class AdminServerWebConfiguration {
         public org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping adminHandlerMapping(
             ContentNegotiationManager contentNegotiationManager) {
             org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping mapping = new de.codecentric.boot.admin.server.web.servlet.AdminControllerHandlerMapping(
-                adminServerProperties.getContextPath());
+                this.adminServerProperties.getContextPath());
             mapping.setOrder(0);
             mapping.setContentNegotiationManager(contentNegotiationManager);
             return mapping;
         }
     }
-
 }

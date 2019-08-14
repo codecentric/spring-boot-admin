@@ -19,10 +19,10 @@
     <table class="table is-fullwidth" v-if="servletFilters.length">
       <thead>
         <tr>
-          <th>Url Pattern</th>
-          <th>Servlet Name</th>
-          <th>Filter Name</th>
-          <th>Class</th>
+          <th v-text="$t('instances.mappings.url_pattern')" />
+          <th v-text="$t('instances.mappings.servlet_name')" />
+          <th v-text="$t('instances.mappings.filter_name')" />
+          <th v-text="$t('instances.mappings.class')" />
         </tr>
       </thead>
       <tbody>

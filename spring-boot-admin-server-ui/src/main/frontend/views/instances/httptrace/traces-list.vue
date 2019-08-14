@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2019 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -18,30 +18,24 @@
   <table class="httptraces table is-hoverable is-fullwidth">
     <thead>
       <tr>
-        <th class="httptraces__trace-timestamp">
-          Timestamp
-        </th>
-        <th class="httptraces__trace-method">
-          Method
-        </th>
-        <th class="httptraces__trace-uri">
-          Path
-        </th>
-        <th class="httptraces__trace-status">
-          Status
-        </th>
-        <th class="httptraces__trace-contentType">
-          Content-Type
-        </th>
-        <th class="httptraces__trace-contentLength">
-          Length
-        </th>
-        <th class="httptraces__trace-timeTaken">
-          Time
-        </th>
+        <th class="httptraces__trace-timestamp" v-text="$t('instances.httptrace.timestamp')" />
+        <th class="httptraces__trace-method" v-text="$t('instances.httptrace.method')" />
+        <th class="httptraces__trace-uri" v-text="$t('instances.httptrace.uri')" />
+        <th class="httptraces__trace-status" v-text="$t('instances.httptrace.status')" />
+        <th class="httptraces__trace-contentType" v-text="$t('instances.httptrace.content_type')" />
+        <th class="httptraces__trace-contentLength" v-text="$t('instances.httptrace.length')" />
+        <th class="httptraces__trace-timeTaken" v-text="$t('instances.httptrace.time')" />
       </tr>
     </thead>
-    <tbody>
+    <transition-group tag="tbody" name="fade-in">
+      <tr key="new-traces" v-if="newTracesCount > 0">
+        <td
+          colspan="7"
+          class="has-text-primary has-text-centered is-selectable"
+          v-text="`${newTracesCount} new traces`"
+          @click="$emit('show-new-traces')"
+        />
+      </tr>
       <template v-for="trace in traces">
         <tr class="is-selectable"
             :class="{ 'httptraces__trace---is-detailed' : showDetails[trace.key] }"
@@ -70,12 +64,10 @@
           </td>
         </tr>
       </template>
-      <tr v-if="traces.length === 0">
-        <td class="is-muted" colspan="7">
-          No traces found.
-        </td>
+      <tr key="no-traces" v-if="traces.length === 0">
+        <td class="is-muted" colspan="7" v-text="$t('instances.httptrace.no_traces_found')" />
       </tr>
-    </tbody>
+    </transition-group>
   </table>
 </template>
 
@@ -84,6 +76,10 @@
 
   export default {
     props: {
+      newTracesCount: {
+        type: Number,
+        default: 0
+      },
       traces: {
         type: Array,
         default: () => []

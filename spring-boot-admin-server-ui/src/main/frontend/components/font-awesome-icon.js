@@ -25,11 +25,14 @@ import {faBell} from '@fortawesome/free-solid-svg-icons/faBell';
 import {faBellSlash} from '@fortawesome/free-solid-svg-icons/faBellSlash';
 import {faBook} from '@fortawesome/free-solid-svg-icons/faBook';
 import {faCheck} from '@fortawesome/free-solid-svg-icons/faCheck';
+import {faCube} from '@fortawesome/free-solid-svg-icons/faCube';
+import {faCubes} from '@fortawesome/free-solid-svg-icons/faCubes';
 import {faDownload} from '@fortawesome/free-solid-svg-icons/faDownload';
 import {faExclamation} from '@fortawesome/free-solid-svg-icons/faExclamation';
 import {faExclamationTriangle} from '@fortawesome/free-solid-svg-icons/faExclamationTriangle';
 import {faFilter} from '@fortawesome/free-solid-svg-icons/faFilter';
 import {faHeartbeat} from '@fortawesome/free-solid-svg-icons/faHeartbeat';
+import {faHistory} from '@fortawesome/free-solid-svg-icons/faHistory';
 import {faHome} from '@fortawesome/free-solid-svg-icons/faHome';
 import {faMapMarkerAlt} from '@fortawesome/free-solid-svg-icons/faMapMarkerAlt';
 import {faMinusCircle} from '@fortawesome/free-solid-svg-icons/faMinusCircle';
@@ -47,36 +50,40 @@ import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
 
 library.add(
 //solid
-  faTrash,
-  faDownload,
-  faStepForward,
-  faStepBackward,
-  faCheck,
-  faQuestionCircle,
+  faAngleDoubleRight,
   faBan,
-  faTimesCircle,
-  faMinusCircle,
-  faExclamation,
-  faBook,
-  faSignOutAlt,
-  faExclamationTriangle,
-  faPencilAlt,
   faBell,
   faBellSlash,
-  faUserCircle,
-  faHeartbeat,
-  faHome,
-  faWrench,
-  faAngleDoubleRight,
-  faSearch,
-  faMapMarkerAlt,
+  faBook,
+  faCheck,
+  faCube,
+  faCubes,
+  faDownload,
+  faExclamation,
+  faExclamationTriangle,
   faFilter,
-//regular,
+  faHeartbeat,
+  faHistory,
+  faHome,
+  faMapMarkerAlt,
+  faMinusCircle,
+  faPencilAlt,
+  faQuestionCircle,
+  faSearch,
+  faSignOutAlt,
+  faStepBackward,
+  faStepForward,
+  faTimesCircle,
+  faTrash,
+  faUserCircle,
+  faWrench,
+//regular
   farTimesCircle,
 //brands
   faGithub,
-  faStackOverflow,
-  faGitter
-);
+  faGitter,
+  faStackOverflow
+)
+;
 
 export default FontAwesomeIcon;

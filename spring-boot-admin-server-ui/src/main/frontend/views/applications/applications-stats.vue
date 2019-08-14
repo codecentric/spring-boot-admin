@@ -18,9 +18,7 @@
   <div class="level">
     <div class="level-item has-text-centered">
       <div>
-        <p class="heading">
-          Applications
-        </p>
+        <p class="heading" v-text="$t('applications.applications')" />
         <p class="title" v-text="applicationsCount">
           1
         </p>
@@ -28,9 +26,7 @@
     </div>
     <div class="level-item has-text-centered">
       <div>
-        <p class="heading">
-          Instances
-        </p>
+        <p class="heading" v-text="$t('applications.instances')" />
         <p class="title" v-text="instancesCount">
           1
         </p>
@@ -38,17 +34,11 @@
     </div>
     <div class="level-item has-text-centered">
       <div v-if="downCount === 0">
-        <p class="heading">
-          Status
-        </p>
-        <p class="title has-text-success">
-          all up
-        </p>
+        <p class="heading" v-text="$t('applications.status')" />
+        <p class="title has-text-success" v-text="$t('applications.all_up')" />
       </div>
       <div v-else>
-        <p class="heading">
-          instances down
-        </p>
+        <p class="heading" v-text="$t('applications.instances_down')" />
         <p class="title has-text-danger" v-text="downCount" />
       </div>
     </div>

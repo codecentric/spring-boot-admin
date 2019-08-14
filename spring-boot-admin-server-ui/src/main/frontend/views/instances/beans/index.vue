@@ -16,39 +16,37 @@
 
 <template>
   <section class="section" :class="{isLoading: isLoading}">
-    <div class="container">
-      <div
-        v-if="error"
-        class="message is-danger"
-      >
-        <div class="message-body">
-          <strong>
-            <font-awesome-icon
-              class="has-text-danger"
-              icon="exclamation-triangle"
-            />
-            Fetching beans failed.
-          </strong>
-          <p v-text="error.message" />
-        </div>
+    <div
+      v-if="error"
+      class="message is-danger"
+    >
+      <div class="message-body">
+        <strong>
+          <font-awesome-icon
+            class="has-text-danger"
+            icon="exclamation-triangle"
+          />
+          Fetching beans failed.
+        </strong>
+        <p v-text="error.message" />
       </div>
-      <div class="field">
-        <p class="control is-expanded has-icons-left">
-          <input
-            class="input"
-            type="search"
-            v-model="filter"
-          >
-          <span class="icon is-small is-left">
-            <font-awesome-icon icon="filter" />
-          </span>
-        </p>
-      </div>
-      <template v-for="context in filteredContexts">
-        <h3 class="title" v-text="context.name" :key="context.name" />
-        <beans-list :beans="context.beans" :key="`${context.name}-beans`" />
-      </template>
     </div>
+    <div class="field">
+      <p class="control is-expanded has-icons-left">
+        <input
+          class="input"
+          type="search"
+          v-model="filter"
+        >
+        <span class="icon is-small is-left">
+          <font-awesome-icon icon="filter" />
+        </span>
+      </p>
+    </div>
+    <template v-for="context in filteredContexts">
+      <h3 class="title" v-text="context.name" :key="context.name" />
+      <beans-list :beans="context.beans" :key="`${context.name}-beans`" />
+    </template>
   </section>
 </template>
 
@@ -58,6 +56,7 @@
   import shortenClassname from '@/utils/shortenClassname';
   import BeansList from '@/views/instances/beans/beans-list';
   import isEmpty from 'lodash/isEmpty';
+  import {VIEW_GROUP} from '../../index';
 
   class Bean {
     constructor(name, bean) {
@@ -139,9 +138,9 @@
         name: 'instances/beans',
         parent: 'instances',
         path: 'beans',
-        group: 'Insights',
+        label: 'instances.beans.label',
+        group: VIEW_GROUP.INSIGHTS,
         component: this,
-        label: 'Beans',
         order: 110,
         isEnabled: ({instance}) => instance.hasEndpoint('beans')
       });

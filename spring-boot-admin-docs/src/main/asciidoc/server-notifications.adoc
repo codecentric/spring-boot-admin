@@ -37,12 +37,12 @@ The `FilteringNotifier` allows you to filter certain notification based on rules
 
 If you add a `FilteringNotifier` to your `ApplicationContext` a RESTful interface on `notifications/filter` gets available.
 
-This notifier is useful if you don't want recieve notifications when deploying your applications. Before stopping the application you can add an (expiring) filter either via a `POST` request.
+This notifier is useful if you don't want receive notifications when deploying your applications. Before stopping the application you can add an (expiring) filter either via a `POST` request.
 
 .How to configure filtering
 [source,java,indent=0]
 ----
-include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/SpringBootAdminServletApplication.java[tags=configuration-filtering-notifier]
+include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/NotifierConfig.java[tags=configuration-filtering-notifier]
 ----
 <1> Add the `FilteringNotifier` bean using a delegate (e.g. `MailNotifier` when configured)
 <2> Add the `RemindingNotifier` as primary bean using the `FilteringNotifier` as delegate.
@@ -96,7 +96,7 @@ spring.boot.admin.notify.mail.to=admin@example.com
 | `"UNKNOWN:UP"`
 
 | spring.boot.admin.notify.mail.template
-| Resource path to the Thymelef template used for rendering.
+| Resource path to the Thymeleaf template used for rendering.
 | `"classpath:/META-INF/spring-boot-admin-server/mail/status-changed.html"`
 
 | spring.boot.admin.notify.mail.to
@@ -358,7 +358,7 @@ To enable https://telegram.org/[Telegram] notifications you need to create and a
 | `true`
 
 | spring.boot.admin.notify.telegram.auth-token
-| The token identifiying und authorizing your Telegram bot (e.g. `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`).
+| The token identifying und authorizing your Telegram bot (e.g. `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`).
 |
 
 | spring.boot.admin.notify.telegram.chat-id

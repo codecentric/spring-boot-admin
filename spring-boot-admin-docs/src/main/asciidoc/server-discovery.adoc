@@ -3,8 +3,6 @@
 
 The Spring Boot Admin Server can use Spring Clouds `DiscoveryClient` to discover applications. The advantage is that the clients don't have to include the `spring-boot-admin-starter-client`. You just have to add a `DiscoveryClient` implementation to your admin server - everything else is done by AutoConfiguration.
 
-TIP: Spring Boot Admin will only update the info and available endpoints when a application changes status or when the registration changes. If you want to trigger an update with every new deployment, you can add a key value pair that changes with every restart (e.g. `eureka.instance.metadata-map.startup: ${random.int}`).
-
 [[spring-cloud-discovery-static-config]]
 ==== Static Configuration using SimpleDiscoveryClient ====
 
@@ -68,7 +66,7 @@ user.password
 
 | management.context-path
 | The path is appended to the service URL and will be used for accessing the actuator endpoints.
-| `${spring.boot.admin.discovery.converter.mangement-context-path}`
+| `${spring.boot.admin.discovery.converter.management-context-path}`
 
 | health.path
 | The path is appended to the service URL and will be used for the health-checking. Ignored by the `EurekaServiceInstanceConverter`.
@@ -98,6 +96,14 @@ user.password
 | spring.boot.admin.discovery.services
 | This services will be included when using discovery and registered as application. Supports simple patterns (e.g. +++"foo*"+++, +++"*bar"+++, +++"foo*bar*"+++).
 | `"*"`
+
+| spring.boot.admin.discovery.ignored-instances-metadata
+| Instances of services will be ignored if they contain at least one metadata item that matches this list. (e.g. +++"discoverable=false"+++)
+|
+
+| spring.boot.admin.discovery.instances-metadata
+| Instances of services will be included if they contain at least one metadata item that matches this list. (e.g. +++"discoverable=true"+++)
+|
 |===
 
 ==== CloudFoundry ====

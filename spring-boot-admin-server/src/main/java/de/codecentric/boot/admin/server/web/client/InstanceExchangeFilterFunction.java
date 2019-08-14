@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,12 @@ import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
 
+/**
+ * Represents a function that filters an{@linkplain ExchangeFunction exchange function} issued on a registered instance.
+ *
+ * @author Johannes Edmeier
+ */
 @FunctionalInterface
 public interface InstanceExchangeFilterFunction {
-    Mono<ClientResponse> exchange(Instance instance, ClientRequest request, ExchangeFunction next);
+    Mono<ClientResponse> filter(Instance instance, ClientRequest request, ExchangeFunction next);
 }

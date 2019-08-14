@@ -1,0 +1,21 @@
+{
+  "instances": {
+    "liquibase": {
+      "label": "Liquibase",
+      "author": "Autor",
+      "changelog": "Changelog",
+      "checksum": "Prüfsumme",
+      "comments": "Kommentare",
+      "contexts": "Kontexte",
+      "deployment_id": "Deployment Id",
+      "description": "Beschreibung",
+      "execution": "Ausführung",
+      "execution_date": "Ausführungs-Datum",
+      "execution_order": "Reihenfolge",
+      "fetch_failed": "Das Laden der Liquibase-Migrations-Daten ist fehlgeschlagen.",
+      "id": "Id",
+      "labels": "Label",
+      "tag": "Tag"
+    }
+  }
+}

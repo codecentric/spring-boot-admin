@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.entities.SnapshottingInstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
+import de.codecentric.boot.admin.server.eventstore.InstanceEventPublisher;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
+import de.codecentric.boot.admin.server.services.ApplicationRegistry;
 import de.codecentric.boot.admin.server.services.EndpointDetectionTrigger;
 import de.codecentric.boot.admin.server.services.EndpointDetector;
 import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
@@ -33,30 +35,23 @@ import de.codecentric.boot.admin.server.services.StatusUpdater;
 import de.codecentric.boot.admin.server.services.endpoints.ChainingStrategy;
 import de.codecentric.boot.admin.server.services.endpoints.ProbeEndpointsStrategy;
 import de.codecentric.boot.admin.server.services.endpoints.QueryIndexEndpointStrategy;
-import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider;
-import de.codecentric.boot.admin.server.web.client.CompositeHttpHeadersProvider;
-import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
-import de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunction;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import org.reactivestreams.Publisher;
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
-import org.springframework.core.annotation.Order;
 
 @Configuration
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
 @EnableConfigurationProperties(AdminServerProperties.class)
-@Import({AdminServerWebConfiguration.class})
+@Import({AdminServerInstanceWebClientConfiguration.class, AdminServerWebConfiguration.class})
+@AutoConfigureAfter({WebClientAutoConfiguration.class})
 public class AdminServerAutoConfiguration {
     private final AdminServerProperties adminServerProperties;
 
@@ -73,46 +68,41 @@ public class AdminServerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    public ApplicationRegistry applicationRegistry(InstanceRegistry instanceRegistry,
+                                                   InstanceEventPublisher instanceEventPublisher) {
+        return new ApplicationRegistry(instanceRegistry, instanceEventPublisher);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public InstanceIdGenerator instanceIdGenerator() {
         return new HashingInstanceUrlIdGenerator();
     }
 
     @Bean
-    @Primary
     @ConditionalOnMissingBean
-    public CompositeHttpHeadersProvider httpHeadersProvider(Collection<HttpHeadersProvider> delegates) {
-        return new CompositeHttpHeadersProvider(delegates);
-    }
-
-    @Bean
-    @Order(0)
-    @ConditionalOnMissingBean
-    public BasicAuthHttpHeaderProvider basicAuthHttpHeadersProvider() {
-        return new BasicAuthHttpHeaderProvider();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public StatusUpdater statusUpdater(InstanceRepository instanceRepository, InstanceWebClient instanceWebClient) {
-        return new StatusUpdater(instanceRepository, instanceWebClient);
+    public StatusUpdater statusUpdater(InstanceRepository instanceRepository,
+                                       InstanceWebClient.Builder instanceWebClientBulder) {
+        return new StatusUpdater(instanceRepository, instanceWebClientBulder.build());
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     @ConditionalOnMissingBean
     public StatusUpdateTrigger statusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> events) {
         StatusUpdateTrigger trigger = new StatusUpdateTrigger(statusUpdater, events);
-        trigger.setUpdateInterval(adminServerProperties.getMonitor().getPeriod());
-        trigger.setStatusLifetime(adminServerProperties.getMonitor().getStatusLifetime());
+        trigger.setInterval(this.adminServerProperties.getMonitor().getStatusInterval());
+        trigger.setLifetime(this.adminServerProperties.getMonitor().getStatusLifetime());
         return trigger;
     }
 
     @Bean
     @ConditionalOnMissingBean
     public EndpointDetector endpointDetector(InstanceRepository instanceRepository,
-                                             InstanceWebClient instanceWebClient) {
+                                             InstanceWebClient.Builder instanceWebClientBuilder) {
+        InstanceWebClient instanceWebClient = instanceWebClientBuilder.build();
         ChainingStrategy strategy = new ChainingStrategy(
             new QueryIndexEndpointStrategy(instanceWebClient),
-            new ProbeEndpointsStrategy(instanceWebClient, adminServerProperties.getProbedEndpoints())
+            new ProbeEndpointsStrategy(instanceWebClient, this.adminServerProperties.getProbedEndpoints())
         );
         return new EndpointDetector(instanceRepository, strategy);
     }
@@ -126,14 +116,18 @@ public class AdminServerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public InfoUpdater infoUpdater(InstanceRepository instanceRepository, InstanceWebClient instanceWebClient) {
-        return new InfoUpdater(instanceRepository, instanceWebClient);
+    public InfoUpdater infoUpdater(InstanceRepository instanceRepository,
+                                   InstanceWebClient.Builder instanceWebClientBuilder) {
+        return new InfoUpdater(instanceRepository, instanceWebClientBuilder.build());
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     @ConditionalOnMissingBean
     public InfoUpdateTrigger infoUpdateTrigger(InfoUpdater infoUpdater, Publisher<InstanceEvent> events) {
-        return new InfoUpdateTrigger(infoUpdater, events);
+        InfoUpdateTrigger trigger = new InfoUpdateTrigger(infoUpdater, events);
+        trigger.setInterval(this.adminServerProperties.getMonitor().getInfoInterval());
+        trigger.setLifetime(this.adminServerProperties.getMonitor().getInfoLifetime());
+        return trigger;
     }
 
     @Bean
@@ -146,20 +140,5 @@ public class AdminServerAutoConfiguration {
     @ConditionalOnMissingBean(InstanceRepository.class)
     public SnapshottingInstanceRepository instanceRepository(InstanceEventStore eventStore) {
         return new SnapshottingInstanceRepository(eventStore);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public InstanceWebClient instanceWebClient(HttpHeadersProvider httpHeadersProvider,
-                                               ObjectProvider<List<InstanceExchangeFilterFunction>> filtersProvider) {
-        List<InstanceExchangeFilterFunction> additionalFilters = filtersProvider.getIfAvailable(Collections::emptyList);
-        return InstanceWebClient.builder()
-                                .connectTimeout(adminServerProperties.getMonitor().getConnectTimeout())
-                                .readTimeout(adminServerProperties.getMonitor().getReadTimeout())
-                                .defaultRetries(adminServerProperties.getMonitor().getDefaultRetries())
-                                .retries(adminServerProperties.getMonitor().getRetries())
-                                .httpHeadersProvider(httpHeadersProvider)
-                                .filters(filters -> filters.addAll(additionalFilters))
-                                .build();
     }
 }

@@ -39,9 +39,7 @@
           <footer class="modal-card-foot">
             <div class="field is-grouped is-grouped-right">
               <div class="control">
-                <button class="button is-primary" @click="invoke(args)">
-                  Execute
-                </button>
+                <button class="button is-primary" @click="invoke(args)" v-text="$t('instances.jolokia.execute')" />
               </div>
             </div>
           </footer>
@@ -50,7 +48,7 @@
         <template v-else-if="state === 'executing'">
           <section class="modal-card-body">
             <section class="section is-loading">
-              <p>Executing...</p>
+              <p v-text="$t('instances.jolokia.executing')" />
             </section>
           </section>
         </template>
@@ -59,7 +57,7 @@
           <section class="modal-card-body">
             <div class="message is-success">
               <div class="message-body">
-                <strong>Execution successful.</strong>
+                <strong v-text="$t('instances.jolokia.execution_successful')" />
               </div>
             </div>
             <pre v-if="descriptor.ret !== 'void'" v-text="prettyPrintedResult" />
@@ -67,9 +65,7 @@
           <footer class="modal-card-foot">
             <div class="field is-grouped is-grouped-right">
               <div class="control">
-                <button class="button is-light" @click="abort">
-                  Close
-                </button>
+                <button class="button is-light" @click="abort" v-text="$t('term.close')" />
               </div>
             </div>
           </footer>
@@ -83,7 +79,7 @@
                   <font-awesome-icon class="has-text-danger"
                                      icon="exclamation-triangle"
                   />
-                  Execution failed.
+                  <span v-text="$t('instances.jolokia.execution_failed')" />
                 </strong>
                 <p v-text="error.message" />
               </div>
@@ -98,9 +94,7 @@
           <footer class="modal-card-foot">
             <div class="field is-grouped is-grouped-right">
               <div class="control">
-                <button class="button is-light" @click="abort">
-                  Close
-                </button>
+                <button class="button is-light" @click="abort" v-text="$t('instances.jolokia.close')" />
               </div>
             </div>
           </footer>

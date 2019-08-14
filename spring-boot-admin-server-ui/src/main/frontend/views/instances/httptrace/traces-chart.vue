@@ -22,27 +22,27 @@
     >
       <table class="is-narrow is-size-7">
         <tr>
-          <th>total requests</th>
+          <th v-text="$t('instances.httptrace.chart.total_requests')" />
           <td v-text="tooltipContent.totalCount" />
         </tr>
         <tr>
-          <th>successful</th>
+          <th v-text="$t('instances.httptrace.chart.successful_requests')" />
           <td v-text="tooltipContent.totalSuccess" />
         </tr>
         <tr>
-          <th>status 4xx</th>
+          <th v-text="$t('instances.httptrace.chart.status_4xx')" />
           <td v-text="tooltipContent.totalClientErrors" />
         </tr>
         <tr>
-          <th>status 5xx</th>
+          <th v-text="$t('instances.httptrace.chart.status_5xx')" />
           <td v-text="tooltipContent.totalServerErrors" />
         </tr>
         <tr>
-          <th>max duration</th>
+          <th v-text="$t('instances.httptrace.chart.max_time')" />
           <td v-text="`${tooltipContent.maxTime}ms`" />
         </tr>
         <tr>
-          <th>ø duration</th>
+          <th v-text="$t('instances.httptrace.chart.avg_time')" />
           <td v-text="`${tooltipContent.avgTime}ms`" />
         </tr>
       </table>

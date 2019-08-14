@@ -42,7 +42,7 @@
       <div class="message-body">
         <strong>
           <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-          Fetching metrics index failed.
+          <span v-text="$t('instances.details.fetch_failed')" />
         </strong>
         <p v-text="error.message" />
       </div>
@@ -96,6 +96,7 @@
   import detailsMetadata from './details-metadata';
   import detailsProcess from './details-process';
   import detailsThreads from './details-threads';
+  import {VIEW_GROUP} from '../../index';
 
   export default {
     /* eslint-disable vue/no-unused-components */
@@ -174,8 +175,8 @@
         parent: 'instances',
         path: 'details',
         component: this,
-        label: 'Details',
-        group: 'Insights',
+        label: 'instances.details.label',
+        group: VIEW_GROUP.INSIGHTS,
         order: 0
       });
     }

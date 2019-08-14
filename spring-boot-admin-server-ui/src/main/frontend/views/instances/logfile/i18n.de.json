@@ -1,0 +1,9 @@
+{
+  "instances": {
+    "logfile": {
+      "label": "Log",
+      "download": "Herunterladen",
+      "fetch_failed": "Das Laden des Logfiles ist fehlgeschlagen."
+    }
+  }
+}

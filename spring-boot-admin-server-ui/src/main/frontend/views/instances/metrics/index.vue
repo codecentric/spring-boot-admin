@@ -20,15 +20,13 @@
       <div class="message-body">
         <strong>
           <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-          Fetching metrics failed.
+          <span v-text="$t('instances.metrics.fetch_failed')" />
         </strong>
         <p v-text="error.message" />
       </div>
     </div>
     <div v-if="isOldMetrics" class="message is-warning">
-      <div class="message-body">
-        Metrics are not supported for Spring Boot 1.x applications.
-      </div>
+      <div class="message-body" v-text="$t('instances.metrics.metrics_not_supported_spring_boot_1')" />
     </div>
     <form @submit.prevent="handleSubmit" class="field" v-else-if="availableMetrics.length > 0">
       <div class="field">
@@ -41,9 +39,7 @@
         </div>
       </div>
       <div>
-        <p v-if="stateFetchingTags === 'executing'" class="is-loading">
-          Fetching available tags
-        </p>
+        <p v-if="stateFetchingTags === 'executing'" class="is-loading" v-text="$t('instances.metrics.fetching_tags')" />
 
         <div class="box" v-if="availableTags">
           <div class="field is-horizontal" v-for="tag in availableTags" :key="tag.tag">
@@ -63,14 +59,10 @@
               </div>
             </div>
           </div>
-          <p v-if="availableTags && availableTags.length === 0">
-            No tags available.
-          </p>
+          <p v-if="availableTags && availableTags.length === 0" v-text="$t('instances.metrics.no_tags_available')" />
           <div class="field is-grouped is-grouped-right">
             <div class="control">
-              <button type="submit" class="button is-primary">
-                Add Metric
-              </button>
+              <button type="submit" class="button is-primary" v-text="$t('instances.metrics.add_metric')" />
             </div>
           </div>
         </div>
@@ -93,6 +85,7 @@
   import Instance from '@/services/instance';
   import sortBy from 'lodash/sortBy';
   import Metric from './metric';
+  import {VIEW_GROUP} from '../../index';
 
   export default {
     components: {Metric},
@@ -209,12 +202,13 @@
     },
     install({viewRegistry}) {
       viewRegistry.addView({
+        id: 'metrics',
         name: 'instances/metrics',
         parent: 'instances',
         path: 'metrics',
         component: this,
-        label: 'Metrics',
-        group: 'Insights',
+        label: 'instances.metrics.label',
+        group: VIEW_GROUP.INSIGHTS,
         order: 50,
         isEnabled: ({instance}) => instance.hasEndpoint('metrics')
       });

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,20 @@
 
 import '@/assets/css/base.scss';
 import moment from 'moment';
+import axios from '@/utils/axios';
+import 'moment/locale/de';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import components from './components';
 import Notifications from './notifications';
+import sbaConfig from './sba-config'
 import sbaShell from './shell';
 import Store from './store';
 import ViewRegistry from './viewRegistry';
 import views from './views';
+import i18n from './i18n';
 
-moment.locale(window.navigator.language);
+moment.locale(navigator.language.split('-')[0]);
 Vue.use(VueRouter);
 Vue.use(components);
 
@@ -35,17 +39,26 @@ const viewRegistry = new ViewRegistry();
 const installables = [
   Notifications,
   ...views,
-  ...global.SBA.extensions
+  ...sbaConfig.extensions
 ];
 
 installables.forEach(view => view.install({
   viewRegistry,
   applicationStore,
-  vue: Vue
+  vue: Vue,
+  axios
 }));
 
+const routesKnownToBackend = sbaConfig.uiSettings.routes.map(r => new RegExp(`^${r.replace('/**', '(/.*)?')}$`));
+const unknownRoutes = viewRegistry.routes.filter(vr => vr.path !== '/' && !routesKnownToBackend.some(br => br.test(vr.path)));
+if (unknownRoutes.length > 0) {
+  console.warn(`The routes ${JSON.stringify(unknownRoutes.map(r => r.path))} aren't known to the backend and may be not properly routed!`)
+}
+
 new Vue({
+  i18n,
   router: new VueRouter({
+    mode: 'history',
     linkActiveClass: 'is-active',
     routes: viewRegistry.routes
   }),

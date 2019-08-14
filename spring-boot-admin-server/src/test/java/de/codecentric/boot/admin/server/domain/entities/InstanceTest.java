@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.domain.entities;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceInfoChangedEvent;
 import de.codecentric.boot.admin.server.domain.values.BuildVersion;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.Info;
@@ -25,6 +26,8 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.Test;
 
 import static java.util.Collections.singletonMap;
@@ -145,8 +148,9 @@ public class InstanceTest {
         ))).isInstanceOf(IllegalArgumentException.class)
            .hasMessage("'event' must refer the same instance");
 
-        assertThatThrownBy(() -> instance.apply(new InstanceDeregisteredEvent(InstanceId.of("id"), 1L))).isInstanceOf(
-            IllegalArgumentException.class).hasMessage("Event 1 doesn't match exptected version 0");
+        assertThatThrownBy(() -> instance.apply(new InstanceDeregisteredEvent(InstanceId.of("id"), 1L))
+                                         .apply(new InstanceDeregisteredEvent(InstanceId.of("id"), 1L))).isInstanceOf(
+            IllegalArgumentException.class).hasMessage("Event 1 must be greater or equal to 2");
     }
 
     @Test
@@ -186,8 +190,7 @@ public class InstanceTest {
         assertThat(instance.getTags().getValues()).containsExactly(entry("environment", "test"), entry("region", "EU"));
 
         instance = instance.withInfo(Info.from(singletonMap("tags", singletonMap("region", "US-East"))));
-        assertThat(instance.getTags().getValues()).containsExactly(
-            entry("environment", "test"),
+        assertThat(instance.getTags().getValues()).containsExactly(entry("environment", "test"),
             entry("region", "US-East")
         );
 
@@ -196,5 +199,26 @@ public class InstanceTest {
 
         instance = instance.register(registration.toBuilder().clearMetadata().build());
         assertThat(instance.getTags().getValues()).isEmpty();
+    }
+
+    @Test
+    public void shoud_rebuild_instance() {
+        Instance instance = Instance.create(InstanceId.of("id"))
+                                    .register(Registration.create("test", "http://test").build())
+                                    .withInfo(Info.from(singletonMap("info", "remove")))
+                                    .withInfo(Info.from(singletonMap("info", "test2")));
+
+        List<InstanceEvent> relevantEvents = instance.getUnsavedEvents()
+                                                     .stream()
+                                                     .filter(e -> !(e instanceof InstanceInfoChangedEvent &&
+                                                                    ((InstanceInfoChangedEvent) e).getInfo()
+                                                                                                  .getValues()
+                                                                                                  .get("info")
+                                                                                                  .equals("remove")))
+                                                     .collect(Collectors.toList());
+
+        Instance rebuilt = Instance.create(InstanceId.of("id")).apply(relevantEvents);
+
+        assertThat(rebuilt).isEqualTo(instance);
     }
 }

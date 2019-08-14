@@ -1,0 +1,33 @@
+{
+  "instances": {
+    "gateway": {
+      "label": "Gateway",
+      "route":{
+        "add_route": "Route hinzufügen",
+        "adding_failed": "Hinzufügen der Route fehlgeschlagen.",
+        "cache_refreshed": "Route-Cache aktualisiert",
+        "cache_refresh": "Aktualisiere Route-Cache",
+        "cache_refresh_failed": "Fehlgeschlagen",
+        "deleted": "Gelöscht",
+        "delete": "Löschen",
+        "delete_failed": "Fehlgeschlagen",
+        "fetch_failed": "Das Laden der Gateway-Routen ist fehlgeschlagen.",
+        "filters": "Filter",
+        "id": "Id",
+        "loading": "Routen werden geladen...",
+        "no_definition_provided": "Keine Routing-Informationen vorhanden.",
+        "no_routes_found": "Keine Routen gefunden.",
+        "order": "Reihenfolge",
+        "predicates": "Predicates",
+        "uri": "URI"
+      },
+      "filters": {
+        "fetch_failed": "Das Lden der Globalen-Filter ist fehlgeschlagen.",
+        "filter_name": "Filtername",
+        "loading": "Global-Filter werden geladen...",
+        "no_filters_found": "Keine Globalen-Filter gefunden.",
+        "order": "Reihenfolge"
+      }
+    }
+  }
+}

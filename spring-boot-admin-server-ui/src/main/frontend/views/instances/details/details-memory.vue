@@ -15,13 +15,13 @@
   -->
 
 <template>
-  <sba-panel :title="`Memory: ${name}`" v-if="hasLoaded">
+  <sba-panel :title="$t('instances.details.memory.title') + `: ${name}`" v-if="hasLoaded">
     <div>
       <div v-if="error" class="message is-danger">
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            Fetching memory metrics failed.
+            <span v-text="$t('instances.details.memory.fetch_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>
@@ -29,33 +29,25 @@
       <div class="level memory-current" v-if="current">
         <div class="level-item has-text-centered" v-if="current.metaspace">
           <div>
-            <p class="heading has-bullet has-bullet-primary">
-              Metaspace
-            </p>
+            <p class="heading has-bullet has-bullet-primary" v-text="$t('instances.details.memory.metaspace')" />
             <p v-text="prettyBytes(current.metaspace)" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading has-bullet has-bullet-info">
-              Used
-            </p>
+            <p class="heading has-bullet has-bullet-info" v-text="$t('instances.details.memory.used')" />
             <p v-text="prettyBytes(current.used)" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading has-bullet has-bullet-warning">
-              Size
-            </p>
+            <p class="heading has-bullet has-bullet-warning" v-text="$t('instances.details.memory.size')" />
             <p v-text="prettyBytes(current.committed)" />
           </div>
         </div>
         <div class="level-item has-text-centered" v-if="current.max >= 0">
           <div>
-            <p class="heading">
-              Max
-            </p>
+            <p class="heading" v-text="$t('instances.details.memory.max')" />
             <p v-text="prettyBytes(current.max)" />
           </div>
         </div>
@@ -90,7 +82,7 @@
       hasLoaded: false,
       error: null,
       current: null,
-      chartData: [],
+      chartData: []
     }),
     computed: {
       name() {
@@ -109,7 +101,8 @@
       async fetchMetrics() {
         const responseMax = this.instance.fetchMetric('jvm.memory.max', {area: this.type});
         const responseUsed = this.instance.fetchMetric('jvm.memory.used', {area: this.type});
-        const responeMetaspace = this.type === 'nonheap'
+        const hasMetaspace = (await responseUsed).data.availableTags.some(tag => tag.tag === 'id' && tag.values.includes('Metaspace'));
+        const responeMetaspace = this.type === 'nonheap' && hasMetaspace
           ? this.instance.fetchMetric('jvm.memory.used', {area: this.type, id: 'Metaspace'})
           : null;
         const responseCommitted = this.instance.fetchMetric('jvm.memory.committed', {area: this.type});

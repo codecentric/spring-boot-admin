@@ -9,15 +9,15 @@ By default `spring-boot-admin-server-ui` provides a login page and a logout butt
 A Spring Security configuration for your server could look like this:
 [source,java,indent=0]
 ----
-include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/SpringBootAdminServletApplication.java[tags=configuration-spring-security]
+include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/SecuritySecureConfig.java[tags=configuration-spring-security]
 ----
 <1> Grants public access to all static assets and the login page.
 <2> Every other request must be authenticated.
 <3> Configures login and logout.
 <4> Enables HTTP-Basic support. This is needed for the Spring Boot Admin Client to register.
 <5> Enables CSRF-Protection using Cookies
-<6> Disables CRSF-Protection the endpoint the Spring Boot Admin Client uses to register.
-<7> Disables CRSF-Protection for the actuator endpoints.
+<6> Disables CSRF-Protection for the endpoint the Spring Boot Admin Client uses to register.
+<7> Disables CSRF-Protection for the actuator endpoints.
 
 In case you use the Spring Boot Admin Client, it needs the credentials for accessing the server:
 [source,yaml]
@@ -77,5 +77,24 @@ Some of the actuator endpoints (e.g. `/loggers`) support POST requests. When usi
 protected void configure(HttpSecurity http) throws Exception {
     http.csrf()
         .ignoringAntMatchers("/actuator/**");
+}
+----
+
+
+=== Using Mutual TLS ===
+
+SBA Server can also use client certificates to authenticate when accessing the actuator endpoints.
+If a custom configured `ClientHttpConnector` bean is present, Spring Boot will automatically configure a `WebClient.Builder` using it, which will be used by Spring Boot Admin.
+
+[source,java]
+----
+@Bean
+public ClientHttpConnector customHttpClient() {
+    SslContextBuilder sslContext = SslContextBuilder.forClient();
+    //Your sslContext customizations go here
+    HttpClient httpClient = HttpClient.create().secure(
+        ssl -> ssl.sslContext(sslContext)
+    );
+    return new ReactorClientHttpConnector(httpClient);
 }
 ----

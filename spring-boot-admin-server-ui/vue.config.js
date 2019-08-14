@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 const {resolve} = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const CopyPlugin = require('copy-webpack-plugin');
+const IgnorePlugin = require('webpack').IgnorePlugin;
 
 
 module.exports = {
@@ -80,11 +81,16 @@ module.exports = {
         toType: 'dir',
         ignore: ['*.scss']
       }]),
+      new CopyPlugin([{
+        from: resolve(__dirname, 'src/main/frontend/sba-settings.js'),
+        to: resolve(__dirname, 'target/dist/sba-settings.js'),
+      }]),
       new BundleAnalyzerPlugin({
         analyzerMode: 'static',
         openAnalyzer: false,
         reportFilename: '../report.html'
-      })
+      }),
+      new IgnorePlugin(/^\.\/locale$/, /moment$/),
     ]
   }
 };

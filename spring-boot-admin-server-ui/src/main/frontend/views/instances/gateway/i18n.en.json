@@ -1,0 +1,33 @@
+{
+  "instances": {
+    "gateway": {
+      "label": "Gateway",
+      "route":{
+        "add_route": "Add route",
+        "adding_failed": "Adding route failed.",
+        "cache_refreshed": "Routes Cache refreshed",
+        "cache_refresh": "Refresh Routes Cache",
+        "cache_refresh_failed": "Failed",
+        "deleted": "Deleted",
+        "delete": "Delete",
+        "delete_failed": "Failed",
+        "fetch_failed": "Fetching gateway routes failed.",
+        "filters": "Filters",
+        "id": "Id",
+        "loading": "Loading Routes...",
+        "no_definition_provided": "No Route Definition provided.",
+        "no_routes_found": "No Routes found.",
+        "order": "Order",
+        "predicates": "Predicates",
+        "uri": "URI"
+      },
+      "filters": {
+        "fetch_failed": "Fetching Global Filters failed.",
+        "filter_name": "Filter name",
+        "loading": "Loading Global Filters...",
+        "no_filters_found": "No Global Filters found.",
+        "order": "Order"
+      }
+    }
+  }
+}

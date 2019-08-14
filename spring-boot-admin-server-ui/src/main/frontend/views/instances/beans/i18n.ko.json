@@ -1,0 +1,12 @@
+{
+  "instances": {
+    "beans": {
+      "label": "빈(Bean)",
+      "name": "이름",
+      "aliases": "별칭",
+      "type": "타입",
+      "resource": "리소스",
+      "dependencies": "의존성"
+    }
+  }
+}

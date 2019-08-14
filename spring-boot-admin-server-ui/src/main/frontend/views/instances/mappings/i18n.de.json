@@ -1,0 +1,19 @@
+{
+  "instances": {
+    "mappings": {
+      "label": "Mappings",
+      "class": "Klasse",
+      "consumes": "Erwartet",
+      "fetch_failed": "Das Laden der Mappings ist fehlgeschlagen.",
+      "filter_name": "Filtername",
+      "handler": "Handler",
+      "headers": "Headers",
+      "http-verb": "HTTP-Verb",
+      "mappings_not_supported_spring_boot_1": "Spring Boot 1.x Anwendungen unterstützen keine Mappings.",
+      "parameters": "Parameter",
+      "produces": "Produziert",
+      "servlet_name": "Servletname",
+      "url_pattern": "Url-Muster"
+    }
+  }
+}

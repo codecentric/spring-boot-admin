@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2019 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -16,53 +16,51 @@
 
 <template>
   <aside class="sidebar">
-    <div v-if="instance" v-sticks-below="['#navigation']">
-      <router-link
-        :to="{name: 'instances/details', params: {instanceId: instance.id}}"
-        class="instance-summary"
-        :class="`instance-summary--${instance.statusInfo.status}`"
+    <router-link
+      :to="{name: 'instances/details', params: {instanceId: instance.id}}"
+      class="instance-summary"
+      :class="`instance-summary--${instance.statusInfo.status}`"
+    >
+      <div
+        class="instance-summary__name"
+        v-text="instance.registration.name"
+      />
+      <div
+        class="instance-summary__id"
+        v-text="instance.id"
+      />
+    </router-link>
+    <ul>
+      <li
+        v-for="group in enabledGroupedViews"
+        :key="group.name"
+        class="sidebar-group"
+        :class="{'is-active' : isActiveGroup(group)}"
+        @mouseenter="hasMultipleViews(group) && !isActiveGroup(group) && showFlyout($event)"
+        @mouseleave="hasMultipleViews(group) && !isActiveGroup(group) && hideFlyout($event)"
       >
-        <div
-          class="instance-summary__name"
-          v-text="instance.registration.name"
+        <router-link
+          :to="{ name: group.views[0].name, params: { 'instanceId' : instance.id } }"
+          v-text="hasMultipleViews(group) ? $t('sidebar.' + group.id + '.title') : ($t(group.views[0].label))"
+          active-class=""
+          exact-active-class=""
+          :class="{'is-active' : isActiveGroup(group) }"
         />
-        <div
-          class="instance-summary__id"
-          v-text="instance.id"
-        />
-      </router-link>
-      <ul>
-        <li
-          v-for="group in enabledGroupedViews"
-          :key="group.name"
-          class="sidebar-group"
-          :class="{'is-active' : isActiveGroup(group)}"
-          @mouseenter="hasMultipleViews(group) && !isActiveGroup(group) && showFlyout($event)"
-          @mouseleave="hasMultipleViews(group) && !isActiveGroup(group) && hideFlyout($event)"
+        <ul
+          v-if="hasMultipleViews(group)"
+          class="sidebar-group-items"
         >
-          <router-link
-            :to="{ name: group.views[0].name, params: { 'instanceId' : instance.id } }"
-            v-text="hasMultipleViews(group) ? group.name : group.views[0].label"
-            active-class=""
-            exact-active-class=""
-            :class="{'is-active' : isActiveGroup(group) }"
-          />
-          <ul
-            v-if="hasMultipleViews(group)"
-            class="sidebar-group-items"
+          <li
+            v-for="view in group.views"
+            :key="view.name"
           >
-            <li
-              v-for="view in group.views"
-              :key="view.name"
-            >
-              <router-link :to="{ name: view.name, params: { 'instanceId' : instance.id } }">
-                <component :is="view.handle" />
-              </router-link>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </div>
+            <router-link :to="{ name: view.name, params: { 'instanceId' : instance.id } }">
+              <component :is="view.handle" />
+            </router-link>
+          </li>
+        </ul>
+      </li>
+    </ul>
   </aside>
 </template>
 
@@ -104,9 +102,9 @@
       enabledGroupedViews() {
         const groups = new Map();
         this.enabledViews.forEach(view => {
-            const groupName = view.group || view.label;
+            const groupName = view.group;
             const group = groups.get(groupName) || {
-              name: groupName,
+              id: groupName,
               order: Number.MAX_SAFE_INTEGER,
               views: []
             };
@@ -160,9 +158,10 @@
 
   .sidebar {
     height: 100%;
-    width: 175px;
+    width: 100%;
     background-color: $white-bis;
     border-right: 1px solid $grey-lighter;
+    overflow-x: auto;
 
     .instance-summary {
       padding: 1rem 0.5rem;
@@ -175,6 +174,8 @@
       }
 
       &__name {
+        max-width: 175px;
+        margin: 0 auto;
         font-weight: $weight-semibold;
         font-size: $size-5;
       }
@@ -212,6 +213,8 @@
     a {
       border-radius: $radius-small;
       color: $text;
+      overflow: hidden;
+      text-overflow: ellipsis;
       display: block;
       padding: 0.5em 0.75em;
 

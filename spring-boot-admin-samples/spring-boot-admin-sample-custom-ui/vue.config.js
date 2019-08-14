@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+const {resolve} = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   outputDir: 'target/dist',
@@ -44,5 +46,15 @@ module.exports = {
     config.plugins.delete('html');
     config.plugins.delete('preload');
     config.plugins.delete('prefetch');
+  },
+  configureWebpack: {
+    plugins: [
+      new CopyPlugin([{
+        from: resolve(__dirname, 'src/routes.txt'),
+        to: resolve(__dirname, 'target/dist'),
+        toType: 'dir',
+        ignore: ['*.scss']
+      }])
+    ]
   }
 };

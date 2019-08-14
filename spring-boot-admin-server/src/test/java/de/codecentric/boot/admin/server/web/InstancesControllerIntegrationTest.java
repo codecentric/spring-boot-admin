@@ -147,7 +147,7 @@ public class InstancesControllerIntegrationTest {
                    .expectStatus()
                    .isOk()
                    .expectHeader()
-                   .contentType(MediaType.APPLICATION_JSON_UTF8)
+                   .contentType(MediaType.APPLICATION_JSON)
                    .expectBody(String.class)
                    .consumeWith(response -> {
                        DocumentContext json = JsonPath.parse(response.getResponseBody());
@@ -181,7 +181,7 @@ public class InstancesControllerIntegrationTest {
                    .expectStatus()
                    .isOk()
                    .expectHeader()
-                   .contentType(MediaType.APPLICATION_JSON_UTF8)
+                   .contentType(MediaType.APPLICATION_JSON)
                    .expectBody()
                    .jsonPath("$[0].id", id);
     }
@@ -193,7 +193,7 @@ public class InstancesControllerIntegrationTest {
                    .expectStatus()
                    .isOk()
                    .expectHeader()
-                   .contentType(MediaType.APPLICATION_JSON_UTF8)
+                   .contentType(MediaType.APPLICATION_JSON)
                    .expectBody()
                    .jsonPath("$[0].id", id);
     }
@@ -205,7 +205,7 @@ public class InstancesControllerIntegrationTest {
                    .expectStatus()
                    .isOk()
                    .expectHeader()
-                   .contentType(MediaType.APPLICATION_JSON_UTF8)
+                   .contentType(MediaType.APPLICATION_JSON)
                    .expectBody()
                    .jsonPath("$[0].id", id);
     }
@@ -220,7 +220,7 @@ public class InstancesControllerIntegrationTest {
                    .expectStatus()
                    .isCreated()
                    .expectHeader()
-                   .contentType(MediaType.APPLICATION_JSON_UTF8)
+                   .contentType(MediaType.APPLICATION_JSON)
                    .expectHeader()
                    .valueEquals("location", getLocation(id))
                    .expectBody(Map.class)
@@ -235,7 +235,7 @@ public class InstancesControllerIntegrationTest {
                                                                 .syncBody(register_as_test)
                                                                 .exchange()
                                                                 .expectStatus().isCreated()
-                                                                .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+                                                                .expectHeader().contentType(MediaType.APPLICATION_JSON)
                                                                 .expectHeader().valueMatches("location", "http://localhost:" + localPort + "/instances/[0-9a-f]+")
                                                                 .expectBody(RESPONSE_TYPE)
                                                                 .returnResult();

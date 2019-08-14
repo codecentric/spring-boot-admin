@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,28 +19,36 @@ package de.codecentric.boot.admin.server.web.servlet;
 import de.codecentric.boot.admin.server.AdminServletApplicationTest;
 import de.codecentric.boot.admin.server.web.AbstractInstancesProxyControllerIntegrationTest;
 
-import org.junit.After;
+import javax.annotation.Nullable;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
 public class InstancesProxyControllerIntegrationTest extends AbstractInstancesProxyControllerIntegrationTest {
-    private ConfigurableApplicationContext context;
+    @Nullable
+    private static ConfigurableApplicationContext context;
 
-    @Before
-    public void setUpCpntext() {
+    @BeforeClass
+    public static void setUpContext() {
         context = new SpringApplicationBuilder().sources(AdminServletApplicationTest.TestAdminApplication.class)
                                                 .web(WebApplicationType.SERVLET)
-                                                .run("--server.port=0",
-                                                    "--eureka.client.enabled=false",
-                                                    "--spring.boot.admin.monitor.read-timeout=5000"
+                                                .run(
+                                                    "--server.port=0",
+                                                    "--spring.boot.admin.monitor.default-timeout=2500"
                                                 );
-        this.setUpClient(context);
+
     }
 
-    @After
-    public void tearDownContext() {
+    @Before
+    public void setUpClient() {
+        super.setUpClient(context);
+    }
+
+    @AfterClass
+    public static void tearDownContext() {
         if (context != null) {
             context.close();
         }

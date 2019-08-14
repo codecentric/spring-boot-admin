@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,17 +35,20 @@ public class AdminReactiveApplicationTest extends AbstractAdminApplicationTest {
 
     @Before
     public void setUp() {
-        instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
-                                                 .web(WebApplicationType.REACTIVE)
-                                                 .run("--server.port=0", "--management.endpoints.web.base-path=/mgmt",
-                                                     "--info.test=foobar", "--eureka.client.enabled=false");
+        this.instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
+                                                      .web(WebApplicationType.REACTIVE)
+                                                      .run(
+                                                          "--server.port=0",
+                                                          "--management.endpoints.web.base-path=/mgmt",
+                                                          "--info.test=foobar"
+                                                      );
 
-        super.setUp(instance.getEnvironment().getProperty("local.server.port", Integer.class, 0));
+        super.setUp(this.instance.getEnvironment().getProperty("local.server.port", Integer.class, 0));
     }
 
     @After
     public void shutdown() {
-        instance.close();
+        this.instance.close();
     }
 
     @EnableAdminServer
@@ -53,11 +56,9 @@ public class AdminReactiveApplicationTest extends AbstractAdminApplicationTest {
     @SpringBootConfiguration
     @EnableWebFluxSecurity
     public static class TestAdminApplication {
-
         @Bean
         public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
             return http.authorizeExchange().anyExchange().permitAll().and().csrf().disable().build();
         }
-
     }
 }

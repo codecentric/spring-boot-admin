@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import sbaConfig from '@/sba-config'
 import axios from 'axios';
 
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-if (global.SBA && global.SBA.csrf && global.SBA.csrf.headerName) {
-  axios.defaults.xsrfHeaderName = global.SBA.csrf.headerName;
-}
+axios.defaults.xsrfHeaderName = sbaConfig.csrf.headerName;
 
 export const redirectOn401 = (predicate = () => true) => error => {
   if (error.response && error.response.status === 401 && predicate(error)) {
@@ -29,7 +27,7 @@ export const redirectOn401 = (predicate = () => true) => error => {
 
 };
 
-const instance = axios.create();
+const instance = axios.create({headers: {'Accept': 'application/json'}});
 instance.interceptors.response.use(response => response, redirectOn401());
 instance.create = axios.create;
 

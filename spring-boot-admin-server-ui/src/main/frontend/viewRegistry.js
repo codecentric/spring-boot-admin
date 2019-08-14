@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-const createTextVNode = label => {
+import {VIEW_GROUP} from './views';
+
+const createTextVNode = (label) => {
   return {
     render() {
-      return this._v(label)
+      return this._v(this.$t(label))
     }
   }
 };
@@ -34,7 +36,7 @@ export default class ViewRegistry {
 
   get routes() {
     return [
-      ...this._toRoutes(this._views, v => !v.parent),
+      ...this._toRoutes(this._views, v => v.path && !v.parent),
       ...this._redirects
     ]
   }
@@ -43,14 +45,22 @@ export default class ViewRegistry {
     views.forEach(view => this._addView(view));
   }
 
-  addRedirect(path, redirectToView) {
-    this._redirects.push({path, redirect: {name: redirectToView}});
+  addRedirect(path, redirect) {
+    if (typeof redirect === 'string') {
+      this._redirects.push({path, redirect: {name: redirect}});
+    } else {
+      this._redirects.push({path, redirect});
+    }
   }
 
   _addView(view) {
     if (view.label && !view.handle) {
       view.handle = createTextVNode(view.label);
     }
+    if (!view.group) {
+      view.group = VIEW_GROUP.NONE;
+    }
+
     this._views.push(view);
   }
 

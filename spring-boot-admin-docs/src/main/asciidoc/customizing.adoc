@@ -5,7 +5,7 @@
 === Custom Notifiers ===
 
 You can add your own Notifiers by adding Spring Beans which implement the `Notifier` interface, at best by extending
-`AbstractEventNotifier` or `AbstractStatusChangeNotifier`
+`AbstractEventNotifier` or `AbstractStatusChangeNotifier`.
 
 [source,java,indent=0]
 ----
@@ -33,16 +33,36 @@ This can be useful for auditing or adding some extra security checks.
 include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/SpringBootAdminServletApplication.java[tags=customization-instance-exchange-filter-function]
 ----
 
+[[customizing-external-views]]
+=== Linking / Embedding External Pages ===
+
+You can very simply add a link to external pages via configuration or even embed them (adding the `iframe=true`):
+
+[source,yaml,indent=0]
+----
+include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/resources/application.yml[tags=customization-external-views]
+----
+
 [[customizing-custom-views]]
 === Custom Views ===
 
 It is possible to add custom views to the ui. The views must be implemented as https://vuejs.org/[Vue.js] components.
 
-The Javascript-Bundle and Css-Stlysheet must be placed on the classpath at `/META-INF/spring-boot-admin-server-ui/extensions/{name}/` so the server can pick them up.
+The JavaScript-Bundle and CSS-Stylesheet must be placed on the classpath at `/META-INF/spring-boot-admin-server-ui/extensions/{name}/` so the server can pick them up.
 The {github-src}/spring-boot-admin-samples/spring-boot-admin-sample-custom-ui/[spring-boot-admin-sample-custom-ui] module contains a sample which has the necessary maven setup to build such a module.
 
 The custom extension registers itself by calling `SBA.use()` and need to expose a `install()` function, which is called by the ui when setting up the routes.
-The `install()` function receives a parameter object referencing the {github-src}/spring-boot-admin-server-ui/src/main/frontend/viewRegistry.js[viewRegistry] and the {github-src}/spring-boot-admin-server-ui/src/main/frontend/store.js[applicationStore] in order to register views and/or callbacks.
+The `install()` function receives the following parameters in order to register views and/or callbacks:
+
+* Object referencing the {github-src}/spring-boot-admin-server-ui/src/main/frontend/viewRegistry.js[viewRegistry]
+
+* Object referencing the {github-src}/spring-boot-admin-server-ui/src/main/frontend/store.js[applicationStore]
+
+* Object referencing the the global Vue[Vue]
+
+* Object referencing the {github-src}/spring-boot-admin-server-ui/src/main/frontend/utils/axios.js[axios]
+
+If new top level routes are added to the frontend, they also must be known to the backend. Add a `/META-INF/spring-boot-admin-server-ui/extensions/{name}/routes.txt` with all your new toplevel routes (one route per line).
 
 [[customizing-custom-views-top-level]]
 ==== Adding a Top-Level View ====
@@ -66,6 +86,12 @@ include::{samples-dir}/spring-boot-admin-sample-custom-ui/src/index.js[tags=cust
 <3> The imported custom component, which will be rendered on the route.
 <4> The label for the custom view to be shown in the top navigation bar.
 <5> Order for the view. Views in the top navigation bar are sorted by ascending order.
+
+The `routes.txt` config with the added route:
+[source,text]
+----
+include::{samples-dir}/spring-boot-admin-sample-custom-ui/src/routes.txt[]
+----
 
 [[customizing-custom-views-instance]]
 ==== Visualizing a Custom Endpoint ====
@@ -95,6 +121,13 @@ Either you just add the image to your jar-file in `/META-INF/spring-boot-admin-s
 or you must ensure yourself that the image gets served correctly (e.g. by registering your own `ResourceHandler`)
 
 - **spring.boot.admin.ui.title**: Use this option to customize the browsers window title.
+
+=== Customizing Login Logo ===
+You can set a custom image to be displayed on the login page.
+
+1. Put the image in a resource location which is served via http (e.g. `/META-INF/spring-boot-admin-server-ui/assets/img/`).
+2. Configure the icons to use using the following property:
+  - **spring.boot.admin.ui.login-icon**: Used as icon on login page. (e.g `assets/img/custom-login-icon.svg`)
 
 === Customizing Favicon ===
 It is possible to use a custom favicon, which is also used for desktop notifications. Spring Boot Admin uses a different icon when one or more application is down.

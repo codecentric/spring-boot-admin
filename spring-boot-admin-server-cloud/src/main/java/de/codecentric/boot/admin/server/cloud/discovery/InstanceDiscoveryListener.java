@@ -21,6 +21,8 @@ import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
+import java.util.HashMap;
+import java.util.Map;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -66,6 +68,16 @@ public class InstanceDiscoveryListener {
      */
     private Set<String> services = new HashSet<>(Collections.singletonList("*"));
 
+    /**
+     * Map of metadata that has to be matched by service instance that is to be registered. (e.g. "discoverable=true")
+     */
+    private Map<String, String> instancesMetadata = new HashMap<>();
+
+    /**
+     * Map of metadata that has to be matched by service instance that is to be ignored. (e.g. "discoverable=false")
+     */
+    private Map<String, String> ignoredInstancesMetadata = new HashMap<>();
+
     public InstanceDiscoveryListener(DiscoveryClient discoveryClient,
                                      InstanceRegistry registry,
                                      InstanceRepository repository) {
@@ -105,6 +117,7 @@ public class InstanceDiscoveryListener {
         Flux.fromIterable(discoveryClient.getServices())
             .filter(this::shouldRegisterService)
             .flatMapIterable(discoveryClient::getInstances)
+            .filter(this::shouldRegisterInstanceBasedOnMetadata)
             .flatMap(this::registerInstance)
             .collect(Collectors.toSet())
             .flatMap(this::removeStaleInstances)
@@ -137,6 +150,14 @@ public class InstanceDiscoveryListener {
         return patterns.stream().anyMatch(pattern -> PatternMatchUtils.simpleMatch(pattern, serviceId));
     }
 
+    protected boolean shouldRegisterInstanceBasedOnMetadata(ServiceInstance instance) {
+        boolean shouldRegister = isInstanceAllowedBasedOnMetadata(instance) && !isInstanceIgnoredBasedOnMetadata(instance);
+        if (!shouldRegister) {
+            log.debug("Ignoring instance '{}' of '{}' service from discovery based on metadata.", instance.getInstanceId(), instance.getServiceId());
+        }
+        return shouldRegister;
+    }
+
     protected Mono<InstanceId> registerInstance(ServiceInstance instance) {
         try {
             Registration registration = converter.convert(instance).toBuilder().source(SOURCE).build();
@@ -151,10 +172,10 @@ public class InstanceDiscoveryListener {
     protected String toString(ServiceInstance instance) {
         String httpScheme = instance.isSecure() ? "https" : "http";
         return String.format("serviceId=%s, instanceId=%s, url= %s://%s:%d",
-            instance.getServiceId(), instance.getInstanceId(),
-            instance.getScheme() != null ? instance.getScheme() : httpScheme,
-            instance.getHost(),
-            instance.getPort()
+                             instance.getServiceId(), instance.getInstanceId(),
+                             instance.getScheme() != null ? instance.getScheme() : httpScheme,
+                             instance.getHost(),
+                             instance.getPort()
         );
     }
 
@@ -176,5 +197,54 @@ public class InstanceDiscoveryListener {
 
     public void setServices(Set<String> services) {
         this.services = services;
+    }
+
+    public Map<String, String> getInstancesMetadata() {
+        return instancesMetadata;
+    }
+
+    public void setInstancesMetadata(Map<String, String> instancesMetadata) {
+        this.instancesMetadata = instancesMetadata;
+    }
+
+    public Map<String, String> getIgnoredInstancesMetadata() {
+        return ignoredInstancesMetadata;
+    }
+
+    public void setIgnoredInstancesMetadata(Map<String, String> ignoredInstancesMetadata) {
+        this.ignoredInstancesMetadata = ignoredInstancesMetadata;
+    }
+
+    private boolean isInstanceAllowedBasedOnMetadata(ServiceInstance instance) {
+        if (instancesMetadata.isEmpty()) {
+            return true;
+        }
+
+        for (Map.Entry<String, String> metadata : instance.getMetadata().entrySet()) {
+            if (isMapContainsEntry(instancesMetadata, metadata)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isInstanceIgnoredBasedOnMetadata(ServiceInstance instance) {
+        if (ignoredInstancesMetadata.isEmpty()) {
+            return false;
+        }
+
+        for (Map.Entry<String, String> metadata : instance.getMetadata().entrySet()) {
+            if (isMapContainsEntry(ignoredInstancesMetadata, metadata)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isMapContainsEntry(Map<String, String> map, Map.Entry<String, String> entry) {
+        String value = map.get(entry.getKey());
+        return value != null && value.equals(entry.getValue());
     }
 }

@@ -16,8 +16,12 @@
 
 package de.codecentric.boot.admin.server.ui.config;
 
+import de.codecentric.boot.admin.server.ui.web.UiController;
+
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -44,6 +48,11 @@ public class AdminServerUiProperties {
      * Locations of SBA ui template.
      */
     private String templateLocation = CLASSPATH_RESOURCE_LOCATIONS[0];
+
+    /**
+     * Icon used as image on login page
+     */
+    private String loginIcon = "assets/img/icon-spring-boot-admin.svg";
 
     /**
      * Icon used as default favicon and icon for desktop notifications.
@@ -77,7 +86,20 @@ public class AdminServerUiProperties {
      */
     private boolean cacheTemplates = true;
 
-    private final Cache cache = new Cache();
+    /**
+     * Cache-Http-Header settings.
+     */
+    private Cache cache = new Cache();
+
+    /**
+     * External views shown in the navbar.
+     */
+    private List<UiController.ExternalView> externalViews = new ArrayList<>();
+
+    /**
+     * Whether the option to remember a user should be available.
+     */
+    private boolean rememberMeEnabled = true;
 
     @lombok.Data
     public static class Cache {
@@ -112,5 +134,4 @@ public class AdminServerUiProperties {
             return CacheControl.empty();
         }
     }
-
 }

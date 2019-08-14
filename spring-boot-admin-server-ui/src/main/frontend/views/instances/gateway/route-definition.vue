@@ -18,7 +18,8 @@
   <div class="route-definition-container">
     <div class="route-definition">
       <div class="route-definition-header">
-        <font-awesome-icon icon="search" />&nbsp;Predicates
+        <font-awesome-icon icon="search" />&nbsp;
+        <span v-text="$t('instances.gateway.route.predicates')" />
       </div>
       <div
         class="route-definition-content"
@@ -43,7 +44,8 @@
 
     <div class="route-definition" v-if="routeDefinition.filters.length > 0">
       <div class="route-definition-header">
-        <font-awesome-icon icon="filter" />&nbsp;Filters
+        <font-awesome-icon icon="filter" />&nbsp;
+        <span v-text="$t('instances.gateway.route.filters')" />
       </div>
       <div
         class="route-definition-content"
@@ -69,7 +71,8 @@
 
     <div class="route-definition">
       <div class="route-definition-header">
-        <font-awesome-icon icon="map-marker-alt" />&nbsp;URI
+        <font-awesome-icon icon="map-marker-alt" />&nbsp;
+        <span v-text="$t('instances.gateway.route.uri')" />
       </div>
       <div
         class="route-definition-content"

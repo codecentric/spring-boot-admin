@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <sba-panel title="Metadata">
+  <sba-panel :title="$t('instances.details.metadata.title')">
     <div class="content metadata" v-if="metadata">
       <table class="table" v-if="!isEmptyMetadata">
         <tr v-for="(value, key) in metadata" :key="key">
@@ -25,9 +25,7 @@
           </td>
         </tr>
       </table>
-      <p v-else class="is-muted">
-        No metadata provided.
-      </p>
+      <p v-else class="is-muted" v-text="$t('instances.details.metadata.No metadata provided.')" />
     </div>
   </sba-panel>
 </template>

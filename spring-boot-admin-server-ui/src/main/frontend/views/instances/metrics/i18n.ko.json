@@ -1,0 +1,13 @@
+{
+  "instances": {
+    "metrics": {
+      "label": "지표",
+      "add_metric": "지표 추가",
+      "fetch_failed": "지표 정보를 가져오는데 실패했습니다.",
+      "fetching_tags": "가능한 태그를 가져오는 중 입니다.",
+      "no_tags": "(태그 없음)",
+      "no_tags_available": "가능한 태그가 없습니다.",
+      "metrics_not_supported_spring_boot_1": "지표는 Spring Boot 1.x 애플리케이션에서는 지원하지 않습니다."
+    }
+  }
+}

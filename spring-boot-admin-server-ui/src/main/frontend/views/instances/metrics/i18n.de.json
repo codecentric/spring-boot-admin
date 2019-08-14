@@ -1,0 +1,13 @@
+{
+  "instances": {
+    "metrics": {
+      "label": "Metriken",
+      "add_metric": "Metrik hinzufügen",
+      "fetch_failed": "Das Laden der Metriken ist fehlgeschlagen.",
+      "fetching_tags": "Verfügbare Tags werden geladen",
+      "no_tags": "(keine Tags)",
+      "no_tags_available": "Keine Tags verfügbar.",
+      "metrics_not_supported_spring_boot_1": "Spring Boot 1.x Anwendungen unterstützen keine Metriken."
+    }
+  }
+}

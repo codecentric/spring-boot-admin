@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,13 +58,21 @@ public class AdminServerProperties {
         this.contextPath = PathUtils.normalizePath(contextPath);
     }
 
+    /**
+     * @param path the partial path within the admin context-path
+     * @return the full path within the admin context-path
+     */
+    public String path(String path) {
+        return this.contextPath + path;
+    }
+
     @lombok.Data
     public static class MonitorProperties {
         /**
-         * Time interval to update the status of instances with expired statusInfo
+         * Time interval to check the status of instances.
          */
         @DurationUnit(ChronoUnit.MILLIS)
-        private Duration period = Duration.ofMillis(10_000L);
+        private Duration statusInterval = Duration.ofMillis(10_000L);
 
         /**
          * Lifetime of status. The status won't be updated as long the last status isn't
@@ -74,19 +82,20 @@ public class AdminServerProperties {
         private Duration statusLifetime = Duration.ofMillis(10_000L);
 
         /**
-         * Connect timeout when querying the instances' status and info.
+         * Time interval to check the info of instances,
          */
         @DurationUnit(ChronoUnit.MILLIS)
-        private Duration connectTimeout = Duration.ofMillis(2_000L);
+        private Duration infoInterval = Duration.ofMinutes(1L);
 
         /**
-         * read timeout when querying the instances' status and info.
+         * Lifetime of info. The info won't be updated as long the last info isn't
+         * expired.
          */
         @DurationUnit(ChronoUnit.MILLIS)
-        private Duration readTimeout = Duration.ofMillis(10_000L);
+        private Duration infoLifetime = Duration.ofMinutes(1L);
 
         /**
-         * Default number of retries for failed requests.
+         * Default number of retries for failed requests. Individual values for specific endpoints can be overriden using `spring.boot.admin.monitor.retries.*`.
          */
         private int defaultRetries = 0;
 
@@ -94,6 +103,18 @@ public class AdminServerProperties {
          * Number of retries per endpointId. Defaults to default-retry.
          */
         private Map<String, Integer> retries = new HashMap<>();
+
+        /**
+         * Default timeout when making requests. Individual values for specific endpoints can be overriden using `spring.boot.admin.monitor.timeout.*`.
+         */
+        @DurationUnit(ChronoUnit.MILLIS)
+        private Duration defaultTimeout = Duration.ofMillis(10_000L);
+
+        /**
+         * timeout per endpointId. Defaults to default-timeout.
+         */
+        @DurationUnit(ChronoUnit.MILLIS)
+        private Map<String, Duration> timeout = new HashMap<>();
     }
 
     @lombok.Data

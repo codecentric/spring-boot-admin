@@ -1,0 +1,21 @@
+{
+  "instances": {
+    "env": {
+      "label": "Environment",
+      "manager": "Environment Manager",
+      "active_profile": "Profile",
+      "context_refresh": "Refresh Context",
+      "context_refresh_failed": "Failed",
+      "context_refreshed": "Context refreshed",
+      "context_reset": "Reset",
+      "context_reset_failed": "Failed",
+      "context_resetted": "Resetted",
+      "context_update": "Update",
+      "context_update_failed": "Failed",
+      "context_updated": "Updated",
+      "fetch_failed": "Fetching environment failed.",
+      "no_properties": "No properties set",
+      "title": "Environment Manager"
+    }
+  }
+}

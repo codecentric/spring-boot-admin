@@ -1,0 +1,12 @@
+{
+  "instances": {
+    "caches": {
+      "label": "缓存",
+      "cache_manager": "缓存管理",
+      "fetch_failed": "获取缓存失败。",
+      "loading": "加载缓存中...",
+      "name": "名称",
+      "no_caches_found": "未找到缓存。"
+    }
+  }
+}

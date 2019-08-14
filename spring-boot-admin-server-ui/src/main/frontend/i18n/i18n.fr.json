@@ -1,0 +1,38 @@
+{
+  "error": {
+    "server_connection_failed": "Erreur de connexion au serveur.  "
+  },
+  "term": {
+    "application": "Application",
+    "attributes": "Attributs",
+    "bytes": "Octets",
+    "cancel": "Annuler",
+    "clear": "Effacer",
+    "cleared": "Effacé",
+    "close": "Fermer",
+    "confirm": "Confirmer",
+    "delete": "Supprimer",
+    "deleted": "Supprimé",
+    "duration": "Durée",
+    "event": "Evènement",
+    "ever": "Tojours",
+    "executing": "Execution...",
+    "execution_failed": "Execution en échec.",
+    "execution_successful": "Execution en succés.",
+    "failed": "Echec",
+    "float": "Décimal",
+    "hours": "{count} heure | {count} heures",
+    "instances": "Instances",
+    "integer": "Entier",
+    "milliseconds": "Millisecondes",
+    "minutes": "{count} minute | {count} minutes",
+    "name": "Nom",
+    "operations": "Operations",
+    "save": "Sauvegarder",
+    "stacktrace": "Stacktrace",
+    "suppress": "Supprimer",
+    "time": "Temps",
+    "unsuppress": "Désinscription",
+    "username": "Identifiant"
+  }
+}

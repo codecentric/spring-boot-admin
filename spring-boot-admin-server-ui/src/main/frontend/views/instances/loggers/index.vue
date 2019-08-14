@@ -15,212 +15,56 @@
   -->
 
 <template>
-  <section class="section" :class="{ 'is-loading' : !hasLoaded }">
-    <template v-if="hasLoaded">
-      <div v-if="error" class="message is-danger">
-        <div class="message-body">
-          <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            Fetching loggers failed.
-          </strong>
-          <p v-text="error.message" />
-        </div>
-      </div>
-      <template v-if="loggerConfig">
-        <div class="field-body">
-          <div class="field has-addons">
-            <p class="control is-expanded has-icons-left">
-              <input
-                class="input"
-                type="search"
-                v-model="filter"
-              >
-              <span class="icon is-small is-left">
-                <font-awesome-icon icon="filter" />
-              </span>
-            </p>
-            <p class="control">
-              <span class="button is-static">
-                <span v-text="filteredLoggers.length" />
-                /
-                <span v-text="loggerConfig.loggers.length" />
-              </span>
-            </p>
-          </div>
-        </div>
-        <div class="field-body">
-          <div class="field is-narrow">
-            <div class="control">
-              <label class="checkbox">
-                <input type="checkbox" v-model="showClassLoggersOnly">
-                class only
-              </label>
-            </div>
-          </div>
-          <div class="field is-narrow">
-            <div class="control">
-              <label class="checkbox">
-                <input type="checkbox" v-model="showConfiguredLoggersOnly">
-                configured
-              </label>
-            </div>
-          </div>
-        </div>
-      </template>
-      <table v-if="loggerConfig" class="table is-hoverable is-fullwidth">
-        <tbody>
-          <tr v-for="logger in limitedLoggers" :key="logger.name">
-            <td>
-              <span class="is-breakable" v-text="logger.name" />
-              <span class="has-text-danger" v-if="logger.name in failed">
-                <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-                <span v-text="`Configuring ${failed[logger.name]} failed.`" />
-              </span>
-              <sba-logger-control class="is-pulled-right"
-                                  :level-options="levels"
-                                  :effective-level="logger.effectiveLevel"
-                                  :configured-level="logger.configuredLevel"
-                                  :is-loading="loading[logger.name]"
-                                  :has-failed="failed[logger.name]"
-                                  :allow-reset="logger.name !== 'ROOT'"
-                                  @input="level => configureLogger(logger, level)"
-              />
-            </td>
-          </tr>
-          <tr v-if="limitedLoggers.length === 0">
-            <td class="is-muted" colspan="5">
-              No loggers found.
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </template>
-  </section>
+  <loggers
+    :loggers-service="service"
+    :scope="scope"
+    :instance-count="application.instances.length"
+    @changeScope="s => scope = s"
+  />
 </template>
 
 <script>
+  import Application from '@/services/application';
   import Instance from '@/services/instance';
-  import sbaLoggerControl from './logger-control';
-
-  const isClassName = name => /\.[A-Z]/.test(name);
-
-  const addToFilter = (oldFilter, addedFilter) =>
-    !oldFilter
-      ? addedFilter
-      : (val, key) => oldFilter(val, key) && addedFilter(val, key);
+  import Loggers from './loggers';
+  import {ApplicationLoggers, InstanceLoggers} from './service';
+  import {VIEW_GROUP} from '../../index';
 
   export default {
-    components: {sbaLoggerControl},
+    components: {Loggers},
     props: {
       instance: {
         type: Instance,
         required: true
+      },
+      application: {
+        type: Application,
+        required: true
       }
     },
-    data: () => ({
-      hasLoaded: false,
-      error: null,
-      loggerConfig: null,
-      filter: '',
-      showClassLoggersOnly: false,
-      showConfiguredLoggersOnly: false,
-      visibleLimit: 25,
-      loading: {},
-      failed: {}
-    }),
+    data: function () {
+      return {
+        scope: this.application.instances.length > 1 ? 'application' : 'instance'
+      };
+    },
     computed: {
-      levels() {
-        return this.loggerConfig.levels;
-      },
-      limitedLoggers() {
-        if (this.visibleLimit > 0) {
-          return this.filteredLoggers.slice(0, this.visibleLimit);
-        } else {
-          return this.filteredLoggers;
-        }
-      },
-      filteredLoggers() {
-        let filterFn = this.getFilterFn();
-        return filterFn ? this.loggerConfig.loggers.filter(filterFn) : this.loggerConfig.loggers;
+      service() {
+        return this.scope === 'instance'
+          ? new InstanceLoggers(this.instance)
+          : new ApplicationLoggers(this.application);
       }
-    },
-    methods: {
-      async configureLogger(logger, level) {
-        const vm = this;
-        const setLoadingHandle = setTimeout(() => vm.$set(vm.loading, logger.name, level), 150);
-        try {
-          await this.instance.configureLogger(logger.name, level);
-          vm.$delete(vm.failed, logger.name, level)
-        } catch (error) {
-          console.warn(`Configuring logger '${logger.name}' failed:`, error);
-          vm.$set(vm.failed, logger.name, level);
-        }
-
-        try {
-          await this.fetchLoggers();
-        } finally {
-          vm.$delete(vm.loading, logger.name);
-          clearTimeout(setLoadingHandle);
-        }
-      },
-      async fetchLoggers() {
-        this.error = null;
-        try {
-          const res = await this.instance.fetchLoggers();
-          this.loggerConfig = res.data;
-        } catch (error) {
-          console.warn('Fetching loggers failed:', error);
-          this.error = error;
-        }
-        this.hasLoaded = true;
-      },
-      onScroll() {
-        if (this.loggerConfig && this.$el.getBoundingClientRect().bottom - 400 <= window.innerHeight && this.visibleLimit < this.filteredLoggers.length) {
-          this.visibleLimit += 25;
-        }
-      },
-      getFilterFn() {
-        let filterFn = null;
-
-        if (this.showClassLoggersOnly) {
-          filterFn = addToFilter(filterFn, logger => isClassName(logger.name));
-        }
-
-        if (this.showConfiguredLoggersOnly) {
-          filterFn = addToFilter(filterFn, logger => !!logger.configuredLevel);
-        }
-
-        if (this.filter) {
-          const normalizedFilter = this.filter.toLowerCase();
-          filterFn = addToFilter(filterFn, logger => logger.name.toLowerCase().includes(normalizedFilter));
-        }
-
-        return filterFn;
-      }
-    },
-    created() {
-      this.fetchLoggers();
-    },
-    mounted() {
-      window.addEventListener('scroll', this.onScroll);
-    },
-    beforeDestroy() {
-      window.removeEventListener('scroll', this.onScroll);
     },
     install({viewRegistry}) {
       viewRegistry.addView({
         name: 'instances/loggers',
         parent: 'instances',
         path: 'loggers',
+        label: 'instances.loggers.label',
         component: this,
-        label: 'Loggers',
-        group: 'Logging',
+        group: VIEW_GROUP.LOGGING,
         order: 300,
         isEnabled: ({instance}) => instance.hasEndpoint('loggers')
       });
     }
   }
 </script>
-
-<style lang="scss">
-</style>

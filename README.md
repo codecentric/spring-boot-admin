@@ -2,7 +2,7 @@ codecentric's Spring Boot Admin
 ===============================
 [![Apache License 2](https://img.shields.io/badge/license-ASF2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 [![Build Status](https://travis-ci.org/codecentric/spring-boot-admin.svg?branch=master)](https://travis-ci.org/codecentric/spring-boot-admin)
-[![Coverage Status](https://coveralls.io/repos/github/codecentric/spring-boot-admin/badge.svg)](https://coveralls.io/github/codecentric/spring-boot-admin)
+[![Coverage Status](https://coveralls.io/repos/github/codecentric/spring-boot-admin/badge.svg?branch=master)](https://coveralls.io/github/codecentric/spring-boot-admin?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.codecentric/spring-boot-admin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.codecentric/spring-boot-admin/)
 [![Gitter](https://badges.gitter.im/codecentric/spring-boot-admin.svg)](https://gitter.im/codecentric/spring-boot-admin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
@@ -10,7 +10,7 @@ codecentric's Spring Boot Admin
 
 This community project provides an admin interface for [Spring Boot <sup>®</sup>](http://projects.spring.io/spring-boot/ "Official Spring-Boot website") applications.
 
-It provides the following features for registered application.
+It provides the following features for registered applications.
 
 * Show health status
 * Show details, like
@@ -38,9 +38,13 @@ It provides the following features for registered application.
 
 ## Getting Started
 
-[A quick guide](http://codecentric.github.io/spring-boot-admin/2.1.3/#getting-started) to get started can be found in our docs.
+[A quick guide](http://codecentric.github.io/spring-boot-admin/2.1.6/#getting-started) to get started can be found in our docs.
 
-There are <a href="https://goo.gl/2tRiUi" target="_blank">introductory talks available on YouTube</a>:
+There are introductory talks available on YouTube:
+
+<a href="https://youtu.be/Ql1Gnz4L_-c" target="_blank"><img src="https://i.ytimg.com/vi/Ql1Gnz4L_-c/maxresdefault.jpg" 
+alt="Cloud Native Spring Boot® Admin by Johannes Edmeier @ Spring I/O 2019" width="240" height="135" border="10" /></a><br>
+**Cloud Native Spring Boot® Admin by Johannes Edmeier @ Spring I/O 2019**
 
 <a href="https://youtu.be/__zkypwjSMs" target="_blank"><img src="https://i.ytimg.com/vi/__zkypwjSMs/maxresdefault.jpg" 
 alt="Monitoring Spring Boot® Applications with Spring Boot Admin @ Spring I/O 2018" width="240" height="135" border="10" /></a><br>
@@ -63,9 +67,9 @@ Having trouble with codecentric's Spring Boot Admin? We’d like to help!
  * Report bugs at http://github.com/codecentric/spring-boot-admin/issues.
 
 ## Reference Guide
-[Version 2.1.3](http://codecentric.github.io/spring-boot-admin/2.1.3/)
+[Version 2.1.6](http://codecentric.github.io/spring-boot-admin/2.1.6/)
 
-[Version 2.0.5](http://codecentric.github.io/spring-boot-admin/2.0.5/)
+[Version 2.0.6](http://codecentric.github.io/spring-boot-admin/2.0.6/)
 
 [Version 1.5.7](http://codecentric.github.io/spring-boot-admin/1.5.7/)
 

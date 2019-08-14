@@ -20,16 +20,18 @@ import de.codecentric.boot.admin.server.ui.extensions.UiExtension;
 import de.codecentric.boot.admin.server.web.AdminController;
 
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.springframework.http.MediaType;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
@@ -39,19 +41,11 @@ public class UiController {
     private final String publicUrl;
     private final List<UiExtension> cssExtensions;
     private final List<UiExtension> jsExtensions;
-    private final Map<String, Object> uiSettings;
+    private final Settings uiSettings;
 
-    public UiController(String publicUrl, String title, String brand, String favicon,
-                        String faviconDanger,
-                        List<UiExtension> uiExtensions,
-                        boolean notificationFilterEnabled) {
+    public UiController(String publicUrl, List<UiExtension> uiExtensions, Settings uiSettings) {
         this.publicUrl = publicUrl;
-        this.uiSettings = new HashMap<>();
-        this.uiSettings.put("title", title);
-        this.uiSettings.put("brand", brand);
-        this.uiSettings.put("favicon", favicon);
-        this.uiSettings.put("faviconDanger", faviconDanger);
-        this.uiSettings.put("notificationFilterEnabled", notificationFilterEnabled);
+        this.uiSettings = uiSettings;
         this.cssExtensions = uiExtensions.stream()
                                          .filter(e -> e.getResourcePath().endsWith(".css"))
                                          .collect(Collectors.toList());
@@ -62,7 +56,7 @@ public class UiController {
 
     @ModelAttribute(value = "baseUrl", binding = false)
     public String getBaseUrl(UriComponentsBuilder uriBuilder) {
-        UriComponents publicComponents = UriComponentsBuilder.fromUriString(publicUrl).build();
+        UriComponents publicComponents = UriComponentsBuilder.fromUriString(this.publicUrl).build();
         if (publicComponents.getScheme() != null) {
             uriBuilder.scheme(publicComponents.getScheme());
         }
@@ -79,18 +73,18 @@ public class UiController {
     }
 
     @ModelAttribute(value = "uiSettings", binding = false)
-    public Map<String, Object> getUiSettings() {
-        return uiSettings;
+    public Settings getUiSettings() {
+        return this.uiSettings;
     }
 
     @ModelAttribute(value = "cssExtensions", binding = false)
     public List<UiExtension> getCssExtensions() {
-        return cssExtensions;
+        return this.cssExtensions;
     }
 
     @ModelAttribute(value = "jsExtensions", binding = false)
     public List<UiExtension> getJsExtensions() {
-        return jsExtensions;
+        return this.jsExtensions;
     }
 
     @ModelAttribute(value = "user", binding = false)
@@ -106,8 +100,57 @@ public class UiController {
         return "index";
     }
 
+    @GetMapping(path = "/sba-settings.js", produces = "application/javascript")
+    public String sbaSettings() {
+        return "sba-settings.js";
+    }
+
     @GetMapping(path = "/login", produces = MediaType.TEXT_HTML_VALUE)
     public String login() {
         return "login";
+    }
+
+    @lombok.Data
+    @lombok.Builder
+    public static class Settings {
+        private final String title;
+        private final String brand;
+        private final String loginIcon;
+        private final String favicon;
+        private final String faviconDanger;
+        private final boolean notificationFilterEnabled;
+        private final boolean rememberMeEnabled;
+        private final List<String> routes;
+        private final List<ExternalView> externalViews;
+    }
+
+    @lombok.Data
+    @JsonInclude(Include.NON_EMPTY)
+    public static class ExternalView {
+        /**
+         * Label to be shown in the navbar.
+         */
+        private final String label;
+        /**
+         * Url for the external view to be linked
+         */
+        private final String url;
+        /**
+         * Order in the navbar.
+         */
+        private final Integer order;
+        /**
+         * Should the page shown as an iframe or open in a new window.
+         */
+        private final boolean iframe;
+
+        public ExternalView(String label, String url, Integer order, boolean iframe) {
+            Assert.hasText(label, "'label' must not be empty");
+            Assert.hasText(url, "'url' must not be empty");
+            this.label = label;
+            this.url = url;
+            this.order = order;
+            this.iframe = iframe;
+        }
     }
 }

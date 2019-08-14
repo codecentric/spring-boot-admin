@@ -1,0 +1,12 @@
+{
+  "instances": {
+    "caches": {
+      "label": "Caches",
+      "cache_manager": "Manager de cache",
+      "fetch_failed": "Echec de la récupération des caches.",
+      "loading": "Chargement des Caches...",
+      "name": "Nom",
+      "no_caches_found": "Aucun caches trouvés."
+    }
+  }
+}

@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2019 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            Fetching Flyway reports failed.
+            <span v-text="$t('instances.flyway.fetch_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>
@@ -32,19 +32,19 @@
                    :header-sticks-below="['#navigation']"
                    class="migration"
         >
-          <table class="table">
+          <table class="table is-fullwidth">
             <thead>
               <tr>
-                <th>Type</th>
-                <th>Checksum</th>
-                <th>Version</th>
-                <th>Description</th>
-                <th>Script</th>
-                <th>State</th>
-                <th>Installed by</th>
-                <th>Installed on</th>
-                <th>Installed rank</th>
-                <th>Execution Time</th>
+                <th v-text="$t('instances.flyway.type')" />
+                <th v-text="$t('instances.flyway.checksum')" />
+                <th v-text="$t('instances.flyway.version')" />
+                <th v-text="$t('instances.flyway.description')" />
+                <th v-text="$t('instances.flyway.script')" />
+                <th v-text="$t('instances.flyway.state')" />
+                <th v-text="$t('instances.flyway.installed_by')" />
+                <th v-text="$t('instances.flyway.installed_on')" />
+                <th v-text="$t('instances.flyway.installed_rank')" />
+                <th v-text="$t('instances.flyway.execution_time')" />
               </tr>
             </thead>
             <tbody>
@@ -52,8 +52,8 @@
                 <td v-text="migration.type" />
                 <td v-text="migration.checksum" />
                 <td v-text="migration.version" />
-                <td v-text="migration.description" />
-                <td v-text="migration.script" />
+                <td class="is-breakable" v-text="migration.description" />
+                <td class="is-breakable" v-text="migration.script" />
                 <td>
                   <span v-text="migration.state" class="tag"
                         :class="stateClass(migration.state)"
@@ -74,6 +74,7 @@
 
 <script>
   import Instance from '@/services/instance';
+  import {VIEW_GROUP} from '../../index';
 
   export default {
     props: {
@@ -132,8 +133,8 @@
         parent: 'instances',
         path: 'flyway',
         component: this,
-        label: 'Flyway',
-        group: 'Data',
+        label: 'instances.flyway.label',
+        group: VIEW_GROUP.DATA,
         order: 900,
         isEnabled: ({instance}) => instance.hasEndpoint('flyway')
       });

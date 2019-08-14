@@ -1,0 +1,10 @@
+{
+  "instances": {
+    "heapdump": {
+      "label": "内存转储",
+      "download": "下载内存转储文件",
+      "warn_dump_expensive": "从CPU和磁盘空间来看，内存转储文件可能很大。",
+      "warn_sensitive_data": "内存转储文件可能包含<strong>敏感数据</strong>。请小心处理。"
+    }
+  }
+}

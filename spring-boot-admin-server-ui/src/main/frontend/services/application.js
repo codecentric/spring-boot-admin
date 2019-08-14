@@ -21,16 +21,41 @@ import uri from '@/utils/uri';
 import sortBy from 'lodash/sortBy';
 import Instance from './instance';
 
+const actuatorMimeTypes = [
+  'application/vnd.spring-boot.actuator.v2+json',
+  'application/vnd.spring-boot.actuator.v1+json',
+  'application/json'
+];
+
+export const hasMatchingContentType = (contentType, compatibleContentTypes) =>
+  Boolean(contentType) && compatibleContentTypes.includes(contentType.replace(/;.*$/, ''));
+
+export const throwOnError = (responses) => responses.forEach(r => {
+  if (r.status >= 400) {
+    const error = new Error(`Request for Instance '${r.instanceId}' failed with status ${r.status}`);
+    error.responses = responses;
+    throw error
+  }
+});
+
+export const convertBody = (responses) => responses.map(res => {
+  if (res.body && hasMatchingContentType(res.contentType, actuatorMimeTypes)) {
+    return {
+      ...res,
+      body: JSON.parse(res.body)
+    }
+  }
+  return res;
+});
+
 class Application {
   constructor({name, instances, ...application}) {
     Object.assign(this, application);
     this.name = name;
     this.axios = axios.create({
-      baseURL: uri`applications/${this.name}/`
+      baseURL: uri`applications/${this.name}/`,
     });
-    this.axios.interceptors.response.use(
-      response => response,
-      redirectOn401()
+    this.axios.interceptors.response.use(response => response, redirectOn401()
     );
     this.instances = sortBy(instances.map(i => new Instance(i), [instance => instance.registration.healthUrl]));
   }
@@ -51,11 +76,14 @@ class Application {
   }
 
   async unregister() {
-    return this.axios.delete('')
+    return this.axios.delete('', {
+      headers: {'Accept': 'application/json'}
+    })
   }
 
   static async list() {
-    return await axios.get('applications', {
+    return axios.get('applications', {
+      headers: {'Accept': 'application/json'},
       transformResponse: Application._transformResponse
     });
   }
@@ -71,11 +99,26 @@ class Application {
         });
 
         eventSource.onerror = err => observer.error(err);
-        return () => {
-          eventSource.close();
-        };
+        return () => eventSource.close();
       })
     );
+  }
+
+  async fetchLoggers() {
+    const responses = convertBody(
+      (await this.axios.get(uri`actuator/loggers`, {headers: {'Accept': actuatorMimeTypes}})).data
+    );
+    throwOnError(responses);
+    return {responses};
+  }
+
+  async configureLogger(name, level) {
+    const responses = (await this.axios.post(
+      uri`actuator/loggers/${name}`,
+      {configuredLevel: level},
+      {headers: {'Content-Type': 'application/json'}}
+    )).data;
+    throwOnError(responses);
   }
 
   static _transformResponse(data) {

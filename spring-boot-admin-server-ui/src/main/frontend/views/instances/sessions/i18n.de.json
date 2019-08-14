@@ -1,0 +1,17 @@
+{
+  "instances": {
+    "sessions": {
+      "label": "Sitzungen",
+      "attributes": "Attribute",
+      "created_at": "Erstellt am",
+      "expired": "Abgelaufen",
+      "expiry": "Verfällt",
+      "fetch_failed": "Das Laden der Sitzungen ist fehlgeschlagen.",
+      "last_accessed_at": "Letzter Zugriff",
+      "loading_sessions": "Sitzungen laden...",
+      "max_inactive_interval": "Max. Inaktivitäts-<br>intervall",
+      "no_sessions_found": "Keine Sitzungen gefunden",
+      "session_id": "Session Id",
+      "unlimited": "Unendlich"
+    }  }
+}

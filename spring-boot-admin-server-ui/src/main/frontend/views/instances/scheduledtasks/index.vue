@@ -21,26 +21,22 @@
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            Fetching scheduled tasks failed.
+            <span v-text="$t('instances.scheduledtasks.fetch_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>
       </div>
       <div v-else-if="!hasData" class="message is-warning">
-        <div class="message-body">
-          No scheduled tasks present.
-        </div>
+        <div class="message-body" v-text="$t('instances.scheduledtasks.no_scheduledtasks')" />
       </div>
 
       <template v-if="hasCronData">
-        <h3 class="title">
-          Cron
-        </h3>
+        <h3 class="title" v-text="$t('instances.scheduledtasks.cron.title')" />
         <table class="table is-fullwidth">
           <thead>
             <tr>
-              <th>Runnable</th>
-              <th>Expression</th>
+              <th v-text="$t('instances.scheduledtasks.cron.runnable')" />
+              <th v-text="$t('instances.scheduledtasks.cron.expression')" />
             </tr>
           </thead>
           <tbody v-for="task in cron" :key="task.runnable.target">
@@ -53,15 +49,13 @@
       </template>
 
       <template v-if="hasFixedDelayData">
-        <h3 class="title">
-          Fixed Delay
-        </h3>
+        <h3 class="title" v-text="$t('instances.scheduledtasks.fixed_delay.title')" />
         <table class="metrics table is-fullwidth">
           <thead>
             <tr>
-              <th>Runnable</th>
-              <th>Initial Delay (ms)</th>
-              <th>Interval (ms)</th>
+              <th v-text="$t('instances.scheduledtasks.fixed_delay.runnable')" />
+              <th v-text="$t('instances.scheduledtasks.fixed_delay.initial_delay_ms')" />
+              <th v-text="$t('instances.scheduledtasks.fixed_delay.interval_ms')" />
             </tr>
           </thead>
           <tbody v-for="task in fixedDelay" :key="task.runnable.target">
@@ -75,15 +69,13 @@
       </template>
 
       <template v-if="hasFixedRateData">
-        <h3 class="title">
-          Fixed Rate
-        </h3>
+        <h3 class="title" v-text="$t('instances.scheduledtasks.fixed_rate.title')" />
         <table class="metrics table is-fullwidth">
           <thead>
             <tr>
-              <th>Runnable</th>
-              <th>Initial Delay (ms)</th>
-              <th>Interval (ms)</th>
+              <th v-text="$t('instances.scheduledtasks.fixed_delay.runnable')" />
+              <th v-text="$t('instances.scheduledtasks.fixed_delay.initial_delay_ms')" />
+              <th v-text="$t('instances.scheduledtasks.fixed_delay.interval_ms')" />
             </tr>
           </thead>
           <tbody v-for="task in fixedRate" :key="task.runnable.target">
@@ -101,6 +93,7 @@
 
 <script>
   import Instance from '@/services/instance';
+  import {VIEW_GROUP} from '../../index';
 
   export default {
     props: {
@@ -154,8 +147,8 @@
         parent: 'instances',
         path: 'scheduledtasks',
         component: this,
-        label: 'Scheduled Tasks',
-        group: 'Insights',
+        label: 'instances.scheduledtasks.label',
+        group: VIEW_GROUP.INSIGHTS,
         order: 950,
         isEnabled: ({instance}) => instance.hasEndpoint('scheduledtasks')
       });

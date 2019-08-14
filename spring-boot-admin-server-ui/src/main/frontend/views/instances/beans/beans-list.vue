@@ -53,7 +53,7 @@
               <tbody>
                 <tr v-if="bean.name !== bean.shortName">
                   <th>
-                    <small>Name</small>
+                    <small v-text="$t('instances.beans.name')" />
                   </th>
                   <td
                     class="is-breakable"
@@ -68,7 +68,7 @@
                     v-if="idx === 0"
                     :rowspan="bean.aliases.length"
                   >
-                    <small>Aliases</small>
+                    <small v-text="$t('instances.beans.aliases')" />
                   </th>
                   <td
                     class="is-breakable"
@@ -77,7 +77,7 @@
                 </tr>
                 <tr v-if="bean.type !== bean.shortType">
                   <th>
-                    <small>Type</small>
+                    <small v-text="$t('instances.beans.type')" />
                   </th>
                   <td
                     class="is-breakable"
@@ -86,7 +86,7 @@
                 </tr>
                 <tr v-if="bean.resource">
                   <th>
-                    <small>Resource</small>
+                    <small v-text="$t('instances.beans.resource')" />
                   </th>
                   <td
                     class="is-breakable"
@@ -101,7 +101,7 @@
                     v-if="idx === 0"
                     :rowspan="bean.dependencies.length"
                   >
-                    <small>Dependencies</small>
+                    <small v-text="$t('instances.beans.dependencies')" />
                   </th>
                   <td
                     class="is-breakable"

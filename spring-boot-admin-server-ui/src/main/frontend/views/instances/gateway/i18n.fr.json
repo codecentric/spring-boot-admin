@@ -1,0 +1,33 @@
+{
+  "instances": {
+    "gateway": {
+      "label": "Gateway",
+      "route":{
+        "add_route": "Ajouter une route",
+        "adding_failed": "Echec de l'ajout d'une route.",
+        "cache_refreshed": "Cache des routes rafraîchi",
+        "cache_refresh": "Rafraîchir le cache des routes",
+        "cache_refresh_failed": "Echec",
+        "deleted": "Supprimé",
+        "delete": "Supprimer",
+        "delete_failed": "Echec",
+        "fetch_failed": "Echec de la récupération des routes.",
+        "filters": "Filtres",
+        "id": "Id",
+        "loading": "Chargement des routes...",
+        "no_definition_provided": "Aucune définition de routes fournies.",
+        "no_routes_found": "Aucune route trouvée.",
+        "order": "Ordre",
+        "predicates": "Prédicats",
+        "uri": "URI"
+      },
+      "filters": {
+        "fetch_failed": "Echec de la récupération des filtres globaux.",
+        "filter_name": "Nom du filtre",
+        "loading": "Chargement des filtres globaux...",
+        "no_filters_found": "Aucun filtre global trouvé.",
+        "order": "Ordre"
+      }
+    }
+  }
+}

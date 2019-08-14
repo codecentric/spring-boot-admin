@@ -19,7 +19,7 @@
     <template v-if="!activeFilter">
       <div class="field">
         <p class="control has-inline-text">
-          Suppress notifications on <code v-text="object.id || object.name" /> for
+          <span v-html="$t('applications.suppress_notifications_on', {name: object.id || object.name})" />&nbsp;
           <span class="select">
             <select v-model="ttl" @click.stop>
               <option v-for="option in ttlOptions"
@@ -35,7 +35,7 @@
           <button class="button is-warning" :class="{'is-loading' : actionState === 'executing'}"
                   @click.stop="addFilter"
           >
-            <font-awesome-icon icon="bell-slash" />&nbsp;Suppress
+            <font-awesome-icon icon="bell-slash" />&nbsp;<span v-text="$t('term.suppress')" />
           </button>
         </div>
       </div>
@@ -43,14 +43,14 @@
     <template v-else>
       <div class="field">
         <p class="control has-inline-text">
-          Notifications on <code v-text="object.id || object.name" /> are suppressed for
-          <strong v-text="activeFilter.expiry ? activeFilter.expiry.locale('en').fromNow(true) : 'ever' " />.
+          <span v-html="$t('applications.notifications_suppressed_for', {name: object.id || object.name})" />&nbsp;
+          <strong v-text="activeFilter.expiry ? activeFilter.expiry.locale(currentLocale).fromNow(true) : $t('term.ever') " />.
         </p>
       </div>
       <div class="field is-grouped is-grouped-right">
         <div class="control">
           <button class="button" :class="{'is-loading' : actionState === 'executing'}" @click.stop="deleteActiveFilter">
-            <font-awesome-icon icon="bell" />&nbsp;Unsuppress
+            <font-awesome-icon icon="bell" />&nbsp;<span v-text="$t('term.unsuppress')" />
           </button>
         </div>
       </div>
@@ -59,6 +59,7 @@
 </template>
 <script>
   import NotificationFilter from '@/services/notification-filter';
+  import i18n from '@/i18n';
 
   export default {
     props: {
@@ -74,20 +75,23 @@
     data: () => ({
       ttl: 5 * 60 * 1000,
       ttlOptions: [
-        {label: '5 minutes', value: 5 * 60 * 1000},
-        {label: '15 minutes', value: 15 * 60 * 1000},
-        {label: '30 minutes', value: 30 * 60 * 1000},
-        {label: '1 hour', value: 60 * 60 * 1000},
-        {label: '3 hours', value: 3 * 60 * 60 * 1000},
-        {label: '8 hours', value: 8 * 60 * 60 * 1000},
-        {label: '24 hours', value: 24 * 60 * 60 * 1000},
-        {label: 'ever', value: -1}
+        {label: i18n.tc('term.minutes', 5, {count: 5}), value: 5 * 60 * 1000},
+        {label: i18n.tc('term.minutes', 15, {count: 15}), value: 15 * 60 * 1000},
+        {label: i18n.tc('term.minutes', 30, {count: 30}), value: 30 * 60 * 1000},
+        {label: i18n.tc('term.hours', 1, {count: 1}), value: 60 * 60 * 1000},
+        {label: i18n.tc('term.hours', 3, {count: 3}), value: 3 * 60 * 60 * 1000},
+        {label: i18n.tc('term.hours', 8, {count: 8}), value: 8 * 60 * 60 * 1000},
+        {label: i18n.tc('term.hours', 24, {count: 24}), value: 24 * 60 * 60 * 1000},
+        {label: i18n.tc('term.ever'), value: -1}
       ],
       actionState: null
     }),
     computed: {
       activeFilter() {
         return this.notificationFilters.find(f => f.affects(this.object));
+      },
+      currentLocale() {
+        return this.$i18n.locale;
       }
     },
     methods: {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,27 +38,13 @@ export {filter} from 'rxjs/internal/operators/filter';
 export {concatAll} from 'rxjs/internal/operators/concatAll';
 export {ignoreElements} from 'rxjs/internal/operators/ignoreElements';
 export {bufferTime} from 'rxjs/internal/operators/bufferTime';
+export {finalize} from 'rxjs/internal/operators/finalize';
 
 export const doOnSubscribe = cb => source =>
   defer(() => {
     cb();
     return source
   });
-
-export const doFirst = cb => source => {
-  let triggered;
-  return defer(() => {
-    triggered = false;
-    return source;
-  }).pipe(
-    tap(v => {
-      if (!triggered) {
-        triggered = true;
-        cb(v);
-      }
-    })
-  );
-};
 
 export const listen = (cb, execDelay = 150) => source => {
   let handle = null;

@@ -23,7 +23,7 @@
             <input
               class="input"
               type="search"
-              placeholder="Principal"
+              :placeholder="$t('instances.auditevents.principal')"
               v-model.trim="filter.principal"
             >
           </p>
@@ -34,7 +34,7 @@
               list="auditevent-type"
               class="input"
               type="search"
-              placeholder="Type"
+              :placeholder="$t('instances.auditevents.type')"
               v-model="filter.type"
             >
             <datalist id="auditevent-type">
@@ -66,7 +66,7 @@
               class="has-text-danger"
               icon="exclamation-triangle"
             />
-            Fetching audit events failed.
+            <span v-text="$t('instances.auditevents.fetch_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>
@@ -75,9 +75,7 @@
         v-if="isOldAuditevents"
         class="message is-warning"
       >
-        <div class="message-body">
-          Audit Log is not supported for Spring Boot 1.x applications.
-        </div>
+        <div class="message-body" v-html="$t('instances.auditevents.audit_log_not_supported_spring_boot_1')" />
       </div>
       <auditevents-list
         :instance="instance"
@@ -95,6 +93,7 @@
   import AuditeventsList from '@/views/instances/auditevents/auditevents-list';
   import uniqBy from 'lodash/uniqBy';
   import moment from 'moment';
+  import {VIEW_GROUP} from '../../index';
 
   class Auditevent {
     constructor({timestamp, ...event}) {
@@ -204,8 +203,8 @@
         parent: 'instances',
         path: 'auditevents',
         component: this,
-        label: 'Audit Log',
-        group: 'Security',
+        label: 'instances.auditevents.label',
+        group: VIEW_GROUP.SECURITY,
         order: 600,
         isEnabled: ({instance}) => instance.hasEndpoint('auditevents')
       });

@@ -1,0 +1,19 @@
+{
+  "instances": {
+    "mappings": {
+      "label": "Mappings",
+      "class": "Class",
+      "consumes": "Consumes",
+      "fetch_failed": "Fetching mappings failed.",
+      "filter_name": "Filter Name",
+      "handler": "Handler",
+      "headers": "Headers",
+      "http-verb": "Method",
+      "mappings_not_supported_spring_boot_1": "Mappings are not supported for Spring Boot 1.x applications.",
+      "parameters": "Parameters",
+      "produces": "Produces",
+      "servlet_name": "Servlet Name",
+      "url_pattern": "Url Pattern"
+    }
+  }
+}

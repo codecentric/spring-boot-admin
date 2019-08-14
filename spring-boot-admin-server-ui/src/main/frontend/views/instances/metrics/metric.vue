@@ -31,21 +31,11 @@
               <option :value="undefined">
                 -
               </option>
-              <option value="integer">
-                Integer
-              </option>
-              <option value="float">
-                Float
-              </option>
-              <option value="duration">
-                Duration
-              </option>
-              <option value="millis">
-                Milliseconds
-              </option>
-              <option value="bytes">
-                Bytes
-              </option>
+              <option value="integer" v-text="$t('term.integer')" />
+              <option value="float" v-text="$t('term.float')" />
+              <option value="duration" v-text="$t('term.duration')" />
+              <option value="millis" v-text="$t('term.milliseconds')" />
+              <option value="bytes" v-text="$t('term.bytes')" />
             </select>
           </div>
         </th>
@@ -79,6 +69,7 @@
   import {concatMap, from, timer} from '@/utils/rxjs';
   import moment from 'moment';
   import prettyBytes from 'pretty-bytes';
+  import i18n from '@/i18n';
 
   const formatDuration = (value, baseUnit) => {
     const duration = moment.duration(toMillis(value, baseUnit));
@@ -148,9 +139,9 @@
           case 'float':
             return measurement.value.toFixed(4);
           case 'duration':
-            return formatDuration(measurement.value);
+            return formatDuration(measurement.value, this.baseUnit);
           case 'millis':
-            return formatMillis(measurement.value);
+            return formatMillis(measurement.value, this.baseUnit);
           case 'bytes':
             return prettyBytes(measurement.value);
           default:
@@ -160,7 +151,7 @@
       getLabel(tags) {
         return Object.entries(tags).filter(([, value]) => typeof value !== 'undefined')
           .map(pair => pair.join(':'))
-          .join('\n') || '(no tags)';
+          .join('\n') || i18n.t('instances.metrics.no_tags');
       },
       async fetchMetric(tags, idx) {
         try {

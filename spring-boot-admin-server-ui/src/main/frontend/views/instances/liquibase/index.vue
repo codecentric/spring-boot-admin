@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2019 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            Fetching Liquibase migrations failed.
+            <span v-text="$t('instances.liquibase.fetch_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>
@@ -35,12 +35,12 @@
             <table class="table is-hoverable is-fullwidth">
               <thead>
                 <tr>
-                  <th>Id</th>
-                  <th>Execution</th>
-                  <th>Description</th>
-                  <th>Tag</th>
-                  <th>Contexts</th>
-                  <th>Labels</th>
+                  <th v-text="$t('instances.liquibase.id')" />
+                  <th v-text="$t('instances.liquibase.execution')" />
+                  <th v-text="$t('instances.liquibase.description')" />
+                  <th v-text="$t('instances.liquibase.tag')" />
+                  <th v-text="$t('instances.liquibase.contexts')" />
+                  <th v-text="$t('instances.liquibase.labels')" />
                 </tr>
               </thead>
               <tbody>
@@ -52,7 +52,7 @@
                     <td>
                       <span v-text="changeSet.execType" class="tag" :class="execClass(execType)" />
                     </td>
-                    <td v-text="changeSet.description" />
+                    <td class="is-breakable" v-text="changeSet.description" />
                     <td v-text="changeSet.tag" />
                     <td v-text="changeSet.contexts.join(', ')" />
                     <td>
@@ -65,23 +65,23 @@
                     <td colspan="6">
                       <table class="table is-fullwidth">
                         <tr>
-                          <th>Changelog</th>
+                          <th v-text="$t('instances.liquibase.changelog')" />
                           <td colspan="3" v-text="changeSet.changeLog" />
-                          <th>Author</th>
+                          <th v-text="$t('instances.liquibase.author')" />
                           <td v-text="changeSet.author" />
                         </tr>
                         <tr>
-                          <th>Checksum</th>
+                          <th v-text="$t('instances.liquibase.checksum')" />
                           <td v-text="changeSet.checksum" />
-                          <th>Comments</th>
+                          <th v-text="$t('instances.liquibase.comments')" />
                           <td colspan="3" v-text="changeSet.comments" />
                         </tr>
                         <tr>
-                          <th>Execution Order</th>
+                          <th v-text="$t('instances.liquibase.execution_order')" />
                           <td v-text="changeSet.orderExecuted" />
-                          <th>ExecutionDate</th>
+                          <th v-text="$t('instances.liquibase.execution_date')" />
                           <td v-text="changeSet.dateExecuted" />
-                          <th>DeploymentId</th>
+                          <th v-text="$t('instances.liquibase.deployment_id')" />
                           <td v-text="changeSet.deploymentId" />
                         </tr>
                       </table>
@@ -99,6 +99,7 @@
 
 <script>
   import Instance from '@/services/instance';
+  import {VIEW_GROUP} from '../../index';
 
   export default {
     props: {
@@ -151,8 +152,8 @@
         parent: 'instances',
         path: 'liquibase',
         component: this,
-        label: 'Liquibase',
-        group: 'Data',
+        label: 'instances.liquibase.label',
+        group: VIEW_GROUP.DATA,
         order: 900,
         isEnabled: ({instance}) => instance.hasEndpoint('liquibase')
       });

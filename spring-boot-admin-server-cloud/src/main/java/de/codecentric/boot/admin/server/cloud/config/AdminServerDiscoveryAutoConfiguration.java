@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.cloud.config;
 import de.codecentric.boot.admin.server.cloud.discovery.DefaultServiceInstanceConverter;
 import de.codecentric.boot.admin.server.cloud.discovery.EurekaServiceInstanceConverter;
 import de.codecentric.boot.admin.server.cloud.discovery.InstanceDiscoveryListener;
+import de.codecentric.boot.admin.server.cloud.discovery.KubernetesServiceInstanceConverter;
 import de.codecentric.boot.admin.server.cloud.discovery.ServiceInstanceConverter;
 import de.codecentric.boot.admin.server.config.AdminServerAutoConfiguration;
 import de.codecentric.boot.admin.server.config.AdminServerMarkerConfiguration;
@@ -32,6 +33,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.cloud.kubernetes.discovery.KubernetesDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.netflix.discovery.EurekaClient;
@@ -65,6 +67,17 @@ public class AdminServerDiscoveryAutoConfiguration {
         @ConfigurationProperties(prefix = "spring.boot.admin.discovery.converter")
         public EurekaServiceInstanceConverter serviceInstanceConverter() {
             return new EurekaServiceInstanceConverter();
+        }
+    }
+
+    @Configuration
+    @ConditionalOnMissingBean({ServiceInstanceConverter.class})
+    @ConditionalOnBean(KubernetesDiscoveryClient.class)
+    public static class KubernetesConverterConfiguration {
+        @Bean
+        @ConfigurationProperties(prefix = "spring.boot.admin.discovery.converter")
+        public KubernetesServiceInstanceConverter serviceInstanceConverter() {
+            return new KubernetesServiceInstanceConverter();
         }
     }
 

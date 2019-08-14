@@ -1,0 +1,18 @@
+{
+  "instances": {
+    "jolokia": {
+      "label": "JMX",
+      "close": "Schließen",
+      "domains": "Domains",
+      "execute": "Execute",
+      "executing": "Führe aus...",
+      "execution_failed": "Ausführung fehlgeschlagen.",
+      "execution_successful": "Ausführung erfolgreich.",
+      "fetch_failed": "Das Laden der JMX-Beans ist fehlgeschlagen.",
+      "mbean": {
+        "fetch_failed": "Das Laden der Attribute ist fehlgeschlagen."
+      },
+      "mbeans": "MBeans"
+    }
+  }
+}

@@ -21,6 +21,7 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
+import de.codecentric.boot.admin.server.eventstore.OptimisticLockingException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -98,6 +99,16 @@ public class SnapshottingInstanceRepositoryTest extends AbstractInstanceReposito
         StepVerifier.create(this.repository.find(InstanceId.of("broken")))
                     .assertNext(i -> assertThat(i.getVersion()).isEqualTo(1L))
                     .verifyComplete();
+    }
+
+    @Test
+    public void should_return_outdated_instance_not_present_in_cache() {
+        this.repository.stop();
+        //given
+        StepVerifier.create(this.repository.save(this.instance)).expectNext(this.instance).verifyComplete();
+        StepVerifier.create(this.repository.save(this.instance)).verifyError(OptimisticLockingException.class);
+        //when
+        StepVerifier.create(this.repository.find(this.instance.getId())).expectNext(this.instance).verifyComplete();
     }
 
     @Test

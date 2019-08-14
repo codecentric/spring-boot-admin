@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2019 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
     <div class="instances__body">
       <div class="instances__sidebar">
         <instance-sidebar
+          v-if="instance"
           :views="views"
           :instance="instance"
           :application="application"
@@ -67,13 +68,20 @@
         name: 'instances',
         path: '/instances/:instanceId',
         component: this,
-        props: true
+        props: true,
+        isEnabled() {
+          return false;
+        }
       });
     }
   }
 </script>
 
 <style lang="scss">
+  @import "~@/assets/css/utilities";
+
+  $sidebar-width-px: 220px;
+
   .instances {
     display: flex;
     flex-grow: 1;
@@ -91,11 +99,19 @@
 
     &__sidebar {
       z-index: 20;
+      position: fixed;
+      top: $navbar-height-px;
+      bottom: 0;
+      left: 0;
+      width: $sidebar-width-px;
     }
+
     &__view {
       flex-grow: 1;
       flex-shrink: 1;
       z-index: 10;
+      max-width: 100%;
+      padding-left: $sidebar-width-px;
     }
   }
 </style>
