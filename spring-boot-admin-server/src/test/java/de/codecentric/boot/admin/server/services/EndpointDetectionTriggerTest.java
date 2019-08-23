@@ -30,6 +30,7 @@ import reactor.test.publisher.TestPublisher;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
@@ -50,7 +51,7 @@ public class EndpointDetectionTriggerTest {
         when(this.detector.detectEndpoints(any(InstanceId.class))).thenReturn(Mono.empty());
         this.trigger = new EndpointDetectionTrigger(this.detector, this.events.flux());
         this.trigger.start();
-        Thread.sleep(50L); //wait for subscription
+        await().until(this.events::wasSubscribed);
     }
 
     @Test

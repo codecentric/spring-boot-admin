@@ -43,6 +43,8 @@ import com.hazelcast.config.MergePolicyConfig;
 import com.hazelcast.config.TcpIpConfig;
 import com.hazelcast.map.merge.PutIfAbsentMapMergePolicy;
 
+import static de.codecentric.boot.admin.server.config.AdminServerHazelcastAutoConfiguration.DEFAULT_NAME_EVENT_STORE_MAP;
+import static de.codecentric.boot.admin.server.config.AdminServerHazelcastAutoConfiguration.DEFAULT_NAME_SENT_NOTIFICATIONS_MAP;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -59,29 +61,24 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
     @Before
     public void setUp() {
         System.setProperty("hazelcast.wait.seconds.before.join", "0");
-        this.instance1 = new SpringApplicationBuilder().sources(TestAdminApplication.class)
-                                                       .web(WebApplicationType.REACTIVE)
-                                                       .run(
-                                                           "--server.port=0",
-                                                           "--management.endpoints.web.base-path=/mgmt",
-                                                           "--endpoints.health.enabled=true",
-                                                           "--info.test=foobar",
-                                                           "--spring.jmx.enabled=false"
-                                                       );
+        this.instance1 = new SpringApplicationBuilder().sources(TestAdminApplication.class).web(WebApplicationType.REACTIVE).run(
+            "--server.port=0",
+            "--management.endpoints.web.base-path=/mgmt",
+            "--endpoints.health.enabled=true",
+            "--info.test=foobar",
+            "--spring.jmx.enabled=false"
+        );
 
-        this.instance2 = new SpringApplicationBuilder().sources(TestAdminApplication.class)
-                                                       .web(WebApplicationType.REACTIVE)
-                                                       .run(
-                                                           "--server.port=0",
-                                                           "--management.endpoints.web.base-path=/mgmt",
-                                                           "--endpoints.health.enabled=true",
-                                                           "--info.test=foobar",
-                                                           "--spring.jmx.enabled=false"
-                                                       );
+        this.instance2 = new SpringApplicationBuilder().sources(TestAdminApplication.class).web(WebApplicationType.REACTIVE).run(
+            "--server.port=0",
+            "--management.endpoints.web.base-path=/mgmt",
+            "--endpoints.health.enabled=true",
+            "--info.test=foobar",
+            "--spring.jmx.enabled=false"
+        );
 
         super.setUp(this.instance1.getEnvironment().getProperty("local.server.port", Integer.class, 0));
-        this.webClient2 = createWebClient(this.instance2.getEnvironment()
-                                                        .getProperty("local.server.port", Integer.class, 0));
+        this.webClient2 = createWebClient(this.instance2.getEnvironment().getProperty("local.server.port", Integer.class, 0));
     }
 
 
@@ -90,29 +87,29 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
     public void lifecycle() {
         super.lifecycle();
 
-        Mono<String> events1 = getWebClient().get()
-                                             .uri("/instances/events")
-                                             .accept(MediaType.APPLICATION_JSON)
-                                             .exchange()
-                                             .expectStatus()
-                                             .isOk()
-                                             .returnResult(String.class)
-                                             .getResponseBody()
-                                             .collect(Collectors.joining());
+        Mono<String> events1 = getWebClient()
+            .get()
+            .uri("/instances/events")
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .returnResult(String.class)
+            .getResponseBody()
+            .collect(Collectors.joining());
 
-        Mono<String> events2 = this.webClient2.get()
-                                              .uri("/instances/events")
-                                              .accept(MediaType.APPLICATION_JSON)
-                                              .exchange()
-                                              .expectStatus()
-                                              .isOk()
-                                              .returnResult(String.class)
-                                              .getResponseBody()
-                                              .collect(Collectors.joining());
+        Mono<String> events2 = this.webClient2
+            .get()
+            .uri("/instances/events")
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .returnResult(String.class)
+            .getResponseBody()
+            .collect(Collectors.joining());
 
-        StepVerifier.create(events1.zipWith(events2))
-                    .assertNext(t -> assertThat(t.getT1()).isEqualTo(t.getT2()))
-                    .verifyComplete();
+        StepVerifier.create(events1.zipWith(events2)).assertNext(t -> assertThat(t.getT1()).isEqualTo(t.getT2())).verifyComplete();
     }
 
     @After
@@ -135,16 +132,21 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
 
         @Bean
         public Config hazelcastConfig() {
-            MapConfig mapConfig = new MapConfig("spring-boot-admin-event-store").setInMemoryFormat(InMemoryFormat.OBJECT)
-                                                                                .setBackupCount(1)
-                                                                                .setEvictionPolicy(EvictionPolicy.NONE)
-                                                                                .setMergePolicyConfig(new MergePolicyConfig(
-                                                                                    PutIfAbsentMapMergePolicy.class.getName(),
-                                                                                    100
-                                                                                ));
+            MapConfig eventStoreMap = new MapConfig(DEFAULT_NAME_EVENT_STORE_MAP)
+                .setInMemoryFormat(InMemoryFormat.OBJECT)
+                .setBackupCount(1)
+                .setEvictionPolicy(EvictionPolicy.NONE)
+                .setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), 100));
+
+            MapConfig sentNotificationsMap = new MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)
+                .setInMemoryFormat(InMemoryFormat.OBJECT)
+                .setBackupCount(1)
+                .setEvictionPolicy(EvictionPolicy.LRU)
+                .setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), 100));
 
             Config config = new Config();
-            config.addMapConfig(mapConfig);
+            config.addMapConfig(eventStoreMap);
+            config.addMapConfig(sentNotificationsMap);
             config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
             TcpIpConfig tcpIpConfig = config.getNetworkConfig().getJoin().getTcpIpConfig();
             tcpIpConfig.setEnabled(true);

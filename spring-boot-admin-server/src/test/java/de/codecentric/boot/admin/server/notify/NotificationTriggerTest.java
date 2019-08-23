@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import reactor.test.publisher.TestPublisher;
 
 import org.junit.Test;
 
+import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
@@ -37,57 +38,59 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class NotificationTriggerTest {
-    private final Instance instance = Instance.create(InstanceId.of("id-1"))
-                                              .register(Registration.create("foo", "http://health-1").build());
+    private final Instance instance = Instance
+        .create(InstanceId.of("id-1"))
+        .register(Registration.create("foo", "http://health-1").build());
+    private final Notifier notifier = mock(Notifier.class);
+    private final TestPublisher<InstanceEvent> events = TestPublisher.create();
+    private final NotificationTrigger trigger = new NotificationTrigger(this.notifier, this.events);
+
+    public NotificationTriggerTest() {
+        when(this.notifier.notify(any())).thenReturn(Mono.empty());
+    }
 
     @Test
     public void should_notify_on_event() throws InterruptedException {
-        //given
-        Notifier notifier = mock(Notifier.class);
-        TestPublisher<InstanceEvent> events = TestPublisher.create();
-        NotificationTrigger trigger = new NotificationTrigger(notifier, events);
-        trigger.start();
-        Thread.sleep(500L); //wait for subscription
+        //given the notifier subscribed to the events
+        this.trigger.start();
+        await().until(this.events::wasSubscribed);
 
         //when registered event is emitted
         InstanceStatusChangedEvent event = new InstanceStatusChangedEvent(this.instance.getId(),
             this.instance.getVersion(),
             StatusInfo.ofDown()
         );
-        events.next(event);
+        this.events.next(event);
+
         //then should notify
-        verify(notifier, times(1)).notify(event);
+        verify(this.notifier, times(1)).notify(event);
 
         //when registered event is emitted but the trigger has been stopped
-        trigger.stop();
-        clearInvocations(notifier);
-        events.next(new InstanceRegisteredEvent(this.instance.getId(), this.instance.getVersion(), this.instance.getRegistration()));
+        this.trigger.stop();
+        clearInvocations(this.notifier);
+        this.events.next(new InstanceRegisteredEvent(this.instance.getId(), this.instance.getVersion(), this.instance.getRegistration()));
         //then should not notify
-        verify(notifier, never()).notify(event);
+        verify(this.notifier, never()).notify(event);
     }
 
     @Test
+
     public void should_resume_on_exceptopn() throws InterruptedException {
         //given
-        Notifier notifier = mock(Notifier.class);
-        TestPublisher<InstanceEvent> events = TestPublisher.create();
-        NotificationTrigger trigger = new NotificationTrigger(notifier, events);
-        trigger.start();
-        Thread.sleep(500L); //wait for subscription
+        this.trigger.start();
+        await().until(this.events::wasSubscribed);
 
-
-        when(notifier.notify(any())).thenReturn(Mono.error(new IllegalStateException("Test"))).thenReturn(Mono.empty());
+        when(this.notifier.notify(any())).thenReturn(Mono.error(new IllegalStateException("Test"))).thenReturn(Mono.empty());
 
         //when exception for the first event is thrown and a subsequent event is fired
         InstanceStatusChangedEvent event = new InstanceStatusChangedEvent(this.instance.getId(),
             this.instance.getVersion(),
             StatusInfo.ofDown()
         );
-        events.next(event);
-        events.next(event);
+        this.events.next(event);
+        this.events.next(event);
 
         //the notifier was after the exception
-        verify(notifier, times(2)).notify(event);
+        verify(this.notifier, times(2)).notify(event);
     }
-
 }

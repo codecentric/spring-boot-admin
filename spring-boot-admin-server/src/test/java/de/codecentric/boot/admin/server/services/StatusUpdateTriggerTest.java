@@ -31,6 +31,7 @@ import java.time.Duration;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.clearInvocations;
@@ -53,7 +54,7 @@ public class StatusUpdateTriggerTest {
 
         this.trigger = new StatusUpdateTrigger(this.updater, this.events.flux());
         this.trigger.start();
-        Thread.sleep(50L); //wait for subscription
+        await().until(this.events::wasSubscribed);
     }
 
     @Test
@@ -63,7 +64,7 @@ public class StatusUpdateTriggerTest {
         this.trigger.setInterval(Duration.ofMillis(10));
         this.trigger.setLifetime(Duration.ofMillis(10));
         this.trigger.start();
-        Thread.sleep(50L); //wait for subscription
+        await().until(this.events::wasSubscribed);
 
         this.events.next(new InstanceRegisteredEvent(this.instance.getId(), 0L, this.instance.getRegistration()));
 
