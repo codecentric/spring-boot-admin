@@ -21,7 +21,11 @@ import de.codecentric.boot.admin.server.domain.entities.SnapshottingInstanceRepo
 import de.codecentric.boot.admin.server.eventstore.ConcurrentMapEventStore;
 import de.codecentric.boot.admin.server.eventstore.HazelcastEventStore;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
+import de.codecentric.boot.admin.server.notify.HazelcastNotificationTrigger;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
+import de.codecentric.boot.admin.server.notify.NotificationTrigger;
+import de.codecentric.boot.admin.server.notify.Notifier;
+import reactor.core.publisher.Mono;
 
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -37,16 +41,15 @@ import com.hazelcast.config.Config;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AdminServerAutoConfigurationTest {
-    private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
-        AutoConfigurations.of(
-            RestTemplateAutoConfiguration.class,
-            ClientHttpConnectorAutoConfiguration.class,
-            WebClientAutoConfiguration.class,
-            HazelcastAutoConfiguration.class,
-            WebMvcAutoConfiguration.class,
-            AdminServerHazelcastAutoConfiguration.class,
-            AdminServerAutoConfiguration.class
-        )).withUserConfiguration(AdminServerMarkerConfiguration.class);
+    private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(
+        RestTemplateAutoConfiguration.class,
+        ClientHttpConnectorAutoConfiguration.class,
+        WebClientAutoConfiguration.class,
+        HazelcastAutoConfiguration.class,
+        WebMvcAutoConfiguration.class,
+        AdminServerHazelcastAutoConfiguration.class,
+        AdminServerAutoConfiguration.class
+    )).withUserConfiguration(AdminServerMarkerConfiguration.class);
 
     @Test
     public void simpleConfig() {
@@ -59,15 +62,21 @@ public class AdminServerAutoConfigurationTest {
 
     @Test
     public void hazelcastConfig() {
-        this.contextRunner.withUserConfiguration(TestHazelcastConfig.class)
-                          .run(context -> assertThat(context).getBean(InstanceEventStore.class)
-                                                        .isInstanceOf(HazelcastEventStore.class));
+        this.contextRunner.withUserConfiguration(TestHazelcastConfig.class).run(context -> {
+            assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(HazelcastEventStore.class);
+            assertThat(context).getBean(NotificationTrigger.class).isInstanceOf(HazelcastNotificationTrigger.class);
+        });
     }
 
     static class TestHazelcastConfig {
         @Bean
         public Config config() {
             return new Config();
+        }
+
+        @Bean
+        public Notifier notifier() {
+            return (e) -> Mono.empty();
         }
     }
 }

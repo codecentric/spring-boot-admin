@@ -30,4 +30,8 @@ include::{samples-dir}/spring-boot-admin-sample-hazelcast/src/main/java/de/codec
 | spring.boot.admin.hazelcast.event-store
 | Name of the Hazelcast-map to store the events
 | `"spring-boot-admin-event-store"`
+
+| spring.boot.admin.hazelcast.sent-notifications
+| Name of the Hazelcast-map used to deduplicate the notifications.
+| `"spring-boot-admin-sent-notifications"`
 |===

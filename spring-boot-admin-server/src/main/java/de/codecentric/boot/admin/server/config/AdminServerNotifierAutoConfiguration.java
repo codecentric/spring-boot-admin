@@ -65,7 +65,7 @@ public class AdminServerNotifierAutoConfiguration {
     @ConditionalOnBean(Notifier.class)
     public static class NotifierTriggerConfiguration {
         @Bean(initMethod = "start", destroyMethod = "stop")
-        @ConditionalOnMissingBean
+        @ConditionalOnMissingBean(NotificationTrigger.class)
         public NotificationTrigger notificationTrigger(Notifier notifier, Publisher<InstanceEvent> events) {
             return new NotificationTrigger(notifier, events);
         }
@@ -104,7 +104,7 @@ public class AdminServerNotifierAutoConfiguration {
 
         @Bean
         public NotificationFilterController notificationFilterController() {
-            return new NotificationFilterController(filteringNotifier);
+            return new NotificationFilterController(this.filteringNotifier);
         }
 
     }
