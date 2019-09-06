@@ -525,7 +525,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.1.7-SNAPSHOT,</span>
-<span id="revdate">14.08.2019</span>
+<span id="revdate">06.09.2019</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -1459,13 +1459,11 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Bean</span>
 <span class="directive">public</span> Config hazelcastConfig() {
-    MapConfig mapConfig = <span class="keyword">new</span> MapConfig(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-boot-admin-event-store</span><span class="delimiter">&quot;</span></span>).setInMemoryFormat(InMemoryFormat.OBJECT)
-                                                                        .setBackupCount(<span class="integer">1</span>)
-                                                                        .setEvictionPolicy(EvictionPolicy.NONE)
-                                                                        .setMergePolicyConfig(<span class="keyword">new</span> MergePolicyConfig(
-                                                                            PutIfAbsentMapMergePolicy.class.getName(),
-                                                                            <span class="integer">100</span>
-                                                                        ));
+    MapConfig mapConfig = <span class="keyword">new</span> MapConfig(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-boot-admin-event-store</span><span class="delimiter">&quot;</span></span>)
+        .setInMemoryFormat(InMemoryFormat.OBJECT)
+        .setBackupCount(<span class="integer">1</span>)
+        .setEvictionPolicy(EvictionPolicy.NONE)
+        .setMergePolicyConfig(<span class="keyword">new</span> MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), <span class="integer">100</span>));
     <span class="keyword">return</span> <span class="keyword">new</span> Config().setProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">hazelcast.jmx</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>).addMapConfig(mapConfig);
 }</code></pre>
 </div>
@@ -2211,9 +2209,10 @@ By default <code>spring-boot-admin-server-ui</code> provides a login page and a 
         .httpBasic().and() <i class="conum" data-value="4"></i><b>(4)</b>
         .csrf()
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())  <i class="conum" data-value="5"></i><b>(5)</b>
-            .ignoringAntMatchers(
-                adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/instances</span><span class="delimiter">&quot;</span></span>,   <i class="conum" data-value="6"></i><b>(6)</b>
-                adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/actuator/**</span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="7"></i><b>(7)</b>
+            .ignoringRequestMatchers(
+                <span class="keyword">new</span> AntPathRequestMatcher(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/instances</span><span class="delimiter">&quot;</span></span>, HttpMethod.POST.toString()), <i class="conum" data-value="6"></i><b>(6)</b>
+                <span class="keyword">new</span> AntPathRequestMatcher(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/instances/*</span><span class="delimiter">&quot;</span></span>, HttpMethod.DELETE.toString()), <i class="conum" data-value="6"></i><b>(6)</b>
+                <span class="keyword">new</span> AntPathRequestMatcher(adminContextPath + <span class="string"><span class="delimiter">&quot;</span><span class="content">/actuator/**</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="7"></i><b>(7)</b>
             );
         <span class="comment">// @formatter:on</span>
     }
@@ -2244,7 +2243,7 @@ By default <code>spring-boot-admin-server-ui</code> provides a login page and a 
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
-<td>Disables CRSF-Protection the endpoint the Spring Boot Admin Client uses to register.</td>
+<td>Disables CRSF-Protection the endpoint the Spring Boot Admin Client uses to (de-)register.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="7"></i><b>7</b></td>
@@ -2420,7 +2419,7 @@ When using this approach the SBA Server decides whether or not the user can acce
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Bean</span>
 <span class="directive">public</span> HttpHeadersProvider customHttpHeadersProvider() {
-    <span class="keyword">return</span>  instance -&gt; {
+    <span class="keyword">return</span> instance -&gt; {
         HttpHeaders httpHeaders = <span class="keyword">new</span> HttpHeaders();
         httpHeaders.add(<span class="string"><span class="delimiter">&quot;</span><span class="content">X-CUSTOM</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">My Custom Value</span><span class="delimiter">&quot;</span></span>);
         <span class="keyword">return</span> httpHeaders;
