@@ -530,7 +530,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.2.0-SNAPSHOT,</span>
-<span id="revdate">31.08.2019</span>
+<span id="revdate">06.09.2019</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -2265,9 +2265,10 @@ By default <code>spring-boot-admin-server-ui</code> provides a login page and a 
         .httpBasic().and() <i class="conum" data-value="4"></i><b>(4)</b>
         .csrf()
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) <i class="conum" data-value="5"></i><b>(5)</b>
-            .ignoringAntMatchers(
-                <span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/instances</span><span class="delimiter">&quot;</span></span>), <i class="conum" data-value="6"></i><b>(6)</b>
-                <span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/actuator/**</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="7"></i><b>(7)</b>
+            .ignoringRequestMatchers(
+                <span class="keyword">new</span> AntPathRequestMatcher(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/instances</span><span class="delimiter">&quot;</span></span>), HttpMethod.POST.toString()),  <i class="conum" data-value="6"></i><b>(6)</b>
+                <span class="keyword">new</span> AntPathRequestMatcher(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/instances/*</span><span class="delimiter">&quot;</span></span>), HttpMethod.DELETE.toString()),  <i class="conum" data-value="6"></i><b>(6)</b>
+                <span class="keyword">new</span> AntPathRequestMatcher(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/actuator/**</span><span class="delimiter">&quot;</span></span>))  <i class="conum" data-value="7"></i><b>(7)</b>
             )
         .and()
         .rememberMe().key(<span class="predefined-type">UUID</span>.randomUUID().toString()).tokenValiditySeconds(<span class="integer">1209600</span>);
@@ -2277,10 +2278,7 @@ By default <code>spring-boot-admin-server-ui</code> provides a login page and a 
     <span class="comment">// Required to provide UserDetailsService for &quot;remember functionality&quot;</span>
     <span class="annotation">@Override</span>
     <span class="directive">protected</span> <span class="type">void</span> configure(AuthenticationManagerBuilder auth) <span class="directive">throws</span> <span class="exception">Exception</span> {
-        auth.inMemoryAuthentication()
-                .withUser(<span class="string"><span class="delimiter">&quot;</span><span class="content">user</span><span class="delimiter">&quot;</span></span>)
-                .password(<span class="string"><span class="delimiter">&quot;</span><span class="content">{noop}password</span><span class="delimiter">&quot;</span></span>)
-                .roles(<span class="string"><span class="delimiter">&quot;</span><span class="content">USER</span><span class="delimiter">&quot;</span></span>);
+        auth.inMemoryAuthentication().withUser(<span class="string"><span class="delimiter">&quot;</span><span class="content">user</span><span class="delimiter">&quot;</span></span>).password(<span class="string"><span class="delimiter">&quot;</span><span class="content">{noop}password</span><span class="delimiter">&quot;</span></span>).roles(<span class="string"><span class="delimiter">&quot;</span><span class="content">USER</span><span class="delimiter">&quot;</span></span>);
     }
 }</code></pre>
 </div>
@@ -2309,7 +2307,7 @@ By default <code>spring-boot-admin-server-ui</code> provides a login page and a 
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
-<td>Disables CSRF-Protection for the endpoint the Spring Boot Admin Client uses to register.</td>
+<td>Disables CSRF-Protection for the endpoint the Spring Boot Admin Client uses to (de-)register.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="7"></i><b>7</b></td>
