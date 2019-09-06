@@ -2,6 +2,7 @@
   "instances": {
     "threaddump": {
       "label": "Thread-Dump",
+      "download": "Thread-Dump herunterladen",
       "fetch_failed": "Das Laden des Thread-Dumps ist fehlgeschlagen.",
       "thread_details_blocked_count": "Blocked-Count",
       "thread_details_blocked_time": "Blocked-Time",

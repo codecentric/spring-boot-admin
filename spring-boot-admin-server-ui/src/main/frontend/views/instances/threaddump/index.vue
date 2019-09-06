@@ -26,6 +26,13 @@
           <p v-text="error.message" />
         </div>
       </div>
+      <div class="control">
+        <button class="button is-primary"
+                @click="downloadThreaddump">
+          <font-awesome-icon icon="download" />&nbsp;
+          <span v-text="$t('instances.threaddump.download')" />
+        </button>
+      </div>
       <threads-list v-if="threads" :thread-timelines="threads" />
     </template>
   </section>
@@ -106,6 +113,9 @@
       async fetchThreaddump() {
         const response = await this.instance.fetchThreaddump();
         return response.data.threads;
+      },
+      async downloadThreaddump() {
+        await this.instance.downloadThreaddump();
       },
       createSubscription() {
         const vm = this;

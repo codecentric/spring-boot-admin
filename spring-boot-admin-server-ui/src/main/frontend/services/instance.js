@@ -179,6 +179,27 @@ class Instance {
     return this.axios.get(uri`actuator/threaddump`);
   }
 
+  async downloadThreaddump() {
+    return axios.get(uri`actuator/threaddump`, {
+      headers: {'Accept': 'text/plain'}
+    }).then( function (response) {
+      let text = response.data;
+      let element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+      element.setAttribute('download','threaddump');
+      element.style.display = 'none';
+
+      document.body.appendChild(element);
+
+      element.click();
+
+      document.body.removeChild(element);
+    })
+      .catch(function (error) {
+        console.warn('Downloading threaddump failed:', error);
+      });
+  }
+
   async fetchAuditevents({after, type, principal}) {
     return this.axios.get(uri`actuator/auditevents`, {
       params: {
