@@ -179,24 +179,16 @@ class Instance {
     return this.axios.get(uri`actuator/threaddump`);
   }
 
-  async downloadThreaddump() {
+  async downloadThreaddump(instanceName) {
     return axios.get(uri`actuator/threaddump`, {
       headers: {'Accept': 'text/plain'}
     }).then( function (response) {
-      let text = response.data;
-      let element = document.createElement('a');
-      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-      element.setAttribute('download','threaddump');
-      element.style.display = 'none';
-
-      document.body.appendChild(element);
-
-      element.click();
-
-      document.body.removeChild(element);
+      const fileSaver = require('file-saver');
+      const blob = new Blob([response.data], {type: 'text/plain;charset=utf-8'});
+      fileSaver.saveAs(blob, instanceName + '-threaddump.txt');
     })
       .catch(function (error) {
-        console.warn('Downloading threaddump failed:', error);
+        console.warn('Downloading threaddump failed: ', error);
       });
   }
 

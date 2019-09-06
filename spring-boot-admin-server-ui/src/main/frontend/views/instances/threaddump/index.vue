@@ -115,7 +115,7 @@
         return response.data.threads;
       },
       async downloadThreaddump() {
-        await this.instance.downloadThreaddump();
+        await this.instance.downloadThreaddump(this.instance.registration.name);
       },
       createSubscription() {
         const vm = this;
