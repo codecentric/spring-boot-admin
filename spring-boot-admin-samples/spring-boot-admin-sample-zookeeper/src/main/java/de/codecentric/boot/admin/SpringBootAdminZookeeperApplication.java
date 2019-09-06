@@ -24,10 +24,12 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableAutoConfiguration
@@ -51,7 +53,11 @@ public class SpringBootAdminZookeeperApplication {
                 .and()
                 .csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringAntMatchers(this.adminServer.path("/instances"), this.adminServer.path("/actuator/**"));
+                .ignoringRequestMatchers(
+                    new AntPathRequestMatcher(this.adminServer.path("/instances"), HttpMethod.POST.toString()),
+                    new AntPathRequestMatcher(this.adminServer.path("/instances/*"), HttpMethod.DELETE.toString()),
+                    new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))
+                );
         }
     }
 
@@ -81,7 +87,11 @@ public class SpringBootAdminZookeeperApplication {
             .httpBasic().and()
             .csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringAntMatchers(this.adminServer.path("/instances"), this.adminServer.path("/actuator/**"));
+                .ignoringRequestMatchers(
+                    new AntPathRequestMatcher(this.adminServer.path("/instances"), HttpMethod.POST.toString()),
+                    new AntPathRequestMatcher(this.adminServer.path("/instances/*"), HttpMethod.DELETE.toString()),
+                    new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))
+                );
             // @formatter:on
         }
     }
