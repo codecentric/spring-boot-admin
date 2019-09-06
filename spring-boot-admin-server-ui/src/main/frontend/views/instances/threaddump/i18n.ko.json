@@ -2,7 +2,9 @@
   "instances": {
     "threaddump": {
       "label": "스레드 덤프",
+      "download": "스레드 덤프 다운로드",
       "fetch_failed": "스레드 덤프 정보를 가져오는데 실패했습니다.",
+      "download_failed": "스레드 덤프 다운로드 실패.",
       "thread_details_blocked_count": "블롯된 횟수",
       "thread_details_blocked_time": "블록된 시간",
       "thread_details_lock_name": "잠김 이름",

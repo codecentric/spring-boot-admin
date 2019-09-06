@@ -19,6 +19,7 @@ import waitForPolyfill from '@/utils/eventsource-polyfill';
 import logtail from '@/utils/logtail';
 import {concat, from, ignoreElements, Observable} from '@/utils/rxjs';
 import uri from '@/utils/uri';
+import saveAs from 'file-saver';
 
 const actuatorMimeTypes = [
   'application/vnd.spring-boot.actuator.v2+json',
@@ -177,6 +178,12 @@ class Instance {
 
   async fetchThreaddump() {
     return this.axios.get(uri`actuator/threaddump`);
+  }
+
+  async downloadThreaddump() {
+    const res = await axios.get(uri`actuator/threaddump`, {headers: {'Accept': 'text/plain'}});
+    const blob = new Blob([res.data], {type: 'text/plain;charset=utf-8'});
+    saveAs(blob, this.registration.name + '-threaddump.txt');
   }
 
   async fetchAuditevents({after, type, principal}) {
