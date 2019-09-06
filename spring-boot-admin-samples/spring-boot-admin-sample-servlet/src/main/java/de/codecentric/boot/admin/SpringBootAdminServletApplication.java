@@ -44,6 +44,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableAutoConfiguration
@@ -66,13 +67,18 @@ public class SpringBootAdminServletApplication {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http.authorizeRequests()
+            http
+                .authorizeRequests()
                 .anyRequest()
                 .permitAll()
                 .and()
                 .csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringAntMatchers(adminContextPath + "/instances", adminContextPath + "/actuator/**");
+                .ignoringRequestMatchers(
+                    new AntPathRequestMatcher(adminContextPath + "/instances", HttpMethod.POST.toString()), //<6>
+                    new AntPathRequestMatcher(adminContextPath + "/instances/*", HttpMethod.DELETE.toString()), //<6>
+                    new AntPathRequestMatcher(adminContextPath + "/actuator/**") //<7>
+                );
         }
     }
 
@@ -103,9 +109,10 @@ public class SpringBootAdminServletApplication {
             .httpBasic().and() // <4>
             .csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())  // <5>
-                .ignoringAntMatchers(
-                    adminContextPath + "/instances",   // <6>
-                    adminContextPath + "/actuator/**"  // <7>
+                .ignoringRequestMatchers(
+                    new AntPathRequestMatcher(adminContextPath + "/instances", HttpMethod.POST.toString()), //<6>
+                    new AntPathRequestMatcher(adminContextPath + "/instances/*", HttpMethod.DELETE.toString()), //<6>
+                    new AntPathRequestMatcher(adminContextPath + "/actuator/**") //<7>
                 );
             // @formatter:on
         }
@@ -137,7 +144,7 @@ public class SpringBootAdminServletApplication {
     // tag::customization-http-headers-providers[]
     @Bean
     public HttpHeadersProvider customHttpHeadersProvider() {
-        return  instance -> {
+        return instance -> {
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add("X-CUSTOM", "My Custom Value");
             return httpHeaders;

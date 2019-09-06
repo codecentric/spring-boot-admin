@@ -16,7 +16,7 @@ include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecen
 <3> Configures login and logout.
 <4> Enables HTTP-Basic support. This is needed for the Spring Boot Admin Client to register.
 <5> Enables CSRF-Protection using Cookies
-<6> Disables CRSF-Protection the endpoint the Spring Boot Admin Client uses to register.
+<6> Disables CRSF-Protection the endpoint the Spring Boot Admin Client uses to (de-)register.
 <7> Disables CRSF-Protection for the actuator endpoints.
 
 In case you use the Spring Boot Admin Client, it needs the credentials for accessing the server:

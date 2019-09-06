@@ -24,10 +24,12 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableAutoConfiguration
@@ -49,13 +51,18 @@ public class SpringBootAdminEurekaApplication {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http.authorizeRequests()
+            http
+                .authorizeRequests()
                 .anyRequest()
                 .permitAll()
                 .and()
                 .csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringAntMatchers(adminContextPath + "/instances", adminContextPath + "/actuator/**");
+                .ignoringRequestMatchers(
+                    new AntPathRequestMatcher(adminContextPath + "/instances", HttpMethod.POST.toString()),
+                    new AntPathRequestMatcher(adminContextPath + "/instances/*", HttpMethod.DELETE.toString()),
+                    new AntPathRequestMatcher(adminContextPath + "/actuator/**")
+                );
         }
     }
 
@@ -85,7 +92,11 @@ public class SpringBootAdminEurekaApplication {
             .httpBasic().and()
             .csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringAntMatchers(adminContextPath + "/instances", adminContextPath + "/actuator/**");
+                .ignoringRequestMatchers(
+                    new AntPathRequestMatcher(adminContextPath + "/instances", HttpMethod.POST.toString()),
+                    new AntPathRequestMatcher(adminContextPath + "/instances/*", HttpMethod.DELETE.toString()),
+                    new AntPathRequestMatcher(adminContextPath + "/actuator/**")
+                );
             // @formatter:on
         }
     }

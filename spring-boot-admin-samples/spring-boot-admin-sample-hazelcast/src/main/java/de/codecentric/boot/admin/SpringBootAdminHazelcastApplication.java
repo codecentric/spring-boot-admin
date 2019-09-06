@@ -24,10 +24,12 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.EvictionPolicy;
 import com.hazelcast.config.InMemoryFormat;
@@ -42,13 +44,11 @@ public class SpringBootAdminHazelcastApplication {
     // tag::application-hazelcast[]
     @Bean
     public Config hazelcastConfig() {
-        MapConfig mapConfig = new MapConfig("spring-boot-admin-event-store").setInMemoryFormat(InMemoryFormat.OBJECT)
-                                                                            .setBackupCount(1)
-                                                                            .setEvictionPolicy(EvictionPolicy.NONE)
-                                                                            .setMergePolicyConfig(new MergePolicyConfig(
-                                                                                PutIfAbsentMapMergePolicy.class.getName(),
-                                                                                100
-                                                                            ));
+        MapConfig mapConfig = new MapConfig("spring-boot-admin-event-store")
+            .setInMemoryFormat(InMemoryFormat.OBJECT)
+            .setBackupCount(1)
+            .setEvictionPolicy(EvictionPolicy.NONE)
+            .setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), 100));
         return new Config().setProperty("hazelcast.jmx", "true").addMapConfig(mapConfig);
     }
     // end::application-hazelcast[]
@@ -64,13 +64,18 @@ public class SpringBootAdminHazelcastApplication {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http.authorizeRequests()
+            http
+                .authorizeRequests()
                 .anyRequest()
                 .permitAll()
                 .and()
                 .csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringAntMatchers(adminContextPath + "/instances", adminContextPath + "/actuator/**");
+                .ignoringRequestMatchers(
+                    new AntPathRequestMatcher(adminContextPath + "/instances", HttpMethod.POST.toString()),
+                    new AntPathRequestMatcher(adminContextPath + "/instances/*", HttpMethod.DELETE.toString()),
+                    new AntPathRequestMatcher(adminContextPath + "/actuator/**")
+                );
         }
     }
 
@@ -100,7 +105,11 @@ public class SpringBootAdminHazelcastApplication {
             .httpBasic().and()
             .csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringAntMatchers(adminContextPath + "/instances", adminContextPath + "/actuator/**");
+                .ignoringRequestMatchers(
+                    new AntPathRequestMatcher(adminContextPath + "/instances", HttpMethod.POST.toString()),
+                    new AntPathRequestMatcher(adminContextPath + "/instances/*", HttpMethod.DELETE.toString()),
+                    new AntPathRequestMatcher(adminContextPath + "/actuator/**")
+                );
             // @formatter:on
         }
     }
