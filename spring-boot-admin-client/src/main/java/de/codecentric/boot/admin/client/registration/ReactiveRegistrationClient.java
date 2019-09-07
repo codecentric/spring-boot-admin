@@ -17,8 +17,10 @@
 package de.codecentric.boot.admin.client.registration;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.Map;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -35,25 +37,25 @@ public class ReactiveRegistrationClient implements RegistrationClient {
 
     @Override
     public String register(String adminUrl, Application application) {
-        Map<String, Object> response = this.webclient.post()
-                                                     .uri(adminUrl)
-                                                     .accept(MediaType.APPLICATION_JSON)
-                                                     .contentType(MediaType.APPLICATION_JSON)
-                                                     .syncBody(application)
-                                                     .retrieve()
-                                                     .bodyToMono(RESPONSE_TYPE)
-                                                     .timeout(this.timeout)
-                                                     .block();
+        Map<String, Object> response = this.webclient
+            .post()
+            .uri(adminUrl)
+            .headers(this::setRequestHeaders)
+            .body(application)
+            .retrieve()
+            .bodyToMono(RESPONSE_TYPE)
+            .timeout(this.timeout)
+            .block();
         return response.get("id").toString();
     }
 
     @Override
     public void deregister(String adminUrl, String id) {
-        this.webclient.delete()
-                      .uri(adminUrl + '/' + id)
-                      .retrieve()
-                      .bodyToMono(Void.class)
-                      .timeout(this.timeout)
-                      .block();
+        this.webclient.delete().uri(adminUrl + '/' + id).retrieve().bodyToMono(Void.class).timeout(this.timeout).block();
+    }
+
+    protected void setRequestHeaders(HttpHeaders headers) {
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
     }
 }
