@@ -19,6 +19,7 @@ import waitForPolyfill from '@/utils/eventsource-polyfill';
 import logtail from '@/utils/logtail';
 import {concat, from, ignoreElements, Observable} from '@/utils/rxjs';
 import uri from '@/utils/uri';
+import saveAs from 'file-saver';
 
 const actuatorMimeTypes = [
   'application/vnd.spring-boot.actuator.v2+json',
@@ -179,17 +180,15 @@ class Instance {
     return this.axios.get(uri`actuator/threaddump`);
   }
 
-  async downloadThreaddump(instanceName) {
-    return axios.get(uri`actuator/threaddump`, {
-      headers: {'Accept': 'text/plain'}
-    }).then( function (response) {
-      const fileSaver = require('file-saver');
-      const blob = new Blob([response.data], {type: 'text/plain;charset=utf-8'});
-      fileSaver.saveAs(blob, instanceName + '-threaddump.txt');
-    })
-      .catch(function (error) {
-        console.warn('Downloading threaddump failed: ', error);
-      });
+  async downloadThreaddump() {
+    try {
+      const vm = this;
+      const res = await axios.get(uri`actuator/threaddump`, {headers: {'Accept': 'text/plain'}});
+      const blob = new Blob([res.data], {type: 'text/plain;charset=utf-8'});
+      saveAs(blob, vm.registration.name + '-threaddump.txt');
+    } catch(error) {
+      console.warn('Downloading threaddump failed: ', error);
+    }
   }
 
   async fetchAuditevents({after, type, principal}) {
