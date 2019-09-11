@@ -154,7 +154,7 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 
         this.client.post()
                    .uri("/instances/{instanceId}/actuator/post", this.instanceId)
-                   .syncBody("PAYLOAD")
+                   .bodyValue("PAYLOAD")
                    .exchange()
                    .expectStatus()
                    .isEqualTo(HttpStatus.OK);
@@ -208,7 +208,7 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 
         this.client.post()
                    .uri("applications/test/actuator/post")
-                   .syncBody("PAYLOAD")
+                   .bodyValue("PAYLOAD")
                    .exchange()
                    .expectStatus()
                    .isEqualTo(HttpStatus.OK);
@@ -302,7 +302,7 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
         EntityExchangeResult<Map<String, Object>> result = this.client.post()
                                                                 .uri("/instances")
                                                                 .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
-                                                                .syncBody(registration)
+                                                                .bodyValue(registration)
                                                                 .exchange()
                                                                 .expectStatus().isCreated()
                                                                 .expectBody(RESPONSE_TYPE)

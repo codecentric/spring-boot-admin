@@ -49,7 +49,7 @@ import static de.codecentric.boot.admin.server.web.client.InstanceExchangeFilter
 import static de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunctions.timeout;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class InfoUpdaterTest {
     @Rule

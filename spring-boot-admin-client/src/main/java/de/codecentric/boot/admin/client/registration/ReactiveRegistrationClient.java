@@ -41,7 +41,7 @@ public class ReactiveRegistrationClient implements RegistrationClient {
             .post()
             .uri(adminUrl)
             .headers(this::setRequestHeaders)
-            .body(application)
+            .bodyValue(application)
             .retrieve()
             .bodyToMono(RESPONSE_TYPE)
             .timeout(this.timeout)

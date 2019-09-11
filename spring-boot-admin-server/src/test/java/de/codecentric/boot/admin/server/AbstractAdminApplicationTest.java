@@ -86,7 +86,7 @@ public abstract class AbstractAdminApplicationTest {
         //@formatter:off
         return this.webClient.post().uri("/instances")
                              .contentType(MediaType.APPLICATION_JSON)
-                             .syncBody(createRegistration())
+                             .bodyValue(createRegistration())
                              .exchange()
                              .expectStatus().isCreated()
                              .expectHeader().valueMatches("location", "^http://localhost:" + this.port + "/instances/[a-f0-9]+$")
