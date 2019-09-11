@@ -181,14 +181,10 @@ class Instance {
   }
 
   async downloadThreaddump() {
-    try {
-      const vm = this;
-      const res = await axios.get(uri`actuator/threaddump`, {headers: {'Accept': 'text/plain'}});
-      const blob = new Blob([res.data], {type: 'text/plain;charset=utf-8'});
-      saveAs(blob, vm.registration.name + '-threaddump.txt');
-    } catch(error) {
-      console.warn('Downloading threaddump failed: ', error);
-    }
+    const vm = this;
+    const res = await axios.get(uri`actuator/threaddump`, {headers: {'Accept': 'text/plain'}});
+    const blob = new Blob([res.data], {type: 'text/plain;charset=utf-8'});
+    saveAs(blob, vm.registration.name + '-threaddump.txt');
   }
 
   async fetchAuditevents({after, type, principal}) {

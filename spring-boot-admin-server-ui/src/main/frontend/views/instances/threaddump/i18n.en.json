@@ -4,6 +4,7 @@
       "label": "Thread Dump",
       "download": "Download Thread Dump",
       "fetch_failed": "Fetching threaddump failed.",
+      "download_failed": "Downloading threaddump failed.",
       "thread_details_blocked_count": "Blocked count",
       "thread_details_blocked_time": "Blocked time",
       "thread_details_lock_name": "Lock name",

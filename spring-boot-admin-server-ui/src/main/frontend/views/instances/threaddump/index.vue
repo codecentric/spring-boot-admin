@@ -17,16 +17,25 @@
 <template>
   <section class="section" :class="{ 'is-loading' : !hasLoaded }">
     <template v-if="hasLoaded">
-      <div v-if="error" class="message is-danger">
+      <div v-if="errorFetch" class="message is-danger">
         <div class="message-body">
           <strong>
             <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
             <span v-text="$t('instances.threaddump.fetch_failed')" />
           </strong>
-          <p v-text="error.message" />
+          <p v-text="errorFetch.message" />
         </div>
       </div>
-      <div class="control">
+      <div v-if="errorDownload" class="message is-danger">
+        <div class="message-body">
+          <strong>
+            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
+            <span v-text="$t('instances.threaddump.download_failed')" />
+          </strong>
+          <p v-text="errorDownload.message" />
+        </div>
+      </div>
+      <div v-if="threads" class="control">
         <button class="button is-primary"
                 @click="downloadThreaddump">
           <font-awesome-icon icon="download" />&nbsp;
@@ -58,7 +67,8 @@
     components: {threadsList},
     data: () => ({
       hasLoaded: false,
-      error: null,
+      errorFetch: null,
+      errorDownload: null,
       threads: null
     }),
     computed: {},
@@ -115,11 +125,18 @@
         return response.data.threads;
       },
       async downloadThreaddump() {
-        await this.instance.downloadThreaddump();
+        const vm = this;
+        vm.errorDownload = null;
+        try {
+          await this.instance.downloadThreaddump();
+        } catch(error) {
+          console.warn('Downloading threaddump failed.', error);
+          vm.errorDownload = error;
+        }
       },
       createSubscription() {
         const vm = this;
-        vm.error = null;
+        vm.errorFetch = null;
         return timer(0, 1000)
           .pipe(concatMap(vm.fetchThreaddump))
           .subscribe({
@@ -130,7 +147,7 @@
             error: error => {
               vm.hasLoaded = true;
               console.warn('Fetching threaddump failed:', error);
-              vm.error = error;
+              vm.errorFetch = error;
             }
           });
       }
