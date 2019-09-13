@@ -530,7 +530,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.2.0-SNAPSHOT,</span>
-<span id="revdate">11.09.2019</span>
+<span id="revdate">13.09.2019</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -664,6 +664,56 @@ The UI is just a Vue.js application on top of the Spring Boot Actuator endpoints
 </div>
 </div>
 </li>
+</ol>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>If you want to use a snapshot version of Spring Boot Admin Server you most likely need to include the spring and sonatype snapshot repositories:</p>
+</div>
+<div class="listingblock">
+<div class="title">pom.xml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;repositories&gt;</span>
+    <span class="tag">&lt;repository&gt;</span>
+        <span class="tag">&lt;id&gt;</span>spring-milestone<span class="tag">&lt;/id&gt;</span>
+        <span class="tag">&lt;snapshots&gt;</span>
+            <span class="tag">&lt;enabled&gt;</span>false<span class="tag">&lt;/enabled&gt;</span>
+        <span class="tag">&lt;/snapshots&gt;</span>
+        <span class="tag">&lt;url&gt;</span>http://repo.spring.io/milestone<span class="tag">&lt;/url&gt;</span>
+    <span class="tag">&lt;/repository&gt;</span>
+    <span class="tag">&lt;repository&gt;</span>
+        <span class="tag">&lt;id&gt;</span>spring-snapshot<span class="tag">&lt;/id&gt;</span>
+        <span class="tag">&lt;snapshots&gt;</span>
+            <span class="tag">&lt;enabled&gt;</span>true<span class="tag">&lt;/enabled&gt;</span>
+        <span class="tag">&lt;/snapshots&gt;</span>
+        <span class="tag">&lt;url&gt;</span>http://repo.spring.io/snapshot<span class="tag">&lt;/url&gt;</span>
+    <span class="tag">&lt;/repository&gt;</span>
+    <span class="tag">&lt;repository&gt;</span>
+        <span class="tag">&lt;id&gt;</span>sonatype-nexus-snapshots<span class="tag">&lt;/id&gt;</span>
+        <span class="tag">&lt;name&gt;</span>Sonatype Nexus Snapshots<span class="tag">&lt;/name&gt;</span>
+        <span class="tag">&lt;url&gt;</span>https://oss.sonatype.org/content/repositories/snapshots/<span class="tag">&lt;/url&gt;</span>
+        <span class="tag">&lt;snapshots&gt;</span>
+            <span class="tag">&lt;enabled&gt;</span>true<span class="tag">&lt;/enabled&gt;</span>
+        <span class="tag">&lt;/snapshots&gt;</span>
+        <span class="tag">&lt;releases&gt;</span>
+            <span class="tag">&lt;enabled&gt;</span>false<span class="tag">&lt;/enabled&gt;</span>
+        <span class="tag">&lt;/releases&gt;</span>
+    <span class="tag">&lt;/repository&gt;</span>
+<span class="tag">&lt;/repositories&gt;</span></code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
 <li>
 <p>Pull in the Spring Boot Admin Server configuration via adding <code>@EnableAdminServer</code> to your configuration:</p>
 <div class="listingblock">
