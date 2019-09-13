@@ -21,6 +21,29 @@ First, you need to setup your server. To do this just setup a simple boot projec
     <artifactId>spring-boot-starter-web</artifactId>
 </dependency>
 ----
+If your Spring Boot Admin Server uses a Spring Boot milestone or snapshot version you need to include
+one or both of the following repositories to be able to resolve the Spring artifact:
++
+[source,xml]
+.pom.xml
+----
+<repositories>
+    <repository>
+        <id>spring-milestone</id>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+        <url>http://repo.spring.io/milestone</url>
+    </repository>
+    <repository>
+        <id>spring-snapshot</id>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+        <url>http://repo.spring.io/snapshot</url>
+    </repository>
+</repositories>
+----
 
 . Pull in the Spring Boot Admin Server configuration via adding `@EnableAdminServer` to your configuration:
 +
