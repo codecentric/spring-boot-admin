@@ -76,6 +76,7 @@
                                 <spring-cloud-version>${spring-cloud.version}</spring-cloud-version>
                                 <samples-dir>${basedir}/../spring-boot-admin-samples/</samples-dir>
                                 <main-dir>${basedir}/../</main-dir>
+                                <scm-tag>${env.TRAVIS_TAG}</scm-tag>
                                 <github-src>https://github.com/codecentric/spring-boot-admin/tree/master</github-src>
                             </attributes>
                         </configuration>

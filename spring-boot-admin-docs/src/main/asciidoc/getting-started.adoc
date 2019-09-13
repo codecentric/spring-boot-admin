@@ -21,9 +21,12 @@ First, you need to setup your server. To do this just setup a simple boot projec
     <artifactId>spring-boot-starter-web</artifactId>
 </dependency>
 ----
-If your Spring Boot Admin Server uses a Spring Boot milestone or snapshot version you need to include
-one or both of the following repositories to be able to resolve the Spring artifact:
-+
+
+ifeval::["{scm-tag}" == ""]
+[TIP]
+====
+If you want to use a snapshot version of Spring Boot Admin Server you most likely need to include the spring and sonatype snapshot repositories:
+
 [source,xml]
 .pom.xml
 ----
@@ -42,8 +45,21 @@ one or both of the following repositories to be able to resolve the Spring artif
         </snapshots>
         <url>http://repo.spring.io/snapshot</url>
     </repository>
+    <repository>
+        <id>sonatype-nexus-snapshots</id>
+        <name>Sonatype Nexus Snapshots</name>
+        <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+        <releases>
+            <enabled>false</enabled>
+        </releases>
+    </repository>
 </repositories>
 ----
+====
+endif::[]
 
 . Pull in the Spring Boot Admin Server configuration via adding `@EnableAdminServer` to your configuration:
 +
