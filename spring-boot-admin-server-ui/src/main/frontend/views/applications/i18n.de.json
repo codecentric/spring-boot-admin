@@ -11,7 +11,7 @@
     "server_connection_failed": "Verbindung zum Server fehlgeschlagen.",
     "suppress_notifications_on": "Benachrichtungen für <code>{name}</code> für",
     "status": "Status",
-    "label": "Anwendunen",
+    "label": "Anwendungen",
     "up": "OK"
   }
 }
