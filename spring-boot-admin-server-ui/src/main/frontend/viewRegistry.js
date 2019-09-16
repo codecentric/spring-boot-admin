@@ -70,7 +70,7 @@ export default class ViewRegistry {
         const children = this._toRoutes(views, v => v.parent === p.name);
         return ({
           path: p.path,
-          name: children.length === 0 ? p.name : undefined,
+          name: p.name,
           component: p.component,
           props: p.props,
           meta: {view: p},
