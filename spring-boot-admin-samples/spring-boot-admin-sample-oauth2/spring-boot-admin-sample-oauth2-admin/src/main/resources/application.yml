@@ -1,0 +1,21 @@
+server:
+  port: 8080
+
+logging:
+  level:
+    org.springframework.web.client.RestTemplate: TRACE
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          my-client:
+            client-id: reader
+            client-secret: secret
+            provider: my-provider
+            client-authentication-method: basic
+            authorization-grant-type: password
+        provider:
+          my-provider:
+            token-uri: http://localhost:8081/oauth/token

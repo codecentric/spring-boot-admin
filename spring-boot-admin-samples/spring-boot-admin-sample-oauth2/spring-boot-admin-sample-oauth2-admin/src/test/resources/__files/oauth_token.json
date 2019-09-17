@@ -1,0 +1,7 @@
+{
+  "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6WyJtZXNzYWdlOndyaXRlIl0sImV4cCI6MTU2ODc1MzYyNSwianRpIjoiMmE5ZWUyMjMtYmEwMi00N2EwLWExMzUtMzk0MDcyNjMzMzVkIiwiY2xpZW50X2lkIjoid3JpdGVyIn0.BcghzN75YeXYBxLgkjHlH49kLErqZs2sL8CnT3p-S8fSwIObnmq0MioVdURj2-Q7nnV-gPlZsIScYOa2C5oG8UCqU9hJFqcjXoZ4FbMXrL0RgU5Kahok8nSkWCwx9ZKtjiPDFkZ6LXE-Rf0v3JbaaaYGfqjaFNmo8Rj-nVGerp0yi1ALwlJmTEJaaT2c6VqufOpecHj6xng3I99bSYsREp7FKQY-BW1gnkLQT1u8ooN8EYmXcpSnruUTFTwpmdwcNG9MMGOn2Zr3P_1eb-qI3LLPfh5rVcJric-yz8dG5mQVBPDMGjXGnw6vC5baKByK-RfiUcUEwZOthwqIJLo1Yw",
+  "token_type": "bearer",
+  "expires_in": 35999,
+  "scope": "message:write",
+  "jti": "2a9ee223-ba02-47a0-a135-39407263335d"
+}

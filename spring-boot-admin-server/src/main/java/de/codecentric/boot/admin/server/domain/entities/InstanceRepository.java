@@ -61,7 +61,7 @@ public interface InstanceRepository {
      *
      * @param id                Instance to update
      * @param remappingFunction function to apply
-     * @return the saved istance
+     * @return the saved instance
      */
     Mono<Instance> compute(InstanceId id, BiFunction<InstanceId, Instance, Mono<Instance>> remappingFunction);
 
@@ -71,7 +71,7 @@ public interface InstanceRepository {
      *
      * @param id                Instance to update
      * @param remappingFunction function to apply
-     * @return the saved istance
+     * @return the saved instance
      */
     Mono<Instance> computeIfPresent(InstanceId id, BiFunction<InstanceId, Instance, Mono<Instance>> remappingFunction);
 }

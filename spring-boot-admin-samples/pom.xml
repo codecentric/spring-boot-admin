@@ -34,6 +34,7 @@
         <module>spring-boot-admin-sample-war</module>
         <module>spring-boot-admin-sample-hazelcast</module>
         <module>spring-boot-admin-sample-custom-ui</module>
+        <module>spring-boot-admin-sample-oauth2</module>
     </modules>
     <dependencyManagement>
         <dependencies>

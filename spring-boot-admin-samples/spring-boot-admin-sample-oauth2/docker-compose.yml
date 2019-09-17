@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  authorization-server:
+    build:
+      context: ./spring-boot-admin-sample-oauth2-authorization
+    container_name: sba-oauth2-auth
+    ports:
+      - 8081:8081
+
+  admin-server:
+    build:
+      context: ./spring-boot-admin-sample-oauth2-admin
+    container_name: sba-oauth2-admin
+    environment:
+      spring.security.oauth2.client.provider.my-provider.token-uri: http://authorization-server:8081/oauth/token
+    depends_on:
+      - authorization-server
+    command: ["./wait-for.sh authorization-server:8081 --timeout=120 -- java -jar app.jar"]
+    ports:
+      - 8080:8080
+
+  resource-server:
+    build:
+      context: ./spring-boot-admin-sample-oauth2-resource
+    container_name: sba-oauth2-resource
+    environment:
+      spring.boot.admin.client.url: http://admin-server:8080
+      spring.security.oauth2.resourceserver.jwt.jwk-set-uri: http://authorization-server:8081/.well-known/jwks.json
+    depends_on:
+      - authorization-server
+      - admin-server
+    command: ["./wait-for.sh admin-server:8080 --timeout=120 -- java -jar app.jar"]
+    ports:
+      - 8082:8082

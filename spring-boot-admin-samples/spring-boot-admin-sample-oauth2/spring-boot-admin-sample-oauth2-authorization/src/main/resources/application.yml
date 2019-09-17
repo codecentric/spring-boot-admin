@@ -1,0 +1,6 @@
+server:
+  port: 8081
+
+logging:
+  level:
+    org.springframework.security.web.authentication.www.BasicAuthenticationFilter: DEBUG
