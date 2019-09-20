@@ -20,6 +20,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>spring-boot-admin-sample-oauth2-authorization</artifactId>
+    <packaging>pom</packaging>
     <name>Spring Boot Admin Sample OAuth2 - Authorization Server</name>
     <description>Spring Boot Admin Sample OAuth2 - Authorization Server</description>
     <parent>
@@ -28,44 +29,4 @@
         <version>${revision}</version>
         <relativePath>..</relativePath>
     </parent>
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security.oauth.boot</groupId>
-            <artifactId>spring-security-oauth2-autoconfigure</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.nimbusds</groupId>
-            <artifactId>nimbus-jose-jwt</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-    <build>
-        <finalName>${project.artifactId}</finalName>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <mainClass>
-                        de.codecentric.boot.admin.sample.oauth2.SpringBootAdminOAuth2AuthorizationServerApplication
-                    </mainClass>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

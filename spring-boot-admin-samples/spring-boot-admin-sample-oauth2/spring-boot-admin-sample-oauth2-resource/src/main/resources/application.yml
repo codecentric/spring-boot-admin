@@ -1,6 +1,11 @@
 server:
   port: 8082
 
+cloudfoundry:
+  uaa:
+    host: localhost
+    port: 8081
+
 spring:
   application:
     name: resource-service
@@ -14,7 +19,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8081/.well-known/jwks.json
+          jwk-set-uri: http://${cloudfoundry.uaa.host}:${cloudfoundry.uaa.port}/uaa/token_keys
 
 management:
   endpoints:

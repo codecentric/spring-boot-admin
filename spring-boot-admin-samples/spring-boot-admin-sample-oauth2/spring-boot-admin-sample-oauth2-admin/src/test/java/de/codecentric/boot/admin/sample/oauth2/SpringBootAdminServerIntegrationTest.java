@@ -22,10 +22,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.configureFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
 @SpringBootTest
@@ -38,10 +35,10 @@ class SpringBootAdminServerIntegrationTest {
         mockAuthorizationServer.start();
         configureFor(mockAuthorizationServer.port());
 
-        stubFor(post("/oauth/token").willReturn(
+        stubFor(post("/uaa/oauth/token").willReturn(
                 aResponse()
                         .withHeader("Content-Type", "application/json")
-                        .withBodyFile("oauth_token.json")));
+                        .withBodyFile("access_token_response.json")));
     }
 
     @AfterAll

@@ -13,7 +13,8 @@ services:
       context: ./spring-boot-admin-sample-oauth2-admin
     container_name: sba-oauth2-admin
     environment:
-      spring.security.oauth2.client.provider.my-provider.token-uri: http://authorization-server:8081/oauth/token
+      cloudfoundry.uaa.host: authorization-server
+      cloudfoundry.uaa.port: 8081
     depends_on:
       - authorization-server
     command: ["./wait-for.sh authorization-server:8081 --timeout=120 -- java -jar app.jar"]
@@ -25,8 +26,9 @@ services:
       context: ./spring-boot-admin-sample-oauth2-resource
     container_name: sba-oauth2-resource
     environment:
+      cloudfoundry.uaa.host: authorization-server
+      cloudfoundry.uaa.port: 8081
       spring.boot.admin.client.url: http://admin-server:8080
-      spring.security.oauth2.resourceserver.jwt.jwk-set-uri: http://authorization-server:8081/.well-known/jwks.json
     depends_on:
       - authorization-server
       - admin-server
