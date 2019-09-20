@@ -1,10 +1,6 @@
 server:
   port: 8080
 
-logging:
-  level:
-    org.springframework.web.client.RestTemplate: TRACE
-
 spring:
   security:
     user:
