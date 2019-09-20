@@ -7,6 +7,9 @@ logging:
 
 spring:
   security:
+    user:
+      name: sbadmin
+      password: pass
     oauth2:
       client:
         registration:

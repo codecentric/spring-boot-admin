@@ -16,18 +16,19 @@
 
 package de.codecentric.boot.admin.sample.oauth2.config;
 
+import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
-import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.client.*;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 import static org.springframework.security.oauth2.client.OAuth2AuthorizationContext.PASSWORD_ATTRIBUTE_NAME;
 import static org.springframework.security.oauth2.client.OAuth2AuthorizationContext.USERNAME_ATTRIBUTE_NAME;
@@ -36,6 +37,15 @@ import static org.springframework.security.oauth2.client.OAuth2AuthorizationCont
 @EnableWebSecurity
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+    private final Environment environment;
+    private final AdminServerProperties adminServerProperties;
+
+    public WebSecurityConfiguration(Environment environment,
+                                    AdminServerProperties adminServerProperties) {
+        this.environment = environment;
+        this.adminServerProperties = adminServerProperties;
+    }
+
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         // @formatter:off
@@ -43,7 +53,18 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .csrf()
                     .disable()
                 .authorizeRequests()
-                    .anyRequest().permitAll();
+                    .antMatchers(adminServerProperties.path("/assets/**")).permitAll()
+                    .antMatchers(adminServerProperties.path("/login")).permitAll()
+                .antMatchers(adminServerProperties.path("/sw.js")).permitAll()
+                    .anyRequest().authenticated()
+                    .and()
+                .formLogin()
+                    .loginPage(adminServerProperties.path("/login"))
+                    .and()
+                .logout()
+                    .logoutUrl(adminServerProperties.path("/logout"))
+                    .and()
+                .httpBasic();
         // @formatter:on
     }
 
@@ -75,6 +96,16 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         manager.setContextAttributesMapper(new PasswordGrantTypeContextAttributesMapper());
 
         return manager;
+    }
+
+    @Bean
+    @Override
+    public UserDetailsService userDetailsService() {
+        return new InMemoryUserDetailsManager(User
+                        .withUsername(environment.getProperty("spring.security.user.name"))
+                        .password("{noop}" + environment.getProperty("spring.security.user.password"))
+                        .roles("USER")
+                        .build());
     }
 
 }

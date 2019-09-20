@@ -8,8 +8,16 @@ spring:
     admin:
       client:
         url: http://localhost:8080
+        username: sbadmin
+        password: pass
   security:
     oauth2:
       resourceserver:
         jwt:
           jwk-set-uri: http://localhost:8081/.well-known/jwks.json
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

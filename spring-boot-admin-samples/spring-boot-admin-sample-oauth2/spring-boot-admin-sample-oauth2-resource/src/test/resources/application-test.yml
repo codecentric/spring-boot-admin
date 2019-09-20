@@ -1,4 +1,0 @@
-spring:
-  autoconfigure:
-    exclude:
-      - de.codecentric.boot.admin.server.config.AdminServerAutoConfiguration
