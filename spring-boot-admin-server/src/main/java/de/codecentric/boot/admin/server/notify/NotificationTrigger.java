@@ -20,8 +20,6 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.services.AbstractEventHandler;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Scheduler;
-import reactor.core.scheduler.Schedulers;
 
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
@@ -38,8 +36,7 @@ public class NotificationTrigger extends AbstractEventHandler<InstanceEvent> {
 
     @Override
     protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
-        Scheduler scheduler = Schedulers.newSingle("notifications");
-        return publisher.subscribeOn(scheduler).flatMap(this::sendNotifications).doFinally(s -> scheduler.dispose());
+        return publisher.flatMap(this::sendNotifications);
     }
 
     protected Mono<Void> sendNotifications(InstanceEvent event) {

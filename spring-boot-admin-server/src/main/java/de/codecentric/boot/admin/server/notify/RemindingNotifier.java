@@ -53,6 +53,8 @@ public class RemindingNotifier extends AbstractEventNotifier {
     private String[] reminderStatuses = {"DOWN", "OFFLINE"};
     @Nullable
     private Disposable subscription;
+    @Nullable
+    private Scheduler reminderScheduler;
 
     public RemindingNotifier(Notifier delegate, InstanceRepository repository) {
         super(repository);
@@ -72,8 +74,8 @@ public class RemindingNotifier extends AbstractEventNotifier {
     }
 
     public void start() {
-        Scheduler scheduler = Schedulers.newSingle("reminders");
-        this.subscription = Flux.interval(this.checkReminderInverval, scheduler)
+        this.reminderScheduler = Schedulers.newSingle("reminders");
+        this.subscription = Flux.interval(this.checkReminderInverval, this.reminderScheduler)
                                 .log(log.getName(), Level.FINEST)
                                 .doOnSubscribe(s -> log.debug("Started reminders"))
                                 .flatMap(i -> this.sendReminders())
@@ -82,7 +84,6 @@ public class RemindingNotifier extends AbstractEventNotifier {
                                                 .doOnRetry(ctx -> log.warn("Unexpected error when sending reminders",
                                                     ctx.exception()
                                                 )))
-                                .doFinally(s -> scheduler.dispose())
                                 .subscribe();
     }
 
@@ -90,6 +91,11 @@ public class RemindingNotifier extends AbstractEventNotifier {
         if (this.subscription != null && !this.subscription.isDisposed()) {
             log.debug("stopped reminders");
             this.subscription.dispose();
+            this.subscription = null;
+        }
+        if (this.reminderScheduler != null) {
+            this.reminderScheduler.dispose();
+            this.reminderScheduler = null;
         }
     }
 

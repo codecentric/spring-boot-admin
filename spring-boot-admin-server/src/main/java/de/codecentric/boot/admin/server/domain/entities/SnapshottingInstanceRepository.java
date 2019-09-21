@@ -78,6 +78,7 @@ public class SnapshottingInstanceRepository extends EventsourcingInstanceReposit
     public void stop() {
         if (this.subscription != null) {
             this.subscription.dispose();
+            this.subscription = null;
         }
     }
 

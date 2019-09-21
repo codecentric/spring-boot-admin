@@ -23,8 +23,6 @@ import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Scheduler;
-import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
 import org.reactivestreams.Publisher;
@@ -44,13 +42,10 @@ public class InfoUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 
     @Override
     protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
-        Scheduler scheduler = Schedulers.newSingle("info-updater");
-        return publisher.subscribeOn(scheduler)
-                        .filter(event -> event instanceof InstanceEndpointsDetectedEvent ||
+        return publisher.filter(event -> event instanceof InstanceEndpointsDetectedEvent ||
                                          event instanceof InstanceStatusChangedEvent ||
                                          event instanceof InstanceRegistrationUpdatedEvent)
-                        .flatMap(event -> this.updateInfo(event.getInstance()))
-                        .doFinally(s -> scheduler.dispose());
+                        .flatMap(event -> this.updateInfo(event.getInstance()));
     }
 
     protected Mono<Void> updateInfo(InstanceId instanceId) {

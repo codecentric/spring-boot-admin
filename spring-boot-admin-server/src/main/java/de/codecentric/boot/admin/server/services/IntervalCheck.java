@@ -49,6 +49,8 @@ public class IntervalCheck {
     private Duration minRetention;
     @Nullable
     private Disposable subscription;
+    @Nullable
+    private Scheduler scheduler;
 
     public IntervalCheck(String name, Function<InstanceId, Mono<Void>> checkFn) {
         this(name, checkFn, Duration.ofSeconds(10), Duration.ofSeconds(10));
@@ -65,11 +67,11 @@ public class IntervalCheck {
     }
 
     public void start() {
-        Scheduler scheduler = Schedulers.newSingle(this.name + "-check");
+        this.scheduler = Schedulers.newSingle(this.name + "-check");
         this.subscription = Flux.interval(this.interval)
                                 .doOnSubscribe(s -> log.debug("Scheduled {}-check every {}", this.name, this.interval))
                                 .log(log.getName(), Level.FINEST)
-                                .subscribeOn(scheduler)
+                                .subscribeOn(this.scheduler)
                                 .concatMap(i -> this.checkAllInstances())
                                 .retryWhen(Retry.any()
                                                 .retryMax(Long.MAX_VALUE)
@@ -77,7 +79,6 @@ public class IntervalCheck {
                                                     this.name,
                                                     ctx.exception()
                                                 )))
-                                .doFinally(s -> scheduler.dispose())
                                 .subscribe();
     }
 
@@ -98,6 +99,11 @@ public class IntervalCheck {
     public void stop() {
         if (this.subscription != null) {
             this.subscription.dispose();
+            this.subscription = null;
+        }
+        if (this.scheduler != null) {
+            this.scheduler.dispose();
+            this.scheduler = null;
         }
     }
 

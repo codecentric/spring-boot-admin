@@ -22,8 +22,6 @@ import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdate
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Scheduler;
-import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
 import org.reactivestreams.Publisher;
@@ -43,12 +41,9 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 
     @Override
     protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
-        Scheduler scheduler = Schedulers.newSingle("status-updater");
-        return publisher.subscribeOn(scheduler)
-                        .filter(event -> event instanceof InstanceRegisteredEvent ||
+        return publisher.filter(event -> event instanceof InstanceRegisteredEvent ||
                                          event instanceof InstanceRegistrationUpdatedEvent)
-                        .flatMap(event -> updateStatus(event.getInstance()))
-                        .doFinally(s -> scheduler.dispose());
+                        .flatMap(event -> updateStatus(event.getInstance()));
     }
 
     protected Mono<Void> updateStatus(InstanceId instanceId) {
