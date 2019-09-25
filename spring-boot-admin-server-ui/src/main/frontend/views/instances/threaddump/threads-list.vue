@@ -26,9 +26,7 @@
     </thead>
     <tbody>
       <template v-for="thread in threadTimelines">
-        <tr class="is-selectable" :key="thread.threadId"
-            @click="showDetails[thread.threadId] ? $delete(showDetails, thread.threadId) : $set(showDetails, thread.threadId, true)"
-        >
+        <tr class="is-selectable" :key="thread.threadId">
           <td class="threads__thread-name">
             <thread-tag :thread-state="thread.threadState" />
             <span v-text="thread.threadName" />
@@ -50,44 +48,44 @@
                 <td v-text="$t('instances.threaddump.thread_name')" />
                 <td v-text="thread.threadName" />
               </tr>
+              <template v-if="getThreadDetails(thread) !== null">
               <tr>
                 <td v-text="$t('instances.threaddump.thread_state')" />
-                <td v-text="thread.threadState" />
+                <td v-text="getThreadDetails(thread).threadState" />
               </tr>
-              <template v-if="thread.details !== null">
                 <tr>
                   <td v-text="$t('instances.threaddump.thread_details_blocked_count')" />
-                  <td v-text="thread.details.blockedCount" />
+                  <td v-text="getThreadDetails(thread).blockedCount" />
                 </tr>
                 <tr>
                   <td v-text="$t('instances.threaddump.thread_details_blocked_time')" />
-                  <td v-text="thread.details.blockedTime" />
+                  <td v-text="getThreadDetails(thread).blockedTime" />
                 </tr>
                 <tr>
                   <td v-text="$t('instances.threaddump.thread_details_waited_count')" />
-                  <td v-text="thread.details.waitedCount" />
+                  <td v-text="getThreadDetails(thread).waitedCount" />
                 </tr>
                 <tr>
                   <td v-text="$t('instances.threaddump.thread_details_waited_time')" />
-                  <td v-text="thread.details.waitedTime" />
+                  <td v-text="getThreadDetails(thread).waitedTime" />
                 </tr>
                 <tr>
                   <td v-text="$t('instances.threaddump.thread_details_lock_name')" />
-                  <td v-text="thread.details.lockName" />
+                  <td v-text="getThreadDetails(thread).lockName" />
                 </tr>
                 <tr>
                   <td v-text="$t('instances.threaddump.thread_details_lock_owner_id')" />
-                  <td v-text="thread.details.lockOwnerId" />
+                  <td v-text="getThreadDetails(thread).lockOwnerId" />
                 </tr>
                 <tr>
                   <td v-text="$t('instances.threaddump.thread_details_lock_owner_name')" />
-                  <td v-text="thread.details.lockOwnerName" />
+                  <td v-text="getThreadDetails(thread).lockOwnerName" />
                 </tr>
-                <tr v-if="thread.details.stackTrace.length > 0">
+                <tr v-if="getThreadDetails(thread).stackTrace.length > 0">
                   <td colspan="2">
                     <span v-text="$t('term.stacktrace')" />
                     <pre class="threads__thread-stacktrace"><template
-                      v-for="(frame, idx) in thread.details.stackTrace"
+                      v-for="(frame, idx) in getThreadDetails(thread).stackTrace"
                     ><span
                       :key="`frame-${thread.threadId}-${idx}`"
                       v-text="`${frame.className}.${frame.methodName}(${frame.fileName}:${frame.lineNumber})`"
@@ -133,6 +131,9 @@
       }
     },
     methods: {
+      getThreadDetails(thread) {
+        return thread.timeline.find(entry => entry.start === this.showDetails[thread.threadId + '-start']).details
+      },
       getTimeExtent(timelines) {
         return Object.entries(timelines).map(([, value]) => value.timeline)
           .map(timeline => ({
@@ -143,6 +144,20 @@
             start: Math.min(current.start, next.start),
             end: Math.max(current.end, next.end)
           }), {start: Number.MAX_SAFE_INTEGER, end: Number.MIN_SAFE_INTEGER});
+      },
+      showThreadDetails({threadId, start}) {
+        if (this.showDetails[threadId + '-start']) {
+          d3.selectAll('#rect-threadid-' + threadId + '-start-' + this.showDetails[threadId + '-start'])
+            .attr('class', d => `thread--${d.threadState.toLowerCase()}`)
+        }
+
+        this.showDetails[threadId + '-start'] ?
+          this.$delete(this.showDetails, threadId + '-start') : this.$set(this.showDetails, threadId + '-start', start);
+        this.showDetails[threadId] ? this.$delete(this.showDetails, threadId) :
+          this.$set(this.showDetails, threadId, true);
+
+        d3.selectAll('#rect-threadid-' + threadId + '-start-' + start)
+          .attr('class', d => `thread--${d.threadState.toLowerCase()}${this.showDetails[threadId + '-start'] ? '_clicked' : ''}`)
       },
       async drawTimelines(timelines) {
         if (timelines) {
@@ -169,13 +184,17 @@
 
             d.enter()
               .append('rect')
-              .merge(d)
+              .attr('id', 'rect-threadid-' + threadId + '-start-' + value.timeline[value.timeline.length - 1].start)
               .attr('class', d => `thread--${d.threadState.toLowerCase()}`)
+              .merge(d)
               .attr('height', '2em')
               .attr('x', d => x(d.start))
               .transition(150)
               .attr('width', d => Math.max(x(d.end) - x(d.start), x(d.start + 500) - x(d.start)))
-          });
+
+            d3.selectAll('#rect-threadid-' + threadId + '-start-' + value.timeline[value.timeline.length - 1].start)
+              .on("click", d => this.showThreadDetails({threadId: threadId, start: d.start}))
+         });
 
           this.lastEndPosition = x(end);
           if (wasInView && !this.isInView(this.lastEndPosition)) {
@@ -240,12 +259,22 @@
       fill: $success;
     }
 
+    &--runnable_clicked {
+      fill: #157d39;
+    }
+
     &--timed_waiting,
     &--waiting {
       fill: $warning;
     }
 
-    &--blocked {
+    &--timed_waiting_clicked,
+    &--waiting_clicked {
+      fill: #e5c64e;
+    }
+
+    &--blocked,
+    &--blocked_clicked {
       fill: $danger;
     }
   }
