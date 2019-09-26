@@ -88,7 +88,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
             return instance.getServiceUrl();
         }
 
-        return UriComponentsBuilder.fromUriString(getServiceBaseUrl()).path("/").toUriString();
+        return UriComponentsBuilder.fromUriString(getServiceBaseUrl()).path(getServicePath()).toUriString();
     }
 
     protected String getServiceBaseUrl() {
@@ -103,6 +103,16 @@ public class DefaultApplicationFactory implements ApplicationFactory {
                                    .host(getServiceHost())
                                    .port(getLocalServerPort())
                                    .toUriString();
+    }
+
+    protected String getServicePath() {
+        String path = instance.getServicePath();
+
+        if (!StringUtils.isEmpty(path)) {
+            return path;
+        }
+
+        return "/";
     }
 
     protected String getManagementUrl() {

@@ -183,6 +183,24 @@ public class DefaultApplicationFactoryTest {
                                                              .hasMessageContaining("service-base-url");
     }
 
+    @Test
+    public void test_service_path() {
+        instanceProperties.setServiceBaseUrl("http://service:80");
+        instanceProperties.setServicePath("app");
+        webEndpoint.setBasePath("/admin");
+        when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/admin/health");
+
+        Application app = factory.createApplication();
+        assertThat(app.getServiceUrl()).isEqualTo("http://service:80/app");
+        assertThat(app.getManagementUrl()).isEqualTo("http://service:80/app/admin");
+        assertThat(app.getHealthUrl()).isEqualTo("http://service:80/app/admin/health");
+    }
+
+    @Test
+    public void test_service_path_default() {
+        assertThat(factory.getServicePath()).isEqualTo("/");
+    }
+
     private String getHostname() {
         try {
             return InetAddress.getLocalHost().getCanonicalHostName();
