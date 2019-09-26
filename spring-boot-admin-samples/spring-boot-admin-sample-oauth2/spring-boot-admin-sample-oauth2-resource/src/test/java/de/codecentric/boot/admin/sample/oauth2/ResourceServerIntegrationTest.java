@@ -16,6 +16,9 @@
 
 package de.codecentric.boot.admin.sample.oauth2;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,21 +26,44 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.configureFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class ResourceServerIntegrationTest {
 
+    private static WireMockServer mockAuthorizationServer = new WireMockServer(options().port(8081));
+
+    @BeforeAll
+    static void beforeAll() {
+        mockAuthorizationServer.start();
+        configureFor(mockAuthorizationServer.port());
+
+        stubFor(post("/uaa/oauth/token_keys").willReturn(
+                aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("token-keys.json")));
+    }
+
+    @AfterAll
+    static void afterAll() {
+        mockAuthorizationServer.stop();
+    }
+
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    void should_not_be_able_access_actuator_endpoint_without_authentication() throws Exception {
+    void should_not_be_able_to_access_actuator_endpoint_without_authentication() throws Exception {
         // when
-        ResultActions resultActions = mockMvc.perform(get("/actuator/health"));
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get("/actuator/health"));
 
         // then
         resultActions
@@ -45,10 +71,10 @@ class ResourceServerIntegrationTest {
     }
 
     @Test
-    @WithMockUser
-    void should_be_able_access_actuator_endpoint_with_authentication() throws Exception {
+    @WithMockUser(roles = "sba_server")
+    void should_be_able_to_access_actuator_endpoint_with_authentication() throws Exception {
         // when
-        ResultActions resultActions = mockMvc.perform(get("/actuator/health"));
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get("/actuator/health"));
 
         // then
         resultActions

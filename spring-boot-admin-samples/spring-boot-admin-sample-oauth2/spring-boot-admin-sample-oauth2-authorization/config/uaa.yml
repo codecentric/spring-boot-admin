@@ -15,7 +15,8 @@ oauth:
     admin:
       name: admin
       secret: secret
-      authorized-grant-types: password
+      authorized-grant-types: authorization_code
+      redirect-uri: #{REDIRECT_URI}
       scope: openid
 
 scim:

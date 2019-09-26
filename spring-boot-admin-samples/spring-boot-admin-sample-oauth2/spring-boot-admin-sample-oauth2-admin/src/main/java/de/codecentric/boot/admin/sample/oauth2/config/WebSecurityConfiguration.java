@@ -18,29 +18,17 @@ package de.codecentric.boot.admin.sample.oauth2.config;
 
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
-import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import static org.springframework.security.oauth2.client.OAuth2AuthorizationContext.PASSWORD_ATTRIBUTE_NAME;
-import static org.springframework.security.oauth2.client.OAuth2AuthorizationContext.USERNAME_ATTRIBUTE_NAME;
-
-@Configuration
 @EnableWebSecurity
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
@@ -67,62 +55,43 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                                 this.adminServerProperties.path("/instances/*"),
                                 HttpMethod.DELETE.toString()),
                         new AntPathRequestMatcher(
-                                this.adminServerProperties.path("/actuator/**"))
-                    ).and()
+                                this.adminServerProperties.path("/actuator/**")))
+                    .and()
                 .authorizeRequests()
                     .antMatchers(adminServerProperties.path("/assets/**")).permitAll()
-                    .antMatchers(adminServerProperties.path("/login")).permitAll()
-                .antMatchers(adminServerProperties.path("/sw.js")).permitAll()
-                    .anyRequest().authenticated()
+                    .antMatchers(adminServerProperties.path("/sw.js")).permitAll()
+                    .antMatchers(adminServerProperties.path("/instances"))
+                        .hasAnyAuthority("ROLE_client", "SCOPE_openid")
+                    .anyRequest().hasAuthority("SCOPE_openid")
                     .and()
-                .formLogin()
-                    .loginPage(adminServerProperties.path("/login"))
+                .oauth2Login()
+                    .loginPage(adminServerProperties.path("/oauth2/authorization/" + getClientId()))
+                        .and()
+                    .logout()
+                        .logoutSuccessUrl(getLogoutSuccessUrl())
                     .and()
-                .logout()
-                    .logoutUrl(adminServerProperties.path("/logout"))
+                .oauth2Client()
                     .and()
                 .httpBasic();
         // @formatter:on
     }
 
     @Bean
-    public OAuth2AuthorizedClient authorizedClient(AuthorizedClientServiceOAuth2AuthorizedClientManager clientManager) {
-        OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest.withClientRegistrationId("my-client")
-                .principal(new UsernamePasswordAuthenticationToken("subject", "password"))
-                .attribute(USERNAME_ATTRIBUTE_NAME, "subject")
-                .attribute(PASSWORD_ATTRIBUTE_NAME, "password")
-                .build();
-        return clientManager.authorize(authorizeRequest);
-    }
-
-    @Bean
-    public AuthorizedClientServiceOAuth2AuthorizedClientManager clientManager(
-            ClientRegistrationRepository clientRegistrationRepository,
-            OAuth2AuthorizedClientService authorizedClientService) {
-
-        AuthorizedClientServiceOAuth2AuthorizedClientManager manager =
-                new AuthorizedClientServiceOAuth2AuthorizedClientManager(
-                        clientRegistrationRepository,
-                        authorizedClientService);
-
-        manager.setAuthorizedClientProvider(
-                OAuth2AuthorizedClientProviderBuilder.builder()
-                        .password()
-                        .build());
-
-        manager.setContextAttributesMapper(new PasswordGrantTypeContextAttributesMapper());
-
-        return manager;
-    }
-
-    @Bean
     @Override
     public UserDetailsService userDetailsService() {
-        return new InMemoryUserDetailsManager(User
-                        .withUsername(environment.getProperty("spring.security.user.name"))
-                        .password("{noop}" + environment.getProperty("spring.security.user.password"))
-                        .roles("USER")
+        return new InMemoryUserDetailsManager(
+                User.withUsername(environment.getRequiredProperty("security.client.registration.username"))
+                        .password(environment.getRequiredProperty("security.client.registration.password"))
+                        .roles("client")
                         .build());
+    }
+
+    private String getClientId() {
+        return environment.getRequiredProperty("spring.security.oauth2.client.registration.admin.client-id");
+    }
+
+    private String getLogoutSuccessUrl() {
+        return environment.getRequiredProperty("security.logout.redirect-url");
     }
 
 }

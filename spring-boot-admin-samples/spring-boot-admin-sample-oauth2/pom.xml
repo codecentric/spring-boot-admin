@@ -34,22 +34,4 @@
         <module>spring-boot-admin-sample-oauth2-authorization</module>
         <module>spring-boot-admin-sample-oauth2-resource</module>
     </modules>
-    <properties>
-        <nimbus-jose-jwt.version>7.8</nimbus-jose-jwt.version>
-        <spring-security-oauth2-autoconfigure.version>2.1.8.RELEASE</spring-security-oauth2-autoconfigure.version>
-    </properties>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.security.oauth.boot</groupId>
-                <artifactId>spring-security-oauth2-autoconfigure</artifactId>
-                <version>${spring-security-oauth2-autoconfigure.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.nimbusds</groupId>
-                <artifactId>nimbus-jose-jwt</artifactId>
-                <version>${nimbus-jose-jwt.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 </project>

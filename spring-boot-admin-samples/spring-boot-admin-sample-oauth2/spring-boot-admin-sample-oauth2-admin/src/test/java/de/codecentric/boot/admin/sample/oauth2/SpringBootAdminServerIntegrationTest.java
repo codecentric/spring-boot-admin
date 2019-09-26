@@ -41,7 +41,7 @@ class SpringBootAdminServerIntegrationTest {
         stubFor(post("/uaa/oauth/token").willReturn(
                 aResponse()
                         .withHeader("Content-Type", "application/json")
-                        .withBodyFile("access_token_response.json")));
+                        .withBodyFile("access-token-response.json")));
     }
 
     @AfterAll

@@ -16,23 +16,53 @@
 
 package de.codecentric.boot.admin.sample.oauth2.config;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @EnableWebSecurity
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    private final Environment environment;
+
+    public WebSecurityConfiguration(Environment environment) {
+        this.environment = environment;
+    }
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         // @formatter:off
         httpSecurity
                 .authorizeRequests()
-                    .anyRequest().authenticated()
+                    .antMatchers("/actuator/health", "/actuator/info")
+                        .hasAnyAuthority("ROLE_sba_server", "SCOPE_openid")
+                    .antMatchers("/actuator/**").hasAuthority("SCOPE_openid")
+                    .anyRequest().hasAuthority("ROLE_user")
+                    .and()
+                .httpBasic()
                     .and()
                 .oauth2ResourceServer()
                     .jwt();
         // @formatter:off
+    }
+
+    @Bean
+    @Override
+    protected UserDetailsService userDetailsService() {
+        return new InMemoryUserDetailsManager(
+                User.withUsername(environment.getRequiredProperty("security.healthcheck.username"))
+                        .password(environment.getRequiredProperty("security.healthcheck.password"))
+                        .roles("sba_server")
+                        .build(),
+                User.withUsername("admin")
+                        .password("{noop}password")
+                        .roles("user")
+                        .build());
     }
 
 }

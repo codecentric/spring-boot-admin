@@ -13,8 +13,8 @@ spring:
     admin:
       client:
         url: http://localhost:8080
-        username: sbadmin
-        password: pass
+        username: client
+        password: password
   security:
     oauth2:
       resourceserver:
@@ -26,3 +26,8 @@ management:
     web:
       exposure:
         include: "*"
+
+security:
+  healthcheck:
+    username: sba
+    password: "{noop}password"

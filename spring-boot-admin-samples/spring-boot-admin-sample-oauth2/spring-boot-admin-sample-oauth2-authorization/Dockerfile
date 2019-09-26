@@ -9,6 +9,9 @@ WORKDIR /usr/local/tomcat/webapps
 RUN wget -O uaa.war "https://repo1.maven.org/maven2/org/cloudfoundry/identity/cloudfoundry-identity-uaa/4.30.0/\
 cloudfoundry-identity-uaa-4.30.0.war"
 
-COPY config/uaa.yml $UAA_CONFIG_PATH/uaa.yml
+COPY config/uaa.yml ${UAA_CONFIG_PATH}/uaa.yml
+
+CMD sed -i "s|#{REDIRECT_URI}|${REDIRECT_URI}|g" ${UAA_CONFIG_PATH}/uaa.yml && \
+/usr/local/tomcat/bin/catalina.sh run
 
 EXPOSE 8081
