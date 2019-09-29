@@ -32,23 +32,16 @@ import java.util.concurrent.ConcurrentHashMap;
  * Mostly clones {@link org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService}, but
  * provides an ability to load authorized client without concrete principal.
  */
-public class CustomOAuth2AuthorizedClientService implements OAuth2AuthorizedClientService {
+// @Service
+public class OAuth2AuthorizedClientServiceImpl implements OAuth2AuthorizedClientService {
 
     private final Map<OAuth2AuthorizedClientId, OAuth2AuthorizedClient> authorizedClients;
     private final ClientRegistrationRepository clientRegistrationRepository;
 
-    public CustomOAuth2AuthorizedClientService(ClientRegistrationRepository clientRegistrationRepository) {
+    public OAuth2AuthorizedClientServiceImpl(ClientRegistrationRepository clientRegistrationRepository) {
         Assert.notNull(clientRegistrationRepository, "clientRegistrationRepository cannot be null");
         this.clientRegistrationRepository = clientRegistrationRepository;
         this.authorizedClients = new ConcurrentHashMap<>();
-    }
-
-    public CustomOAuth2AuthorizedClientService(ClientRegistrationRepository clientRegistrationRepository,
-                                               Map<OAuth2AuthorizedClientId, OAuth2AuthorizedClient> authorizedClients) {
-        Assert.notNull(clientRegistrationRepository, "clientRegistrationRepository cannot be null");
-        Assert.notEmpty(authorizedClients, "authorizedClients cannot be empty");
-        this.clientRegistrationRepository = clientRegistrationRepository;
-        this.authorizedClients = new ConcurrentHashMap<>(authorizedClients);
     }
 
     @Override

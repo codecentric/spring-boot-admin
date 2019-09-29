@@ -34,11 +34,14 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final Environment environment;
     private final AdminServerProperties adminServerProperties;
+    private final OAuth2AuthenticationSuccessHandler authenticationSuccessHandler;
 
     public WebSecurityConfiguration(Environment environment,
-                                    AdminServerProperties adminServerProperties) {
+                                    AdminServerProperties adminServerProperties,
+                                    OAuth2AuthenticationSuccessHandler authenticationSuccessHandler) {
         this.environment = environment;
         this.adminServerProperties = adminServerProperties;
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
     }
 
     @Override
@@ -65,6 +68,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .anyRequest().hasAuthority("SCOPE_openid")
                     .and()
                 .oauth2Login()
+                    .successHandler(authenticationSuccessHandler)
                     .loginPage(adminServerProperties.path("/oauth2/authorization/" + getClientId()))
                         .and()
                     .logout()
