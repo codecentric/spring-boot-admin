@@ -22,6 +22,7 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientId;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.util.Map;
@@ -32,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Mostly clones {@link org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService}, but
  * provides an ability to load authorized client without concrete principal.
  */
-// @Service
+@Service
 public class OAuth2AuthorizedClientServiceImpl implements OAuth2AuthorizedClientService {
 
     private final Map<OAuth2AuthorizedClientId, OAuth2AuthorizedClient> authorizedClients;
