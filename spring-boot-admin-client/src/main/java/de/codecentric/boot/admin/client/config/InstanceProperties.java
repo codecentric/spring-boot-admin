@@ -52,6 +52,12 @@ public class InstanceProperties {
     private String serviceBaseUrl;
 
     /**
+     * Path for computing the service-url to register with. If not specified, defaults to "/"
+     */
+    @Nullable
+    private String servicePath;
+
+    /**
      * Client-health-URL to register with. Inferred at runtime, can be overridden in case the
      * reachable URL is different (e.g. Docker). Must be unique all services registry.
      */

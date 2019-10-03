@@ -149,6 +149,10 @@ spring.boot.admin.client.password
 | Service-url to register with. Can be overridden in case the reachable url is different (e.g. Docker).
 | Guessed based on service-base-url and `server.context-path`.
 
+| spring.boot.admin.client.instance.service-path
+| Service-path to register with. Can be overridden in case the reachable path is different (e.g. context-path set programmatically).
+| /
+
 | spring.boot.admin.client.instance.name
 | Name to register with.
 | `${spring.application.name}` if set, `"spring-boot-application"` otherwise.
