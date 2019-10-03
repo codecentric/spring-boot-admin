@@ -107,6 +107,20 @@ public class ServletApplicationFactoryTest {
         assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":80/srv");
     }
 
+    @Test
+    public void test_servicePath() {
+        servletContext.setContextPath("app");
+        when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
+        publishApplicationReadyEvent(factory, 80, null);
+        instance.setServicePath("/servicePath/");
+
+
+        Application app = factory.createApplication();
+        assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":80/servicePath/app/actuator");
+        assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":80/servicePath/app/actuator/health");
+        assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":80/servicePath/app");
+    }
+
     private String getHostname() {
         try {
             return InetAddress.getLocalHost().getCanonicalHostName();

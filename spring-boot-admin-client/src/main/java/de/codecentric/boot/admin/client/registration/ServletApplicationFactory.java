@@ -60,7 +60,7 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
         }
 
         return UriComponentsBuilder.fromUriString(getServiceBaseUrl())
-                                   .path("/")
+                                   .path(getServicePath())
                                    .path(getServerContextPath())
                                    .toUriString();
     }
