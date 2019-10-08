@@ -28,10 +28,12 @@ import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 
 import static java.util.Collections.singletonList;
-import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class CloudFoundryApplicationFactoryTest {
     private InstanceProperties instanceProperties = new InstanceProperties();
@@ -40,24 +42,43 @@ public class CloudFoundryApplicationFactoryTest {
     private PathMappedEndpoints pathMappedEndpoints = mock(PathMappedEndpoints.class);
     private WebEndpointProperties webEndpoint = new WebEndpointProperties();
     private CloudFoundryApplicationProperties cfApplicationProperties = new CloudFoundryApplicationProperties();
-    private CloudFoundryApplicationFactory factory = new CloudFoundryApplicationFactory(instanceProperties, management,
-        server, pathMappedEndpoints, webEndpoint, () -> singletonMap("contributor", "test"), cfApplicationProperties);
+	private Map<String, String> metadata = new HashMap<>();
 
-    @Before
-    public void setup() {
-        instanceProperties.setName("test");
-    }
+	private CloudFoundryApplicationFactory factory = new CloudFoundryApplicationFactory(instanceProperties, management,
+			server, pathMappedEndpoints, webEndpoint, () -> metadata, cfApplicationProperties);
 
-    @Test
-    public void should_use_application_uri() {
-        when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
-        cfApplicationProperties.setUris(singletonList("application/Uppercase"));
+	@Before
+	public void setup() {
+		instanceProperties.setName("test");
+		metadata.put("contributor", "test");
+	}
 
-        Application app = factory.createApplication();
+	@Test
+	public void should_use_application_uri() {
 
-        assertThat(app.getManagementUrl()).isEqualTo("http://application/Uppercase/actuator");
-        assertThat(app.getHealthUrl()).isEqualTo("http://application/Uppercase/actuator/health");
-        assertThat(app.getServiceUrl()).isEqualTo("http://application/Uppercase/");
-    }
+		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
+		cfApplicationProperties.setUris(singletonList("application/Uppercase"));
+
+		Application app = factory.createApplication();
+
+		assertThat(app.getManagementUrl()).isEqualTo("http://application/Uppercase/actuator");
+		assertThat(app.getHealthUrl()).isEqualTo("http://application/Uppercase/actuator/health");
+		assertThat(app.getServiceUrl()).isEqualTo("http://application/Uppercase/");
+	}
+
+	@Test
+	public void should_use_application_uri_with_defined_service_schema() {
+
+		metadata.put("serviceSchema", "https");
+
+		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
+		cfApplicationProperties.setUris(singletonList("application/Uppercase"));
+
+		Application app = factory.createApplication();
+
+		assertThat(app.getManagementUrl()).isEqualTo("https://application/Uppercase/actuator");
+		assertThat(app.getHealthUrl()).isEqualTo("https://application/Uppercase/actuator/health");
+		assertThat(app.getServiceUrl()).isEqualTo("https://application/Uppercase/");
+	}
 
 }

@@ -39,13 +39,14 @@ public class CloudFoundryApplicationFactory extends DefaultApplicationFactory {
         this.cfApplicationProperties = cfApplicationProperties;
     }
 
-    @Override
-    protected String getServiceBaseUrl() {
-        if (cfApplicationProperties.getUris().isEmpty()) {
-            return super.getServiceBaseUrl();
-        }
+	@Override
+	protected String getServiceBaseUrl() {
+		if (cfApplicationProperties.getUris().isEmpty()) {
+			return super.getServiceBaseUrl();
+		}
 
-        String uri = cfApplicationProperties.getUris().get(0);
-        return "http://" + uri;
-    }
+		String uri = cfApplicationProperties.getUris().get(0);
+		String schema = this.getMetadata().getOrDefault("serviceSchema", "http");
+		return schema + "://" + uri;
+	}
 }

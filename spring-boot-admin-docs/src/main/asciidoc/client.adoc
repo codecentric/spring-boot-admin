@@ -178,4 +178,8 @@ spring.boot.admin.client.password
 user.password
 | Credentials being used to access the endpoints.
 |
+| serviceSchema
+| schema used by SBA server to access the client/instance on CloudFoundry
+| http
 |===
+
