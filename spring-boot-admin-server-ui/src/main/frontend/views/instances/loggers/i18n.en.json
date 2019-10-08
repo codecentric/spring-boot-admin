@@ -11,6 +11,7 @@
         "configured": "configured"
       },
       "instance": "Instance",
+      "new": "new logger",
       "no_loggers_found": "No loggers found.",
       "reset": "Reset",
       "setting_loglevel_failed": "Setting {logger} to {loglevel} failed."

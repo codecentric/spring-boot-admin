@@ -20,6 +20,7 @@
       <tr v-for="logger in loggers.slice(0, this.visibleLimit)" :key="logger.name">
         <td>
           <span class="is-breakable" v-text="logger.name" />
+          <span class="is-breakable" v-if="logger.isNew" v-text="' ('+ $t('instances.loggers.new') + ')'" />
 
           <sba-logger-control class="is-pulled-right"
                               :level-options="levels"
