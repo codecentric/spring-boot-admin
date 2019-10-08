@@ -99,11 +99,11 @@
 </template>
 
 <script>
-  import sticksBelow from '@/directives/sticks-below';
-  import {finalize, from, listen} from '@/utils/rxjs';
-  import LoggersList from './loggers-list';
+    import sticksBelow from '@/directives/sticks-below';
+    import {finalize, from, listen} from '@/utils/rxjs';
+    import LoggersList from './loggers-list';
 
-  const isClassName = name => /\.[A-Z]/.test(name);
+    const isClassName = name => /\.[A-Z]/.test(name);
 
   const addToFilter = (oldFilter, addedFilter) =>
     !oldFilter
@@ -122,7 +122,7 @@
               isNew: true
           })
       }
-  }
+  };
 
   export default {
     components: {LoggersList},

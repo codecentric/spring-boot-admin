@@ -11,9 +11,10 @@
         "configured": "configured"
       },
       "instance": "Instance",
-      "new": "new logger",
+      "new": "new",
       "no_loggers_found": "No loggers found.",
       "reset": "Reset",
       "setting_loglevel_failed": "Setting {logger} to {loglevel} failed."
-    }    }
+    }
+  }
 }

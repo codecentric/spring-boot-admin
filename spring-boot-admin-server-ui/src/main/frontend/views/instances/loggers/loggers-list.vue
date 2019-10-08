@@ -19,9 +19,8 @@
     <tbody>
       <tr v-for="logger in loggers.slice(0, this.visibleLimit)" :key="logger.name">
         <td>
-          <span class="is-breakable" v-text="logger.name" />
-          <span class="is-breakable" v-if="logger.isNew" v-text="' ('+ $t('instances.loggers.new') + ')'" />
-
+          <span class="is-breakable" v-text="logger.name" />&nbsp;
+          <span class="tag is-primary is-uppercase" v-if="logger.isNew" v-text="$t('instances.loggers.new')" />
           <sba-logger-control class="is-pulled-right"
                               :level-options="levels"
                               :value="logger.level"
@@ -50,10 +49,10 @@
   </table>
 </template>
 <script>
-  import InfiniteLoading from 'vue-infinite-loading'
-  import SbaLoggerControl from './logger-control'
+    import InfiniteLoading from 'vue-infinite-loading'
+    import SbaLoggerControl from './logger-control'
 
-  export default {
+    export default {
     components: {InfiniteLoading, SbaLoggerControl},
     props: {
       levels: {
