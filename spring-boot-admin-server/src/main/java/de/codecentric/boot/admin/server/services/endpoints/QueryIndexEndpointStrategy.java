@@ -117,7 +117,7 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
                 return endpoints;
             }
             log.warn(
-                "Endpoints for instance {} queried from {} are falsely using http. Rewritten to https. Consider configuring this instance to use 'server.use-forward-headers=true'.",
+                "Endpoints for instance {} queried from {} are falsely using http. Rewritten to https. Consider configuring this instance to use 'server.forward-headers-strategy=native'.",
                 instanceId,
                 managementUrl
             );
