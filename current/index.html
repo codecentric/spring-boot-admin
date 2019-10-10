@@ -1208,7 +1208,7 @@ user.password</p></td>
 <h3 id="_running_behind_a_front_end_proxy_server"><a class="anchor" href="#_running_behind_a_front_end_proxy_server"></a><a class="link" href="#_running_behind_a_front_end_proxy_server">4.1. Running Behind a Front-end Proxy Server</a></h3>
 <div class="paragraph">
 <p>In case the Spring Boot Admin server is running behind a reverse proxy, it may be requried to configure the public url where the server is reachable via (<code>spring.boot.admin.ui.public-url</code>).
-In addition when the reverse proxy terminates the https connection, it may be necessary to configure <code>server.use-forward-headers=true</code> (also see <a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto-use-tomcat-behind-a-proxy-server">Spring Boot Reference Guide</a>).</p>
+In addition when the reverse proxy terminates the https connection, it may be necessary to configure <code>server.forward-headers-strategy=native</code> (also see <a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto-use-tomcat-behind-a-proxy-server">Spring Boot Reference Guide</a>).</p>
 </div>
 </div>
 <div class="sect2">
