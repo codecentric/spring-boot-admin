@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication
 @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
 @Conditional(SpringBootAdminClientEnabledCondition.class)

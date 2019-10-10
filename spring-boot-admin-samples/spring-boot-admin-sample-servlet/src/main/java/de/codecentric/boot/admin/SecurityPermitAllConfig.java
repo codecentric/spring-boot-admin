@@ -27,7 +27,7 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Profile("insecure")
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
     private final AdminServerProperties adminServer;
 

@@ -48,7 +48,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 
 import static java.util.Arrays.asList;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
 @AutoConfigureAfter(AdminServerWebConfiguration.class)
 @EnableConfigurationProperties(AdminServerUiProperties.class)
@@ -117,10 +117,10 @@ public class AdminServerUiAutoConfiguration {
         return resolver;
     }
 
-    @Configuration
+    @Configuration(proxyBeanMethods = false)
     @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
     public static class ReactiveUiConfiguration {
-        @Configuration
+        @Configuration(proxyBeanMethods = false)
         public static class AdminUiWebfluxConfig implements WebFluxConfigurer {
             private final AdminServerUiProperties adminUi;
             private final AdminServerProperties adminServer;
@@ -157,10 +157,10 @@ public class AdminServerUiAutoConfiguration {
         }
     }
 
-    @Configuration
+    @Configuration(proxyBeanMethods = false)
     @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
     public static class ServletUiConfiguration {
-        @Configuration
+        @Configuration(proxyBeanMethods = false)
         public static class AdminUiWebMvcConfig implements WebMvcConfigurer {
             private final AdminServerUiProperties adminUi;
             private final AdminServerProperties adminServer;

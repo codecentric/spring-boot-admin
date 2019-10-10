@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 // tag::configuration-filtering-notifier[]
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class NotifierConfig {
     private final InstanceRepository repository;
     private final ObjectProvider<List<Notifier>> otherNotifiers;

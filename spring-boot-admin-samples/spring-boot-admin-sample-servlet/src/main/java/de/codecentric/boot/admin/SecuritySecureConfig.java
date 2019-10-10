@@ -31,7 +31,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Profile("secure")
 // tag::configuration-spring-security[]
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
     private final AdminServerProperties adminServer;
 

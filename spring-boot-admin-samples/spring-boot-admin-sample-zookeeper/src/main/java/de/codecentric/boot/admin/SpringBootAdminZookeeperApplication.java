@@ -31,14 +31,14 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
 @EnableDiscoveryClient
 @EnableAdminServer
 public class SpringBootAdminZookeeperApplication {
     @Profile("insecure")
-    @Configuration
-    public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
+    @Configuration(proxyBeanMethods = false)
+public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
         private final AdminServerProperties adminServer;
 
         public SecurityPermitAllConfig(AdminServerProperties adminServer) {
@@ -62,8 +62,8 @@ public class SpringBootAdminZookeeperApplication {
     }
 
     @Profile("secure")
-    @Configuration
-    public static class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
+    @Configuration(proxyBeanMethods = false)
+public static class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
         private final AdminServerProperties adminServer;
 
         public SecuritySecureConfig(AdminServerProperties adminServer) {

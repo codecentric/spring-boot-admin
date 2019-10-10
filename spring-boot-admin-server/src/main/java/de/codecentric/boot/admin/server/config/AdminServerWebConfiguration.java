@@ -37,7 +37,7 @@ import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class AdminServerWebConfiguration {
     private final AdminServerProperties adminServerProperties;
 
@@ -49,8 +49,7 @@ public class AdminServerWebConfiguration {
     public SimpleModule adminJacksonModule() {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(Registration.class, new RegistrationDeserializer());
-        module.setSerializerModifier(new RegistrationBeanSerializerModifier(new SanitizingMapSerializer(this.adminServerProperties
-            .getMetadataKeysToSanitize())));
+        module.setSerializerModifier(new RegistrationBeanSerializerModifier(new SanitizingMapSerializer(this.adminServerProperties.getMetadataKeysToSanitize())));
         return module;
     }
 
@@ -66,7 +65,7 @@ public class AdminServerWebConfiguration {
         return new ApplicationsController(applicationRegistry);
     }
 
-    @Configuration
+    @Configuration(proxyBeanMethods = false)
     @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
     public static class ReactiveRestApiConfiguration {
         private final AdminServerProperties adminServerProperties;
@@ -77,9 +76,8 @@ public class AdminServerWebConfiguration {
 
         @Bean
         @ConditionalOnMissingBean
-        public de.codecentric.boot.admin.server.web.reactive.InstancesProxyController instancesProxyController(
-            InstanceRegistry instanceRegistry,
-            InstanceWebClient.Builder instanceWebClientBuilder) {
+        public de.codecentric.boot.admin.server.web.reactive.InstancesProxyController instancesProxyController(InstanceRegistry instanceRegistry,
+                                                                                                               InstanceWebClient.Builder instanceWebClientBuilder) {
             return new de.codecentric.boot.admin.server.web.reactive.InstancesProxyController(
                 this.adminServerProperties.getContextPath(),
                 this.adminServerProperties.getInstanceProxy().getIgnoredHeaders(),
@@ -99,7 +97,7 @@ public class AdminServerWebConfiguration {
         }
     }
 
-    @Configuration
+    @Configuration(proxyBeanMethods = false)
     @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
     @AutoConfigureAfter(WebMvcAutoConfiguration.class)
     public static class ServletRestApiConfirguation {
@@ -111,9 +109,8 @@ public class AdminServerWebConfiguration {
 
         @Bean
         @ConditionalOnMissingBean
-        public de.codecentric.boot.admin.server.web.servlet.InstancesProxyController instancesProxyController(
-            InstanceRegistry instanceRegistry,
-            InstanceWebClient.Builder instanceWebClientBuilder) {
+        public de.codecentric.boot.admin.server.web.servlet.InstancesProxyController instancesProxyController(InstanceRegistry instanceRegistry,
+                                                                                                              InstanceWebClient.Builder instanceWebClientBuilder) {
             return new de.codecentric.boot.admin.server.web.servlet.InstancesProxyController(
                 this.adminServerProperties.getContextPath(),
                 this.adminServerProperties.getInstanceProxy().getIgnoredHeaders(),

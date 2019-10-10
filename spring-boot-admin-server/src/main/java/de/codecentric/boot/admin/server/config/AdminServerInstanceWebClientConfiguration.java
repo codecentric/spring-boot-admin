@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.reactive.function.client.WebClient;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class AdminServerInstanceWebClientConfiguration {
     private final InstanceWebClient.Builder instanceWebClientBuilder;
 
@@ -53,8 +53,8 @@ public class AdminServerInstanceWebClientConfiguration {
         return this.instanceWebClientBuilder.clone();
     }
 
-    @Configuration
-    protected static class InstanceExchangeFiltersConfiguration {
+    @Configuration(proxyBeanMethods = false)
+protected static class InstanceExchangeFiltersConfiguration {
 
         @Bean
         @ConditionalOnBean(InstanceExchangeFilterFunction.class)
@@ -63,8 +63,8 @@ public class AdminServerInstanceWebClientConfiguration {
             return builder -> builder.filters(f -> f.addAll(filters));
         }
 
-        @Configuration
-        protected static class DefaultInstanceExchangeFiltersConfiguration {
+        @Configuration(proxyBeanMethods = false)
+protected static class DefaultInstanceExchangeFiltersConfiguration {
             @Bean
             @Order(0)
             @ConditionalOnBean(HttpHeadersProvider.class)
@@ -120,8 +120,8 @@ public class AdminServerInstanceWebClientConfiguration {
         }
     }
 
-    @Configuration
-    protected static class HttpHeadersProviderConfiguration {
+    @Configuration(proxyBeanMethods = false)
+protected static class HttpHeadersProviderConfiguration {
         @Bean
         @ConditionalOnMissingBean
         public BasicAuthHttpHeaderProvider basicAuthHttpHeadersProvider() {
@@ -129,8 +129,8 @@ public class AdminServerInstanceWebClientConfiguration {
         }
     }
 
-    @Configuration
-    protected static class LegaycEndpointConvertersConfiguration {
+    @Configuration(proxyBeanMethods = false)
+protected static class LegaycEndpointConvertersConfiguration {
         @Bean
         @ConditionalOnMissingBean(name = "healthLegacyEndpointConverter")
         public LegacyEndpointConverter healthLegacyEndpointConverter() {

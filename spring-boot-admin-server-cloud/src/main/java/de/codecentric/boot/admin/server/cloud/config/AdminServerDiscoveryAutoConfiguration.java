@@ -38,13 +38,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.netflix.discovery.EurekaClient;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnSingleCandidate(DiscoveryClient.class)
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
 @ConditionalOnProperty(prefix = "spring.boot.admin.discovery", name = "enabled", matchIfMissing = true)
 @AutoConfigureAfter(value = AdminServerAutoConfiguration.class, name = {
     "org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration",
-    "org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration"})
+    "org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration"
+})
 public class AdminServerDiscoveryAutoConfiguration {
 
     @Bean
@@ -59,7 +60,7 @@ public class AdminServerDiscoveryAutoConfiguration {
         return listener;
     }
 
-    @Configuration
+    @Configuration(proxyBeanMethods = false)
     @ConditionalOnMissingBean({ServiceInstanceConverter.class})
     @ConditionalOnBean(EurekaClient.class)
     public static class EurekaConverterConfiguration {
@@ -70,7 +71,7 @@ public class AdminServerDiscoveryAutoConfiguration {
         }
     }
 
-    @Configuration
+    @Configuration(proxyBeanMethods = false)
     @ConditionalOnMissingBean({ServiceInstanceConverter.class})
     @ConditionalOnBean(KubernetesDiscoveryClient.class)
     public static class KubernetesConverterConfiguration {

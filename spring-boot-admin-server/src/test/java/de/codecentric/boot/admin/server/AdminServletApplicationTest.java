@@ -54,8 +54,8 @@ public class AdminServletApplicationTest extends AbstractAdminApplicationTest {
     @EnableAutoConfiguration
     @SpringBootConfiguration
     public static class TestAdminApplication {
-        @Configuration
-        public static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+        @Configuration(proxyBeanMethods = false)
+public static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             @Override
             protected void configure(HttpSecurity http) throws Exception {
                 http.authorizeRequests().anyRequest().permitAll()//

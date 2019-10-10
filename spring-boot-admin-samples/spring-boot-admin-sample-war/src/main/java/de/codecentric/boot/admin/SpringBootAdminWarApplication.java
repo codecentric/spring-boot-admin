@@ -32,7 +32,7 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
 @EnableAdminServer
 public class SpringBootAdminWarApplication extends SpringBootServletInitializer {
@@ -43,8 +43,8 @@ public class SpringBootAdminWarApplication extends SpringBootServletInitializer 
     }
 
     @Profile("insecure")
-    @Configuration
-    public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
+    @Configuration(proxyBeanMethods = false)
+public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
         private final AdminServerProperties adminServer;
 
         public SecurityPermitAllConfig(AdminServerProperties adminServer) {
@@ -69,8 +69,8 @@ public class SpringBootAdminWarApplication extends SpringBootServletInitializer 
     }
 
     @Profile("secure")
-    @Configuration
-    public static class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
+    @Configuration(proxyBeanMethods = false)
+public static class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
         private final AdminServerProperties adminServer;
 
         public SecuritySecureConfig(AdminServerProperties adminServer) {

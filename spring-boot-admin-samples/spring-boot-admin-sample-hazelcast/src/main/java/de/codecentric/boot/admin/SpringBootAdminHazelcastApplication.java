@@ -46,7 +46,7 @@ import static de.codecentric.boot.admin.server.config.AdminServerHazelcastAutoCo
 import static de.codecentric.boot.admin.server.config.AdminServerHazelcastAutoConfiguration.DEFAULT_NAME_SENT_NOTIFICATIONS_MAP;
 import static java.util.Collections.singletonList;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
 @EnableAdminServer
 public class SpringBootAdminHazelcastApplication {
@@ -93,8 +93,8 @@ public class SpringBootAdminHazelcastApplication {
     }
 
     @Profile("insecure")
-    @Configuration
-    public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
+    @Configuration(proxyBeanMethods = false)
+public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
         private final AdminServerProperties adminServer;
 
         public SecurityPermitAllConfig(AdminServerProperties adminServer) {
@@ -120,8 +120,8 @@ public class SpringBootAdminHazelcastApplication {
     }
 
     @Profile("secure")
-    @Configuration
-    public static class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
+    @Configuration(proxyBeanMethods = false)
+public static class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
         private final AdminServerProperties adminServer;
 
         public SecuritySecureConfig(AdminServerProperties adminServer) {

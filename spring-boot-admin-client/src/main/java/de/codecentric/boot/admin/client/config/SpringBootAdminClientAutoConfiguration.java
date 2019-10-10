@@ -56,14 +56,23 @@ import org.springframework.web.reactive.function.client.WebClient;
 import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication
 @Conditional(SpringBootAdminClientEnabledCondition.class)
-@AutoConfigureAfter({WebEndpointAutoConfiguration.class, RestTemplateAutoConfiguration.class, WebClientAutoConfiguration.class})
-@EnableConfigurationProperties({ClientProperties.class, InstanceProperties.class, ServerProperties.class, ManagementServerProperties.class})
+@AutoConfigureAfter({
+    WebEndpointAutoConfiguration.class,
+    RestTemplateAutoConfiguration.class,
+    WebClientAutoConfiguration.class
+})
+@EnableConfigurationProperties({
+    ClientProperties.class,
+    InstanceProperties.class,
+    ServerProperties.class,
+    ManagementServerProperties.class
+})
 public class SpringBootAdminClientAutoConfiguration {
 
-    @Configuration
+    @Configuration(proxyBeanMethods = false)
     @ConditionalOnWebApplication(type = Type.SERVLET)
     @AutoConfigureAfter(DispatcherServletAutoConfiguration.class)
     public static class ServletConfiguration {
@@ -89,7 +98,7 @@ public class SpringBootAdminClientAutoConfiguration {
         }
     }
 
-    @Configuration
+    @Configuration(proxyBeanMethods = false)
     @ConditionalOnWebApplication(type = Type.REACTIVE)
     public static class ReactiveConfiguration {
         @Bean
@@ -110,14 +119,15 @@ public class SpringBootAdminClientAutoConfiguration {
         }
     }
 
-    @Configuration
+    @Configuration(proxyBeanMethods = false)
     @ConditionalOnBean(RestTemplateBuilder.class)
     static class BlockingRegistrationClientConfig {
         @Bean
         @ConditionalOnMissingBean
         public BlockingRegistrationClient registrationClient(ClientProperties client) {
-            RestTemplateBuilder builder = new RestTemplateBuilder().setConnectTimeout(client.getConnectTimeout())
-                                                                   .setReadTimeout(client.getReadTimeout());
+            RestTemplateBuilder builder = new RestTemplateBuilder()
+                .setConnectTimeout(client.getConnectTimeout())
+                .setReadTimeout(client.getReadTimeout());
             if (client.getUsername() != null && client.getPassword() != null) {
                 builder = builder.basicAuthentication(client.getUsername(), client.getPassword());
             }
@@ -125,7 +135,7 @@ public class SpringBootAdminClientAutoConfiguration {
         }
     }
 
-    @Configuration
+    @Configuration(proxyBeanMethods = false)
     @ConditionalOnBean(WebClient.Builder.class)
     @ConditionalOnMissingBean(RestTemplateBuilder.class)
     static class ReactiveRegistrationClientConfig {
@@ -145,11 +155,7 @@ public class SpringBootAdminClientAutoConfiguration {
                                               ClientProperties client,
                                               ApplicationFactory applicationFactory) {
 
-        return new ApplicationRegistrator(applicationFactory,
-            registrationClient,
-            client.getAdminUrl(),
-            client.isRegisterOnce()
-        );
+        return new ApplicationRegistrator(applicationFactory, registrationClient, client.getAdminUrl(), client.isRegisterOnce());
     }
 
     @Bean

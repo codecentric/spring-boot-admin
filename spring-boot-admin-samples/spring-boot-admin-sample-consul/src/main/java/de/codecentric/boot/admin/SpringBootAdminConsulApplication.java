@@ -31,15 +31,15 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
 @EnableDiscoveryClient
 @EnableAdminServer
 public class SpringBootAdminConsulApplication {
 
     @Profile("insecure")
-    @Configuration
-    public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
+    @Configuration(proxyBeanMethods = false)
+public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
         private final String adminContextPath;
 
         public SecurityPermitAllConfig(AdminServerProperties adminServerProperties) {
@@ -56,16 +56,16 @@ public class SpringBootAdminConsulApplication {
                 .csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .ignoringRequestMatchers(
-                    new AntPathRequestMatcher(adminContextPath + "/instances", HttpMethod.POST.toString()),
-                    new AntPathRequestMatcher(adminContextPath + "/instances/*", HttpMethod.DELETE.toString()),
-                    new AntPathRequestMatcher(adminContextPath + "/actuator/**")
+                    new AntPathRequestMatcher(this.adminContextPath + "/instances", HttpMethod.POST.toString()),
+                    new AntPathRequestMatcher(this.adminContextPath + "/instances/*", HttpMethod.DELETE.toString()),
+                    new AntPathRequestMatcher(this.adminContextPath + "/actuator/**")
                 );
         }
     }
 
     @Profile("secure")
-    @Configuration
-    public static class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
+    @Configuration(proxyBeanMethods = false)
+public static class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
         private final String adminContextPath;
 
         public SecuritySecureConfig(AdminServerProperties adminServerProperties) {
@@ -77,22 +77,22 @@ public class SpringBootAdminConsulApplication {
             // @formatter:off
             SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
             successHandler.setTargetUrlParameter("redirectTo");
-            successHandler.setDefaultTargetUrl(adminContextPath + "/");
+            successHandler.setDefaultTargetUrl(this.adminContextPath + "/");
 
             http.authorizeRequests()
-                .antMatchers(adminContextPath + "/assets/**").permitAll()
-                .antMatchers(adminContextPath + "/login").permitAll()
+                .antMatchers(this.adminContextPath + "/assets/**").permitAll()
+                .antMatchers(this.adminContextPath + "/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
-            .formLogin().loginPage(adminContextPath + "/login").successHandler(successHandler).and()
-            .logout().logoutUrl(adminContextPath + "/logout").and()
+            .formLogin().loginPage(this.adminContextPath + "/login").successHandler(successHandler).and()
+            .logout().logoutUrl(this.adminContextPath + "/logout").and()
             .httpBasic().and()
             .csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .ignoringRequestMatchers(
-                    new AntPathRequestMatcher(adminContextPath + "/instances", HttpMethod.POST.toString()),
-                    new AntPathRequestMatcher(adminContextPath + "/instances/*", HttpMethod.DELETE.toString()),
-                    new AntPathRequestMatcher(adminContextPath + "/actuator/**")
+                    new AntPathRequestMatcher(this.adminContextPath + "/instances", HttpMethod.POST.toString()),
+                    new AntPathRequestMatcher(this.adminContextPath + "/instances/*", HttpMethod.DELETE.toString()),
+                    new AntPathRequestMatcher(this.adminContextPath + "/actuator/**")
                 );
             // @formatter:on
         }
