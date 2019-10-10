@@ -65,22 +65,20 @@ class InstanceExchangeFilterFunctionsTest {
         private final DefaultDataBufferFactory bufferFactory = new DefaultDataBufferFactory();
         private final DataBuffer original = this.bufferFactory.wrap("ORIGINAL".getBytes(StandardCharsets.UTF_8));
         private final DataBuffer converted = this.bufferFactory.wrap("CONVERTED".getBytes(StandardCharsets.UTF_8));
-        private final InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.convertLegacyEndpoints(
-            singletonList(new LegacyEndpointConverter("test", from -> Flux.just(this.converted)) {
-            }));
+        private final InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.convertLegacyEndpoints(singletonList(new LegacyEndpointConverter("test",
+            from -> Flux.just(this.converted)
+        ) {
+        }));
 
         @Test
         void should_convert_v1_actuator() {
-            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
-                                                 .attribute(ATTRIBUTE_ENDPOINT, "test")
-                                                 .build();
-            ClientResponse legacyResponse = ClientResponse.create(HttpStatus.OK)
-                                                          .header(CONTENT_TYPE, ActuatorMediaType.V1_JSON)
-                                                          .header(CONTENT_LENGTH,
-                                                              Integer.toString(this.original.readableByteCount())
-                                                          )
-                                                          .body(Flux.just(this.original))
-                                                          .build();
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test")).attribute(ATTRIBUTE_ENDPOINT, "test").build();
+            @SuppressWarnings("deprecation") ClientResponse legacyResponse = ClientResponse
+                .create(HttpStatus.OK)
+                .header(CONTENT_TYPE, ActuatorMediaType.V1_JSON)
+                .header(CONTENT_LENGTH, Integer.toString(this.original.readableByteCount()))
+                .body(Flux.just(this.original))
+                .build();
 
             Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, r -> Mono.just(legacyResponse));
 
@@ -93,16 +91,13 @@ class InstanceExchangeFilterFunctionsTest {
 
         @Test
         void should_convert_json() {
-            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
-                                                 .attribute(ATTRIBUTE_ENDPOINT, "test")
-                                                 .build();
-            ClientResponse legacyResponse = ClientResponse.create(HttpStatus.OK)
-                                                          .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                                                          .header(CONTENT_LENGTH,
-                                                              Integer.toString(this.original.readableByteCount())
-                                                          )
-                                                          .body(Flux.just(this.original))
-                                                          .build();
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test")).attribute(ATTRIBUTE_ENDPOINT, "test").build();
+            ClientResponse legacyResponse = ClientResponse
+                .create(HttpStatus.OK)
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .header(CONTENT_LENGTH, Integer.toString(this.original.readableByteCount()))
+                .body(Flux.just(this.original))
+                .build();
 
             Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, r -> Mono.just(legacyResponse));
 
@@ -115,20 +110,18 @@ class InstanceExchangeFilterFunctionsTest {
 
         @Test
         void should_not_convert_v2_actuator() {
-            InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.convertLegacyEndpoints(singletonList(
-                new LegacyEndpointConverter("test", from -> Flux.just(this.converted)) {
-                }));
+            InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.convertLegacyEndpoints(singletonList(new LegacyEndpointConverter("test",
+                from -> Flux.just(this.converted)
+            ) {
+            }));
 
-            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
-                                                 .attribute(ATTRIBUTE_ENDPOINT, "test")
-                                                 .build();
-            ClientResponse response = ClientResponse.create(HttpStatus.OK)
-                                                    .header(CONTENT_TYPE, ActuatorMediaType.V2_JSON)
-                                                    .header(CONTENT_LENGTH,
-                                                        Integer.toString(this.original.readableByteCount())
-                                                    )
-                                                    .body(Flux.just(this.original))
-                                                    .build();
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test")).attribute(ATTRIBUTE_ENDPOINT, "test").build();
+            ClientResponse response = ClientResponse
+                .create(HttpStatus.OK)
+                .header(CONTENT_TYPE, ActuatorMediaType.V2_JSON)
+                .header(CONTENT_LENGTH, Integer.toString(this.original.readableByteCount()))
+                .body(Flux.just(this.original))
+                .build();
 
             Mono<ClientResponse> convertedResponse = filter.filter(INSTANCE, request, r -> Mono.just(response));
 
@@ -141,18 +134,18 @@ class InstanceExchangeFilterFunctionsTest {
 
         @Test
         void should_not_convert_unknown_endpoint() {
-            InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.convertLegacyEndpoints(singletonList(
-                new LegacyEndpointConverter("test", from -> Flux.just(this.converted)) {
-                }));
+            InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.convertLegacyEndpoints(singletonList(new LegacyEndpointConverter("test",
+                from -> Flux.just(this.converted)
+            ) {
+            }));
 
             ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test")).build();
-            ClientResponse response = ClientResponse.create(HttpStatus.OK)
-                                                    .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                                                    .header(CONTENT_LENGTH,
-                                                        Integer.toString(this.original.readableByteCount())
-                                                    )
-                                                    .body(Flux.just(this.original))
-                                                    .build();
+            ClientResponse response = ClientResponse
+                .create(HttpStatus.OK)
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .header(CONTENT_LENGTH, Integer.toString(this.original.readableByteCount()))
+                .body(Flux.just(this.original))
+                .build();
 
             Mono<ClientResponse> convertedResponse = filter.filter(INSTANCE, request, r -> Mono.just(response));
 
@@ -165,20 +158,21 @@ class InstanceExchangeFilterFunctionsTest {
 
         @Test
         void should_not_convert_without_converter() {
-            InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.convertLegacyEndpoints(singletonList(
-                new LegacyEndpointConverter("test", from -> Flux.just(this.converted)) {
-                }));
+            InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.convertLegacyEndpoints(singletonList(new LegacyEndpointConverter("test",
+                from -> Flux.just(this.converted)
+            ) {
+            }));
 
-            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/unknown"))
-                                                 .attribute(ATTRIBUTE_ENDPOINT, "unknown")
-                                                 .build();
-            ClientResponse response = ClientResponse.create(HttpStatus.OK)
-                                                    .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                                                    .header(CONTENT_LENGTH,
-                                                        Integer.toString(this.original.readableByteCount())
-                                                    )
-                                                    .body(Flux.just(this.original))
-                                                    .build();
+            ClientRequest request = ClientRequest
+                .create(HttpMethod.GET, URI.create("/unknown"))
+                .attribute(ATTRIBUTE_ENDPOINT, "unknown")
+                .build();
+            ClientResponse response = ClientResponse
+                .create(HttpStatus.OK)
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .header(CONTENT_LENGTH, Integer.toString(this.original.readableByteCount()))
+                .body(Flux.just(this.original))
+                .build();
 
             Mono<ClientResponse> convertedResponse = filter.filter(INSTANCE, request, r -> Mono.just(response));
 
@@ -215,9 +209,7 @@ class InstanceExchangeFilterFunctionsTest {
         void should_retry_using_endpoint_value_default() {
             InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.retry(0, singletonMap("test", 1));
 
-            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
-                                                 .attribute(ATTRIBUTE_ENDPOINT, "test")
-                                                 .build();
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test")).attribute(ATTRIBUTE_ENDPOINT, "test").build();
             ClientResponse response = ClientResponse.create(HttpStatus.OK).build();
 
             AtomicLong invocationCount = new AtomicLong(0L);
@@ -244,8 +236,7 @@ class InstanceExchangeFilterFunctionsTest {
             });
 
             ClientRequest patchRequest = ClientRequest.create(HttpMethod.PATCH, URI.create("/test")).build();
-            StepVerifier.create(filter.filter(INSTANCE, patchRequest, exchange))
-                        .verifyError(IllegalStateException.class);
+            StepVerifier.create(filter.filter(INSTANCE, patchRequest, exchange)).verifyError(IllegalStateException.class);
             assertThat(invocationCount.get()).isEqualTo(1);
 
             invocationCount.set(0L);
@@ -255,14 +246,12 @@ class InstanceExchangeFilterFunctionsTest {
 
             invocationCount.set(0L);
             ClientRequest postRequest = ClientRequest.create(HttpMethod.POST, URI.create("/test")).build();
-            StepVerifier.create(filter.filter(INSTANCE, postRequest, exchange))
-                        .verifyError(IllegalStateException.class);
+            StepVerifier.create(filter.filter(INSTANCE, postRequest, exchange)).verifyError(IllegalStateException.class);
             assertThat(invocationCount.get()).isEqualTo(1);
 
             invocationCount.set(0L);
             ClientRequest deleteRequest = ClientRequest.create(HttpMethod.DELETE, URI.create("/test")).build();
-            StepVerifier.create(filter.filter(INSTANCE, deleteRequest, exchange))
-                        .verifyError(IllegalStateException.class);
+            StepVerifier.create(filter.filter(INSTANCE, deleteRequest, exchange)).verifyError(IllegalStateException.class);
             assertThat(invocationCount.get()).isEqualTo(1);
         }
     }
@@ -277,9 +266,10 @@ class InstanceExchangeFilterFunctionsTest {
 
         @Test
         void should_add_headers_from_provider() {
-            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
-                                                 .attribute(ATTRIBUTE_INSTANCE, INSTANCE)
-                                                 .build();
+            ClientRequest request = ClientRequest
+                .create(HttpMethod.GET, URI.create("/test"))
+                .attribute(ATTRIBUTE_INSTANCE, INSTANCE)
+                .build();
 
             Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (req) -> {
                 assertThat(req.headers().get("X-INSTANCE-ID")).containsExactly(INSTANCE.getId().getValue());
@@ -295,6 +285,7 @@ class InstanceExchangeFilterFunctionsTest {
         private final InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.setDefaultAcceptHeader();
 
         @Test
+        @SuppressWarnings("deprecation")
         void should_add_default_accept_headers() {
             ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test")).build();
 
@@ -311,9 +302,10 @@ class InstanceExchangeFilterFunctionsTest {
 
         @Test
         void should_not_add_default_accept_headers() {
-            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
-                                                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_XML_VALUE)
-                                                 .build();
+            ClientRequest request = ClientRequest
+                .create(HttpMethod.GET, URI.create("/test"))
+                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_XML_VALUE)
+                .build();
 
             Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (req) -> {
                 assertThat(req.headers().getAccept()).containsExactly(MediaType.APPLICATION_XML);
@@ -325,9 +317,10 @@ class InstanceExchangeFilterFunctionsTest {
 
         @Test
         void should_add_default_logfile_accept_headers() {
-            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
-                                                 .attribute(ATTRIBUTE_ENDPOINT, Endpoint.LOGFILE)
-                                                 .build();
+            ClientRequest request = ClientRequest
+                .create(HttpMethod.GET, URI.create("/test"))
+                .attribute(ATTRIBUTE_ENDPOINT, Endpoint.LOGFILE)
+                .build();
 
             Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (req) -> {
                 assertThat(req.headers().getAccept()).containsExactly(MediaType.TEXT_PLAIN);
@@ -341,19 +334,19 @@ class InstanceExchangeFilterFunctionsTest {
     @Nested
     class RewriteEndpointUrl {
         private final InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.rewriteEndpointUrl();
-        private final Registration registration = Registration.create("R", "http://test/actuator/health")
-                                                              .managementUrl("http://test/actuator")
-                                                              .build();
+        private final Registration registration = Registration
+            .create("R", "http://test/actuator/health")
+            .managementUrl("http://test/actuator")
+            .build();
         private final Endpoints endpoints = Endpoints.single(Endpoint.ENV, "http://test/actuator/env");
-        private final Instance instance = Instance.create(InstanceId.of("R"))
-                                                  .register(this.registration)
-                                                  .withEndpoints(this.endpoints);
+        private final Instance instance = Instance.create(InstanceId.of("R")).register(this.registration).withEndpoints(this.endpoints);
 
         @Test
         void should_rewirte_url_and_add_endpoint_attribute() {
-            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("health/database"))
-                                                 .attribute(ATTRIBUTE_INSTANCE, this.instance)
-                                                 .build();
+            ClientRequest request = ClientRequest
+                .create(HttpMethod.GET, URI.create("health/database"))
+                .attribute(ATTRIBUTE_INSTANCE, this.instance)
+                .build();
 
             Mono<ClientResponse> response = this.filter.filter(this.instance, request, (req) -> {
                 assertThat(req.url()).isEqualTo(URI.create(this.registration.getHealthUrl() + "/database"));
@@ -366,9 +359,10 @@ class InstanceExchangeFilterFunctionsTest {
 
         @Test
         void should_not_rewrite_absolute_url() {
-            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("http://test/actuator/unknown"))
-                                                 .attribute(ATTRIBUTE_INSTANCE, this.instance)
-                                                 .build();
+            ClientRequest request = ClientRequest
+                .create(HttpMethod.GET, URI.create("http://test/actuator/unknown"))
+                .attribute(ATTRIBUTE_INSTANCE, this.instance)
+                .build();
 
             Mono<ClientResponse> response = this.filter.filter(this.instance, request, (req) -> {
                 assertThat(req.url()).isEqualTo(URI.create("http://test/actuator/unknown"));
@@ -381,9 +375,10 @@ class InstanceExchangeFilterFunctionsTest {
 
         @Test
         void should_set_endpoint_attribute_for_management_url() {
-            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("http://test/actuator"))
-                                                 .attribute(ATTRIBUTE_INSTANCE, this.instance)
-                                                 .build();
+            ClientRequest request = ClientRequest
+                .create(HttpMethod.GET, URI.create("http://test/actuator"))
+                .attribute(ATTRIBUTE_INSTANCE, this.instance)
+                .build();
 
             Mono<ClientResponse> response = this.filter.filter(this.instance, request, (req) -> {
                 assertThat(req.attribute(ATTRIBUTE_ENDPOINT)).hasValue(Endpoint.ACTUATOR_INDEX);
@@ -395,34 +390,38 @@ class InstanceExchangeFilterFunctionsTest {
 
         @Test
         void should_error_on_unspecified_endpoint() {
-            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create(""))
-                                                 .attribute(ATTRIBUTE_INSTANCE, this.instance)
-                                                 .build();
+            ClientRequest request = ClientRequest
+                .create(HttpMethod.GET, URI.create(""))
+                .attribute(ATTRIBUTE_INSTANCE, this.instance)
+                .build();
 
             Mono<ClientResponse> response = this.filter.filter(this.instance,
                 request,
                 (req) -> Mono.just(ClientResponse.create(HttpStatus.OK).build())
             );
 
-            StepVerifier.create(response)
-                        .verifyErrorSatisfies(e -> assertThat(e).isInstanceOf(ResolveEndpointException.class)
-                                                                .hasMessage("No endpoint specified"));
+            StepVerifier
+                .create(response)
+                .verifyErrorSatisfies(e -> assertThat(e).isInstanceOf(ResolveEndpointException.class).hasMessage("No endpoint specified"));
         }
 
         @Test
         void should_error_on_unknown_endpoint() {
-            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("unknown"))
-                                                 .attribute(ATTRIBUTE_INSTANCE, this.instance)
-                                                 .build();
+            ClientRequest request = ClientRequest
+                .create(HttpMethod.GET, URI.create("unknown"))
+                .attribute(ATTRIBUTE_INSTANCE, this.instance)
+                .build();
 
             Mono<ClientResponse> response = this.filter.filter(this.instance,
                 request,
                 (req) -> Mono.just(ClientResponse.create(HttpStatus.OK).build())
             );
 
-            StepVerifier.create(response)
-                        .verifyErrorSatisfies(e -> assertThat(e).isInstanceOf(ResolveEndpointException.class)
-                                                                .hasMessage("Endpoint 'unknown' not found"));
+            StepVerifier
+                .create(response)
+                .verifyErrorSatisfies(e -> assertThat(e)
+                    .isInstanceOf(ResolveEndpointException.class)
+                    .hasMessage("Endpoint 'unknown' not found"));
         }
     }
 
@@ -431,9 +430,7 @@ class InstanceExchangeFilterFunctionsTest {
     class Timeout {
         @Test
         void should_timeout_using_default() {
-            InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.timeout(Duration.ofSeconds(1),
-                emptyMap()
-            );
+            InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.timeout(Duration.ofSeconds(1), emptyMap());
 
             ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test")).build();
 
@@ -451,9 +448,7 @@ class InstanceExchangeFilterFunctionsTest {
                 singletonMap("test", Duration.ofSeconds(1))
             );
 
-            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
-                                                 .attribute(ATTRIBUTE_ENDPOINT, "test")
-                                                 .build();
+            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test")).attribute(ATTRIBUTE_ENDPOINT, "test").build();
 
             Mono<ClientResponse> response = filter.filter(INSTANCE,
                 request,
@@ -470,10 +465,11 @@ class InstanceExchangeFilterFunctionsTest {
 
         @Test
         void should_add_accept_all_to_headers_for_logfile() {
-            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
-                                                 .attribute(ATTRIBUTE_ENDPOINT, Endpoint.LOGFILE)
-                                                 .header(ACCEPT, TEXT_PLAIN_VALUE)
-                                                 .build();
+            ClientRequest request = ClientRequest
+                .create(HttpMethod.GET, URI.create("/test"))
+                .attribute(ATTRIBUTE_ENDPOINT, Endpoint.LOGFILE)
+                .header(ACCEPT, TEXT_PLAIN_VALUE)
+                .build();
 
             Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (req) -> {
                 assertThat(req.headers().getAccept()).containsExactly(MediaType.TEXT_PLAIN, MediaType.ALL);
@@ -485,10 +481,11 @@ class InstanceExchangeFilterFunctionsTest {
 
         @Test
         void should_not_add_accept_all_to_headers_for_non_logfile() {
-            ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
-                                                 .attribute(ATTRIBUTE_ENDPOINT, Endpoint.HTTPTRACE)
-                                                 .header(ACCEPT, APPLICATION_JSON_VALUE)
-                                                 .build();
+            ClientRequest request = ClientRequest
+                .create(HttpMethod.GET, URI.create("/test"))
+                .attribute(ATTRIBUTE_ENDPOINT, Endpoint.HTTPTRACE)
+                .header(ACCEPT, APPLICATION_JSON_VALUE)
+                .build();
 
             Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (req) -> {
                 assertThat(req.headers().getAccept()).containsExactly(MediaType.APPLICATION_JSON);

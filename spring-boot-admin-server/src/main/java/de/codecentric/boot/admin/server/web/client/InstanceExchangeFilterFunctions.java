@@ -47,6 +47,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 public final class InstanceExchangeFilterFunctions {
     private static final Logger log = LoggerFactory.getLogger(InstanceExchangeFilterFunctions.class);
     public static final String ATTRIBUTE_ENDPOINT = "endpointId";
+    @SuppressWarnings("deprecation") // We need to support Spring Boot 1.x apps...
     private static final List<MediaType> DEFAULT_ACCEPT_MEDIATYPES = asList(MediaType.parseMediaType(ActuatorMediaType.V2_JSON),
         MediaType.parseMediaType(ActuatorMediaType.V1_JSON),
         MediaType.APPLICATION_JSON

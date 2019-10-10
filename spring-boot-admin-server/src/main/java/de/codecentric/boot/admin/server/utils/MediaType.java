@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.utils;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 
 public final class MediaType {
+    @SuppressWarnings("deprecation") // We need to support Spring Boot 1.x apps...
     public static final org.springframework.http.MediaType ACTUATOR_V1_MEDIATYPE = org.springframework.http.MediaType.parseMediaType(
         ActuatorMediaType.V1_JSON);
     public static final org.springframework.http.MediaType ACTUATOR_V2_MEDIATYPE = org.springframework.http.MediaType.parseMediaType(
