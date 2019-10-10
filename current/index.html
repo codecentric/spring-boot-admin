@@ -530,7 +530,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.2.0-SNAPSHOT,</span>
-<span id="revdate">08.10.2019</span>
+<span id="revdate">10.10.2019</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -1669,7 +1669,7 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <div class="listingblock">
 <div class="title">How to configure filtering</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>(proxyBeanMethods = <span class="predefined-constant">false</span>)
 <span class="directive">public</span> <span class="type">class</span> <span class="class">NotifierConfig</span> {
     <span class="directive">private</span> <span class="directive">final</span> InstanceRepository repository;
     <span class="directive">private</span> <span class="directive">final</span> ObjectProvider&lt;<span class="predefined-type">List</span>&lt;Notifier&gt;&gt; otherNotifiers;
@@ -2295,7 +2295,7 @@ By default <code>spring-boot-admin-server-ui</code> provides a login page and a 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>(proxyBeanMethods = <span class="predefined-constant">false</span>)
 <span class="directive">public</span> <span class="type">class</span> <span class="class">SecuritySecureConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
     <span class="directive">private</span> <span class="directive">final</span> AdminServerProperties adminServer;
 
