@@ -24,9 +24,11 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointPr
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.util.StringUtils;
 
 public class CloudFoundryApplicationFactory extends DefaultApplicationFactory {
     private final CloudFoundryApplicationProperties cfApplicationProperties;
+    private final InstanceProperties instance;
 
     public CloudFoundryApplicationFactory(InstanceProperties instance,
                                           ManagementServerProperties management,
@@ -37,16 +39,21 @@ public class CloudFoundryApplicationFactory extends DefaultApplicationFactory {
                                           CloudFoundryApplicationProperties cfApplicationProperties) {
         super(instance, management, server, pathMappedEndpoints, webEndpoint, metadataContributor);
         this.cfApplicationProperties = cfApplicationProperties;
+        this.instance = instance;
     }
 
-	@Override
-	protected String getServiceBaseUrl() {
-		if (cfApplicationProperties.getUris().isEmpty()) {
-			return super.getServiceBaseUrl();
-		}
+    @Override
+    protected String getServiceBaseUrl() {
+        String baseUrl = this.instance.getServiceBaseUrl();
+        if (!StringUtils.isEmpty(baseUrl)) {
+            return baseUrl;
+        }
 
-		String uri = cfApplicationProperties.getUris().get(0);
-		String schema = this.getMetadata().getOrDefault("serviceSchema", "http");
-		return schema + "://" + uri;
-	}
+        if (this.cfApplicationProperties.getUris().isEmpty()) {
+            return super.getServiceBaseUrl();
+        }
+
+        return "http://" + this.cfApplicationProperties.getUris().get(0);
+    }
 }
+

@@ -4,7 +4,8 @@
 [[show-version-in-application-list]]
 === Show Version in Application List ===
 
-For *Spring Boot* applications the easiest way to show the version, is to use the `build-info` goal from the `spring-boot-maven-plugin`, which generates the `META-INF/build-info.properties`. See also the http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#howto-build-info[Spring Boot Reference Guide].
+For *Spring Boot* applications the easiest way to show the version, is to use the `build-info` goal from the `spring-boot-maven-plugin`, which generates the `META-INF/build-info.properties`.
+See also the http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#howto-build-info[Spring Boot Reference Guide].
 
 For *non-Spring Boot* applications you can either add a `version` or `build.version` to the registration metadata and the version will show up in the application list.
 
@@ -31,8 +32,10 @@ For *non-Spring Boot* applications you can either add a `version` or `build.vers
 [[jmx-bean-management]]
 === JMX-Bean Management ===
 
-To interact with JMX-beans in the admin UI you have to include https://jolokia.org/[Jolokia] in your application. As Jolokia is servlet based there is no support for reactive applications.
-In case you are using the `spring-boot-admin-starter-client` it will be pulled in for you, if not add Jolokia to your dependencies. With Spring Boot 2.2.0 you might want to set `spring.jmx.enabled=true` if you want to expose Spring beans via JMX.
+To interact with JMX-beans in the admin UI you have to include https://jolokia.org/[Jolokia] in your application.
+As Jolokia is servlet based there is no support for reactive applications.
+In case you are using the `spring-boot-admin-starter-client` it will be pulled in for you, if not add Jolokia to your dependencies.
+With Spring Boot 2.2.0 you might want to set `spring.jmx.enabled=true` if you want to expose Spring beans via JMX.
 
 [source,xml]
 .pom.xml
@@ -52,14 +55,16 @@ In order to enable the logfile actuator endpoint you need to configure Spring Bo
 
 Spring Boot Admin will detect everything that looks like an URL and render it as hyperlink.
 
-ANSI color-escapes are also supported. You need to set a custom file log pattern as Spring Boot's default one doesn't use colors.
+ANSI color-escapes are also supported.
+You need to set a custom file log pattern as Spring Boot's default one doesn't use colors.
 
 .application.properties
 ----
 logging.file=/var/log/sample-boot-application.log <1>
 logging.pattern.file=%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID}){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx <2>
 ----
-<1> Destination the logfile is written to. Enables the logfile actuator endpoint.
+<1> Destination the logfile is written to.
+Enables the logfile actuator endpoint.
 <2> File log pattern using ANSI colors.
 
 [[show-instance-tags]]
@@ -80,9 +85,12 @@ info.tags.environment=test
 [[spring-boot-admin-client]]
 === Spring Boot Admin Client ===
 
-The Spring Boot Admin Client registers the application at the admin server. This is done by periodically doing a HTTP post request to the SBA Server providing information about the application. It also adds Jolokia to your application, so that JMX-beans are accessible via HTTP.
+The Spring Boot Admin Client registers the application at the admin server.
+This is done by periodically doing a HTTP post request to the SBA Server providing information about the application.
+It also adds Jolokia to your application, so that JMX-beans are accessible via HTTP.
 
-TIP: There are plenty of properties to influence the way how the SBA Client registers your application. In case that doesn't fit your needs, you can provide your own `ApplicationFactory` implementation.
+TIP: There are plenty of properties to influence the way how the SBA Client registers your application.
+In case that doesn't fit your needs, you can provide your own `ApplicationFactory` implementation.
 
 .Spring Boot Admin Client configuration options
 |===
@@ -142,7 +150,7 @@ spring.boot.admin.client.password
 | Guessed based on management-base-url and `management.context-path`.
 
 | spring.boot.admin.client.instance.service-base-url
-| Base url for computing the service-url to register with. The path is inferred at runtime, and appended to the base url.
+| Base url for computing the service-url to register with. The path is inferred at runtime, and appended to the base url. In Cloudfoundry environments you can switching to https like this: `spring.boot.admin.client.instance.service-base-url=https://${vcap.application.uris[0]}`
 | Guessed based on hostname, `server.port`.
 
 | spring.boot.admin.client.instance.service-url
@@ -178,8 +186,4 @@ spring.boot.admin.client.password
 user.password
 | Credentials being used to access the endpoints.
 |
-| serviceSchema
-| schema used by SBA server to access the client/instance on CloudFoundry
-| http
 |===
-
