@@ -530,7 +530,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.2.0-SNAPSHOT,</span>
-<span id="revdate">10.10.2019</span>
+<span id="revdate">11.10.2019</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -948,7 +948,8 @@ You can include the Spring Boot Admin Server to your Eureka server. Setup everyt
 <div class="sect2">
 <h3 id="show-version-in-application-list"><a class="anchor" href="#show-version-in-application-list"></a><a class="link" href="#show-version-in-application-list">3.1. Show Version in Application List</a></h3>
 <div class="paragraph">
-<p>For <strong>Spring Boot</strong> applications the easiest way to show the version, is to use the <code>build-info</code> goal from the <code>spring-boot-maven-plugin</code>, which generates the <code>META-INF/build-info.properties</code>. See also the <a href="http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#howto-build-info">Spring Boot Reference Guide</a>.</p>
+<p>For <strong>Spring Boot</strong> applications the easiest way to show the version, is to use the <code>build-info</code> goal from the <code>spring-boot-maven-plugin</code>, which generates the <code>META-INF/build-info.properties</code>.
+See also the <a href="http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#howto-build-info">Spring Boot Reference Guide</a>.</p>
 </div>
 <div class="paragraph">
 <p>For <strong>non-Spring Boot</strong> applications you can either add a <code>version</code> or <code>build.version</code> to the registration metadata and the version will show up in the application list.</p>
@@ -977,8 +978,10 @@ You can include the Spring Boot Admin Server to your Eureka server. Setup everyt
 <div class="sect2">
 <h3 id="jmx-bean-management"><a class="anchor" href="#jmx-bean-management"></a><a class="link" href="#jmx-bean-management">3.2. JMX-Bean Management</a></h3>
 <div class="paragraph">
-<p>To interact with JMX-beans in the admin UI you have to include <a href="https://jolokia.org/">Jolokia</a> in your application. As Jolokia is servlet based there is no support for reactive applications.
-In case you are using the <code>spring-boot-admin-starter-client</code> it will be pulled in for you, if not add Jolokia to your dependencies. With Spring Boot 2.2.0 you might want to set <code>spring.jmx.enabled=true</code> if you want to expose Spring beans via JMX.</p>
+<p>To interact with JMX-beans in the admin UI you have to include <a href="https://jolokia.org/">Jolokia</a> in your application.
+As Jolokia is servlet based there is no support for reactive applications.
+In case you are using the <code>spring-boot-admin-starter-client</code> it will be pulled in for you, if not add Jolokia to your dependencies.
+With Spring Boot 2.2.0 you might want to set <code>spring.jmx.enabled=true</code> if you want to expose Spring beans via JMX.</p>
 </div>
 <div class="listingblock">
 <div class="title">pom.xml</div>
@@ -1001,7 +1004,8 @@ In order to enable the logfile actuator endpoint you need to configure Spring Bo
 <p>Spring Boot Admin will detect everything that looks like an URL and render it as hyperlink.</p>
 </div>
 <div class="paragraph">
-<p>ANSI color-escapes are also supported. You need to set a custom file log pattern as Spring Boot&#8217;s default one doesn&#8217;t use colors.</p>
+<p>ANSI color-escapes are also supported.
+You need to set a custom file log pattern as Spring Boot&#8217;s default one doesn&#8217;t use colors.</p>
 </div>
 <div class="listingblock">
 <div class="title">application.properties</div>
@@ -1014,7 +1018,8 @@ logging.pattern.file=%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${P
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Destination the logfile is written to. Enables the logfile actuator endpoint.</td>
+<td>Destination the logfile is written to.
+Enables the logfile actuator endpoint.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
@@ -1043,7 +1048,9 @@ info.tags.environment=test</pre>
 <div class="sect2">
 <h3 id="spring-boot-admin-client"><a class="anchor" href="#spring-boot-admin-client"></a><a class="link" href="#spring-boot-admin-client">3.5. Spring Boot Admin Client</a></h3>
 <div class="paragraph">
-<p>The Spring Boot Admin Client registers the application at the admin server. This is done by periodically doing a HTTP post request to the SBA Server providing information about the application. It also adds Jolokia to your application, so that JMX-beans are accessible via HTTP.</p>
+<p>The Spring Boot Admin Client registers the application at the admin server.
+This is done by periodically doing a HTTP post request to the SBA Server providing information about the application.
+It also adds Jolokia to your application, so that JMX-beans are accessible via HTTP.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -1052,7 +1059,8 @@ info.tags.environment=test</pre>
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-There are plenty of properties to influence the way how the SBA Client registers your application. In case that doesn&#8217;t fit your needs, you can provide your own <code>ApplicationFactory</code> implementation.
+There are plenty of properties to influence the way how the SBA Client registers your application.
+In case that doesn&#8217;t fit your needs, you can provide your own <code>ApplicationFactory</code> implementation.
 </td>
 </tr>
 </table>
@@ -1140,7 +1148,7 @@ spring.boot.admin.client.password</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.instance.service-base-url</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Base url for computing the service-url to register with. The path is inferred at runtime, and appended to the base url.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Base url for computing the service-url to register with. The path is inferred at runtime, and appended to the base url. In Cloudfoundry environments you can switching to https like this: <code>spring.boot.admin.client.instance.service-base-url=https://${vcap.application.uris[0]}</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Guessed based on hostname, <code>server.port</code>.</p></td>
 </tr>
 <tr>
