@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ public class StatusUpdater {
     }
 
     public Mono<Void> updateStatus(InstanceId id) {
-        return repository.computeIfPresent(id, (key, instance) -> this.doUpdateStatus(instance)).then();
+        return this.repository.computeIfPresent(id, (key, instance) -> this.doUpdateStatus(instance)).then();
 
     }
 
@@ -67,15 +67,15 @@ public class StatusUpdater {
         }
 
         log.debug("Update status for {}", instance);
-        return instanceWebClient.instance(instance)
-                                .get()
-                                .uri(Endpoint.HEALTH)
-                                .exchange()
-                                .log(log.getName(), Level.FINEST)
-                                .flatMap(this::convertStatusInfo)
-                                .doOnError(ex -> logError(instance, ex))
-                                .onErrorResume(this::handleError)
-                                .map(instance::withStatusInfo);
+        return this.instanceWebClient.instance(instance)
+                                     .get()
+                                     .uri(Endpoint.HEALTH)
+                                     .exchange()
+                                     .log(log.getName(), Level.FINEST)
+                                     .flatMap(this::convertStatusInfo)
+                                     .doOnError(ex -> logError(instance, ex))
+                                     .onErrorResume(this::handleError)
+                                     .map(instance::withStatusInfo);
     }
 
     protected Mono<StatusInfo> convertStatusInfo(ClientResponse response) {
@@ -94,7 +94,7 @@ public class StatusUpdater {
                 return getStatusInfoFromStatus(response.statusCode(), body);
             }).defaultIfEmpty(statusInfoFromStatus);
         }
-        return response.bodyToMono(Void.class).then(Mono.just(statusInfoFromStatus));
+        return response.releaseBody().then(Mono.just(statusInfoFromStatus));
     }
 
     @SuppressWarnings("unchecked")

@@ -88,7 +88,7 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
                     managementUrl,
                     response.rawStatusCode()
                 );
-                return response.bodyToMono(Void.class).then(Mono.empty());
+                return response.releaseBody().then(Mono.empty());
             }
 
             if (!response.headers().contentType().map(actuatorMediaType::isCompatibleWith).orElse(false)) {
@@ -98,7 +98,7 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
                     managementUrl,
                     response.headers().contentType().map(Objects::toString).orElse("(missing)")
                 );
-                return response.bodyToMono(Void.class).then(Mono.empty());
+                return response.releaseBody().then(Mono.empty());
             }
 
             log.debug("Querying actuator-index for instance {} on '{}' successful.", instance.getId(), managementUrl);

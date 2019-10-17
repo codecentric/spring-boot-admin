@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ public class InfoUpdater {
     }
 
     public Mono<Void> updateInfo(InstanceId id) {
-        return repository.computeIfPresent(id, (key, instance) -> this.doUpdateInfo(instance)).then();
+        return this.repository.computeIfPresent(id, (key, instance) -> this.doUpdateInfo(instance)).then();
     }
 
     protected Mono<Instance> doUpdateInfo(Instance instance) {
@@ -65,14 +65,14 @@ public class InfoUpdater {
         }
 
         log.debug("Update info for {}", instance);
-        return instanceWebClient.instance(instance)
-                                .get()
-                                .uri(Endpoint.INFO)
-                                .exchange()
-                                .log(log.getName(), Level.FINEST)
-                                .flatMap(response -> convertInfo(instance, response))
-                                .onErrorResume(ex -> Mono.just(convertInfo(instance, ex)))
-                                .map(instance::withInfo);
+        return this.instanceWebClient.instance(instance)
+                                     .get()
+                                     .uri(Endpoint.INFO)
+                                     .exchange()
+                                     .log(log.getName(), Level.FINEST)
+                                     .flatMap(response -> convertInfo(instance, response))
+                                     .onErrorResume(ex -> Mono.just(convertInfo(instance, ex)))
+                                     .map(instance::withInfo);
     }
 
     protected Mono<Info> convertInfo(Instance instance, ClientResponse response) {
@@ -85,7 +85,7 @@ public class InfoUpdater {
             return response.bodyToMono(RESPONSE_TYPE).map(Info::from).defaultIfEmpty(Info.empty());
         }
         log.info("Couldn't retrieve info for {}: {}", instance, response.statusCode());
-        return response.bodyToMono(Void.class).then(Mono.just(Info.empty()));
+        return response.releaseBody().then(Mono.just(Info.empty()));
     }
 
     protected Info convertInfo(Instance instance, Throwable ex) {

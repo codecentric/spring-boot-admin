@@ -109,7 +109,7 @@ public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
                     response.rawStatusCode()
                 );
             }
-            return response.bodyToMono(Void.class).then(endpoint);
+            return response.releaseBody().then(endpoint);
         };
     }
 

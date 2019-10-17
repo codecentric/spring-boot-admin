@@ -51,7 +51,7 @@ public class ReactiveRegistrationClient implements RegistrationClient {
 
     @Override
     public void deregister(String adminUrl, String id) {
-        this.webclient.delete().uri(adminUrl + '/' + id).retrieve().bodyToMono(Void.class).timeout(this.timeout).block();
+        this.webclient.delete().uri(adminUrl + '/' + id).retrieve().toBodilessEntity().timeout(this.timeout).block();
     }
 
     protected void setRequestHeaders(HttpHeaders headers) {
