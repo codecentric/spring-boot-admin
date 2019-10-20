@@ -66,7 +66,7 @@ public class AdminServerHazelcastAutoConfiguration {
     @ConditionalOnBean(Notifier.class)
     public static class NotifierTriggerConfiguration {
 
-        @Value("${spring.boot.admin.hazelcast.event-store:" + DEFAULT_NAME_SENT_NOTIFICATIONS_MAP + "}")
+        @Value("${spring.boot.admin.hazelcast.sent-notifications:" + DEFAULT_NAME_SENT_NOTIFICATIONS_MAP + "}")
         private String nameSentNotificationsMap = DEFAULT_NAME_SENT_NOTIFICATIONS_MAP;
 
         @Bean(initMethod = "start", destroyMethod = "stop")
