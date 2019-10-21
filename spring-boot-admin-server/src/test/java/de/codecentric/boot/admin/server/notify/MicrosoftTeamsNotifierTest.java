@@ -66,8 +66,7 @@ public class MicrosoftTeamsNotifierTest {
         when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 
         mockRestTemplate = mock(RestTemplate.class);
-        notifier = new MicrosoftTeamsNotifier(repository);
-        notifier.setRestTemplate(mockRestTemplate);
+        notifier = new MicrosoftTeamsNotifier(repository, mockRestTemplate);
         notifier.setWebhookUrl(URI.create("http://example.com"));
     }
 

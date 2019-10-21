@@ -37,7 +37,7 @@ import org.springframework.web.client.RestTemplate;
 public class TelegramNotifier extends AbstractStatusChangeNotifier {
     private static final String DEFAULT_MESSAGE = "<strong>#{instance.registration.name}</strong>/#{instance.id} is <strong>#{event.statusInfo.status}</strong>";
     private final SpelExpressionParser parser = new SpelExpressionParser();
-    private RestTemplate restTemplate = new RestTemplate();
+    private RestTemplate restTemplate;
 
     /**
      * base url for telegram (i.e. https://api.telegram.org)
@@ -69,8 +69,9 @@ public class TelegramNotifier extends AbstractStatusChangeNotifier {
 
     private Expression message;
 
-    public TelegramNotifier(InstanceRepository repository) {
+    public TelegramNotifier(InstanceRepository repository, RestTemplate restTemplate) {
         super(repository);
+        this.restTemplate = restTemplate;
         this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
     }
 

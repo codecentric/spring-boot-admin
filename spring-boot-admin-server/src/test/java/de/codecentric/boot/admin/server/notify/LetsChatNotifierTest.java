@@ -60,12 +60,11 @@ public class LetsChatNotifierTest {
         when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 
         restTemplate = mock(RestTemplate.class);
-        notifier = new LetsChatNotifier(repository);
+        notifier = new LetsChatNotifier(repository, restTemplate);
         notifier.setUsername(user);
         notifier.setUrl(URI.create(host));
         notifier.setRoom(room);
         notifier.setToken(token);
-        notifier.setRestTemplate(restTemplate);
     }
 
     @Test

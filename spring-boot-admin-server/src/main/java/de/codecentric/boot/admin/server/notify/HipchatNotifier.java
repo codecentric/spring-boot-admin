@@ -47,7 +47,7 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
     private static final String DEFAULT_DESCRIPTION = "<strong>#{instance.registration.name}</strong>/#{instance.id} is <strong>#{event.statusInfo.status}</strong>";
 
     private final SpelExpressionParser parser = new SpelExpressionParser();
-    private RestTemplate restTemplate = new RestTemplate();
+    private RestTemplate restTemplate;
 
     /**
      * Base URL for HipChat API (i.e. https://ACCOUNT_NAME.hipchat.com/v2
@@ -77,8 +77,9 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
      */
     private Expression description;
 
-    public HipchatNotifier(InstanceRepository repository) {
+    public HipchatNotifier(InstanceRepository repository, RestTemplate restTemplate) {
         super(repository);
+        this.restTemplate = restTemplate;
         this.description = parser.parseExpression(DEFAULT_DESCRIPTION, ParserContext.TEMPLATE_EXPRESSION);
     }
 

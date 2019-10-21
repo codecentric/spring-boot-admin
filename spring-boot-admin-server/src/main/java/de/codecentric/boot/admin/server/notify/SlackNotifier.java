@@ -47,7 +47,7 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
     private static final String DEFAULT_MESSAGE = "*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*";
 
     private final SpelExpressionParser parser = new SpelExpressionParser();
-    private RestTemplate restTemplate = new RestTemplate();
+    private RestTemplate restTemplate;
 
     /**
      * Webhook url for Slack API (i.e. https://hooks.slack.com/services/xxx)
@@ -78,8 +78,9 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
      */
     private Expression message;
 
-    public SlackNotifier(InstanceRepository repository) {
+    public SlackNotifier(InstanceRepository repository, RestTemplate restTemplate) {
         super(repository);
+        this.restTemplate = restTemplate;
         this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
     }
 

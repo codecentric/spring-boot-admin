@@ -55,9 +55,8 @@ public class OpsGenieNotifierTest {
         when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE));
         restTemplate = mock(RestTemplate.class);
 
-        notifier = new OpsGenieNotifier(repository);
+        notifier = new OpsGenieNotifier(repository, restTemplate);
         notifier.setApiKey("--service--");
-        notifier.setRestTemplate(restTemplate);
         notifier.setUser("--user--");
         notifier.setSource("--source--");
         notifier.setEntity("--entity--");

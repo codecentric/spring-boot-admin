@@ -57,12 +57,11 @@ public class HipchatNotifierTest {
         when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 
         restTemplate = mock(RestTemplate.class);
-        notifier = new HipchatNotifier(repository);
+        notifier = new HipchatNotifier(repository, restTemplate);
         notifier.setNotify(true);
         notifier.setAuthToken("--token-");
         notifier.setRoomId("-room-");
         notifier.setUrl(URI.create("http://localhost/v2"));
-        notifier.setRestTemplate(restTemplate);
     }
 
     @Test
