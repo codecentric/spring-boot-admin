@@ -76,8 +76,8 @@ public class AdminServerNotifierAutoConfiguration {
         }
 
         @Bean
-        public RestTemplate notifierRestTemplate(RestTemplateBuilder builder) {
-            return builder.additionalCustomizers(notifierProxyCustomizer()).build();
+        public RestTemplate notifierRestTemplate() {
+            return new RestTemplateBuilder().additionalCustomizers(notifierProxyCustomizer()).build();
         }
     }
 
