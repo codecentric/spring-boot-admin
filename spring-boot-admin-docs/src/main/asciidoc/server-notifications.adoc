@@ -365,7 +365,7 @@ To enable Discord notifications you need to create a webhook and set the appropr
 
 [[notification-proxy]]
 ==== Notification Proxy Settings ====
-All Notifiers are sharing a common `RestTemplate` which can be configured to use a proxy.
+All Notifiers which are using a `RestTemplate` can be configured to use a proxy.
 
 .Notification Proxy configuration options
 |===
@@ -379,42 +379,6 @@ All Notifiers are sharing a common `RestTemplate` which can be configured to use
 | The proxy port
 |
 |===
-
-If you need proxy authentication, you need to configure your own `RestTemplate`.
-[source,java]
-----
-@Bean
-public RestTemplate notifierRestTemplate() {
-    int proxyPort = 8080;
-    String proxyHost = "localhost";
-    String proxyUser = "user";
-    String proxyPassword = "password";
-
-    CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-    credentialsProvider.setCredentials(new AuthScope(proxyHost, proxyPort), new UsernamePasswordCredentials(proxyUser, proxyPassword));
-
-    HttpClientBuilder clientBuilder = HttpClientBuilder.create();
-    clientBuilder.useSystemProperties();
-    clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
-    clientBuilder.setDefaultCredentialsProvider(credentialsProvider);
-    clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
-    CloseableHttpClient client = clientBuilder.build();
-
-    HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(client);
-
-    return new RestTemplate(factory);
-}
-----
-
-You need to add an additional dependency to use the authentication features of Apache HttpClient.
-[source,xml]
-.pom.xml
-----
-<dependency>
-    <groupId>org.apache.httpcomponents</groupId>
-    <artifactId>httpclient</artifactId>
-</dependency>
-----
 
 
 [[reminder-notifications]]

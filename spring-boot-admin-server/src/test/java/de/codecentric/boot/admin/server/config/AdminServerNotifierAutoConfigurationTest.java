@@ -24,6 +24,7 @@ import de.codecentric.boot.admin.server.notify.MailNotifier;
 import de.codecentric.boot.admin.server.notify.MicrosoftTeamsNotifier;
 import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
+import de.codecentric.boot.admin.server.notify.NotifierProxyProperties;
 import de.codecentric.boot.admin.server.notify.OpsGenieNotifier;
 import de.codecentric.boot.admin.server.notify.PagerdutyNotifier;
 import de.codecentric.boot.admin.server.notify.SlackNotifier;
@@ -42,7 +43,6 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -144,26 +144,11 @@ public class AdminServerNotifierAutoConfigurationTest {
     }
 
     @Test
-    public void test_no_notifierRestTemplate() {
-        this.contextRunner.run(context -> assertThat(context).doesNotHaveBean("notifierRestTemplate"));
+    public void test_notifierProxyProperties() {
+        this.contextRunner.withPropertyValues(
+            "spring.boot.admin.notify.proxy.host")
+                          .run(context -> assertThat(context).hasSingleBean(NotifierProxyProperties.class));
     }
-
-    @Test
-    public void test_defaultNotifierRestTermplate() {
-        this.contextRunner.withUserConfiguration(TestSingleNotifierConfig.class).run(context -> {
-            assertThat(context.getBean("notifierRestTemplate")).isInstanceOf(RestTemplate.class);
-            assertThat(context).getBeans(RestTemplate.class).hasSize(1);
-        });
-    }
-
-    @Test
-    public void test_customNotifierRestTermplate() {
-        this.contextRunner.withUserConfiguration(TestNotifierRestTemplateConfig.class).run(context -> {
-            assertThat(context.getBean("notifierRestTemplate")).isInstanceOf(RestTemplate.class);
-            assertThat(context).getBeans(RestTemplate.class).hasSize(1);
-        });
-    }
-
 
     public static class TestSingleNotifierConfig {
         @Bean
@@ -177,13 +162,6 @@ public class AdminServerNotifierAutoConfigurationTest {
         @Bean
         public JavaMailSenderImpl mailSender() {
             return new JavaMailSenderImpl();
-        }
-    }
-
-    private static class TestNotifierRestTemplateConfig {
-        @Bean
-        public RestTemplate notifierRestTemplate() {
-            return new RestTemplate();
         }
     }
 
