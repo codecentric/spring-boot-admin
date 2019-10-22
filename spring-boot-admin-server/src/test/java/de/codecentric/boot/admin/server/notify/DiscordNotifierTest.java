@@ -58,8 +58,7 @@ public class DiscordNotifierTest {
         repository = mock(InstanceRepository.class);
         when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE));
         restTemplate = mock(RestTemplate.class);
-        notifier = new DiscordNotifier(repository);
-        notifier.setRestTemplate(restTemplate);
+        notifier = new DiscordNotifier(repository, restTemplate);
         notifier.setWebhookUrl(webhookUri);
     }
 

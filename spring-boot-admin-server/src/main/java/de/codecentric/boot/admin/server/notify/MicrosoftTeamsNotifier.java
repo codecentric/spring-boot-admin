@@ -47,7 +47,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
     private static final String HEALTH_URL_KEY = "Health URL";
     private static final String MANAGEMENT_URL_KEY = "Management URL";
     private static final String SOURCE_KEY = "Source";
-    private RestTemplate restTemplate = new RestTemplate();
+    private RestTemplate restTemplate;
 
     /**
      * Webhook url for Microsoft Teams Channel Webhook connector (i.e.
@@ -100,8 +100,9 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
      */
     private String messageSummary = "Spring Boot Admin Notification";
 
-    public MicrosoftTeamsNotifier(InstanceRepository repository) {
+    public MicrosoftTeamsNotifier(InstanceRepository repository, RestTemplate restTemplate) {
         super(repository);
+        this.restTemplate = restTemplate;
     }
 
     @Override

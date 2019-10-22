@@ -54,13 +54,12 @@ public class TelegramNotifierTest {
         when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 
         restTemplate = mock(RestTemplate.class);
-        notifier = new TelegramNotifier(repository);
+        notifier = new TelegramNotifier(repository, restTemplate);
         notifier.setDisableNotify(false);
         notifier.setAuthToken("--token-");
         notifier.setChatId("-room-");
         notifier.setParseMode("HTML");
         notifier.setApiUrl("https://telegram.com");
-        notifier.setRestTemplate(restTemplate);
     }
 
     @Test

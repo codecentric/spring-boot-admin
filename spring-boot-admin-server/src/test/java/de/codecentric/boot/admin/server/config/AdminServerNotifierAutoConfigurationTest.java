@@ -24,6 +24,7 @@ import de.codecentric.boot.admin.server.notify.MailNotifier;
 import de.codecentric.boot.admin.server.notify.MicrosoftTeamsNotifier;
 import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
+import de.codecentric.boot.admin.server.notify.NotifierProxyProperties;
 import de.codecentric.boot.admin.server.notify.OpsGenieNotifier;
 import de.codecentric.boot.admin.server.notify.PagerdutyNotifier;
 import de.codecentric.boot.admin.server.notify.SlackNotifier;
@@ -142,6 +143,12 @@ public class AdminServerNotifierAutoConfigurationTest {
         });
     }
 
+    @Test
+    public void test_notifierProxyProperties() {
+        this.contextRunner.withPropertyValues(
+            "spring.boot.admin.notify.proxy.host")
+                          .run(context -> assertThat(context).hasSingleBean(NotifierProxyProperties.class));
+    }
 
     public static class TestSingleNotifierConfig {
         @Bean

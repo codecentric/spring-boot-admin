@@ -1,55 +1,5 @@
 === Notifications ===
 
-
-[[reminder-notifications]]
-==== Reminder Notifications ====
-The `RemindingNotifier` sends reminders for down/offline applications, it delegates the sending of notifications to another notifier.
-
-By default a reminder is triggered when a registered application changes to `DOWN` or `OFFLINE`. You can alter this behaviour via `setReminderStatuses()`. The reminder ends when either the status changes to a non-triggering status or the regarding application gets deregistered.
-
-By default the reminders are sent every 10 minutes, to change this use `setReminderPeriod()`. The `RemindingNotifier` itself doesn't start the background thread to send the reminders, you need to take care of this as shown in the given example below;
-
-.How to configure reminders
-[source,java]
-----
-@Configuration
-public class NotifierConfiguration {
-    @Autowired
-    private Notifier notifier;
-
-    @Primary
-    @Bean(initMethod = "start", destroyMethod = "stop")
-    public RemindingNotifier remindingNotifier() {
-        RemindingNotifier notifier = new RemindingNotifier(notifier, repository);
-        notifier.setReminderPeriod(Duration.ofMinutes(10)); // <1>
-        notifier.setCheckReminderInverval(Duration.ofSeconds(10)); //<2>
-        return notifier;
-    }
-}
-----
-<1> The reminders will be sent every 10 minutes.
-<2> Schedules sending of due reminders every 10 seconds.
-
-
-[[filtering-notifications]]
-==== Filtering Notifications ====
-The `FilteringNotifier` allows you to filter certain notification based on rules you can add/remove at runtime. It delegates the sending of notifications to another notifier.
-
-If you add a `FilteringNotifier` to your `ApplicationContext` a RESTful interface on `notifications/filter` gets available.
-
-This notifier is useful if you don't want receive notifications when deploying your applications. Before stopping the application you can add an (expiring) filter either via a `POST` request.
-
-.How to configure filtering
-[source,java,indent=0]
-----
-include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/NotifierConfig.java[tags=configuration-filtering-notifier]
-----
-<1> Add the `FilteringNotifier` bean using a delegate (e.g. `MailNotifier` when configured)
-<2> Add the `RemindingNotifier` as primary bean using the `FilteringNotifier` as delegate.
-
-TIP: This example combines the reminding and filtering notifiers. This allows you to get notifications after the deployed application hasn't restarted in a certain amount of time (until the filter expires).
-
-
 [[mail-notifications]]
 ==== Mail Notifications ====
 
@@ -411,3 +361,70 @@ To enable Discord notifications you need to create a webhook and set the appropr
 | Text to send. SpEL-expressions are supported.
 | `+++"*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*"+++`
 |===
+
+
+[[notification-proxy]]
+==== Notification Proxy Settings ====
+All Notifiers which are using a `RestTemplate` can be configured to use a proxy.
+
+.Notification Proxy configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.proxy.host
+| The proxy host
+|
+
+| spring.boot.admin.notify.proxy.port
+| The proxy port
+|
+|===
+
+
+[[reminder-notifications]]
+==== Notification Reminder ====
+The `RemindingNotifier` sends reminders for down/offline applications, it delegates the sending of notifications to another notifier.
+
+By default a reminder is triggered when a registered application changes to `DOWN` or `OFFLINE`. You can alter this behaviour via `setReminderStatuses()`. The reminder ends when either the status changes to a non-triggering status or the regarding application gets deregistered.
+
+By default the reminders are sent every 10 minutes, to change this use `setReminderPeriod()`. The `RemindingNotifier` itself doesn't start the background thread to send the reminders, you need to take care of this as shown in the given example below;
+
+.How to configure reminders
+[source,java]
+----
+@Configuration
+public class NotifierConfiguration {
+    @Autowired
+    private Notifier notifier;
+
+    @Primary
+    @Bean(initMethod = "start", destroyMethod = "stop")
+    public RemindingNotifier remindingNotifier() {
+        RemindingNotifier notifier = new RemindingNotifier(notifier, repository);
+        notifier.setReminderPeriod(Duration.ofMinutes(10)); // <1>
+        notifier.setCheckReminderInverval(Duration.ofSeconds(10)); //<2>
+        return notifier;
+    }
+}
+----
+<1> The reminders will be sent every 10 minutes.
+<2> Schedules sending of due reminders every 10 seconds.
+
+
+[[filtering-notifications]]
+==== Filtering Notifications ====
+The `FilteringNotifier` allows you to filter certain notification based on rules you can add/remove at runtime. It delegates the sending of notifications to another notifier.
+
+If you add a `FilteringNotifier` to your `ApplicationContext` a RESTful interface on `notifications/filter` gets available.
+
+This notifier is useful if you don't want receive notifications when deploying your applications. Before stopping the application you can add an (expiring) filter either via a `POST` request.
+
+.How to configure filtering
+[source,java,indent=0]
+----
+include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/NotifierConfig.java[tags=configuration-filtering-notifier]
+----
+<1> Add the `FilteringNotifier` bean using a delegate (e.g. `MailNotifier` when configured)
+<2> Add the `RemindingNotifier` as primary bean using the `FilteringNotifier` as delegate.
+
+TIP: This example combines the reminding and filtering notifiers. This allows you to get notifications after the deployed application hasn't restarted in a certain amount of time (until the filter expires).

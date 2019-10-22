@@ -62,10 +62,9 @@ public class SlackNotifierTest {
         when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE));
         restTemplate = mock(RestTemplate.class);
 
-        notifier = new SlackNotifier(repository);
+        notifier = new SlackNotifier(repository, restTemplate);
         notifier.setUsername(user);
         notifier.setWebhookUrl(URI.create("http://localhost/"));
-        notifier.setRestTemplate(restTemplate);
     }
 
     @Test

@@ -55,11 +55,10 @@ public class PagerdutyNotifierTest {
         when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE));
         restTemplate = mock(RestTemplate.class);
 
-        notifier = new PagerdutyNotifier(repository);
+        notifier = new PagerdutyNotifier(repository, restTemplate);
         notifier.setServiceKey("--service--");
         notifier.setClient("TestClient");
         notifier.setClientUrl(URI.create("http://localhost"));
-        notifier.setRestTemplate(restTemplate);
     }
 
 

@@ -48,7 +48,7 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
     private static final URI DEFAULT_URI = URI.create("https://api.opsgenie.com/v2/alerts");
     private static final String DEFAULT_MESSAGE = "#{instance.registration.name}/#{instance.id} is #{instance.statusInfo.status}";
     private final SpelExpressionParser parser = new SpelExpressionParser();
-    private RestTemplate restTemplate = new RestTemplate();
+    private RestTemplate restTemplate;
 
     /**
      * BASE URL for OpsGenie API
@@ -96,8 +96,9 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
      */
     private Expression description;
 
-    public OpsGenieNotifier(InstanceRepository repository) {
+    public OpsGenieNotifier(InstanceRepository repository, RestTemplate restTemplate) {
         super(repository);
+        this.restTemplate = restTemplate;
         this.description = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
     }
 

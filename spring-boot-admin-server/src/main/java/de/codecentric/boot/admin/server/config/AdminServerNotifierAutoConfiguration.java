@@ -26,6 +26,7 @@ import de.codecentric.boot.admin.server.notify.MailNotifier;
 import de.codecentric.boot.admin.server.notify.MicrosoftTeamsNotifier;
 import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
+import de.codecentric.boot.admin.server.notify.NotifierProxyProperties;
 import de.codecentric.boot.admin.server.notify.OpsGenieNotifier;
 import de.codecentric.boot.admin.server.notify.PagerdutyNotifier;
 import de.codecentric.boot.admin.server.notify.SlackNotifier;
@@ -33,6 +34,8 @@ import de.codecentric.boot.admin.server.notify.TelegramNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
 import de.codecentric.boot.admin.server.notify.filter.web.NotificationFilterController;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.reactivestreams.Publisher;
@@ -45,19 +48,23 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
 @Configuration(proxyBeanMethods = false)
+@EnableConfigurationProperties(NotifierProxyProperties.class)
 @AutoConfigureAfter({MailSenderAutoConfiguration.class})
 public class AdminServerNotifierAutoConfiguration {
 
@@ -152,8 +159,8 @@ public class AdminServerNotifierAutoConfiguration {
         @Bean
         @ConditionalOnMissingBean
         @ConfigurationProperties("spring.boot.admin.notify.hipchat")
-        public HipchatNotifier hipchatNotifier(InstanceRepository repository) {
-            return new HipchatNotifier(repository);
+        public HipchatNotifier hipchatNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
+            return new HipchatNotifier(repository, createNotifierRestTemplate(proxyProperties));
         }
     }
 
@@ -167,8 +174,8 @@ public class AdminServerNotifierAutoConfiguration {
         @Bean
         @ConditionalOnMissingBean
         @ConfigurationProperties("spring.boot.admin.notify.slack")
-        public SlackNotifier slackNotifier(InstanceRepository repository) {
-            return new SlackNotifier(repository);
+        public SlackNotifier slackNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
+            return new SlackNotifier(repository, createNotifierRestTemplate(proxyProperties));
         }
     }
 
@@ -182,8 +189,8 @@ public class AdminServerNotifierAutoConfiguration {
         @Bean
         @ConditionalOnMissingBean
         @ConfigurationProperties("spring.boot.admin.notify.letschat")
-        public LetsChatNotifier letsChatNotifier(InstanceRepository repository) {
-            return new LetsChatNotifier(repository);
+        public LetsChatNotifier letsChatNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
+            return new LetsChatNotifier(repository, createNotifierRestTemplate(proxyProperties));
         }
     }
 
@@ -197,8 +204,8 @@ public class AdminServerNotifierAutoConfiguration {
         @Bean
         @ConditionalOnMissingBean
         @ConfigurationProperties("spring.boot.admin.notify.pagerduty")
-        public PagerdutyNotifier pagerdutyNotifier(InstanceRepository repository) {
-            return new PagerdutyNotifier(repository);
+        public PagerdutyNotifier pagerdutyNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
+            return new PagerdutyNotifier(repository, createNotifierRestTemplate(proxyProperties));
         }
     }
 
@@ -212,8 +219,8 @@ public class AdminServerNotifierAutoConfiguration {
         @Bean
         @ConditionalOnMissingBean
         @ConfigurationProperties("spring.boot.admin.notify.opsgenie")
-        public OpsGenieNotifier opsgenieNotifier(InstanceRepository repository) {
-            return new OpsGenieNotifier(repository);
+        public OpsGenieNotifier opsgenieNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
+            return new OpsGenieNotifier(repository, createNotifierRestTemplate(proxyProperties));
         }
     }
 
@@ -227,8 +234,8 @@ public class AdminServerNotifierAutoConfiguration {
         @Bean
         @ConditionalOnMissingBean
         @ConfigurationProperties("spring.boot.admin.notify.ms-teams")
-        public MicrosoftTeamsNotifier microsoftTeamsNotifier(InstanceRepository repository) {
-            return new MicrosoftTeamsNotifier(repository);
+        public MicrosoftTeamsNotifier microsoftTeamsNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
+            return new MicrosoftTeamsNotifier(repository, createNotifierRestTemplate(proxyProperties));
         }
     }
 
@@ -242,8 +249,8 @@ public class AdminServerNotifierAutoConfiguration {
         @Bean
         @ConditionalOnMissingBean
         @ConfigurationProperties("spring.boot.admin.notify.telegram")
-        public TelegramNotifier telegramNotifier(InstanceRepository repository) {
-            return new TelegramNotifier(repository);
+        public TelegramNotifier telegramNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
+            return new TelegramNotifier(repository, createNotifierRestTemplate(proxyProperties));
         }
     }
 
@@ -257,8 +264,19 @@ public class AdminServerNotifierAutoConfiguration {
         @Bean
         @ConditionalOnMissingBean
         @ConfigurationProperties("spring.boot.admin.notify.discord")
-        public DiscordNotifier discordNotifier(InstanceRepository repository) {
-            return new DiscordNotifier(repository);
+        public DiscordNotifier discordNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
+            return new DiscordNotifier(repository, createNotifierRestTemplate(proxyProperties));
         }
+    }
+
+    private static RestTemplate createNotifierRestTemplate(NotifierProxyProperties proxyProperties) {
+        RestTemplate restTemplate = new RestTemplate();
+        if (proxyProperties.getHost() != null) {
+            SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyProperties.getHost(), proxyProperties.getPort()));
+            requestFactory.setProxy(proxy);
+            restTemplate.setRequestFactory(requestFactory);
+        }
+        return restTemplate;
     }
 }

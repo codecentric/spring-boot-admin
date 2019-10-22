@@ -47,7 +47,7 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
     private static final String DEFAULT_DESCRIPTION = "#{instance.registration.name}/#{instance.id} is #{instance.statusInfo.status}";
 
     private final SpelExpressionParser parser = new SpelExpressionParser();
-    private RestTemplate restTemplate = new RestTemplate();
+    private RestTemplate restTemplate;
 
     /**
      * URI for pagerduty-REST-API
@@ -77,8 +77,9 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
      */
     private Expression description;
 
-    public PagerdutyNotifier(InstanceRepository repository) {
+    public PagerdutyNotifier(InstanceRepository repository, RestTemplate restTemplate) {
         super(repository);
+        this.restTemplate = restTemplate;
         this.description = parser.parseExpression(DEFAULT_DESCRIPTION, ParserContext.TEMPLATE_EXPRESSION);
     }
 
