@@ -530,7 +530,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.2.0-SNAPSHOT,</span>
-<span id="revdate">20.10.2019</span>
+<span id="revdate">22.10.2019</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -571,17 +571,18 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#clustering-support">4.4. Clustering</a></li>
 <li><a href="#_notifications">4.5. Notifications</a>
 <ul class="sectlevel3">
-<li><a href="#reminder-notifications">4.5.1. Reminder Notifications</a></li>
-<li><a href="#filtering-notifications">4.5.2. Filtering Notifications</a></li>
-<li><a href="#mail-notifications">4.5.3. Mail Notifications</a></li>
-<li><a href="#pagerduty-notifications">4.5.4. PagerDuty Notifications</a></li>
-<li><a href="#opsgenie-notifications">4.5.5. OpsGenie Notifications</a></li>
-<li><a href="#hipchat-notifications">4.5.6. Hipchat Notifications</a></li>
-<li><a href="#slack-notifications">4.5.7. Slack Notifications</a></li>
-<li><a href="#letschat-notifications">4.5.8. Let&#8217;s Chat Notifications</a></li>
-<li><a href="#ms-teams-notifications">4.5.9. Microsoft Teams Notifications</a></li>
-<li><a href="#telegram-notifications">4.5.10. Telegram Notifications</a></li>
-<li><a href="#discord-notifications">4.5.11. Discord Notifications</a></li>
+<li><a href="#mail-notifications">4.5.1. Mail Notifications</a></li>
+<li><a href="#pagerduty-notifications">4.5.2. PagerDuty Notifications</a></li>
+<li><a href="#opsgenie-notifications">4.5.3. OpsGenie Notifications</a></li>
+<li><a href="#hipchat-notifications">4.5.4. Hipchat Notifications</a></li>
+<li><a href="#slack-notifications">4.5.5. Slack Notifications</a></li>
+<li><a href="#letschat-notifications">4.5.6. Let&#8217;s Chat Notifications</a></li>
+<li><a href="#ms-teams-notifications">4.5.7. Microsoft Teams Notifications</a></li>
+<li><a href="#telegram-notifications">4.5.8. Telegram Notifications</a></li>
+<li><a href="#discord-notifications">4.5.9. Discord Notifications</a></li>
+<li><a href="#notification-proxy">4.5.10. Notification Proxy Settings</a></li>
+<li><a href="#reminder-notifications">4.5.11. Notification Reminder</a></li>
+<li><a href="#filtering-notifications">4.5.12. Filtering Notifications</a></li>
 </ul>
 </li>
 </ul>
@@ -1621,116 +1622,7 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <div class="sect2">
 <h3 id="_notifications"><a class="anchor" href="#_notifications"></a><a class="link" href="#_notifications">4.5. Notifications</a></h3>
 <div class="sect3">
-<h4 id="reminder-notifications"><a class="anchor" href="#reminder-notifications"></a><a class="link" href="#reminder-notifications">4.5.1. Reminder Notifications</a></h4>
-<div class="paragraph">
-<p>The <code>RemindingNotifier</code> sends reminders for down/offline applications, it delegates the sending of notifications to another notifier.</p>
-</div>
-<div class="paragraph">
-<p>By default a reminder is triggered when a registered application changes to <code>DOWN</code> or <code>OFFLINE</code>. You can alter this behaviour via <code>setReminderStatuses()</code>. The reminder ends when either the status changes to a non-triggering status or the regarding application gets deregistered.</p>
-</div>
-<div class="paragraph">
-<p>By default the reminders are sent every 10 minutes, to change this use <code>setReminderPeriod()</code>. The <code>RemindingNotifier</code> itself doesn&#8217;t start the background thread to send the reminders, you need to take care of this as shown in the given example below;</p>
-</div>
-<div class="listingblock">
-<div class="title">How to configure reminders</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
-<span class="directive">public</span> <span class="type">class</span> <span class="class">NotifierConfiguration</span> {
-    <span class="annotation">@Autowired</span>
-    <span class="directive">private</span> Notifier notifier;
-
-    <span class="annotation">@Primary</span>
-    <span class="annotation">@Bean</span>(initMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span>, destroyMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">stop</span><span class="delimiter">&quot;</span></span>)
-    <span class="directive">public</span> RemindingNotifier remindingNotifier() {
-        RemindingNotifier notifier = <span class="keyword">new</span> RemindingNotifier(notifier, repository);
-        notifier.setReminderPeriod(<span class="predefined-type">Duration</span>.ofMinutes(<span class="integer">10</span>)); <i class="conum" data-value="1"></i><b>(1)</b>
-        notifier.setCheckReminderInverval(<span class="predefined-type">Duration</span>.ofSeconds(<span class="integer">10</span>)); <i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="keyword">return</span> notifier;
-    }
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The reminders will be sent every 10 minutes.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Schedules sending of due reminders every 10 seconds.</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect3">
-<h4 id="filtering-notifications"><a class="anchor" href="#filtering-notifications"></a><a class="link" href="#filtering-notifications">4.5.2. Filtering Notifications</a></h4>
-<div class="paragraph">
-<p>The <code>FilteringNotifier</code> allows you to filter certain notification based on rules you can add/remove at runtime. It delegates the sending of notifications to another notifier.</p>
-</div>
-<div class="paragraph">
-<p>If you add a <code>FilteringNotifier</code> to your <code>ApplicationContext</code> a RESTful interface on <code>notifications/filter</code> gets available.</p>
-</div>
-<div class="paragraph">
-<p>This notifier is useful if you don&#8217;t want receive notifications when deploying your applications. Before stopping the application you can add an (expiring) filter either via a <code>POST</code> request.</p>
-</div>
-<div class="listingblock">
-<div class="title">How to configure filtering</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>(proxyBeanMethods = <span class="predefined-constant">false</span>)
-<span class="directive">public</span> <span class="type">class</span> <span class="class">NotifierConfig</span> {
-    <span class="directive">private</span> <span class="directive">final</span> InstanceRepository repository;
-    <span class="directive">private</span> <span class="directive">final</span> ObjectProvider&lt;<span class="predefined-type">List</span>&lt;Notifier&gt;&gt; otherNotifiers;
-
-    <span class="directive">public</span> NotifierConfig(InstanceRepository repository, ObjectProvider&lt;<span class="predefined-type">List</span>&lt;Notifier&gt;&gt; otherNotifiers) {
-        <span class="local-variable">this</span>.repository = repository;
-        <span class="local-variable">this</span>.otherNotifiers = otherNotifiers;
-    }
-
-    <span class="annotation">@Bean</span>
-    <span class="directive">public</span> FilteringNotifier filteringNotifier() { <i class="conum" data-value="1"></i><b>(1)</b>
-        CompositeNotifier delegate = <span class="keyword">new</span> CompositeNotifier(<span class="local-variable">this</span>.otherNotifiers.getIfAvailable(<span class="predefined-type">Collections</span>::emptyList));
-        <span class="keyword">return</span> <span class="keyword">new</span> FilteringNotifier(delegate, <span class="local-variable">this</span>.repository);
-    }
-
-    <span class="annotation">@Primary</span>
-    <span class="annotation">@Bean</span>(initMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span>, destroyMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">stop</span><span class="delimiter">&quot;</span></span>)
-    <span class="directive">public</span> RemindingNotifier remindingNotifier() { <i class="conum" data-value="2"></i><b>(2)</b>
-        RemindingNotifier notifier = <span class="keyword">new</span> RemindingNotifier(filteringNotifier(), <span class="local-variable">this</span>.repository);
-        notifier.setReminderPeriod(<span class="predefined-type">Duration</span>.ofMinutes(<span class="integer">10</span>));
-        notifier.setCheckReminderInverval(<span class="predefined-type">Duration</span>.ofSeconds(<span class="integer">10</span>));
-        <span class="keyword">return</span> notifier;
-    }
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Add the <code>FilteringNotifier</code> bean using a delegate (e.g. <code>MailNotifier</code> when configured)</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Add the <code>RemindingNotifier</code> as primary bean using the <code>FilteringNotifier</code> as delegate.</td>
-</tr>
-</table>
-</div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-This example combines the reminding and filtering notifiers. This allows you to get notifications after the deployed application hasn&#8217;t restarted in a certain amount of time (until the filter expires).
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect3">
-<h4 id="mail-notifications"><a class="anchor" href="#mail-notifications"></a><a class="link" href="#mail-notifications">4.5.3. Mail Notifications</a></h4>
+<h4 id="mail-notifications"><a class="anchor" href="#mail-notifications"></a><a class="link" href="#mail-notifications">4.5.1. Mail Notifications</a></h4>
 <div class="paragraph">
 <p>Mail notifications will be delivered as HTML emails rendered using <a href="https://www.thymeleaf.org/">Thymeleaf</a> templates.
 To enable Mail notifications, configure a <code>JavaMailSender</code> using <code>spring-boot-starter-mail</code> and set a recipient.</p>
@@ -1837,7 +1729,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="pagerduty-notifications"><a class="anchor" href="#pagerduty-notifications"></a><a class="link" href="#pagerduty-notifications">4.5.4. PagerDuty Notifications</a></h4>
+<h4 id="pagerduty-notifications"><a class="anchor" href="#pagerduty-notifications"></a><a class="link" href="#pagerduty-notifications">4.5.2. PagerDuty Notifications</a></h4>
 <div class="paragraph">
 <p>To enable <a href="https://www.pagerduty.com/">PagerDuty</a> notifications you just have to add a generic service to your PagerDuty-account and set <code>spring.boot.admin.notify.pagerduty.service-key</code> to the service-key you received.</p>
 </div>
@@ -1895,7 +1787,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="opsgenie-notifications"><a class="anchor" href="#opsgenie-notifications"></a><a class="link" href="#opsgenie-notifications">4.5.5. OpsGenie Notifications</a></h4>
+<h4 id="opsgenie-notifications"><a class="anchor" href="#opsgenie-notifications"></a><a class="link" href="#opsgenie-notifications">4.5.3. OpsGenie Notifications</a></h4>
 <div class="paragraph">
 <p>To enable <a href="https://www.opsgenie.com/">OpsGenie</a> notifications you just have to add a new JSON Rest API integration to your OpsGenie account and set <code>spring.boot.admin.notify.opsgenie.api-key</code> to the apiKey you received.</p>
 </div>
@@ -1968,7 +1860,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="hipchat-notifications"><a class="anchor" href="#hipchat-notifications"></a><a class="link" href="#hipchat-notifications">4.5.6. Hipchat Notifications</a></h4>
+<h4 id="hipchat-notifications"><a class="anchor" href="#hipchat-notifications"></a><a class="link" href="#hipchat-notifications">4.5.4. Hipchat Notifications</a></h4>
 <div class="paragraph">
 <p>To enable <a href="https://www.hipchat.com/">Hipchat</a> notifications you need to create an API token on your Hipchat account and set the appropriate configuration properties.</p>
 </div>
@@ -2026,7 +1918,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="slack-notifications"><a class="anchor" href="#slack-notifications"></a><a class="link" href="#slack-notifications">4.5.7. Slack Notifications</a></h4>
+<h4 id="slack-notifications"><a class="anchor" href="#slack-notifications"></a><a class="link" href="#slack-notifications">4.5.5. Slack Notifications</a></h4>
 <div class="paragraph">
 <p>To enable <a href="https://slack.com/">Slack</a> notifications you need to add a incoming Webhook under custom integrations on your Slack
 account and configure it appropriately.</p>
@@ -2085,7 +1977,7 @@ account and configure it appropriately.</p>
 </table>
 </div>
 <div class="sect3">
-<h4 id="letschat-notifications"><a class="anchor" href="#letschat-notifications"></a><a class="link" href="#letschat-notifications">4.5.8. Let&#8217;s Chat Notifications</a></h4>
+<h4 id="letschat-notifications"><a class="anchor" href="#letschat-notifications"></a><a class="link" href="#letschat-notifications">4.5.6. Let&#8217;s Chat Notifications</a></h4>
 <div class="paragraph">
 <p>To enable <a href="https://sdelements.github.io/lets-chat/">Let&#8217;s Chat</a> notifications you need to add the host url and add the API token and username from Let&#8217;s Chat</p>
 </div>
@@ -2143,7 +2035,7 @@ account and configure it appropriately.</p>
 </table>
 </div>
 <div class="sect3">
-<h4 id="ms-teams-notifications"><a class="anchor" href="#ms-teams-notifications"></a><a class="link" href="#ms-teams-notifications">4.5.9. Microsoft Teams Notifications</a></h4>
+<h4 id="ms-teams-notifications"><a class="anchor" href="#ms-teams-notifications"></a><a class="link" href="#ms-teams-notifications">4.5.7. Microsoft Teams Notifications</a></h4>
 <div class="paragraph">
 <p>To enable Microsoft Teams notifications you need to setup a connector webhook url and set the appropriate configuration property.</p>
 </div>
@@ -2181,7 +2073,7 @@ account and configure it appropriately.</p>
 </table>
 </div>
 <div class="sect3">
-<h4 id="telegram-notifications"><a class="anchor" href="#telegram-notifications"></a><a class="link" href="#telegram-notifications">4.5.10. Telegram Notifications</a></h4>
+<h4 id="telegram-notifications"><a class="anchor" href="#telegram-notifications"></a><a class="link" href="#telegram-notifications">4.5.8. Telegram Notifications</a></h4>
 <div class="paragraph">
 <p>To enable <a href="https://telegram.org/">Telegram</a> notifications you need to create and authorize a telegram bot and set the appropriate configuration properties for auth-token and chat-id.</p>
 </div>
@@ -2234,7 +2126,7 @@ account and configure it appropriately.</p>
 </table>
 </div>
 <div class="sect3">
-<h4 id="discord-notifications"><a class="anchor" href="#discord-notifications"></a><a class="link" href="#discord-notifications">4.5.11. Discord Notifications</a></h4>
+<h4 id="discord-notifications"><a class="anchor" href="#discord-notifications"></a><a class="link" href="#discord-notifications">4.5.9. Discord Notifications</a></h4>
 <div class="paragraph">
 <p>To enable Discord notifications you need to create a webhook and set the appropriate configuration property.</p>
 </div>
@@ -2285,6 +2177,148 @@ account and configure it appropriately.</p>
 </tr>
 </tbody>
 </table>
+</div>
+<div class="sect3">
+<h4 id="notification-proxy"><a class="anchor" href="#notification-proxy"></a><a class="link" href="#notification-proxy">4.5.10. Notification Proxy Settings</a></h4>
+<div class="paragraph">
+<p>All Notifiers which are using a <code>RestTemplate</code> can be configured to use a proxy.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 15. Notification Proxy configuration options</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.proxy.host</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The proxy host</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.proxy.port</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The proxy port</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="reminder-notifications"><a class="anchor" href="#reminder-notifications"></a><a class="link" href="#reminder-notifications">4.5.11. Notification Reminder</a></h4>
+<div class="paragraph">
+<p>The <code>RemindingNotifier</code> sends reminders for down/offline applications, it delegates the sending of notifications to another notifier.</p>
+</div>
+<div class="paragraph">
+<p>By default a reminder is triggered when a registered application changes to <code>DOWN</code> or <code>OFFLINE</code>. You can alter this behaviour via <code>setReminderStatuses()</code>. The reminder ends when either the status changes to a non-triggering status or the regarding application gets deregistered.</p>
+</div>
+<div class="paragraph">
+<p>By default the reminders are sent every 10 minutes, to change this use <code>setReminderPeriod()</code>. The <code>RemindingNotifier</code> itself doesn&#8217;t start the background thread to send the reminders, you need to take care of this as shown in the given example below;</p>
+</div>
+<div class="listingblock">
+<div class="title">How to configure reminders</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">NotifierConfiguration</span> {
+    <span class="annotation">@Autowired</span>
+    <span class="directive">private</span> Notifier notifier;
+
+    <span class="annotation">@Primary</span>
+    <span class="annotation">@Bean</span>(initMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span>, destroyMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">stop</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">public</span> RemindingNotifier remindingNotifier() {
+        RemindingNotifier notifier = <span class="keyword">new</span> RemindingNotifier(notifier, repository);
+        notifier.setReminderPeriod(<span class="predefined-type">Duration</span>.ofMinutes(<span class="integer">10</span>)); <i class="conum" data-value="1"></i><b>(1)</b>
+        notifier.setCheckReminderInverval(<span class="predefined-type">Duration</span>.ofSeconds(<span class="integer">10</span>)); <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="keyword">return</span> notifier;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The reminders will be sent every 10 minutes.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Schedules sending of due reminders every 10 seconds.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="filtering-notifications"><a class="anchor" href="#filtering-notifications"></a><a class="link" href="#filtering-notifications">4.5.12. Filtering Notifications</a></h4>
+<div class="paragraph">
+<p>The <code>FilteringNotifier</code> allows you to filter certain notification based on rules you can add/remove at runtime. It delegates the sending of notifications to another notifier.</p>
+</div>
+<div class="paragraph">
+<p>If you add a <code>FilteringNotifier</code> to your <code>ApplicationContext</code> a RESTful interface on <code>notifications/filter</code> gets available.</p>
+</div>
+<div class="paragraph">
+<p>This notifier is useful if you don&#8217;t want receive notifications when deploying your applications. Before stopping the application you can add an (expiring) filter either via a <code>POST</code> request.</p>
+</div>
+<div class="listingblock">
+<div class="title">How to configure filtering</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>(proxyBeanMethods = <span class="predefined-constant">false</span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">NotifierConfig</span> {
+    <span class="directive">private</span> <span class="directive">final</span> InstanceRepository repository;
+    <span class="directive">private</span> <span class="directive">final</span> ObjectProvider&lt;<span class="predefined-type">List</span>&lt;Notifier&gt;&gt; otherNotifiers;
+
+    <span class="directive">public</span> NotifierConfig(InstanceRepository repository, ObjectProvider&lt;<span class="predefined-type">List</span>&lt;Notifier&gt;&gt; otherNotifiers) {
+        <span class="local-variable">this</span>.repository = repository;
+        <span class="local-variable">this</span>.otherNotifiers = otherNotifiers;
+    }
+
+    <span class="annotation">@Bean</span>
+    <span class="directive">public</span> FilteringNotifier filteringNotifier() { <i class="conum" data-value="1"></i><b>(1)</b>
+        CompositeNotifier delegate = <span class="keyword">new</span> CompositeNotifier(<span class="local-variable">this</span>.otherNotifiers.getIfAvailable(<span class="predefined-type">Collections</span>::emptyList));
+        <span class="keyword">return</span> <span class="keyword">new</span> FilteringNotifier(delegate, <span class="local-variable">this</span>.repository);
+    }
+
+    <span class="annotation">@Primary</span>
+    <span class="annotation">@Bean</span>(initMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span>, destroyMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">stop</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">public</span> RemindingNotifier remindingNotifier() { <i class="conum" data-value="2"></i><b>(2)</b>
+        RemindingNotifier notifier = <span class="keyword">new</span> RemindingNotifier(filteringNotifier(), <span class="local-variable">this</span>.repository);
+        notifier.setReminderPeriod(<span class="predefined-type">Duration</span>.ofMinutes(<span class="integer">10</span>));
+        notifier.setCheckReminderInverval(<span class="predefined-type">Duration</span>.ofSeconds(<span class="integer">10</span>));
+        <span class="keyword">return</span> notifier;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Add the <code>FilteringNotifier</code> bean using a delegate (e.g. <code>MailNotifier</code> when configured)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Add the <code>RemindingNotifier</code> as primary bean using the <code>FilteringNotifier</code> as delegate.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+This example combines the reminding and filtering notifiers. This allows you to get notifications after the deployed application hasn&#8217;t restarted in a certain amount of time (until the filter expires).
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 </div>
