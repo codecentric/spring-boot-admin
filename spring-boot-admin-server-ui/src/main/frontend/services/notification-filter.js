@@ -42,11 +42,11 @@ class NotificationFilter {
   }
 
   get isApplicationFilter() {
-    return this.hasOwnProperty('applicationName');
+    return 'applicationName' in this;
   }
 
   get isInstanceFilter() {
-    return this.hasOwnProperty('instanceId');
+    return 'instanceId' in this;
   }
 
   async delete() {
@@ -65,9 +65,9 @@ class NotificationFilter {
 
   static async addFilter(object, ttl) {
     const params = {ttl};
-    if (object.hasOwnProperty('name')) {
+    if ('name' in object) {
       params.applicationName = object.name;
-    } else if (object.hasOwnProperty('id')) {
+    } else if ('id' in object) {
       params.instanceId = object.id;
     }
     return axios.post('notifications/filters', null, {

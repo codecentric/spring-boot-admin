@@ -3,20 +3,25 @@
   "private": true,
   "scripts": {
     "build": "vue-cli-service build",
-    "watch": "vue-cli-service build --watch",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "watch": "vue-cli-service build --watch"
+  },
+  "dependencies": {
+    "babel-eslint": "^10.0.3",
+    "core-js": "^3.3.2",
+    "eslint-plugin-vue": "^5.2.3"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^4.0.5",
+    "@vue/cli-plugin-eslint": "^4.0.5",
+    "@vue/cli-service": "^4.0.5",
+    "@vue/eslint-config-standard": "^4.0.0",
+    "copy-webpack-plugin": "^5.0.4",
+    "eslint": "^6.6.0",
+    "vue-template-compiler": "^2.6.10"
   },
   "peerDependencies": {
     "vue": "^2.5.16"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.11.0",
-    "@vue/cli-plugin-eslint": "^3.11.0",
-    "@vue/cli-service": "^3.11.0",
-    "@vue/eslint-config-standard": "^4.0.0",
-    "copy-webpack-plugin": "^5.0.4",
-    "vue-template-compiler": "^2.6.10"
   },
   "eslintConfig": {
     "root": true,

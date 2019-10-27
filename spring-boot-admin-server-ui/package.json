@@ -1,12 +1,12 @@
 {
   "name": "spring-boot-admin-server-ui",
-  "description": "Spring Boot Admin UI",
   "private": true,
+  "description": "Spring Boot Admin UI",
   "scripts": {
-    "watch": "vue-cli-service build --watch",
     "build": "vue-cli-service build",
+    "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "test:unit": "vue-cli-service test:unit"
+    "watch": "vue-cli-service build --watch"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.25",
@@ -17,8 +17,9 @@
     "ansi_up": "^4.0.4",
     "autolinker": "^3.11.1",
     "axios": "^0.19.0",
-    "bulma": "^0.7.5",
+    "bulma": "^0.8.0",
     "bulma-badge": "^3.0.1",
+    "core-js": "^3.3.2",
     "d3-array": "^2.3.3",
     "d3-axis": "^1.0.12",
     "d3-brush": "^1.1.3",
@@ -42,21 +43,21 @@
     "vue-router": "^3.1.2"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.12.1",
-    "@vue/cli-plugin-eslint": "^3.12.1",
-    "@vue/cli-plugin-unit-jest": "^3.12.1",
-    "@vue/cli-service": "^3.12.1",
+    "@vue/cli-plugin-babel": "^4.0.5",
+    "@vue/cli-plugin-eslint": "^4.0.5",
+    "@vue/cli-plugin-unit-jest": "^4.0.5",
+    "@vue/cli-service": "^4.0.5",
     "@vue/eslint-config-standard": "^4.0.0",
     "@vue/test-utils": "^1.0.0-beta.29",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.0.3",
-    "babel-jest": "^23.6.0",
-    "eslint": "^5.16.0",
+    "babel-jest": "^24.9.0",
+    "eslint": "^6.6.0",
     "eslint-plugin-vue": "^5.2.3",
     "html-loader": "^0.5.5",
     "jest": "^24.9.0",
     "node-sass": "^4.13.0",
-    "sass-loader": "^7.3.1",
+    "sass-loader": "^8.0.0",
     "vue-template-compiler": "^2.6.10",
     "webpack-bundle-analyzer": "^3.6.0"
   },
@@ -83,7 +84,7 @@
         }
       ],
       "vue/max-attributes-per-line": "off",
-      "vue/component-name-in-template-casing": "kebab-case"
+      "vue/component-name-in-template-casing": ["error", "kebab-case"]
     },
     "parserOptions": {
       "parser": "babel-eslint"
