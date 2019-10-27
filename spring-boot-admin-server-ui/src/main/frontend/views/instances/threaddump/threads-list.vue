@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2019 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@
             <span v-text="thread.threadName" />
           </td>
           <td class="threads__timeline">
-            <svg :id="`thread-${thread.threadId}`" height="26px" />
+            <svg :id="`thread-${thread.threadId}`" height="32px" />
           </td>
         </tr>
         <tr :key="`${thread.threadId}-detail`"
@@ -49,10 +49,10 @@
                 <td v-text="thread.threadName" />
               </tr>
               <template v-if="getThreadDetails(thread) !== null">
-              <tr>
-                <td v-text="$t('instances.threaddump.thread_state')" />
-                <td v-text="getThreadDetails(thread).threadState" />
-              </tr>
+                <tr>
+                  <td v-text="$t('instances.threaddump.thread_state')" />
+                  <td v-text="getThreadDetails(thread).threadState" />
+                </tr>
                 <tr>
                   <td v-text="$t('instances.threaddump.thread_details_blocked_count')" />
                   <td v-text="getThreadDetails(thread).blockedCount" />
@@ -105,11 +105,11 @@
   </table>
 </template>
 <script>
-  import d3 from '@/utils/d3';
-  import moment from 'moment';
-  import threadTag from './thread-tag';
+    import d3 from '@/utils/d3';
+    import moment from 'moment';
+    import threadTag from './thread-tag';
 
-  const maxPixelsPerSeconds = 15;
+    const maxPixelsPerSeconds = 15;
 
   export default {
     props: {
@@ -132,7 +132,7 @@
     },
     methods: {
       getThreadDetails(thread) {
-        return thread.timeline.find(entry => entry.start === this.showDetails[thread.threadId + '-start']).details
+        return thread.timeline.find(entry => entry.start === this.showDetails[thread.threadId]).details
       },
       getTimeExtent(timelines) {
         return Object.entries(timelines).map(([, value]) => value.timeline)
@@ -146,18 +146,19 @@
           }), {start: Number.MAX_SAFE_INTEGER, end: Number.MIN_SAFE_INTEGER});
       },
       showThreadDetails({threadId, start}) {
-        if (this.showDetails[threadId + '-start']) {
-          d3.selectAll('#rect-threadid-' + threadId + '-start-' + this.showDetails[threadId + '-start'])
-            .attr('class', d => `thread--${d.threadState.toLowerCase()}`)
+        const previousSelectedStart = this.showDetails[threadId];
+        if (previousSelectedStart) {
+          d3.selectAll('#rect-threadid-' + threadId + '-start-' + previousSelectedStart)
+            .attr('class', d => `thread thread--${d.threadState.toLowerCase()}`);
         }
 
-        this.showDetails[threadId + '-start'] ?
-          this.$delete(this.showDetails, threadId + '-start') : this.$set(this.showDetails, threadId + '-start', start);
-        this.showDetails[threadId] ? this.$delete(this.showDetails, threadId) :
-          this.$set(this.showDetails, threadId, true);
-
-        d3.selectAll('#rect-threadid-' + threadId + '-start-' + start)
-          .attr('class', d => `thread--${d.threadState.toLowerCase()}${this.showDetails[threadId + '-start'] ? '_clicked' : ''}`)
+        if (previousSelectedStart === start) {
+          this.$delete(this.showDetails, threadId)
+        } else {
+          this.$set(this.showDetails, threadId, start);
+          d3.selectAll('#rect-threadid-' + threadId + '-start-' + start)
+            .attr('class', d => `thread thread--${d.threadState.toLowerCase()} thread--clicked`)
+        }
       },
       async drawTimelines(timelines) {
         if (timelines) {
@@ -185,15 +186,15 @@
             d.enter()
               .append('rect')
               .attr('id', 'rect-threadid-' + threadId + '-start-' + value.timeline[value.timeline.length - 1].start)
-              .attr('class', d => `thread--${d.threadState.toLowerCase()}`)
+              .attr('class', d => `thread thread--${d.threadState.toLowerCase()}`)
               .merge(d)
               .attr('height', '2em')
               .attr('x', d => x(d.start))
               .transition(150)
-              .attr('width', d => Math.max(x(d.end) - x(d.start), x(d.start + 500) - x(d.start)))
+              .attr('width', d => Math.max(x(d.end) - x(d.start), x(d.start + 500) - x(d.start)));
 
             d3.selectAll('#rect-threadid-' + threadId + '-start-' + value.timeline[value.timeline.length - 1].start)
-              .on("click", d => this.showThreadDetails({threadId: threadId, start: d.start}))
+              .on('click', d => this.showThreadDetails({threadId: threadId, start: d.start}))
          });
 
           this.lastEndPosition = x(end);
@@ -255,27 +256,44 @@
   }
 
   .thread {
+    stroke: $black;
+    stroke-width: 1px;
+    stroke-opacity: .1;
+
     &--runnable {
       fill: $success;
+
+      &:hover,
+      &.thread--clicked {
+        fill: darken($success, 20%)
+      }
     }
 
-    &--runnable_clicked {
-      fill: #157d39;
-    }
-
-    &--timed_waiting,
     &--waiting {
       fill: $warning;
+
+      &:hover,
+      &.thread--clicked {
+        fill: darken($warning, 20%)
+      }
     }
 
-    &--timed_waiting_clicked,
-    &--waiting_clicked {
-      fill: #e5c64e;
+    &--timed_waiting {
+      fill: $warning;
+
+      &:hover,
+      &.thread--clicked {
+        fill: darken($warning, 20%)
+      }
     }
 
-    &--blocked,
-    &--blocked_clicked {
+    &--blocked {
       fill: $danger;
+
+      &:hover,
+      &.thread--clicked {
+        fill: darken($warning, 20%)
+      }
     }
   }
 </style>
