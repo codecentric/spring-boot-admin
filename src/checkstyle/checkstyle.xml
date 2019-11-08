@@ -15,6 +15,17 @@
   ~ limitations under the License.
   -->
 
+<!--
+ This configuration is basically a copy of spring-javaformat.
+
+ https://github.com/spring-io/spring-javaformat/blob/master/spring-javaformat/spring-javaformat-checkstyle/src/main/resources/io/spring/javaformat/checkstyle/spring-checkstyle.xml
+
+ Changes as follows
+ - Own HeaderCheck
+ - root-package for SpringImportOrderCheck
+-->
+
+
 <!DOCTYPE module PUBLIC
     "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
     "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
@@ -37,24 +48,92 @@
         <module name="com.puppycrawl.tools.checkstyle.checks.annotation.MissingOverrideCheck"/>
         <module name="com.puppycrawl.tools.checkstyle.checks.annotation.PackageAnnotationCheck"/>
         <module name="com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationLocationCheck">
-            <property name="allowSamelineSingleParameterlessAnnotation" value="false"/>
+            <property name="allowSamelineSingleParameterlessAnnotation"
+                      value="false"/>
         </module>
 
-        <!-- Package -->
-        <module name="com.puppycrawl.tools.checkstyle.checks.naming.PackageNameCheck">
-            <property name="format" value="^de\.codecentric\.boot\.admin(\.[a-z][a-z0-9]*)*$"/>
+        <!-- Block Checks -->
+        <module name="com.puppycrawl.tools.checkstyle.checks.blocks.EmptyBlockCheck">
+            <property name="option" value="text"/>
         </module>
+        <module name="com.puppycrawl.tools.checkstyle.checks.blocks.LeftCurlyCheck"/>
+        <module name="com.puppycrawl.tools.checkstyle.checks.blocks.RightCurlyCheck">
+            <property name="option" value="alone"/>
+        </module>
+        <module name="com.puppycrawl.tools.checkstyle.checks.blocks.NeedBracesCheck"/>
+        <module name="com.puppycrawl.tools.checkstyle.checks.blocks.AvoidNestedBlocksCheck"/>
+
+        <!-- Class Design -->
+        <module name="com.puppycrawl.tools.checkstyle.checks.design.FinalClassCheck"/>
+        <module name="com.puppycrawl.tools.checkstyle.checks.design.InterfaceIsTypeCheck"/>
+        <module name="io.spring.javaformat.checkstyle.check.SpringHideUtilityClassConstructor"/>
+        <module name="com.puppycrawl.tools.checkstyle.checks.design.MutableExceptionCheck"/>
+        <module name="com.puppycrawl.tools.checkstyle.checks.design.InnerTypeLastCheck"/>
+        <module name="com.puppycrawl.tools.checkstyle.checks.design.OneTopLevelClassCheck"/>
+
+        <!-- Coding -->
+        <module name="com.puppycrawl.tools.checkstyle.checks.coding.CovariantEqualsCheck"/>
+        <module name="com.puppycrawl.tools.checkstyle.checks.coding.EmptyStatementCheck"/>
+        <module name="com.puppycrawl.tools.checkstyle.checks.coding.EqualsHashCodeCheck"/>
+        <module name="com.puppycrawl.tools.checkstyle.checks.coding.InnerAssignmentCheck"/>
+        <module name="com.puppycrawl.tools.checkstyle.checks.coding.SimplifyBooleanExpressionCheck"/>
+        <module name="com.puppycrawl.tools.checkstyle.checks.coding.SimplifyBooleanReturnCheck"/>
+        <module name="com.puppycrawl.tools.checkstyle.checks.coding.StringLiteralEqualityCheck"/>
+        <module name="com.puppycrawl.tools.checkstyle.checks.coding.NestedForDepthCheck">
+            <property name="max" value="3"/>
+        </module>
+        <module name="com.puppycrawl.tools.checkstyle.checks.coding.NestedIfDepthCheck">
+            <property name="max" value="3"/>
+        </module>
+        <module name="com.puppycrawl.tools.checkstyle.checks.coding.NestedTryDepthCheck">
+            <property name="max" value="3"/>
+        </module>
+        <module name="com.puppycrawl.tools.checkstyle.checks.coding.MultipleVariableDeclarationsCheck"/>
+        <module name="com.puppycrawl.tools.checkstyle.checks.coding.RequireThisCheck">
+            <property name="checkMethods" value="false"/>
+            <property name="validateOnlyOverlapping" value="false"/>
+        </module>
+        <module name="com.puppycrawl.tools.checkstyle.checks.coding.OneStatementPerLineCheck"/>
 
         <!-- Imports -->
         <module name="com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck"/>
-        <module name="com.puppycrawl.tools.checkstyle.checks.imports.IllegalImportCheck">
-            <property name="illegalPkgs"
-                      value="sun, org.apache.commons.(?!codec|compress|dbcp2|lang|lang3|logging|pool2).*, com.google.common, org.flywaydb.core.internal, reactor.core.support.Assert"/>
-            <property name="regexp" value="true"/>
+        <module name="com.puppycrawl.tools.checkstyle.checks.imports.AvoidStaticImportCheck">
+            <property name="excludes"
+                      value="io.restassured.RestAssured.*, org.assertj.core.api.Assertions.*, org.junit.jupiter.api.Assertions.*, org.junit.jupiter.api.Assumptions.*, org.junit.Assert.*, org.junit.Assume.*, org.junit.internal.matchers.ThrowableMessageMatcher.*, org.junit.jupiter.api.Assertions.*, org.hamcrest.CoreMatchers.*, org.hamcrest.Matchers.*, org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.*, org.springframework.boot.configurationprocessor.TestCompiler.*, org.springframework.boot.test.autoconfigure.AutoConfigurationImportedCondition.*, org.mockito.Mockito.*, org.mockito.BDDMockito.*, org.mockito.ArgumentMatchers.*, org.mockito.Matchers.*, org.springframework.restdocs.headers.HeaderDocumentation.*, org.springframework.restdocs.hypermedia.HypermediaDocumentation.*, org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*, org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*, org.springframework.restdocs.operation.preprocess.Preprocessors.*, org.springframework.restdocs.payload.PayloadDocumentation.*, org.springframework.restdocs.request.RequestDocumentation.*, org.springframework.restdocs.restassured3.operation.preprocess.RestAssuredPreprocessors.*, org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.*, org.springframework.restdocs.snippet.Attributes.*, org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.*, org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*, org.springframework.test.web.servlet.result.MockMvcResultMatchers.*, org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.*, org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*, org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*, org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo, org.springframework.test.web.client.ExpectedCount.*, org.springframework.test.web.client.match.MockRestRequestMatchers.*, org.springframework.test.web.client.response.MockRestResponseCreators.*, org.springframework.test.web.servlet.result.MockMvcResultHandlers.*, org.springframework.web.reactive.function.BodyInserters.*, org.springframework.web.reactive.function.server.RequestPredicates.*, org.springframework.web.reactive.function.server.RouterFunctions.*, org.springframework.test.web.servlet.setup.MockMvcBuilders.*"/>
         </module>
         <module name="com.puppycrawl.tools.checkstyle.checks.imports.RedundantImportCheck"/>
         <module name="com.puppycrawl.tools.checkstyle.checks.imports.UnusedImportsCheck">
             <property name="processJavadoc" value="true"/>
+        </module>
+        <module name="io.spring.javaformat.checkstyle.check.SpringImportOrderCheck">
+            <property name="projectRootPackage" value="de.codecentric.boot.admin"/>
+        </module>
+
+        <!-- Javadoc Comments -->
+        <module name="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTypeCheck">
+            <property name="scope" value="package"/>
+            <property name="authorFormat" value=".+\s.+"/>
+        </module>
+        <module name="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck">
+            <property name="allowMissingJavadoc" value="true"/>
+        </module>
+        <module name="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocVariableCheck">
+            <property name="scope" value="public"/>
+        </module>
+        <module name="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocStyleCheck">
+            <property name="checkEmptyJavadoc" value="true"/>
+        </module>
+        <module name="com.puppycrawl.tools.checkstyle.checks.javadoc.NonEmptyAtclauseDescriptionCheck"/>
+        <module name="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTagContinuationIndentationCheck">
+            <property name="offset" value="0"/>
+        </module>
+        <module name="com.puppycrawl.tools.checkstyle.checks.javadoc.AtclauseOrderCheck">
+            <property name="target" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF"/>
+            <property name="tagOrder" value="@param, @author, @since, @see, @version, @serial, @deprecated"/>
+        </module>
+        <module name="com.puppycrawl.tools.checkstyle.checks.javadoc.AtclauseOrderCheck">
+            <property name="target" value="METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
+            <property name="tagOrder" value="@param, @return, @throws, @since, @deprecated, @see"/>
         </module>
 
         <!-- Miscellaneous -->
@@ -67,11 +146,25 @@
 
         <!-- Modifiers -->
         <module name="com.puppycrawl.tools.checkstyle.checks.modifier.RedundantModifierCheck"/>
+        <module name="com.puppycrawl.tools.checkstyle.checks.modifier.ModifierOrderCheck"/>
 
         <!-- Regexp -->
         <module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
+            <property name="format" value="^\t* +\t*\S"/>
+            <property name="message"
+                      value="Line has leading space characters; indentation should be performed with tabs only."/>
+            <property name="ignoreComments" value="true"/>
+        </module>
+        <module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
             <property name="maximum" value="0"/>
-            <property name="format" value="org\.junit\.Assert\.assert"/>
+            <property name="format" value="org\.mockito\.Mockito\.(when|doThrow|doAnswer)"/>
+            <property name="message"
+                      value="Please use BDDMockito imports."/>
+            <property name="ignoreComments" value="true"/>
+        </module>
+        <module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
+            <property name="maximum" value="0"/>
+            <property name="format" value="org\.junit\.(Assert|jupiter\.api\.Assertions)\.assert"/>
             <property name="message"
                       value="Please use AssertJ imports."/>
             <property name="ignoreComments" value="true"/>
@@ -93,5 +186,13 @@
         <module name="com.puppycrawl.tools.checkstyle.checks.whitespace.TypecastParenPadCheck"/>
         <module name="com.puppycrawl.tools.checkstyle.checks.whitespace.WhitespaceAfterCheck"/>
         <module name="com.puppycrawl.tools.checkstyle.checks.whitespace.WhitespaceAroundCheck"/>
+
+        <!-- Spring Conventions -->
+        <module name="io.spring.javaformat.checkstyle.check.SpringLambdaCheck"/>
+        <module name="io.spring.javaformat.checkstyle.check.SpringTernaryCheck"/>
+        <module name="io.spring.javaformat.checkstyle.check.SpringCatchCheck"/>
+        <module name="io.spring.javaformat.checkstyle.check.SpringJavadocCheck"/>
+        <module name="io.spring.javaformat.checkstyle.check.SpringMethodOrderCheck"/>
+        <module name="io.spring.javaformat.checkstyle.check.SpringMethodVisibilityCheck"/>
     </module>
 </module>
