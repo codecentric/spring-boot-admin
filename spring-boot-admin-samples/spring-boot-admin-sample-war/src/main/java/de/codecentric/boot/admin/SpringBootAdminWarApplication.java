@@ -37,6 +37,10 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableAdminServer
 public class SpringBootAdminWarApplication extends SpringBootServletInitializer {
 
+	public static void main(String[] args) {
+		SpringApplication.run(SpringBootAdminWarApplication.class, args);
+	}
+
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application;
@@ -99,10 +103,6 @@ public class SpringBootAdminWarApplication extends SpringBootServletInitializer 
             // @formatter:on
 		}
 
-	}
-
-	public static void main(String[] args) {
-		SpringApplication.run(SpringBootAdminWarApplication.class, args);
 	}
 
 }

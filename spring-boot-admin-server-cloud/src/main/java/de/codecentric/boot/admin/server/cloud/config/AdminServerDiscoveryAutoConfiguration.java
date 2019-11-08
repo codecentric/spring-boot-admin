@@ -26,6 +26,7 @@ import de.codecentric.boot.admin.server.config.AdminServerMarkerConfiguration;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
 
+import com.netflix.discovery.EurekaClient;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -36,7 +37,6 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.kubernetes.discovery.KubernetesDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import com.netflix.discovery.EurekaClient;
 
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnSingleCandidate(DiscoveryClient.class)
@@ -55,6 +55,13 @@ public class AdminServerDiscoveryAutoConfiguration {
 		InstanceDiscoveryListener listener = new InstanceDiscoveryListener(discoveryClient, registry, repository);
 		listener.setConverter(serviceInstanceConverter);
 		return listener;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean({ ServiceInstanceConverter.class })
+	@ConfigurationProperties(prefix = "spring.boot.admin.discovery.converter")
+	public DefaultServiceInstanceConverter serviceInstanceConverter() {
+		return new DefaultServiceInstanceConverter();
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -81,13 +88,6 @@ public class AdminServerDiscoveryAutoConfiguration {
 			return new KubernetesServiceInstanceConverter();
 		}
 
-	}
-
-	@Bean
-	@ConditionalOnMissingBean({ ServiceInstanceConverter.class })
-	@ConfigurationProperties(prefix = "spring.boot.admin.discovery.converter")
-	public DefaultServiceInstanceConverter serviceInstanceConverter() {
-		return new DefaultServiceInstanceConverter();
 	}
 
 }

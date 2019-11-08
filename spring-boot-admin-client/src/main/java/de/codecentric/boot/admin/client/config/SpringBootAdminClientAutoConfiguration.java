@@ -65,6 +65,32 @@ import static org.springframework.web.reactive.function.client.ExchangeFilterFun
 		ManagementServerProperties.class })
 public class SpringBootAdminClientAutoConfiguration {
 
+	@Bean
+	@ConditionalOnMissingBean
+	public ApplicationRegistrator registrator(RegistrationClient registrationClient, ClientProperties client,
+			ApplicationFactory applicationFactory) {
+
+		return new ApplicationRegistrator(applicationFactory, registrationClient, client.getAdminUrl(),
+				client.isRegisterOnce());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public RegistrationApplicationListener registrationListener(ClientProperties client,
+			ApplicationRegistrator registrator, Environment environment) {
+		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator);
+		listener.setAutoRegister(client.isAutoRegistration());
+		listener.setAutoDeregister(client.isAutoDeregistration(environment));
+		listener.setRegisterPeriod(client.getPeriod());
+		return listener;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public StartupDateMetadataContributor startupDateMetadataContributor() {
+		return new StartupDateMetadataContributor();
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@AutoConfigureAfter(DispatcherServletAutoConfiguration.class)
@@ -130,32 +156,6 @@ public class SpringBootAdminClientAutoConfiguration {
 			return new ReactiveRegistrationClient(webClient.build(), client.getReadTimeout());
 		}
 
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public ApplicationRegistrator registrator(RegistrationClient registrationClient, ClientProperties client,
-			ApplicationFactory applicationFactory) {
-
-		return new ApplicationRegistrator(applicationFactory, registrationClient, client.getAdminUrl(),
-				client.isRegisterOnce());
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public RegistrationApplicationListener registrationListener(ClientProperties client,
-			ApplicationRegistrator registrator, Environment environment) {
-		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator);
-		listener.setAutoRegister(client.isAutoRegistration());
-		listener.setAutoDeregister(client.isAutoDeregistration(environment));
-		listener.setRegisterPeriod(client.getPeriod());
-		return listener;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public StartupDateMetadataContributor startupDateMetadataContributor() {
-		return new StartupDateMetadataContributor();
 	}
 
 }
