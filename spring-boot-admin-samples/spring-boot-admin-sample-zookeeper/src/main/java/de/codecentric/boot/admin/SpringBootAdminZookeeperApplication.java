@@ -37,6 +37,10 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableAdminServer
 public class SpringBootAdminZookeeperApplication {
 
+	public static void main(String[] args) {
+		SpringApplication.run(SpringBootAdminZookeeperApplication.class, args);
+	}
+
 	@Profile("insecure")
 	@Configuration(proxyBeanMethods = false)
 	public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
@@ -94,10 +98,6 @@ public class SpringBootAdminZookeeperApplication {
             // @formatter:on
 		}
 
-	}
-
-	public static void main(String[] args) {
-		SpringApplication.run(SpringBootAdminZookeeperApplication.class, args);
 	}
 
 }

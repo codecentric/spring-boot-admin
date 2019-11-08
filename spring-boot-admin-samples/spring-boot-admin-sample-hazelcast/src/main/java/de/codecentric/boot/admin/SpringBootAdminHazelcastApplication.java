@@ -19,8 +19,14 @@ package de.codecentric.boot.admin;
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import de.codecentric.boot.admin.server.notify.Notifier;
-import reactor.core.publisher.Mono;
 
+import com.hazelcast.config.Config;
+import com.hazelcast.config.EvictionPolicy;
+import com.hazelcast.config.InMemoryFormat;
+import com.hazelcast.config.MapConfig;
+import com.hazelcast.config.MergePolicyConfig;
+import com.hazelcast.config.TcpIpConfig;
+import com.hazelcast.map.merge.PutIfAbsentMapMergePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -34,13 +40,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import com.hazelcast.config.Config;
-import com.hazelcast.config.EvictionPolicy;
-import com.hazelcast.config.InMemoryFormat;
-import com.hazelcast.config.MapConfig;
-import com.hazelcast.config.MergePolicyConfig;
-import com.hazelcast.config.TcpIpConfig;
-import com.hazelcast.map.merge.PutIfAbsentMapMergePolicy;
+import reactor.core.publisher.Mono;
 
 import static de.codecentric.boot.admin.server.config.AdminServerHazelcastAutoConfiguration.DEFAULT_NAME_EVENT_STORE_MAP;
 import static de.codecentric.boot.admin.server.config.AdminServerHazelcastAutoConfiguration.DEFAULT_NAME_SENT_NOTIFICATIONS_MAP;
@@ -52,6 +52,10 @@ import static java.util.Collections.singletonList;
 public class SpringBootAdminHazelcastApplication {
 
 	private static final Logger log = LoggerFactory.getLogger(SpringBootAdminHazelcastApplication.class);
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringBootAdminHazelcastApplication.class, args);
+	}
 
 	// tag::application-hazelcast[]
 	@Bean
@@ -149,10 +153,6 @@ public class SpringBootAdminHazelcastApplication {
             // @formatter:on
 		}
 
-	}
-
-	public static void main(String[] args) {
-		SpringApplication.run(SpringBootAdminHazelcastApplication.class, args);
 	}
 
 }
