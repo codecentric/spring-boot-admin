@@ -20,11 +20,9 @@ import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
-import io.netty.handler.timeout.ReadTimeoutException;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.util.function.Tuples;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.netty.handler.timeout.ReadTimeoutException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.TimeoutException;
@@ -39,7 +37,9 @@ import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.util.function.Tuples;
 
 /**
  * Forwards a request to a single instances endpoint and will respond with: - 502 (Bad
@@ -106,6 +106,17 @@ public class InstanceWebProxy {
 				});
 	}
 
+	private boolean requiresBody(HttpMethod method) {
+		switch (method) {
+		case PUT:
+		case POST:
+		case PATCH:
+			return true;
+		default:
+			return false;
+		}
+	}
+
 	@lombok.Data
 	@lombok.Builder(builderClassName = "Builder")
 	public static class InstanceResponse {
@@ -122,17 +133,6 @@ public class InstanceWebProxy {
 		@JsonInclude(JsonInclude.Include.NON_EMPTY)
 		private final String contentType;
 
-	}
-
-	private boolean requiresBody(HttpMethod method) {
-		switch (method) {
-		case PUT:
-		case POST:
-		case PATCH:
-			return true;
-		default:
-			return false;
-		}
 	}
 
 }
