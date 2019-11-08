@@ -68,6 +68,18 @@ import org.thymeleaf.templatemode.TemplateMode;
 @AutoConfigureAfter({ MailSenderAutoConfiguration.class })
 public class AdminServerNotifierAutoConfiguration {
 
+	private static RestTemplate createNotifierRestTemplate(NotifierProxyProperties proxyProperties) {
+		RestTemplate restTemplate = new RestTemplate();
+		if (proxyProperties.getHost() != null) {
+			SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+			Proxy proxy = new Proxy(Proxy.Type.HTTP,
+					new InetSocketAddress(proxyProperties.getHost(), proxyProperties.getPort()));
+			requestFactory.setProxy(proxy);
+			restTemplate.setRequestFactory(requestFactory);
+		}
+		return restTemplate;
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(Notifier.class)
 	public static class NotifierTriggerConfiguration {
@@ -271,18 +283,6 @@ public class AdminServerNotifierAutoConfiguration {
 			return new DiscordNotifier(repository, createNotifierRestTemplate(proxyProperties));
 		}
 
-	}
-
-	private static RestTemplate createNotifierRestTemplate(NotifierProxyProperties proxyProperties) {
-		RestTemplate restTemplate = new RestTemplate();
-		if (proxyProperties.getHost() != null) {
-			SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-			Proxy proxy = new Proxy(Proxy.Type.HTTP,
-					new InetSocketAddress(proxyProperties.getHost(), proxyProperties.getPort()));
-			requestFactory.setProxy(proxy);
-			restTemplate.setRequestFactory(requestFactory);
-		}
-		return restTemplate;
 	}
 
 }
