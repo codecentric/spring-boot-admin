@@ -16,9 +16,9 @@
 
 package de.codecentric.boot.admin.server.web;
 
-import reactor.core.publisher.Flux;
-import reactor.test.StepVerifier;
-
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.http.Fault;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -34,16 +34,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import com.github.tomakehurst.wiremock.common.FileSource;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import com.github.tomakehurst.wiremock.extension.Parameters;
-import com.github.tomakehurst.wiremock.extension.ResponseTransformer;
-import com.github.tomakehurst.wiremock.http.Fault;
-import com.github.tomakehurst.wiremock.http.HttpHeader;
-import com.github.tomakehurst.wiremock.http.HttpHeaders;
-import com.github.tomakehurst.wiremock.http.Request;
-import com.github.tomakehurst.wiremock.http.Response;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
@@ -249,23 +241,6 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
                         .expectStatus().isOk()
                         .returnResult(RESPONSE_TYPE).getResponseBody();
         //@formatter:on
-	}
-
-}
-
-// Force the connections to be closed...
-// see https://github.com/tomakehurst/wiremock/issues/485
-class ConnectionCloseExtension extends ResponseTransformer {
-
-	@Override
-	public Response transform(Request request, Response response, FileSource files, Parameters parameters) {
-		return Response.Builder.like(response)
-				.headers(HttpHeaders.copyOf(response.getHeaders()).plus(new HttpHeader("Connection", "Close"))).build();
-	}
-
-	@Override
-	public String getName() {
-		return "ConnectionCloseExtension";
 	}
 
 }
