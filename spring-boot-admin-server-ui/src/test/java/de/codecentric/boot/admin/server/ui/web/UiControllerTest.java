@@ -30,52 +30,43 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class UiControllerTest {
 
-    @Test
-    public void should_use_default_url() throws Exception {
-        MockMvc mockMvc = setupController("");
+	@Test
+	public void should_use_default_url() throws Exception {
+		MockMvc mockMvc = setupController("");
 
-        mockMvc.perform(get("http://example/"))
-               .andExpect(status().isOk())
-               .andExpect(view().name("index"))
-               .andExpect(model().attribute("baseUrl", "http://example/"));
-    }
+		mockMvc.perform(get("http://example/")).andExpect(status().isOk()).andExpect(view().name("index"))
+				.andExpect(model().attribute("baseUrl", "http://example/"));
+	}
 
-    @Test
-    public void should_use_path_from_public_url() throws Exception {
-        MockMvc mockMvc = setupController("/public");
+	@Test
+	public void should_use_path_from_public_url() throws Exception {
+		MockMvc mockMvc = setupController("/public");
 
-        mockMvc.perform(get("http://example/"))
-               .andExpect(status().isOk())
-               .andExpect(view().name("index"))
-               .andExpect(model().attribute("baseUrl", "http://example/public/"));
-    }
+		mockMvc.perform(get("http://example/")).andExpect(status().isOk()).andExpect(view().name("index"))
+				.andExpect(model().attribute("baseUrl", "http://example/public/"));
+	}
 
-    @Test
-    public void should_use_host_and_path_from_public_url() throws Exception {
-        MockMvc mockMvc = setupController("http://public/public");
+	@Test
+	public void should_use_host_and_path_from_public_url() throws Exception {
+		MockMvc mockMvc = setupController("http://public/public");
 
-        mockMvc.perform(get("http://example/"))
-               .andExpect(status().isOk())
-               .andExpect(view().name("index"))
-               .andExpect(model().attribute("baseUrl", "http://public/public/"));
-    }
+		mockMvc.perform(get("http://example/")).andExpect(status().isOk()).andExpect(view().name("index"))
+				.andExpect(model().attribute("baseUrl", "http://public/public/"));
+	}
 
-    @Test
-    public void should_use_scheme_host_and_path_from_public_url() throws Exception {
-        MockMvc mockMvc = setupController("https://public/public");
+	@Test
+	public void should_use_scheme_host_and_path_from_public_url() throws Exception {
+		MockMvc mockMvc = setupController("https://public/public");
 
-        mockMvc.perform(get("http://example/"))
-               .andExpect(status().isOk())
-               .andExpect(view().name("index"))
-               .andExpect(model().attribute("baseUrl", "https://public/public/"));
-    }
+		mockMvc.perform(get("http://example/")).andExpect(status().isOk()).andExpect(view().name("index"))
+				.andExpect(model().attribute("baseUrl", "https://public/public/"));
+	}
 
-    private MockMvc setupController(String publicUrl) {
-        return MockMvcBuilders.standaloneSetup(new UiController(publicUrl,
-            Collections.emptyList(),
-            UiController.Settings.builder().build()
-        ))
-                              .setCustomHandlerMapping(() -> new AdminControllerHandlerMapping(""))
-                              .build();
-    }
+	private MockMvc setupController(String publicUrl) {
+		return MockMvcBuilders
+				.standaloneSetup(
+						new UiController(publicUrl, Collections.emptyList(), UiController.Settings.builder().build()))
+				.setCustomHandlerMapping(() -> new AdminControllerHandlerMapping("")).build();
+	}
+
 }

@@ -22,8 +22,9 @@ import org.junit.Before;
 
 public class EventsourcingInstanceRepositoryTest extends AbstractInstanceRepositoryTest {
 
-    @Before
-    public void setUp() {
-        super.setUp(new EventsourcingInstanceRepository(new InMemoryEventStore()));
-    }
+	@Before
+	public void setUp() {
+		super.setUp(new EventsourcingInstanceRepository(new InMemoryEventStore()));
+	}
+
 }

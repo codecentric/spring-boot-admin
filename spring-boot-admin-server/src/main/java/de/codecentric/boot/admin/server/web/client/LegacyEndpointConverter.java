@@ -25,19 +25,22 @@ import org.springframework.core.io.buffer.DataBuffer;
  * @author Johannes Edmeier
  */
 public class LegacyEndpointConverter {
-    private final String endpointId;
-    private final Function<Flux<DataBuffer>, Flux<DataBuffer>> converterFn;
 
-    protected LegacyEndpointConverter(String endpointId, Function<Flux<DataBuffer>, Flux<DataBuffer>> converterFn) {
-        this.endpointId = endpointId;
-        this.converterFn = converterFn;
-    }
+	private final String endpointId;
 
-    public boolean canConvert(Object endpointId) {
-        return this.endpointId.equals(endpointId);
-    }
+	private final Function<Flux<DataBuffer>, Flux<DataBuffer>> converterFn;
 
-    public Flux<DataBuffer> convert(Flux<DataBuffer> body) {
-        return converterFn.apply(body);
-    }
+	protected LegacyEndpointConverter(String endpointId, Function<Flux<DataBuffer>, Flux<DataBuffer>> converterFn) {
+		this.endpointId = endpointId;
+		this.converterFn = converterFn;
+	}
+
+	public boolean canConvert(Object endpointId) {
+		return this.endpointId.equals(endpointId);
+	}
+
+	public Flux<DataBuffer> convert(Flux<DataBuffer> body) {
+		return converterFn.apply(body);
+	}
+
 }

@@ -24,23 +24,23 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CloudFoundryHttpHeaderProviderTest {
-    private CloudFoundryHttpHeaderProvider headersProvider = new CloudFoundryHttpHeaderProvider();
 
-    @Test
-    public void test_cloud_foundry_header() {
-        Registration registration = Registration.create("foo", "http://health")
-            .metadata("applicationId", "549e64cf-a478-423d-9d6d-02d803a028a8")
-            .metadata("instanceId", "0")
-            .build();
-        Instance instance = Instance.create(InstanceId.of("id")).register(registration);
-        assertThat(headersProvider.getHeaders(instance).get("X-CF-APP-INSTANCE")).containsOnly(
-            "549e64cf-a478-423d-9d6d-02d803a028a8:0");
-    }
+	private CloudFoundryHttpHeaderProvider headersProvider = new CloudFoundryHttpHeaderProvider();
 
-    @Test
-    public void test_no_header() {
-        Registration registration = Registration.create("foo", "http://health").build();
-        Instance instance = Instance.create(InstanceId.of("id")).register(registration);
-        assertThat(headersProvider.getHeaders(instance)).isEmpty();
-    }
+	@Test
+	public void test_cloud_foundry_header() {
+		Registration registration = Registration.create("foo", "http://health")
+				.metadata("applicationId", "549e64cf-a478-423d-9d6d-02d803a028a8").metadata("instanceId", "0").build();
+		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
+		assertThat(headersProvider.getHeaders(instance).get("X-CF-APP-INSTANCE"))
+				.containsOnly("549e64cf-a478-423d-9d6d-02d803a028a8:0");
+	}
+
+	@Test
+	public void test_no_header() {
+		Registration registration = Registration.create("foo", "http://health").build();
+		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
+		assertThat(headersProvider.getHeaders(instance)).isEmpty();
+	}
+
 }

@@ -34,84 +34,82 @@ import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class InstanceRegistryTest {
-    private InstanceRepository repository;
-    private InstanceIdGenerator idGenerator;
-    private InstanceRegistry registry;
 
-    @Before
-    public void setUp() {
-        repository = new EventsourcingInstanceRepository(new InMemoryEventStore());
-        idGenerator = new HashingInstanceUrlIdGenerator();
-        registry = new InstanceRegistry(repository, idGenerator);
-    }
+	private InstanceRepository repository;
 
-    @Test(expected = IllegalArgumentException.class)
-    public void registerFailed_null() {
-        registry.register(null);
-    }
+	private InstanceIdGenerator idGenerator;
 
-    @Test
-    public void register() {
-        Registration registration = Registration.create("abc", "http://localhost:8080/health").build();
-        InstanceId id = registry.register(registration).block();
+	private InstanceRegistry registry;
 
-        StepVerifier.create(registry.getInstance(id)).assertNext(app -> {
-            assertThat(app.getRegistration()).isEqualTo(registration);
-            assertThat(app.getId()).isNotNull();
-        }).verifyComplete();
+	@Before
+	public void setUp() {
+		repository = new EventsourcingInstanceRepository(new InMemoryEventStore());
+		idGenerator = new HashingInstanceUrlIdGenerator();
+		registry = new InstanceRegistry(repository, idGenerator);
+	}
 
-        StepVerifier.create(registry.getInstances()).assertNext(app -> {
-            assertThat(app.getRegistration()).isEqualTo(registration);
-            assertThat(app.getId()).isNotNull();
-        }).verifyComplete();
-    }
+	@Test(expected = IllegalArgumentException.class)
+	public void registerFailed_null() {
+		registry.register(null);
+	}
 
-    @Test
-    public void deregister() {
-        InstanceId id = registry.register(Registration.create("abc", "http://localhost:8080/health").build()).block();
-        registry.deregister(id).block();
+	@Test
+	public void register() {
+		Registration registration = Registration.create("abc", "http://localhost:8080/health").build();
+		InstanceId id = registry.register(registration).block();
 
-        StepVerifier.create(registry.getInstance(id))
-                    .assertNext(app -> assertThat(app.isRegistered()).isFalse())
-                    .verifyComplete();
-    }
+		StepVerifier.create(registry.getInstance(id)).assertNext(app -> {
+			assertThat(app.getRegistration()).isEqualTo(registration);
+			assertThat(app.getId()).isNotNull();
+		}).verifyComplete();
 
-    @Test
-    public void refresh() {
-        // Given instance is already reegistered and has status and info.
-        StatusInfo status = StatusInfo.ofUp();
-        Info info = Info.from(singletonMap("foo", "bar"));
-        Registration registration = Registration.create("abc", "http://localhost:8080/health").build();
-        InstanceId id = idGenerator.generateId(registration);
-        Instance app = Instance.create(id).register(registration).withStatusInfo(status).withInfo(info);
-        StepVerifier.create(repository.save(app)).expectNextCount(1).verifyComplete();
+		StepVerifier.create(registry.getInstances()).assertNext(app -> {
+			assertThat(app.getRegistration()).isEqualTo(registration);
+			assertThat(app.getId()).isNotNull();
+		}).verifyComplete();
+	}
 
-        // When instance registers second time
-        InstanceId refreshId = registry.register(Registration.create("abc", "http://localhost:8080/health").build())
-                                       .block();
+	@Test
+	public void deregister() {
+		InstanceId id = registry.register(Registration.create("abc", "http://localhost:8080/health").build()).block();
+		registry.deregister(id).block();
 
-        assertThat(refreshId).isEqualTo(id);
-        StepVerifier.create(registry.getInstance(id)).assertNext(registered -> {
-            // Then info and status are retained
-            assertThat(registered.getInfo()).isEqualTo(info);
-            assertThat(registered.getStatusInfo()).isEqualTo(status);
-        }).verifyComplete();
-    }
+		StepVerifier.create(registry.getInstance(id)).assertNext(app -> assertThat(app.isRegistered()).isFalse())
+				.verifyComplete();
+	}
 
-    @Test
-    public void findByName() {
-        InstanceId id1 = registry.register(Registration.create("abc", "http://localhost:8080/health").build()).block();
-        InstanceId id2 = registry.register(Registration.create("abc", "http://localhost:8081/health").build()).block();
-        InstanceId id3 = registry.register(Registration.create("zzz", "http://localhost:9999/health").build()).block();
+	@Test
+	public void refresh() {
+		// Given instance is already reegistered and has status and info.
+		StatusInfo status = StatusInfo.ofUp();
+		Info info = Info.from(singletonMap("foo", "bar"));
+		Registration registration = Registration.create("abc", "http://localhost:8080/health").build();
+		InstanceId id = idGenerator.generateId(registration);
+		Instance app = Instance.create(id).register(registration).withStatusInfo(status).withInfo(info);
+		StepVerifier.create(repository.save(app)).expectNextCount(1).verifyComplete();
 
-        StepVerifier.create(registry.getInstances("abc"))
-                    .recordWith(ArrayList::new)
-                    .thenConsumeWhile(a -> true)
-                    .consumeRecordedWith(
-                        applications -> assertThat(applications.stream().map(Instance::getId)).doesNotContain(id3)
-                                                                                              .containsExactlyInAnyOrder(
-                                                                                                  id1, id2))
-                    .verifyComplete();
-    }
+		// When instance registers second time
+		InstanceId refreshId = registry.register(Registration.create("abc", "http://localhost:8080/health").build())
+				.block();
+
+		assertThat(refreshId).isEqualTo(id);
+		StepVerifier.create(registry.getInstance(id)).assertNext(registered -> {
+			// Then info and status are retained
+			assertThat(registered.getInfo()).isEqualTo(info);
+			assertThat(registered.getStatusInfo()).isEqualTo(status);
+		}).verifyComplete();
+	}
+
+	@Test
+	public void findByName() {
+		InstanceId id1 = registry.register(Registration.create("abc", "http://localhost:8080/health").build()).block();
+		InstanceId id2 = registry.register(Registration.create("abc", "http://localhost:8081/health").build()).block();
+		InstanceId id3 = registry.register(Registration.create("zzz", "http://localhost:9999/health").build()).block();
+
+		StepVerifier.create(registry.getInstances("abc")).recordWith(ArrayList::new).thenConsumeWhile(a -> true)
+				.consumeRecordedWith(applications -> assertThat(applications.stream().map(Instance::getId))
+						.doesNotContain(id3).containsExactlyInAnyOrder(id1, id2))
+				.verifyComplete();
+	}
 
 }

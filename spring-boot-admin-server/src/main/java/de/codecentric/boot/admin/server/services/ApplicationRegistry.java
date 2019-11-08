@@ -39,122 +39,105 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 /**
- * Registry for all applications that should be managed/administrated by the Spring Boot Admin
- * server. Backed by an InstanceRegistry for persistence and an InstanceEventPublisher for events
+ * Registry for all applications that should be managed/administrated by the Spring Boot
+ * Admin server. Backed by an InstanceRegistry for persistence and an
+ * InstanceEventPublisher for events
  *
  * @author Dean de Bree
  */
 public class ApplicationRegistry {
 
-    private final InstanceRegistry instanceRegistry;
-    private final InstanceEventPublisher instanceEventPublisher;
+	private final InstanceRegistry instanceRegistry;
 
-    public ApplicationRegistry(InstanceRegistry instanceRegistry,
-                               InstanceEventPublisher instanceEventPublisher) {
-        this.instanceRegistry = instanceRegistry;
-        this.instanceEventPublisher = instanceEventPublisher;
-    }
+	private final InstanceEventPublisher instanceEventPublisher;
 
-    /**
-     * Get a list of all registered applications.
-     *
-     * @return Flux of all the applications.
-     */
-    public Flux<Application> getApplications() {
-        return this.instanceRegistry.getInstances()
-                                    .filter(Instance::isRegistered)
-                                    .groupBy(instance -> instance.getRegistration().getName())
-                                    .flatMap(grouped -> toApplication(grouped.key(), grouped), Integer.MAX_VALUE);
-    }
+	public ApplicationRegistry(InstanceRegistry instanceRegistry, InstanceEventPublisher instanceEventPublisher) {
+		this.instanceRegistry = instanceRegistry;
+		this.instanceEventPublisher = instanceEventPublisher;
+	}
 
-    /**
-     * Get a specific application instance.
-     * @param name the name of the application to find.
-     * @return Mono with the application or an empty Mono if not found.
-     */
-    public Mono<Application> getApplication(String name) {
-        return this.toApplication(name, this.instanceRegistry.getInstances(name).filter(Instance::isRegistered))
-            .filter(a -> !a.getInstances().isEmpty());
-    }
+	/**
+	 * Get a list of all registered applications.
+	 * @return Flux of all the applications.
+	 */
+	public Flux<Application> getApplications() {
+		return this.instanceRegistry.getInstances().filter(Instance::isRegistered)
+				.groupBy(instance -> instance.getRegistration().getName())
+				.flatMap(grouped -> toApplication(grouped.key(), grouped), Integer.MAX_VALUE);
+	}
 
-    public Flux<Application> getApplicationStream() {
-        return Flux.from(this.instanceEventPublisher)
-            .flatMap(event -> this.instanceRegistry.getInstance(event.getInstance()))
-            .map(this::getApplicationForInstance)
-            .flatMap(group -> toApplication(group.getT1(), group.getT2()));
-    }
+	/**
+	 * Get a specific application instance.
+	 * @param name the name of the application to find.
+	 * @return Mono with the application or an empty Mono if not found.
+	 */
+	public Mono<Application> getApplication(String name) {
+		return this.toApplication(name, this.instanceRegistry.getInstances(name).filter(Instance::isRegistered))
+				.filter(a -> !a.getInstances().isEmpty());
+	}
 
-    public Flux<InstanceId> deregister(String name) {
-        return this.instanceRegistry.getInstances(name)
-                                    .flatMap(instance -> this.instanceRegistry.deregister(instance.getId()));
-    }
+	public Flux<Application> getApplicationStream() {
+		return Flux.from(this.instanceEventPublisher)
+				.flatMap(event -> this.instanceRegistry.getInstance(event.getInstance()))
+				.map(this::getApplicationForInstance).flatMap(group -> toApplication(group.getT1(), group.getT2()));
+	}
 
-    protected Tuple2<String, Flux<Instance>> getApplicationForInstance(Instance instance) {
-        String name = instance.getRegistration().getName();
-        return Tuples.of(name, this.instanceRegistry.getInstances(name).filter(Instance::isRegistered));
-    }
+	public Flux<InstanceId> deregister(String name) {
+		return this.instanceRegistry.getInstances(name)
+				.flatMap(instance -> this.instanceRegistry.deregister(instance.getId()));
+	}
 
-    protected Mono<Application> toApplication(String name, Flux<Instance> instances) {
-        return instances.collectList().map(instanceList -> {
-            Tuple2<String, Instant> status = getStatus(instanceList);
-            return Application
-                .create(name)
-                .instances(instanceList)
-                .buildVersion(getBuildVersion(instanceList))
-                .status(status.getT1())
-                .statusTimestamp(status.getT2())
-                .build();
-        });
-    }
+	protected Tuple2<String, Flux<Instance>> getApplicationForInstance(Instance instance) {
+		String name = instance.getRegistration().getName();
+		return Tuples.of(name, this.instanceRegistry.getInstances(name).filter(Instance::isRegistered));
+	}
 
-    @Nullable
-    protected BuildVersion getBuildVersion(List<Instance> instances) {
-        List<BuildVersion> versions = instances.stream()
-            .map(Instance::getBuildVersion)
-            .filter(Objects::nonNull)
-            .distinct()
-            .sorted()
-            .collect(toList());
-        if (versions.isEmpty()) {
-            return null;
-        } else if (versions.size() == 1) {
-            return versions.get(0);
-        } else {
-            return BuildVersion.valueOf(versions.get(0) + " ... " + versions.get(versions.size() - 1));
-        }
-    }
+	protected Mono<Application> toApplication(String name, Flux<Instance> instances) {
+		return instances.collectList().map(instanceList -> {
+			Tuple2<String, Instant> status = getStatus(instanceList);
+			return Application.create(name).instances(instanceList).buildVersion(getBuildVersion(instanceList))
+					.status(status.getT1()).statusTimestamp(status.getT2()).build();
+		});
+	}
 
-    protected Tuple2<String, Instant> getStatus(List<Instance> instances) {
-        //TODO: Correct is just a second readmodel for groups
-        Map<String, Instant> statusWithTime = instances.stream()
-            .collect(toMap(instance -> instance.getStatusInfo().getStatus(),
-                Instance::getStatusTimestamp,
-                this::getMax
-            ));
-        if (statusWithTime.size() == 1) {
-            Map.Entry<String, Instant> e = statusWithTime.entrySet().iterator().next();
-            return Tuples.of(e.getKey(), e.getValue());
-        }
+	@Nullable
+	protected BuildVersion getBuildVersion(List<Instance> instances) {
+		List<BuildVersion> versions = instances.stream().map(Instance::getBuildVersion).filter(Objects::nonNull)
+				.distinct().sorted().collect(toList());
+		if (versions.isEmpty()) {
+			return null;
+		}
+		else if (versions.size() == 1) {
+			return versions.get(0);
+		}
+		else {
+			return BuildVersion.valueOf(versions.get(0) + " ... " + versions.get(versions.size() - 1));
+		}
+	}
 
-        if (statusWithTime.containsKey(StatusInfo.STATUS_UP)) {
-            Instant oldestNonUp = statusWithTime.entrySet()
-                .stream()
-                .filter(e -> !StatusInfo.STATUS_UP.equals(e.getKey()))
-                .map(Map.Entry::getValue)
-                .min(naturalOrder())
-                .orElse(Instant.EPOCH);
-            Instant latest = getMax(oldestNonUp, statusWithTime.getOrDefault(StatusInfo.STATUS_UP, Instant.EPOCH));
-            return Tuples.of(StatusInfo.STATUS_RESTRICTED, latest);
-        }
+	protected Tuple2<String, Instant> getStatus(List<Instance> instances) {
+		// TODO: Correct is just a second readmodel for groups
+		Map<String, Instant> statusWithTime = instances.stream().collect(
+				toMap(instance -> instance.getStatusInfo().getStatus(), Instance::getStatusTimestamp, this::getMax));
+		if (statusWithTime.size() == 1) {
+			Map.Entry<String, Instant> e = statusWithTime.entrySet().iterator().next();
+			return Tuples.of(e.getKey(), e.getValue());
+		}
 
-        return statusWithTime.entrySet()
-            .stream()
-            .min(Map.Entry.comparingByKey(StatusInfo.severity()))
-            .map(e -> Tuples.of(e.getKey(), e.getValue()))
-            .orElse(Tuples.of(STATUS_UNKNOWN, Instant.EPOCH));
-    }
+		if (statusWithTime.containsKey(StatusInfo.STATUS_UP)) {
+			Instant oldestNonUp = statusWithTime.entrySet().stream()
+					.filter(e -> !StatusInfo.STATUS_UP.equals(e.getKey())).map(Map.Entry::getValue).min(naturalOrder())
+					.orElse(Instant.EPOCH);
+			Instant latest = getMax(oldestNonUp, statusWithTime.getOrDefault(StatusInfo.STATUS_UP, Instant.EPOCH));
+			return Tuples.of(StatusInfo.STATUS_RESTRICTED, latest);
+		}
 
-    protected Instant getMax(Instant t1, Instant t2) {
-        return t1.compareTo(t2) >= 0 ? t1 : t2;
-    }
+		return statusWithTime.entrySet().stream().min(Map.Entry.comparingByKey(StatusInfo.severity()))
+				.map(e -> Tuples.of(e.getKey(), e.getValue())).orElse(Tuples.of(STATUS_UNKNOWN, Instant.EPOCH));
+	}
+
+	protected Instant getMax(Instant t1, Instant t2) {
+		return t1.compareTo(t2) >= 0 ? t1 : t2;
+	}
+
 }

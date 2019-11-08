@@ -30,32 +30,33 @@ import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class InfoTest {
-    private ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
 
-    @Test
-    public void should_serialize_json() throws Exception {
-        Map<String, Object> values = new HashMap<>();
-        values.put("foo", "bar");
-        values.put("build", singletonMap("version", "1.0.0"));
-        Info info = Info.from(values);
-        String json = objectMapper.writeValueAsString(info);
+	private ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
 
-        DocumentContext doc = JsonPath.parse(json);
+	@Test
+	public void should_serialize_json() throws Exception {
+		Map<String, Object> values = new HashMap<>();
+		values.put("foo", "bar");
+		values.put("build", singletonMap("version", "1.0.0"));
+		Info info = Info.from(values);
+		String json = objectMapper.writeValueAsString(info);
 
-        assertThat(doc.read("$.foo", String.class)).isEqualTo("bar");
-        assertThat(doc.read("$.build.version", String.class)).isEqualTo("1.0.0");
-    }
+		DocumentContext doc = JsonPath.parse(json);
 
-    @Test
-    public void should_keep_order() {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("z", "1");
-        map.put("x", "2");
+		assertThat(doc.read("$.foo", String.class)).isEqualTo("bar");
+		assertThat(doc.read("$.build.version", String.class)).isEqualTo("1.0.0");
+	}
 
-        Iterator<?> iter = Info.from(map).getValues().entrySet().iterator();
+	@Test
+	public void should_keep_order() {
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("z", "1");
+		map.put("x", "2");
 
-        assertThat(iter.next()).hasFieldOrPropertyWithValue("key", "z").hasFieldOrPropertyWithValue("value", "1");
-        assertThat(iter.next()).hasFieldOrPropertyWithValue("key", "x").hasFieldOrPropertyWithValue("value", "2");
-    }
+		Iterator<?> iter = Info.from(map).getValues().entrySet().iterator();
+
+		assertThat(iter.next()).hasFieldOrPropertyWithValue("key", "z").hasFieldOrPropertyWithValue("value", "1");
+		assertThat(iter.next()).hasFieldOrPropertyWithValue("key", "x").hasFieldOrPropertyWithValue("value", "2");
+	}
 
 }

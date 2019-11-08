@@ -16,7 +16,6 @@
 
 package de.codecentric.boot.admin.server.services.endpoints;
 
-
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
@@ -29,34 +28,34 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ChainingStrategyTest {
 
-    @Test
-    public void invariants() {
-        assertThatThrownBy(() -> {
-            new ChainingStrategy((EndpointDetectionStrategy[]) null);
-        }).isInstanceOf(IllegalArgumentException.class).hasMessage("'delegates' must not be null.");
-        assertThatThrownBy(() -> {
-            new ChainingStrategy((EndpointDetectionStrategy) null);
-        }).isInstanceOf(IllegalArgumentException.class).hasMessage("'delegates' must not contain null.");
-    }
+	@Test
+	public void invariants() {
+		assertThatThrownBy(() -> {
+			new ChainingStrategy((EndpointDetectionStrategy[]) null);
+		}).isInstanceOf(IllegalArgumentException.class).hasMessage("'delegates' must not be null.");
+		assertThatThrownBy(() -> {
+			new ChainingStrategy((EndpointDetectionStrategy) null);
+		}).isInstanceOf(IllegalArgumentException.class).hasMessage("'delegates' must not contain null.");
+	}
 
-    @Test
-    public void should_chain_on_empty() {
-        //given
-        Instance instance = Instance.create(InstanceId.of("id"));
-        ChainingStrategy strategy = new ChainingStrategy((a) -> Mono.empty(), (a) -> Mono.empty(),
-            (a) -> Mono.just(Endpoints.single("id", "path")));
-        //when/then
-        StepVerifier.create(strategy.detectEndpoints(instance))
-                    .expectNext(Endpoints.single("id", "path"))
-                    .verifyComplete();
-    }
+	@Test
+	public void should_chain_on_empty() {
+		// given
+		Instance instance = Instance.create(InstanceId.of("id"));
+		ChainingStrategy strategy = new ChainingStrategy((a) -> Mono.empty(), (a) -> Mono.empty(),
+				(a) -> Mono.just(Endpoints.single("id", "path")));
+		// when/then
+		StepVerifier.create(strategy.detectEndpoints(instance)).expectNext(Endpoints.single("id", "path"))
+				.verifyComplete();
+	}
 
-    @Test
-    public void should_return_empty_endpoints_when_all_empty() {
-        //given
-        Instance instance = Instance.create(InstanceId.of("id"));
-        ChainingStrategy strategy = new ChainingStrategy((a) -> Mono.empty());
-        //when/then
-        StepVerifier.create(strategy.detectEndpoints(instance)).expectNext(Endpoints.empty()).verifyComplete();
-    }
+	@Test
+	public void should_return_empty_endpoints_when_all_empty() {
+		// given
+		Instance instance = Instance.create(InstanceId.of("id"));
+		ChainingStrategy strategy = new ChainingStrategy((a) -> Mono.empty());
+		// when/then
+		StepVerifier.create(strategy.detectEndpoints(instance)).expectNext(Endpoints.empty()).verifyComplete();
+	}
+
 }

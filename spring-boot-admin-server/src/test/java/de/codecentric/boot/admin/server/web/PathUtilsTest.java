@@ -22,14 +22,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class PathUtilsTest {
 
-    @Test
-    public void normalizePath() {
-        assertThat(PathUtils.normalizePath(null)).isEqualTo(null);
-        assertThat(PathUtils.normalizePath("")).isEqualTo("");
-        assertThat(PathUtils.normalizePath("/")).isEqualTo("");
-        assertThat(PathUtils.normalizePath("admin")).isEqualTo("/admin");
-        assertThat(PathUtils.normalizePath("/admin")).isEqualTo("/admin");
-        assertThat(PathUtils.normalizePath("/admin/")).isEqualTo("/admin");
-        assertThat(PathUtils.normalizePath("admin/")).isEqualTo("/admin");
-    }
+	@Test
+	public void normalizePath() {
+		assertThat(PathUtils.normalizePath(null)).isEqualTo(null);
+		assertThat(PathUtils.normalizePath("")).isEqualTo("");
+		assertThat(PathUtils.normalizePath("/")).isEqualTo("");
+		assertThat(PathUtils.normalizePath("admin")).isEqualTo("/admin");
+		assertThat(PathUtils.normalizePath("/admin")).isEqualTo("/admin");
+		assertThat(PathUtils.normalizePath("/admin/")).isEqualTo("/admin");
+		assertThat(PathUtils.normalizePath("admin/")).isEqualTo("/admin");
+	}
+
 }

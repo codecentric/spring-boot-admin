@@ -39,92 +39,89 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class SnapshottingInstanceRepositoryTest extends AbstractInstanceRepositoryTest {
-    private final Instance instance = Instance.create(InstanceId.of("app-1"))
-                                              .register(Registration.create("app", "http://health").build());
-    private InMemoryEventStore eventStore = spy(new InMemoryEventStore());
-    private SnapshottingInstanceRepository repository;
 
-    @Before
-    public void setUp() {
-        this.repository = new SnapshottingInstanceRepository(this.eventStore);
-        this.repository.start();
-        super.setUp(this.repository);
-    }
+	private final Instance instance = Instance.create(InstanceId.of("app-1"))
+			.register(Registration.create("app", "http://health").build());
 
-    @After
-    public void tearDown() {
-        this.repository.stop();
-    }
+	private InMemoryEventStore eventStore = spy(new InMemoryEventStore());
 
+	private SnapshottingInstanceRepository repository;
 
-    @Test
-    public void should_return_instance_from_cache() {
-        //given
-        StepVerifier.create(this.repository.save(this.instance)).expectNext(this.instance).verifyComplete();
-        //when
-        reset(this.eventStore);
-        StepVerifier.create(this.repository.find(this.instance.getId())).expectNext(this.instance).verifyComplete();
-        //then
-        verify(this.eventStore, never()).find(any());
-    }
+	@Before
+	public void setUp() {
+		this.repository = new SnapshottingInstanceRepository(this.eventStore);
+		this.repository.start();
+		super.setUp(this.repository);
+	}
 
-    @Test
-    public void should_return_all_instances_from_cache() {
-        //given
-        StepVerifier.create(this.repository.save(this.instance)).expectNext(this.instance).verifyComplete();
-        //when
-        reset(this.eventStore);
-        StepVerifier.create(this.repository.findAll()).expectNext(this.instance).verifyComplete();
-        //then
-        verify(this.eventStore, never()).findAll();
-    }
+	@After
+	public void tearDown() {
+		this.repository.stop();
+	}
 
-    @Test
-    public void should_update_cache_after_error() {
-        //given
-        this.repository.stop();
-        when(this.eventStore.findAll()).thenReturn(Flux.just(new InstanceRegisteredEvent(InstanceId.of("broken"),
-                0L,
-                this.instance.getRegistration()
-            ),
-            new InstanceRegisteredEvent(InstanceId.of("broken"), 0L, this.instance.getRegistration()),
-            new InstanceRegisteredEvent(this.instance.getId(), 0L, this.instance.getRegistration()),
-            new InstanceRegisteredEvent(InstanceId.of("broken"), 1L, this.instance.getRegistration())
-        ));
-        //when
-        this.repository.start();
-        //then
-        reset(this.eventStore);
-        StepVerifier.create(this.repository.find(this.instance.getId())).expectNext(this.instance).verifyComplete();
-        StepVerifier.create(this.repository.find(InstanceId.of("broken")))
-                    .assertNext(i -> assertThat(i.getVersion()).isEqualTo(1L))
-                    .verifyComplete();
-    }
+	@Test
+	public void should_return_instance_from_cache() {
+		// given
+		StepVerifier.create(this.repository.save(this.instance)).expectNext(this.instance).verifyComplete();
+		// when
+		reset(this.eventStore);
+		StepVerifier.create(this.repository.find(this.instance.getId())).expectNext(this.instance).verifyComplete();
+		// then
+		verify(this.eventStore, never()).find(any());
+	}
 
-    @Test
-    public void should_return_outdated_instance_not_present_in_cache() {
-        this.repository.stop();
-        //given
-        StepVerifier.create(this.repository.save(this.instance)).expectNext(this.instance).verifyComplete();
-        StepVerifier.create(this.repository.save(this.instance)).verifyError(OptimisticLockingException.class);
-        //when
-        StepVerifier.create(this.repository.find(this.instance.getId())).expectNext(this.instance).verifyComplete();
-    }
+	@Test
+	public void should_return_all_instances_from_cache() {
+		// given
+		StepVerifier.create(this.repository.save(this.instance)).expectNext(this.instance).verifyComplete();
+		// when
+		reset(this.eventStore);
+		StepVerifier.create(this.repository.findAll()).expectNext(this.instance).verifyComplete();
+		// then
+		verify(this.eventStore, never()).findAll();
+	}
 
-    @Test
-    public void should_refresh_snapshots_eagerly_on_optimistick_lock_exception() {
-        //given
-        StepVerifier.create(this.repository.save(this.instance)).expectNextCount(1L).verifyComplete();
-        this.repository.stop();
-        StepVerifier.create(this.repository.save(this.instance.clearUnsavedEvents()
-                                                              .withStatusInfo(StatusInfo.ofDown())))
-                    .expectNextCount(1L)
-                    .verifyComplete();
-        //when
-        StepVerifier.create(this.repository.computeIfPresent(this.instance.getId(),
-            (id, i) -> Mono.just(i.withStatusInfo(StatusInfo.ofUp()))
-        ))
-                    .expectNextCount(1L)
-                    .verifyComplete();
-    }
+	@Test
+	public void should_update_cache_after_error() {
+		// given
+		this.repository.stop();
+		when(this.eventStore.findAll()).thenReturn(
+				Flux.just(new InstanceRegisteredEvent(InstanceId.of("broken"), 0L, this.instance.getRegistration()),
+						new InstanceRegisteredEvent(InstanceId.of("broken"), 0L, this.instance.getRegistration()),
+						new InstanceRegisteredEvent(this.instance.getId(), 0L, this.instance.getRegistration()),
+						new InstanceRegisteredEvent(InstanceId.of("broken"), 1L, this.instance.getRegistration())));
+		// when
+		this.repository.start();
+		// then
+		reset(this.eventStore);
+		StepVerifier.create(this.repository.find(this.instance.getId())).expectNext(this.instance).verifyComplete();
+		StepVerifier.create(this.repository.find(InstanceId.of("broken")))
+				.assertNext(i -> assertThat(i.getVersion()).isEqualTo(1L)).verifyComplete();
+	}
+
+	@Test
+	public void should_return_outdated_instance_not_present_in_cache() {
+		this.repository.stop();
+		// given
+		StepVerifier.create(this.repository.save(this.instance)).expectNext(this.instance).verifyComplete();
+		StepVerifier.create(this.repository.save(this.instance)).verifyError(OptimisticLockingException.class);
+		// when
+		StepVerifier.create(this.repository.find(this.instance.getId())).expectNext(this.instance).verifyComplete();
+	}
+
+	@Test
+	public void should_refresh_snapshots_eagerly_on_optimistick_lock_exception() {
+		// given
+		StepVerifier.create(this.repository.save(this.instance)).expectNextCount(1L).verifyComplete();
+		this.repository.stop();
+		StepVerifier
+				.create(this.repository.save(this.instance.clearUnsavedEvents().withStatusInfo(StatusInfo.ofDown())))
+				.expectNextCount(1L).verifyComplete();
+		// when
+		StepVerifier
+				.create(this.repository.computeIfPresent(this.instance.getId(),
+						(id, i) -> Mono.just(i.withStatusInfo(StatusInfo.ofUp()))))
+				.expectNextCount(1L).verifyComplete();
+	}
+
 }

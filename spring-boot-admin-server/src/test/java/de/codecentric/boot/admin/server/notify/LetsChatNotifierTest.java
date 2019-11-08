@@ -45,73 +45,84 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class LetsChatNotifierTest {
-    private static final String room = "text_room";
-    private static final String token = "text_token";
-    private static final String user = "api_user";
-    private static final String host = "http://localhost";
-    private static final Instance instance = Instance.create(InstanceId.of("-id-"))
-                                              .register(Registration.create("App", "http://health").build());
-    private LetsChatNotifier notifier;
-    private RestTemplate restTemplate;
 
-    @Before
-    public void setUp() {
-        InstanceRepository repository = mock(InstanceRepository.class);
-        when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
+	private static final String room = "text_room";
 
-        restTemplate = mock(RestTemplate.class);
-        notifier = new LetsChatNotifier(repository, restTemplate);
-        notifier.setUsername(user);
-        notifier.setUrl(URI.create(host));
-        notifier.setRoom(room);
-        notifier.setToken(token);
-    }
+	private static final String token = "text_token";
 
-    @Test
-    public void test_onApplicationEvent_resolve() {
-        StepVerifier.create(notifier.notify(
-            new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
-                    .verifyComplete();
-        clearInvocations(restTemplate);
+	private static final String user = "api_user";
 
-        StepVerifier.create(
-            notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
-                    .verifyComplete();
+	private static final String host = "http://localhost";
 
-        HttpEntity<?> expected = expectedMessage(standardMessage("UP"));
-        verify(restTemplate).exchange(eq(URI.create(String.format("%s/rooms/%s/messages", host, room))),
-            eq(HttpMethod.POST), eq(expected), eq(Void.class));
-    }
+	private static final Instance instance = Instance.create(InstanceId.of("-id-"))
+			.register(Registration.create("App", "http://health").build());
 
-    @Test
-    public void test_onApplicationEvent_resolve_with_custom_message() {
-        notifier.setMessage("TEST");
-        StepVerifier.create(notifier.notify(
-            new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
-                    .verifyComplete();
-        clearInvocations(restTemplate);
+	private LetsChatNotifier notifier;
 
-        StepVerifier.create(
-            notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
-                    .verifyComplete();
+	private RestTemplate restTemplate;
 
-        HttpEntity<?> expected = expectedMessage("TEST");
-        verify(restTemplate).exchange(eq(URI.create(String.format("%s/rooms/%s/messages", host, room))),
-            eq(HttpMethod.POST), eq(expected), eq(Void.class));
-    }
+	@Before
+	public void setUp() {
+		InstanceRepository repository = mock(InstanceRepository.class);
+		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 
-    private HttpEntity<?> expectedMessage(String message) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        String auth = Base64Utils.encodeToString(String.format("%s:%s", token, user).getBytes(StandardCharsets.UTF_8));
-        httpHeaders.add(HttpHeaders.AUTHORIZATION, String.format("Basic %s", auth));
-        Map<String, Object> messageJson = new HashMap<>();
-        messageJson.put("text", message);
-        return new HttpEntity<>(messageJson, httpHeaders);
-    }
+		restTemplate = mock(RestTemplate.class);
+		notifier = new LetsChatNotifier(repository, restTemplate);
+		notifier.setUsername(user);
+		notifier.setUrl(URI.create(host));
+		notifier.setRoom(room);
+		notifier.setToken(token);
+	}
 
-    private String standardMessage(String status) {
-        return "*" + instance.getRegistration().getName() + "* (" + instance.getId() + ") is *" + status + "*";
-    }
+	@Test
+	public void test_onApplicationEvent_resolve() {
+		StepVerifier
+				.create(notifier.notify(
+						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
+				.verifyComplete();
+		clearInvocations(restTemplate);
+
+		StepVerifier
+				.create(notifier.notify(
+						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+				.verifyComplete();
+
+		HttpEntity<?> expected = expectedMessage(standardMessage("UP"));
+		verify(restTemplate).exchange(eq(URI.create(String.format("%s/rooms/%s/messages", host, room))),
+				eq(HttpMethod.POST), eq(expected), eq(Void.class));
+	}
+
+	@Test
+	public void test_onApplicationEvent_resolve_with_custom_message() {
+		notifier.setMessage("TEST");
+		StepVerifier
+				.create(notifier.notify(
+						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
+				.verifyComplete();
+		clearInvocations(restTemplate);
+
+		StepVerifier
+				.create(notifier.notify(
+						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+				.verifyComplete();
+
+		HttpEntity<?> expected = expectedMessage("TEST");
+		verify(restTemplate).exchange(eq(URI.create(String.format("%s/rooms/%s/messages", host, room))),
+				eq(HttpMethod.POST), eq(expected), eq(Void.class));
+	}
+
+	private HttpEntity<?> expectedMessage(String message) {
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		String auth = Base64Utils.encodeToString(String.format("%s:%s", token, user).getBytes(StandardCharsets.UTF_8));
+		httpHeaders.add(HttpHeaders.AUTHORIZATION, String.format("Basic %s", auth));
+		Map<String, Object> messageJson = new HashMap<>();
+		messageJson.put("text", message);
+		return new HttpEntity<>(messageJson, httpHeaders);
+	}
+
+	private String standardMessage(String status) {
+		return "*" + instance.getRegistration().getName() + "* (" + instance.getId() + ") is *" + status + "*";
+	}
 
 }

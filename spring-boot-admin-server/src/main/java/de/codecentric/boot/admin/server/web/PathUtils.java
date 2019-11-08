@@ -19,22 +19,22 @@ package de.codecentric.boot.admin.server.web;
 import org.springframework.util.StringUtils;
 
 public final class PathUtils {
-    private PathUtils() {
-    }
 
+	private PathUtils() {
+	}
 
-    public static String normalizePath(String path) {
-        if (!StringUtils.hasText(path)) {
-            return path;
-        }
-        String normalizedPath = path;
-        if (!normalizedPath.startsWith("/")) {
-            normalizedPath = "/" + normalizedPath;
-        }
-        if (normalizedPath.endsWith("/")) {
-            normalizedPath = normalizedPath.substring(0, normalizedPath.length() - 1);
-        }
-        return normalizedPath;
-    }
+	public static String normalizePath(String path) {
+		if (!StringUtils.hasText(path)) {
+			return path;
+		}
+		String normalizedPath = path;
+		if (!normalizedPath.startsWith("/")) {
+			normalizedPath = "/" + normalizedPath;
+		}
+		if (normalizedPath.endsWith("/")) {
+			normalizedPath = normalizedPath.substring(0, normalizedPath.length() - 1);
+		}
+		return normalizedPath;
+	}
 
 }

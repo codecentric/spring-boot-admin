@@ -23,10 +23,12 @@ import java.util.Map;
 import static java.util.Collections.singletonMap;
 
 public class StartupDateMetadataContributor implements MetadataContributor {
-    private final OffsetDateTime timestamp = OffsetDateTime.now();
 
-    @Override
-    public Map<String, String> getMetadata() {
-        return singletonMap("startup", this.timestamp.format(DateTimeFormatter.ISO_DATE_TIME));
-    }
+	private final OffsetDateTime timestamp = OffsetDateTime.now();
+
+	@Override
+	public Map<String, String> getMetadata() {
+		return singletonMap("startup", this.timestamp.format(DateTimeFormatter.ISO_DATE_TIME));
+	}
+
 }

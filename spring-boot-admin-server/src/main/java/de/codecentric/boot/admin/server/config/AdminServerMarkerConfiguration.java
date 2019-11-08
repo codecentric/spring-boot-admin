@@ -21,11 +21,14 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
 public class AdminServerMarkerConfiguration {
-    @Bean
-    public Marker adminServerMarker() {
-        return new Marker();
-    }
 
-    public static class Marker {
-    }
+	@Bean
+	public Marker adminServerMarker() {
+		return new Marker();
+	}
+
+	public static class Marker {
+
+	}
+
 }

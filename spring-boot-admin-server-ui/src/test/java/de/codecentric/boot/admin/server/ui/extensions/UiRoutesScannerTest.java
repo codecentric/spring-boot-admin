@@ -24,11 +24,13 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UiRoutesScannerTest {
-    private final UiRoutesScanner scanner = new UiRoutesScanner(new PathMatchingResourcePatternResolver());
 
-    @Test
-    public void should_find_route() throws IOException {
-        List<String> routes = this.scanner.scan("classpath:/META-INF/test-extensions/");
-        assertThat(routes).containsExactlyInAnyOrder("/custom/**");
-    }
+	private final UiRoutesScanner scanner = new UiRoutesScanner(new PathMatchingResourcePatternResolver());
+
+	@Test
+	public void should_find_route() throws IOException {
+		List<String> routes = this.scanner.scan("classpath:/META-INF/test-extensions/");
+		assertThat(routes).containsExactlyInAnyOrder("/custom/**");
+	}
+
 }

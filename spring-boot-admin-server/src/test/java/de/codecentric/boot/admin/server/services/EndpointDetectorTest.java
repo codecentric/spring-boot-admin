@@ -42,61 +42,59 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class EndpointDetectorTest {
-    private EndpointDetector detector;
-    private InstanceRepository repository;
-    private ConcurrentMapEventStore eventStore;
-    private EndpointDetectionStrategy strategy;
 
-    @Before
-    public void setup() {
-        eventStore = new InMemoryEventStore();
-        repository = new EventsourcingInstanceRepository(eventStore);
-        strategy = mock(EndpointDetectionStrategy.class);
-        detector = new EndpointDetector(repository, strategy);
-    }
+	private EndpointDetector detector;
 
-    @Test
-    public void should_update_endpoints() {
-        //given
-        Registration registration = Registration.create("foo", "http://health").managementUrl("http://mgmt").build();
-        Instance instance = Instance.create(InstanceId.of("onl"))
-                                    .register(registration)
-                                    .withStatusInfo(StatusInfo.ofUp());
-        StepVerifier.create(repository.save(instance)).expectNextCount(1).verifyComplete();
+	private InstanceRepository repository;
 
-        Instance noActuator = Instance.create(InstanceId.of("noActuator"))
-                                      .register(Registration.create("foo", "http://health").build())
-                                      .withStatusInfo(StatusInfo.ofUp());
-        StepVerifier.create(repository.save(noActuator)).expectNextCount(1).verifyComplete();
+	private ConcurrentMapEventStore eventStore;
 
-        Instance offline = Instance.create(InstanceId.of("off"))
-                                   .register(registration)
-                                   .withStatusInfo(StatusInfo.ofOffline());
-        StepVerifier.create(repository.save(offline)).expectNextCount(1).verifyComplete();
+	private EndpointDetectionStrategy strategy;
 
-        Instance unknown = Instance.create(InstanceId.of("unk"))
-                                   .register(registration)
-                                   .withStatusInfo(StatusInfo.ofUnknown());
-        StepVerifier.create(repository.save(unknown)).expectNextCount(1).verifyComplete();
+	@Before
+	public void setup() {
+		eventStore = new InMemoryEventStore();
+		repository = new EventsourcingInstanceRepository(eventStore);
+		strategy = mock(EndpointDetectionStrategy.class);
+		detector = new EndpointDetector(repository, strategy);
+	}
 
-        when(strategy.detectEndpoints(any(Instance.class))).thenReturn(Mono.just(Endpoints.single("id", "url")));
+	@Test
+	public void should_update_endpoints() {
+		// given
+		Registration registration = Registration.create("foo", "http://health").managementUrl("http://mgmt").build();
+		Instance instance = Instance.create(InstanceId.of("onl")).register(registration)
+				.withStatusInfo(StatusInfo.ofUp());
+		StepVerifier.create(repository.save(instance)).expectNextCount(1).verifyComplete();
 
-        //when/then
-        StepVerifier.create(Flux.from(eventStore).log("FOO", Level.SEVERE))
-                    .expectSubscription()
-                    .then(() -> StepVerifier.create(detector.detectEndpoints(offline.getId())).verifyComplete())
-                    .then(() -> StepVerifier.create(detector.detectEndpoints(unknown.getId())).verifyComplete())
-                    .then(() -> StepVerifier.create(detector.detectEndpoints(noActuator.getId())).verifyComplete())
-                    .expectNoEvent(Duration.ofMillis(100L))
-                    .then(() -> StepVerifier.create(detector.detectEndpoints(instance.getId())).verifyComplete())
-                    .assertNext(event -> assertThat(event).isInstanceOf(InstanceEndpointsDetectedEvent.class))
-                    .thenCancel()
-                    .verify();
+		Instance noActuator = Instance.create(InstanceId.of("noActuator"))
+				.register(Registration.create("foo", "http://health").build()).withStatusInfo(StatusInfo.ofUp());
+		StepVerifier.create(repository.save(noActuator)).expectNextCount(1).verifyComplete();
 
-        StepVerifier.create(repository.find(instance.getId()))
-                    .assertNext(app -> assertThat(app.getEndpoints()).isEqualTo(
-                        Endpoints.single("id", "url").withEndpoint("health", "http://health")))
-                    .verifyComplete();
-    }
+		Instance offline = Instance.create(InstanceId.of("off")).register(registration)
+				.withStatusInfo(StatusInfo.ofOffline());
+		StepVerifier.create(repository.save(offline)).expectNextCount(1).verifyComplete();
+
+		Instance unknown = Instance.create(InstanceId.of("unk")).register(registration)
+				.withStatusInfo(StatusInfo.ofUnknown());
+		StepVerifier.create(repository.save(unknown)).expectNextCount(1).verifyComplete();
+
+		when(strategy.detectEndpoints(any(Instance.class))).thenReturn(Mono.just(Endpoints.single("id", "url")));
+
+		// when/then
+		StepVerifier.create(Flux.from(eventStore).log("FOO", Level.SEVERE)).expectSubscription()
+				.then(() -> StepVerifier.create(detector.detectEndpoints(offline.getId())).verifyComplete())
+				.then(() -> StepVerifier.create(detector.detectEndpoints(unknown.getId())).verifyComplete())
+				.then(() -> StepVerifier.create(detector.detectEndpoints(noActuator.getId())).verifyComplete())
+				.expectNoEvent(Duration.ofMillis(100L))
+				.then(() -> StepVerifier.create(detector.detectEndpoints(instance.getId())).verifyComplete())
+				.assertNext(event -> assertThat(event).isInstanceOf(InstanceEndpointsDetectedEvent.class)).thenCancel()
+				.verify();
+
+		StepVerifier.create(repository.find(instance.getId()))
+				.assertNext(app -> assertThat(app.getEndpoints())
+						.isEqualTo(Endpoints.single("id", "url").withEndpoint("health", "http://health")))
+				.verifyComplete();
+	}
 
 }

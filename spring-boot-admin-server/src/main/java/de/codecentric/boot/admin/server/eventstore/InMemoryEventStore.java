@@ -28,16 +28,18 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Johannes Edmeier
  */
 public class InMemoryEventStore extends ConcurrentMapEventStore {
-    public InMemoryEventStore() {
-        this(100);
-    }
 
-    public InMemoryEventStore(int maxLogSizePerAggregate) {
-        super(maxLogSizePerAggregate, new ConcurrentHashMap<>());
-    }
+	public InMemoryEventStore() {
+		this(100);
+	}
 
-    @Override
-    public Mono<Void> append(List<InstanceEvent> events) {
-        return super.append(events).then(Mono.fromRunnable(() -> this.publish(events)));
-    }
+	public InMemoryEventStore(int maxLogSizePerAggregate) {
+		super(maxLogSizePerAggregate, new ConcurrentHashMap<>());
+	}
+
+	@Override
+	public Mono<Void> append(List<InstanceEvent> events) {
+		return super.append(events).then(Mono.fromRunnable(() -> this.publish(events)));
+	}
+
 }

@@ -27,53 +27,42 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ApplicationTest {
 
-    @Test
-    public void test_json_format() throws IOException {
-        ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
+	@Test
+	public void test_json_format() throws IOException {
+		ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
 
-        Application app = Application.create("test")
-                                     .healthUrl("http://health")
-                                     .serviceUrl("http://service")
-                                     .managementUrl("http://management")
-                                     .build();
+		Application app = Application.create("test").healthUrl("http://health").serviceUrl("http://service")
+				.managementUrl("http://management").build();
 
-        DocumentContext json = JsonPath.parse(objectMapper.writeValueAsString(app));
+		DocumentContext json = JsonPath.parse(objectMapper.writeValueAsString(app));
 
-        assertThat((String) json.read("$.name")).isEqualTo("test");
-        assertThat((String) json.read("$.serviceUrl")).isEqualTo("http://service");
-        assertThat((String) json.read("$.managementUrl")).isEqualTo("http://management");
-        assertThat((String) json.read("$.healthUrl")).isEqualTo("http://health");
-    }
+		assertThat((String) json.read("$.name")).isEqualTo("test");
+		assertThat((String) json.read("$.serviceUrl")).isEqualTo("http://service");
+		assertThat((String) json.read("$.managementUrl")).isEqualTo("http://management");
+		assertThat((String) json.read("$.healthUrl")).isEqualTo("http://health");
+	}
 
-    @Test
-    public void test_equals_hashCode() {
-        Application a1 = Application.create("foo")
-                                    .healthUrl("healthUrl")
-                                    .managementUrl("mgmt")
-                                    .serviceUrl("svc")
-                                    .build();
-        Application a2 = Application.create("foo")
-                                    .healthUrl("healthUrl")
-                                    .managementUrl("mgmt")
-                                    .serviceUrl("svc")
-                                    .build();
+	@Test
+	public void test_equals_hashCode() {
+		Application a1 = Application.create("foo").healthUrl("healthUrl").managementUrl("mgmt").serviceUrl("svc")
+				.build();
+		Application a2 = Application.create("foo").healthUrl("healthUrl").managementUrl("mgmt").serviceUrl("svc")
+				.build();
 
-        assertThat(a1).isEqualTo(a2);
-        assertThat(a1.hashCode()).isEqualTo(a2.hashCode());
+		assertThat(a1).isEqualTo(a2);
+		assertThat(a1.hashCode()).isEqualTo(a2.hashCode());
 
-        Application a3 = Application.create("foo")
-                                    .healthUrl("healthUrl2")
-                                    .managementUrl("mgmt")
-                                    .serviceUrl("svc")
-                                    .build();
+		Application a3 = Application.create("foo").healthUrl("healthUrl2").managementUrl("mgmt").serviceUrl("svc")
+				.build();
 
-        assertThat(a1).isNotEqualTo(a3);
-        assertThat(a2).isNotEqualTo(a3);
-    }
+		assertThat(a1).isNotEqualTo(a3);
+		assertThat(a2).isNotEqualTo(a3);
+	}
 
-    @Test
-    public void should_not_return_sensitive_data_in_toString() {
-        Application application = Application.create("app").healthUrl("HEALTH").metadata("password", "geheim").build();
-        assertThat(application.toString()).doesNotContain("geheim");
-    }
+	@Test
+	public void should_not_return_sensitive_data_in_toString() {
+		Application application = Application.create("app").healthUrl("HEALTH").metadata("password", "geheim").build();
+		assertThat(application.toString()).doesNotContain("geheim");
+	}
+
 }

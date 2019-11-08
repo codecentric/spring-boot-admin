@@ -26,20 +26,22 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class InstanceIdNotificationFilterTest {
-    @Test
-    public void test_filterByName() {
-        NotificationFilter filter = new InstanceIdNotificationFilter(InstanceId.of("cafebabe"), null);
 
-        Instance filteredInstance = Instance.create(InstanceId.of("cafebabe"))
-                                            .register(Registration.create("foo", "http://health").build());
-        InstanceRegisteredEvent filteredEvent = new InstanceRegisteredEvent(filteredInstance.getId(),
-            filteredInstance.getVersion(), filteredInstance.getRegistration());
-        assertThat(filter.filter(filteredEvent, filteredInstance)).isTrue();
+	@Test
+	public void test_filterByName() {
+		NotificationFilter filter = new InstanceIdNotificationFilter(InstanceId.of("cafebabe"), null);
 
-        Instance ignoredInstance = Instance.create(InstanceId.of("-"))
-                                           .register(Registration.create("foo", "http://health").build());
-        InstanceRegisteredEvent ignoredEvent = new InstanceRegisteredEvent(ignoredInstance.getId(),
-            ignoredInstance.getVersion(), ignoredInstance.getRegistration());
-        assertThat(filter.filter(ignoredEvent, ignoredInstance)).isFalse();
-    }
+		Instance filteredInstance = Instance.create(InstanceId.of("cafebabe"))
+				.register(Registration.create("foo", "http://health").build());
+		InstanceRegisteredEvent filteredEvent = new InstanceRegisteredEvent(filteredInstance.getId(),
+				filteredInstance.getVersion(), filteredInstance.getRegistration());
+		assertThat(filter.filter(filteredEvent, filteredInstance)).isTrue();
+
+		Instance ignoredInstance = Instance.create(InstanceId.of("-"))
+				.register(Registration.create("foo", "http://health").build());
+		InstanceRegisteredEvent ignoredEvent = new InstanceRegisteredEvent(ignoredInstance.getId(),
+				ignoredInstance.getVersion(), ignoredInstance.getRegistration());
+		assertThat(filter.filter(ignoredEvent, ignoredInstance)).isFalse();
+	}
+
 }

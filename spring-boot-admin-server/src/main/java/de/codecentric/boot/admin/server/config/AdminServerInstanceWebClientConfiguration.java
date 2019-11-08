@@ -38,139 +38,153 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration(proxyBeanMethods = false)
 public class AdminServerInstanceWebClientConfiguration {
-    private final InstanceWebClient.Builder instanceWebClientBuilder;
 
-    public AdminServerInstanceWebClientConfiguration(ObjectProvider<InstanceWebClientCustomizer> customizers,
-                                                     WebClient.Builder webClient) {
-        this.instanceWebClientBuilder = InstanceWebClient.builder(webClient);
-        customizers.orderedStream().forEach(customizer -> customizer.customize(this.instanceWebClientBuilder));
-    }
+	private final InstanceWebClient.Builder instanceWebClientBuilder;
 
-    @Bean
-    @ConditionalOnMissingBean
-    @Scope("prototype")
-    public InstanceWebClient.Builder instanceWebClientBuilder() {
-        return this.instanceWebClientBuilder.clone();
-    }
+	public AdminServerInstanceWebClientConfiguration(ObjectProvider<InstanceWebClientCustomizer> customizers,
+			WebClient.Builder webClient) {
+		this.instanceWebClientBuilder = InstanceWebClient.builder(webClient);
+		customizers.orderedStream().forEach(customizer -> customizer.customize(this.instanceWebClientBuilder));
+	}
 
-    @Configuration(proxyBeanMethods = false)
-protected static class InstanceExchangeFiltersConfiguration {
+	@Bean
+	@ConditionalOnMissingBean
+	@Scope("prototype")
+	public InstanceWebClient.Builder instanceWebClientBuilder() {
+		return this.instanceWebClientBuilder.clone();
+	}
 
-        @Bean
-        @ConditionalOnBean(InstanceExchangeFilterFunction.class)
-        @ConditionalOnMissingBean(name = "filterInstanceWebClientCustomizer")
-        public InstanceWebClientCustomizer filterInstanceWebClientCustomizer(List<InstanceExchangeFilterFunction> filters) {
-            return builder -> builder.filters(f -> f.addAll(filters));
-        }
+	@Configuration(proxyBeanMethods = false)
+	protected static class InstanceExchangeFiltersConfiguration {
 
-        @Configuration(proxyBeanMethods = false)
-protected static class DefaultInstanceExchangeFiltersConfiguration {
-            @Bean
-            @Order(0)
-            @ConditionalOnBean(HttpHeadersProvider.class)
-            @ConditionalOnMissingBean(name = "addHeadersInstanceExchangeFilter")
-            public InstanceExchangeFilterFunction addHeadersInstanceExchangeFilter(List<HttpHeadersProvider> headersProviders) {
-                return InstanceExchangeFilterFunctions.addHeaders(new CompositeHttpHeadersProvider(headersProviders));
-            }
+		@Bean
+		@ConditionalOnBean(InstanceExchangeFilterFunction.class)
+		@ConditionalOnMissingBean(name = "filterInstanceWebClientCustomizer")
+		public InstanceWebClientCustomizer filterInstanceWebClientCustomizer(
+				List<InstanceExchangeFilterFunction> filters) {
+			return builder -> builder.filters(f -> f.addAll(filters));
+		}
 
-            @Bean
-            @Order(10)
-            @ConditionalOnMissingBean(name = "rewriteEndpointUrlInstanceExchangeFilter")
-            public InstanceExchangeFilterFunction rewriteEndpointUrlInstanceExchangeFilter() {
-                return InstanceExchangeFilterFunctions.rewriteEndpointUrl();
-            }
+		@Configuration(proxyBeanMethods = false)
+		protected static class DefaultInstanceExchangeFiltersConfiguration {
 
-            @Bean
-            @Order(20)
-            @ConditionalOnMissingBean(name = "setDefaultAcceptHeaderInstanceExchangeFilter")
-            public InstanceExchangeFilterFunction setDefaultAcceptHeaderInstanceExchangeFilter() {
-                return InstanceExchangeFilterFunctions.setDefaultAcceptHeader();
-            }
+			@Bean
+			@Order(0)
+			@ConditionalOnBean(HttpHeadersProvider.class)
+			@ConditionalOnMissingBean(name = "addHeadersInstanceExchangeFilter")
+			public InstanceExchangeFilterFunction addHeadersInstanceExchangeFilter(
+					List<HttpHeadersProvider> headersProviders) {
+				return InstanceExchangeFilterFunctions.addHeaders(new CompositeHttpHeadersProvider(headersProviders));
+			}
 
-            @Bean
-            @Order(30)
-            @ConditionalOnBean(LegacyEndpointConverter.class)
-            @ConditionalOnMissingBean(name = "legacyEndpointConverterInstanceExchangeFilter")
-            public InstanceExchangeFilterFunction legacyEndpointConverterInstanceExchangeFilter(List<LegacyEndpointConverter> converters) {
-                return InstanceExchangeFilterFunctions.convertLegacyEndpoints(converters);
-            }
+			@Bean
+			@Order(10)
+			@ConditionalOnMissingBean(name = "rewriteEndpointUrlInstanceExchangeFilter")
+			public InstanceExchangeFilterFunction rewriteEndpointUrlInstanceExchangeFilter() {
+				return InstanceExchangeFilterFunctions.rewriteEndpointUrl();
+			}
 
-            @Bean
-            @Order(40)
-            @ConditionalOnMissingBean(name = "logfileAcceptWorkaround")
-            public InstanceExchangeFilterFunction logfileAcceptWorkaround() {
-                return InstanceExchangeFilterFunctions.logfileAcceptWorkaround();
-            }
+			@Bean
+			@Order(20)
+			@ConditionalOnMissingBean(name = "setDefaultAcceptHeaderInstanceExchangeFilter")
+			public InstanceExchangeFilterFunction setDefaultAcceptHeaderInstanceExchangeFilter() {
+				return InstanceExchangeFilterFunctions.setDefaultAcceptHeader();
+			}
 
-            @Bean
-            @Order(100)
-            @ConditionalOnMissingBean(name = "retryInstanceExchangeFilter")
-            public InstanceExchangeFilterFunction retryInstanceExchangeFilter(AdminServerProperties adminServerProperties) {
-                AdminServerProperties.MonitorProperties monitor = adminServerProperties.getMonitor();
-                return InstanceExchangeFilterFunctions.retry(monitor.getDefaultRetries(), monitor.getRetries());
-            }
+			@Bean
+			@Order(30)
+			@ConditionalOnBean(LegacyEndpointConverter.class)
+			@ConditionalOnMissingBean(name = "legacyEndpointConverterInstanceExchangeFilter")
+			public InstanceExchangeFilterFunction legacyEndpointConverterInstanceExchangeFilter(
+					List<LegacyEndpointConverter> converters) {
+				return InstanceExchangeFilterFunctions.convertLegacyEndpoints(converters);
+			}
 
-            @Bean
-            @Order(200)
-            @ConditionalOnMissingBean(name = "timeoutInstanceExchangeFilter")
-            public InstanceExchangeFilterFunction timeoutInstanceExchangeFilter(AdminServerProperties adminServerProperties) {
-                AdminServerProperties.MonitorProperties monitor = adminServerProperties.getMonitor();
-                return InstanceExchangeFilterFunctions.timeout(monitor.getDefaultTimeout(), monitor.getTimeout());
-            }
-        }
-    }
+			@Bean
+			@Order(40)
+			@ConditionalOnMissingBean(name = "logfileAcceptWorkaround")
+			public InstanceExchangeFilterFunction logfileAcceptWorkaround() {
+				return InstanceExchangeFilterFunctions.logfileAcceptWorkaround();
+			}
 
-    @Configuration(proxyBeanMethods = false)
-protected static class HttpHeadersProviderConfiguration {
-        @Bean
-        @ConditionalOnMissingBean
-        public BasicAuthHttpHeaderProvider basicAuthHttpHeadersProvider() {
-            return new BasicAuthHttpHeaderProvider();
-        }
-    }
+			@Bean
+			@Order(100)
+			@ConditionalOnMissingBean(name = "retryInstanceExchangeFilter")
+			public InstanceExchangeFilterFunction retryInstanceExchangeFilter(
+					AdminServerProperties adminServerProperties) {
+				AdminServerProperties.MonitorProperties monitor = adminServerProperties.getMonitor();
+				return InstanceExchangeFilterFunctions.retry(monitor.getDefaultRetries(), monitor.getRetries());
+			}
 
-    @Configuration(proxyBeanMethods = false)
-protected static class LegaycEndpointConvertersConfiguration {
-        @Bean
-        @ConditionalOnMissingBean(name = "healthLegacyEndpointConverter")
-        public LegacyEndpointConverter healthLegacyEndpointConverter() {
-            return LegacyEndpointConverters.health();
-        }
+			@Bean
+			@Order(200)
+			@ConditionalOnMissingBean(name = "timeoutInstanceExchangeFilter")
+			public InstanceExchangeFilterFunction timeoutInstanceExchangeFilter(
+					AdminServerProperties adminServerProperties) {
+				AdminServerProperties.MonitorProperties monitor = adminServerProperties.getMonitor();
+				return InstanceExchangeFilterFunctions.timeout(monitor.getDefaultTimeout(), monitor.getTimeout());
+			}
 
-        @Bean
-        @ConditionalOnMissingBean(name = "infoLegacyEndpointConverter")
-        public LegacyEndpointConverter infoLegacyEndpointConverter() {
-            return LegacyEndpointConverters.info();
-        }
+		}
 
-        @Bean
-        @ConditionalOnMissingBean(name = "envLegacyEndpointConverter")
-        public LegacyEndpointConverter envLegacyEndpointConverter() {
-            return LegacyEndpointConverters.env();
-        }
+	}
 
-        @Bean
-        @ConditionalOnMissingBean(name = "httptraceLegacyEndpointConverter")
-        public LegacyEndpointConverter httptraceLegacyEndpointConverter() {
-            return LegacyEndpointConverters.httptrace();
-        }
+	@Configuration(proxyBeanMethods = false)
+	protected static class HttpHeadersProviderConfiguration {
 
-        @Bean
-        @ConditionalOnMissingBean(name = "threaddumpLegacyEndpointConverter")
-        public LegacyEndpointConverter threaddumpLegacyEndpointConverter() {
-            return LegacyEndpointConverters.threaddump();
-        }
+		@Bean
+		@ConditionalOnMissingBean
+		public BasicAuthHttpHeaderProvider basicAuthHttpHeadersProvider() {
+			return new BasicAuthHttpHeaderProvider();
+		}
 
-        @Bean
-        @ConditionalOnMissingBean(name = "liquibaseLegacyEndpointConverter")
-        public LegacyEndpointConverter liquibaseLegacyEndpointConverter() {
-            return LegacyEndpointConverters.liquibase();
-        }
+	}
 
-        @Bean
-        @ConditionalOnMissingBean(name = "flywayLegacyEndpointConverter")
-        public LegacyEndpointConverter flywayLegacyEndpointConverter() {
-            return LegacyEndpointConverters.flyway();
-        }
-    }
+	@Configuration(proxyBeanMethods = false)
+	protected static class LegaycEndpointConvertersConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(name = "healthLegacyEndpointConverter")
+		public LegacyEndpointConverter healthLegacyEndpointConverter() {
+			return LegacyEndpointConverters.health();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(name = "infoLegacyEndpointConverter")
+		public LegacyEndpointConverter infoLegacyEndpointConverter() {
+			return LegacyEndpointConverters.info();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(name = "envLegacyEndpointConverter")
+		public LegacyEndpointConverter envLegacyEndpointConverter() {
+			return LegacyEndpointConverters.env();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(name = "httptraceLegacyEndpointConverter")
+		public LegacyEndpointConverter httptraceLegacyEndpointConverter() {
+			return LegacyEndpointConverters.httptrace();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(name = "threaddumpLegacyEndpointConverter")
+		public LegacyEndpointConverter threaddumpLegacyEndpointConverter() {
+			return LegacyEndpointConverters.threaddump();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(name = "liquibaseLegacyEndpointConverter")
+		public LegacyEndpointConverter liquibaseLegacyEndpointConverter() {
+			return LegacyEndpointConverters.liquibase();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(name = "flywayLegacyEndpointConverter")
+		public LegacyEndpointConverter flywayLegacyEndpointConverter() {
+			return LegacyEndpointConverters.flyway();
+		}
+
+	}
+
 }

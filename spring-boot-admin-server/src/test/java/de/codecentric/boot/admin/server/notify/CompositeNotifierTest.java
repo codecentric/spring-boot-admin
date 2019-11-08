@@ -29,36 +29,36 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CompositeNotifierTest {
-    private static final InstanceEvent APP_DOWN = new InstanceStatusChangedEvent(InstanceId.of("-"),
-        0L,
-        StatusInfo.ofDown()
-    );
 
-    @Test(expected = IllegalArgumentException.class)
-    public void should_throw_for_invariants() {
-        new CompositeNotifier(null);
-    }
+	private static final InstanceEvent APP_DOWN = new InstanceStatusChangedEvent(InstanceId.of("-"), 0L,
+			StatusInfo.ofDown());
 
-    @Test
-    public void should_trigger_all_notifiers() {
-        TestNotifier notifier1 = new TestNotifier();
-        TestNotifier notifier2 = new TestNotifier();
-        CompositeNotifier compositeNotifier = new CompositeNotifier(Arrays.asList(notifier1, notifier2));
+	@Test(expected = IllegalArgumentException.class)
+	public void should_throw_for_invariants() {
+		new CompositeNotifier(null);
+	}
 
-        StepVerifier.create(compositeNotifier.notify(APP_DOWN)).verifyComplete();
+	@Test
+	public void should_trigger_all_notifiers() {
+		TestNotifier notifier1 = new TestNotifier();
+		TestNotifier notifier2 = new TestNotifier();
+		CompositeNotifier compositeNotifier = new CompositeNotifier(Arrays.asList(notifier1, notifier2));
 
-        assertThat(notifier1.getEvents()).containsOnly(APP_DOWN);
-        assertThat(notifier2.getEvents()).containsOnly(APP_DOWN);
-    }
+		StepVerifier.create(compositeNotifier.notify(APP_DOWN)).verifyComplete();
 
-    @Test
-    public void should_continue_on_exception() {
-        Notifier notifier1 = ev -> Mono.error(new IllegalStateException("Test"));
-        TestNotifier notifier2 = new TestNotifier();
-        CompositeNotifier compositeNotifier = new CompositeNotifier(Arrays.asList(notifier1, notifier2));
+		assertThat(notifier1.getEvents()).containsOnly(APP_DOWN);
+		assertThat(notifier2.getEvents()).containsOnly(APP_DOWN);
+	}
 
-        StepVerifier.create(compositeNotifier.notify(APP_DOWN)).verifyComplete();
+	@Test
+	public void should_continue_on_exception() {
+		Notifier notifier1 = ev -> Mono.error(new IllegalStateException("Test"));
+		TestNotifier notifier2 = new TestNotifier();
+		CompositeNotifier compositeNotifier = new CompositeNotifier(Arrays.asList(notifier1, notifier2));
 
-        assertThat(notifier2.getEvents()).containsOnly(APP_DOWN);
-    }
+		StepVerifier.create(compositeNotifier.notify(APP_DOWN)).verifyComplete();
+
+		assertThat(notifier2.getEvents()).containsOnly(APP_DOWN);
+	}
+
 }

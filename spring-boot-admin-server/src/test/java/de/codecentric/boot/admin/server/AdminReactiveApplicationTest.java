@@ -31,34 +31,34 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 public class AdminReactiveApplicationTest extends AbstractAdminApplicationTest {
-    private ConfigurableApplicationContext instance;
 
-    @Before
-    public void setUp() {
-        this.instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
-                                                      .web(WebApplicationType.REACTIVE)
-                                                      .run(
-                                                          "--server.port=0",
-                                                          "--management.endpoints.web.base-path=/mgmt",
-                                                          "--info.test=foobar"
-                                                      );
+	private ConfigurableApplicationContext instance;
 
-        super.setUp(this.instance.getEnvironment().getProperty("local.server.port", Integer.class, 0));
-    }
+	@Before
+	public void setUp() {
+		this.instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
+				.web(WebApplicationType.REACTIVE)
+				.run("--server.port=0", "--management.endpoints.web.base-path=/mgmt", "--info.test=foobar");
 
-    @After
-    public void shutdown() {
-        this.instance.close();
-    }
+		super.setUp(this.instance.getEnvironment().getProperty("local.server.port", Integer.class, 0));
+	}
 
-    @EnableAdminServer
-    @EnableAutoConfiguration
-    @SpringBootConfiguration
-    @EnableWebFluxSecurity
-    public static class TestAdminApplication {
-        @Bean
-        public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-            return http.authorizeExchange().anyExchange().permitAll().and().csrf().disable().build();
-        }
-    }
+	@After
+	public void shutdown() {
+		this.instance.close();
+	}
+
+	@EnableAdminServer
+	@EnableAutoConfiguration
+	@SpringBootConfiguration
+	@EnableWebFluxSecurity
+	public static class TestAdminApplication {
+
+		@Bean
+		public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+			return http.authorizeExchange().anyExchange().permitAll().and().csrf().disable().build();
+		}
+
+	}
+
 }

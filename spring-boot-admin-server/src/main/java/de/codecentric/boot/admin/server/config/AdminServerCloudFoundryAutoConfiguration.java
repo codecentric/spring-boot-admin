@@ -30,18 +30,19 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
-@AutoConfigureBefore({AdminServerAutoConfiguration.class})
+@AutoConfigureBefore({ AdminServerAutoConfiguration.class })
 public class AdminServerCloudFoundryAutoConfiguration {
 
-    @Bean
-    @ConditionalOnMissingBean
-    public InstanceIdGenerator instanceIdGenerator() {
-        return new CloudFoundryInstanceIdGenerator(new HashingInstanceUrlIdGenerator());
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public InstanceIdGenerator instanceIdGenerator() {
+		return new CloudFoundryInstanceIdGenerator(new HashingInstanceUrlIdGenerator());
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public CloudFoundryHttpHeaderProvider cloudFoundryHttpHeaderProvider() {
-        return new CloudFoundryHttpHeaderProvider();
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public CloudFoundryHttpHeaderProvider cloudFoundryHttpHeaderProvider() {
+		return new CloudFoundryHttpHeaderProvider();
+	}
+
 }

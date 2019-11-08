@@ -24,19 +24,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CloudFoundryMetadataContributorTest {
 
-    @Test
-    public void should_return_empty_metadata() {
-        CloudFoundryMetadataContributor contributor = new CloudFoundryMetadataContributor(
-            new CloudFoundryApplicationProperties());
-        assertThat(contributor.getMetadata()).isEmpty();
-    }
+	@Test
+	public void should_return_empty_metadata() {
+		CloudFoundryMetadataContributor contributor = new CloudFoundryMetadataContributor(
+				new CloudFoundryApplicationProperties());
+		assertThat(contributor.getMetadata()).isEmpty();
+	}
 
-    @Test
-    public void should_return_metadata() {
-        CloudFoundryApplicationProperties cfApplicationProperties = new CloudFoundryApplicationProperties();
-        cfApplicationProperties.setApplicationId("appId");
-        cfApplicationProperties.setInstanceIndex("1");
-        CloudFoundryMetadataContributor contributor = new CloudFoundryMetadataContributor(cfApplicationProperties);
-        assertThat(contributor.getMetadata()).containsEntry("applicationId", "appId").containsEntry("instanceId", "1");
-    }
+	@Test
+	public void should_return_metadata() {
+		CloudFoundryApplicationProperties cfApplicationProperties = new CloudFoundryApplicationProperties();
+		cfApplicationProperties.setApplicationId("appId");
+		cfApplicationProperties.setInstanceIndex("1");
+		CloudFoundryMetadataContributor contributor = new CloudFoundryMetadataContributor(cfApplicationProperties);
+		assertThat(contributor.getMetadata()).containsEntry("applicationId", "appId").containsEntry("instanceId", "1");
+	}
+
 }

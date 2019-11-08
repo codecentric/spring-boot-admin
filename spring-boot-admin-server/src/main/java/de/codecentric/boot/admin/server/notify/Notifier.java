@@ -26,6 +26,6 @@ import reactor.core.publisher.Mono;
  */
 public interface Notifier {
 
-    Mono<Void> notify(InstanceEvent event);
+	Mono<Void> notify(InstanceEvent event);
 
 }

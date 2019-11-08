@@ -37,127 +37,128 @@ import static org.mockito.Mockito.when;
 
 public class RegistrationApplicationListenerTest {
 
-    @Test
-    public void should_schedule_register_task() {
-        ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
-        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
+	@Test
+	public void should_schedule_register_task() {
+		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
+		ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
 
-        listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
-            mock(ConfigurableWebApplicationContext.class)));
+		listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
+				mock(ConfigurableWebApplicationContext.class)));
 
-        verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)));
-    }
+		verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)));
+	}
 
-    @Test
-    public void should_no_schedule_register_task_when_not_autoRegister() {
-        ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
-        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
-        listener.setAutoRegister(false);
+	@Test
+	public void should_no_schedule_register_task_when_not_autoRegister() {
+		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
+		ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
+		listener.setAutoRegister(false);
 
-        listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
-            mock(ConfigurableWebApplicationContext.class)));
+		listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
+				mock(ConfigurableWebApplicationContext.class)));
 
-        verify(scheduler, never()).scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)));
-    }
+		verify(scheduler, never()).scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)));
+	}
 
-    @Test
-    public void should_cancel_register_task_on_context_close() {
-        ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
-        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
+	@Test
+	public void should_cancel_register_task_on_context_close() {
+		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
+		ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
 
-        ScheduledFuture<?> task = mock(ScheduledFuture.class);
-        when(scheduler.scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)))).then(invocation -> task);
+		ScheduledFuture<?> task = mock(ScheduledFuture.class);
+		when(scheduler.scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)))).then(invocation -> task);
 
-        listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
-            mock(ConfigurableWebApplicationContext.class)));
-        verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)));
+		listener.onApplicationReady(new ApplicationReadyEvent(mock(SpringApplication.class), null,
+				mock(ConfigurableWebApplicationContext.class)));
+		verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)));
 
-        listener.onClosedContext(new ContextClosedEvent(mock(WebApplicationContext.class)));
-        verify(task).cancel(true);
-    }
+		listener.onClosedContext(new ContextClosedEvent(mock(WebApplicationContext.class)));
+		verify(task).cancel(true);
+	}
 
-    @Test
-    public void should_start_and_cancel_task_on_request() {
-        ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
-        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
+	@Test
+	public void should_start_and_cancel_task_on_request() {
+		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
+		ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
 
-        ScheduledFuture<?> task = mock(ScheduledFuture.class);
-        when(scheduler.scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)))).then(invocation -> task);
+		ScheduledFuture<?> task = mock(ScheduledFuture.class);
+		when(scheduler.scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)))).then(invocation -> task);
 
-        listener.startRegisterTask();
-        verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)));
+		listener.startRegisterTask();
+		verify(scheduler).scheduleAtFixedRate(isA(Runnable.class), eq(Duration.ofSeconds(10)));
 
-        listener.stopRegisterTask();
-        verify(task).cancel(true);
-    }
+		listener.stopRegisterTask();
+		verify(task).cancel(true);
+	}
 
-    @Test
-    public void should_not_deregister_when_not_autoDeregister() {
-        ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
-        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
+	@Test
+	public void should_not_deregister_when_not_autoDeregister() {
+		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
+		ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
 
-        listener.onClosedContext(new ContextClosedEvent(mock(WebApplicationContext.class)));
+		listener.onClosedContext(new ContextClosedEvent(mock(WebApplicationContext.class)));
 
-        verify(registrator, never()).deregister();
-    }
+		verify(registrator, never()).deregister();
+	}
 
-    @Test
-    public void should_deregister_when_autoDeregister() {
-        ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
-        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
-        listener.setAutoDeregister(true);
+	@Test
+	public void should_deregister_when_autoDeregister() {
+		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
+		ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
+		listener.setAutoDeregister(true);
 
-        listener.onClosedContext(new ContextClosedEvent(mock(ApplicationContext.class)));
+		listener.onClosedContext(new ContextClosedEvent(mock(ApplicationContext.class)));
 
-        verify(registrator).deregister();
-    }
+		verify(registrator).deregister();
+	}
 
-    @Test
-    public void should_deregister_when_autoDeregister_and_parent_is_bootstrap_contex() {
-        ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
-        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
-        listener.setAutoDeregister(true);
+	@Test
+	public void should_deregister_when_autoDeregister_and_parent_is_bootstrap_contex() {
+		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
+		ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
+		listener.setAutoDeregister(true);
 
-        ApplicationContext parentContext = mock(ApplicationContext.class);
-        when(parentContext.getId()).thenReturn("bootstrap");
-        ApplicationContext mockContext = mock(ApplicationContext.class);
-        when(mockContext.getParent()).thenReturn(parentContext);
-        listener.onClosedContext(new ContextClosedEvent(mockContext));
+		ApplicationContext parentContext = mock(ApplicationContext.class);
+		when(parentContext.getId()).thenReturn("bootstrap");
+		ApplicationContext mockContext = mock(ApplicationContext.class);
+		when(mockContext.getParent()).thenReturn(parentContext);
+		listener.onClosedContext(new ContextClosedEvent(mockContext));
 
-        verify(registrator).deregister();
-    }
+		verify(registrator).deregister();
+	}
 
-    @Test
-    public void should_not_deregister_when_autoDeregister_and_not_root() {
-        ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
-        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
-        listener.setAutoDeregister(true);
+	@Test
+	public void should_not_deregister_when_autoDeregister_and_not_root() {
+		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
+		ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
+		listener.setAutoDeregister(true);
 
-        ApplicationContext mockContext = mock(ApplicationContext.class);
-        when(mockContext.getParent()).thenReturn(mock(ApplicationContext.class));
-        listener.onClosedContext(new ContextClosedEvent(mockContext));
+		ApplicationContext mockContext = mock(ApplicationContext.class);
+		when(mockContext.getParent()).thenReturn(mock(ApplicationContext.class));
+		listener.onClosedContext(new ContextClosedEvent(mockContext));
 
-        verify(registrator, never()).deregister();
-    }
+		verify(registrator, never()).deregister();
+	}
 
-    @Test
-    public void should_init_and_shutdown_taskScheduler() {
-        ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
-        ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
-        RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
+	@Test
+	public void should_init_and_shutdown_taskScheduler() {
+		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
+		ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
+		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
 
-        listener.afterPropertiesSet();
-        verify(scheduler, times(1)).afterPropertiesSet();
+		listener.afterPropertiesSet();
+		verify(scheduler, times(1)).afterPropertiesSet();
 
-        listener.destroy();
-        verify(scheduler, times(1)).destroy();
-    }
+		listener.destroy();
+		verify(scheduler, times(1)).destroy();
+	}
+
 }

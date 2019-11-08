@@ -39,129 +39,124 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class ApplicationRegistryTest {
-    private InstanceRegistry instanceRegistry;
-    private InstanceEventPublisher instanceEventPublisher;
-    private ApplicationRegistry applicationRegistry;
 
-    @Before
-    public void setUp() {
-        this.instanceRegistry = mock(InstanceRegistry.class);
-        this.instanceEventPublisher = mock(InstanceEventPublisher.class);
-        this.applicationRegistry = new ApplicationRegistry(this.instanceRegistry, this.instanceEventPublisher);
-    }
+	private InstanceRegistry instanceRegistry;
 
-    @Test
-    public void getApplications_noRegisteredApplications() {
-        when(this.instanceRegistry.getInstances()).thenReturn(Flux.just());
+	private InstanceEventPublisher instanceEventPublisher;
 
-        StepVerifier.create(this.applicationRegistry.getApplications())
-            .verifyComplete();
-    }
+	private ApplicationRegistry applicationRegistry;
 
-    @Test
-    public void getApplications_oneRegisteredAndOneUnregisteredApplication() {
-        Instance instance1 = getInstance("App1");
-        Instance instance2 = getInstance("App2").deregister();
+	@Before
+	public void setUp() {
+		this.instanceRegistry = mock(InstanceRegistry.class);
+		this.instanceEventPublisher = mock(InstanceEventPublisher.class);
+		this.applicationRegistry = new ApplicationRegistry(this.instanceRegistry, this.instanceEventPublisher);
+	}
 
-        when(this.instanceRegistry.getInstances()).thenReturn(Flux.just(instance1, instance2));
+	@Test
+	public void getApplications_noRegisteredApplications() {
+		when(this.instanceRegistry.getInstances()).thenReturn(Flux.just());
 
-        StepVerifier.create(this.applicationRegistry.getApplications())
-            .assertNext(app -> assertThat(app.getName()).isEqualTo("App1"))
-            .verifyComplete();
-    }
+		StepVerifier.create(this.applicationRegistry.getApplications()).verifyComplete();
+	}
 
-    @Test
-    public void getApplications_allRegisteredApplications() {
-        Instance instance1 = getInstance("App1");
-        Instance instance2 = getInstance("App2");
+	@Test
+	public void getApplications_oneRegisteredAndOneUnregisteredApplication() {
+		Instance instance1 = getInstance("App1");
+		Instance instance2 = getInstance("App2").deregister();
 
-        when(this.instanceRegistry.getInstances()).thenReturn(Flux.just(instance1, instance2));
+		when(this.instanceRegistry.getInstances()).thenReturn(Flux.just(instance1, instance2));
 
-        StepVerifier.create(this.applicationRegistry.getApplications())
-            .recordWith(ArrayList::new)
-            .thenConsumeWhile(a -> true)
-            .consumeRecordedWith(applications -> assertThat(applications.stream().map(Application::getName))
-                    .containsExactlyInAnyOrder("App1", "App2"))
-            .verifyComplete();
-    }
+		StepVerifier.create(this.applicationRegistry.getApplications())
+				.assertNext(app -> assertThat(app.getName()).isEqualTo("App1")).verifyComplete();
+	}
 
-    @Test
-    public void getApplication_noRegisteredApplications() {
-        when(this.instanceRegistry.getInstances(any(String.class))).thenReturn(Flux.just());
+	@Test
+	public void getApplications_allRegisteredApplications() {
+		Instance instance1 = getInstance("App1");
+		Instance instance2 = getInstance("App2");
 
-        StepVerifier.create(this.applicationRegistry.getApplication("App1"))
-            .verifyComplete();
-    }
+		when(this.instanceRegistry.getInstances()).thenReturn(Flux.just(instance1, instance2));
 
-    @Test
-    public void getApplication_noMatchingRegisteredApplications() {
-        when(this.instanceRegistry.getInstances("App2")).thenReturn(Flux.just(getInstance("App2")));
-        when(this.instanceRegistry.getInstances(any(String.class))).thenReturn(Flux.just());
+		StepVerifier.create(this.applicationRegistry.getApplications()).recordWith(ArrayList::new)
+				.thenConsumeWhile(a -> true)
+				.consumeRecordedWith(applications -> assertThat(applications.stream().map(Application::getName))
+						.containsExactlyInAnyOrder("App1", "App2"))
+				.verifyComplete();
+	}
 
-        StepVerifier.create(this.applicationRegistry.getApplication("App1"))
-            .verifyComplete();
-    }
+	@Test
+	public void getApplication_noRegisteredApplications() {
+		when(this.instanceRegistry.getInstances(any(String.class))).thenReturn(Flux.just());
 
-    @Test
-    public void getApplication_matchingUnregisteredApplications() {
-        Instance instance = getInstance("App1").deregister();
-        when(this.instanceRegistry.getInstances("App1")).thenReturn(Flux.just(instance));
+		StepVerifier.create(this.applicationRegistry.getApplication("App1")).verifyComplete();
+	}
 
-        StepVerifier.create(this.applicationRegistry.getApplication("App1"))
-            .verifyComplete();
-    }
+	@Test
+	public void getApplication_noMatchingRegisteredApplications() {
+		when(this.instanceRegistry.getInstances("App2")).thenReturn(Flux.just(getInstance("App2")));
+		when(this.instanceRegistry.getInstances(any(String.class))).thenReturn(Flux.just());
 
-    @Test
-    public void getApplication_matchingRegisteredApplications() {
-        Instance instance = getInstance("App1");
-        when(this.instanceRegistry.getInstances("App1")).thenReturn(Flux.just(instance));
+		StepVerifier.create(this.applicationRegistry.getApplication("App1")).verifyComplete();
+	}
 
-        StepVerifier.create(this.applicationRegistry.getApplication("App1"))
-            .assertNext(app -> assertThat(app.getName()).isEqualTo("App1"))
-            .verifyComplete();
-    }
+	@Test
+	public void getApplication_matchingUnregisteredApplications() {
+		Instance instance = getInstance("App1").deregister();
+		when(this.instanceRegistry.getInstances("App1")).thenReturn(Flux.just(instance));
 
-    @Test
-    public void deregister() {
-        Instance instance1 = getInstance("App1");
-        InstanceId instance1Id = instance1.getId();
+		StepVerifier.create(this.applicationRegistry.getApplication("App1")).verifyComplete();
+	}
 
-        when(this.instanceRegistry.getInstances("App1")).thenReturn(Flux.just(instance1));
-        when(this.instanceRegistry.deregister(instance1Id)).thenReturn(Mono.just(instance1Id));
+	@Test
+	public void getApplication_matchingRegisteredApplications() {
+		Instance instance = getInstance("App1");
+		when(this.instanceRegistry.getInstances("App1")).thenReturn(Flux.just(instance));
 
-        StepVerifier.create(this.applicationRegistry.deregister("App1"))
-            .assertNext(instanceId -> assertThat(instanceId).isEqualTo(instance1Id))
-            .verifyComplete();
+		StepVerifier.create(this.applicationRegistry.getApplication("App1"))
+				.assertNext(app -> assertThat(app.getName()).isEqualTo("App1")).verifyComplete();
+	}
 
-        verify(this.instanceRegistry).deregister(instance1Id);
-    }
+	@Test
+	public void deregister() {
+		Instance instance1 = getInstance("App1");
+		InstanceId instance1Id = instance1.getId();
 
-    @Test
-    public void getBuildVersion() {
-        Instance instance1 = getInstance("App1", "0.1");
-        Instance instance2 = getInstance("App2", "0.2");
+		when(this.instanceRegistry.getInstances("App1")).thenReturn(Flux.just(instance1));
+		when(this.instanceRegistry.deregister(instance1Id)).thenReturn(Mono.just(instance1Id));
 
-        //Empty list should return null:
-        assertThat(this.applicationRegistry.getBuildVersion(Collections.emptyList())).isNull();
+		StepVerifier.create(this.applicationRegistry.deregister("App1"))
+				.assertNext(instanceId -> assertThat(instanceId).isEqualTo(instance1Id)).verifyComplete();
 
-        //Single instance should return the version number:
-        assertThat(this.applicationRegistry.getBuildVersion(Collections.singletonList(instance1))).isEqualTo(BuildVersion.valueOf("0.1"));
+		verify(this.instanceRegistry).deregister(instance1Id);
+	}
 
-        //Multiple instances should return the version number range:
-        assertThat(this.applicationRegistry.getBuildVersion(Arrays.asList(instance1, instance2))).isEqualTo(BuildVersion.valueOf("0.1 ... 0.2"));
-    }
+	@Test
+	public void getBuildVersion() {
+		Instance instance1 = getInstance("App1", "0.1");
+		Instance instance2 = getInstance("App2", "0.2");
 
-    private Instance getInstance(String applicationName, String version) {
-        Registration registration = Registration
-            .create(applicationName, "http://localhost:8080/health")
-            .metadata("version", version)
-            .build();
-        InstanceId id = InstanceId.of("TEST" + applicationName);
-        return Instance.create(id).register(registration);
-    }
+		// Empty list should return null:
+		assertThat(this.applicationRegistry.getBuildVersion(Collections.emptyList())).isNull();
 
-    private Instance getInstance(String applicationName) {
-        return getInstance(applicationName, "FooBarVersion");
-    }
+		// Single instance should return the version number:
+		assertThat(this.applicationRegistry.getBuildVersion(Collections.singletonList(instance1)))
+				.isEqualTo(BuildVersion.valueOf("0.1"));
+
+		// Multiple instances should return the version number range:
+		assertThat(this.applicationRegistry.getBuildVersion(Arrays.asList(instance1, instance2)))
+				.isEqualTo(BuildVersion.valueOf("0.1 ... 0.2"));
+	}
+
+	private Instance getInstance(String applicationName, String version) {
+		Registration registration = Registration.create(applicationName, "http://localhost:8080/health")
+				.metadata("version", version).build();
+		InstanceId id = InstanceId.of("TEST" + applicationName);
+		return Instance.create(id).register(registration);
+	}
+
+	private Instance getInstance(String applicationName) {
+		return getInstance(applicationName, "FooBarVersion");
+	}
 
 }

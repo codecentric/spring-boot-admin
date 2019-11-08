@@ -32,36 +32,40 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.util.StringUtils;
 
 public class UiRoutesScanner {
-    private static final Logger log = LoggerFactory.getLogger(UiRoutesScanner.class);
-    private final ResourcePatternResolver resolver;
 
-    public UiRoutesScanner(ResourcePatternResolver resolver) {
-        this.resolver = resolver;
-    }
+	private static final Logger log = LoggerFactory.getLogger(UiRoutesScanner.class);
 
-    public List<String> scan(String... locations) throws IOException {
-        List<String> routes = new ArrayList<>();
-        for (String location : locations) {
-            for (Resource resource : this.resolver.getResources(toPattern(location) + "**/routes.txt")) {
-                if (resource.isReadable()) {
-                    routes.addAll(readLines(resource.getInputStream()));
-                }
-            }
-        }
-        return routes;
-    }
+	private final ResourcePatternResolver resolver;
 
-    private List<String> readLines(InputStream input) {
-        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
-            return buffer.lines().map(String::trim).filter(StringUtils::hasText).collect(Collectors.toList());
-        } catch (IOException e) {
-            log.warn("Couldn't read routes from", e);
-            return Collections.emptyList();
-        }
-    }
+	public UiRoutesScanner(ResourcePatternResolver resolver) {
+		this.resolver = resolver;
+	}
 
-    private String toPattern(String location) {
-        //replace the classpath pattern to search all locations and not just the first
-        return location.replace("classpath:", "classpath*:");
-    }
+	public List<String> scan(String... locations) throws IOException {
+		List<String> routes = new ArrayList<>();
+		for (String location : locations) {
+			for (Resource resource : this.resolver.getResources(toPattern(location) + "**/routes.txt")) {
+				if (resource.isReadable()) {
+					routes.addAll(readLines(resource.getInputStream()));
+				}
+			}
+		}
+		return routes;
+	}
+
+	private List<String> readLines(InputStream input) {
+		try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
+			return buffer.lines().map(String::trim).filter(StringUtils::hasText).collect(Collectors.toList());
+		}
+		catch (IOException e) {
+			log.warn("Couldn't read routes from", e);
+			return Collections.emptyList();
+		}
+	}
+
+	private String toPattern(String location) {
+		// replace the classpath pattern to search all locations and not just the first
+		return location.replace("classpath:", "classpath*:");
+	}
+
 }

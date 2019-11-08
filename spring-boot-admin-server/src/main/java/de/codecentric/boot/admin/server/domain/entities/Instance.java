@@ -53,287 +53,219 @@ import static java.util.Collections.unmodifiableList;
  * @author Johannes Edmeier
  */
 @lombok.Data
-@lombok.EqualsAndHashCode(exclude = {"unsavedEvents", "statusTimestamp"})
+@lombok.EqualsAndHashCode(exclude = { "unsavedEvents", "statusTimestamp" })
 @lombok.ToString(exclude = "unsavedEvents")
 public class Instance implements Serializable {
-    private final InstanceId id;
-    private final long version;
-    @Nullable
-    private final Registration registration;
-    private final boolean registered;
-    private final StatusInfo statusInfo;
-    private final Instant statusTimestamp;
-    private final Info info;
-    private final List<InstanceEvent> unsavedEvents;
-    private final Endpoints endpoints;
-    @Nullable
-    private final BuildVersion buildVersion;
-    private final Tags tags;
 
-    private Instance(InstanceId id) {
-        this(id,
-            -1L,
-            null,
-            false,
-            StatusInfo.ofUnknown(),
-            Instant.EPOCH,
-            Info.empty(),
-            Endpoints.empty(),
-            null,
-            Tags.empty(),
-            emptyList()
-        );
-    }
+	private final InstanceId id;
 
-    private Instance(InstanceId id,
-                     long version,
-                     @Nullable Registration registration,
-                     boolean registered,
-                     StatusInfo statusInfo,
-                     Instant statusTimestamp,
-                     Info info,
-                     Endpoints endpoints,
-                     @Nullable BuildVersion buildVersion,
-                     Tags tags,
-                     List<InstanceEvent> unsavedEvents) {
-        Assert.notNull(id, "'id' must not be null");
-        Assert.notNull(endpoints, "'endpoints' must not be null");
-        Assert.notNull(info, "'info' must not be null");
-        Assert.notNull(statusInfo, "'statusInfo' must not be null");
-        this.id = id;
-        this.version = version;
-        this.registration = registration;
-        this.registered = registered;
-        this.statusInfo = statusInfo;
-        this.statusTimestamp = statusTimestamp;
-        this.info = info;
-        this.endpoints = registered && registration != null ? endpoints.withEndpoint(Endpoint.HEALTH,
-            registration.getHealthUrl()
-        ) : endpoints;
-        this.unsavedEvents = unsavedEvents;
-        this.buildVersion = buildVersion;
-        this.tags = tags;
-    }
+	private final long version;
 
-    public static Instance create(InstanceId id) {
-        Assert.notNull(id, "'id' must not be null");
-        return new Instance(id);
-    }
+	@Nullable
+	private final Registration registration;
 
-    public Instance register(Registration registration) {
-        Assert.notNull(registration, "'registration' must not be null");
-        if (!this.isRegistered()) {
-            return this.apply(new InstanceRegisteredEvent(this.id, this.nextVersion(), registration), true);
-        }
+	private final boolean registered;
 
-        if (!Objects.equals(this.registration, registration)) {
-            return this.apply(new InstanceRegistrationUpdatedEvent(this.id, this.nextVersion(), registration), true);
-        }
+	private final StatusInfo statusInfo;
 
-        return this;
-    }
+	private final Instant statusTimestamp;
 
-    public Instance deregister() {
-        if (this.isRegistered()) {
-            return this.apply(new InstanceDeregisteredEvent(this.id, this.nextVersion()), true);
-        }
-        return this;
-    }
+	private final Info info;
 
-    public Instance withInfo(Info info) {
-        Assert.notNull(info, "'info' must not be null");
-        if (Objects.equals(this.info, info)) {
-            return this;
-        }
-        return this.apply(new InstanceInfoChangedEvent(this.id, this.nextVersion(), info), true);
-    }
+	private final List<InstanceEvent> unsavedEvents;
 
-    public Instance withStatusInfo(StatusInfo statusInfo) {
-        Assert.notNull(statusInfo, "'statusInfo' must not be null");
-        if (Objects.equals(this.statusInfo.getStatus(), statusInfo.getStatus())) {
-            return this;
-        }
-        return this.apply(new InstanceStatusChangedEvent(this.id, this.nextVersion(), statusInfo), true);
-    }
+	private final Endpoints endpoints;
 
-    public Instance withEndpoints(Endpoints endpoints) {
-        Assert.notNull(endpoints, "'endpoints' must not be null");
-        Endpoints endpointsWithHealth = this.registration != null ? endpoints.withEndpoint(Endpoint.HEALTH,
-            this.registration.getHealthUrl()
-        ) : endpoints;
-        if (Objects.equals(this.endpoints, endpointsWithHealth)) {
-            return this;
-        }
-        return this.apply(new InstanceEndpointsDetectedEvent(this.id, this.nextVersion(), endpoints), true);
-    }
+	@Nullable
+	private final BuildVersion buildVersion;
 
-    public boolean isRegistered() {
-        return this.registered;
-    }
+	private final Tags tags;
 
-    public Registration getRegistration() {
-        if (this.registration == null) {
-            throw new IllegalStateException("Application '" + this.id + "' has no valid registration.");
-        }
-        return this.registration;
-    }
+	private Instance(InstanceId id) {
+		this(id, -1L, null, false, StatusInfo.ofUnknown(), Instant.EPOCH, Info.empty(), Endpoints.empty(), null,
+				Tags.empty(), emptyList());
+	}
 
-    List<InstanceEvent> getUnsavedEvents() {
-        return unmodifiableList(this.unsavedEvents);
-    }
+	private Instance(InstanceId id, long version, @Nullable Registration registration, boolean registered,
+			StatusInfo statusInfo, Instant statusTimestamp, Info info, Endpoints endpoints,
+			@Nullable BuildVersion buildVersion, Tags tags, List<InstanceEvent> unsavedEvents) {
+		Assert.notNull(id, "'id' must not be null");
+		Assert.notNull(endpoints, "'endpoints' must not be null");
+		Assert.notNull(info, "'info' must not be null");
+		Assert.notNull(statusInfo, "'statusInfo' must not be null");
+		this.id = id;
+		this.version = version;
+		this.registration = registration;
+		this.registered = registered;
+		this.statusInfo = statusInfo;
+		this.statusTimestamp = statusTimestamp;
+		this.info = info;
+		this.endpoints = registered && registration != null
+				? endpoints.withEndpoint(Endpoint.HEALTH, registration.getHealthUrl()) : endpoints;
+		this.unsavedEvents = unsavedEvents;
+		this.buildVersion = buildVersion;
+		this.tags = tags;
+	}
 
-    Instance clearUnsavedEvents() {
-        return new Instance(this.id,
-            this.version,
-            this.registration,
-            this.registered,
-            this.statusInfo,
-            this.statusTimestamp, this.info,
-            this.endpoints,
-            this.buildVersion,
-            this.tags,
-            emptyList()
-        );
-    }
+	public static Instance create(InstanceId id) {
+		Assert.notNull(id, "'id' must not be null");
+		return new Instance(id);
+	}
 
-    Instance apply(Collection<InstanceEvent> events) {
-        Assert.notNull(events, "'events' must not be null");
-        Instance instance = this;
-        for (InstanceEvent event : events) {
-            instance = instance.apply(event);
-        }
-        return instance;
-    }
+	public Instance register(Registration registration) {
+		Assert.notNull(registration, "'registration' must not be null");
+		if (!this.isRegistered()) {
+			return this.apply(new InstanceRegisteredEvent(this.id, this.nextVersion(), registration), true);
+		}
 
-    Instance apply(InstanceEvent event) {
-        return this.apply(event, false);
-    }
+		if (!Objects.equals(this.registration, registration)) {
+			return this.apply(new InstanceRegistrationUpdatedEvent(this.id, this.nextVersion(), registration), true);
+		}
 
-    private Instance apply(InstanceEvent event, boolean isNewEvent) {
-        Assert.notNull(event, "'event' must not be null");
-        Assert.isTrue(this.id.equals(event.getInstance()), "'event' must refer the same instance");
-        Assert.isTrue(event.getVersion() >= this.nextVersion(),
-            () -> "Event " + event.getVersion() + " must be greater or equal to " + this.nextVersion()
-        );
+		return this;
+	}
 
-        List<InstanceEvent> unsavedEvents = appendToEvents(event, isNewEvent);
+	public Instance deregister() {
+		if (this.isRegistered()) {
+			return this.apply(new InstanceDeregisteredEvent(this.id, this.nextVersion()), true);
+		}
+		return this;
+	}
 
-        if (event instanceof InstanceRegisteredEvent) {
-            Registration registration = ((InstanceRegisteredEvent) event).getRegistration();
-            return new Instance(this.id,
-                event.getVersion(),
-                registration,
-                true,
-                StatusInfo.ofUnknown(),
-                event.getTimestamp(),
-                Info.empty(),
-                Endpoints.empty(),
-                updateBuildVersion(registration.getMetadata()),
-                updateTags(registration.getMetadata()),
-                unsavedEvents
-            );
+	public Instance withInfo(Info info) {
+		Assert.notNull(info, "'info' must not be null");
+		if (Objects.equals(this.info, info)) {
+			return this;
+		}
+		return this.apply(new InstanceInfoChangedEvent(this.id, this.nextVersion(), info), true);
+	}
 
-        } else if (event instanceof InstanceRegistrationUpdatedEvent) {
-            Registration registration = ((InstanceRegistrationUpdatedEvent) event).getRegistration();
-            return new Instance(this.id,
-                event.getVersion(),
-                registration,
-                this.registered,
-                this.statusInfo,
-                this.statusTimestamp,
-                this.info,
-                this.endpoints,
-                updateBuildVersion(registration.getMetadata(), this.info.getValues()),
-                updateTags(registration.getMetadata(), this.info.getValues()),
-                unsavedEvents
-            );
+	public Instance withStatusInfo(StatusInfo statusInfo) {
+		Assert.notNull(statusInfo, "'statusInfo' must not be null");
+		if (Objects.equals(this.statusInfo.getStatus(), statusInfo.getStatus())) {
+			return this;
+		}
+		return this.apply(new InstanceStatusChangedEvent(this.id, this.nextVersion(), statusInfo), true);
+	}
 
-        } else if (event instanceof InstanceStatusChangedEvent) {
-            StatusInfo statusInfo = ((InstanceStatusChangedEvent) event).getStatusInfo();
-            return new Instance(this.id,
-                event.getVersion(),
-                this.registration,
-                this.registered,
-                statusInfo,
-                event.getTimestamp(),
-                this.info,
-                this.endpoints,
-                this.buildVersion,
-                this.tags,
-                unsavedEvents
-            );
+	public Instance withEndpoints(Endpoints endpoints) {
+		Assert.notNull(endpoints, "'endpoints' must not be null");
+		Endpoints endpointsWithHealth = this.registration != null
+				? endpoints.withEndpoint(Endpoint.HEALTH, this.registration.getHealthUrl()) : endpoints;
+		if (Objects.equals(this.endpoints, endpointsWithHealth)) {
+			return this;
+		}
+		return this.apply(new InstanceEndpointsDetectedEvent(this.id, this.nextVersion(), endpoints), true);
+	}
 
-        } else if (event instanceof InstanceEndpointsDetectedEvent) {
-            Endpoints endpoints = ((InstanceEndpointsDetectedEvent) event).getEndpoints();
-            return new Instance(this.id,
-                event.getVersion(),
-                this.registration,
-                this.registered,
-                this.statusInfo,
-                this.statusTimestamp,
-                this.info,
-                endpoints,
-                this.buildVersion,
-                this.tags,
-                unsavedEvents
-            );
+	public boolean isRegistered() {
+		return this.registered;
+	}
 
-        } else if (event instanceof InstanceInfoChangedEvent) {
-            Info info = ((InstanceInfoChangedEvent) event).getInfo();
-            Map<String, ?> metaData = this.registration != null ? this.registration.getMetadata() : emptyMap();
-            return new Instance(this.id,
-                event.getVersion(),
-                this.registration,
-                this.registered,
-                this.statusInfo,
-                this.statusTimestamp,
-                info,
-                this.endpoints,
-                updateBuildVersion(metaData, info.getValues()),
-                updateTags(metaData, info.getValues()),
-                unsavedEvents
-            );
+	public Registration getRegistration() {
+		if (this.registration == null) {
+			throw new IllegalStateException("Application '" + this.id + "' has no valid registration.");
+		}
+		return this.registration;
+	}
 
-        } else if (event instanceof InstanceDeregisteredEvent) {
-            return new Instance(this.id,
-                event.getVersion(),
-                this.registration,
-                false,
-                StatusInfo.ofUnknown(),
-                event.getTimestamp(),
-                Info.empty(),
-                Endpoints.empty(),
-                null,
-                Tags.empty(),
-                unsavedEvents
-            );
-        }
+	List<InstanceEvent> getUnsavedEvents() {
+		return unmodifiableList(this.unsavedEvents);
+	}
 
-        return this;
-    }
+	Instance clearUnsavedEvents() {
+		return new Instance(this.id, this.version, this.registration, this.registered, this.statusInfo,
+				this.statusTimestamp, this.info, this.endpoints, this.buildVersion, this.tags, emptyList());
+	}
 
-    private long nextVersion() {
-        return this.version + 1L;
-    }
+	Instance apply(Collection<InstanceEvent> events) {
+		Assert.notNull(events, "'events' must not be null");
+		Instance instance = this;
+		for (InstanceEvent event : events) {
+			instance = instance.apply(event);
+		}
+		return instance;
+	}
 
-    private List<InstanceEvent> appendToEvents(InstanceEvent event, boolean isNewEvent) {
-        if (!isNewEvent) {
-            return this.unsavedEvents;
-        }
-        ArrayList<InstanceEvent> events = new ArrayList<>(this.unsavedEvents.size() + 1);
-        events.addAll(this.unsavedEvents);
-        events.add(event);
-        return events;
-    }
+	Instance apply(InstanceEvent event) {
+		return this.apply(event, false);
+	}
 
-    @Nullable
-    @SafeVarargs
-    private final BuildVersion updateBuildVersion(Map<String, ?>... sources) {
-        return Arrays.stream(sources).map(BuildVersion::from).filter(Objects::nonNull).findFirst().orElse(null);
-    }
+	private Instance apply(InstanceEvent event, boolean isNewEvent) {
+		Assert.notNull(event, "'event' must not be null");
+		Assert.isTrue(this.id.equals(event.getInstance()), "'event' must refer the same instance");
+		Assert.isTrue(event.getVersion() >= this.nextVersion(),
+				() -> "Event " + event.getVersion() + " must be greater or equal to " + this.nextVersion());
 
-    @SafeVarargs
-    private final Tags updateTags(Map<String, ?>... sources) {
-        return Arrays.stream(sources).map(source -> Tags.from(source, "tags")).reduce(Tags.empty(), Tags::append);
-    }
+		List<InstanceEvent> unsavedEvents = appendToEvents(event, isNewEvent);
+
+		if (event instanceof InstanceRegisteredEvent) {
+			Registration registration = ((InstanceRegisteredEvent) event).getRegistration();
+			return new Instance(this.id, event.getVersion(), registration, true, StatusInfo.ofUnknown(),
+					event.getTimestamp(), Info.empty(), Endpoints.empty(),
+					updateBuildVersion(registration.getMetadata()), updateTags(registration.getMetadata()),
+					unsavedEvents);
+
+		}
+		else if (event instanceof InstanceRegistrationUpdatedEvent) {
+			Registration registration = ((InstanceRegistrationUpdatedEvent) event).getRegistration();
+			return new Instance(this.id, event.getVersion(), registration, this.registered, this.statusInfo,
+					this.statusTimestamp, this.info, this.endpoints,
+					updateBuildVersion(registration.getMetadata(), this.info.getValues()),
+					updateTags(registration.getMetadata(), this.info.getValues()), unsavedEvents);
+
+		}
+		else if (event instanceof InstanceStatusChangedEvent) {
+			StatusInfo statusInfo = ((InstanceStatusChangedEvent) event).getStatusInfo();
+			return new Instance(this.id, event.getVersion(), this.registration, this.registered, statusInfo,
+					event.getTimestamp(), this.info, this.endpoints, this.buildVersion, this.tags, unsavedEvents);
+
+		}
+		else if (event instanceof InstanceEndpointsDetectedEvent) {
+			Endpoints endpoints = ((InstanceEndpointsDetectedEvent) event).getEndpoints();
+			return new Instance(this.id, event.getVersion(), this.registration, this.registered, this.statusInfo,
+					this.statusTimestamp, this.info, endpoints, this.buildVersion, this.tags, unsavedEvents);
+
+		}
+		else if (event instanceof InstanceInfoChangedEvent) {
+			Info info = ((InstanceInfoChangedEvent) event).getInfo();
+			Map<String, ?> metaData = this.registration != null ? this.registration.getMetadata() : emptyMap();
+			return new Instance(this.id, event.getVersion(), this.registration, this.registered, this.statusInfo,
+					this.statusTimestamp, info, this.endpoints, updateBuildVersion(metaData, info.getValues()),
+					updateTags(metaData, info.getValues()), unsavedEvents);
+
+		}
+		else if (event instanceof InstanceDeregisteredEvent) {
+			return new Instance(this.id, event.getVersion(), this.registration, false, StatusInfo.ofUnknown(),
+					event.getTimestamp(), Info.empty(), Endpoints.empty(), null, Tags.empty(), unsavedEvents);
+		}
+
+		return this;
+	}
+
+	private long nextVersion() {
+		return this.version + 1L;
+	}
+
+	private List<InstanceEvent> appendToEvents(InstanceEvent event, boolean isNewEvent) {
+		if (!isNewEvent) {
+			return this.unsavedEvents;
+		}
+		ArrayList<InstanceEvent> events = new ArrayList<>(this.unsavedEvents.size() + 1);
+		events.addAll(this.unsavedEvents);
+		events.add(event);
+		return events;
+	}
+
+	@Nullable
+	@SafeVarargs
+	private final BuildVersion updateBuildVersion(Map<String, ?>... sources) {
+		return Arrays.stream(sources).map(BuildVersion::from).filter(Objects::nonNull).findFirst().orElse(null);
+	}
+
+	@SafeVarargs
+	private final Tags updateTags(Map<String, ?>... sources) {
+		return Arrays.stream(sources).map(source -> Tags.from(source, "tags")).reduce(Tags.empty(), Tags::append);
+	}
+
 }

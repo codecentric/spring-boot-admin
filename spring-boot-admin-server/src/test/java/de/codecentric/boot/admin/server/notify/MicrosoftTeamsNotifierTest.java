@@ -43,235 +43,203 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class MicrosoftTeamsNotifierTest {
-    private static final String appName = "Test App";
-    private static final String appId = "TestAppId";
-    private static final String healthUrl = "http://health";
-    private static final String managementUrl = "http://management";
-    private static final String serviceUrl = "http://service";
 
-    private MicrosoftTeamsNotifier notifier;
-    private RestTemplate mockRestTemplate;
-    private Instance instance;
-    private InstanceRepository repository;
+	private static final String appName = "Test App";
 
-    @Before
-    public void setUp() {
-        instance = Instance.create(InstanceId.of(appId))
-                           .register(Registration.create(appName, healthUrl)
-                                                 .managementUrl(managementUrl)
-                                                 .serviceUrl(serviceUrl)
-                                                 .build());
+	private static final String appId = "TestAppId";
 
-        repository = mock(InstanceRepository.class);
-        when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
+	private static final String healthUrl = "http://health";
 
-        mockRestTemplate = mock(RestTemplate.class);
-        notifier = new MicrosoftTeamsNotifier(repository, mockRestTemplate);
-        notifier.setWebhookUrl(URI.create("http://example.com"));
-    }
+	private static final String managementUrl = "http://management";
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void test_onClientApplicationDeRegisteredEvent_resolve() {
-        InstanceDeregisteredEvent event = new InstanceDeregisteredEvent(instance.getId(), 1L);
+	private static final String serviceUrl = "http://service";
 
-        StepVerifier.create(notifier.doNotify(event, instance)).verifyComplete();
+	private MicrosoftTeamsNotifier notifier;
 
-        ArgumentCaptor<HttpEntity<Message>> entity = ArgumentCaptor.forClass(HttpEntity.class);
-        verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")),
-            entity.capture(),
-            eq(Void.class)
-        );
+	private RestTemplate mockRestTemplate;
 
-        assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertMessage(entity.getValue().getBody(),
-            notifier.getDeRegisteredTitle(),
-            notifier.getMessageSummary(),
-            String.format(notifier.getDeregisterActivitySubtitlePattern(),
-                instance.getRegistration().getName(),
-                instance.getId()
-            )
-        );
-    }
+	private Instance instance;
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void test_onApplicationRegisteredEvent_resolve() {
-        InstanceRegisteredEvent event = new InstanceRegisteredEvent(instance.getId(), 1L, instance.getRegistration());
+	private InstanceRepository repository;
 
-        StepVerifier.create(notifier.doNotify(event, instance)).verifyComplete();
+	@Before
+	public void setUp() {
+		instance = Instance.create(InstanceId.of(appId)).register(
+				Registration.create(appName, healthUrl).managementUrl(managementUrl).serviceUrl(serviceUrl).build());
 
-        ArgumentCaptor<HttpEntity<Message>> entity = ArgumentCaptor.forClass(HttpEntity.class);
-        verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")), entity.capture(), eq(Void.class));
+		repository = mock(InstanceRepository.class);
+		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 
-        assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertMessage(entity.getValue().getBody(),
-            notifier.getRegisteredTitle(),
-            notifier.getMessageSummary(),
-            String.format(notifier.getRegisterActivitySubtitlePattern(),
-                instance.getRegistration().getName(),
-                instance.getId()
-            )
-        );
-    }
+		mockRestTemplate = mock(RestTemplate.class);
+		notifier = new MicrosoftTeamsNotifier(repository, mockRestTemplate);
+		notifier.setWebhookUrl(URI.create("http://example.com"));
+	}
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void test_onApplicationStatusChangedEvent_resolve() {
-        InstanceStatusChangedEvent event = new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofUp());
+	@Test
+	@SuppressWarnings("unchecked")
+	public void test_onClientApplicationDeRegisteredEvent_resolve() {
+		InstanceDeregisteredEvent event = new InstanceDeregisteredEvent(instance.getId(), 1L);
 
-        StepVerifier.create(notifier.doNotify(event, instance)).verifyComplete();
+		StepVerifier.create(notifier.doNotify(event, instance)).verifyComplete();
 
-        ArgumentCaptor<HttpEntity<Message>> entity = ArgumentCaptor.forClass(HttpEntity.class);
-        verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")), entity.capture(), eq(Void.class));
+		ArgumentCaptor<HttpEntity<Message>> entity = ArgumentCaptor.forClass(HttpEntity.class);
+		verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")), entity.capture(), eq(Void.class));
 
-        assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertMessage(entity.getValue().getBody(),
-            notifier.getStatusChangedTitle(),
-            notifier.getMessageSummary(),
-            String.format(notifier.getStatusActivitySubtitlePattern(),
-                instance.getRegistration().getName(),
-                instance.getId(),
-                StatusInfo.ofUnknown().getStatus(),
-                StatusInfo.ofUp().getStatus()
-            )
-        );
-    }
+		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+		assertMessage(entity.getValue().getBody(), notifier.getDeRegisteredTitle(), notifier.getMessageSummary(),
+				String.format(notifier.getDeregisterActivitySubtitlePattern(), instance.getRegistration().getName(),
+						instance.getId()));
+	}
 
-    @Test
-    public void test_shouldNotifyWithRegisteredEventReturns_true() {
-        InstanceRegisteredEvent event = new InstanceRegisteredEvent(instance.getId(), 1L, instance.getRegistration());
-        assertThat(notifier.shouldNotify(event, instance)).isTrue();
-    }
+	@Test
+	@SuppressWarnings("unchecked")
+	public void test_onApplicationRegisteredEvent_resolve() {
+		InstanceRegisteredEvent event = new InstanceRegisteredEvent(instance.getId(), 1L, instance.getRegistration());
 
-    @Test
-    public void test_shouldNotifyWithDeRegisteredEventReturns_true() {
-        InstanceDeregisteredEvent event = new InstanceDeregisteredEvent(instance.getId(), 1L);
-        assertThat(notifier.shouldNotify(event, instance)).isTrue();
-    }
+		StepVerifier.create(notifier.doNotify(event, instance)).verifyComplete();
 
-    @Test
-    public void test_getDeregisteredMessageForAppReturns_correctContent() {
-        Message message = notifier.getDeregisteredMessage(instance);
+		ArgumentCaptor<HttpEntity<Message>> entity = ArgumentCaptor.forClass(HttpEntity.class);
+		verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")), entity.capture(), eq(Void.class));
 
-        assertMessage(message,
-            notifier.getDeRegisteredTitle(),
-            notifier.getMessageSummary(),
-            String.format(notifier.getDeregisterActivitySubtitlePattern(),
-                instance.getRegistration().getName(),
-                instance.getId()
-            )
-        );
-    }
+		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+		assertMessage(entity.getValue().getBody(), notifier.getRegisteredTitle(), notifier.getMessageSummary(),
+				String.format(notifier.getRegisterActivitySubtitlePattern(), instance.getRegistration().getName(),
+						instance.getId()));
+	}
 
-    @Test
-    public void test_getRegisteredMessageForAppReturns_correctContent() {
-        Message message = notifier.getRegisteredMessage(instance);
+	@Test
+	@SuppressWarnings("unchecked")
+	public void test_onApplicationStatusChangedEvent_resolve() {
+		InstanceStatusChangedEvent event = new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofUp());
 
-        assertMessage(message,
-            notifier.getRegisteredTitle(),
-            notifier.getMessageSummary(),
-            String.format(notifier.getRegisterActivitySubtitlePattern(),
-                instance.getRegistration().getName(),
-                instance.getId()
-            )
-        );
-    }
+		StepVerifier.create(notifier.doNotify(event, instance)).verifyComplete();
 
-    @Test
-    public void test_getStatusChangedMessageForAppReturns_correctContent() {
-        Message message = notifier.getStatusChangedMessage(instance, "UP", "DOWN");
+		ArgumentCaptor<HttpEntity<Message>> entity = ArgumentCaptor.forClass(HttpEntity.class);
+		verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")), entity.capture(), eq(Void.class));
 
-        assertMessage(message,
-            notifier.getStatusChangedTitle(),
-            notifier.getMessageSummary(),
-            String.format(notifier.getStatusActivitySubtitlePattern(),
-                instance.getRegistration().getName(),
-                instance.getId(),
-                StatusInfo.ofUp().getStatus(),
-                StatusInfo.ofDown().getStatus()
-            )
-        );
-    }
+		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+		assertMessage(entity.getValue().getBody(), notifier.getStatusChangedTitle(), notifier.getMessageSummary(),
+				String.format(notifier.getStatusActivitySubtitlePattern(), instance.getRegistration().getName(),
+						instance.getId(), StatusInfo.ofUnknown().getStatus(), StatusInfo.ofUp().getStatus()));
+	}
 
-    @Test
-    public void test_getStatusChangedMessageWithMissingFormatArgumentReturns_activitySubtitlePattern() {
-        String pattern = "STATUS_%s_ACTIVITY%s_PATTERN%s%s%s%s";
-        notifier.setStatusActivitySubtitlePattern(pattern);
-        Message message = notifier.getStatusChangedMessage(instance, "UP", "DOWN");
+	@Test
+	public void test_shouldNotifyWithRegisteredEventReturns_true() {
+		InstanceRegisteredEvent event = new InstanceRegisteredEvent(instance.getId(), 1L, instance.getRegistration());
+		assertThat(notifier.shouldNotify(event, instance)).isTrue();
+	}
 
-        assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo(pattern);
-    }
+	@Test
+	public void test_shouldNotifyWithDeRegisteredEventReturns_true() {
+		InstanceDeregisteredEvent event = new InstanceDeregisteredEvent(instance.getId(), 1L);
+		assertThat(notifier.shouldNotify(event, instance)).isTrue();
+	}
 
-    @Test
-    public void test_getStatusChangedMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
-        notifier.setStatusActivitySubtitlePattern("STATUS_ACTIVITY_PATTERN_%s");
-        Message message = notifier.getStatusChangedMessage(instance, "UP", "DOWN");
+	@Test
+	public void test_getDeregisteredMessageForAppReturns_correctContent() {
+		Message message = notifier.getDeregisteredMessage(instance);
 
-        assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo("STATUS_ACTIVITY_PATTERN_" + appName);
-    }
+		assertMessage(message, notifier.getDeRegisteredTitle(), notifier.getMessageSummary(),
+				String.format(notifier.getDeregisterActivitySubtitlePattern(), instance.getRegistration().getName(),
+						instance.getId()));
+	}
 
-    @Test
-    public void test_getRegisterMessageWithMissingFormatArgumentReturns_activitySubtitlePattern() {
-        String pattern = "REGISTER_%s_ACTIVITY%s_PATTERN%s%s%s%s";
-        notifier.setRegisterActivitySubtitlePattern(pattern);
-        Message message = notifier.getRegisteredMessage(instance);
+	@Test
+	public void test_getRegisteredMessageForAppReturns_correctContent() {
+		Message message = notifier.getRegisteredMessage(instance);
 
-        assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo(pattern);
-    }
+		assertMessage(message, notifier.getRegisteredTitle(), notifier.getMessageSummary(), String.format(
+				notifier.getRegisterActivitySubtitlePattern(), instance.getRegistration().getName(), instance.getId()));
+	}
 
-    @Test
-    public void test_getRegisterMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
-        notifier.setRegisterActivitySubtitlePattern("REGISTER_ACTIVITY_PATTERN_%s");
-        Message message = notifier.getRegisteredMessage(instance);
+	@Test
+	public void test_getStatusChangedMessageForAppReturns_correctContent() {
+		Message message = notifier.getStatusChangedMessage(instance, "UP", "DOWN");
 
-        assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo("REGISTER_ACTIVITY_PATTERN_" +
-                                                                                 appName);
-    }
+		assertMessage(message, notifier.getStatusChangedTitle(), notifier.getMessageSummary(),
+				String.format(notifier.getStatusActivitySubtitlePattern(), instance.getRegistration().getName(),
+						instance.getId(), StatusInfo.ofUp().getStatus(), StatusInfo.ofDown().getStatus()));
+	}
 
-    @Test
-    public void test_getDeRegisterMessageWithMissingFormatArgumentReturns_activitySubtitlePattern() {
-        String pattern = "DEREGISTER_%s_ACTIVITY%s_PATTERN%s%s%s%s";
-        notifier.setDeregisterActivitySubtitlePattern(pattern);
-        Message message = notifier.getDeregisteredMessage(instance);
+	@Test
+	public void test_getStatusChangedMessageWithMissingFormatArgumentReturns_activitySubtitlePattern() {
+		String pattern = "STATUS_%s_ACTIVITY%s_PATTERN%s%s%s%s";
+		notifier.setStatusActivitySubtitlePattern(pattern);
+		Message message = notifier.getStatusChangedMessage(instance, "UP", "DOWN");
 
-        assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo(pattern);
-    }
+		assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo(pattern);
+	}
 
-    @Test
-    public void test_getDeRegisterMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
-        notifier.setDeregisterActivitySubtitlePattern("DEREGISTER_ACTIVITY_PATTERN_%s");
-        Message message = notifier.getDeregisteredMessage(instance);
+	@Test
+	public void test_getStatusChangedMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
+		notifier.setStatusActivitySubtitlePattern("STATUS_ACTIVITY_PATTERN_%s");
+		Message message = notifier.getStatusChangedMessage(instance, "UP", "DOWN");
 
-        assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo("DEREGISTER_ACTIVITY_PATTERN_" +
-                                                                                 appName);
-    }
+		assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo("STATUS_ACTIVITY_PATTERN_" + appName);
+	}
 
-    private void assertMessage(Message message, String expectedTitle, String expectedSummary, String expectedSubTitle) {
-        assertThat(message.getTitle()).isEqualTo(expectedTitle);
-        assertThat(message.getSummary()).isEqualTo(expectedSummary);
-        assertThat(message.getThemeColor()).isEqualTo("6db33f");
+	@Test
+	public void test_getRegisterMessageWithMissingFormatArgumentReturns_activitySubtitlePattern() {
+		String pattern = "REGISTER_%s_ACTIVITY%s_PATTERN%s%s%s%s";
+		notifier.setRegisterActivitySubtitlePattern(pattern);
+		Message message = notifier.getRegisteredMessage(instance);
 
-        assertThat(message.getSections()).hasSize(1).anySatisfy(section -> {
-            assertThat(section.getActivityTitle()).isEqualTo(instance.getRegistration().getName());
-            assertThat(section.getActivitySubtitle()).isEqualTo(expectedSubTitle);
+		assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo(pattern);
+	}
 
-            assertThat(section.getFacts()).hasSize(5).anySatisfy(fact -> {
-                assertThat(fact.getName()).isEqualTo("Status");
-                assertThat(fact.getValue()).isEqualTo("UNKNOWN");
-            }).anySatisfy(fact -> {
-                assertThat(fact.getName()).isEqualTo("Service URL");
-                assertThat(fact.getValue()).isEqualTo(serviceUrl);
-            }).anySatisfy(fact -> {
-                assertThat(fact.getName()).isEqualTo("Health URL");
-                assertThat(fact.getValue()).isEqualTo(healthUrl);
-            }).anySatisfy(fact -> {
-                assertThat(fact.getName()).isEqualTo("Management URL");
-                assertThat(fact.getValue()).isEqualTo(managementUrl);
-            }).anySatisfy(fact -> {
-                assertThat(fact.getName()).isEqualTo("Source");
-                assertThat(fact.getValue()).isEqualTo(null);
-            });
-        });
-    }
+	@Test
+	public void test_getRegisterMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
+		notifier.setRegisterActivitySubtitlePattern("REGISTER_ACTIVITY_PATTERN_%s");
+		Message message = notifier.getRegisteredMessage(instance);
+
+		assertThat(message.getSections().get(0).getActivitySubtitle())
+				.isEqualTo("REGISTER_ACTIVITY_PATTERN_" + appName);
+	}
+
+	@Test
+	public void test_getDeRegisterMessageWithMissingFormatArgumentReturns_activitySubtitlePattern() {
+		String pattern = "DEREGISTER_%s_ACTIVITY%s_PATTERN%s%s%s%s";
+		notifier.setDeregisterActivitySubtitlePattern(pattern);
+		Message message = notifier.getDeregisteredMessage(instance);
+
+		assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo(pattern);
+	}
+
+	@Test
+	public void test_getDeRegisterMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
+		notifier.setDeregisterActivitySubtitlePattern("DEREGISTER_ACTIVITY_PATTERN_%s");
+		Message message = notifier.getDeregisteredMessage(instance);
+
+		assertThat(message.getSections().get(0).getActivitySubtitle())
+				.isEqualTo("DEREGISTER_ACTIVITY_PATTERN_" + appName);
+	}
+
+	private void assertMessage(Message message, String expectedTitle, String expectedSummary, String expectedSubTitle) {
+		assertThat(message.getTitle()).isEqualTo(expectedTitle);
+		assertThat(message.getSummary()).isEqualTo(expectedSummary);
+		assertThat(message.getThemeColor()).isEqualTo("6db33f");
+
+		assertThat(message.getSections()).hasSize(1).anySatisfy(section -> {
+			assertThat(section.getActivityTitle()).isEqualTo(instance.getRegistration().getName());
+			assertThat(section.getActivitySubtitle()).isEqualTo(expectedSubTitle);
+
+			assertThat(section.getFacts()).hasSize(5).anySatisfy(fact -> {
+				assertThat(fact.getName()).isEqualTo("Status");
+				assertThat(fact.getValue()).isEqualTo("UNKNOWN");
+			}).anySatisfy(fact -> {
+				assertThat(fact.getName()).isEqualTo("Service URL");
+				assertThat(fact.getValue()).isEqualTo(serviceUrl);
+			}).anySatisfy(fact -> {
+				assertThat(fact.getName()).isEqualTo("Health URL");
+				assertThat(fact.getValue()).isEqualTo(healthUrl);
+			}).anySatisfy(fact -> {
+				assertThat(fact.getName()).isEqualTo("Management URL");
+				assertThat(fact.getValue()).isEqualTo(managementUrl);
+			}).anySatisfy(fact -> {
+				assertThat(fact.getName()).isEqualTo("Source");
+				assertThat(fact.getValue()).isEqualTo(null);
+			});
+		});
+	}
+
 }

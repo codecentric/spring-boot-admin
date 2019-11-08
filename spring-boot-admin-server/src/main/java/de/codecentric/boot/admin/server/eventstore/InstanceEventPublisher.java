@@ -28,25 +28,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class InstanceEventPublisher implements Publisher<InstanceEvent> {
-    private static final Logger log = LoggerFactory.getLogger(InstanceEventPublisher.class);
-    private final Flux<InstanceEvent> publishedFlux;
-    private final FluxSink<InstanceEvent> sink;
 
-    protected InstanceEventPublisher() {
-        UnicastProcessor<InstanceEvent> unicastProcessor = UnicastProcessor.create();
-        this.publishedFlux = unicastProcessor.publish().autoConnect(0);
-        this.sink = unicastProcessor.sink();
-    }
+	private static final Logger log = LoggerFactory.getLogger(InstanceEventPublisher.class);
 
-    protected void publish(List<InstanceEvent> events) {
-        events.forEach(event -> {
-            log.debug("Event published {}", event);
-            this.sink.next(event);
-        });
-    }
+	private final Flux<InstanceEvent> publishedFlux;
 
-    @Override
-    public void subscribe(Subscriber<? super InstanceEvent> s) {
-        publishedFlux.subscribe(s);
-    }
+	private final FluxSink<InstanceEvent> sink;
+
+	protected InstanceEventPublisher() {
+		UnicastProcessor<InstanceEvent> unicastProcessor = UnicastProcessor.create();
+		this.publishedFlux = unicastProcessor.publish().autoConnect(0);
+		this.sink = unicastProcessor.sink();
+	}
+
+	protected void publish(List<InstanceEvent> events) {
+		events.forEach(event -> {
+			log.debug("Event published {}", event);
+			this.sink.next(event);
+		});
+	}
+
+	@Override
+	public void subscribe(Subscriber<? super InstanceEvent> s) {
+		publishedFlux.subscribe(s);
+	}
+
 }

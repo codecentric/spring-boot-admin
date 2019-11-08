@@ -27,33 +27,31 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.util.StringUtils;
 
 public class CloudFoundryApplicationFactory extends DefaultApplicationFactory {
-    private final CloudFoundryApplicationProperties cfApplicationProperties;
-    private final InstanceProperties instance;
 
-    public CloudFoundryApplicationFactory(InstanceProperties instance,
-                                          ManagementServerProperties management,
-                                          ServerProperties server,
-                                          PathMappedEndpoints pathMappedEndpoints,
-                                          WebEndpointProperties webEndpoint,
-                                          MetadataContributor metadataContributor,
-                                          CloudFoundryApplicationProperties cfApplicationProperties) {
-        super(instance, management, server, pathMappedEndpoints, webEndpoint, metadataContributor);
-        this.cfApplicationProperties = cfApplicationProperties;
-        this.instance = instance;
-    }
+	private final CloudFoundryApplicationProperties cfApplicationProperties;
 
-    @Override
-    protected String getServiceBaseUrl() {
-        String baseUrl = this.instance.getServiceBaseUrl();
-        if (!StringUtils.isEmpty(baseUrl)) {
-            return baseUrl;
-        }
+	private final InstanceProperties instance;
 
-        if (this.cfApplicationProperties.getUris().isEmpty()) {
-            return super.getServiceBaseUrl();
-        }
+	public CloudFoundryApplicationFactory(InstanceProperties instance, ManagementServerProperties management,
+			ServerProperties server, PathMappedEndpoints pathMappedEndpoints, WebEndpointProperties webEndpoint,
+			MetadataContributor metadataContributor, CloudFoundryApplicationProperties cfApplicationProperties) {
+		super(instance, management, server, pathMappedEndpoints, webEndpoint, metadataContributor);
+		this.cfApplicationProperties = cfApplicationProperties;
+		this.instance = instance;
+	}
 
-        return "http://" + this.cfApplicationProperties.getUris().get(0);
-    }
+	@Override
+	protected String getServiceBaseUrl() {
+		String baseUrl = this.instance.getServiceBaseUrl();
+		if (!StringUtils.isEmpty(baseUrl)) {
+			return baseUrl;
+		}
+
+		if (this.cfApplicationProperties.getUris().isEmpty()) {
+			return super.getServiceBaseUrl();
+		}
+
+		return "http://" + this.cfApplicationProperties.getUris().get(0);
+	}
+
 }
-

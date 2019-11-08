@@ -65,218 +65,224 @@ import org.thymeleaf.templatemode.TemplateMode;
 
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(NotifierProxyProperties.class)
-@AutoConfigureAfter({MailSenderAutoConfiguration.class})
+@AutoConfigureAfter({ MailSenderAutoConfiguration.class })
 public class AdminServerNotifierAutoConfiguration {
 
-    @Configuration(proxyBeanMethods = false)
-    @ConditionalOnBean(Notifier.class)
-    public static class NotifierTriggerConfiguration {
-        @Bean(initMethod = "start", destroyMethod = "stop")
-        @ConditionalOnMissingBean(NotificationTrigger.class)
-        public NotificationTrigger notificationTrigger(Notifier notifier, Publisher<InstanceEvent> events) {
-            return new NotificationTrigger(notifier, events);
-        }
-    }
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBean(Notifier.class)
+	public static class NotifierTriggerConfiguration {
 
-    @Configuration(proxyBeanMethods = false)
-    @ConditionalOnBean(Notifier.class)
-    @AutoConfigureBefore({NotifierTriggerConfiguration.class})
-    public static class CompositeNotifierConfiguration {
-        @Bean
-        @Primary
-        @Conditional(NoSingleNotifierCandidateCondition.class)
-        public CompositeNotifier compositeNotifier(List<Notifier> notifiers) {
-            return new CompositeNotifier(notifiers);
-        }
+		@Bean(initMethod = "start", destroyMethod = "stop")
+		@ConditionalOnMissingBean(NotificationTrigger.class)
+		public NotificationTrigger notificationTrigger(Notifier notifier, Publisher<InstanceEvent> events) {
+			return new NotificationTrigger(notifier, events);
+		}
 
-        static class NoSingleNotifierCandidateCondition extends NoneNestedConditions {
-            NoSingleNotifierCandidateCondition() {
-                super(ConfigurationPhase.REGISTER_BEAN);
-            }
+	}
 
-            @ConditionalOnSingleCandidate(Notifier.class)
-            static class HasSingleNotifierInstance {
-            }
-        }
-    }
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBean(Notifier.class)
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class })
+	public static class CompositeNotifierConfiguration {
 
-    @Configuration(proxyBeanMethods = false)
-    @ConditionalOnSingleCandidate(FilteringNotifier.class)
-    public static class FilteringNotifierWebConfiguration {
-        private final FilteringNotifier filteringNotifier;
+		@Bean
+		@Primary
+		@Conditional(NoSingleNotifierCandidateCondition.class)
+		public CompositeNotifier compositeNotifier(List<Notifier> notifiers) {
+			return new CompositeNotifier(notifiers);
+		}
 
-        public FilteringNotifierWebConfiguration(FilteringNotifier filteringNotifier) {
-            this.filteringNotifier = filteringNotifier;
-        }
+		static class NoSingleNotifierCandidateCondition extends NoneNestedConditions {
 
-        @Bean
-        public NotificationFilterController notificationFilterController() {
-            return new NotificationFilterController(this.filteringNotifier);
-        }
+			NoSingleNotifierCandidateCondition() {
+				super(ConfigurationPhase.REGISTER_BEAN);
+			}
 
-    }
+			@ConditionalOnSingleCandidate(Notifier.class)
+			static class HasSingleNotifierInstance {
 
-    @Configuration(proxyBeanMethods = false)
-    @AutoConfigureBefore({
-        NotifierTriggerConfiguration.class,
-        CompositeNotifierConfiguration.class
-    })
-    @ConditionalOnBean(MailSender.class)
-    public static class MailNotifierConfiguration {
-        private final ApplicationContext applicationContext;
+			}
 
-        public MailNotifierConfiguration(ApplicationContext applicationContext) {
-            this.applicationContext = applicationContext;
-        }
+		}
 
-        @Bean
-        @ConditionalOnMissingBean
-        @ConfigurationProperties("spring.boot.admin.notify.mail")
-        public MailNotifier mailNotifier(JavaMailSender mailSender, InstanceRepository repository) {
-            return new MailNotifier(mailSender, repository, mailNotifierTemplateEngine());
-        }
+	}
 
-        @Bean
-        public TemplateEngine mailNotifierTemplateEngine() {
-            SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
-            resolver.setApplicationContext(this.applicationContext);
-            resolver.setTemplateMode(TemplateMode.HTML);
-            resolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnSingleCandidate(FilteringNotifier.class)
+	public static class FilteringNotifierWebConfiguration {
 
-            SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-            templateEngine.addTemplateResolver(resolver);
-            return templateEngine;
-        }
-    }
+		private final FilteringNotifier filteringNotifier;
 
-    @Configuration(proxyBeanMethods = false)
-    @ConditionalOnProperty(prefix = "spring.boot.admin.notify.hipchat", name = "url")
-    @AutoConfigureBefore({
-        NotifierTriggerConfiguration.class,
-        CompositeNotifierConfiguration.class
-    })
-    public static class HipchatNotifierConfiguration {
-        @Bean
-        @ConditionalOnMissingBean
-        @ConfigurationProperties("spring.boot.admin.notify.hipchat")
-        public HipchatNotifier hipchatNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
-            return new HipchatNotifier(repository, createNotifierRestTemplate(proxyProperties));
-        }
-    }
+		public FilteringNotifierWebConfiguration(FilteringNotifier filteringNotifier) {
+			this.filteringNotifier = filteringNotifier;
+		}
 
-    @Configuration(proxyBeanMethods = false)
-    @ConditionalOnProperty(prefix = "spring.boot.admin.notify.slack", name = "webhook-url")
-    @AutoConfigureBefore({
-        NotifierTriggerConfiguration.class,
-        CompositeNotifierConfiguration.class
-    })
-    public static class SlackNotifierConfiguration {
-        @Bean
-        @ConditionalOnMissingBean
-        @ConfigurationProperties("spring.boot.admin.notify.slack")
-        public SlackNotifier slackNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
-            return new SlackNotifier(repository, createNotifierRestTemplate(proxyProperties));
-        }
-    }
+		@Bean
+		public NotificationFilterController notificationFilterController() {
+			return new NotificationFilterController(this.filteringNotifier);
+		}
 
-    @Configuration(proxyBeanMethods = false)
-    @ConditionalOnProperty(prefix = "spring.boot.admin.notify.letschat", name = "url")
-    @AutoConfigureBefore({
-        NotifierTriggerConfiguration.class,
-        CompositeNotifierConfiguration.class
-    })
-    public static class LetsChatNotifierConfiguration {
-        @Bean
-        @ConditionalOnMissingBean
-        @ConfigurationProperties("spring.boot.admin.notify.letschat")
-        public LetsChatNotifier letsChatNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
-            return new LetsChatNotifier(repository, createNotifierRestTemplate(proxyProperties));
-        }
-    }
+	}
 
-    @Configuration(proxyBeanMethods = false)
-    @ConditionalOnProperty(prefix = "spring.boot.admin.notify.pagerduty", name = "service-key")
-    @AutoConfigureBefore({
-        NotifierTriggerConfiguration.class,
-        CompositeNotifierConfiguration.class
-    })
-    public static class PagerdutyNotifierConfiguration {
-        @Bean
-        @ConditionalOnMissingBean
-        @ConfigurationProperties("spring.boot.admin.notify.pagerduty")
-        public PagerdutyNotifier pagerdutyNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
-            return new PagerdutyNotifier(repository, createNotifierRestTemplate(proxyProperties));
-        }
-    }
+	@Configuration(proxyBeanMethods = false)
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
+	@ConditionalOnBean(MailSender.class)
+	public static class MailNotifierConfiguration {
 
-    @Configuration(proxyBeanMethods = false)
-    @ConditionalOnProperty(prefix = "spring.boot.admin.notify.opsgenie", name = "api-key")
-    @AutoConfigureBefore({
-        NotifierTriggerConfiguration.class,
-        CompositeNotifierConfiguration.class
-    })
-    public static class OpsGenieNotifierConfiguration {
-        @Bean
-        @ConditionalOnMissingBean
-        @ConfigurationProperties("spring.boot.admin.notify.opsgenie")
-        public OpsGenieNotifier opsgenieNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
-            return new OpsGenieNotifier(repository, createNotifierRestTemplate(proxyProperties));
-        }
-    }
+		private final ApplicationContext applicationContext;
 
-    @Configuration(proxyBeanMethods = false)
-    @ConditionalOnProperty(prefix = "spring.boot.admin.notify.ms-teams", name = "webhook-url")
-    @AutoConfigureBefore({
-        NotifierTriggerConfiguration.class,
-        CompositeNotifierConfiguration.class
-    })
-    public static class MicrosoftTeamsNotifierConfiguration {
-        @Bean
-        @ConditionalOnMissingBean
-        @ConfigurationProperties("spring.boot.admin.notify.ms-teams")
-        public MicrosoftTeamsNotifier microsoftTeamsNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
-            return new MicrosoftTeamsNotifier(repository, createNotifierRestTemplate(proxyProperties));
-        }
-    }
+		public MailNotifierConfiguration(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
 
-    @Configuration(proxyBeanMethods = false)
-    @ConditionalOnProperty(prefix = "spring.boot.admin.notify.telegram", name = "auth-token")
-    @AutoConfigureBefore({
-        NotifierTriggerConfiguration.class,
-        CompositeNotifierConfiguration.class
-    })
-    public static class TelegramNotifierConfiguration {
-        @Bean
-        @ConditionalOnMissingBean
-        @ConfigurationProperties("spring.boot.admin.notify.telegram")
-        public TelegramNotifier telegramNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
-            return new TelegramNotifier(repository, createNotifierRestTemplate(proxyProperties));
-        }
-    }
+		@Bean
+		@ConditionalOnMissingBean
+		@ConfigurationProperties("spring.boot.admin.notify.mail")
+		public MailNotifier mailNotifier(JavaMailSender mailSender, InstanceRepository repository) {
+			return new MailNotifier(mailSender, repository, mailNotifierTemplateEngine());
+		}
 
-    @Configuration(proxyBeanMethods = false)
-    @ConditionalOnProperty(prefix = "spring.boot.admin.notify.discord", name = "webhook-url")
-    @AutoConfigureBefore({
-        NotifierTriggerConfiguration.class,
-        CompositeNotifierConfiguration.class
-    })
-    public static class DiscordNotifierConfiguration {
-        @Bean
-        @ConditionalOnMissingBean
-        @ConfigurationProperties("spring.boot.admin.notify.discord")
-        public DiscordNotifier discordNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
-            return new DiscordNotifier(repository, createNotifierRestTemplate(proxyProperties));
-        }
-    }
+		@Bean
+		public TemplateEngine mailNotifierTemplateEngine() {
+			SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
+			resolver.setApplicationContext(this.applicationContext);
+			resolver.setTemplateMode(TemplateMode.HTML);
+			resolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
-    private static RestTemplate createNotifierRestTemplate(NotifierProxyProperties proxyProperties) {
-        RestTemplate restTemplate = new RestTemplate();
-        if (proxyProperties.getHost() != null) {
-            SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyProperties.getHost(), proxyProperties.getPort()));
-            requestFactory.setProxy(proxy);
-            restTemplate.setRequestFactory(requestFactory);
-        }
-        return restTemplate;
-    }
+			SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+			templateEngine.addTemplateResolver(resolver);
+			return templateEngine;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.hipchat", name = "url")
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
+	public static class HipchatNotifierConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConfigurationProperties("spring.boot.admin.notify.hipchat")
+		public HipchatNotifier hipchatNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
+			return new HipchatNotifier(repository, createNotifierRestTemplate(proxyProperties));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.slack", name = "webhook-url")
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
+	public static class SlackNotifierConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConfigurationProperties("spring.boot.admin.notify.slack")
+		public SlackNotifier slackNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
+			return new SlackNotifier(repository, createNotifierRestTemplate(proxyProperties));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.letschat", name = "url")
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
+	public static class LetsChatNotifierConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConfigurationProperties("spring.boot.admin.notify.letschat")
+		public LetsChatNotifier letsChatNotifier(InstanceRepository repository,
+				NotifierProxyProperties proxyProperties) {
+			return new LetsChatNotifier(repository, createNotifierRestTemplate(proxyProperties));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.pagerduty", name = "service-key")
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
+	public static class PagerdutyNotifierConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConfigurationProperties("spring.boot.admin.notify.pagerduty")
+		public PagerdutyNotifier pagerdutyNotifier(InstanceRepository repository,
+				NotifierProxyProperties proxyProperties) {
+			return new PagerdutyNotifier(repository, createNotifierRestTemplate(proxyProperties));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.opsgenie", name = "api-key")
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
+	public static class OpsGenieNotifierConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConfigurationProperties("spring.boot.admin.notify.opsgenie")
+		public OpsGenieNotifier opsgenieNotifier(InstanceRepository repository,
+				NotifierProxyProperties proxyProperties) {
+			return new OpsGenieNotifier(repository, createNotifierRestTemplate(proxyProperties));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.ms-teams", name = "webhook-url")
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
+	public static class MicrosoftTeamsNotifierConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConfigurationProperties("spring.boot.admin.notify.ms-teams")
+		public MicrosoftTeamsNotifier microsoftTeamsNotifier(InstanceRepository repository,
+				NotifierProxyProperties proxyProperties) {
+			return new MicrosoftTeamsNotifier(repository, createNotifierRestTemplate(proxyProperties));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.telegram", name = "auth-token")
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
+	public static class TelegramNotifierConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConfigurationProperties("spring.boot.admin.notify.telegram")
+		public TelegramNotifier telegramNotifier(InstanceRepository repository,
+				NotifierProxyProperties proxyProperties) {
+			return new TelegramNotifier(repository, createNotifierRestTemplate(proxyProperties));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.discord", name = "webhook-url")
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
+	public static class DiscordNotifierConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConfigurationProperties("spring.boot.admin.notify.discord")
+		public DiscordNotifier discordNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
+			return new DiscordNotifier(repository, createNotifierRestTemplate(proxyProperties));
+		}
+
+	}
+
+	private static RestTemplate createNotifierRestTemplate(NotifierProxyProperties proxyProperties) {
+		RestTemplate restTemplate = new RestTemplate();
+		if (proxyProperties.getHost() != null) {
+			SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+			Proxy proxy = new Proxy(Proxy.Type.HTTP,
+					new InetSocketAddress(proxyProperties.getHost(), proxyProperties.getPort()));
+			requestFactory.setProxy(proxy);
+			restTemplate.setRequestFactory(requestFactory);
+		}
+		return restTemplate;
+	}
+
 }

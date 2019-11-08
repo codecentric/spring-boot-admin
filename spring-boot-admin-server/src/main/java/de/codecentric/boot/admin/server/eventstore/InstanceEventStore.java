@@ -30,9 +30,11 @@ import org.reactivestreams.Publisher;
  * @author Johannes Edmeier
  */
 public interface InstanceEventStore extends Publisher<InstanceEvent> {
-    Flux<InstanceEvent> findAll();
 
-    Flux<InstanceEvent> find(InstanceId id);
+	Flux<InstanceEvent> findAll();
 
-    Mono<Void> append(List<InstanceEvent> events);
+	Flux<InstanceEvent> find(InstanceId id);
+
+	Mono<Void> append(List<InstanceEvent> events);
+
 }

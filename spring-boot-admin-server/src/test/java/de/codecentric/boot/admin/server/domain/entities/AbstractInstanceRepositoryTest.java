@@ -29,128 +29,130 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractInstanceRepositoryTest {
-    private final Instance instance1 = Instance.create(InstanceId.of("app-1"))
-                                               .register(Registration.create("app", "http://health").build());
-    private final Instance instance2 = Instance.create(InstanceId.of("app-2"))
-                                               .register(Registration.create("app", "http://health").build());
-    private final Instance instance3 = Instance.create(InstanceId.of("other-1"))
-                                               .register(Registration.create("other", "http://health").build());
-    private InstanceRepository repository;
 
-    public void setUp(InstanceRepository repository) {
-        this.repository = repository;
-    }
+	private final Instance instance1 = Instance.create(InstanceId.of("app-1"))
+			.register(Registration.create("app", "http://health").build());
 
-    @Test
-    public void should_save() {
-        //when
-        StepVerifier.create(this.repository.save(this.instance1)).expectNext(this.instance1).verifyComplete();
-        //then
-        StepVerifier.create(this.repository.find(this.instance1.getId())).expectNext(this.instance1).verifyComplete();
-    }
+	private final Instance instance2 = Instance.create(InstanceId.of("app-2"))
+			.register(Registration.create("app", "http://health").build());
 
-    @Test
-    public void should_find_instances() {
-        //given
-        StepVerifier.create(this.repository.save(this.instance1)).expectNextCount(1).verifyComplete();
-        StepVerifier.create(this.repository.save(this.instance2)).expectNextCount(1).verifyComplete();
-        StepVerifier.create(this.repository.save(this.instance3)).expectNextCount(1).verifyComplete();
+	private final Instance instance3 = Instance.create(InstanceId.of("other-1"))
+			.register(Registration.create("other", "http://health").build());
 
-        //when/then
-        StepVerifier.create(this.repository.find(this.instance2.getId())).expectNext(this.instance2).verifyComplete();
+	private InstanceRepository repository;
 
-        StepVerifier.create(this.repository.findByName("app").collectList())
-                    .assertNext(v -> assertThat(v).containsExactlyInAnyOrder(this.instance1, this.instance2))
-                    .verifyComplete();
+	public void setUp(InstanceRepository repository) {
+		this.repository = repository;
+	}
 
-        StepVerifier.create(this.repository.findAll().collectList())
-                    .assertNext(v -> assertThat(v).containsExactlyInAnyOrder(this.instance1,
-                        this.instance2,
-                        this.instance3
-                    ))
-                    .verifyComplete();
-    }
+	@Test
+	public void should_save() {
+		// when
+		StepVerifier.create(this.repository.save(this.instance1)).expectNext(this.instance1).verifyComplete();
+		// then
+		StepVerifier.create(this.repository.find(this.instance1.getId())).expectNext(this.instance1).verifyComplete();
+	}
 
-    @Test
-    public void should_computeIfPresent() {
-        AtomicLong counter = new AtomicLong(3L);
-        Endpoints infoEndpoint = Endpoints.single("info", "info");
+	@Test
+	public void should_find_instances() {
+		// given
+		StepVerifier.create(this.repository.save(this.instance1)).expectNextCount(1).verifyComplete();
+		StepVerifier.create(this.repository.save(this.instance2)).expectNextCount(1).verifyComplete();
+		StepVerifier.create(this.repository.save(this.instance3)).expectNextCount(1).verifyComplete();
 
-        //given
-        StepVerifier.create(this.repository.save(this.instance1)).expectNextCount(1).verifyComplete();
+		// when/then
+		StepVerifier.create(this.repository.find(this.instance2.getId())).expectNext(this.instance2).verifyComplete();
 
-        //when
-        StepVerifier.create(this.repository.computeIfPresent(this.instance1.getId(), (key, value) -> {
-            if (counter.getAndDecrement() > 0L) {
-                return Mono.just(this.instance1); // causes OptimistickLockException
-            } else {
-                return Mono.just(value.withEndpoints(infoEndpoint));
-            }
-        })).expectNext(this.instance1.withEndpoints(infoEndpoint)).verifyComplete();
+		StepVerifier.create(this.repository.findByName("app").collectList())
+				.assertNext(v -> assertThat(v).containsExactlyInAnyOrder(this.instance1, this.instance2))
+				.verifyComplete();
 
-        //then
-        StepVerifier.create(this.repository.find(this.instance1.getId()))
-                    .expectNext(this.instance1.withEndpoints(infoEndpoint))
-                    .verifyComplete();
-    }
+		StepVerifier.create(this.repository.findAll().collectList())
+				.assertNext(
+						v -> assertThat(v).containsExactlyInAnyOrder(this.instance1, this.instance2, this.instance3))
+				.verifyComplete();
+	}
 
-    @Test
-    public void should_not_compute_if_not_present() {
-        //given
-        InstanceId instanceId = InstanceId.of("not-existent");
+	@Test
+	public void should_computeIfPresent() {
+		AtomicLong counter = new AtomicLong(3L);
+		Endpoints infoEndpoint = Endpoints.single("info", "info");
 
-        //when
-        StepVerifier.create(this.repository.computeIfPresent(
-            instanceId,
-            (key, application) -> Mono.error(new AssertionFailedError("Should not call any computation"))
-        ))
-                    .verifyComplete();
+		// given
+		StepVerifier.create(this.repository.save(this.instance1)).expectNextCount(1).verifyComplete();
 
-        //then
-        StepVerifier.create(this.repository.find(instanceId)).verifyComplete();
-    }
+		// when
+		StepVerifier.create(this.repository.computeIfPresent(this.instance1.getId(), (key, value) -> {
+			if (counter.getAndDecrement() > 0L) {
+				return Mono.just(this.instance1); // causes OptimistickLockException
+			}
+			else {
+				return Mono.just(value.withEndpoints(infoEndpoint));
+			}
+		})).expectNext(this.instance1.withEndpoints(infoEndpoint)).verifyComplete();
 
-    @Test
-    public void should_run_compute_with_null() {
-        InstanceId instanceId = InstanceId.of("app-1");
-        Registration registration = Registration.create("app", "http://health").build();
+		// then
+		StepVerifier.create(this.repository.find(this.instance1.getId()))
+				.expectNext(this.instance1.withEndpoints(infoEndpoint)).verifyComplete();
+	}
 
-        //when
-        StepVerifier.create(this.repository.compute(this.instance1.getId(), (key, application) -> {
-            assertThat(application).isNull();
-            return Mono.just(Instance.create(key).register(registration));
-        })).assertNext(v -> {
-            assertThat(v.getId()).isEqualTo(instanceId);
-            assertThat(v.getRegistration()).isEqualTo(registration);
-        }).verifyComplete();
+	@Test
+	public void should_not_compute_if_not_present() {
+		// given
+		InstanceId instanceId = InstanceId.of("not-existent");
 
-        //then
-        StepVerifier.create(this.repository.find(instanceId)).assertNext(v -> {
-            assertThat(v.getId()).isEqualTo(instanceId);
-            assertThat(v.getRegistration()).isEqualTo(registration);
-        }).verifyComplete();
-    }
+		// when
+		StepVerifier
+				.create(this.repository.computeIfPresent(instanceId,
+						(key, application) -> Mono.error(new AssertionFailedError("Should not call any computation"))))
+				.verifyComplete();
 
-    @Test
-    public void should_retry_compute() {
-        AtomicLong counter = new AtomicLong(3L);
-        Endpoints infoEndpoint = Endpoints.single("info", "info");
+		// then
+		StepVerifier.create(this.repository.find(instanceId)).verifyComplete();
+	}
 
-        //given
-        StepVerifier.create(this.repository.save(this.instance1)).expectNextCount(1).verifyComplete();
+	@Test
+	public void should_run_compute_with_null() {
+		InstanceId instanceId = InstanceId.of("app-1");
+		Registration registration = Registration.create("app", "http://health").build();
 
-        //when
-        StepVerifier.create(this.repository.compute(this.instance1.getId(), (key, value) -> {
-            if (counter.getAndDecrement() > 0L) {
-                return Mono.just(this.instance1); // causes OptimistickLockException
-            } else {
-                return Mono.just(value.withEndpoints(infoEndpoint));
-            }
-        })).expectNext(this.instance1.withEndpoints(infoEndpoint)).verifyComplete();
+		// when
+		StepVerifier.create(this.repository.compute(this.instance1.getId(), (key, application) -> {
+			assertThat(application).isNull();
+			return Mono.just(Instance.create(key).register(registration));
+		})).assertNext(v -> {
+			assertThat(v.getId()).isEqualTo(instanceId);
+			assertThat(v.getRegistration()).isEqualTo(registration);
+		}).verifyComplete();
 
-        //then
-        StepVerifier.create(this.repository.find(this.instance1.getId()))
-                    .expectNext(this.instance1.withEndpoints(infoEndpoint))
-                    .verifyComplete();
-    }
+		// then
+		StepVerifier.create(this.repository.find(instanceId)).assertNext(v -> {
+			assertThat(v.getId()).isEqualTo(instanceId);
+			assertThat(v.getRegistration()).isEqualTo(registration);
+		}).verifyComplete();
+	}
+
+	@Test
+	public void should_retry_compute() {
+		AtomicLong counter = new AtomicLong(3L);
+		Endpoints infoEndpoint = Endpoints.single("info", "info");
+
+		// given
+		StepVerifier.create(this.repository.save(this.instance1)).expectNextCount(1).verifyComplete();
+
+		// when
+		StepVerifier.create(this.repository.compute(this.instance1.getId(), (key, value) -> {
+			if (counter.getAndDecrement() > 0L) {
+				return Mono.just(this.instance1); // causes OptimistickLockException
+			}
+			else {
+				return Mono.just(value.withEndpoints(infoEndpoint));
+			}
+		})).expectNext(this.instance1.withEndpoints(infoEndpoint)).verifyComplete();
+
+		// then
+		StepVerifier.create(this.repository.find(this.instance1.getId()))
+				.expectNext(this.instance1.withEndpoints(infoEndpoint)).verifyComplete();
+	}
+
 }

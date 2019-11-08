@@ -32,16 +32,17 @@ import com.netflix.appinfo.InstanceInfo;
  */
 public class EurekaServiceInstanceConverter extends DefaultServiceInstanceConverter {
 
-    @Override
-    protected URI getHealthUrl(ServiceInstance instance) {
-        Assert.isInstanceOf(EurekaServiceInstance.class, instance,
-            "serviceInstance must be of type EurekaServiceInstance");
+	@Override
+	protected URI getHealthUrl(ServiceInstance instance) {
+		Assert.isInstanceOf(EurekaServiceInstance.class, instance,
+				"serviceInstance must be of type EurekaServiceInstance");
 
-        InstanceInfo instanceInfo = ((EurekaServiceInstance) instance).getInstanceInfo();
-        String healthUrl = instanceInfo.getSecureHealthCheckUrl();
-        if (StringUtils.isEmpty(healthUrl)) {
-            healthUrl = instanceInfo.getHealthCheckUrl();
-        }
-        return URI.create(healthUrl);
-    }
+		InstanceInfo instanceInfo = ((EurekaServiceInstance) instance).getInstanceInfo();
+		String healthUrl = instanceInfo.getSecureHealthCheckUrl();
+		if (StringUtils.isEmpty(healthUrl)) {
+			healthUrl = instanceInfo.getHealthCheckUrl();
+		}
+		return URI.create(healthUrl);
+	}
+
 }

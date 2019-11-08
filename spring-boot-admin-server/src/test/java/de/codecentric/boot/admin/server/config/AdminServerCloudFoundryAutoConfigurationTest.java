@@ -33,30 +33,28 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AdminServerCloudFoundryAutoConfigurationTest {
-    private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
-        AutoConfigurations.of(
-            RestTemplateAutoConfiguration.class,
-            ClientHttpConnectorAutoConfiguration.class,
-            WebClientAutoConfiguration.class,
-            HazelcastAutoConfiguration.class,
-            WebMvcAutoConfiguration.class,
-            AdminServerAutoConfiguration.class,
-            AdminServerCloudFoundryAutoConfiguration.class
-        )).withUserConfiguration(AdminServerMarkerConfiguration.class);
 
-    @Test
-    public void non_cloud_platform() {
-        this.contextRunner.run(context -> {
-            assertThat(context).doesNotHaveBean(CloudFoundryHttpHeaderProvider.class);
-            assertThat(context).getBean(InstanceIdGenerator.class).isInstanceOf(HashingInstanceUrlIdGenerator.class);
-        });
-    }
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
+					ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class,
+					HazelcastAutoConfiguration.class, WebMvcAutoConfiguration.class, AdminServerAutoConfiguration.class,
+					AdminServerCloudFoundryAutoConfiguration.class))
+			.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
-    @Test
-    public void cloudfoundry() {
-        this.contextRunner.withPropertyValues("VCAP_APPLICATION:{}").run(context -> {
-            assertThat(context).hasSingleBean(CloudFoundryHttpHeaderProvider.class);
-            assertThat(context).getBean(InstanceIdGenerator.class).isInstanceOf(CloudFoundryInstanceIdGenerator.class);
-        });
-    }
+	@Test
+	public void non_cloud_platform() {
+		this.contextRunner.run(context -> {
+			assertThat(context).doesNotHaveBean(CloudFoundryHttpHeaderProvider.class);
+			assertThat(context).getBean(InstanceIdGenerator.class).isInstanceOf(HashingInstanceUrlIdGenerator.class);
+		});
+	}
+
+	@Test
+	public void cloudfoundry() {
+		this.contextRunner.withPropertyValues("VCAP_APPLICATION:{}").run(context -> {
+			assertThat(context).hasSingleBean(CloudFoundryHttpHeaderProvider.class);
+			assertThat(context).getBean(InstanceIdGenerator.class).isInstanceOf(CloudFoundryInstanceIdGenerator.class);
+		});
+	}
+
 }

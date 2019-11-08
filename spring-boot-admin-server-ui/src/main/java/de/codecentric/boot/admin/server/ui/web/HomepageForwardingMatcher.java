@@ -25,37 +25,38 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 
 public class HomepageForwardingMatcher<T> implements Predicate<T> {
-    private final List<Pattern> routes;
-    private final Function<T, String> methodAccessor;
-    private final Function<T, String> pathAccessor;
-    private final Function<T, List<MediaType>> acceptsAccessor;
 
-    public HomepageForwardingMatcher(List<String> routes,
-                                     Function<T, String> methodAccessor,
-                                     Function<T, String> pathAccessor,
-                                     Function<T, List<MediaType>> acceptsAccessor) {
-        this.routes = toPatterns(routes);
-        this.methodAccessor = methodAccessor;
-        this.pathAccessor = pathAccessor;
-        this.acceptsAccessor = acceptsAccessor;
-    }
+	private final List<Pattern> routes;
 
-    public boolean test(T request) {
-        if (!HttpMethod.GET.matches(this.methodAccessor.apply(request))) {
-            return false;
-        }
+	private final Function<T, String> methodAccessor;
 
-        if (this.routes.stream().noneMatch(p -> p.matcher(this.pathAccessor.apply(request)).matches())) {
-            return false;
-        }
+	private final Function<T, String> pathAccessor;
 
-        return this.acceptsAccessor.apply(request).stream().anyMatch(t -> t.includes(MediaType.TEXT_HTML));
-    }
+	private final Function<T, List<MediaType>> acceptsAccessor;
 
-    private List<Pattern> toPatterns(List<String> routes) {
-        return routes.stream()
-                     .map(r -> "^" + r.replaceAll("/[*][*]", "(/.*)?") + "$")
-                     .map(Pattern::compile)
-                     .collect(Collectors.toList());
-    }
+	public HomepageForwardingMatcher(List<String> routes, Function<T, String> methodAccessor,
+			Function<T, String> pathAccessor, Function<T, List<MediaType>> acceptsAccessor) {
+		this.routes = toPatterns(routes);
+		this.methodAccessor = methodAccessor;
+		this.pathAccessor = pathAccessor;
+		this.acceptsAccessor = acceptsAccessor;
+	}
+
+	public boolean test(T request) {
+		if (!HttpMethod.GET.matches(this.methodAccessor.apply(request))) {
+			return false;
+		}
+
+		if (this.routes.stream().noneMatch(p -> p.matcher(this.pathAccessor.apply(request)).matches())) {
+			return false;
+		}
+
+		return this.acceptsAccessor.apply(request).stream().anyMatch(t -> t.includes(MediaType.TEXT_HTML));
+	}
+
+	private List<Pattern> toPatterns(List<String> routes) {
+		return routes.stream().map(r -> "^" + r.replaceAll("/[*][*]", "(/.*)?") + "$").map(Pattern::compile)
+				.collect(Collectors.toList());
+	}
+
 }

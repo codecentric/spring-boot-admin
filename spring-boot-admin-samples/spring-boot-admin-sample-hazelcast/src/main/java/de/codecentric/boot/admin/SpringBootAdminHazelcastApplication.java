@@ -50,87 +50,82 @@ import static java.util.Collections.singletonList;
 @EnableAutoConfiguration
 @EnableAdminServer
 public class SpringBootAdminHazelcastApplication {
-    private static final Logger log = LoggerFactory.getLogger(SpringBootAdminHazelcastApplication.class);
 
-    // tag::application-hazelcast[]
-    @Bean
-    public Config hazelcastConfig() {
-        //This map is used to store the events.
-        //It should be configured to reliably hold all the data,
-        //Spring Boot Admin will compact the events, if there are too many
-        MapConfig eventStoreMap = new MapConfig(DEFAULT_NAME_EVENT_STORE_MAP)
-            .setInMemoryFormat(InMemoryFormat.OBJECT)
-            .setBackupCount(1)
-            .setEvictionPolicy(EvictionPolicy.NONE)
-            .setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), 100));
+	private static final Logger log = LoggerFactory.getLogger(SpringBootAdminHazelcastApplication.class);
 
-        //This map is used to deduplicate the notifications.
-        //If data in this map gets lost it should not be a big issue as it will atmost lead to
-        //the same notification to be sent by multiple instances
-        MapConfig sentNotificationsMap = new MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)
-            .setInMemoryFormat(InMemoryFormat.OBJECT)
-            .setBackupCount(1)
-            .setEvictionPolicy(EvictionPolicy.LRU)
-            .setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), 100));
+	// tag::application-hazelcast[]
+	@Bean
+	public Config hazelcastConfig() {
+		// This map is used to store the events.
+		// It should be configured to reliably hold all the data,
+		// Spring Boot Admin will compact the events, if there are too many
+		MapConfig eventStoreMap = new MapConfig(DEFAULT_NAME_EVENT_STORE_MAP).setInMemoryFormat(InMemoryFormat.OBJECT)
+				.setBackupCount(1).setEvictionPolicy(EvictionPolicy.NONE)
+				.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), 100));
 
-        Config config = new Config();
-        config.addMapConfig(eventStoreMap);
-        config.addMapConfig(sentNotificationsMap);
-        config.setProperty("hazelcast.jmx", "true");
+		// This map is used to deduplicate the notifications.
+		// If data in this map gets lost it should not be a big issue as it will atmost
+		// lead to
+		// the same notification to be sent by multiple instances
+		MapConfig sentNotificationsMap = new MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)
+				.setInMemoryFormat(InMemoryFormat.OBJECT).setBackupCount(1).setEvictionPolicy(EvictionPolicy.LRU)
+				.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), 100));
 
-        //WARNING: This setups a local cluster, you change it to fit your needs.
-        config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
-        TcpIpConfig tcpIpConfig = config.getNetworkConfig().getJoin().getTcpIpConfig();
-        tcpIpConfig.setEnabled(true);
-        tcpIpConfig.setMembers(singletonList("127.0.0.1"));
-        return config;
-    }
-    // end::application-hazelcast[]
+		Config config = new Config();
+		config.addMapConfig(eventStoreMap);
+		config.addMapConfig(sentNotificationsMap);
+		config.setProperty("hazelcast.jmx", "true");
 
-    @Bean
-    public Notifier loggingNotifier() {
-        return (event) -> Mono.fromRunnable(() -> log.info("Event occured: {}", event));
-    }
+		// WARNING: This setups a local cluster, you change it to fit your needs.
+		config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
+		TcpIpConfig tcpIpConfig = config.getNetworkConfig().getJoin().getTcpIpConfig();
+		tcpIpConfig.setEnabled(true);
+		tcpIpConfig.setMembers(singletonList("127.0.0.1"));
+		return config;
+	}
+	// end::application-hazelcast[]
 
-    @Profile("insecure")
-    @Configuration(proxyBeanMethods = false)
-public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
-        private final AdminServerProperties adminServer;
+	@Bean
+	public Notifier loggingNotifier() {
+		return (event) -> Mono.fromRunnable(() -> log.info("Event occured: {}", event));
+	}
 
-        public SecurityPermitAllConfig(AdminServerProperties adminServer) {
-            this.adminServer = adminServer;
-        }
+	@Profile("insecure")
+	@Configuration(proxyBeanMethods = false)
+	public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
 
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http
-                .authorizeRequests()
-                .anyRequest()
-                .permitAll()
-                .and()
-                .csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringRequestMatchers(
-                    new AntPathRequestMatcher(this.adminServer.path("/instances"), HttpMethod.POST.toString()),
-                    new AntPathRequestMatcher(this.adminServer.path("/instances/*"), HttpMethod.DELETE.toString()),
-                    new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))
-                );
-        }
-    }
+		private final AdminServerProperties adminServer;
 
-    @Profile("secure")
-    @Configuration(proxyBeanMethods = false)
-public static class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
-        private final AdminServerProperties adminServer;
+		public SecurityPermitAllConfig(AdminServerProperties adminServer) {
+			this.adminServer = adminServer;
+		}
 
-        public SecuritySecureConfig(AdminServerProperties adminServer) {
-            this.adminServer = adminServer;
-        }
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			http.authorizeRequests().anyRequest().permitAll().and().csrf()
+					.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+					.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).ignoringRequestMatchers(
+							new AntPathRequestMatcher(this.adminServer.path("/instances"), HttpMethod.POST.toString()),
+							new AntPathRequestMatcher(this.adminServer.path("/instances/*"),
+									HttpMethod.DELETE.toString()),
+							new AntPathRequestMatcher(this.adminServer.path("/actuator/**")));
+		}
 
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            // @formatter:off
+	}
+
+	@Profile("secure")
+	@Configuration(proxyBeanMethods = false)
+	public static class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
+
+		private final AdminServerProperties adminServer;
+
+		public SecuritySecureConfig(AdminServerProperties adminServer) {
+			this.adminServer = adminServer;
+		}
+
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			// @formatter:off
             SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
             successHandler.setTargetUrlParameter("redirectTo");
             successHandler.setDefaultTargetUrl(this.adminServer.path("/"));
@@ -152,11 +147,12 @@ public static class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
                     new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))
                 );
             // @formatter:on
-        }
-    }
+		}
 
-    public static void main(String[] args) {
-        SpringApplication.run(SpringBootAdminHazelcastApplication.class, args);
-    }
+	}
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringBootAdminHazelcastApplication.class, args);
+	}
 
 }

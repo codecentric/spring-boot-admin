@@ -22,8 +22,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 public class ReactiveRegistrationClientTest extends AbstractRegistrationClientTest {
 
-    @Before
-    public void setUp() {
-        super.setUp(new ReactiveRegistrationClient(WebClient.create(), Duration.ofSeconds(10)));
-    }
+	@Before
+	public void setUp() {
+		super.setUp(new ReactiveRegistrationClient(WebClient.create(), Duration.ofSeconds(10)));
+	}
+
 }

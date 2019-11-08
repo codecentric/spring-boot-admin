@@ -23,34 +23,35 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ConfigurableApplicationContext;
 
 public class ClientServletApplicationTest extends AbstractClientApplicationTest {
-    private ConfigurableApplicationContext instance;
 
-    @Before
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+	private ConfigurableApplicationContext instance;
 
-        SpringApplication application = new SpringApplication(TestClientApplication.class);
-        application.setWebApplicationType(WebApplicationType.SERVLET);
-        instance = application.run("--spring.application.name=Test-Client", "--server.port=0",
-            "--management.endpoints.web.base-path=/mgmt", "--endpoints.health.enabled=true",
-            "--spring.boot.admin.client.url=" + wireMock.url("/"));
-    }
+	@Before
+	@Override
+	public void setUp() throws Exception {
+		super.setUp();
 
-    @After
-    public void shutdown() {
-        instance.close();
-    }
+		SpringApplication application = new SpringApplication(TestClientApplication.class);
+		application.setWebApplicationType(WebApplicationType.SERVLET);
+		instance = application.run("--spring.application.name=Test-Client", "--server.port=0",
+				"--management.endpoints.web.base-path=/mgmt", "--endpoints.health.enabled=true",
+				"--spring.boot.admin.client.url=" + wireMock.url("/"));
+	}
 
-    @Override
-    protected int getServerPort() {
-        return instance.getEnvironment().getProperty("local.server.port", Integer.class, 0);
-    }
+	@After
+	public void shutdown() {
+		instance.close();
+	}
 
-    @Override
-    protected int getManagementPort() {
-        return instance.getEnvironment().getProperty("local.management.port", Integer.class, 0);
+	@Override
+	protected int getServerPort() {
+		return instance.getEnvironment().getProperty("local.server.port", Integer.class, 0);
+	}
 
-    }
+	@Override
+	protected int getManagementPort() {
+		return instance.getEnvironment().getProperty("local.management.port", Integer.class, 0);
+
+	}
 
 }

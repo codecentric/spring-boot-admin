@@ -29,16 +29,17 @@ import static org.mockito.Mockito.when;
 
 public class KubernetesServiceInstanceConverterTest {
 
-    @Test
-    public void convert_using_port_mgmt() {
-        ServiceInstance service = mock(ServiceInstance.class);
-        when(service.getUri()).thenReturn(URI.create("http://localhost:80"));
-        when(service.getServiceId()).thenReturn("test");
-        when(service.getMetadata()).thenReturn(Collections.singletonMap("port.management", "9080"));
+	@Test
+	public void convert_using_port_mgmt() {
+		ServiceInstance service = mock(ServiceInstance.class);
+		when(service.getUri()).thenReturn(URI.create("http://localhost:80"));
+		when(service.getServiceId()).thenReturn("test");
+		when(service.getMetadata()).thenReturn(Collections.singletonMap("port.management", "9080"));
 
-        Registration registration = new KubernetesServiceInstanceConverter().convert(service);
+		Registration registration = new KubernetesServiceInstanceConverter().convert(service);
 
-        assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:9080/actuator");
-        assertThat(registration.getHealthUrl()).isEqualTo("http://localhost:9080/actuator/health");
-    }
+		assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:9080/actuator");
+		assertThat(registration.getHealthUrl()).isEqualTo("http://localhost:9080/actuator/health");
+	}
+
 }

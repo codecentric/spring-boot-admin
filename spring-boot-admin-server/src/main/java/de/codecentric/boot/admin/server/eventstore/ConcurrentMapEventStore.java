@@ -39,90 +39,93 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.reducing;
 
 public abstract class ConcurrentMapEventStore extends InstanceEventPublisher implements InstanceEventStore {
-    private static final Logger log = LoggerFactory.getLogger(ConcurrentMapEventStore.class);
-    private static final Comparator<InstanceEvent> byTimestampAndIdAndVersion = comparing(
-        InstanceEvent::getTimestamp).thenComparing(InstanceEvent::getInstance).thenComparing(InstanceEvent::getVersion);
-    private final int maxLogSizePerAggregate;
-    private final ConcurrentMap<InstanceId, List<InstanceEvent>> eventLog;
 
-    protected ConcurrentMapEventStore(int maxLogSizePerAggregate,
-                                      ConcurrentMap<InstanceId, List<InstanceEvent>> eventLog) {
-        this.eventLog = eventLog;
-        this.maxLogSizePerAggregate = maxLogSizePerAggregate;
-    }
+	private static final Logger log = LoggerFactory.getLogger(ConcurrentMapEventStore.class);
 
-    @Override
-    public Flux<InstanceEvent> findAll() {
-        return Flux.defer(() -> Flux.fromIterable(eventLog.values())
-                                    .flatMapIterable(Function.identity())
-                                    .sort(byTimestampAndIdAndVersion));
-    }
+	private static final Comparator<InstanceEvent> byTimestampAndIdAndVersion = comparing(InstanceEvent::getTimestamp)
+			.thenComparing(InstanceEvent::getInstance).thenComparing(InstanceEvent::getVersion);
 
-    @Override
-    public Flux<InstanceEvent> find(InstanceId id) {
-        return Flux.defer(() -> Flux.fromIterable(eventLog.getOrDefault(id, Collections.emptyList())));
-    }
+	private final int maxLogSizePerAggregate;
 
-    @Override
-    public Mono<Void> append(List<InstanceEvent> events) {
-        return Mono.fromRunnable(() -> {
-            while (true) {
-                if (doAppend(events)) {
-                    return;
-                }
-            }
-        });
-    }
+	private final ConcurrentMap<InstanceId, List<InstanceEvent>> eventLog;
 
-    protected boolean doAppend(List<InstanceEvent> events) {
-        if (events.isEmpty()) {
-            return true;
-        }
+	protected ConcurrentMapEventStore(int maxLogSizePerAggregate,
+			ConcurrentMap<InstanceId, List<InstanceEvent>> eventLog) {
+		this.eventLog = eventLog;
+		this.maxLogSizePerAggregate = maxLogSizePerAggregate;
+	}
 
-        InstanceId id = events.get(0).getInstance();
-        if (!events.stream().allMatch(event -> event.getInstance().equals(id))) {
-            throw new IllegalArgumentException("'events' must only refer to the same instance.");
-        }
+	@Override
+	public Flux<InstanceEvent> findAll() {
+		return Flux.defer(() -> Flux.fromIterable(eventLog.values()).flatMapIterable(Function.identity())
+				.sort(byTimestampAndIdAndVersion));
+	}
 
-        List<InstanceEvent> oldEvents = eventLog.computeIfAbsent(id,
-            (key) -> new ArrayList<>(maxLogSizePerAggregate + 1));
+	@Override
+	public Flux<InstanceEvent> find(InstanceId id) {
+		return Flux.defer(() -> Flux.fromIterable(eventLog.getOrDefault(id, Collections.emptyList())));
+	}
 
-        long lastVersion = getLastVersion(oldEvents);
-        if (lastVersion >= events.get(0).getVersion()) {
-            throw createOptimisticLockException(events.get(0), lastVersion);
-        }
+	@Override
+	public Mono<Void> append(List<InstanceEvent> events) {
+		return Mono.fromRunnable(() -> {
+			while (true) {
+				if (doAppend(events)) {
+					return;
+				}
+			}
+		});
+	}
 
-        List<InstanceEvent> newEvents = new ArrayList<>(oldEvents);
-        newEvents.addAll(events);
+	protected boolean doAppend(List<InstanceEvent> events) {
+		if (events.isEmpty()) {
+			return true;
+		}
 
-        if (newEvents.size() > maxLogSizePerAggregate) {
-            log.debug("Threshold for {} reached. Compacting events", id);
-            compact(newEvents);
-        }
+		InstanceId id = events.get(0).getInstance();
+		if (!events.stream().allMatch(event -> event.getInstance().equals(id))) {
+			throw new IllegalArgumentException("'events' must only refer to the same instance.");
+		}
 
-        if (eventLog.replace(id, oldEvents, newEvents)) {
-            log.debug("Events appended to log {}", events);
-            return true;
-        }
+		List<InstanceEvent> oldEvents = eventLog.computeIfAbsent(id,
+				(key) -> new ArrayList<>(maxLogSizePerAggregate + 1));
 
-        log.debug("Unsuccessful attempot append the events {} ", events);
-        return false;
-    }
+		long lastVersion = getLastVersion(oldEvents);
+		if (lastVersion >= events.get(0).getVersion()) {
+			throw createOptimisticLockException(events.get(0), lastVersion);
+		}
 
-    private void compact(List<InstanceEvent> events) {
-        BinaryOperator<InstanceEvent> latestEvent = (e1, e2) -> e1.getVersion() > e2.getVersion() ? e1 : e2;
-        Map<Class<?>, Optional<InstanceEvent>> latestPerType = events.stream()
-                                                                     .collect(groupingBy(InstanceEvent::getClass,
-                                                                         reducing(latestEvent)));
-        events.removeIf((e) -> !Objects.equals(e, latestPerType.get(e.getClass()).orElse(null)));
-    }
+		List<InstanceEvent> newEvents = new ArrayList<>(oldEvents);
+		newEvents.addAll(events);
 
-    private OptimisticLockingException createOptimisticLockException(InstanceEvent event, long lastVersion) {
-        return new OptimisticLockingException(
-            "Verison " + event.getVersion() + " was overtaken by " + lastVersion + " for " + event.getInstance());
-    }
+		if (newEvents.size() > maxLogSizePerAggregate) {
+			log.debug("Threshold for {} reached. Compacting events", id);
+			compact(newEvents);
+		}
 
-    protected static long getLastVersion(List<InstanceEvent> events) {
-        return events.isEmpty() ? -1 : events.get(events.size() - 1).getVersion();
-    }
+		if (eventLog.replace(id, oldEvents, newEvents)) {
+			log.debug("Events appended to log {}", events);
+			return true;
+		}
+
+		log.debug("Unsuccessful attempot append the events {} ", events);
+		return false;
+	}
+
+	private void compact(List<InstanceEvent> events) {
+		BinaryOperator<InstanceEvent> latestEvent = (e1, e2) -> e1.getVersion() > e2.getVersion() ? e1 : e2;
+		Map<Class<?>, Optional<InstanceEvent>> latestPerType = events.stream()
+				.collect(groupingBy(InstanceEvent::getClass, reducing(latestEvent)));
+		events.removeIf((e) -> !Objects.equals(e, latestPerType.get(e.getClass()).orElse(null)));
+	}
+
+	private OptimisticLockingException createOptimisticLockException(InstanceEvent event, long lastVersion) {
+		return new OptimisticLockingException(
+				"Verison " + event.getVersion() + " was overtaken by " + lastVersion + " for " + event.getInstance());
+	}
+
+	protected static long getLastVersion(List<InstanceEvent> events) {
+		return events.isEmpty() ? -1 : events.get(events.size() - 1).getVersion();
+	}
+
 }

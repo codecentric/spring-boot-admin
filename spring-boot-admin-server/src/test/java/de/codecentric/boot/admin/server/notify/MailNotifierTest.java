@@ -55,134 +55,139 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 public class MailNotifierTest {
-    private final Instance instance = Instance.create(InstanceId.of("cafebabe"))
-                                              .register(Registration.create("application-name",
-                                                  "http://localhost:8081/actuator/health")
-                                                                    .managementUrl("http://localhost:8081/actuator")
-                                                                    .serviceUrl("http://localhost:8081/")
-                                                                    .build());
-    private JavaMailSender sender;
-    private MailNotifier notifier;
-    private InstanceRepository repository;
 
-    @Before
-    public void setup() {
-        repository = mock(InstanceRepository.class);
-        when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
+	private final Instance instance = Instance.create(InstanceId.of("cafebabe"))
+			.register(Registration.create("application-name", "http://localhost:8081/actuator/health")
+					.managementUrl("http://localhost:8081/actuator").serviceUrl("http://localhost:8081/").build());
 
-        sender = mock(JavaMailSender.class);
-        when(sender.createMimeMessage()).thenAnswer(args -> new MimeMessage(Session.getInstance(new Properties())));
+	private JavaMailSender sender;
 
-        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-        ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
-        resolver.setTemplateMode(TemplateMode.HTML);
-        resolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        templateEngine.addTemplateResolver(resolver);
+	private MailNotifier notifier;
 
-        notifier = new MailNotifier(sender, repository, templateEngine);
-        notifier.setTo(new String[]{"foo@bar.com"});
-        notifier.setCc(new String[]{"bar@foo.com"});
-        notifier.setFrom("SBA <no-reply@example.com>");
-        notifier.setBaseUrl("http://localhost:8080");
-        notifier.setTemplate("/META-INF/spring-boot-admin-server/mail/status-changed.html");
-    }
+	private InstanceRepository repository;
 
-    @Test
-    public void should_send_mail_using_default_template() throws IOException, MessagingException {
-        Map<String, Object> details = new HashMap<>();
-        details.put("Simple Value", 1234);
-        details.put("Complex Value", singletonMap("Nested Simple Value", "99!"));
+	@Before
+	public void setup() {
+		repository = mock(InstanceRepository.class);
+		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 
-        StepVerifier.create(notifier.notify(
-            new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown(details))))
-                    .verifyComplete();
+		sender = mock(JavaMailSender.class);
+		when(sender.createMimeMessage()).thenAnswer(args -> new MimeMessage(Session.getInstance(new Properties())));
 
-        ArgumentCaptor<MimeMessage> mailCaptor = ArgumentCaptor.forClass(MimeMessage.class);
-        verify(sender).send(mailCaptor.capture());
+		SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+		ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
+		resolver.setTemplateMode(TemplateMode.HTML);
+		resolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
+		templateEngine.addTemplateResolver(resolver);
 
-        MimeMessage mail = mailCaptor.getValue();
+		notifier = new MailNotifier(sender, repository, templateEngine);
+		notifier.setTo(new String[] { "foo@bar.com" });
+		notifier.setCc(new String[] { "bar@foo.com" });
+		notifier.setFrom("SBA <no-reply@example.com>");
+		notifier.setBaseUrl("http://localhost:8080");
+		notifier.setTemplate("/META-INF/spring-boot-admin-server/mail/status-changed.html");
+	}
 
-        assertThat(mail.getSubject()).isEqualTo("application-name (cafebabe) is DOWN");
-        assertThat(mail.getRecipients(Message.RecipientType.TO)).containsExactly(new InternetAddress("foo@bar.com"));
-        assertThat(mail.getRecipients(Message.RecipientType.CC)).containsExactly(new InternetAddress("bar@foo.com"));
-        assertThat(mail.getFrom()).containsExactly(new InternetAddress("SBA <no-reply@example.com>"));
-        assertThat(mail.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
+	@Test
+	public void should_send_mail_using_default_template() throws IOException, MessagingException {
+		Map<String, Object> details = new HashMap<>();
+		details.put("Simple Value", 1234);
+		details.put("Complex Value", singletonMap("Nested Simple Value", "99!"));
 
-        String body = extractBody(mail.getDataHandler());
-        assertThat(body).isEqualTo(loadExpectedBody("expected-default-mail"));
-    }
+		StepVerifier.create(notifier.notify(
+				new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown(details))))
+				.verifyComplete();
 
-    @Test
-    public void should_send_mail_using_custom_template_with_additional_properties() throws IOException, MessagingException {
-        notifier.setTemplate("/de/codecentric/boot/admin/server/notify/custom-mail.html");
-        notifier.getAdditionalProperties().put("customProperty", "HELLO WORLD!");
+		ArgumentCaptor<MimeMessage> mailCaptor = ArgumentCaptor.forClass(MimeMessage.class);
+		verify(sender).send(mailCaptor.capture());
 
+		MimeMessage mail = mailCaptor.getValue();
 
-        StepVerifier.create(notifier.notify(
-            new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
-                    .verifyComplete();
+		assertThat(mail.getSubject()).isEqualTo("application-name (cafebabe) is DOWN");
+		assertThat(mail.getRecipients(Message.RecipientType.TO)).containsExactly(new InternetAddress("foo@bar.com"));
+		assertThat(mail.getRecipients(Message.RecipientType.CC)).containsExactly(new InternetAddress("bar@foo.com"));
+		assertThat(mail.getFrom()).containsExactly(new InternetAddress("SBA <no-reply@example.com>"));
+		assertThat(mail.getDataHandler().getContentType()).isEqualTo("text/html;charset=UTF-8");
 
-        ArgumentCaptor<MimeMessage> mailCaptor = ArgumentCaptor.forClass(MimeMessage.class);
-        verify(sender).send(mailCaptor.capture());
+		String body = extractBody(mail.getDataHandler());
+		assertThat(body).isEqualTo(loadExpectedBody("expected-default-mail"));
+	}
 
-        MimeMessage mail = mailCaptor.getValue();
-        String body = extractBody(mail.getDataHandler());
-        assertThat(body).isEqualTo(loadExpectedBody("expected-custom-mail"));
-    }
+	@Test
+	public void should_send_mail_using_custom_template_with_additional_properties()
+			throws IOException, MessagingException {
+		notifier.setTemplate("/de/codecentric/boot/admin/server/notify/custom-mail.html");
+		notifier.getAdditionalProperties().put("customProperty", "HELLO WORLD!");
 
-    // The following tests are rather for AbstractNotifier
+		StepVerifier
+				.create(notifier.notify(
+						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
+				.verifyComplete();
 
-    @Test
-    public void should_not_send_mail_when_disabled() {
-        notifier.setEnabled(false);
-        StepVerifier.create(
-            notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
-                    .verifyComplete();
+		ArgumentCaptor<MimeMessage> mailCaptor = ArgumentCaptor.forClass(MimeMessage.class);
+		verify(sender).send(mailCaptor.capture());
 
-        verifyNoMoreInteractions(sender);
-    }
+		MimeMessage mail = mailCaptor.getValue();
+		String body = extractBody(mail.getDataHandler());
+		assertThat(body).isEqualTo(loadExpectedBody("expected-custom-mail"));
+	}
 
-    @Test
-    public void should_not_send_when_unknown_to_up() {
-        StepVerifier.create(
-            notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
-                    .verifyComplete();
+	// The following tests are rather for AbstractNotifier
 
-        verifyNoMoreInteractions(sender);
-    }
+	@Test
+	public void should_not_send_mail_when_disabled() {
+		notifier.setEnabled(false);
+		StepVerifier
+				.create(notifier.notify(
+						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+				.verifyComplete();
 
-    @Test
-    public void should_not_send_on_wildcard_ignore() {
-        notifier.setIgnoreChanges(new String[]{"*:UP"});
-        StepVerifier.create(
-            notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
-                    .verifyComplete();
+		verifyNoMoreInteractions(sender);
+	}
 
-        verifyNoMoreInteractions(sender);
-    }
+	@Test
+	public void should_not_send_when_unknown_to_up() {
+		StepVerifier
+				.create(notifier.notify(
+						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+				.verifyComplete();
 
-    @Test
-    public void should_not_propagate_error() {
-        Notifier notifier = new AbstractStatusChangeNotifier(repository) {
-            @Override
-            protected Mono<Void> doNotify(InstanceEvent event, Instance application) {
-                return Mono.error(new IllegalStateException("test"));
-            }
-        };
-        StepVerifier.create(
-            notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
-                    .verifyComplete();
-    }
+		verifyNoMoreInteractions(sender);
+	}
 
+	@Test
+	public void should_not_send_on_wildcard_ignore() {
+		notifier.setIgnoreChanges(new String[] { "*:UP" });
+		StepVerifier
+				.create(notifier.notify(
+						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+				.verifyComplete();
 
-    private String loadExpectedBody(String resource) throws IOException {
-        return StreamUtils.copyToString(this.getClass().getResourceAsStream(resource), StandardCharsets.UTF_8);
-    }
+		verifyNoMoreInteractions(sender);
+	}
 
-    private String extractBody(DataHandler dataHandler) throws IOException {
-        ByteArrayOutputStream os = new ByteArrayOutputStream(4096);
-        dataHandler.writeTo(os);
-        return os.toString(StandardCharsets.UTF_8.name())
-                 .replaceAll("\\r?\\n", "\n");
-    }
+	@Test
+	public void should_not_propagate_error() {
+		Notifier notifier = new AbstractStatusChangeNotifier(repository) {
+			@Override
+			protected Mono<Void> doNotify(InstanceEvent event, Instance application) {
+				return Mono.error(new IllegalStateException("test"));
+			}
+		};
+		StepVerifier
+				.create(notifier.notify(
+						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+				.verifyComplete();
+	}
+
+	private String loadExpectedBody(String resource) throws IOException {
+		return StreamUtils.copyToString(this.getClass().getResourceAsStream(resource), StandardCharsets.UTF_8);
+	}
+
+	private String extractBody(DataHandler dataHandler) throws IOException {
+		ByteArrayOutputStream os = new ByteArrayOutputStream(4096);
+		dataHandler.writeTo(os);
+		return os.toString(StandardCharsets.UTF_8.name()).replaceAll("\\r?\\n", "\n");
+	}
+
 }

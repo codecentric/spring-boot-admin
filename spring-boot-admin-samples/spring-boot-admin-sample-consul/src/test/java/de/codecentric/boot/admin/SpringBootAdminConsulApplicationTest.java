@@ -22,9 +22,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {SpringBootAdminConsulApplication.class}, properties = {"spring.cloud.consul.enabled=false"})
+@SpringBootTest(classes = { SpringBootAdminConsulApplication.class },
+		properties = { "spring.cloud.consul.enabled=false" })
 public class SpringBootAdminConsulApplicationTest {
-    @Test
-    public void contextLoads() {
-    }
+
+	@Test
+	public void contextLoads() {
+	}
+
 }

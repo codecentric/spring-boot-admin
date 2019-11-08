@@ -33,66 +33,67 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class IntervalCheckTest {
-    private static final InstanceId INSTANCE_ID = InstanceId.of("Test");
-    @SuppressWarnings("unchecked")
-    private final Function<InstanceId, Mono<Void>> checkFn = mock(Function.class, i -> Mono.empty());
-    private final IntervalCheck intervalCheck = new IntervalCheck("test",
-        this.checkFn,
-        Duration.ofMillis(10),
-        Duration.ofMillis(10)
-    );
 
-    @Test
-    public void should_check_after_being_started() throws InterruptedException {
-        this.intervalCheck.markAsChecked(INSTANCE_ID);
+	private static final InstanceId INSTANCE_ID = InstanceId.of("Test");
 
-        this.intervalCheck.start();
-        Thread.sleep(100);
-        verify(this.checkFn, atLeastOnce()).apply(INSTANCE_ID);
-    }
+	@SuppressWarnings("unchecked")
+	private final Function<InstanceId, Mono<Void>> checkFn = mock(Function.class, i -> Mono.empty());
 
-    @Test
-    public void should_not_check_when_stopped() throws InterruptedException {
-        this.intervalCheck.markAsChecked(INSTANCE_ID);
+	private final IntervalCheck intervalCheck = new IntervalCheck("test", this.checkFn, Duration.ofMillis(10),
+			Duration.ofMillis(10));
 
-        this.intervalCheck.stop();
-        Thread.sleep(100);
-        verify(this.checkFn, never()).apply(any());
-    }
+	@Test
+	public void should_check_after_being_started() throws InterruptedException {
+		this.intervalCheck.markAsChecked(INSTANCE_ID);
 
-    @Test
-    public void should_not_check_in_retention_period() throws InterruptedException {
-        this.intervalCheck.setMinRetention(Duration.ofSeconds(100));
-        this.intervalCheck.markAsChecked(INSTANCE_ID);
+		this.intervalCheck.start();
+		Thread.sleep(100);
+		verify(this.checkFn, atLeastOnce()).apply(INSTANCE_ID);
+	}
 
-        this.intervalCheck.start();
-        Thread.sleep(100);
-        verify(this.checkFn, never()).apply(any());
-    }
+	@Test
+	public void should_not_check_when_stopped() throws InterruptedException {
+		this.intervalCheck.markAsChecked(INSTANCE_ID);
 
-    @Test
-    public void should_recheck_after_retention_period() throws InterruptedException {
-        this.intervalCheck.setMinRetention(Duration.ofMillis(10));
-        this.intervalCheck.markAsChecked(INSTANCE_ID);
+		this.intervalCheck.stop();
+		Thread.sleep(100);
+		verify(this.checkFn, never()).apply(any());
+	}
 
-        this.intervalCheck.start();
-        Thread.sleep(100);
-        verify(this.checkFn, atLeast(2)).apply(INSTANCE_ID);
-    }
+	@Test
+	public void should_not_check_in_retention_period() throws InterruptedException {
+		this.intervalCheck.setMinRetention(Duration.ofSeconds(100));
+		this.intervalCheck.markAsChecked(INSTANCE_ID);
 
-    @Test
-    public void should_check_after_error() throws InterruptedException {
-        this.intervalCheck.markAsChecked(INSTANCE_ID);
+		this.intervalCheck.start();
+		Thread.sleep(100);
+		verify(this.checkFn, never()).apply(any());
+	}
 
-        when(this.checkFn.apply(any())).thenReturn(Mono.error(new RuntimeException("Test"))).thenReturn(Mono.empty());
+	@Test
+	public void should_recheck_after_retention_period() throws InterruptedException {
+		this.intervalCheck.setMinRetention(Duration.ofMillis(10));
+		this.intervalCheck.markAsChecked(INSTANCE_ID);
 
-        this.intervalCheck.start();
-        Thread.sleep(100);
-        verify(this.checkFn, atLeast(2)).apply(InstanceId.of("Test"));
-    }
+		this.intervalCheck.start();
+		Thread.sleep(100);
+		verify(this.checkFn, atLeast(2)).apply(INSTANCE_ID);
+	}
 
-    @After
-    public void tearDown() {
-        this.intervalCheck.stop();
-    }
+	@Test
+	public void should_check_after_error() throws InterruptedException {
+		this.intervalCheck.markAsChecked(INSTANCE_ID);
+
+		when(this.checkFn.apply(any())).thenReturn(Mono.error(new RuntimeException("Test"))).thenReturn(Mono.empty());
+
+		this.intervalCheck.start();
+		Thread.sleep(100);
+		verify(this.checkFn, atLeast(2)).apply(InstanceId.of("Test"));
+	}
+
+	@After
+	public void tearDown() {
+		this.intervalCheck.stop();
+	}
+
 }

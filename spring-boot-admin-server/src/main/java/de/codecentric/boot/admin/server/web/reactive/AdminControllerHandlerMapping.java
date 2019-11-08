@@ -31,39 +31,39 @@ import org.springframework.web.util.pattern.PathPattern;
 
 import static java.util.stream.Collectors.toList;
 
-
 public class AdminControllerHandlerMapping extends RequestMappingHandlerMapping {
-    private final String adminContextPath;
 
-    public AdminControllerHandlerMapping(String adminContextPath) {
-        this.adminContextPath = adminContextPath;
-    }
+	private final String adminContextPath;
 
-    @Override
-    protected boolean isHandler(Class<?> beanType) {
-        return AnnotatedElementUtils.hasAnnotation(beanType, AdminController.class);
-    }
+	public AdminControllerHandlerMapping(String adminContextPath) {
+		this.adminContextPath = adminContextPath;
+	}
 
-    @Override
-    protected void registerHandlerMethod(Object handler, Method method, RequestMappingInfo mapping) {
-        super.registerHandlerMethod(handler, method, withPrefix(mapping));
-    }
+	@Override
+	protected boolean isHandler(Class<?> beanType) {
+		return AnnotatedElementUtils.hasAnnotation(beanType, AdminController.class);
+	}
 
-    private RequestMappingInfo withPrefix(RequestMappingInfo mapping) {
-        if (!StringUtils.hasText(adminContextPath)) {
-            return mapping;
-        }
-        PatternsRequestCondition patternsCondition = new PatternsRequestCondition(
-            withNewPatterns(mapping.getPatternsCondition().getPatterns()));
-        return new RequestMappingInfo(patternsCondition, mapping.getMethodsCondition(), mapping.getParamsCondition(),
-            mapping.getHeadersCondition(), mapping.getConsumesCondition(), mapping.getProducesCondition(),
-            mapping.getCustomCondition());
-    }
+	@Override
+	protected void registerHandlerMethod(Object handler, Method method, RequestMappingInfo mapping) {
+		super.registerHandlerMethod(handler, method, withPrefix(mapping));
+	}
 
-    private List<PathPattern> withNewPatterns(Set<PathPattern> patterns) {
-        return patterns.stream()
-                       .map(
-                           pattern -> getPathPatternParser().parse(PathUtils.normalizePath(adminContextPath + pattern)))
-                       .collect(toList());
-    }
+	private RequestMappingInfo withPrefix(RequestMappingInfo mapping) {
+		if (!StringUtils.hasText(adminContextPath)) {
+			return mapping;
+		}
+		PatternsRequestCondition patternsCondition = new PatternsRequestCondition(
+				withNewPatterns(mapping.getPatternsCondition().getPatterns()));
+		return new RequestMappingInfo(patternsCondition, mapping.getMethodsCondition(), mapping.getParamsCondition(),
+				mapping.getHeadersCondition(), mapping.getConsumesCondition(), mapping.getProducesCondition(),
+				mapping.getCustomCondition());
+	}
+
+	private List<PathPattern> withNewPatterns(Set<PathPattern> patterns) {
+		return patterns.stream()
+				.map(pattern -> getPathPatternParser().parse(PathUtils.normalizePath(adminContextPath + pattern)))
+				.collect(toList());
+	}
+
 }

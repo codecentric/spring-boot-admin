@@ -30,48 +30,51 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class InfoUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
-    private static final Logger log = LoggerFactory.getLogger(InfoUpdateTrigger.class);
-    private final InfoUpdater infoUpdater;
-    private final IntervalCheck intervalCheck;
 
-    public InfoUpdateTrigger(InfoUpdater infoUpdater, Publisher<InstanceEvent> publisher) {
-        super(publisher, InstanceEvent.class);
-        this.infoUpdater = infoUpdater;
-        this.intervalCheck = new IntervalCheck("info", this::updateInfo, Duration.ofMinutes(5), Duration.ofMinutes(1));
-    }
+	private static final Logger log = LoggerFactory.getLogger(InfoUpdateTrigger.class);
 
-    @Override
-    protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
-        return publisher.filter(event -> event instanceof InstanceEndpointsDetectedEvent ||
-                                         event instanceof InstanceStatusChangedEvent ||
-                                         event instanceof InstanceRegistrationUpdatedEvent)
-                        .flatMap(event -> this.updateInfo(event.getInstance()));
-    }
+	private final InfoUpdater infoUpdater;
 
-    protected Mono<Void> updateInfo(InstanceId instanceId) {
-        return this.infoUpdater.updateInfo(instanceId).onErrorResume(e -> {
-            log.warn("Unexpected error while updating info for {}", instanceId, e);
-            return Mono.empty();
-        }).doFinally(s -> this.intervalCheck.markAsChecked(instanceId));
-    }
+	private final IntervalCheck intervalCheck;
 
-    @Override
-    public void start() {
-        super.start();
-        this.intervalCheck.start();
-    }
+	public InfoUpdateTrigger(InfoUpdater infoUpdater, Publisher<InstanceEvent> publisher) {
+		super(publisher, InstanceEvent.class);
+		this.infoUpdater = infoUpdater;
+		this.intervalCheck = new IntervalCheck("info", this::updateInfo, Duration.ofMinutes(5), Duration.ofMinutes(1));
+	}
 
-    @Override
-    public void stop() {
-        super.stop();
-        this.intervalCheck.stop();
-    }
+	@Override
+	protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
+		return publisher.filter(event -> event instanceof InstanceEndpointsDetectedEvent
+				|| event instanceof InstanceStatusChangedEvent || event instanceof InstanceRegistrationUpdatedEvent)
+				.flatMap(event -> this.updateInfo(event.getInstance()));
+	}
 
-    public void setInterval(Duration updateInterval) {
-        this.intervalCheck.setInterval(updateInterval);
-    }
+	protected Mono<Void> updateInfo(InstanceId instanceId) {
+		return this.infoUpdater.updateInfo(instanceId).onErrorResume(e -> {
+			log.warn("Unexpected error while updating info for {}", instanceId, e);
+			return Mono.empty();
+		}).doFinally(s -> this.intervalCheck.markAsChecked(instanceId));
+	}
 
-    public void setLifetime(Duration infoLifetime) {
-        this.intervalCheck.setMinRetention(infoLifetime);
-    }
+	@Override
+	public void start() {
+		super.start();
+		this.intervalCheck.start();
+	}
+
+	@Override
+	public void stop() {
+		super.stop();
+		this.intervalCheck.stop();
+	}
+
+	public void setInterval(Duration updateInterval) {
+		this.intervalCheck.setInterval(updateInterval);
+	}
+
+	public void setLifetime(Duration infoLifetime) {
+		this.intervalCheck.setMinRetention(infoLifetime);
+	}
+
 }

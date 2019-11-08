@@ -27,8 +27,9 @@ import java.lang.annotation.Target;
  *
  * @author Johannes Edmeier
  */
-@Target({ElementType.TYPE})
+@Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface AdminController {
+
 }

@@ -36,64 +36,68 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class FilteringNotifierTest {
-    private final Instance instance = Instance.create(InstanceId.of("-"))
-                                              .register(Registration.create("foo", "http://health").build());
-    private final InstanceRegisteredEvent event = new InstanceRegisteredEvent(instance.getId(), instance.getVersion(),
-        instance.getRegistration());
-    private InstanceRepository repository;
 
-    @Before
-    public void setUp() {
-        repository = mock(InstanceRepository.class);
-        when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
-    }
+	private final Instance instance = Instance.create(InstanceId.of("-"))
+			.register(Registration.create("foo", "http://health").build());
 
-    @Test(expected = IllegalArgumentException.class)
-    public void test_ctor_assert() {
-        new FilteringNotifier(null, repository);
-    }
+	private final InstanceRegisteredEvent event = new InstanceRegisteredEvent(instance.getId(), instance.getVersion(),
+			instance.getRegistration());
 
-    @Test
-    public void test_expired_removal() {
-        FilteringNotifier notifier = new FilteringNotifier(new TestNotifier(), repository);
-        notifier.setCleanupInterval(Duration.ZERO);
+	private InstanceRepository repository;
 
-        ApplicationNameNotificationFilter filter1 = new ApplicationNameNotificationFilter("foo",
-            Instant.now().minus(Duration.ofSeconds(1)));
-        notifier.addFilter(filter1);
-        ApplicationNameNotificationFilter filter2 = new ApplicationNameNotificationFilter("bar", null);
-        notifier.addFilter(filter2);
+	@Before
+	public void setUp() {
+		repository = mock(InstanceRepository.class);
+		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
+	}
 
-        assertThat(notifier.getNotificationFilters()).containsKey(filter1.getId()).containsKey(filter2.getId());
+	@Test(expected = IllegalArgumentException.class)
+	public void test_ctor_assert() {
+		new FilteringNotifier(null, repository);
+	}
 
-        StepVerifier.create(notifier.notify(event)).verifyComplete();
+	@Test
+	public void test_expired_removal() {
+		FilteringNotifier notifier = new FilteringNotifier(new TestNotifier(), repository);
+		notifier.setCleanupInterval(Duration.ZERO);
 
-        assertThat(notifier.getNotificationFilters()).doesNotContainKey(filter1.getId()).containsKey(filter2.getId());
+		ApplicationNameNotificationFilter filter1 = new ApplicationNameNotificationFilter("foo",
+				Instant.now().minus(Duration.ofSeconds(1)));
+		notifier.addFilter(filter1);
+		ApplicationNameNotificationFilter filter2 = new ApplicationNameNotificationFilter("bar", null);
+		notifier.addFilter(filter2);
 
-        notifier.removeFilter(filter2.getId());
-        assertThat(notifier.getNotificationFilters()).doesNotContainKey(filter2.getId());
-    }
+		assertThat(notifier.getNotificationFilters()).containsKey(filter1.getId()).containsKey(filter2.getId());
 
-    @Test
-    public void test_filter() {
-        TestNotifier delegate = new TestNotifier();
-        FilteringNotifier notifier = new FilteringNotifier(delegate, repository);
+		StepVerifier.create(notifier.notify(event)).verifyComplete();
 
-        AbstractNotificationFilter trueFilter = new AbstractNotificationFilter() {
-            @Override
-            public boolean filter(InstanceEvent event, Instance instance) {
-                return true;
-            }
-        };
-        notifier.addFilter(trueFilter);
+		assertThat(notifier.getNotificationFilters()).doesNotContainKey(filter1.getId()).containsKey(filter2.getId());
 
-        StepVerifier.create(notifier.notify(event)).verifyComplete();
+		notifier.removeFilter(filter2.getId());
+		assertThat(notifier.getNotificationFilters()).doesNotContainKey(filter2.getId());
+	}
 
-        assertThat(delegate.getEvents()).doesNotContain(event);
+	@Test
+	public void test_filter() {
+		TestNotifier delegate = new TestNotifier();
+		FilteringNotifier notifier = new FilteringNotifier(delegate, repository);
 
-        notifier.removeFilter(trueFilter.getId());
-        StepVerifier.create(notifier.notify(event)).verifyComplete();
+		AbstractNotificationFilter trueFilter = new AbstractNotificationFilter() {
+			@Override
+			public boolean filter(InstanceEvent event, Instance instance) {
+				return true;
+			}
+		};
+		notifier.addFilter(trueFilter);
 
-        assertThat(delegate.getEvents()).contains(event);
-    }
+		StepVerifier.create(notifier.notify(event)).verifyComplete();
+
+		assertThat(delegate.getEvents()).doesNotContain(event);
+
+		notifier.removeFilter(trueFilter.getId());
+		StepVerifier.create(notifier.notify(event)).verifyComplete();
+
+		assertThat(delegate.getEvents()).contains(event);
+	}
+
 }

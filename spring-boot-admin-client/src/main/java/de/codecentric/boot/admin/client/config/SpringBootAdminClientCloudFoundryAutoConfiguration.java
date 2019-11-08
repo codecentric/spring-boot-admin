@@ -43,31 +43,25 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
 @Conditional(SpringBootAdminClientEnabledCondition.class)
 @EnableConfigurationProperties(CloudFoundryApplicationProperties.class)
-@AutoConfigureBefore({SpringBootAdminClientAutoConfiguration.class})
+@AutoConfigureBefore({ SpringBootAdminClientAutoConfiguration.class })
 public class SpringBootAdminClientCloudFoundryAutoConfiguration {
-    @Bean
-    @ConditionalOnMissingBean
-    public CloudFoundryMetadataContributor cloudFoundryMetadataContributor(CloudFoundryApplicationProperties cloudFoundryApplicationProperties) {
-        return new CloudFoundryMetadataContributor(cloudFoundryApplicationProperties);
-    }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public CloudFoundryApplicationFactory applicationFactory(InstanceProperties instance,
-                                                             ManagementServerProperties management,
-                                                             ServerProperties server,
-                                                             PathMappedEndpoints pathMappedEndpoints,
-                                                             WebEndpointProperties webEndpoint,
-                                                             ObjectProvider<List<MetadataContributor>> metadataContributors,
-                                                             CloudFoundryApplicationProperties cfApplicationProperties) {
-        return new CloudFoundryApplicationFactory(
-            instance,
-            management,
-            server,
-            pathMappedEndpoints,
-            webEndpoint,
-            new CompositeMetadataContributor(metadataContributors.getIfAvailable(Collections::emptyList)),
-            cfApplicationProperties
-        );
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public CloudFoundryMetadataContributor cloudFoundryMetadataContributor(
+			CloudFoundryApplicationProperties cloudFoundryApplicationProperties) {
+		return new CloudFoundryMetadataContributor(cloudFoundryApplicationProperties);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public CloudFoundryApplicationFactory applicationFactory(InstanceProperties instance,
+			ManagementServerProperties management, ServerProperties server, PathMappedEndpoints pathMappedEndpoints,
+			WebEndpointProperties webEndpoint, ObjectProvider<List<MetadataContributor>> metadataContributors,
+			CloudFoundryApplicationProperties cfApplicationProperties) {
+		return new CloudFoundryApplicationFactory(instance, management, server, pathMappedEndpoints, webEndpoint,
+				new CompositeMetadataContributor(metadataContributors.getIfAvailable(Collections::emptyList)),
+				cfApplicationProperties);
+	}
+
 }

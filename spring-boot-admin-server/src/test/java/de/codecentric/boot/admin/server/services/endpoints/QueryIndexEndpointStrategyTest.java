@@ -54,206 +54,170 @@ import static java.util.Collections.singletonMap;
 
 public class QueryIndexEndpointStrategyTest {
 
-    @Rule
-    public WireMockRule wireMock = new WireMockRule(wireMockConfig().dynamicPort().dynamicHttpsPort());
+	@Rule
+	public WireMockRule wireMock = new WireMockRule(wireMockConfig().dynamicPort().dynamicHttpsPort());
 
-    private InstanceWebClient instanceWebClient = InstanceWebClient.builder()
-                                                                   .webClient(WebClient.builder()
-                                                                                       .clientConnector(httpConnector()))
-                                                                   .filter(rewriteEndpointUrl()).filter(retry(
-            0,
-                                                                       singletonMap(Endpoint.ACTUATOR_INDEX, 1)
-                                                                   ))
-                                                                   .filter(timeout(Duration.ofSeconds(1), emptyMap()))
-                                                                   .build();
+	private InstanceWebClient instanceWebClient = InstanceWebClient.builder()
+			.webClient(WebClient.builder().clientConnector(httpConnector())).filter(rewriteEndpointUrl())
+			.filter(retry(0, singletonMap(Endpoint.ACTUATOR_INDEX, 1)))
+			.filter(timeout(Duration.ofSeconds(1), emptyMap())).build();
 
-    @Test
-    public void should_return_endpoints() {
-        //given
-        Instance instance = Instance.create(InstanceId.of("id"))
-                                    .register(Registration.create("test", this.wireMock.url("/mgmt/health"))
-                                                          .managementUrl(this.wireMock.url("/mgmt"))
-                                                          .build());
+	@Test
+	public void should_return_endpoints() {
+		// given
+		Instance instance = Instance.create(InstanceId.of("id")).register(Registration
+				.create("test", this.wireMock.url("/mgmt/health")).managementUrl(this.wireMock.url("/mgmt")).build());
 
-        String host = "https://localhost:" + this.wireMock.httpsPort();
-        String body = "{\"_links\":{\"metrics-requiredMetricName\":{\"templated\":true,\"href\":\"" +
-                      host +
-                      "/mgmt/metrics/{requiredMetricName}\"},\"self\":{\"templated\":false,\"href\":\"" +
-                      host +
-                      "/mgmt\"},\"metrics\":{\"templated\":false,\"href\":\"" +
-                      host +
-                      "/mgmt/stats\"},\"info\":{\"templated\":false,\"href\":\"" +
-                      host +
-                      "/mgmt/info\"}}}";
+		String host = "https://localhost:" + this.wireMock.httpsPort();
+		String body = "{\"_links\":{\"metrics-requiredMetricName\":{\"templated\":true,\"href\":\"" + host
+				+ "/mgmt/metrics/{requiredMetricName}\"},\"self\":{\"templated\":false,\"href\":\"" + host
+				+ "/mgmt\"},\"metrics\":{\"templated\":false,\"href\":\"" + host
+				+ "/mgmt/stats\"},\"info\":{\"templated\":false,\"href\":\"" + host + "/mgmt/info\"}}}";
 
-        this.wireMock.stubFor(get("/mgmt").willReturn(ok(body).withHeader("Content-Type", ActuatorMediaType.V2_JSON)));
+		this.wireMock.stubFor(get("/mgmt").willReturn(ok(body).withHeader("Content-Type", ActuatorMediaType.V2_JSON)));
 
-        QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
+		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
 
-        //when
-        StepVerifier.create(strategy.detectEndpoints(instance))
-                    //then
-                    .expectNext(Endpoints.single("metrics", host + "/mgmt/stats")
-                                         .withEndpoint("info", host + "/mgmt/info"))//
-                    .verifyComplete();
-    }
+		// when
+		StepVerifier.create(strategy.detectEndpoints(instance))
+				// then
+				.expectNext(Endpoints.single("metrics", host + "/mgmt/stats").withEndpoint("info", host + "/mgmt/info"))//
+				.verifyComplete();
+	}
 
-    @Test
-    public void should_return_endpoints_with_aligned_scheme() {
-        //given
-        Instance instance = Instance.create(InstanceId.of("id"))
-                                    .register(Registration.create("test", this.wireMock.url("/mgmt/health"))
-                                                          .managementUrl(this.wireMock.url("/mgmt"))
-                                                          .build());
+	@Test
+	public void should_return_endpoints_with_aligned_scheme() {
+		// given
+		Instance instance = Instance.create(InstanceId.of("id")).register(Registration
+				.create("test", this.wireMock.url("/mgmt/health")).managementUrl(this.wireMock.url("/mgmt")).build());
 
-        String host = "http://localhost:" + this.wireMock.httpsPort();
-        String body = "{\"_links\":{\"metrics-requiredMetricName\":{\"templated\":true,\"href\":\"" +
-                      host +
-                      "/mgmt/metrics/{requiredMetricName}\"},\"self\":{\"templated\":false,\"href\":\"" +
-                      host +
-                      "/mgmt\"},\"metrics\":{\"templated\":false,\"href\":\"" +
-                      host +
-                      "/mgmt/stats\"},\"info\":{\"templated\":false,\"href\":\"" +
-                      host +
-                      "/mgmt/info\"}}}";
+		String host = "http://localhost:" + this.wireMock.httpsPort();
+		String body = "{\"_links\":{\"metrics-requiredMetricName\":{\"templated\":true,\"href\":\"" + host
+				+ "/mgmt/metrics/{requiredMetricName}\"},\"self\":{\"templated\":false,\"href\":\"" + host
+				+ "/mgmt\"},\"metrics\":{\"templated\":false,\"href\":\"" + host
+				+ "/mgmt/stats\"},\"info\":{\"templated\":false,\"href\":\"" + host + "/mgmt/info\"}}}";
 
-        this.wireMock.stubFor(get("/mgmt").willReturn(ok(body).withHeader("Content-Type", ActuatorMediaType.V2_JSON)));
+		this.wireMock.stubFor(get("/mgmt").willReturn(ok(body).withHeader("Content-Type", ActuatorMediaType.V2_JSON)));
 
-        QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
+		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
 
-        //when
-        String secureHost = "https://localhost:" + this.wireMock.httpsPort();
-        StepVerifier.create(strategy.detectEndpoints(instance))
-                    //then
-                    .expectNext(Endpoints.single("metrics", secureHost + "/mgmt/stats")
-                                         .withEndpoint("info", secureHost + "/mgmt/info"))//
-                    .verifyComplete();
-    }
+		// when
+		String secureHost = "https://localhost:" + this.wireMock.httpsPort();
+		StepVerifier.create(strategy.detectEndpoints(instance))
+				// then
+				.expectNext(Endpoints.single("metrics", secureHost + "/mgmt/stats").withEndpoint("info",
+						secureHost + "/mgmt/info"))//
+				.verifyComplete();
+	}
 
-    @Test
-    public void should_return_empty_on_empty_endpoints() {
-        //given
-        Instance instance = Instance.create(InstanceId.of("id"))
-                                    .register(Registration.create("test", this.wireMock.url("/mgmt/health"))
-                                                          .managementUrl(this.wireMock.url("/mgmt"))
-                                                          .build());
+	@Test
+	public void should_return_empty_on_empty_endpoints() {
+		// given
+		Instance instance = Instance.create(InstanceId.of("id")).register(Registration
+				.create("test", this.wireMock.url("/mgmt/health")).managementUrl(this.wireMock.url("/mgmt")).build());
 
-        String body = "{\"_links\":{}}";
-        this.wireMock.stubFor(get("/mgmt").willReturn(okJson(body).withHeader("Content-Type",
-            ActuatorMediaType.V2_JSON
-        )));
+		String body = "{\"_links\":{}}";
+		this.wireMock
+				.stubFor(get("/mgmt").willReturn(okJson(body).withHeader("Content-Type", ActuatorMediaType.V2_JSON)));
 
-        QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
+		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
 
-        //when
-        StepVerifier.create(strategy.detectEndpoints(instance))
-                    //then
-                    .verifyComplete();
-    }
+		// when
+		StepVerifier.create(strategy.detectEndpoints(instance))
+				// then
+				.verifyComplete();
+	}
 
-    @Test
-    public void should_return_empty_on_not_found() {
-        //given
-        Instance instance = Instance.create(InstanceId.of("id"))
-                                    .register(Registration.create("test", this.wireMock.url("/mgmt/health"))
-                                                          .managementUrl(this.wireMock.url("/mgmt"))
-                                                          .build());
+	@Test
+	public void should_return_empty_on_not_found() {
+		// given
+		Instance instance = Instance.create(InstanceId.of("id")).register(Registration
+				.create("test", this.wireMock.url("/mgmt/health")).managementUrl(this.wireMock.url("/mgmt")).build());
 
-        this.wireMock.stubFor(get("/mgmt").willReturn(notFound()));
+		this.wireMock.stubFor(get("/mgmt").willReturn(notFound()));
 
-        QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
+		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
 
-        //when
-        StepVerifier.create(strategy.detectEndpoints(instance))
-                    //then
-                    .verifyComplete();
-    }
+		// when
+		StepVerifier.create(strategy.detectEndpoints(instance))
+				// then
+				.verifyComplete();
+	}
 
-    @Test
-    public void should_return_empty_on_error() {
-        //given
-        Instance instance = Instance.create(InstanceId.of("id"))
-                                    .register(Registration.create("test", this.wireMock.url("/mgmt/health"))
-                                                          .managementUrl(this.wireMock.url("/mgmt"))
-                                                          .build());
+	@Test
+	public void should_return_empty_on_error() {
+		// given
+		Instance instance = Instance.create(InstanceId.of("id")).register(Registration
+				.create("test", this.wireMock.url("/mgmt/health")).managementUrl(this.wireMock.url("/mgmt")).build());
 
-        this.wireMock.stubFor(get("/mgmt").willReturn(aResponse().withFault(Fault.EMPTY_RESPONSE)));
+		this.wireMock.stubFor(get("/mgmt").willReturn(aResponse().withFault(Fault.EMPTY_RESPONSE)));
 
-        QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
+		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
 
-        //when
-        StepVerifier.create(strategy.detectEndpoints(instance))
-                    //then
-                    .verifyComplete();
-    }
+		// when
+		StepVerifier.create(strategy.detectEndpoints(instance))
+				// then
+				.verifyComplete();
+	}
 
+	@Test
+	public void should_return_empty_on_wrong_content_type() {
+		// given
+		Instance instance = Instance.create(InstanceId.of("id")).register(Registration
+				.create("test", this.wireMock.url("/mgmt/health")).managementUrl(this.wireMock.url("/mgmt")).build());
 
-    @Test
-    public void should_return_empty_on_wrong_content_type() {
-        //given
-        Instance instance = Instance.create(InstanceId.of("id"))
-                                    .register(Registration.create("test", this.wireMock.url("/mgmt/health"))
-                                                          .managementUrl(this.wireMock.url("/mgmt"))
-                                                          .build());
+		String body = "HELLOW WORLD";
+		this.wireMock.stubFor(get("/mgmt").willReturn(ok(body).withHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE)));
 
-        String body = "HELLOW WORLD";
-        this.wireMock.stubFor(get("/mgmt").willReturn(ok(body).withHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE)));
+		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
 
-        QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
+		// when
+		StepVerifier.create(strategy.detectEndpoints(instance))
+				// then
+				.verifyComplete();
+	}
 
-        //when
-        StepVerifier.create(strategy.detectEndpoints(instance))
-                    //then
-                    .verifyComplete();
-    }
+	@Test
+	public void should_return_empty_when_mgmt_equals_service_url() {
+		// given
+		Instance instance = Instance.create(InstanceId.of("id"))
+				.register(Registration.create("test", this.wireMock.url("/app/health"))
+						.managementUrl(this.wireMock.url("/app")).serviceUrl(this.wireMock.url("/app")).build());
 
-    @Test
-    public void should_return_empty_when_mgmt_equals_service_url() {
-        //given
-        Instance instance = Instance.create(InstanceId.of("id"))
-                                    .register(Registration.create("test", this.wireMock.url("/app/health"))
-                                                          .managementUrl(this.wireMock.url("/app"))
-                                                          .serviceUrl(this.wireMock.url("/app"))
-                                                          .build());
+		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
 
-        QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
+		// when/then
+		StepVerifier.create(strategy.detectEndpoints(instance)).verifyComplete();
+		this.wireMock.verify(0, anyRequestedFor(urlPathEqualTo("/app")));
+	}
 
-        //when/then
-        StepVerifier.create(strategy.detectEndpoints(instance)).verifyComplete();
-        this.wireMock.verify(0, anyRequestedFor(urlPathEqualTo("/app")));
-    }
+	@Test
+	public void should_retry() {
+		// given
+		Instance instance = Instance.create(InstanceId.of("id")).register(Registration
+				.create("test", this.wireMock.url("/mgmt/health")).managementUrl(this.wireMock.url("/mgmt")).build());
 
-    @Test
-    public void should_retry() {
-        //given
-        Instance instance = Instance.create(InstanceId.of("id"))
-                                    .register(Registration.create("test", this.wireMock.url("/mgmt/health"))
-                                                          .managementUrl(this.wireMock.url("/mgmt"))
-                                                          .build());
+		String body = "{\"_links\":{\"metrics-requiredMetricName\":{\"templated\":true,\"href\":\"/mgmt/metrics/{requiredMetricName}\"},\"self\":{\"templated\":false,\"href\":\"/mgmt\"},\"metrics\":{\"templated\":false,\"href\":\"/mgmt/stats\"},\"info\":{\"templated\":false,\"href\":\"/mgmt/info\"}}}";
 
-        String body = "{\"_links\":{\"metrics-requiredMetricName\":{\"templated\":true,\"href\":\"/mgmt/metrics/{requiredMetricName}\"},\"self\":{\"templated\":false,\"href\":\"/mgmt\"},\"metrics\":{\"templated\":false,\"href\":\"/mgmt/stats\"},\"info\":{\"templated\":false,\"href\":\"/mgmt/info\"}}}";
+		this.wireMock.stubFor(get("/mgmt").inScenario("retry").whenScenarioStateIs(STARTED)
+				.willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER)).willSetStateTo("recovered"));
 
-        this.wireMock.stubFor(get("/mgmt").inScenario("retry")
-                                          .whenScenarioStateIs(STARTED)
-                                          .willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER))
-                                          .willSetStateTo("recovered"));
+		this.wireMock.stubFor(get("/mgmt").inScenario("retry").whenScenarioStateIs("recovered")
+				.willReturn(ok(body).withHeader("Content-Type", ActuatorMediaType.V2_JSON)));
 
-        this.wireMock.stubFor(get("/mgmt").inScenario("retry")
-                                          .whenScenarioStateIs("recovered")
-                                          .willReturn(ok(body).withHeader("Content-Type", ActuatorMediaType.V2_JSON)));
+		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
 
-        QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
+		// when
+		StepVerifier.create(strategy.detectEndpoints(instance))
+				// then
+				.expectNext(Endpoints.single("metrics", "/mgmt/stats").withEndpoint("info", "/mgmt/info"))//
+				.verifyComplete();
+	}
 
-        //when
-        StepVerifier.create(strategy.detectEndpoints(instance))
-                    //then
-                    .expectNext(Endpoints.single("metrics", "/mgmt/stats").withEndpoint("info", "/mgmt/info"))//
-                    .verifyComplete();
-    }
+	private ReactorClientHttpConnector httpConnector() {
+		SslContextBuilder sslCtx = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE);
+		HttpClient client = HttpClient.create().secure(ssl -> ssl.sslContext(sslCtx));
+		return new ReactorClientHttpConnector(client);
+	}
 
-    private ReactorClientHttpConnector httpConnector() {
-        SslContextBuilder sslCtx = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE);
-        HttpClient client = HttpClient.create().secure(ssl -> ssl.sslContext(sslCtx));
-        return new ReactorClientHttpConnector(client);
-    }
 }

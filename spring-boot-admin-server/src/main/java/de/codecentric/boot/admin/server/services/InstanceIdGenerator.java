@@ -21,12 +21,11 @@ import de.codecentric.boot.admin.server.domain.values.Registration;
 
 public interface InstanceIdGenerator {
 
-    /**
-     * Generate an id based on the given Instance
-     *
-     * @param registration the registration the id is computed for.
-     * @return the instance id
-     */
-    InstanceId generateId(Registration registration);
+	/**
+	 * Generate an id based on the given Instance
+	 * @param registration the registration the id is computed for.
+	 * @return the instance id
+	 */
+	InstanceId generateId(Registration registration);
 
 }

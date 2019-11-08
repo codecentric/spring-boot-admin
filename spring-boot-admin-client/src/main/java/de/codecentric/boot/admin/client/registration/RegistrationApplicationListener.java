@@ -31,94 +31,102 @@ import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 /**
- * Listener responsible for starting and stopping the registration task when the application is
- * ready.
+ * Listener responsible for starting and stopping the registration task when the
+ * application is ready.
  *
  * @author Johannes Edmeier
  */
 public class RegistrationApplicationListener implements InitializingBean, DisposableBean {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RegistrationApplicationListener.class);
-    private final ApplicationRegistrator registrator;
-    private final ThreadPoolTaskScheduler taskScheduler;
-    private boolean autoDeregister = false;
-    private boolean autoRegister = true;
-    private Duration registerPeriod = Duration.ofSeconds(10);
-    @Nullable
-    private volatile ScheduledFuture<?> scheduledTask;
 
-    public RegistrationApplicationListener(ApplicationRegistrator registrator) {
-        this(registrator, registrationTaskScheduler());
-    }
+	private static final Logger LOGGER = LoggerFactory.getLogger(RegistrationApplicationListener.class);
 
-    private static ThreadPoolTaskScheduler registrationTaskScheduler() {
-        ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-        taskScheduler.setPoolSize(1);
-        taskScheduler.setRemoveOnCancelPolicy(true);
-        taskScheduler.setThreadNamePrefix("registrationTask");
-        return taskScheduler;
-    }
+	private final ApplicationRegistrator registrator;
 
-    RegistrationApplicationListener(ApplicationRegistrator registrator, ThreadPoolTaskScheduler taskScheduler) {
-        this.registrator = registrator;
-        this.taskScheduler = taskScheduler;
-    }
+	private final ThreadPoolTaskScheduler taskScheduler;
 
-    @EventListener
-    @Order(Ordered.LOWEST_PRECEDENCE)
-    public void onApplicationReady(ApplicationReadyEvent event) {
-        if (autoRegister) {
-            startRegisterTask();
-        }
-    }
+	private boolean autoDeregister = false;
 
-    @EventListener
-    @Order(Ordered.LOWEST_PRECEDENCE)
-    public void onClosedContext(ContextClosedEvent event) {
-        if (event.getApplicationContext().getParent() == null ||
-            "bootstrap".equals(event.getApplicationContext().getParent().getId())) {
-            stopRegisterTask();
+	private boolean autoRegister = true;
 
-            if (autoDeregister) {
-                registrator.deregister();
-            }
-        }
-    }
+	private Duration registerPeriod = Duration.ofSeconds(10);
 
-    public void startRegisterTask() {
-        if (scheduledTask != null && !scheduledTask.isDone()) {
-            return;
-        }
+	@Nullable
+	private volatile ScheduledFuture<?> scheduledTask;
 
-        scheduledTask = taskScheduler.scheduleAtFixedRate(registrator::register, registerPeriod);
-        LOGGER.debug("Scheduled registration task for every {}ms", registerPeriod);
-    }
+	public RegistrationApplicationListener(ApplicationRegistrator registrator) {
+		this(registrator, registrationTaskScheduler());
+	}
 
-    public void stopRegisterTask() {
-        if (scheduledTask != null && !scheduledTask.isDone()) {
-            scheduledTask.cancel(true);
-            LOGGER.debug("Canceled registration task");
-        }
-    }
+	private static ThreadPoolTaskScheduler registrationTaskScheduler() {
+		ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+		taskScheduler.setPoolSize(1);
+		taskScheduler.setRemoveOnCancelPolicy(true);
+		taskScheduler.setThreadNamePrefix("registrationTask");
+		return taskScheduler;
+	}
 
-    public void setAutoDeregister(boolean autoDeregister) {
-        this.autoDeregister = autoDeregister;
-    }
+	RegistrationApplicationListener(ApplicationRegistrator registrator, ThreadPoolTaskScheduler taskScheduler) {
+		this.registrator = registrator;
+		this.taskScheduler = taskScheduler;
+	}
 
-    public void setAutoRegister(boolean autoRegister) {
-        this.autoRegister = autoRegister;
-    }
+	@EventListener
+	@Order(Ordered.LOWEST_PRECEDENCE)
+	public void onApplicationReady(ApplicationReadyEvent event) {
+		if (autoRegister) {
+			startRegisterTask();
+		}
+	}
 
-    public void setRegisterPeriod(Duration registerPeriod) {
-        this.registerPeriod = registerPeriod;
-    }
+	@EventListener
+	@Order(Ordered.LOWEST_PRECEDENCE)
+	public void onClosedContext(ContextClosedEvent event) {
+		if (event.getApplicationContext().getParent() == null
+				|| "bootstrap".equals(event.getApplicationContext().getParent().getId())) {
+			stopRegisterTask();
 
-    @Override
-    public void afterPropertiesSet() {
-        taskScheduler.afterPropertiesSet();
-    }
+			if (autoDeregister) {
+				registrator.deregister();
+			}
+		}
+	}
 
-    @Override
-    public void destroy() {
-        taskScheduler.destroy();
-    }
+	public void startRegisterTask() {
+		if (scheduledTask != null && !scheduledTask.isDone()) {
+			return;
+		}
+
+		scheduledTask = taskScheduler.scheduleAtFixedRate(registrator::register, registerPeriod);
+		LOGGER.debug("Scheduled registration task for every {}ms", registerPeriod);
+	}
+
+	public void stopRegisterTask() {
+		if (scheduledTask != null && !scheduledTask.isDone()) {
+			scheduledTask.cancel(true);
+			LOGGER.debug("Canceled registration task");
+		}
+	}
+
+	public void setAutoDeregister(boolean autoDeregister) {
+		this.autoDeregister = autoDeregister;
+	}
+
+	public void setAutoRegister(boolean autoRegister) {
+		this.autoRegister = autoRegister;
+	}
+
+	public void setRegisterPeriod(Duration registerPeriod) {
+		this.registerPeriod = registerPeriod;
+	}
+
+	@Override
+	public void afterPropertiesSet() {
+		taskScheduler.afterPropertiesSet();
+	}
+
+	@Override
+	public void destroy() {
+		taskScheduler.destroy();
+	}
+
 }

@@ -28,45 +28,43 @@ import static org.assertj.core.api.Assertions.entry;
 
 public class TagsTest {
 
-    @Test
-    public void should_return_empty_from_factory_method() {
-        assertThat(Tags.empty().getValues()).isEmpty();
-        assertThat(Tags.from(Collections.emptyMap())).isSameAs(Tags.empty());
-    }
+	@Test
+	public void should_return_empty_from_factory_method() {
+		assertThat(Tags.empty().getValues()).isEmpty();
+		assertThat(Tags.from(Collections.emptyMap())).isSameAs(Tags.empty());
+	}
 
-    @Test
-    public void should_return_tags_from_flat_map() {
-        Map<String, String> flatTags = new LinkedHashMap<>();
-        flatTags.put("tags.env", "test");
-        flatTags.put("tags.foo", "bar");
-        flatTags.put("ignore", "ignored");
-        flatTags.put("tagsi", "ignored");
+	@Test
+	public void should_return_tags_from_flat_map() {
+		Map<String, String> flatTags = new LinkedHashMap<>();
+		flatTags.put("tags.env", "test");
+		flatTags.put("tags.foo", "bar");
+		flatTags.put("ignore", "ignored");
+		flatTags.put("tagsi", "ignored");
 
-        assertThat(Tags.from(flatTags, "tags").getValues()).containsExactly(entry("env", "test"), entry("foo", "bar"));
-    }
+		assertThat(Tags.from(flatTags, "tags").getValues()).containsExactly(entry("env", "test"), entry("foo", "bar"));
+	}
 
-    @Test
-    public void should_return_tags_from_nested_map() {
-        Map<String, String> tags = new LinkedHashMap<>();
-        tags.put("env", "test");
-        tags.put("foo", "bar");
+	@Test
+	public void should_return_tags_from_nested_map() {
+		Map<String, String> tags = new LinkedHashMap<>();
+		tags.put("env", "test");
+		tags.put("foo", "bar");
 
-        Map<String, Object> nestedTags = new HashMap<>();
-        nestedTags.put("tags", tags);
-        nestedTags.put("tagsi", singletonMap("ignore", "ignored"));
+		Map<String, Object> nestedTags = new HashMap<>();
+		nestedTags.put("tags", tags);
+		nestedTags.put("tagsi", singletonMap("ignore", "ignored"));
 
-        assertThat(Tags.from(nestedTags, "tags").getValues()).containsExactly(entry("env", "test"),
-            entry("foo", "bar")
-        );
-    }
+		assertThat(Tags.from(nestedTags, "tags").getValues()).containsExactly(entry("env", "test"),
+				entry("foo", "bar"));
+	}
 
-    @Test
-    public void should_append_tags() {
-        Tags tags = Tags.empty()
-                        .append(Tags.from(singletonMap("tags.env", "test"), "tags"))
-                        .append(Tags.from(singletonMap("env", "test2")))
-                        .append(Tags.from(singletonMap("foo", "bar")));
+	@Test
+	public void should_append_tags() {
+		Tags tags = Tags.empty().append(Tags.from(singletonMap("tags.env", "test"), "tags"))
+				.append(Tags.from(singletonMap("env", "test2"))).append(Tags.from(singletonMap("foo", "bar")));
 
-        assertThat(tags.getValues()).containsExactly(entry("env", "test2"), entry("foo", "bar"));
-    }
+		assertThat(tags.getValues()).containsExactly(entry("env", "test2"), entry("foo", "bar"));
+	}
+
 }
