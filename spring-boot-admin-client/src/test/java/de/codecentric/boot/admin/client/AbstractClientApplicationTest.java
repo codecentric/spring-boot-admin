@@ -45,58 +45,62 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 
 public abstract class AbstractClientApplicationTest {
 
-    @Rule
-    public WireMockRule wireMock = new WireMockRule(options().dynamicPort().notifier(new ConsoleNotifier(true)));
-    private static final CountDownLatch cdl = new CountDownLatch(1);
+	@Rule
+	public WireMockRule wireMock = new WireMockRule(options().dynamicPort().notifier(new ConsoleNotifier(true)));
 
-    public void setUp() throws Exception {
-        ResponseDefinitionBuilder response = created().withHeader("Content-Type", "application/json")
-                                                      .withHeader("Connection", "close")
-                                                      .withHeader("Location", wireMock.url("/instances/abcdef"))
-                                                      .withBody("{ \"id\" : \"abcdef\" }");
-        wireMock.stubFor(post(urlEqualTo("/instances")).willReturn(response));
-    }
+	private static final CountDownLatch cdl = new CountDownLatch(1);
 
-    @Test
-    public void test_context() throws InterruptedException, UnknownHostException {
-        cdl.await();
-        Thread.sleep(2500);
-        String hostName = InetAddress.getLocalHost().getCanonicalHostName();
-        String serviceHost = "http://" + hostName + ":" + getServerPort();
-        String managementHost = "http://" + hostName + ":" + getManagementPort();
-        RequestPatternBuilder request = postRequestedFor(urlEqualTo("/instances"));
-        request.withHeader("Content-Type", equalTo("application/json"))
-               .withRequestBody(matchingJsonPath("$.name", equalTo("Test-Client")))
-               .withRequestBody(matchingJsonPath("$.healthUrl", equalTo(managementHost + "/mgmt/health")))
-               .withRequestBody(matchingJsonPath("$.managementUrl", equalTo(managementHost + "/mgmt")))
-               .withRequestBody(matchingJsonPath("$.serviceUrl", equalTo(serviceHost + "/")))
-               .withRequestBody(matchingJsonPath("$.metadata.startup", matching(".+")));
+	public void setUp() throws Exception {
+		ResponseDefinitionBuilder response = created().withHeader("Content-Type", "application/json")
+				.withHeader("Connection", "close").withHeader("Location", wireMock.url("/instances/abcdef"))
+				.withBody("{ \"id\" : \"abcdef\" }");
+		wireMock.stubFor(post(urlEqualTo("/instances")).willReturn(response));
+	}
 
-        verify(request);
-    }
+	@Test
+	public void test_context() throws InterruptedException, UnknownHostException {
+		cdl.await();
+		Thread.sleep(2500);
+		String hostName = InetAddress.getLocalHost().getCanonicalHostName();
+		String serviceHost = "http://" + hostName + ":" + getServerPort();
+		String managementHost = "http://" + hostName + ":" + getManagementPort();
+		RequestPatternBuilder request = postRequestedFor(urlEqualTo("/instances"));
+		request.withHeader("Content-Type", equalTo("application/json"))
+				.withRequestBody(matchingJsonPath("$.name", equalTo("Test-Client")))
+				.withRequestBody(matchingJsonPath("$.healthUrl", equalTo(managementHost + "/mgmt/health")))
+				.withRequestBody(matchingJsonPath("$.managementUrl", equalTo(managementHost + "/mgmt")))
+				.withRequestBody(matchingJsonPath("$.serviceUrl", equalTo(serviceHost + "/")))
+				.withRequestBody(matchingJsonPath("$.metadata.startup", matching(".+")));
 
-    protected abstract int getServerPort();
+		verify(request);
+	}
 
-    protected abstract int getManagementPort();
+	protected abstract int getServerPort();
 
-    @SpringBootConfiguration
-    @EnableAutoConfiguration
-    public static class TestClientApplication {
-        @Autowired
-        private ApplicationRegistrator registrator;
+	protected abstract int getManagementPort();
 
-        @EventListener
-        public void ping(ApplicationReadyEvent ev) {
-            new Thread(() -> {
-                try {
-                    while (registrator.getRegisteredId() == null) {
-                        Thread.sleep(500);
-                    }
-                } catch (InterruptedException e) {
-                    Thread.interrupted();
-                }
-                cdl.countDown();
-            }).start();
-        }
-    }
+	@SpringBootConfiguration
+	@EnableAutoConfiguration
+	public static class TestClientApplication {
+
+		@Autowired
+		private ApplicationRegistrator registrator;
+
+		@EventListener
+		public void ping(ApplicationReadyEvent ev) {
+			new Thread(() -> {
+				try {
+					while (registrator.getRegisteredId() == null) {
+						Thread.sleep(500);
+					}
+				}
+				catch (InterruptedException e) {
+					Thread.interrupted();
+				}
+				cdl.countDown();
+			}).start();
+		}
+
+	}
+
 }

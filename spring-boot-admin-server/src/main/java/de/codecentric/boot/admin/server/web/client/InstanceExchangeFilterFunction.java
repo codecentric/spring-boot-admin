@@ -24,11 +24,14 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
 
 /**
- * Represents a function that filters an{@linkplain ExchangeFunction exchange function} issued on a registered instance.
+ * Represents a function that filters an{@linkplain ExchangeFunction exchange function}
+ * issued on a registered instance.
  *
  * @author Johannes Edmeier
  */
 @FunctionalInterface
 public interface InstanceExchangeFilterFunction {
-    Mono<ClientResponse> filter(Instance instance, ClientRequest request, ExchangeFunction next);
+
+	Mono<ClientResponse> filter(Instance instance, ClientRequest request, ExchangeFunction next);
+
 }

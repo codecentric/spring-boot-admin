@@ -32,71 +32,77 @@ import static java.util.stream.Collectors.toMap;
 @lombok.EqualsAndHashCode
 @lombok.ToString
 public class Endpoints implements Iterable<Endpoint>, Serializable {
-    private final Map<String, Endpoint> endpoints;
-    private static final Endpoints EMPTY = new Endpoints(Collections.emptyList());
 
-    private Endpoints(Collection<Endpoint> endpoints) {
-        if (endpoints.isEmpty()) {
-            this.endpoints = Collections.emptyMap();
-        } else {
-            this.endpoints = endpoints.stream().collect(toMap(Endpoint::getId, Function.identity()));
-        }
-    }
+	private final Map<String, Endpoint> endpoints;
 
-    public Optional<Endpoint> get(String id) {
-        return Optional.ofNullable(this.endpoints.get(id));
-    }
+	private static final Endpoints EMPTY = new Endpoints(Collections.emptyList());
 
-    public boolean isPresent(String id) {
-        return this.endpoints.containsKey(id);
-    }
+	private Endpoints(Collection<Endpoint> endpoints) {
+		if (endpoints.isEmpty()) {
+			this.endpoints = Collections.emptyMap();
+		}
+		else {
+			this.endpoints = endpoints.stream().collect(toMap(Endpoint::getId, Function.identity()));
+		}
+	}
 
-    @Override
-    public Iterator<Endpoint> iterator() {
-        return new UnmodifiableIterator<>(this.endpoints.values().iterator());
-    }
+	public Optional<Endpoint> get(String id) {
+		return Optional.ofNullable(this.endpoints.get(id));
+	}
 
-    public static Endpoints empty() {
-        return EMPTY;
-    }
+	public boolean isPresent(String id) {
+		return this.endpoints.containsKey(id);
+	}
 
-    public static Endpoints single(String id, String url) {
-        return new Endpoints(Collections.singletonList(Endpoint.of(id, url)));
-    }
+	@Override
+	public Iterator<Endpoint> iterator() {
+		return new UnmodifiableIterator<>(this.endpoints.values().iterator());
+	}
 
-    public static Endpoints of(@Nullable Collection<Endpoint> endpoints) {
-        if (endpoints == null || endpoints.isEmpty()) {
-            return empty();
-        }
-        return new Endpoints(endpoints);
-    }
+	public static Endpoints empty() {
+		return EMPTY;
+	}
 
-    public Endpoints withEndpoint(String id, String url) {
-        Endpoint endpoint = Endpoint.of(id, url);
-        HashMap<String, Endpoint> newEndpoints = new HashMap<>(this.endpoints);
-        newEndpoints.put(endpoint.getId(), endpoint);
-        return new Endpoints(newEndpoints.values());
-    }
+	public static Endpoints single(String id, String url) {
+		return new Endpoints(Collections.singletonList(Endpoint.of(id, url)));
+	}
 
-    public Stream<Endpoint> stream() {
-        return this.endpoints.values().stream();
-    }
+	public static Endpoints of(@Nullable Collection<Endpoint> endpoints) {
+		if (endpoints == null || endpoints.isEmpty()) {
+			return empty();
+		}
+		return new Endpoints(endpoints);
+	}
 
-    private static class UnmodifiableIterator<T> implements Iterator<T> {
-        private final Iterator<T> delegate;
+	public Endpoints withEndpoint(String id, String url) {
+		Endpoint endpoint = Endpoint.of(id, url);
+		HashMap<String, Endpoint> newEndpoints = new HashMap<>(this.endpoints);
+		newEndpoints.put(endpoint.getId(), endpoint);
+		return new Endpoints(newEndpoints.values());
+	}
 
-        private UnmodifiableIterator(Iterator<T> delegate) {
-            this.delegate = delegate;
-        }
+	public Stream<Endpoint> stream() {
+		return this.endpoints.values().stream();
+	}
 
-        @Override
-        public boolean hasNext() {
-            return this.delegate.hasNext();
-        }
+	private static class UnmodifiableIterator<T> implements Iterator<T> {
 
-        @Override
-        public T next() {
-            return this.delegate.next();
-        }
-    }
+		private final Iterator<T> delegate;
+
+		private UnmodifiableIterator(Iterator<T> delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return this.delegate.hasNext();
+		}
+
+		@Override
+		public T next() {
+			return this.delegate.next();
+		}
+
+	}
+
 }

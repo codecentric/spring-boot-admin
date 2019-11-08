@@ -35,27 +35,25 @@ import com.hazelcast.map.listener.MapListener;
  */
 public class HazelcastEventStore extends ConcurrentMapEventStore {
 
-    private static final Logger log = LoggerFactory.getLogger(HazelcastEventStore.class);
+	private static final Logger log = LoggerFactory.getLogger(HazelcastEventStore.class);
 
-    public HazelcastEventStore(IMap<InstanceId, List<InstanceEvent>> eventLogs) {
-        this(100, eventLogs);
-    }
+	public HazelcastEventStore(IMap<InstanceId, List<InstanceEvent>> eventLogs) {
+		this(100, eventLogs);
+	}
 
-    public HazelcastEventStore(int maxLogSizePerAggregate, IMap<InstanceId, List<InstanceEvent>> eventLog) {
-        super(maxLogSizePerAggregate, eventLog);
+	public HazelcastEventStore(int maxLogSizePerAggregate, IMap<InstanceId, List<InstanceEvent>> eventLog) {
+		super(maxLogSizePerAggregate, eventLog);
 
-        eventLog.addEntryListener((MapListener) new EntryAdapter<InstanceId, List<InstanceEvent>>() {
-            @Override
-            public void entryUpdated(EntryEvent<InstanceId, List<InstanceEvent>> event) {
-                log.debug("Updated {}", event);
-                long lastKnownVersion = getLastVersion(event.getOldValue());
-                List<InstanceEvent> newEvents = event.getValue()
-                                                     .stream()
-                                                     .filter(e -> e.getVersion() > lastKnownVersion)
-                                                     .collect(Collectors.toList());
-                HazelcastEventStore.this.publish(newEvents);
-            }
-        }, true);
-    }
+		eventLog.addEntryListener((MapListener) new EntryAdapter<InstanceId, List<InstanceEvent>>() {
+			@Override
+			public void entryUpdated(EntryEvent<InstanceId, List<InstanceEvent>> event) {
+				log.debug("Updated {}", event);
+				long lastKnownVersion = getLastVersion(event.getOldValue());
+				List<InstanceEvent> newEvents = event.getValue().stream().filter(e -> e.getVersion() > lastKnownVersion)
+						.collect(Collectors.toList());
+				HazelcastEventStore.this.publish(newEvents);
+			}
+		}, true);
+	}
 
 }

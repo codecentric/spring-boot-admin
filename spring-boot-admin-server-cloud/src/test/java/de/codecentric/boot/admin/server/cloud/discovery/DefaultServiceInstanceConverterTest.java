@@ -28,49 +28,49 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class DefaultServiceInstanceConverterTest {
 
-    @Test
-    public void test_convert_with_defaults() {
-        ServiceInstance service = new DefaultServiceInstance("test-1", "test", "localhost", 80, false);
-        Registration registration = new DefaultServiceInstanceConverter().convert(service);
+	@Test
+	public void test_convert_with_defaults() {
+		ServiceInstance service = new DefaultServiceInstance("test-1", "test", "localhost", 80, false);
+		Registration registration = new DefaultServiceInstanceConverter().convert(service);
 
-        assertThat(registration.getName()).isEqualTo("test");
-        assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80/");
-        assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80/actuator");
-        assertThat(registration.getHealthUrl()).isEqualTo("http://localhost:80/actuator/health");
-    }
+		assertThat(registration.getName()).isEqualTo("test");
+		assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80/");
+		assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80/actuator");
+		assertThat(registration.getHealthUrl()).isEqualTo("http://localhost:80/actuator/health");
+	}
 
-    @Test
-    public void test_convert_with_custom_defaults() {
-        DefaultServiceInstanceConverter converter = new DefaultServiceInstanceConverter();
-        converter.setHealthEndpointPath("ping");
-        converter.setManagementContextPath("mgmt");
+	@Test
+	public void test_convert_with_custom_defaults() {
+		DefaultServiceInstanceConverter converter = new DefaultServiceInstanceConverter();
+		converter.setHealthEndpointPath("ping");
+		converter.setManagementContextPath("mgmt");
 
-        ServiceInstance service = new DefaultServiceInstance("test-1", "test", "localhost", 80, false);
-        Registration registration = converter.convert(service);
+		ServiceInstance service = new DefaultServiceInstance("test-1", "test", "localhost", 80, false);
+		Registration registration = converter.convert(service);
 
-        assertThat(registration.getName()).isEqualTo("test");
-        assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80/");
-        assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80/mgmt");
-        assertThat(registration.getHealthUrl()).isEqualTo("http://localhost:80/mgmt/ping");
-    }
+		assertThat(registration.getName()).isEqualTo("test");
+		assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80/");
+		assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80/mgmt");
+		assertThat(registration.getHealthUrl()).isEqualTo("http://localhost:80/mgmt/ping");
+	}
 
-    @Test
-    public void test_convert_with_metadata() {
-        ServiceInstance service = new DefaultServiceInstance("test-1", "test", "localhost", 80, false);
-        Map<String, String> metadata = new HashMap<>();
-        metadata.put("health.path", "ping");
-        metadata.put("management.context-path", "mgmt");
-        metadata.put("management.port", "1234");
-        metadata.put("management.address", "127.0.0.1");
-        service.getMetadata().putAll(metadata);
+	@Test
+	public void test_convert_with_metadata() {
+		ServiceInstance service = new DefaultServiceInstance("test-1", "test", "localhost", 80, false);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("health.path", "ping");
+		metadata.put("management.context-path", "mgmt");
+		metadata.put("management.port", "1234");
+		metadata.put("management.address", "127.0.0.1");
+		service.getMetadata().putAll(metadata);
 
-        Registration registration = new DefaultServiceInstanceConverter().convert(service);
+		Registration registration = new DefaultServiceInstanceConverter().convert(service);
 
-        assertThat(registration.getName()).isEqualTo("test");
-        assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80/");
-        assertThat(registration.getManagementUrl()).isEqualTo("http://127.0.0.1:1234/mgmt");
-        assertThat(registration.getHealthUrl()).isEqualTo("http://127.0.0.1:1234/mgmt/ping");
-        assertThat(registration.getMetadata()).isEqualTo(metadata);
-    }
+		assertThat(registration.getName()).isEqualTo("test");
+		assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80/");
+		assertThat(registration.getManagementUrl()).isEqualTo("http://127.0.0.1:1234/mgmt");
+		assertThat(registration.getHealthUrl()).isEqualTo("http://127.0.0.1:1234/mgmt/ping");
+		assertThat(registration.getMetadata()).isEqualTo(metadata);
+	}
 
 }

@@ -26,30 +26,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CompositeHttpHeadersProviderTest {
 
-    @Test
-    public void should_return_all_headers() {
-        HttpHeadersProvider provider = new CompositeHttpHeadersProvider(asList(i -> {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("a", "1");
-            headers.set("b", "2-a");
-            return headers;
-        }, i -> {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("b", "2-b");
-            headers.set("c", "3");
-            return headers;
-        }));
+	@Test
+	public void should_return_all_headers() {
+		HttpHeadersProvider provider = new CompositeHttpHeadersProvider(asList(i -> {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("a", "1");
+			headers.set("b", "2-a");
+			return headers;
+		}, i -> {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("b", "2-b");
+			headers.set("c", "3");
+			return headers;
+		}));
 
-        HttpHeaders headers = provider.getHeaders(null);
-        assertThat(headers.get("a")).isEqualTo(singletonList("1"));
-        assertThat(headers.get("b")).isEqualTo(asList("2-a", "2-b"));
-        assertThat(headers.get("c")).isEqualTo(singletonList("3"));
-    }
+		HttpHeaders headers = provider.getHeaders(null);
+		assertThat(headers.get("a")).isEqualTo(singletonList("1"));
+		assertThat(headers.get("b")).isEqualTo(asList("2-a", "2-b"));
+		assertThat(headers.get("c")).isEqualTo(singletonList("3"));
+	}
 
-    @Test
-    public void should_return_empty_headers() {
-        HttpHeadersProvider provider = new CompositeHttpHeadersProvider(emptyList());
-        HttpHeaders headers = provider.getHeaders(null);
-        assertThat(headers.size()).isEqualTo(0);
-    }
+	@Test
+	public void should_return_empty_headers() {
+		HttpHeadersProvider provider = new CompositeHttpHeadersProvider(emptyList());
+		HttpHeaders headers = provider.getHeaders(null);
+		assertThat(headers.size()).isEqualTo(0);
+	}
+
 }

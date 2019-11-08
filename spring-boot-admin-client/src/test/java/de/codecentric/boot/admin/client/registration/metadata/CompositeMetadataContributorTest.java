@@ -27,23 +27,24 @@ import static org.assertj.core.api.Assertions.entry;
 
 public class CompositeMetadataContributorTest {
 
-    @Test
-    public void should_merge_metadata() {
-        CompositeMetadataContributor contributor = new CompositeMetadataContributor(
-            asList(() -> singletonMap("a", "first"), () -> singletonMap("b", "second"),
-                () -> singletonMap("b", "second-new")));
+	@Test
+	public void should_merge_metadata() {
+		CompositeMetadataContributor contributor = new CompositeMetadataContributor(
+				asList(() -> singletonMap("a", "first"), () -> singletonMap("b", "second"),
+						() -> singletonMap("b", "second-new")));
 
-        Map<String, String> metadata = contributor.getMetadata();
+		Map<String, String> metadata = contributor.getMetadata();
 
-        assertThat(metadata).containsExactly(entry("a", "first"), entry("b", "second-new"));
-    }
+		assertThat(metadata).containsExactly(entry("a", "first"), entry("b", "second-new"));
+	}
 
-    @Test
-    public void should_return_empty_metadata() {
-        CompositeMetadataContributor contributor = new CompositeMetadataContributor(emptyList());
+	@Test
+	public void should_return_empty_metadata() {
+		CompositeMetadataContributor contributor = new CompositeMetadataContributor(emptyList());
 
-        Map<String, String> metadata = contributor.getMetadata();
+		Map<String, String> metadata = contributor.getMetadata();
 
-        assertThat(metadata).isEmpty();
-    }
+		assertThat(metadata).isEmpty();
+	}
+
 }

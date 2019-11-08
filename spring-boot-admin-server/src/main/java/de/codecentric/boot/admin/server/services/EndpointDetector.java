@@ -30,26 +30,29 @@ import org.springframework.util.StringUtils;
  * @author Johannes Edmeier
  */
 public class EndpointDetector {
-    private static final Logger log = LoggerFactory.getLogger(EndpointDetector.class);
-    private final InstanceRepository repository;
-    private final EndpointDetectionStrategy strategy;
 
-    public EndpointDetector(InstanceRepository repository, EndpointDetectionStrategy strategy) {
-        this.repository = repository;
-        this.strategy = strategy;
-    }
+	private static final Logger log = LoggerFactory.getLogger(EndpointDetector.class);
 
-    public Mono<Void> detectEndpoints(InstanceId id) {
-        return repository.computeIfPresent(id, (key, instance) -> this.doDetectEndpoints(instance)).then();
-    }
+	private final InstanceRepository repository;
 
-    private Mono<Instance> doDetectEndpoints(Instance instance) {
-        if (!StringUtils.hasText(instance.getRegistration().getManagementUrl()) ||
-            instance.getStatusInfo().isOffline() ||
-            instance.getStatusInfo().isUnknown()) {
-            return Mono.empty();
-        }
-        log.debug("Detect endpoints for {}", instance);
-        return strategy.detectEndpoints(instance).map(instance::withEndpoints);
-    }
+	private final EndpointDetectionStrategy strategy;
+
+	public EndpointDetector(InstanceRepository repository, EndpointDetectionStrategy strategy) {
+		this.repository = repository;
+		this.strategy = strategy;
+	}
+
+	public Mono<Void> detectEndpoints(InstanceId id) {
+		return repository.computeIfPresent(id, (key, instance) -> this.doDetectEndpoints(instance)).then();
+	}
+
+	private Mono<Instance> doDetectEndpoints(Instance instance) {
+		if (!StringUtils.hasText(instance.getRegistration().getManagementUrl()) || instance.getStatusInfo().isOffline()
+				|| instance.getStatusInfo().isUnknown()) {
+			return Mono.empty();
+		}
+		log.debug("Detect endpoints for {}", instance);
+		return strategy.detectEndpoints(instance).map(instance::withEndpoints);
+	}
+
 }

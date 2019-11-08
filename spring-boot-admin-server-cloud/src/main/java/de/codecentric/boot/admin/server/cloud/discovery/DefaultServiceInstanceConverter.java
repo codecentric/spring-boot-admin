@@ -31,122 +31,116 @@ import static org.springframework.util.StringUtils.isEmpty;
 
 /**
  * Converts any {@link ServiceInstance}s to {@link Instance}s. To customize the health- or
- * management-url for all instances you can set healthEndpointPath or managementContextPath
- * respectively. If you want to influence the url per service you can add
- * <code>management.context-path</code>, <code>management.port</code>, <code>management.address</code> or <code>health.path</code>
- * to the instances metadata.
+ * management-url for all instances you can set healthEndpointPath or
+ * managementContextPath respectively. If you want to influence the url per service you
+ * can add <code>management.context-path</code>, <code>management.port</code>,
+ * <code>management.address</code> or <code>health.path</code> to the instances metadata.
  *
  * @author Johannes Edmeier
  */
 public class DefaultServiceInstanceConverter implements ServiceInstanceConverter {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultServiceInstanceConverter.class);
-    private static final String KEY_MANAGEMENT_PORT = "management.port";
-    private static final String KEY_MANAGEMENT_PATH = "management.context-path";
-    private static final String KEY_MANAGEMENT_ADDRESS = "management.address";
-    private static final String KEY_HEALTH_PATH = "health.path";
 
-    /**
-     * Default context-path to be appended to the url of the discovered service for the
-     * managment-url.
-     */
-    private String managementContextPath = "/actuator";
-    /**
-     * Default path of the health-endpoint to be used for the health-url of the discovered service.
-     */
-    private String healthEndpointPath = "health";
+	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultServiceInstanceConverter.class);
 
-    @Override
-    public Registration convert(ServiceInstance instance) {
-        LOGGER.debug(
-            "Converting service '{}' running at '{}' with metadata {}",
-            instance.getServiceId(),
-            instance.getUri(),
-            instance.getMetadata()
-        );
+	private static final String KEY_MANAGEMENT_PORT = "management.port";
 
-        return Registration.create(instance.getServiceId(), getHealthUrl(instance).toString())
-                           .managementUrl(getManagementUrl(instance).toString())
-                           .serviceUrl(getServiceUrl(instance).toString())
-                           .metadata(getMetadata(instance))
-                           .build();
-    }
+	private static final String KEY_MANAGEMENT_PATH = "management.context-path";
 
-    protected URI getHealthUrl(ServiceInstance instance) {
-        return UriComponentsBuilder.fromUri(getManagementUrl(instance))
-                                   .path("/")
-                                   .path(getHealthPath(instance))
-                                   .build()
-                                   .toUri();
-    }
+	private static final String KEY_MANAGEMENT_ADDRESS = "management.address";
 
-    protected String getHealthPath(ServiceInstance instance) {
-        String healthPath = instance.getMetadata().get(KEY_HEALTH_PATH);
-        if (!isEmpty(healthPath)) {
-            return healthPath;
-        }
-        return this.healthEndpointPath;
-    }
+	private static final String KEY_HEALTH_PATH = "health.path";
 
-    protected URI getManagementUrl(ServiceInstance instance) {
-        return UriComponentsBuilder.newInstance()
-                                   .scheme(getManagementScheme(instance))
-                                   .host(getManagementHost(instance))
-                                   .port(getManagementPort(instance))
-                                   .path("/")
-                                   .path(getManagementPath(instance))
-                                   .build()
-                                   .toUri();
-    }
+	/**
+	 * Default context-path to be appended to the url of the discovered service for the
+	 * managment-url.
+	 */
+	private String managementContextPath = "/actuator";
 
-    private String getManagementScheme(ServiceInstance instance) {
-        return this.getServiceUrl(instance).getScheme();
-    }
+	/**
+	 * Default path of the health-endpoint to be used for the health-url of the discovered
+	 * service.
+	 */
+	private String healthEndpointPath = "health";
 
-    protected String getManagementHost(ServiceInstance instance) {
-        String managementServerHost = instance.getMetadata().get(KEY_MANAGEMENT_ADDRESS);
-        if (!isEmpty(managementServerHost)) {
-            return managementServerHost;
-        }
-        return getServiceUrl(instance).getHost();
-    }
+	@Override
+	public Registration convert(ServiceInstance instance) {
+		LOGGER.debug("Converting service '{}' running at '{}' with metadata {}", instance.getServiceId(),
+				instance.getUri(), instance.getMetadata());
 
-    protected String getManagementPort(ServiceInstance instance) {
-        String managementPort = instance.getMetadata().get(KEY_MANAGEMENT_PORT);
-        if (!isEmpty(managementPort)) {
-            return managementPort;
-        }
-        return String.valueOf(getServiceUrl(instance).getPort());
-    }
+		return Registration.create(instance.getServiceId(), getHealthUrl(instance).toString())
+				.managementUrl(getManagementUrl(instance).toString()).serviceUrl(getServiceUrl(instance).toString())
+				.metadata(getMetadata(instance)).build();
+	}
 
-    protected String getManagementPath(ServiceInstance instance) {
-        String managementPath = instance.getMetadata().get(DefaultServiceInstanceConverter.KEY_MANAGEMENT_PATH);
-        if (!isEmpty(managementPath)) {
-            return managementPath;
-        }
-        return this.managementContextPath;
-    }
+	protected URI getHealthUrl(ServiceInstance instance) {
+		return UriComponentsBuilder.fromUri(getManagementUrl(instance)).path("/").path(getHealthPath(instance)).build()
+				.toUri();
+	}
 
-    protected URI getServiceUrl(ServiceInstance instance) {
-        return UriComponentsBuilder.fromUri(instance.getUri()).path("/").build().toUri();
-    }
+	protected String getHealthPath(ServiceInstance instance) {
+		String healthPath = instance.getMetadata().get(KEY_HEALTH_PATH);
+		if (!isEmpty(healthPath)) {
+			return healthPath;
+		}
+		return this.healthEndpointPath;
+	}
 
-    protected Map<String, String> getMetadata(ServiceInstance instance) {
-        return instance.getMetadata() != null ? instance.getMetadata() : emptyMap();
-    }
+	protected URI getManagementUrl(ServiceInstance instance) {
+		return UriComponentsBuilder.newInstance().scheme(getManagementScheme(instance))
+				.host(getManagementHost(instance)).port(getManagementPort(instance)).path("/")
+				.path(getManagementPath(instance)).build().toUri();
+	}
 
-    public void setManagementContextPath(String managementContextPath) {
-        this.managementContextPath = managementContextPath;
-    }
+	private String getManagementScheme(ServiceInstance instance) {
+		return this.getServiceUrl(instance).getScheme();
+	}
 
-    public String getManagementContextPath() {
-        return this.managementContextPath;
-    }
+	protected String getManagementHost(ServiceInstance instance) {
+		String managementServerHost = instance.getMetadata().get(KEY_MANAGEMENT_ADDRESS);
+		if (!isEmpty(managementServerHost)) {
+			return managementServerHost;
+		}
+		return getServiceUrl(instance).getHost();
+	}
 
-    public void setHealthEndpointPath(String healthEndpointPath) {
-        this.healthEndpointPath = healthEndpointPath;
-    }
+	protected String getManagementPort(ServiceInstance instance) {
+		String managementPort = instance.getMetadata().get(KEY_MANAGEMENT_PORT);
+		if (!isEmpty(managementPort)) {
+			return managementPort;
+		}
+		return String.valueOf(getServiceUrl(instance).getPort());
+	}
 
-    public String getHealthEndpointPath() {
-        return this.healthEndpointPath;
-    }
+	protected String getManagementPath(ServiceInstance instance) {
+		String managementPath = instance.getMetadata().get(DefaultServiceInstanceConverter.KEY_MANAGEMENT_PATH);
+		if (!isEmpty(managementPath)) {
+			return managementPath;
+		}
+		return this.managementContextPath;
+	}
+
+	protected URI getServiceUrl(ServiceInstance instance) {
+		return UriComponentsBuilder.fromUri(instance.getUri()).path("/").build().toUri();
+	}
+
+	protected Map<String, String> getMetadata(ServiceInstance instance) {
+		return instance.getMetadata() != null ? instance.getMetadata() : emptyMap();
+	}
+
+	public void setManagementContextPath(String managementContextPath) {
+		this.managementContextPath = managementContextPath;
+	}
+
+	public String getManagementContextPath() {
+		return this.managementContextPath;
+	}
+
+	public void setHealthEndpointPath(String healthEndpointPath) {
+		this.healthEndpointPath = healthEndpointPath;
+	}
+
+	public String getHealthEndpointPath() {
+		return this.healthEndpointPath;
+	}
+
 }

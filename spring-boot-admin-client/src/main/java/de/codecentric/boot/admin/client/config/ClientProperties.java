@@ -28,78 +28,78 @@ import org.springframework.core.env.Environment;
 @ConfigurationProperties(prefix = "spring.boot.admin.client")
 public class ClientProperties {
 
-    /**
-     * The admin server urls to register at
-     */
-    private String[] url = new String[]{};
+	/**
+	 * The admin server urls to register at
+	 */
+	private String[] url = new String[] {};
 
-    /**
-     * The admin rest-apis path.
-     */
-    private String apiPath = "instances";
+	/**
+	 * The admin rest-apis path.
+	 */
+	private String apiPath = "instances";
 
-    /**
-     * Time interval the registration is repeated
-     */
-    @DurationUnit(ChronoUnit.MILLIS)
-    private Duration period = Duration.ofMillis(10_000L);
+	/**
+	 * Time interval the registration is repeated
+	 */
+	@DurationUnit(ChronoUnit.MILLIS)
+	private Duration period = Duration.ofMillis(10_000L);
 
-    /**
-     * Connect timeout for the registration.
-     */
-    @DurationUnit(ChronoUnit.MILLIS)
-    private Duration connectTimeout = Duration.ofMillis(5_000L);
+	/**
+	 * Connect timeout for the registration.
+	 */
+	@DurationUnit(ChronoUnit.MILLIS)
+	private Duration connectTimeout = Duration.ofMillis(5_000L);
 
-    /**
-     * Read timeout (in ms) for the registration.
-     */
-    @DurationUnit(ChronoUnit.MILLIS)
-    private Duration readTimeout = Duration.ofMillis(5_000L);
+	/**
+	 * Read timeout (in ms) for the registration.
+	 */
+	@DurationUnit(ChronoUnit.MILLIS)
+	private Duration readTimeout = Duration.ofMillis(5_000L);
 
-    /**
-     * Username for basic authentication on admin server
-     */
-    @Nullable
-    private String username;
+	/**
+	 * Username for basic authentication on admin server
+	 */
+	@Nullable
+	private String username;
 
-    /**
-     * Password for basic authentication on admin server
-     */
-    @Nullable
-    private String password;
+	/**
+	 * Password for basic authentication on admin server
+	 */
+	@Nullable
+	private String password;
 
-    /**
-     * Enable automatic deregistration on shutdown
-     * If not set it defaults to true if a active {@link CloudPlatform} is present;
-     */
-    @Nullable
-    private Boolean autoDeregistration = null;
+	/**
+	 * Enable automatic deregistration on shutdown If not set it defaults to true if a
+	 * active {@link CloudPlatform} is present;
+	 */
+	@Nullable
+	private Boolean autoDeregistration = null;
 
-    /**
-     * Enable automatic registration when the application is ready.
-     */
-    private boolean autoRegistration = true;
+	/**
+	 * Enable automatic registration when the application is ready.
+	 */
+	private boolean autoRegistration = true;
 
-    /**
-     * Enable registration against one or all admin servers
-     */
-    private boolean registerOnce = true;
+	/**
+	 * Enable registration against one or all admin servers
+	 */
+	private boolean registerOnce = true;
 
-    /**
-     * Enable Spring Boot Admin Client.
-     */
-    private boolean enabled = true;
+	/**
+	 * Enable Spring Boot Admin Client.
+	 */
+	private boolean enabled = true;
 
+	public String[] getAdminUrl() {
+		String[] adminUrls = this.url.clone();
+		for (int i = 0; i < adminUrls.length; i++) {
+			adminUrls[i] += "/" + this.apiPath;
+		}
+		return adminUrls;
+	}
 
-    public String[] getAdminUrl() {
-        String[] adminUrls = this.url.clone();
-        for (int i = 0; i < adminUrls.length; i++) {
-            adminUrls[i] += "/" + this.apiPath;
-        }
-        return adminUrls;
-    }
+	public boolean isAutoDeregistration(Environment environment) {
+		return this.autoDeregistration != null ? this.autoDeregistration : CloudPlatform.getActive(environment) != null;
+	}
 
-    public boolean isAutoDeregistration(Environment environment) {
-        return this.autoDeregistration != null ? this.autoDeregistration : CloudPlatform.getActive(environment) != null;
-    }
 }

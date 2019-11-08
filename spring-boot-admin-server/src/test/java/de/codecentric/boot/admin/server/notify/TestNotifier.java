@@ -23,15 +23,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestNotifier implements Notifier {
-    private List<InstanceEvent> events = new ArrayList<>();
 
-    @Override
-    public Mono<Void> notify(InstanceEvent event) {
-        this.events.add(event);
-        return Mono.empty();
-    }
+	private List<InstanceEvent> events = new ArrayList<>();
 
-    public List<InstanceEvent> getEvents() {
-        return events;
-    }
+	@Override
+	public Mono<Void> notify(InstanceEvent event) {
+		this.events.add(event);
+		return Mono.empty();
+	}
+
+	public List<InstanceEvent> getEvents() {
+		return events;
+	}
+
 }

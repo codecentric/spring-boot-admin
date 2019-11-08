@@ -39,120 +39,138 @@ import static java.util.Collections.singletonMap;
 
 @AdminController
 public class UiController {
-    private final String publicUrl;
-    private final List<UiExtension> cssExtensions;
-    private final List<UiExtension> jsExtensions;
-    private final Settings uiSettings;
 
-    public UiController(String publicUrl, List<UiExtension> uiExtensions, Settings uiSettings) {
-        this.publicUrl = publicUrl;
-        this.uiSettings = uiSettings;
-        this.cssExtensions = uiExtensions.stream()
-                                         .filter(e -> e.getResourcePath().endsWith(".css"))
-                                         .collect(Collectors.toList());
-        this.jsExtensions = uiExtensions.stream()
-                                        .filter(e -> e.getResourcePath().endsWith(".js"))
-                                        .collect(Collectors.toList());
-    }
+	private final String publicUrl;
 
-    @ModelAttribute(value = "baseUrl", binding = false)
-    public String getBaseUrl(UriComponentsBuilder uriBuilder) {
-        UriComponents publicComponents = UriComponentsBuilder.fromUriString(this.publicUrl).build();
-        if (publicComponents.getScheme() != null) {
-            uriBuilder.scheme(publicComponents.getScheme());
-        }
-        if (publicComponents.getHost() != null) {
-            uriBuilder.host(publicComponents.getHost());
-        }
-        if (publicComponents.getPort() != -1) {
-            uriBuilder.port(publicComponents.getPort());
-        }
-        if (publicComponents.getPath() != null) {
-            uriBuilder.path(publicComponents.getPath());
-        }
-        return uriBuilder.path("/").toUriString();
-    }
+	private final List<UiExtension> cssExtensions;
 
-    @ModelAttribute(value = "uiSettings", binding = false)
-    public Settings getUiSettings() {
-        return this.uiSettings;
-    }
+	private final List<UiExtension> jsExtensions;
 
-    @ModelAttribute(value = "cssExtensions", binding = false)
-    public List<UiExtension> getCssExtensions() {
-        return this.cssExtensions;
-    }
+	private final Settings uiSettings;
 
-    @ModelAttribute(value = "jsExtensions", binding = false)
-    public List<UiExtension> getJsExtensions() {
-        return this.jsExtensions;
-    }
+	public UiController(String publicUrl, List<UiExtension> uiExtensions, Settings uiSettings) {
+		this.publicUrl = publicUrl;
+		this.uiSettings = uiSettings;
+		this.cssExtensions = uiExtensions.stream().filter(e -> e.getResourcePath().endsWith(".css"))
+				.collect(Collectors.toList());
+		this.jsExtensions = uiExtensions.stream().filter(e -> e.getResourcePath().endsWith(".js"))
+				.collect(Collectors.toList());
+	}
 
-    @ModelAttribute(value = "user", binding = false)
-    public Map<String, Object> getUser(@Nullable Principal principal) {
-        if (principal != null) {
-            return singletonMap("name", principal.getName());
-        }
-        return emptyMap();
-    }
+	@ModelAttribute(value = "baseUrl", binding = false)
+	public String getBaseUrl(UriComponentsBuilder uriBuilder) {
+		UriComponents publicComponents = UriComponentsBuilder.fromUriString(this.publicUrl).build();
+		if (publicComponents.getScheme() != null) {
+			uriBuilder.scheme(publicComponents.getScheme());
+		}
+		if (publicComponents.getHost() != null) {
+			uriBuilder.host(publicComponents.getHost());
+		}
+		if (publicComponents.getPort() != -1) {
+			uriBuilder.port(publicComponents.getPort());
+		}
+		if (publicComponents.getPath() != null) {
+			uriBuilder.path(publicComponents.getPath());
+		}
+		return uriBuilder.path("/").toUriString();
+	}
 
-    @GetMapping(path = "/", produces = MediaType.TEXT_HTML_VALUE)
-    public String index() {
-        return "index";
-    }
+	@ModelAttribute(value = "uiSettings", binding = false)
+	public Settings getUiSettings() {
+		return this.uiSettings;
+	}
 
-    @GetMapping(path = "/sba-settings.js", produces = "application/javascript")
-    public String sbaSettings() {
-        return "sba-settings.js";
-    }
+	@ModelAttribute(value = "cssExtensions", binding = false)
+	public List<UiExtension> getCssExtensions() {
+		return this.cssExtensions;
+	}
 
-    @GetMapping(path = "/login", produces = MediaType.TEXT_HTML_VALUE)
-    public String login() {
-        return "login";
-    }
+	@ModelAttribute(value = "jsExtensions", binding = false)
+	public List<UiExtension> getJsExtensions() {
+		return this.jsExtensions;
+	}
 
-    @lombok.Data
-    @lombok.Builder
-    public static class Settings {
-        private final String title;
-        private final String brand;
-        private final String loginIcon;
-        private final String favicon;
-        private final String faviconDanger;
-        private final boolean notificationFilterEnabled;
-        private final boolean rememberMeEnabled;
-        private final List<String> routes;
-        private final List<ExternalView> externalViews;
-    }
+	@ModelAttribute(value = "user", binding = false)
+	public Map<String, Object> getUser(@Nullable Principal principal) {
+		if (principal != null) {
+			return singletonMap("name", principal.getName());
+		}
+		return emptyMap();
+	}
 
-    @lombok.Data
-    @JsonInclude(Include.NON_EMPTY)
-    @ConstructorBinding
-    public static class ExternalView {
-        /**
-         * Label to be shown in the navbar.
-         */
-        private final String label;
-        /**
-         * Url for the external view to be linked
-         */
-        private final String url;
-        /**
-         * Order in the navbar.
-         */
-        private final Integer order;
-        /**
-         * Should the page shown as an iframe or open in a new window.
-         */
-        private final boolean iframe;
+	@GetMapping(path = "/", produces = MediaType.TEXT_HTML_VALUE)
+	public String index() {
+		return "index";
+	}
 
-        public ExternalView(String label, String url, Integer order, boolean iframe) {
-            Assert.hasText(label, "'label' must not be empty");
-            Assert.hasText(url, "'url' must not be empty");
-            this.label = label;
-            this.url = url;
-            this.order = order;
-            this.iframe = iframe;
-        }
-    }
+	@GetMapping(path = "/sba-settings.js", produces = "application/javascript")
+	public String sbaSettings() {
+		return "sba-settings.js";
+	}
+
+	@GetMapping(path = "/login", produces = MediaType.TEXT_HTML_VALUE)
+	public String login() {
+		return "login";
+	}
+
+	@lombok.Data
+	@lombok.Builder
+	public static class Settings {
+
+		private final String title;
+
+		private final String brand;
+
+		private final String loginIcon;
+
+		private final String favicon;
+
+		private final String faviconDanger;
+
+		private final boolean notificationFilterEnabled;
+
+		private final boolean rememberMeEnabled;
+
+		private final List<String> routes;
+
+		private final List<ExternalView> externalViews;
+
+	}
+
+	@lombok.Data
+	@JsonInclude(Include.NON_EMPTY)
+	@ConstructorBinding
+	public static class ExternalView {
+
+		/**
+		 * Label to be shown in the navbar.
+		 */
+		private final String label;
+
+		/**
+		 * Url for the external view to be linked
+		 */
+		private final String url;
+
+		/**
+		 * Order in the navbar.
+		 */
+		private final Integer order;
+
+		/**
+		 * Should the page shown as an iframe or open in a new window.
+		 */
+		private final boolean iframe;
+
+		public ExternalView(String label, String url, Integer order, boolean iframe) {
+			Assert.hasText(label, "'label' must not be empty");
+			Assert.hasText(url, "'url' must not be empty");
+			this.label = label;
+			this.url = url;
+			this.order = order;
+			this.iframe = iframe;
+		}
+
+	}
+
 }

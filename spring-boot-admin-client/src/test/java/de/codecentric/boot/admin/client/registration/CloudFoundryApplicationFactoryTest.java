@@ -34,48 +34,51 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class CloudFoundryApplicationFactoryTest {
-    private InstanceProperties instanceProperties = new InstanceProperties();
-    private ServerProperties server = new ServerProperties();
-    private ManagementServerProperties management = new ManagementServerProperties();
-    private PathMappedEndpoints pathMappedEndpoints = mock(PathMappedEndpoints.class);
-    private WebEndpointProperties webEndpoint = new WebEndpointProperties();
-    private CloudFoundryApplicationProperties cfApplicationProperties = new CloudFoundryApplicationProperties();
-    private CloudFoundryApplicationFactory factory = new CloudFoundryApplicationFactory(this.instanceProperties,
-        this.management,
-        this.server,
-        this.pathMappedEndpoints,
-        this.webEndpoint,
-        () -> singletonMap("contributor", "test"),
-        this.cfApplicationProperties
-    );
 
-    @Before
-    public void setup() {
-        this.instanceProperties.setName("test");
-    }
+	private InstanceProperties instanceProperties = new InstanceProperties();
 
-    @Test
-    public void should_use_application_uri() {
-        when(this.pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
-        this.cfApplicationProperties.setUris(singletonList("application/Uppercase"));
+	private ServerProperties server = new ServerProperties();
 
-        Application app = this.factory.createApplication();
+	private ManagementServerProperties management = new ManagementServerProperties();
 
-        assertThat(app.getManagementUrl()).isEqualTo("http://application/Uppercase/actuator");
-        assertThat(app.getHealthUrl()).isEqualTo("http://application/Uppercase/actuator/health");
-        assertThat(app.getServiceUrl()).isEqualTo("http://application/Uppercase/");
-    }
+	private PathMappedEndpoints pathMappedEndpoints = mock(PathMappedEndpoints.class);
 
-    @Test
-    public void should_use_service_base_uri() {
-        when(this.pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
-        this.cfApplicationProperties.setUris(singletonList("application/Uppercase"));
-        this.instanceProperties.setServiceBaseUrl("https://serviceBaseUrl");
+	private WebEndpointProperties webEndpoint = new WebEndpointProperties();
 
-        Application app = this.factory.createApplication();
+	private CloudFoundryApplicationProperties cfApplicationProperties = new CloudFoundryApplicationProperties();
 
-        assertThat(app.getManagementUrl()).isEqualTo("https://serviceBaseUrl/actuator");
-        assertThat(app.getHealthUrl()).isEqualTo("https://serviceBaseUrl/actuator/health");
-        assertThat(app.getServiceUrl()).isEqualTo("https://serviceBaseUrl/");
-    }
+	private CloudFoundryApplicationFactory factory = new CloudFoundryApplicationFactory(this.instanceProperties,
+			this.management, this.server, this.pathMappedEndpoints, this.webEndpoint,
+			() -> singletonMap("contributor", "test"), this.cfApplicationProperties);
+
+	@Before
+	public void setup() {
+		this.instanceProperties.setName("test");
+	}
+
+	@Test
+	public void should_use_application_uri() {
+		when(this.pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
+		this.cfApplicationProperties.setUris(singletonList("application/Uppercase"));
+
+		Application app = this.factory.createApplication();
+
+		assertThat(app.getManagementUrl()).isEqualTo("http://application/Uppercase/actuator");
+		assertThat(app.getHealthUrl()).isEqualTo("http://application/Uppercase/actuator/health");
+		assertThat(app.getServiceUrl()).isEqualTo("http://application/Uppercase/");
+	}
+
+	@Test
+	public void should_use_service_base_uri() {
+		when(this.pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
+		this.cfApplicationProperties.setUris(singletonList("application/Uppercase"));
+		this.instanceProperties.setServiceBaseUrl("https://serviceBaseUrl");
+
+		Application app = this.factory.createApplication();
+
+		assertThat(app.getManagementUrl()).isEqualTo("https://serviceBaseUrl/actuator");
+		assertThat(app.getHealthUrl()).isEqualTo("https://serviceBaseUrl/actuator/health");
+		assertThat(app.getServiceUrl()).isEqualTo("https://serviceBaseUrl/");
+	}
+
 }

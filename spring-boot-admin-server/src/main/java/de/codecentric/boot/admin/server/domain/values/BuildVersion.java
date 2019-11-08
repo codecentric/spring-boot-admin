@@ -25,77 +25,81 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 @lombok.Data
 public class BuildVersion implements Serializable, Comparable<BuildVersion> {
-    private final String value;
 
-    private BuildVersion(String value) {
-        Assert.hasText(value, "'value' must not be empty");
-        this.value = value;
-    }
+	private final String value;
 
-    public static BuildVersion valueOf(String s) {
-        return new BuildVersion(s);
-    }
+	private BuildVersion(String value) {
+		Assert.hasText(value, "'value' must not be empty");
+		this.value = value;
+	}
 
-    @Nullable
-    public static BuildVersion from(Map<String, ?> map) {
-        if (map.isEmpty()) {
-            return null;
-        }
+	public static BuildVersion valueOf(String s) {
+		return new BuildVersion(s);
+	}
 
-        Object build = map.get("build");
-        if (build instanceof Map) {
-            Object version = ((Map<?, ?>) build).get("version");
-            if (version instanceof String) {
-                return valueOf((String) version);
-            }
-        }
+	@Nullable
+	public static BuildVersion from(Map<String, ?> map) {
+		if (map.isEmpty()) {
+			return null;
+		}
 
-        Object version = map.get("build.version");
-        if (version instanceof String) {
-            return valueOf((String) version);
-        }
+		Object build = map.get("build");
+		if (build instanceof Map) {
+			Object version = ((Map<?, ?>) build).get("version");
+			if (version instanceof String) {
+				return valueOf((String) version);
+			}
+		}
 
-        version = map.get("version");
-        if (version instanceof String) {
-            return valueOf((String) version);
-        }
-        return null;
-    }
+		Object version = map.get("build.version");
+		if (version instanceof String) {
+			return valueOf((String) version);
+		}
 
-    @JsonValue
-    public String getValue() {
-        return this.value;
-    }
+		version = map.get("version");
+		if (version instanceof String) {
+			return valueOf((String) version);
+		}
+		return null;
+	}
 
-    @Override
-    public String toString() {
-        return this.value;
-    }
+	@JsonValue
+	public String getValue() {
+		return this.value;
+	}
 
-    @Override
-    public int compareTo(BuildVersion other) {
-        try (Scanner s1 = new Scanner(this.value); Scanner s2 = new Scanner(other.value)) {
-            s1.useDelimiter("[.\\-+]");
-            s2.useDelimiter("[.\\-+]");
+	@Override
+	public String toString() {
+		return this.value;
+	}
 
-            while (s1.hasNext() && s2.hasNext()) {
-                int c;
-                if (s1.hasNextInt() && s2.hasNextInt()) {
-                    c = Integer.compare(s1.nextInt(), s2.nextInt());
-                } else {
-                    c = s1.next().compareTo(s2.next());
-                }
-                if (c != 0) {
-                    return c;
-                }
-            }
+	@Override
+	public int compareTo(BuildVersion other) {
+		try (Scanner s1 = new Scanner(this.value); Scanner s2 = new Scanner(other.value)) {
+			s1.useDelimiter("[.\\-+]");
+			s2.useDelimiter("[.\\-+]");
 
-            if (s1.hasNext()) {
-                return 1;
-            } else if (s2.hasNext()) {
-                return -1;
-            }
-        }
-        return 0;
-    }
+			while (s1.hasNext() && s2.hasNext()) {
+				int c;
+				if (s1.hasNextInt() && s2.hasNextInt()) {
+					c = Integer.compare(s1.nextInt(), s2.nextInt());
+				}
+				else {
+					c = s1.next().compareTo(s2.next());
+				}
+				if (c != 0) {
+					return c;
+				}
+			}
+
+			if (s1.hasNext()) {
+				return 1;
+			}
+			else if (s2.hasNext()) {
+				return -1;
+			}
+		}
+		return 0;
+	}
+
 }

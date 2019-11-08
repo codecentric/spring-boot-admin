@@ -48,203 +48,203 @@ import org.springframework.util.PatternMatchUtils;
  * @author Johannes Edmeier
  */
 public class InstanceDiscoveryListener {
-    private static final Logger log = LoggerFactory.getLogger(InstanceDiscoveryListener.class);
-    private static final String SOURCE = "discovery";
-    private final DiscoveryClient discoveryClient;
-    private final InstanceRegistry registry;
-    private final InstanceRepository repository;
-    private final HeartbeatMonitor monitor = new HeartbeatMonitor();
-    private ServiceInstanceConverter converter = new DefaultServiceInstanceConverter();
 
-    /**
-     * Set of serviceIds to be ignored and not to be registered as application. Supports simple
-     * patterns (e.g. "foo*", "*foo", "foo*bar").
-     */
-    private Set<String> ignoredServices = new HashSet<>();
+	private static final Logger log = LoggerFactory.getLogger(InstanceDiscoveryListener.class);
 
-    /**
-     * Set of serviceIds that has to match to be registered as application. Supports simple
-     * patterns (e.g. "foo*", "*foo", "foo*bar"). Default value is everything
-     */
-    private Set<String> services = new HashSet<>(Collections.singletonList("*"));
+	private static final String SOURCE = "discovery";
 
-    /**
-     * Map of metadata that has to be matched by service instance that is to be registered. (e.g. "discoverable=true")
-     */
-    private Map<String, String> instancesMetadata = new HashMap<>();
+	private final DiscoveryClient discoveryClient;
 
-    /**
-     * Map of metadata that has to be matched by service instance that is to be ignored. (e.g. "discoverable=false")
-     */
-    private Map<String, String> ignoredInstancesMetadata = new HashMap<>();
+	private final InstanceRegistry registry;
 
-    public InstanceDiscoveryListener(DiscoveryClient discoveryClient,
-                                     InstanceRegistry registry,
-                                     InstanceRepository repository) {
-        this.discoveryClient = discoveryClient;
-        this.registry = registry;
-        this.repository = repository;
-    }
+	private final InstanceRepository repository;
 
-    @EventListener
-    public void onApplicationReady(ApplicationReadyEvent event) {
-        discover();
-    }
+	private final HeartbeatMonitor monitor = new HeartbeatMonitor();
 
-    @EventListener
-    public void onInstanceRegistered(InstanceRegisteredEvent<?> event) {
-        discover();
-    }
+	private ServiceInstanceConverter converter = new DefaultServiceInstanceConverter();
 
-    @EventListener
-    public void onParentHeartbeat(ParentHeartbeatEvent event) {
-        discoverIfNeeded(event.getValue());
-    }
+	/**
+	 * Set of serviceIds to be ignored and not to be registered as application. Supports
+	 * simple patterns (e.g. "foo*", "*foo", "foo*bar").
+	 */
+	private Set<String> ignoredServices = new HashSet<>();
 
-    @EventListener
-    public void onApplicationEvent(HeartbeatEvent event) {
-        discoverIfNeeded(event.getValue());
-    }
+	/**
+	 * Set of serviceIds that has to match to be registered as application. Supports
+	 * simple patterns (e.g. "foo*", "*foo", "foo*bar"). Default value is everything
+	 */
+	private Set<String> services = new HashSet<>(Collections.singletonList("*"));
 
-    private void discoverIfNeeded(Object value) {
-        if (this.monitor.update(value)) {
-            discover();
-        }
-    }
+	/**
+	 * Map of metadata that has to be matched by service instance that is to be
+	 * registered. (e.g. "discoverable=true")
+	 */
+	private Map<String, String> instancesMetadata = new HashMap<>();
 
-    protected void discover() {
-        log.debug("Discovering new instances from DiscoveryClient");
-        Flux.fromIterable(discoveryClient.getServices())
-            .filter(this::shouldRegisterService)
-            .flatMapIterable(discoveryClient::getInstances)
-            .filter(this::shouldRegisterInstanceBasedOnMetadata)
-            .flatMap(this::registerInstance)
-            .collect(Collectors.toSet())
-            .flatMap(this::removeStaleInstances)
-            .subscribe(v -> { }, ex -> log.error("Unexpected error.", ex));
-    }
+	/**
+	 * Map of metadata that has to be matched by service instance that is to be ignored.
+	 * (e.g. "discoverable=false")
+	 */
+	private Map<String, String> ignoredInstancesMetadata = new HashMap<>();
 
-    protected Mono<Void> removeStaleInstances(Set<InstanceId> registeredInstanceIds) {
-        return repository.findAll()
-                         .filter(Instance::isRegistered)
-                         .filter(instance -> SOURCE.equals(instance.getRegistration().getSource()))
-                         .map(Instance::getId)
-                         .filter(id -> !registeredInstanceIds.contains(id))
-                         .doOnNext(id -> log.info(
-                             "Instance '{}' missing in DiscoveryClient services and will be removed.",
-                             id
-                         ))
-                         .flatMap(registry::deregister)
-                         .then();
-    }
+	public InstanceDiscoveryListener(DiscoveryClient discoveryClient, InstanceRegistry registry,
+			InstanceRepository repository) {
+		this.discoveryClient = discoveryClient;
+		this.registry = registry;
+		this.repository = repository;
+	}
 
-    protected boolean shouldRegisterService(final String serviceId) {
-        boolean shouldRegister = matchesPattern(serviceId, services) && !matchesPattern(serviceId, ignoredServices);
-        if (!shouldRegister) {
-            log.debug("Ignoring service '{}' from discovery.", serviceId);
-        }
-        return shouldRegister;
-    }
+	@EventListener
+	public void onApplicationReady(ApplicationReadyEvent event) {
+		discover();
+	}
 
-    protected boolean matchesPattern(String serviceId, Set<String> patterns) {
-        return patterns.stream().anyMatch(pattern -> PatternMatchUtils.simpleMatch(pattern, serviceId));
-    }
+	@EventListener
+	public void onInstanceRegistered(InstanceRegisteredEvent<?> event) {
+		discover();
+	}
 
-    protected boolean shouldRegisterInstanceBasedOnMetadata(ServiceInstance instance) {
-        boolean shouldRegister = isInstanceAllowedBasedOnMetadata(instance) && !isInstanceIgnoredBasedOnMetadata(instance);
-        if (!shouldRegister) {
-            log.debug("Ignoring instance '{}' of '{}' service from discovery based on metadata.", instance.getInstanceId(), instance.getServiceId());
-        }
-        return shouldRegister;
-    }
+	@EventListener
+	public void onParentHeartbeat(ParentHeartbeatEvent event) {
+		discoverIfNeeded(event.getValue());
+	}
 
-    protected Mono<InstanceId> registerInstance(ServiceInstance instance) {
-        try {
-            Registration registration = converter.convert(instance).toBuilder().source(SOURCE).build();
-            log.debug("Registering discovered instance {}", registration);
-            return registry.register(registration);
-        } catch (Exception ex) {
-            log.error("Couldn't register instance for discovered instance ({})", toString(instance), ex);
-            return Mono.empty();
-        }
-    }
+	@EventListener
+	public void onApplicationEvent(HeartbeatEvent event) {
+		discoverIfNeeded(event.getValue());
+	}
 
-    protected String toString(ServiceInstance instance) {
-        String httpScheme = instance.isSecure() ? "https" : "http";
-        return String.format("serviceId=%s, instanceId=%s, url= %s://%s:%d",
-                             instance.getServiceId(), instance.getInstanceId(),
-                             instance.getScheme() != null ? instance.getScheme() : httpScheme,
-                             instance.getHost(),
-                             instance.getPort()
-        );
-    }
+	private void discoverIfNeeded(Object value) {
+		if (this.monitor.update(value)) {
+			discover();
+		}
+	}
 
-    public void setConverter(ServiceInstanceConverter converter) {
-        this.converter = converter;
-    }
+	protected void discover() {
+		log.debug("Discovering new instances from DiscoveryClient");
+		Flux.fromIterable(discoveryClient.getServices()).filter(this::shouldRegisterService)
+				.flatMapIterable(discoveryClient::getInstances).filter(this::shouldRegisterInstanceBasedOnMetadata)
+				.flatMap(this::registerInstance).collect(Collectors.toSet()).flatMap(this::removeStaleInstances)
+				.subscribe(v -> {
+				}, ex -> log.error("Unexpected error.", ex));
+	}
 
-    public void setIgnoredServices(Set<String> ignoredServices) {
-        this.ignoredServices = ignoredServices;
-    }
+	protected Mono<Void> removeStaleInstances(Set<InstanceId> registeredInstanceIds) {
+		return repository.findAll().filter(Instance::isRegistered)
+				.filter(instance -> SOURCE.equals(instance.getRegistration().getSource())).map(Instance::getId)
+				.filter(id -> !registeredInstanceIds.contains(id))
+				.doOnNext(id -> log.info("Instance '{}' missing in DiscoveryClient services and will be removed.", id))
+				.flatMap(registry::deregister).then();
+	}
 
-    public Set<String> getIgnoredServices() {
-        return ignoredServices;
-    }
+	protected boolean shouldRegisterService(final String serviceId) {
+		boolean shouldRegister = matchesPattern(serviceId, services) && !matchesPattern(serviceId, ignoredServices);
+		if (!shouldRegister) {
+			log.debug("Ignoring service '{}' from discovery.", serviceId);
+		}
+		return shouldRegister;
+	}
 
-    public Set<String> getServices() {
-        return services;
-    }
+	protected boolean matchesPattern(String serviceId, Set<String> patterns) {
+		return patterns.stream().anyMatch(pattern -> PatternMatchUtils.simpleMatch(pattern, serviceId));
+	}
 
-    public void setServices(Set<String> services) {
-        this.services = services;
-    }
+	protected boolean shouldRegisterInstanceBasedOnMetadata(ServiceInstance instance) {
+		boolean shouldRegister = isInstanceAllowedBasedOnMetadata(instance)
+				&& !isInstanceIgnoredBasedOnMetadata(instance);
+		if (!shouldRegister) {
+			log.debug("Ignoring instance '{}' of '{}' service from discovery based on metadata.",
+					instance.getInstanceId(), instance.getServiceId());
+		}
+		return shouldRegister;
+	}
 
-    public Map<String, String> getInstancesMetadata() {
-        return instancesMetadata;
-    }
+	protected Mono<InstanceId> registerInstance(ServiceInstance instance) {
+		try {
+			Registration registration = converter.convert(instance).toBuilder().source(SOURCE).build();
+			log.debug("Registering discovered instance {}", registration);
+			return registry.register(registration);
+		}
+		catch (Exception ex) {
+			log.error("Couldn't register instance for discovered instance ({})", toString(instance), ex);
+			return Mono.empty();
+		}
+	}
 
-    public void setInstancesMetadata(Map<String, String> instancesMetadata) {
-        this.instancesMetadata = instancesMetadata;
-    }
+	protected String toString(ServiceInstance instance) {
+		String httpScheme = instance.isSecure() ? "https" : "http";
+		return String.format("serviceId=%s, instanceId=%s, url= %s://%s:%d", instance.getServiceId(),
+				instance.getInstanceId(), instance.getScheme() != null ? instance.getScheme() : httpScheme,
+				instance.getHost(), instance.getPort());
+	}
 
-    public Map<String, String> getIgnoredInstancesMetadata() {
-        return ignoredInstancesMetadata;
-    }
+	public void setConverter(ServiceInstanceConverter converter) {
+		this.converter = converter;
+	}
 
-    public void setIgnoredInstancesMetadata(Map<String, String> ignoredInstancesMetadata) {
-        this.ignoredInstancesMetadata = ignoredInstancesMetadata;
-    }
+	public void setIgnoredServices(Set<String> ignoredServices) {
+		this.ignoredServices = ignoredServices;
+	}
 
-    private boolean isInstanceAllowedBasedOnMetadata(ServiceInstance instance) {
-        if (instancesMetadata.isEmpty()) {
-            return true;
-        }
+	public Set<String> getIgnoredServices() {
+		return ignoredServices;
+	}
 
-        for (Map.Entry<String, String> metadata : instance.getMetadata().entrySet()) {
-            if (isMapContainsEntry(instancesMetadata, metadata)) {
-                return true;
-            }
-        }
+	public Set<String> getServices() {
+		return services;
+	}
 
-        return false;
-    }
+	public void setServices(Set<String> services) {
+		this.services = services;
+	}
 
-    private boolean isInstanceIgnoredBasedOnMetadata(ServiceInstance instance) {
-        if (ignoredInstancesMetadata.isEmpty()) {
-            return false;
-        }
+	public Map<String, String> getInstancesMetadata() {
+		return instancesMetadata;
+	}
 
-        for (Map.Entry<String, String> metadata : instance.getMetadata().entrySet()) {
-            if (isMapContainsEntry(ignoredInstancesMetadata, metadata)) {
-                return true;
-            }
-        }
+	public void setInstancesMetadata(Map<String, String> instancesMetadata) {
+		this.instancesMetadata = instancesMetadata;
+	}
 
-        return false;
-    }
+	public Map<String, String> getIgnoredInstancesMetadata() {
+		return ignoredInstancesMetadata;
+	}
 
-    private boolean isMapContainsEntry(Map<String, String> map, Map.Entry<String, String> entry) {
-        String value = map.get(entry.getKey());
-        return value != null && value.equals(entry.getValue());
-    }
+	public void setIgnoredInstancesMetadata(Map<String, String> ignoredInstancesMetadata) {
+		this.ignoredInstancesMetadata = ignoredInstancesMetadata;
+	}
+
+	private boolean isInstanceAllowedBasedOnMetadata(ServiceInstance instance) {
+		if (instancesMetadata.isEmpty()) {
+			return true;
+		}
+
+		for (Map.Entry<String, String> metadata : instance.getMetadata().entrySet()) {
+			if (isMapContainsEntry(instancesMetadata, metadata)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private boolean isInstanceIgnoredBasedOnMetadata(ServiceInstance instance) {
+		if (ignoredInstancesMetadata.isEmpty()) {
+			return false;
+		}
+
+		for (Map.Entry<String, String> metadata : instance.getMetadata().entrySet()) {
+			if (isMapContainsEntry(ignoredInstancesMetadata, metadata)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private boolean isMapContainsEntry(Map<String, String> map, Map.Entry<String, String> entry) {
+		String value = map.get(entry.getKey());
+		return value != null && value.equals(entry.getValue());
+	}
+
 }

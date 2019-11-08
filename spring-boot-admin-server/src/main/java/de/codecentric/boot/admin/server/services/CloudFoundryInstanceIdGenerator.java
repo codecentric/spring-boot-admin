@@ -28,20 +28,22 @@ import org.springframework.util.StringUtils;
  * @author Tetsushi Awano
  */
 public class CloudFoundryInstanceIdGenerator implements InstanceIdGenerator {
-    private final InstanceIdGenerator fallbackIdGenerator;
 
-    public CloudFoundryInstanceIdGenerator(InstanceIdGenerator fallbackIdGenerator) {
-        this.fallbackIdGenerator = fallbackIdGenerator;
-    }
+	private final InstanceIdGenerator fallbackIdGenerator;
 
-    @Override
-    public InstanceId generateId(Registration registration) {
-        String applicationId = registration.getMetadata().get("applicationId");
-        String instanceId = registration.getMetadata().get("instanceId");
+	public CloudFoundryInstanceIdGenerator(InstanceIdGenerator fallbackIdGenerator) {
+		this.fallbackIdGenerator = fallbackIdGenerator;
+	}
 
-        if (StringUtils.hasText(applicationId) && StringUtils.hasText(instanceId)) {
-            return InstanceId.of(String.format("%s:%s", applicationId, instanceId));
-        }
-        return fallbackIdGenerator.generateId(registration);
-    }
+	@Override
+	public InstanceId generateId(Registration registration) {
+		String applicationId = registration.getMetadata().get("applicationId");
+		String instanceId = registration.getMetadata().get("instanceId");
+
+		if (StringUtils.hasText(applicationId) && StringUtils.hasText(instanceId)) {
+			return InstanceId.of(String.format("%s:%s", applicationId, instanceId));
+		}
+		return fallbackIdGenerator.generateId(registration);
+	}
+
 }

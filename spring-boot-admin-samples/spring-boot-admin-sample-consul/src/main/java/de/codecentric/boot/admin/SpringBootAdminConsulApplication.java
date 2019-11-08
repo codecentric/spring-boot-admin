@@ -37,44 +37,41 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableAdminServer
 public class SpringBootAdminConsulApplication {
 
-    @Profile("insecure")
-    @Configuration(proxyBeanMethods = false)
-public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
-        private final String adminContextPath;
+	@Profile("insecure")
+	@Configuration(proxyBeanMethods = false)
+	public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
 
-        public SecurityPermitAllConfig(AdminServerProperties adminServerProperties) {
-            this.adminContextPath = adminServerProperties.getContextPath();
-        }
+		private final String adminContextPath;
 
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http
-                .authorizeRequests()
-                .anyRequest()
-                .permitAll()
-                .and()
-                .csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringRequestMatchers(
-                    new AntPathRequestMatcher(this.adminContextPath + "/instances", HttpMethod.POST.toString()),
-                    new AntPathRequestMatcher(this.adminContextPath + "/instances/*", HttpMethod.DELETE.toString()),
-                    new AntPathRequestMatcher(this.adminContextPath + "/actuator/**")
-                );
-        }
-    }
+		public SecurityPermitAllConfig(AdminServerProperties adminServerProperties) {
+			this.adminContextPath = adminServerProperties.getContextPath();
+		}
 
-    @Profile("secure")
-    @Configuration(proxyBeanMethods = false)
-public static class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
-        private final String adminContextPath;
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			http.authorizeRequests().anyRequest().permitAll().and().csrf()
+					.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).ignoringRequestMatchers(
+							new AntPathRequestMatcher(this.adminContextPath + "/instances", HttpMethod.POST.toString()),
+							new AntPathRequestMatcher(this.adminContextPath + "/instances/*",
+									HttpMethod.DELETE.toString()),
+							new AntPathRequestMatcher(this.adminContextPath + "/actuator/**"));
+		}
 
-        public SecuritySecureConfig(AdminServerProperties adminServerProperties) {
-            this.adminContextPath = adminServerProperties.getContextPath();
-        }
+	}
 
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            // @formatter:off
+	@Profile("secure")
+	@Configuration(proxyBeanMethods = false)
+	public static class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
+
+		private final String adminContextPath;
+
+		public SecuritySecureConfig(AdminServerProperties adminServerProperties) {
+			this.adminContextPath = adminServerProperties.getContextPath();
+		}
+
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			// @formatter:off
             SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
             successHandler.setTargetUrlParameter("redirectTo");
             successHandler.setDefaultTargetUrl(this.adminContextPath + "/");
@@ -95,11 +92,12 @@ public static class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
                     new AntPathRequestMatcher(this.adminContextPath + "/actuator/**")
                 );
             // @formatter:on
-        }
-    }
+		}
 
-    public static void main(String[] args) {
-        SpringApplication.run(SpringBootAdminConsulApplication.class, args);
-    }
+	}
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringBootAdminConsulApplication.class, args);
+	}
 
 }

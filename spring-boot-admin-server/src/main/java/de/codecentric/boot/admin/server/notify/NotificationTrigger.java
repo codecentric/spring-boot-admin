@@ -26,22 +26,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class NotificationTrigger extends AbstractEventHandler<InstanceEvent> {
-    private static final Logger log = LoggerFactory.getLogger(NotificationTrigger.class);
-    private final Notifier notifier;
 
-    public NotificationTrigger(Notifier notifier, Publisher<InstanceEvent> publisher) {
-        super(publisher, InstanceEvent.class);
-        this.notifier = notifier;
-    }
+	private static final Logger log = LoggerFactory.getLogger(NotificationTrigger.class);
 
-    @Override
-    protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
-        return publisher.flatMap(this::sendNotifications);
-    }
+	private final Notifier notifier;
 
-    protected Mono<Void> sendNotifications(InstanceEvent event) {
-        return this.notifier.notify(event)
-                            .doOnError(e -> log.warn("Couldn't notify for event {} ", event, e))
-                            .onErrorResume(e -> Mono.empty());
-    }
+	public NotificationTrigger(Notifier notifier, Publisher<InstanceEvent> publisher) {
+		super(publisher, InstanceEvent.class);
+		this.notifier = notifier;
+	}
+
+	@Override
+	protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
+		return publisher.flatMap(this::sendNotifications);
+	}
+
+	protected Mono<Void> sendNotifications(InstanceEvent event) {
+		return this.notifier.notify(event).doOnError(e -> log.warn("Couldn't notify for event {} ", event, e))
+				.onErrorResume(e -> Mono.empty());
+	}
+
 }

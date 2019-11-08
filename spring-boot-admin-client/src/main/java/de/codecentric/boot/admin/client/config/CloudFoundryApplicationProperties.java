@@ -24,9 +24,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @lombok.Data
 @ConfigurationProperties("vcap.application")
 public class CloudFoundryApplicationProperties {
-    @Nullable
-    private String applicationId;
-    @Nullable
-    private String instanceIndex;
-    private List<String> uris = new ArrayList<>();
+
+	@Nullable
+	private String applicationId;
+
+	@Nullable
+	private String instanceIndex;
+
+	private List<String> uris = new ArrayList<>();
+
 }

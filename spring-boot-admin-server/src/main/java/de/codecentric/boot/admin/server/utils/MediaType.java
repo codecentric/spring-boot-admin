@@ -19,12 +19,15 @@ package de.codecentric.boot.admin.server.utils;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 
 public final class MediaType {
-    @SuppressWarnings("deprecation") // We need to support Spring Boot 1.x apps...
-    public static final org.springframework.http.MediaType ACTUATOR_V1_MEDIATYPE = org.springframework.http.MediaType.parseMediaType(
-        ActuatorMediaType.V1_JSON);
-    public static final org.springframework.http.MediaType ACTUATOR_V2_MEDIATYPE = org.springframework.http.MediaType.parseMediaType(
-        ActuatorMediaType.V2_JSON);
 
-    private MediaType() {
-    }
+	@SuppressWarnings("deprecation") // We need to support Spring Boot 1.x apps...
+	public static final org.springframework.http.MediaType ACTUATOR_V1_MEDIATYPE = org.springframework.http.MediaType
+			.parseMediaType(ActuatorMediaType.V1_JSON);
+
+	public static final org.springframework.http.MediaType ACTUATOR_V2_MEDIATYPE = org.springframework.http.MediaType
+			.parseMediaType(ActuatorMediaType.V2_JSON);
+
+	private MediaType() {
+	}
+
 }

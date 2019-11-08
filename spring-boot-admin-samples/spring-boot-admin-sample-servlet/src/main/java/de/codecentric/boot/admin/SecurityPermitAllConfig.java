@@ -29,25 +29,20 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Profile("insecure")
 @Configuration(proxyBeanMethods = false)
 public class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
-    private final AdminServerProperties adminServer;
 
-    public SecurityPermitAllConfig(AdminServerProperties adminServer) {
-        this.adminServer = adminServer;
-    }
+	private final AdminServerProperties adminServer;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-            .authorizeRequests()
-            .anyRequest()
-            .permitAll()
-            .and()
-            .csrf()
-            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-            .ignoringRequestMatchers(
-                new AntPathRequestMatcher(this.adminServer.path("/instances"), HttpMethod.POST.toString()),
-                new AntPathRequestMatcher(this.adminServer.path("/instances/*"), HttpMethod.DELETE.toString()),
-                new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))
-            );
-    }
+	public SecurityPermitAllConfig(AdminServerProperties adminServer) {
+		this.adminServer = adminServer;
+	}
+
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.authorizeRequests().anyRequest().permitAll().and().csrf()
+				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).ignoringRequestMatchers(
+						new AntPathRequestMatcher(this.adminServer.path("/instances"), HttpMethod.POST.toString()),
+						new AntPathRequestMatcher(this.adminServer.path("/instances/*"), HttpMethod.DELETE.toString()),
+						new AntPathRequestMatcher(this.adminServer.path("/actuator/**")));
+	}
+
 }

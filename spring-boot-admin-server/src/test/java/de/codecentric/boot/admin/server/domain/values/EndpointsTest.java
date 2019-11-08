@@ -16,7 +16,6 @@
 
 package de.codecentric.boot.admin.server.domain.values;
 
-
 import java.util.Collections;
 import org.junit.Test;
 
@@ -24,24 +23,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class EndpointsTest {
-    @Test
-    public void should_return_endpoint_or_empty() {
-        Endpoints endpoints = Endpoints.single("id", "path");
-        assertThat(endpoints.isPresent("id")).isTrue();
-        assertThat(endpoints.get("id")).contains(Endpoint.of("id", "path"));
-        assertThat(endpoints.get("none!")).isEmpty();
-    }
 
-    @Test
-    public void factory_methods() {
-        assertThat(Endpoints.empty()).isEqualTo(Endpoints.of(Collections.emptyList())).isEqualTo(Endpoints.of(null));
-        assertThat(Endpoints.of(Collections.singletonList(Endpoint.of("id", "path")))).isEqualTo(
-            Endpoints.empty().withEndpoint("id", "path")).isEqualTo(Endpoints.single("id", "path"));
-    }
+	@Test
+	public void should_return_endpoint_or_empty() {
+		Endpoints endpoints = Endpoints.single("id", "path");
+		assertThat(endpoints.isPresent("id")).isTrue();
+		assertThat(endpoints.get("id")).contains(Endpoint.of("id", "path"));
+		assertThat(endpoints.get("none!")).isEmpty();
+	}
 
-    @Test
-    public void should_throw_on_iterator_modificiation() {
-        Endpoints endpoints = Endpoints.single("id", "path");
-        assertThatThrownBy(() -> endpoints.iterator().remove()).isInstanceOf(UnsupportedOperationException.class);
-    }
+	@Test
+	public void factory_methods() {
+		assertThat(Endpoints.empty()).isEqualTo(Endpoints.of(Collections.emptyList())).isEqualTo(Endpoints.of(null));
+		assertThat(Endpoints.of(Collections.singletonList(Endpoint.of("id", "path"))))
+				.isEqualTo(Endpoints.empty().withEndpoint("id", "path")).isEqualTo(Endpoints.single("id", "path"));
+	}
+
+	@Test
+	public void should_throw_on_iterator_modificiation() {
+		Endpoints endpoints = Endpoints.single("id", "path");
+		assertThatThrownBy(() -> endpoints.iterator().remove()).isInstanceOf(UnsupportedOperationException.class);
+	}
+
 }

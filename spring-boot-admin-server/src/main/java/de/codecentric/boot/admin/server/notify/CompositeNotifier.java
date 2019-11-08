@@ -30,19 +30,22 @@ import org.springframework.util.Assert;
  * @author Sebastian Meiser
  */
 public class CompositeNotifier implements Notifier {
-    private static final Logger log = LoggerFactory.getLogger(CompositeNotifier.class);
-    private final Iterable<Notifier> delegates;
 
-    public CompositeNotifier(Iterable<Notifier> delegates) {
-        Assert.notNull(delegates, "'delegates' must not be null!");
-        this.delegates = delegates;
-    }
+	private static final Logger log = LoggerFactory.getLogger(CompositeNotifier.class);
 
-    @Override
-    public Mono<Void> notify(InstanceEvent event) {
-        return Flux.fromIterable(delegates).flatMap(d -> d.notify(event).onErrorResume(error -> {
-            log.warn("Unexpected exception while triggering notifications. Notification might not be sent.", error);
-            return Mono.empty();
-        })).then();
-    }
+	private final Iterable<Notifier> delegates;
+
+	public CompositeNotifier(Iterable<Notifier> delegates) {
+		Assert.notNull(delegates, "'delegates' must not be null!");
+		this.delegates = delegates;
+	}
+
+	@Override
+	public Mono<Void> notify(InstanceEvent event) {
+		return Flux.fromIterable(delegates).flatMap(d -> d.notify(event).onErrorResume(error -> {
+			log.warn("Unexpected exception while triggering notifications. Notification might not be sent.", error);
+			return Mono.empty();
+		})).then();
+	}
+
 }

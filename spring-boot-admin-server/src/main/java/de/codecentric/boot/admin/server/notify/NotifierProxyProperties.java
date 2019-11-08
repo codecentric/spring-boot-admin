@@ -21,13 +21,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @lombok.Data
 @ConfigurationProperties("spring.boot.admin.notify.proxy")
 public class NotifierProxyProperties {
-    /**
-     * Proxy-Host for sending notifications
-     */
-    private String host;
 
-    /**
-     * Proxy-Port for sending notifications
-     */
-    private int port;
+	/**
+	 * Proxy-Host for sending notifications
+	 */
+	private String host;
+
+	/**
+	 * Proxy-Port for sending notifications
+	 */
+	private int port;
+
 }

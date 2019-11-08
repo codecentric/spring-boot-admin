@@ -33,15 +33,16 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 // tag::configuration-spring-security[]
 @Configuration(proxyBeanMethods = false)
 public class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
-    private final AdminServerProperties adminServer;
 
-    public SecuritySecureConfig(AdminServerProperties adminServer) {
-        this.adminServer = adminServer;
-    }
+	private final AdminServerProperties adminServer;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        // @formatter:off
+	public SecuritySecureConfig(AdminServerProperties adminServer) {
+		this.adminServer = adminServer;
+	}
+
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		// @formatter:off
         SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
         successHandler.setTargetUrlParameter("redirectTo");
         successHandler.setDefaultTargetUrl(this.adminServer.path("/"));
@@ -64,12 +65,13 @@ public class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
         .and()
         .rememberMe().key(UUID.randomUUID().toString()).tokenValiditySeconds(1209600);
         // @formatter:on
-    }
+	}
 
-    // Required to provide UserDetailsService for "remember functionality"
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication().withUser("user").password("{noop}password").roles("USER");
-    }
+	// Required to provide UserDetailsService for "remember functionality"
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.inMemoryAuthentication().withUser("user").password("{noop}password").roles("USER");
+	}
+
 }
 // end::configuration-spring-security[]

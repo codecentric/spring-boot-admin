@@ -53,147 +53,154 @@ import static java.util.Arrays.asList;
 @AutoConfigureAfter(AdminServerWebConfiguration.class)
 @EnableConfigurationProperties(AdminServerUiProperties.class)
 public class AdminServerUiAutoConfiguration {
-    private static final Logger log = LoggerFactory.getLogger(AdminServerUiAutoConfiguration.class);
-    private static final List<String> DEFAULT_UI_ROUTES = asList("/about/**",
-        "/applications/**",
-        "/instances/**",
-        "/journal/**",
-        "/wallboard/**",
-        "/external/**"
-    );
-    private final AdminServerUiProperties adminUi;
-    private final AdminServerProperties adminServer;
-    private final ApplicationContext applicationContext;
 
-    public AdminServerUiAutoConfiguration(AdminServerUiProperties adminUi,
-                                          AdminServerProperties serverProperties,
-                                          ApplicationContext applicationContext) {
-        this.adminUi = adminUi;
-        this.adminServer = serverProperties;
-        this.applicationContext = applicationContext;
-    }
+	private static final Logger log = LoggerFactory.getLogger(AdminServerUiAutoConfiguration.class);
 
-    @Bean
-    @ConditionalOnMissingBean
-    public UiController homeUiController() throws IOException {
-        List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext).scan(this.adminUi.getExtensionResourceLocations());
-        List<String> routes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream()).collect(Collectors.toList());
+	private static final List<String> DEFAULT_UI_ROUTES = asList("/about/**", "/applications/**", "/instances/**",
+			"/journal/**", "/wallboard/**", "/external/**");
 
-        Settings uiSettings = Settings
-            .builder()
-            .brand(this.adminUi.getBrand())
-            .title(this.adminUi.getTitle())
-            .loginIcon(this.adminUi.getLoginIcon())
-            .favicon(this.adminUi.getFavicon())
-            .faviconDanger(this.adminUi.getFaviconDanger())
-            .notificationFilterEnabled(!this.applicationContext.getBeansOfType(NotificationFilterController.class).isEmpty())
-            .routes(routes)
-            .rememberMeEnabled(this.adminUi.isRememberMeEnabled())
-            .externalViews(this.adminUi.getExternalViews())
-            .build();
+	private final AdminServerUiProperties adminUi;
 
-        String publicUrl = this.adminUi.getPublicUrl() != null ? this.adminUi.getPublicUrl() : this.adminServer.getContextPath();
-        return new UiController(publicUrl, this.uiExtensions(), uiSettings);
-    }
+	private final AdminServerProperties adminServer;
 
-    private List<UiExtension> uiExtensions() throws IOException {
-        UiExtensionsScanner scanner = new UiExtensionsScanner(this.applicationContext);
-        List<UiExtension> uiExtensions = scanner.scan(this.adminUi.getExtensionResourceLocations());
-        uiExtensions.forEach(e -> log.info("Loaded Spring Boot Admin UI Extension: {}", e));
-        return uiExtensions;
-    }
+	private final ApplicationContext applicationContext;
 
-    @Bean
-    public SpringResourceTemplateResolver adminTemplateResolver() {
-        SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
-        resolver.setApplicationContext(this.applicationContext);
-        resolver.setPrefix(this.adminUi.getTemplateLocation());
-        resolver.setSuffix(".html");
-        resolver.setTemplateMode(TemplateMode.HTML);
-        resolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        resolver.setCacheable(this.adminUi.isCacheTemplates());
-        resolver.setOrder(10);
-        resolver.setCheckExistence(true);
-        return resolver;
-    }
+	public AdminServerUiAutoConfiguration(AdminServerUiProperties adminUi, AdminServerProperties serverProperties,
+			ApplicationContext applicationContext) {
+		this.adminUi = adminUi;
+		this.adminServer = serverProperties;
+		this.applicationContext = applicationContext;
+	}
 
-    @Configuration(proxyBeanMethods = false)
-    @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-    public static class ReactiveUiConfiguration {
-        @Configuration(proxyBeanMethods = false)
-        public static class AdminUiWebfluxConfig implements WebFluxConfigurer {
-            private final AdminServerUiProperties adminUi;
-            private final AdminServerProperties adminServer;
-            private final ApplicationContext applicationContext;
+	@Bean
+	@ConditionalOnMissingBean
+	public UiController homeUiController() throws IOException {
+		List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
+				.scan(this.adminUi.getExtensionResourceLocations());
+		List<String> routes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream())
+				.collect(Collectors.toList());
 
-            public AdminUiWebfluxConfig(AdminServerUiProperties adminUi,
-                                        AdminServerProperties adminServer,
-                                        ApplicationContext applicationContext) {
-                this.adminUi = adminUi;
-                this.adminServer = adminServer;
-                this.applicationContext = applicationContext;
-            }
+		Settings uiSettings = Settings.builder().brand(this.adminUi.getBrand()).title(this.adminUi.getTitle())
+				.loginIcon(this.adminUi.getLoginIcon()).favicon(this.adminUi.getFavicon())
+				.faviconDanger(this.adminUi.getFaviconDanger())
+				.notificationFilterEnabled(
+						!this.applicationContext.getBeansOfType(NotificationFilterController.class).isEmpty())
+				.routes(routes).rememberMeEnabled(this.adminUi.isRememberMeEnabled())
+				.externalViews(this.adminUi.getExternalViews()).build();
 
-            @Override
-            public void addResourceHandlers(org.springframework.web.reactive.config.ResourceHandlerRegistry registry) {
-                registry
-                    .addResourceHandler(this.adminServer.path("/**"))
-                    .addResourceLocations(this.adminUi.getResourceLocations())
-                    .addResourceLocations(this.adminUi.getExtensionResourceLocations())
-                    .setCacheControl(this.adminUi.getCache().toCacheControl());
-            }
+		String publicUrl = this.adminUi.getPublicUrl() != null ? this.adminUi.getPublicUrl()
+				: this.adminServer.getContextPath();
+		return new UiController(publicUrl, this.uiExtensions(), uiSettings);
+	}
 
-            @Bean
-            @ConditionalOnMissingBean
-            public de.codecentric.boot.admin.server.ui.web.reactive.HomepageForwardingFilter homepageForwardFilter() throws IOException {
-                List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext).scan(this.adminUi.getExtensionResourceLocations());
-                List<String> routes = Stream
-                    .concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream())
-                    .map(this.adminServer::path)
-                    .collect(Collectors.toList());
-                String homepage = this.adminServer.path("/");
-                return new de.codecentric.boot.admin.server.ui.web.reactive.HomepageForwardingFilter(homepage, routes);
-            }
-        }
-    }
+	private List<UiExtension> uiExtensions() throws IOException {
+		UiExtensionsScanner scanner = new UiExtensionsScanner(this.applicationContext);
+		List<UiExtension> uiExtensions = scanner.scan(this.adminUi.getExtensionResourceLocations());
+		uiExtensions.forEach(e -> log.info("Loaded Spring Boot Admin UI Extension: {}", e));
+		return uiExtensions;
+	}
 
-    @Configuration(proxyBeanMethods = false)
-    @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-    public static class ServletUiConfiguration {
-        @Configuration(proxyBeanMethods = false)
-        public static class AdminUiWebMvcConfig implements WebMvcConfigurer {
-            private final AdminServerUiProperties adminUi;
-            private final AdminServerProperties adminServer;
-            private final ApplicationContext applicationContext;
+	@Bean
+	public SpringResourceTemplateResolver adminTemplateResolver() {
+		SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
+		resolver.setApplicationContext(this.applicationContext);
+		resolver.setPrefix(this.adminUi.getTemplateLocation());
+		resolver.setSuffix(".html");
+		resolver.setTemplateMode(TemplateMode.HTML);
+		resolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
+		resolver.setCacheable(this.adminUi.isCacheTemplates());
+		resolver.setOrder(10);
+		resolver.setCheckExistence(true);
+		return resolver;
+	}
 
-            public AdminUiWebMvcConfig(AdminServerUiProperties adminUi,
-                                       AdminServerProperties adminServer,
-                                       ApplicationContext applicationContext) {
-                this.adminUi = adminUi;
-                this.adminServer = adminServer;
-                this.applicationContext = applicationContext;
-            }
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+	public static class ReactiveUiConfiguration {
 
-            @Override
-            public void addResourceHandlers(org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
-                registry
-                    .addResourceHandler(this.adminServer.path("/**"))
-                    .addResourceLocations(this.adminUi.getResourceLocations())
-                    .addResourceLocations(this.adminUi.getExtensionResourceLocations())
-                    .setCacheControl(this.adminUi.getCache().toCacheControl());
-            }
+		@Configuration(proxyBeanMethods = false)
+		public static class AdminUiWebfluxConfig implements WebFluxConfigurer {
 
-            @Bean
-            @ConditionalOnMissingBean
-            public de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter homepageForwardFilter() throws IOException {
-                List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext).scan(this.adminUi.getExtensionResourceLocations());
-                List<String> routes = Stream
-                    .concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream())
-                    .map(this.adminServer::path)
-                    .collect(Collectors.toList());
-                String homepage = this.adminServer.path("/");
-                return new de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter(homepage, routes);
-            }
-        }
-    }
+			private final AdminServerUiProperties adminUi;
+
+			private final AdminServerProperties adminServer;
+
+			private final ApplicationContext applicationContext;
+
+			public AdminUiWebfluxConfig(AdminServerUiProperties adminUi, AdminServerProperties adminServer,
+					ApplicationContext applicationContext) {
+				this.adminUi = adminUi;
+				this.adminServer = adminServer;
+				this.applicationContext = applicationContext;
+			}
+
+			@Override
+			public void addResourceHandlers(org.springframework.web.reactive.config.ResourceHandlerRegistry registry) {
+				registry.addResourceHandler(this.adminServer.path("/**"))
+						.addResourceLocations(this.adminUi.getResourceLocations())
+						.addResourceLocations(this.adminUi.getExtensionResourceLocations())
+						.setCacheControl(this.adminUi.getCache().toCacheControl());
+			}
+
+			@Bean
+			@ConditionalOnMissingBean
+			public de.codecentric.boot.admin.server.ui.web.reactive.HomepageForwardingFilter homepageForwardFilter()
+					throws IOException {
+				List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
+						.scan(this.adminUi.getExtensionResourceLocations());
+				List<String> routes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream())
+						.map(this.adminServer::path).collect(Collectors.toList());
+				String homepage = this.adminServer.path("/");
+				return new de.codecentric.boot.admin.server.ui.web.reactive.HomepageForwardingFilter(homepage, routes);
+			}
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+	public static class ServletUiConfiguration {
+
+		@Configuration(proxyBeanMethods = false)
+		public static class AdminUiWebMvcConfig implements WebMvcConfigurer {
+
+			private final AdminServerUiProperties adminUi;
+
+			private final AdminServerProperties adminServer;
+
+			private final ApplicationContext applicationContext;
+
+			public AdminUiWebMvcConfig(AdminServerUiProperties adminUi, AdminServerProperties adminServer,
+					ApplicationContext applicationContext) {
+				this.adminUi = adminUi;
+				this.adminServer = adminServer;
+				this.applicationContext = applicationContext;
+			}
+
+			@Override
+			public void addResourceHandlers(
+					org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
+				registry.addResourceHandler(this.adminServer.path("/**"))
+						.addResourceLocations(this.adminUi.getResourceLocations())
+						.addResourceLocations(this.adminUi.getExtensionResourceLocations())
+						.setCacheControl(this.adminUi.getCache().toCacheControl());
+			}
+
+			@Bean
+			@ConditionalOnMissingBean
+			public de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter homepageForwardFilter()
+					throws IOException {
+				List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
+						.scan(this.adminUi.getExtensionResourceLocations());
+				List<String> routes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream())
+						.map(this.adminServer::path).collect(Collectors.toList());
+				String homepage = this.adminServer.path("/");
+				return new de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter(homepage, routes);
+			}
+
+		}
+
+	}
+
 }

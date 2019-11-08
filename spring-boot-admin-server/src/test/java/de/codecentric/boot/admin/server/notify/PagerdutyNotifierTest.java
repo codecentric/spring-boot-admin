@@ -41,85 +41,89 @@ import static org.mockito.Mockito.when;
 
 public class PagerdutyNotifierTest {
 
-    private PagerdutyNotifier notifier;
-    private RestTemplate restTemplate;
+	private PagerdutyNotifier notifier;
 
-    private InstanceRepository repository;
-    private static final String appName = "App";
-    private static final Instance INSTANCE = Instance.create(InstanceId.of("-id-"))
-                                                     .register(Registration.create(appName, "http://health").build());
+	private RestTemplate restTemplate;
 
-    @Before
-    public void setUp() {
-        repository = mock(InstanceRepository.class);
-        when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE));
-        restTemplate = mock(RestTemplate.class);
+	private InstanceRepository repository;
 
-        notifier = new PagerdutyNotifier(repository, restTemplate);
-        notifier.setServiceKey("--service--");
-        notifier.setClient("TestClient");
-        notifier.setClientUrl(URI.create("http://localhost"));
-    }
+	private static final String appName = "App";
 
+	private static final Instance INSTANCE = Instance.create(InstanceId.of("-id-"))
+			.register(Registration.create(appName, "http://health").build());
 
-    @Test
-    public void test_onApplicationEvent_resolve() {
-        StepVerifier.create(notifier.notify(
-            new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 1, StatusInfo.ofDown())))
-                    .verifyComplete();
-        reset(restTemplate);
+	@Before
+	public void setUp() {
+		repository = mock(InstanceRepository.class);
+		when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE));
+		restTemplate = mock(RestTemplate.class);
 
-        StatusInfo up = StatusInfo.ofUp();
-        when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE.withStatusInfo(up)));
-        StepVerifier.create(
-            notifier.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, up)))
-                    .verifyComplete();
+		notifier = new PagerdutyNotifier(repository, restTemplate);
+		notifier.setServiceKey("--service--");
+		notifier.setClient("TestClient");
+		notifier.setClientUrl(URI.create("http://localhost"));
+	}
 
+	@Test
+	public void test_onApplicationEvent_resolve() {
+		StepVerifier.create(notifier.notify(
+				new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 1, StatusInfo.ofDown())))
+				.verifyComplete();
+		reset(restTemplate);
 
-        Map<String, Object> expected = new HashMap<>();
-        expected.put("service_key", "--service--");
-        expected.put("incident_key", "App/-id-");
-        expected.put("event_type", "resolve");
-        expected.put("description", "App/-id- is UP");
-        Map<String, Object> details = new HashMap<>();
-        details.put("from", "DOWN");
-        details.put("to", up);
-        expected.put("details", details);
+		StatusInfo up = StatusInfo.ofUp();
+		when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE.withStatusInfo(up)));
+		StepVerifier
+				.create(notifier
+						.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, up)))
+				.verifyComplete();
 
-        verify(restTemplate).postForEntity(eq(PagerdutyNotifier.DEFAULT_URI), eq(expected), eq(Void.class));
-    }
+		Map<String, Object> expected = new HashMap<>();
+		expected.put("service_key", "--service--");
+		expected.put("incident_key", "App/-id-");
+		expected.put("event_type", "resolve");
+		expected.put("description", "App/-id- is UP");
+		Map<String, Object> details = new HashMap<>();
+		details.put("from", "DOWN");
+		details.put("to", up);
+		expected.put("details", details);
 
-    @Test
-    public void test_onApplicationEvent_trigger() {
-        StepVerifier.create(notifier.notify(
-            new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 1, StatusInfo.ofUp())))
-                    .verifyComplete();
-        reset(restTemplate);
+		verify(restTemplate).postForEntity(eq(PagerdutyNotifier.DEFAULT_URI), eq(expected), eq(Void.class));
+	}
 
-        StatusInfo down = StatusInfo.ofDown();
-        when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE.withStatusInfo(down)));
-        StepVerifier.create(
-            notifier.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, down)))
-                    .verifyComplete();
+	@Test
+	public void test_onApplicationEvent_trigger() {
+		StepVerifier
+				.create(notifier.notify(
+						new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 1, StatusInfo.ofUp())))
+				.verifyComplete();
+		reset(restTemplate);
 
-        Map<String, Object> expected = new HashMap<>();
-        expected.put("service_key", "--service--");
-        expected.put("incident_key", "App/-id-");
-        expected.put("event_type", "trigger");
-        expected.put("description", "App/-id- is DOWN");
-        expected.put("client", "TestClient");
-        expected.put("client_url", URI.create("http://localhost"));
-        Map<String, Object> details = new HashMap<>();
-        details.put("from", "UP");
-        details.put("to", down);
-        expected.put("details", details);
-        Map<String, Object> context = new HashMap<>();
-        context.put("type", "link");
-        context.put("href", "http://health");
-        context.put("text", "Application health-endpoint");
-        expected.put("contexts", Arrays.asList(context));
+		StatusInfo down = StatusInfo.ofDown();
+		when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE.withStatusInfo(down)));
+		StepVerifier
+				.create(notifier
+						.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, down)))
+				.verifyComplete();
 
-        verify(restTemplate).postForEntity(eq(PagerdutyNotifier.DEFAULT_URI), eq(expected), eq(Void.class));
-    }
+		Map<String, Object> expected = new HashMap<>();
+		expected.put("service_key", "--service--");
+		expected.put("incident_key", "App/-id-");
+		expected.put("event_type", "trigger");
+		expected.put("description", "App/-id- is DOWN");
+		expected.put("client", "TestClient");
+		expected.put("client_url", URI.create("http://localhost"));
+		Map<String, Object> details = new HashMap<>();
+		details.put("from", "UP");
+		details.put("to", down);
+		expected.put("details", details);
+		Map<String, Object> context = new HashMap<>();
+		context.put("type", "link");
+		context.put("href", "http://health");
+		context.put("text", "Application health-endpoint");
+		expected.put("contexts", Arrays.asList(context));
+
+		verify(restTemplate).postForEntity(eq(PagerdutyNotifier.DEFAULT_URI), eq(expected), eq(Void.class));
+	}
 
 }

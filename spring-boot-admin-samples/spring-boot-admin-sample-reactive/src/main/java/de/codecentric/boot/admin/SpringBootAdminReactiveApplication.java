@@ -33,28 +33,29 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableAutoConfiguration
 @EnableAdminServer
 public class SpringBootAdminReactiveApplication {
-    private final AdminServerProperties adminServer;
 
-    public SpringBootAdminReactiveApplication(AdminServerProperties adminServer) {
-        this.adminServer = adminServer;
-    }
+	private final AdminServerProperties adminServer;
 
-    public static void main(String[] args) {
-        SpringApplication.run(SpringBootAdminReactiveApplication.class, args);
-    }
+	public SpringBootAdminReactiveApplication(AdminServerProperties adminServer) {
+		this.adminServer = adminServer;
+	}
 
-    @Bean
-    @Profile("insecure")
-    public SecurityWebFilterChain securityWebFilterChainPermitAll(ServerHttpSecurity http) {
-        return http.authorizeExchange().anyExchange().permitAll()//
-                   .and().csrf().disable()//
-                   .build();
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(SpringBootAdminReactiveApplication.class, args);
+	}
 
-    @Bean
-    @Profile("secure")
-    public SecurityWebFilterChain securityWebFilterChainSecure(ServerHttpSecurity http) {
-        // @formatter:off
+	@Bean
+	@Profile("insecure")
+	public SecurityWebFilterChain securityWebFilterChainPermitAll(ServerHttpSecurity http) {
+		return http.authorizeExchange().anyExchange().permitAll()//
+				.and().csrf().disable()//
+				.build();
+	}
+
+	@Bean
+	@Profile("secure")
+	public SecurityWebFilterChain securityWebFilterChainSecure(ServerHttpSecurity http) {
+		// @formatter:off
         return http.authorizeExchange()
                 .pathMatchers(this.adminServer.path("/assets/**")).permitAll()
                 .pathMatchers(this.adminServer.path("/login")).permitAll()
@@ -66,10 +67,11 @@ public class SpringBootAdminReactiveApplication {
             .csrf().disable()
             .build();
         // @formatter:on
-    }
+	}
 
-    @Bean
-    public LoggingNotifier loggerNotifier(InstanceRepository repository) {
-        return new LoggingNotifier(repository);
-    }
+	@Bean
+	public LoggingNotifier loggerNotifier(InstanceRepository repository) {
+		return new LoggingNotifier(repository);
+	}
+
 }

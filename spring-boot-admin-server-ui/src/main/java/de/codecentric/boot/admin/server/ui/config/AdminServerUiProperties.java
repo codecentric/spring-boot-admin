@@ -31,107 +31,113 @@ import org.springframework.http.CacheControl;
 @lombok.Data
 @ConfigurationProperties("spring.boot.admin.ui")
 public class AdminServerUiProperties {
-    private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {"classpath:/META-INF/spring-boot-admin-server-ui/"};
-    private static final String[] CLASSPATH_EXTENSION_RESOURCE_LOCATIONS = {"classpath:/META-INF/spring-boot-admin-server-ui/extensions/"};
 
-    /**
-     * Locations of SBA ui resources.
-     */
-    private String[] resourceLocations = CLASSPATH_RESOURCE_LOCATIONS;
+	private static final String[] CLASSPATH_RESOURCE_LOCATIONS = { "classpath:/META-INF/spring-boot-admin-server-ui/" };
 
-    /**
-     * Locations of SBA ui exentsion resources.
-     */
-    private String[] extensionResourceLocations = CLASSPATH_EXTENSION_RESOURCE_LOCATIONS;
+	private static final String[] CLASSPATH_EXTENSION_RESOURCE_LOCATIONS = {
+			"classpath:/META-INF/spring-boot-admin-server-ui/extensions/" };
 
-    /**
-     * Locations of SBA ui template.
-     */
-    private String templateLocation = CLASSPATH_RESOURCE_LOCATIONS[0];
+	/**
+	 * Locations of SBA ui resources.
+	 */
+	private String[] resourceLocations = CLASSPATH_RESOURCE_LOCATIONS;
 
-    /**
-     * Icon used as image on login page
-     */
-    private String loginIcon = "assets/img/icon-spring-boot-admin.svg";
+	/**
+	 * Locations of SBA ui exentsion resources.
+	 */
+	private String[] extensionResourceLocations = CLASSPATH_EXTENSION_RESOURCE_LOCATIONS;
 
-    /**
-     * Icon used as default favicon and icon for desktop notifications.
-     */
-    private String favicon = "assets/img/favicon.png";
+	/**
+	 * Locations of SBA ui template.
+	 */
+	private String templateLocation = CLASSPATH_RESOURCE_LOCATIONS[0];
 
-    /**
-     * Icon used as default favicon and icon for desktop notifications.
-     */
-    private String faviconDanger = "assets/img/favicon-danger.png";
+	/**
+	 * Icon used as image on login page
+	 */
+	private String loginIcon = "assets/img/icon-spring-boot-admin.svg";
 
-    /**
-     * Page-Title to be shown.
-     */
-    private String title = "Spring Boot Admin";
+	/**
+	 * Icon used as default favicon and icon for desktop notifications.
+	 */
+	private String favicon = "assets/img/favicon.png";
 
-    /**
-     * Brand to be shown in then navbar.
-     */
-    private String brand = "<img src=\"assets/img/icon-spring-boot-admin.svg\"><span>Spring Boot Admin</span>";
+	/**
+	 * Icon used as default favicon and icon for desktop notifications.
+	 */
+	private String faviconDanger = "assets/img/favicon-danger.png";
 
-    /**
-     * If running behind a reverse proxy (using path rewriting) this can be used to output correct self references.
-     * If the host/port is omitted it will be inferred from the request.
-     */
-    @Nullable
-    private String publicUrl = null;
+	/**
+	 * Page-Title to be shown.
+	 */
+	private String title = "Spring Boot Admin";
 
-    /**
-     * Wether the thymeleaf templates should be cached.
-     */
-    private boolean cacheTemplates = true;
+	/**
+	 * Brand to be shown in then navbar.
+	 */
+	private String brand = "<img src=\"assets/img/icon-spring-boot-admin.svg\"><span>Spring Boot Admin</span>";
 
-    /**
-     * Cache-Http-Header settings.
-     */
-    private Cache cache = new Cache();
+	/**
+	 * If running behind a reverse proxy (using path rewriting) this can be used to output
+	 * correct self references. If the host/port is omitted it will be inferred from the
+	 * request.
+	 */
+	@Nullable
+	private String publicUrl = null;
 
-    /**
-     * External views shown in the navbar.
-     */
-    private List<UiController.ExternalView> externalViews = new ArrayList<>();
+	/**
+	 * Wether the thymeleaf templates should be cached.
+	 */
+	private boolean cacheTemplates = true;
 
-    /**
-     * Whether the option to remember a user should be available.
-     */
-    private boolean rememberMeEnabled = true;
+	/**
+	 * Cache-Http-Header settings.
+	 */
+	private Cache cache = new Cache();
 
-    @lombok.Data
-    public static class Cache {
+	/**
+	 * External views shown in the navbar.
+	 */
+	private List<UiController.ExternalView> externalViews = new ArrayList<>();
 
-        /**
-         * include "max-age" directive in Cache-Control http header.
-         */
-        @Nullable
-        @DurationUnit(ChronoUnit.SECONDS)
-        private Duration maxAge = Duration.ofSeconds(3600);
+	/**
+	 * Whether the option to remember a user should be available.
+	 */
+	private boolean rememberMeEnabled = true;
 
-        /**
-         * include "no-cache" directive in Cache-Control http header.
-         */
-        private Boolean noCache = false;
+	@lombok.Data
+	public static class Cache {
 
-        /**
-         * include "no-store" directive in Cache-Control http header.
-         */
-        private Boolean noStore = false;
+		/**
+		 * include "max-age" directive in Cache-Control http header.
+		 */
+		@Nullable
+		@DurationUnit(ChronoUnit.SECONDS)
+		private Duration maxAge = Duration.ofSeconds(3600);
 
-        public CacheControl toCacheControl() {
-            if (Boolean.TRUE.equals(this.noStore)) {
-                return CacheControl.noStore();
-            }
-            if (Boolean.TRUE.equals(this.noCache)) {
-                return CacheControl.noCache();
-            }
-            if (this.maxAge != null) {
-                return CacheControl.maxAge(this.maxAge.getSeconds(), TimeUnit.SECONDS);
-            }
-            return CacheControl.empty();
-        }
-    }
+		/**
+		 * include "no-cache" directive in Cache-Control http header.
+		 */
+		private Boolean noCache = false;
+
+		/**
+		 * include "no-store" directive in Cache-Control http header.
+		 */
+		private Boolean noStore = false;
+
+		public CacheControl toCacheControl() {
+			if (Boolean.TRUE.equals(this.noStore)) {
+				return CacheControl.noStore();
+			}
+			if (Boolean.TRUE.equals(this.noCache)) {
+				return CacheControl.noCache();
+			}
+			if (this.maxAge != null) {
+				return CacheControl.maxAge(this.maxAge.getSeconds(), TimeUnit.SECONDS);
+			}
+			return CacheControl.empty();
+		}
+
+	}
+
 }

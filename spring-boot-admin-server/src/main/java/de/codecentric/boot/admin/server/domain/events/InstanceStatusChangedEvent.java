@@ -30,19 +30,22 @@ import java.time.Instant;
 @lombok.EqualsAndHashCode(callSuper = true)
 @lombok.ToString(callSuper = true)
 public class InstanceStatusChangedEvent extends InstanceEvent {
-    private static final long serialVersionUID = 1L;
-    private final StatusInfo statusInfo;
 
-    public InstanceStatusChangedEvent(InstanceId instance, long version, StatusInfo statusInfo) {
-        this(instance, version, Instant.now(), statusInfo);
-    }
+	private static final long serialVersionUID = 1L;
 
-    public InstanceStatusChangedEvent(InstanceId instance, long version, Instant timestamp, StatusInfo statusInfo) {
-        super(instance, version, "STATUS_CHANGED", timestamp);
-        this.statusInfo = statusInfo;
-    }
+	private final StatusInfo statusInfo;
 
-    public StatusInfo getStatusInfo() {
-        return statusInfo;
-    }
+	public InstanceStatusChangedEvent(InstanceId instance, long version, StatusInfo statusInfo) {
+		this(instance, version, Instant.now(), statusInfo);
+	}
+
+	public InstanceStatusChangedEvent(InstanceId instance, long version, Instant timestamp, StatusInfo statusInfo) {
+		super(instance, version, "STATUS_CHANGED", timestamp);
+		this.statusInfo = statusInfo;
+	}
+
+	public StatusInfo getStatusInfo() {
+		return statusInfo;
+	}
+
 }

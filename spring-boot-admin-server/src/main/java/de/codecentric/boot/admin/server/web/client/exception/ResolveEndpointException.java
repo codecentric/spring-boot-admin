@@ -17,11 +17,13 @@
 package de.codecentric.boot.admin.server.web.client.exception;
 
 public class ResolveEndpointException extends InstanceWebClientException {
-    public ResolveEndpointException(String message) {
-        super(message);
-    }
 
-    public ResolveEndpointException(String message, Throwable cause) {
-        super(message, cause);
-    }
+	public ResolveEndpointException(String message) {
+		super(message);
+	}
+
+	public ResolveEndpointException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
 }

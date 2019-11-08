@@ -30,48 +30,48 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractEventHandler<T extends InstanceEvent> {
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private final Publisher<InstanceEvent> publisher;
-    private final Class<T> eventType;
-    @Nullable
-    private Disposable subscription;
-    @Nullable
-    private Scheduler scheduler;
 
-    protected AbstractEventHandler(Publisher<InstanceEvent> publisher, Class<T> eventType) {
-        this.publisher = publisher;
-        this.eventType = eventType;
-    }
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public void start() {
-        this.scheduler = this.createScheduler();
-        this.subscription = Flux.from(this.publisher)
-                                .subscribeOn(this.scheduler)
-                                .log(this.log.getName(), Level.FINEST)
-                                .doOnSubscribe(s -> this.log.debug("Subscribed to {} events", this.eventType))
-                                .ofType(this.eventType)
-                                .cast(this.eventType)
-                                .transform(this::handle)
-                                .retryWhen(Retry.any()
-                                                .retryMax(Long.MAX_VALUE)
-                                                .doOnRetry(ctx -> this.log.warn("Unexpected error", ctx.exception())))
-                                .subscribe();
-    }
+	private final Publisher<InstanceEvent> publisher;
 
-    protected abstract Publisher<Void> handle(Flux<T> publisher);
+	private final Class<T> eventType;
 
-    protected Scheduler createScheduler() {
-        return Schedulers.newElastic(this.getClass().getSimpleName());
-    }
+	@Nullable
+	private Disposable subscription;
 
-    public void stop() {
-        if (this.subscription != null) {
-            this.subscription.dispose();
-            this.subscription = null;
-        }
-        if (this.scheduler != null) {
-            this.scheduler.dispose();
-            this.scheduler = null;
-        }
-    }
+	@Nullable
+	private Scheduler scheduler;
+
+	protected AbstractEventHandler(Publisher<InstanceEvent> publisher, Class<T> eventType) {
+		this.publisher = publisher;
+		this.eventType = eventType;
+	}
+
+	public void start() {
+		this.scheduler = this.createScheduler();
+		this.subscription = Flux.from(this.publisher).subscribeOn(this.scheduler).log(this.log.getName(), Level.FINEST)
+				.doOnSubscribe(s -> this.log.debug("Subscribed to {} events", this.eventType)).ofType(this.eventType)
+				.cast(this.eventType).transform(this::handle).retryWhen(Retry.any().retryMax(Long.MAX_VALUE)
+						.doOnRetry(ctx -> this.log.warn("Unexpected error", ctx.exception())))
+				.subscribe();
+	}
+
+	protected abstract Publisher<Void> handle(Flux<T> publisher);
+
+	protected Scheduler createScheduler() {
+		return Schedulers.newElastic(this.getClass().getSimpleName());
+	}
+
+	public void stop() {
+		if (this.subscription != null) {
+			this.subscription.dispose();
+			this.subscription = null;
+		}
+		if (this.scheduler != null) {
+			this.scheduler.dispose();
+			this.scheduler = null;
+		}
+	}
+
 }

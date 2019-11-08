@@ -26,42 +26,42 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class HomepageForwardingMatcherTest {
-    private final HomepageForwardingMatcher<MockRequest> matcher = new HomepageForwardingMatcher<>(singletonList(
-        "/viewRoute/**"), MockRequest::getMethod, MockRequest::getPath, MockRequest::getAccepts);
 
-    @Test
-    public void should_return_false_when_method_is_not_get() {
-        assertThat(this.matcher.test(new MockRequest("POST",
-            "/viewRoute",
-            singletonList(MediaType.TEXT_HTML)
-        ))).isFalse();
-    }
+	private final HomepageForwardingMatcher<MockRequest> matcher = new HomepageForwardingMatcher<>(
+			singletonList("/viewRoute/**"), MockRequest::getMethod, MockRequest::getPath, MockRequest::getAccepts);
 
-    @Test
-    public void should_return_false_when_path_does_not_match() {
-        assertThat(this.matcher.test(new MockRequest("GET", "/api", singletonList(MediaType.TEXT_HTML)))).isFalse();
-    }
+	@Test
+	public void should_return_false_when_method_is_not_get() {
+		assertThat(this.matcher.test(new MockRequest("POST", "/viewRoute", singletonList(MediaType.TEXT_HTML))))
+				.isFalse();
+	}
 
-    @Test
-    public void should_return_false_when_accepts_does_not_match() {
-        assertThat(this.matcher.test(new MockRequest("GET",
-            "/viewRoute",
-            singletonList(MediaType.APPLICATION_XML)
-        ))).isFalse();
-    }
+	@Test
+	public void should_return_false_when_path_does_not_match() {
+		assertThat(this.matcher.test(new MockRequest("GET", "/api", singletonList(MediaType.TEXT_HTML)))).isFalse();
+	}
 
-    @Test
-    public void should_return_true() {
-        assertThat(this.matcher.test(new MockRequest("GET",
-            "/viewRoute/detail?query",
-            singletonList(MediaType.TEXT_HTML)
-        ))).isTrue();
-    }
+	@Test
+	public void should_return_false_when_accepts_does_not_match() {
+		assertThat(this.matcher.test(new MockRequest("GET", "/viewRoute", singletonList(MediaType.APPLICATION_XML))))
+				.isFalse();
+	}
 
-    @Data
-    private static class MockRequest {
-        private final String method;
-        private final String path;
-        private final List<MediaType> accepts;
-    }
+	@Test
+	public void should_return_true() {
+		assertThat(this.matcher
+				.test(new MockRequest("GET", "/viewRoute/detail?query", singletonList(MediaType.TEXT_HTML)))).isTrue();
+	}
+
+	@Data
+	private static class MockRequest {
+
+		private final String method;
+
+		private final String path;
+
+		private final List<MediaType> accepts;
+
+	}
+
 }

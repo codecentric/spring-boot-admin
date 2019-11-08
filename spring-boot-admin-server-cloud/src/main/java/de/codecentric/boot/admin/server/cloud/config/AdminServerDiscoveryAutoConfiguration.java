@@ -42,50 +42,52 @@ import com.netflix.discovery.EurekaClient;
 @ConditionalOnSingleCandidate(DiscoveryClient.class)
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
 @ConditionalOnProperty(prefix = "spring.boot.admin.discovery", name = "enabled", matchIfMissing = true)
-@AutoConfigureAfter(value = AdminServerAutoConfiguration.class, name = {
-    "org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration",
-    "org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration"
-})
+@AutoConfigureAfter(value = AdminServerAutoConfiguration.class,
+		name = { "org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration",
+				"org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration" })
 public class AdminServerDiscoveryAutoConfiguration {
 
-    @Bean
-    @ConditionalOnMissingBean
-    @ConfigurationProperties(prefix = "spring.boot.admin.discovery")
-    public InstanceDiscoveryListener instanceDiscoveryListener(ServiceInstanceConverter serviceInstanceConverter,
-                                                               DiscoveryClient discoveryClient,
-                                                               InstanceRegistry registry,
-                                                               InstanceRepository repository) {
-        InstanceDiscoveryListener listener = new InstanceDiscoveryListener(discoveryClient, registry, repository);
-        listener.setConverter(serviceInstanceConverter);
-        return listener;
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	@ConfigurationProperties(prefix = "spring.boot.admin.discovery")
+	public InstanceDiscoveryListener instanceDiscoveryListener(ServiceInstanceConverter serviceInstanceConverter,
+			DiscoveryClient discoveryClient, InstanceRegistry registry, InstanceRepository repository) {
+		InstanceDiscoveryListener listener = new InstanceDiscoveryListener(discoveryClient, registry, repository);
+		listener.setConverter(serviceInstanceConverter);
+		return listener;
+	}
 
-    @Configuration(proxyBeanMethods = false)
-    @ConditionalOnMissingBean({ServiceInstanceConverter.class})
-    @ConditionalOnBean(EurekaClient.class)
-    public static class EurekaConverterConfiguration {
-        @Bean
-        @ConfigurationProperties(prefix = "spring.boot.admin.discovery.converter")
-        public EurekaServiceInstanceConverter serviceInstanceConverter() {
-            return new EurekaServiceInstanceConverter();
-        }
-    }
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingBean({ ServiceInstanceConverter.class })
+	@ConditionalOnBean(EurekaClient.class)
+	public static class EurekaConverterConfiguration {
 
-    @Configuration(proxyBeanMethods = false)
-    @ConditionalOnMissingBean({ServiceInstanceConverter.class})
-    @ConditionalOnBean(KubernetesDiscoveryClient.class)
-    public static class KubernetesConverterConfiguration {
-        @Bean
-        @ConfigurationProperties(prefix = "spring.boot.admin.discovery.converter")
-        public KubernetesServiceInstanceConverter serviceInstanceConverter() {
-            return new KubernetesServiceInstanceConverter();
-        }
-    }
+		@Bean
+		@ConfigurationProperties(prefix = "spring.boot.admin.discovery.converter")
+		public EurekaServiceInstanceConverter serviceInstanceConverter() {
+			return new EurekaServiceInstanceConverter();
+		}
 
-    @Bean
-    @ConditionalOnMissingBean({ServiceInstanceConverter.class})
-    @ConfigurationProperties(prefix = "spring.boot.admin.discovery.converter")
-    public DefaultServiceInstanceConverter serviceInstanceConverter() {
-        return new DefaultServiceInstanceConverter();
-    }
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingBean({ ServiceInstanceConverter.class })
+	@ConditionalOnBean(KubernetesDiscoveryClient.class)
+	public static class KubernetesConverterConfiguration {
+
+		@Bean
+		@ConfigurationProperties(prefix = "spring.boot.admin.discovery.converter")
+		public KubernetesServiceInstanceConverter serviceInstanceConverter() {
+			return new KubernetesServiceInstanceConverter();
+		}
+
+	}
+
+	@Bean
+	@ConditionalOnMissingBean({ ServiceInstanceConverter.class })
+	@ConfigurationProperties(prefix = "spring.boot.admin.discovery.converter")
+	public DefaultServiceInstanceConverter serviceInstanceConverter() {
+		return new DefaultServiceInstanceConverter();
+	}
+
 }

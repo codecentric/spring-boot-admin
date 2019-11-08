@@ -30,15 +30,18 @@ import java.time.Instant;
 @lombok.EqualsAndHashCode(callSuper = true)
 @lombok.ToString(callSuper = true)
 public class InstanceEndpointsDetectedEvent extends InstanceEvent {
-    private static final long serialVersionUID = 1L;
-    private final Endpoints endpoints;
 
-    public InstanceEndpointsDetectedEvent(InstanceId instance, long version, Endpoints endpoints) {
-        this(instance, version, Instant.now(), endpoints);
-    }
+	private static final long serialVersionUID = 1L;
 
-    public InstanceEndpointsDetectedEvent(InstanceId instance, long version, Instant timestamp, Endpoints endpoints) {
-        super(instance, version, "ENDPOINTS_DETECTED", timestamp);
-        this.endpoints = endpoints;
-    }
+	private final Endpoints endpoints;
+
+	public InstanceEndpointsDetectedEvent(InstanceId instance, long version, Endpoints endpoints) {
+		this(instance, version, Instant.now(), endpoints);
+	}
+
+	public InstanceEndpointsDetectedEvent(InstanceId instance, long version, Instant timestamp, Endpoints endpoints) {
+		super(instance, version, "ENDPOINTS_DETECTED", timestamp);
+		this.endpoints = endpoints;
+	}
+
 }

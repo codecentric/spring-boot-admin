@@ -32,39 +32,29 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AdminServerInstanceWebClientConfigurationTest {
-    private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
-        AutoConfigurations.of(
-            RestTemplateAutoConfiguration.class,
-            ClientHttpConnectorAutoConfiguration.class,
-            WebClientAutoConfiguration.class,
-            WebMvcAutoConfiguration.class,
-            AdminServerAutoConfiguration.class,
-            AdminServerInstanceWebClientConfiguration.class
-        )).withUserConfiguration(AdminServerMarkerConfiguration.class);
 
-    @Test
-    public void simpleConfig() {
-        this.contextRunner.run(context -> {
-            assertThat(context).hasSingleBean(InstanceWebClient.Builder.class);
-            assertThat(context).hasBean("filterInstanceWebClientCustomizer");
-            assertThat(context).hasSingleBean(BasicAuthHttpHeaderProvider.class);
-            assertThat(context).getBeanNames(InstanceExchangeFilterFunction.class).containsExactly(
-                "addHeadersInstanceExchangeFilter",
-                "rewriteEndpointUrlInstanceExchangeFilter",
-                "setDefaultAcceptHeaderInstanceExchangeFilter",
-                "legacyEndpointConverterInstanceExchangeFilter", "logfileAcceptWorkaround",
-                "retryInstanceExchangeFilter",
-                "timeoutInstanceExchangeFilter"
-            );
-            assertThat(context).getBeanNames(LegacyEndpointConverter.class).containsExactly(
-                "healthLegacyEndpointConverter",
-                "infoLegacyEndpointConverter",
-                "envLegacyEndpointConverter",
-                "httptraceLegacyEndpointConverter",
-                "threaddumpLegacyEndpointConverter",
-                "liquibaseLegacyEndpointConverter",
-                "flywayLegacyEndpointConverter"
-            );
-        });
-    }
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
+					ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class,
+					WebMvcAutoConfiguration.class, AdminServerAutoConfiguration.class,
+					AdminServerInstanceWebClientConfiguration.class))
+			.withUserConfiguration(AdminServerMarkerConfiguration.class);
+
+	@Test
+	public void simpleConfig() {
+		this.contextRunner.run(context -> {
+			assertThat(context).hasSingleBean(InstanceWebClient.Builder.class);
+			assertThat(context).hasBean("filterInstanceWebClientCustomizer");
+			assertThat(context).hasSingleBean(BasicAuthHttpHeaderProvider.class);
+			assertThat(context).getBeanNames(InstanceExchangeFilterFunction.class).containsExactly(
+					"addHeadersInstanceExchangeFilter", "rewriteEndpointUrlInstanceExchangeFilter",
+					"setDefaultAcceptHeaderInstanceExchangeFilter", "legacyEndpointConverterInstanceExchangeFilter",
+					"logfileAcceptWorkaround", "retryInstanceExchangeFilter", "timeoutInstanceExchangeFilter");
+			assertThat(context).getBeanNames(LegacyEndpointConverter.class).containsExactly(
+					"healthLegacyEndpointConverter", "infoLegacyEndpointConverter", "envLegacyEndpointConverter",
+					"httptraceLegacyEndpointConverter", "threaddumpLegacyEndpointConverter",
+					"liquibaseLegacyEndpointConverter", "flywayLegacyEndpointConverter");
+		});
+	}
+
 }

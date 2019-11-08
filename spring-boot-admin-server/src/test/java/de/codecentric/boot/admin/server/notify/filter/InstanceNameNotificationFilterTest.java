@@ -30,36 +30,37 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class InstanceNameNotificationFilterTest {
 
-    @Test
-    public void test_filterByName() {
-        NotificationFilter filter = new ApplicationNameNotificationFilter("foo", null);
+	@Test
+	public void test_filterByName() {
+		NotificationFilter filter = new ApplicationNameNotificationFilter("foo", null);
 
-        Instance filteredInstance = Instance.create(InstanceId.of("-"))
-                                            .register(Registration.create("foo", "http://health").build());
-        InstanceRegisteredEvent filteredEvent = new InstanceRegisteredEvent(filteredInstance.getId(),
-            filteredInstance.getVersion(), filteredInstance.getRegistration());
-        assertThat(filter.filter(filteredEvent, filteredInstance)).isTrue();
+		Instance filteredInstance = Instance.create(InstanceId.of("-"))
+				.register(Registration.create("foo", "http://health").build());
+		InstanceRegisteredEvent filteredEvent = new InstanceRegisteredEvent(filteredInstance.getId(),
+				filteredInstance.getVersion(), filteredInstance.getRegistration());
+		assertThat(filter.filter(filteredEvent, filteredInstance)).isTrue();
 
-        Instance ignoredInstance = Instance.create(InstanceId.of("-"))
-                                           .register(Registration.create("bar", "http://health").build());
-        InstanceRegisteredEvent ignoredEvent = new InstanceRegisteredEvent(ignoredInstance.getId(),
-            ignoredInstance.getVersion(), ignoredInstance.getRegistration());
-        assertThat(filter.filter(ignoredEvent, ignoredInstance)).isFalse();
-    }
+		Instance ignoredInstance = Instance.create(InstanceId.of("-"))
+				.register(Registration.create("bar", "http://health").build());
+		InstanceRegisteredEvent ignoredEvent = new InstanceRegisteredEvent(ignoredInstance.getId(),
+				ignoredInstance.getVersion(), ignoredInstance.getRegistration());
+		assertThat(filter.filter(ignoredEvent, ignoredInstance)).isFalse();
+	}
 
-    @Test
-    public void test_expiry() throws InterruptedException {
-        ExpiringNotificationFilter filterForever = new ApplicationNameNotificationFilter("foo", null);
-        ExpiringNotificationFilter filterExpired = new ApplicationNameNotificationFilter("foo",
-            Instant.now().minus(Duration.ofSeconds(1)));
-        ExpiringNotificationFilter filterLong = new ApplicationNameNotificationFilter("foo",
-            Instant.now().plus(Duration.ofMillis(100)));
+	@Test
+	public void test_expiry() throws InterruptedException {
+		ExpiringNotificationFilter filterForever = new ApplicationNameNotificationFilter("foo", null);
+		ExpiringNotificationFilter filterExpired = new ApplicationNameNotificationFilter("foo",
+				Instant.now().minus(Duration.ofSeconds(1)));
+		ExpiringNotificationFilter filterLong = new ApplicationNameNotificationFilter("foo",
+				Instant.now().plus(Duration.ofMillis(100)));
 
-        assertThat(filterForever.isExpired()).isFalse();
-        assertThat(filterLong.isExpired()).isFalse();
-        assertThat(filterExpired.isExpired()).isTrue();
+		assertThat(filterForever.isExpired()).isFalse();
+		assertThat(filterLong.isExpired()).isFalse();
+		assertThat(filterExpired.isExpired()).isTrue();
 
-        TimeUnit.MILLISECONDS.sleep(200);
-        assertThat(filterLong.isExpired()).isTrue();
-    }
+		TimeUnit.MILLISECONDS.sleep(200);
+		assertThat(filterLong.isExpired()).isTrue();
+	}
+
 }

@@ -16,7 +16,6 @@
 
 package de.codecentric.boot.admin.server.utils.jackson;
 
-
 import de.codecentric.boot.admin.server.domain.values.Registration;
 
 import java.io.IOException;
@@ -28,42 +27,45 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 public class RegistrationDeserializer extends StdDeserializer<Registration> {
-    private static final long serialVersionUID = 1L;
 
-    public RegistrationDeserializer() {
-        super(Registration.class);
-    }
+	private static final long serialVersionUID = 1L;
 
-    @Override
-    public Registration deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        JsonNode node = p.readValueAsTree();
-        Registration.Builder builder = Registration.builder();
+	public RegistrationDeserializer() {
+		super(Registration.class);
+	}
 
-        if (node.has("name")) {
-            builder.name(node.get("name").asText());
-        }
-        if (node.has("url")) {
-            String url = node.get("url").asText();
-            builder.healthUrl(url.replaceFirst("/+$", "") + "/health").managementUrl(url);
-        } else {
-            if (node.has("healthUrl")) {
-                builder.healthUrl(node.get("healthUrl").asText());
-            }
-            if (node.has("managementUrl")) {
-                builder.managementUrl(node.get("managementUrl").asText());
-            }
-            if (node.has("serviceUrl")) {
-                builder.serviceUrl(node.get("serviceUrl").asText());
-            }
-        }
+	@Override
+	public Registration deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+		JsonNode node = p.readValueAsTree();
+		Registration.Builder builder = Registration.builder();
 
-        if (node.has("metadata")) {
-            Iterator<Map.Entry<String, JsonNode>> it = node.get("metadata").fields();
-            while (it.hasNext()) {
-                Map.Entry<String, JsonNode> entry = it.next();
-                builder.metadata(entry.getKey(), entry.getValue().asText());
-            }
-        }
-        return builder.build();
-    }
+		if (node.has("name")) {
+			builder.name(node.get("name").asText());
+		}
+		if (node.has("url")) {
+			String url = node.get("url").asText();
+			builder.healthUrl(url.replaceFirst("/+$", "") + "/health").managementUrl(url);
+		}
+		else {
+			if (node.has("healthUrl")) {
+				builder.healthUrl(node.get("healthUrl").asText());
+			}
+			if (node.has("managementUrl")) {
+				builder.managementUrl(node.get("managementUrl").asText());
+			}
+			if (node.has("serviceUrl")) {
+				builder.serviceUrl(node.get("serviceUrl").asText());
+			}
+		}
+
+		if (node.has("metadata")) {
+			Iterator<Map.Entry<String, JsonNode>> it = node.get("metadata").fields();
+			while (it.hasNext()) {
+				Map.Entry<String, JsonNode> entry = it.next();
+				builder.metadata(entry.getKey(), entry.getValue().asText());
+			}
+		}
+		return builder.build();
+	}
+
 }

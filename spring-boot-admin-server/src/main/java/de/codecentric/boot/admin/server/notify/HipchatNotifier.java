@@ -37,148 +37,148 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
-
 /**
  * Notifier submitting events to HipChat.
  *
  * @author Jamie Brown
  */
 public class HipchatNotifier extends AbstractStatusChangeNotifier {
-    private static final String DEFAULT_DESCRIPTION = "<strong>#{instance.registration.name}</strong>/#{instance.id} is <strong>#{event.statusInfo.status}</strong>";
 
-    private final SpelExpressionParser parser = new SpelExpressionParser();
-    private RestTemplate restTemplate;
+	private static final String DEFAULT_DESCRIPTION = "<strong>#{instance.registration.name}</strong>/#{instance.id} is <strong>#{event.statusInfo.status}</strong>";
 
-    /**
-     * Base URL for HipChat API (i.e. https://ACCOUNT_NAME.hipchat.com/v2
-     */
-    @Nullable
-    private URI url;
+	private final SpelExpressionParser parser = new SpelExpressionParser();
 
-    /**
-     * API token that has access to notify in the room
-     */
-    @Nullable
-    private String authToken;
+	private RestTemplate restTemplate;
 
-    /**
-     * Id of the room to notify
-     */
-    @Nullable
-    private String roomId;
+	/**
+	 * Base URL for HipChat API (i.e. https://ACCOUNT_NAME.hipchat.com/v2
+	 */
+	@Nullable
+	private URI url;
 
-    /**
-     * TRUE will cause OS notification, FALSE will only notify to room
-     */
-    private boolean notify = false;
+	/**
+	 * API token that has access to notify in the room
+	 */
+	@Nullable
+	private String authToken;
 
-    /**
-     * Trigger description. SpEL template using event as root;
-     */
-    private Expression description;
+	/**
+	 * Id of the room to notify
+	 */
+	@Nullable
+	private String roomId;
 
-    public HipchatNotifier(InstanceRepository repository, RestTemplate restTemplate) {
-        super(repository);
-        this.restTemplate = restTemplate;
-        this.description = parser.parseExpression(DEFAULT_DESCRIPTION, ParserContext.TEMPLATE_EXPRESSION);
-    }
+	/**
+	 * TRUE will cause OS notification, FALSE will only notify to room
+	 */
+	private boolean notify = false;
 
-    @Override
-    protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
-        return Mono.fromRunnable(() -> restTemplate.postForEntity(buildUrl(),
-            createHipChatNotification(event, instance),
-            Void.class
-        ));
-    }
+	/**
+	 * Trigger description. SpEL template using event as root;
+	 */
+	private Expression description;
 
-    protected String buildUrl() {
-        if (url == null) {
-            throw new IllegalStateException("'url' must not be null.");
-        }
-        return String.format("%s/room/%s/notification?auth_token=%s", url.toString(), roomId, authToken);
-    }
+	public HipchatNotifier(InstanceRepository repository, RestTemplate restTemplate) {
+		super(repository);
+		this.restTemplate = restTemplate;
+		this.description = parser.parseExpression(DEFAULT_DESCRIPTION, ParserContext.TEMPLATE_EXPRESSION);
+	}
 
-    protected HttpEntity<Map<String, Object>> createHipChatNotification(InstanceEvent event, Instance instance) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("color", getColor(event));
-        body.put("message", getMessage(event, instance));
-        body.put("notify", getNotify());
-        body.put("message_format", "html");
+	@Override
+	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
+		return Mono.fromRunnable(
+				() -> restTemplate.postForEntity(buildUrl(), createHipChatNotification(event, instance), Void.class));
+	}
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new HttpEntity<>(body, headers);
-    }
+	protected String buildUrl() {
+		if (url == null) {
+			throw new IllegalStateException("'url' must not be null.");
+		}
+		return String.format("%s/room/%s/notification?auth_token=%s", url.toString(), roomId, authToken);
+	}
 
-    protected boolean getNotify() {
-        return notify;
-    }
+	protected HttpEntity<Map<String, Object>> createHipChatNotification(InstanceEvent event, Instance instance) {
+		Map<String, Object> body = new HashMap<>();
+		body.put("color", getColor(event));
+		body.put("message", getMessage(event, instance));
+		body.put("notify", getNotify());
+		body.put("message_format", "html");
 
-    @Nullable
-    protected String getMessage(InstanceEvent event, Instance instance) {
-        Map<String, Object> root = new HashMap<>();
-        root.put("event", event);
-        root.put("instance", instance);
-        root.put("lastStatus", getLastStatus(event.getInstance()));
-        StandardEvaluationContext context = new StandardEvaluationContext(root);
-        context.addPropertyAccessor(new MapAccessor());
-        return description.getValue(context, String.class);
-    }
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		return new HttpEntity<>(body, headers);
+	}
 
-    protected String getColor(InstanceEvent event) {
-        if (event instanceof InstanceStatusChangedEvent) {
-            return StatusInfo.STATUS_UP.equals(((InstanceStatusChangedEvent) event).getStatusInfo()
-                                                                                   .getStatus()) ? "green" : "red";
-        } else {
-            return "gray";
-        }
-    }
+	protected boolean getNotify() {
+		return notify;
+	}
 
-    public void setUrl(@Nullable URI url) {
-        this.url = url;
-    }
+	@Nullable
+	protected String getMessage(InstanceEvent event, Instance instance) {
+		Map<String, Object> root = new HashMap<>();
+		root.put("event", event);
+		root.put("instance", instance);
+		root.put("lastStatus", getLastStatus(event.getInstance()));
+		StandardEvaluationContext context = new StandardEvaluationContext(root);
+		context.addPropertyAccessor(new MapAccessor());
+		return description.getValue(context, String.class);
+	}
 
+	protected String getColor(InstanceEvent event) {
+		if (event instanceof InstanceStatusChangedEvent) {
+			return StatusInfo.STATUS_UP.equals(((InstanceStatusChangedEvent) event).getStatusInfo().getStatus())
+					? "green" : "red";
+		}
+		else {
+			return "gray";
+		}
+	}
 
-    @Nullable
-    public URI getUrl() {
-        return url;
-    }
+	public void setUrl(@Nullable URI url) {
+		this.url = url;
+	}
 
-    public void setAuthToken(@Nullable String authToken) {
-        this.authToken = authToken;
-    }
+	@Nullable
+	public URI getUrl() {
+		return url;
+	}
 
-    @Nullable
-    public String getAuthToken() {
-        return authToken;
-    }
+	public void setAuthToken(@Nullable String authToken) {
+		this.authToken = authToken;
+	}
 
-    public void setRoomId(@Nullable String roomId) {
-        this.roomId = roomId;
-    }
+	@Nullable
+	public String getAuthToken() {
+		return authToken;
+	}
 
-    @Nullable
-    public String getRoomId() {
-        return roomId;
-    }
+	public void setRoomId(@Nullable String roomId) {
+		this.roomId = roomId;
+	}
 
-    public void setNotify(boolean notify) {
-        this.notify = notify;
-    }
+	@Nullable
+	public String getRoomId() {
+		return roomId;
+	}
 
-    public boolean isNotify() {
-        return notify;
-    }
+	public void setNotify(boolean notify) {
+		this.notify = notify;
+	}
 
-    public void setDescription(String description) {
-        this.description = parser.parseExpression(description, ParserContext.TEMPLATE_EXPRESSION);
-    }
+	public boolean isNotify() {
+		return notify;
+	}
 
-    public String getDescription() {
-        return description.getExpressionString();
-    }
+	public void setDescription(String description) {
+		this.description = parser.parseExpression(description, ParserContext.TEMPLATE_EXPRESSION);
+	}
 
-    public void setRestTemplate(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+	public String getDescription() {
+		return description.getExpressionString();
+	}
+
+	public void setRestTemplate(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
+
 }

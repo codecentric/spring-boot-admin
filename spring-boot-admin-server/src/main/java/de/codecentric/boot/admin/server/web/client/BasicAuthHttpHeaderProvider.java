@@ -24,29 +24,30 @@ import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
 
 /**
- * Provides Basic Auth headers for the {@link Instance} using the metadata for "user.name" and
- * "user.password".
+ * Provides Basic Auth headers for the {@link Instance} using the metadata for "user.name"
+ * and "user.password".
  *
  * @author Johannes Edmeier
  */
 public class BasicAuthHttpHeaderProvider implements HttpHeadersProvider {
 
-    @Override
-    public HttpHeaders getHeaders(Instance instance) {
-        String username = instance.getRegistration().getMetadata().get("user.name");
-        String password = instance.getRegistration().getMetadata().get("user.password");
+	@Override
+	public HttpHeaders getHeaders(Instance instance) {
+		String username = instance.getRegistration().getMetadata().get("user.name");
+		String password = instance.getRegistration().getMetadata().get("user.password");
 
-        HttpHeaders headers = new HttpHeaders();
+		HttpHeaders headers = new HttpHeaders();
 
-        if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
-            headers.set(HttpHeaders.AUTHORIZATION, encode(username, password));
-        }
+		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
+			headers.set(HttpHeaders.AUTHORIZATION, encode(username, password));
+		}
 
-        return headers;
-    }
+		return headers;
+	}
 
-    protected String encode(String username, String password) {
-        String token = Base64Utils.encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8));
-        return "Basic " + token;
-    }
+	protected String encode(String username, String password) {
+		String token = Base64Utils.encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8));
+		return "Basic " + token;
+	}
+
 }

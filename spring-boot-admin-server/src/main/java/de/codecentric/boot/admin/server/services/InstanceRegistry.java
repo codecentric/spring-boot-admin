@@ -26,74 +26,72 @@ import reactor.core.publisher.Mono;
 import org.springframework.util.Assert;
 
 /**
- * Registry for all application instances that should be managed/administrated by the Spring Boot Admin
- * server. Backed by an InstanceRepository for persistence and an InstanceIdGenerator for id
- * generation.
+ * Registry for all application instances that should be managed/administrated by the
+ * Spring Boot Admin server. Backed by an InstanceRepository for persistence and an
+ * InstanceIdGenerator for id generation.
  */
 public class InstanceRegistry {
-    private final InstanceRepository repository;
-    private final InstanceIdGenerator generator;
 
-    public InstanceRegistry(InstanceRepository repository, InstanceIdGenerator generator) {
-        this.repository = repository;
-        this.generator = generator;
-    }
+	private final InstanceRepository repository;
 
-    /**
-     * Register instance.
-     *
-     * @param registration instance to be registered.
-     * @return the id of the registered instance.
-     */
-    public Mono<InstanceId> register(Registration registration) {
-        Assert.notNull(registration, "'registration' must not be null");
-        InstanceId id = generator.generateId(registration);
-        Assert.notNull(id, "'id' must not be null");
-        return repository.compute(id, (key, instance) -> {
-            if (instance == null) {
-                instance = Instance.create(key);
-            }
-            return Mono.just(instance.register(registration));
-        }).map(Instance::getId);
-    }
+	private final InstanceIdGenerator generator;
 
-    /**
-     * Get a list of all registered instances.
-     *
-     * @return List of all instances.
-     */
-    public Flux<Instance> getInstances() {
-        return repository.findAll();
-    }
+	public InstanceRegistry(InstanceRepository repository, InstanceIdGenerator generator) {
+		this.repository = repository;
+		this.generator = generator;
+	}
 
-    /**
-     * Get a list of all registered application instances.
-     *
-     * @param name the name to search for.
-     * @return List of instances for the given application
-     */
-    public Flux<Instance> getInstances(String name) {
-        return repository.findByName(name);
-    }
+	/**
+	 * Register instance.
+	 * @param registration instance to be registered.
+	 * @return the id of the registered instance.
+	 */
+	public Mono<InstanceId> register(Registration registration) {
+		Assert.notNull(registration, "'registration' must not be null");
+		InstanceId id = generator.generateId(registration);
+		Assert.notNull(id, "'id' must not be null");
+		return repository.compute(id, (key, instance) -> {
+			if (instance == null) {
+				instance = Instance.create(key);
+			}
+			return Mono.just(instance.register(registration));
+		}).map(Instance::getId);
+	}
 
-    /**
-     * Get a specific instance
-     *
-     * @param id Id.
-     * @return Instance.
-     */
-    public Mono<Instance> getInstance(InstanceId id) {
-        return repository.find(id);
-    }
+	/**
+	 * Get a list of all registered instances.
+	 * @return List of all instances.
+	 */
+	public Flux<Instance> getInstances() {
+		return repository.findAll();
+	}
 
-    /**
-     * Remove a specific instance from services
-     *
-     * @param id the instances id to unregister
-     * @return the id of the unregistered instance
-     */
-    public Mono<InstanceId> deregister(InstanceId id) {
-        return repository.computeIfPresent(id, (key, instance) -> Mono.just(instance.deregister()))
-                         .map(Instance::getId);
-    }
+	/**
+	 * Get a list of all registered application instances.
+	 * @param name the name to search for.
+	 * @return List of instances for the given application
+	 */
+	public Flux<Instance> getInstances(String name) {
+		return repository.findByName(name);
+	}
+
+	/**
+	 * Get a specific instance
+	 * @param id Id.
+	 * @return Instance.
+	 */
+	public Mono<Instance> getInstance(InstanceId id) {
+		return repository.find(id);
+	}
+
+	/**
+	 * Remove a specific instance from services
+	 * @param id the instances id to unregister
+	 * @return the id of the unregistered instance
+	 */
+	public Mono<InstanceId> deregister(InstanceId id) {
+		return repository.computeIfPresent(id, (key, instance) -> Mono.just(instance.deregister()))
+				.map(Instance::getId);
+	}
+
 }

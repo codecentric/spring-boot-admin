@@ -34,48 +34,48 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 class HazelcastNotificationTriggerTest {
-    private final Instance instance = Instance
-        .create(InstanceId.of("id-1"))
-        .register(Registration.create("foo", "http://health-1").build());
-    private final Notifier notifier = mock(Notifier.class);
-    private final TestPublisher<InstanceEvent> events = TestPublisher.create();
-    private final ConcurrentHashMap<InstanceId, Long> sentNotifications = new ConcurrentHashMap<>();
-    private final HazelcastNotificationTrigger trigger = new HazelcastNotificationTrigger(this.notifier,
-        this.events,
-        this.sentNotifications
-    );
 
-    @Test
-    void should_trigger_notifications() {
-        //given then notifier has subscribed to the events and no notification was sent before
-        this.sentNotifications.clear();
-        this.trigger.start();
-        await().until(this.events::wasSubscribed);
+	private final Instance instance = Instance.create(InstanceId.of("id-1"))
+			.register(Registration.create("foo", "http://health-1").build());
 
-        //when registered event is emitted
-        InstanceStatusChangedEvent event = new InstanceStatusChangedEvent(this.instance.getId(),
-            this.instance.getVersion(),
-            StatusInfo.ofDown()
-        );
-        this.events.next(event);
-        //then should notify
-        verify(this.notifier, times(1)).notify(event);
-    }
+	private final Notifier notifier = mock(Notifier.class);
 
-    @Test
-    void should_not_trigger_notifications() {
-        //given the event is in the already sent notifications.
-        InstanceStatusChangedEvent event = new InstanceStatusChangedEvent(this.instance.getId(),
-            this.instance.getVersion(),
-            StatusInfo.ofDown()
-        );
-        this.sentNotifications.put(event.getInstance(), event.getVersion());
-        this.trigger.start();
-        await().until(this.events::wasSubscribed);
+	private final TestPublisher<InstanceEvent> events = TestPublisher.create();
 
-        //when registered event is emitted
-        this.events.next(event);
-        //then should not notify
-        verify(this.notifier, never()).notify(event);
-    }
+	private final ConcurrentHashMap<InstanceId, Long> sentNotifications = new ConcurrentHashMap<>();
+
+	private final HazelcastNotificationTrigger trigger = new HazelcastNotificationTrigger(this.notifier, this.events,
+			this.sentNotifications);
+
+	@Test
+	void should_trigger_notifications() {
+		// given then notifier has subscribed to the events and no notification was sent
+		// before
+		this.sentNotifications.clear();
+		this.trigger.start();
+		await().until(this.events::wasSubscribed);
+
+		// when registered event is emitted
+		InstanceStatusChangedEvent event = new InstanceStatusChangedEvent(this.instance.getId(),
+				this.instance.getVersion(), StatusInfo.ofDown());
+		this.events.next(event);
+		// then should notify
+		verify(this.notifier, times(1)).notify(event);
+	}
+
+	@Test
+	void should_not_trigger_notifications() {
+		// given the event is in the already sent notifications.
+		InstanceStatusChangedEvent event = new InstanceStatusChangedEvent(this.instance.getId(),
+				this.instance.getVersion(), StatusInfo.ofDown());
+		this.sentNotifications.put(event.getInstance(), event.getVersion());
+		this.trigger.start();
+		await().until(this.events::wasSubscribed);
+
+		// when registered event is emitted
+		this.events.next(event);
+		// then should not notify
+		verify(this.notifier, never()).notify(event);
+	}
+
 }

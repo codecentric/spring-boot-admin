@@ -35,56 +35,57 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class StatusInfoTest {
 
-    @Test
-    public void invariants() {
-        assertThatThrownBy(() -> StatusInfo.valueOf("")).isInstanceOf(IllegalArgumentException.class)
-                                                        .hasMessage("'status' must not be empty.");
-    }
+	@Test
+	public void invariants() {
+		assertThatThrownBy(() -> StatusInfo.valueOf("")).isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("'status' must not be empty.");
+	}
 
-    @Test
-    public void test_isMethods() {
-        assertThat(StatusInfo.valueOf("FOO").isUp()).isFalse();
-        assertThat(StatusInfo.valueOf("FOO").isDown()).isFalse();
-        assertThat(StatusInfo.valueOf("FOO").isUnknown()).isFalse();
-        assertThat(StatusInfo.valueOf("FOO").isOffline()).isFalse();
+	@Test
+	public void test_isMethods() {
+		assertThat(StatusInfo.valueOf("FOO").isUp()).isFalse();
+		assertThat(StatusInfo.valueOf("FOO").isDown()).isFalse();
+		assertThat(StatusInfo.valueOf("FOO").isUnknown()).isFalse();
+		assertThat(StatusInfo.valueOf("FOO").isOffline()).isFalse();
 
-        assertThat(StatusInfo.ofUp().isUp()).isTrue();
-        assertThat(StatusInfo.ofUp().isDown()).isFalse();
-        assertThat(StatusInfo.ofUp().isUnknown()).isFalse();
-        assertThat(StatusInfo.ofUp().isOffline()).isFalse();
+		assertThat(StatusInfo.ofUp().isUp()).isTrue();
+		assertThat(StatusInfo.ofUp().isDown()).isFalse();
+		assertThat(StatusInfo.ofUp().isUnknown()).isFalse();
+		assertThat(StatusInfo.ofUp().isOffline()).isFalse();
 
-        assertThat(StatusInfo.ofDown().isUp()).isFalse();
-        assertThat(StatusInfo.ofDown().isDown()).isTrue();
-        assertThat(StatusInfo.ofDown().isUnknown()).isFalse();
-        assertThat(StatusInfo.ofDown().isOffline()).isFalse();
+		assertThat(StatusInfo.ofDown().isUp()).isFalse();
+		assertThat(StatusInfo.ofDown().isDown()).isTrue();
+		assertThat(StatusInfo.ofDown().isUnknown()).isFalse();
+		assertThat(StatusInfo.ofDown().isOffline()).isFalse();
 
-        assertThat(StatusInfo.ofUnknown().isUp()).isFalse();
-        assertThat(StatusInfo.ofUnknown().isDown()).isFalse();
-        assertThat(StatusInfo.ofUnknown().isUnknown()).isTrue();
-        assertThat(StatusInfo.ofUnknown().isOffline()).isFalse();
+		assertThat(StatusInfo.ofUnknown().isUp()).isFalse();
+		assertThat(StatusInfo.ofUnknown().isDown()).isFalse();
+		assertThat(StatusInfo.ofUnknown().isUnknown()).isTrue();
+		assertThat(StatusInfo.ofUnknown().isOffline()).isFalse();
 
-        assertThat(StatusInfo.ofOffline().isUp()).isFalse();
-        assertThat(StatusInfo.ofOffline().isDown()).isFalse();
-        assertThat(StatusInfo.ofOffline().isUnknown()).isFalse();
-        assertThat(StatusInfo.ofOffline().isOffline()).isTrue();
-    }
+		assertThat(StatusInfo.ofOffline().isUp()).isFalse();
+		assertThat(StatusInfo.ofOffline().isDown()).isFalse();
+		assertThat(StatusInfo.ofOffline().isUnknown()).isFalse();
+		assertThat(StatusInfo.ofOffline().isOffline()).isTrue();
+	}
 
-    @Test
-    public void from_map_should_return_same_result() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("status", "UP");
-        map.put("details", singletonMap("foo", "bar"));
+	@Test
+	public void from_map_should_return_same_result() {
+		Map<String, Object> map = new HashMap<>();
+		map.put("status", "UP");
+		map.put("details", singletonMap("foo", "bar"));
 
-        assertThat(StatusInfo.from(map)).isEqualTo(StatusInfo.ofUp(singletonMap("foo", "bar")));
-    }
+		assertThat(StatusInfo.from(map)).isEqualTo(StatusInfo.ofUp(singletonMap("foo", "bar")));
+	}
 
-    @Test
-    public void should_sort_by_status_order() {
-        List<String> unordered = asList(STATUS_OUT_OF_SERVICE, STATUS_UNKNOWN, STATUS_OFFLINE, STATUS_DOWN, STATUS_UP,
-            STATUS_RESTRICTED);
+	@Test
+	public void should_sort_by_status_order() {
+		List<String> unordered = asList(STATUS_OUT_OF_SERVICE, STATUS_UNKNOWN, STATUS_OFFLINE, STATUS_DOWN, STATUS_UP,
+				STATUS_RESTRICTED);
 
-        List<String> ordered = unordered.stream().sorted(StatusInfo.severity()).collect(Collectors.toList());
-        assertThat(ordered).containsExactly(STATUS_DOWN, STATUS_OUT_OF_SERVICE, STATUS_OFFLINE, STATUS_UNKNOWN,
-            STATUS_RESTRICTED, STATUS_UP);
-    }
+		List<String> ordered = unordered.stream().sorted(StatusInfo.severity()).collect(Collectors.toList());
+		assertThat(ordered).containsExactly(STATUS_DOWN, STATUS_OUT_OF_SERVICE, STATUS_OFFLINE, STATUS_UNKNOWN,
+				STATUS_RESTRICTED, STATUS_UP);
+	}
+
 }

@@ -29,142 +29,115 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class ApplicationRegistratorTest {
-    private final Application application = Application.create("AppName")
-                                                       .managementUrl("http://localhost:8080/mgmt")
-                                                       .healthUrl("http://localhost:8080/health")
-                                                       .serviceUrl("http://localhost:8080")
-                                                       .build();
-    private final RegistrationClient registrationClient = mock(RegistrationClient.class);
 
-    @Test
-    public void register_should_return_true_when_successful() {
-        ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application,
-            this.registrationClient,
-            new String[]{"http://sba:8080/instances", "http://sba2:8080/instances"},
-            true
-        );
+	private final Application application = Application.create("AppName").managementUrl("http://localhost:8080/mgmt")
+			.healthUrl("http://localhost:8080/health").serviceUrl("http://localhost:8080").build();
 
-        when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
-        assertThat(registrator.register()).isTrue();
-        assertThat(registrator.getRegisteredId()).isEqualTo("-id-");
-    }
+	private final RegistrationClient registrationClient = mock(RegistrationClient.class);
 
+	@Test
+	public void register_should_return_true_when_successful() {
+		ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application, this.registrationClient,
+				new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" }, true);
 
-    @Test
-    public void register_should_return_false_when_failed() {
-        ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application,
-            this.registrationClient,
-            new String[]{"http://sba:8080/instances", "http://sba2:8080/instances"},
-            true
-        );
+		when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
+		assertThat(registrator.register()).isTrue();
+		assertThat(registrator.getRegisteredId()).isEqualTo("-id-");
+	}
 
-        when(this.registrationClient.register(any(), eq(this.application))).thenThrow(new RestClientException("Error"));
+	@Test
+	public void register_should_return_false_when_failed() {
+		ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application, this.registrationClient,
+				new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" }, true);
 
-        assertThat(registrator.register()).isFalse();
-        assertThat(registrator.register()).isFalse();
-        assertThat(registrator.getRegisteredId()).isNull();
-    }
+		when(this.registrationClient.register(any(), eq(this.application))).thenThrow(new RestClientException("Error"));
 
-    @Test
-    public void register_should_try_next_on_error() {
-        ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application,
-            this.registrationClient,
-            new String[]{"http://sba:8080/instances", "http://sba2:8080/instances"},
-            true
-        );
+		assertThat(registrator.register()).isFalse();
+		assertThat(registrator.register()).isFalse();
+		assertThat(registrator.getRegisteredId()).isNull();
+	}
 
-        when(this.registrationClient.register("http://sba:8080/instances",
-            this.application
-        )).thenThrow(new RestClientException("Error"));
-        when(this.registrationClient.register("http://sba2:8080/instances", this.application)).thenReturn("-id-");
+	@Test
+	public void register_should_try_next_on_error() {
+		ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application, this.registrationClient,
+				new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" }, true);
 
-        assertThat(registrator.register()).isTrue();
-        assertThat(registrator.getRegisteredId()).isEqualTo("-id-");
-    }
+		when(this.registrationClient.register("http://sba:8080/instances", this.application))
+				.thenThrow(new RestClientException("Error"));
+		when(this.registrationClient.register("http://sba2:8080/instances", this.application)).thenReturn("-id-");
 
-    @Test
-    public void deregister_should_deregister_at_server() {
-        ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application,
-            this.registrationClient,
-            new String[]{"http://sba:8080/instances", "http://sba2:8080/instances"},
-            true
-        );
+		assertThat(registrator.register()).isTrue();
+		assertThat(registrator.getRegisteredId()).isEqualTo("-id-");
+	}
 
-        when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
+	@Test
+	public void deregister_should_deregister_at_server() {
+		ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application, this.registrationClient,
+				new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" }, true);
 
-        registrator.register();
-        registrator.deregister();
-        assertThat(registrator.getRegisteredId()).isNull();
+		when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
 
-        verify(this.registrationClient).deregister("http://sba:8080/instances", "-id-");
-    }
+		registrator.register();
+		registrator.deregister();
+		assertThat(registrator.getRegisteredId()).isNull();
 
-    @Test
-    public void deregister_should_not_deregister_when_not_registered() {
-        ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application,
-            this.registrationClient,
-            new String[]{"http://sba:8080/instances", "http://sba2:8080/instances"},
-            true
-        );
+		verify(this.registrationClient).deregister("http://sba:8080/instances", "-id-");
+	}
 
-        registrator.deregister();
+	@Test
+	public void deregister_should_not_deregister_when_not_registered() {
+		ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application, this.registrationClient,
+				new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" }, true);
 
-        verify(this.registrationClient, never()).deregister(any(), any());
-    }
+		registrator.deregister();
 
-    @Test
-    public void deregister_should_try_next_on_error() {
-        ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application,
-            this.registrationClient,
-            new String[]{"http://sba:8080/instances", "http://sba2:8080/instances"},
-            true
-        );
+		verify(this.registrationClient, never()).deregister(any(), any());
+	}
 
-        when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
-        doThrow(new RestClientException("Error")).when(this.registrationClient)
-                                                 .deregister("http://sba:8080/instances", "-id-");
+	@Test
+	public void deregister_should_try_next_on_error() {
+		ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application, this.registrationClient,
+				new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" }, true);
 
-        registrator.register();
-        registrator.deregister();
-        assertThat(registrator.getRegisteredId()).isNull();
+		when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
+		doThrow(new RestClientException("Error")).when(this.registrationClient).deregister("http://sba:8080/instances",
+				"-id-");
 
-        verify(this.registrationClient).deregister("http://sba:8080/instances", "-id-");
-        verify(this.registrationClient).deregister("http://sba2:8080/instances", "-id-");
-    }
+		registrator.register();
+		registrator.deregister();
+		assertThat(registrator.getRegisteredId()).isNull();
 
-    @Test
-    public void register_should_register_on_multiple_servers() {
-        ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application,
-            this.registrationClient,
-            new String[]{"http://sba:8080/instances", "http://sba2:8080/instances"},
-            false
-        );
+		verify(this.registrationClient).deregister("http://sba:8080/instances", "-id-");
+		verify(this.registrationClient).deregister("http://sba2:8080/instances", "-id-");
+	}
 
-        when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
+	@Test
+	public void register_should_register_on_multiple_servers() {
+		ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application, this.registrationClient,
+				new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" }, false);
 
-        assertThat(registrator.register()).isTrue();
-        assertThat(registrator.getRegisteredId()).isEqualTo("-id-");
+		when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
 
-        verify(this.registrationClient).register("http://sba:8080/instances", this.application);
-        verify(this.registrationClient).register("http://sba2:8080/instances", this.application);
-    }
+		assertThat(registrator.register()).isTrue();
+		assertThat(registrator.getRegisteredId()).isEqualTo("-id-");
 
+		verify(this.registrationClient).register("http://sba:8080/instances", this.application);
+		verify(this.registrationClient).register("http://sba2:8080/instances", this.application);
+	}
 
-    @Test
-    public void deregister_should_deregister_on_multiple_servers() {
-        ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application,
-            this.registrationClient,
-            new String[]{"http://sba:8080/instances", "http://sba2:8080/instances"},
-            false
-        );
+	@Test
+	public void deregister_should_deregister_on_multiple_servers() {
+		ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application, this.registrationClient,
+				new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" }, false);
 
-        when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
+		when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
 
-        registrator.register();
-        registrator.deregister();
-        assertThat(registrator.getRegisteredId()).isNull();
+		registrator.register();
+		registrator.deregister();
+		assertThat(registrator.getRegisteredId()).isNull();
 
-        verify(this.registrationClient).deregister("http://sba:8080/instances", "-id-");
-        verify(this.registrationClient).deregister("http://sba2:8080/instances", "-id-");
-    }
+		verify(this.registrationClient).deregister("http://sba:8080/instances", "-id-");
+		verify(this.registrationClient).deregister("http://sba2:8080/instances", "-id-");
+	}
+
 }

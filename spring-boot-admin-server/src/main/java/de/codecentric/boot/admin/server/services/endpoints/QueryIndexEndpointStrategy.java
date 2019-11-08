@@ -40,119 +40,103 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
-    private static final Logger log = LoggerFactory.getLogger(QueryIndexEndpointStrategy.class);
-    private final InstanceWebClient instanceWebClient;
-    private static final MediaType actuatorMediaType = MediaType.parseMediaType(ActuatorMediaType.V2_JSON);
 
-    public QueryIndexEndpointStrategy(InstanceWebClient instanceWebClient) {
-        this.instanceWebClient = instanceWebClient;
-    }
+	private static final Logger log = LoggerFactory.getLogger(QueryIndexEndpointStrategy.class);
 
-    @Override
-    public Mono<Endpoints> detectEndpoints(Instance instance) {
-        Registration registration = instance.getRegistration();
-        String managementUrl = registration.getManagementUrl();
-        if (managementUrl == null || Objects.equals(registration.getServiceUrl(), managementUrl)) {
-            log.debug("Querying actuator-index for instance {} omitted.", instance.getId());
-            return Mono.empty();
-        }
+	private final InstanceWebClient instanceWebClient;
 
-        return this.instanceWebClient.instance(instance)
-                                     .get()
-                                     .uri(managementUrl)
-                                     .exchange()
-                                     .flatMap(this.convert(instance, managementUrl))
-                                     .onErrorResume(e -> {
-                                         log.warn(
-                                             "Querying actuator-index for instance {} on '{}' failed: {}",
-                                             instance.getId(),
-                                             managementUrl,
-                                             e.getMessage()
-                                         );
-                                         log.debug(
-                                             "Querying actuator-index for instance {} on '{}' failed.",
-                                             instance.getId(),
-                                             managementUrl,
-                                             e
-                                         );
-                                         return Mono.empty();
-                                     });
-    }
+	private static final MediaType actuatorMediaType = MediaType.parseMediaType(ActuatorMediaType.V2_JSON);
 
-    protected Function<ClientResponse, Mono<Endpoints>> convert(Instance instance, String managementUrl) {
-        return response -> {
-            if (!response.statusCode().is2xxSuccessful()) {
-                log.debug(
-                    "Querying actuator-index for instance {} on '{}' failed with status {}.",
-                    instance.getId(),
-                    managementUrl,
-                    response.rawStatusCode()
-                );
-                return response.releaseBody().then(Mono.empty());
-            }
+	public QueryIndexEndpointStrategy(InstanceWebClient instanceWebClient) {
+		this.instanceWebClient = instanceWebClient;
+	}
 
-            if (!response.headers().contentType().map(actuatorMediaType::isCompatibleWith).orElse(false)) {
-                log.debug(
-                    "Querying actuator-index for instance {} on '{}' failed with incompatible Content-Type '{}'.",
-                    instance.getId(),
-                    managementUrl,
-                    response.headers().contentType().map(Objects::toString).orElse("(missing)")
-                );
-                return response.releaseBody().then(Mono.empty());
-            }
+	@Override
+	public Mono<Endpoints> detectEndpoints(Instance instance) {
+		Registration registration = instance.getRegistration();
+		String managementUrl = registration.getManagementUrl();
+		if (managementUrl == null || Objects.equals(registration.getServiceUrl(), managementUrl)) {
+			log.debug("Querying actuator-index for instance {} omitted.", instance.getId());
+			return Mono.empty();
+		}
 
-            log.debug("Querying actuator-index for instance {} on '{}' successful.", instance.getId(), managementUrl);
-            return response.bodyToMono(Response.class)
-                           .flatMap(this::convertResponse)
-                           .map(this.alignWithManagementUrl(instance.getId(), managementUrl));
-        };
-    }
+		return this.instanceWebClient.instance(instance).get().uri(managementUrl).exchange()
+				.flatMap(this.convert(instance, managementUrl)).onErrorResume(e -> {
+					log.warn("Querying actuator-index for instance {} on '{}' failed: {}", instance.getId(),
+							managementUrl, e.getMessage());
+					log.debug("Querying actuator-index for instance {} on '{}' failed.", instance.getId(),
+							managementUrl, e);
+					return Mono.empty();
+				});
+	}
 
-    protected Function<Endpoints, Endpoints> alignWithManagementUrl(InstanceId instanceId, String managementUrl) {
-        return endpoints -> {
-            if (!managementUrl.startsWith("https:")) {
-                return endpoints;
-            }
-            if (endpoints.stream().noneMatch(e -> e.getUrl().startsWith("http:"))) {
-                return endpoints;
-            }
-            log.warn(
-                "Endpoints for instance {} queried from {} are falsely using http. Rewritten to https. Consider configuring this instance to use 'server.forward-headers-strategy=native'.",
-                instanceId,
-                managementUrl
-            );
+	protected Function<ClientResponse, Mono<Endpoints>> convert(Instance instance, String managementUrl) {
+		return response -> {
+			if (!response.statusCode().is2xxSuccessful()) {
+				log.debug("Querying actuator-index for instance {} on '{}' failed with status {}.", instance.getId(),
+						managementUrl, response.rawStatusCode());
+				return response.releaseBody().then(Mono.empty());
+			}
 
-            return Endpoints.of(endpoints.stream()
-                                         .map(e -> Endpoint.of(e.getId(), e.getUrl().replaceFirst("http:", "https:")))
-                                         .collect(Collectors.toList()));
-        };
-    }
+			if (!response.headers().contentType().map(actuatorMediaType::isCompatibleWith).orElse(false)) {
+				log.debug("Querying actuator-index for instance {} on '{}' failed with incompatible Content-Type '{}'.",
+						instance.getId(), managementUrl,
+						response.headers().contentType().map(Objects::toString).orElse("(missing)"));
+				return response.releaseBody().then(Mono.empty());
+			}
 
-    protected Mono<Endpoints> convertResponse(Response response) {
-        List<Endpoint> endpoints = response.getLinks()
-                                           .entrySet()
-                                           .stream()
-                                           .filter(e -> !e.getKey().equals("self") && !e.getValue().isTemplated())
-                                           .map(e -> Endpoint.of(e.getKey(), e.getValue().getHref()))
-                                           .collect(Collectors.toList());
-        return endpoints.isEmpty() ? Mono.empty() : Mono.just(Endpoints.of(endpoints));
-    }
+			log.debug("Querying actuator-index for instance {} on '{}' successful.", instance.getId(), managementUrl);
+			return response.bodyToMono(Response.class).flatMap(this::convertResponse)
+					.map(this.alignWithManagementUrl(instance.getId(), managementUrl));
+		};
+	}
 
-    @Data
-    protected static class Response {
-        @JsonProperty("_links")
-        private Map<String, EndpointRef> links = new HashMap<>();
+	protected Function<Endpoints, Endpoints> alignWithManagementUrl(InstanceId instanceId, String managementUrl) {
+		return endpoints -> {
+			if (!managementUrl.startsWith("https:")) {
+				return endpoints;
+			}
+			if (endpoints.stream().noneMatch(e -> e.getUrl().startsWith("http:"))) {
+				return endpoints;
+			}
+			log.warn(
+					"Endpoints for instance {} queried from {} are falsely using http. Rewritten to https. Consider configuring this instance to use 'server.forward-headers-strategy=native'.",
+					instanceId, managementUrl);
 
-        @Data
-        protected static class EndpointRef {
-            private final String href;
-            private final boolean templated;
+			return Endpoints
+					.of(endpoints.stream().map(e -> Endpoint.of(e.getId(), e.getUrl().replaceFirst("http:", "https:")))
+							.collect(Collectors.toList()));
+		};
+	}
 
-            @JsonCreator
-            EndpointRef(@JsonProperty("href") String href, @JsonProperty("templated") boolean templated) {
-                this.href = href;
-                this.templated = templated;
-            }
-        }
-    }
+	protected Mono<Endpoints> convertResponse(Response response) {
+		List<Endpoint> endpoints = response.getLinks().entrySet().stream()
+				.filter(e -> !e.getKey().equals("self") && !e.getValue().isTemplated())
+				.map(e -> Endpoint.of(e.getKey(), e.getValue().getHref())).collect(Collectors.toList());
+		return endpoints.isEmpty() ? Mono.empty() : Mono.just(Endpoints.of(endpoints));
+	}
+
+	@Data
+	protected static class Response {
+
+		@JsonProperty("_links")
+		private Map<String, EndpointRef> links = new HashMap<>();
+
+		@Data
+		protected static class EndpointRef {
+
+			private final String href;
+
+			private final boolean templated;
+
+			@JsonCreator
+			EndpointRef(@JsonProperty("href") String href, @JsonProperty("templated") boolean templated) {
+				this.href = href;
+				this.templated = templated;
+			}
+
+		}
+
+	}
+
 }

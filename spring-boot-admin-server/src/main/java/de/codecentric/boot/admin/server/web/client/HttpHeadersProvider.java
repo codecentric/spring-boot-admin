@@ -28,6 +28,6 @@ import org.springframework.http.HttpHeaders;
  */
 public interface HttpHeadersProvider {
 
-    HttpHeaders getHeaders(Instance instance);
+	HttpHeaders getHeaders(Instance instance);
 
 }

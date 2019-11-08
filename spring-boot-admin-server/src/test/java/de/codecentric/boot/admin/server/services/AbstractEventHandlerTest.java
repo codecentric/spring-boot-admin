@@ -35,72 +35,79 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AbstractEventHandlerTest {
-    private static final Logger log = LoggerFactory.getLogger(AbstractEventHandlerTest.class);
-    private static final Registration registration = Registration.create("foo", "http://health").build();
-    private static final InstanceRegisteredEvent firstEvent = new InstanceRegisteredEvent(InstanceId.of("id"), 0L, registration);
-    private static final InstanceRegisteredEvent secondEvent = new InstanceRegisteredEvent(InstanceId.of("id"), 1L, registration);
-    private static final InstanceRegisteredEvent errorEvent = new InstanceRegisteredEvent(InstanceId.of("err"), 2L, registration);
-    private static final InstanceDeregisteredEvent ignoredEvent = new InstanceDeregisteredEvent(InstanceId.of("id"), 2L);
 
-    @Test
-    public void should_resubscribe_after_error() {
-        TestPublisher<InstanceEvent> testPublisher = TestPublisher.create();
+	private static final Logger log = LoggerFactory.getLogger(AbstractEventHandlerTest.class);
 
-        TestEventHandler eventHandler = new TestEventHandler(testPublisher.flux());
-        eventHandler.start();
+	private static final Registration registration = Registration.create("foo", "http://health").build();
 
-        StepVerifier.create(eventHandler.getFlux())
-                    .expectSubscription()
-                    .then(() -> testPublisher.next(firstEvent, errorEvent, secondEvent))
-                    .expectNext(firstEvent, secondEvent)
-                    .thenCancel()
-                    .verify(Duration.ofSeconds(1));
+	private static final InstanceRegisteredEvent firstEvent = new InstanceRegisteredEvent(InstanceId.of("id"), 0L,
+			registration);
 
-    }
+	private static final InstanceRegisteredEvent secondEvent = new InstanceRegisteredEvent(InstanceId.of("id"), 1L,
+			registration);
 
-    @Test
-    public void should_filter() {
-        TestPublisher<InstanceEvent> testPublisher = TestPublisher.create();
+	private static final InstanceRegisteredEvent errorEvent = new InstanceRegisteredEvent(InstanceId.of("err"), 2L,
+			registration);
 
-        TestEventHandler eventHandler = new TestEventHandler(testPublisher.flux());
-        eventHandler.start();
+	private static final InstanceDeregisteredEvent ignoredEvent = new InstanceDeregisteredEvent(InstanceId.of("id"),
+			2L);
 
-        StepVerifier.create(eventHandler.getFlux())
-                    .expectSubscription()
-                    .then(() -> testPublisher.next(firstEvent, ignoredEvent, secondEvent))
-                    .expectNext(firstEvent, secondEvent)
-                    .thenCancel()
-                    .verify(Duration.ofSeconds(1));
-    }
+	@Test
+	public void should_resubscribe_after_error() {
+		TestPublisher<InstanceEvent> testPublisher = TestPublisher.create();
 
+		TestEventHandler eventHandler = new TestEventHandler(testPublisher.flux());
+		eventHandler.start();
 
-    private static class TestEventHandler extends AbstractEventHandler<InstanceRegisteredEvent> {
-        private final FluxSink<InstanceEvent> sink;
-        private final Flux<InstanceEvent> flux;
+		StepVerifier.create(eventHandler.getFlux()).expectSubscription()
+				.then(() -> testPublisher.next(firstEvent, errorEvent, secondEvent)).expectNext(firstEvent, secondEvent)
+				.thenCancel().verify(Duration.ofSeconds(1));
 
-        private TestEventHandler(Publisher<InstanceEvent> publisher) {
-            super(publisher, InstanceRegisteredEvent.class);
-            UnicastProcessor<InstanceEvent> processor = UnicastProcessor.create();
-            this.sink = processor.sink();
-            this.flux = processor;
-        }
+	}
 
-        @Override
-        protected Publisher<Void> handle(Flux<InstanceRegisteredEvent> publisher) {
-            return publisher.flatMap(event -> {
-                if (event.equals(errorEvent)) {
-                    return Mono.error(new IllegalStateException("Error"));
-                } else {
-                    log.info("Event {}", event);
-                    this.sink.next(event);
-                    return Mono.empty();
-                }
-            }).then();
-        }
+	@Test
+	public void should_filter() {
+		TestPublisher<InstanceEvent> testPublisher = TestPublisher.create();
 
-        public Flux<InstanceEvent> getFlux() {
-            return this.flux;
-        }
-    }
+		TestEventHandler eventHandler = new TestEventHandler(testPublisher.flux());
+		eventHandler.start();
+
+		StepVerifier.create(eventHandler.getFlux()).expectSubscription()
+				.then(() -> testPublisher.next(firstEvent, ignoredEvent, secondEvent))
+				.expectNext(firstEvent, secondEvent).thenCancel().verify(Duration.ofSeconds(1));
+	}
+
+	private static class TestEventHandler extends AbstractEventHandler<InstanceRegisteredEvent> {
+
+		private final FluxSink<InstanceEvent> sink;
+
+		private final Flux<InstanceEvent> flux;
+
+		private TestEventHandler(Publisher<InstanceEvent> publisher) {
+			super(publisher, InstanceRegisteredEvent.class);
+			UnicastProcessor<InstanceEvent> processor = UnicastProcessor.create();
+			this.sink = processor.sink();
+			this.flux = processor;
+		}
+
+		@Override
+		protected Publisher<Void> handle(Flux<InstanceRegisteredEvent> publisher) {
+			return publisher.flatMap(event -> {
+				if (event.equals(errorEvent)) {
+					return Mono.error(new IllegalStateException("Error"));
+				}
+				else {
+					log.info("Event {}", event);
+					this.sink.next(event);
+					return Mono.empty();
+				}
+			}).then();
+		}
+
+		public Flux<InstanceEvent> getFlux() {
+			return this.flux;
+		}
+
+	}
 
 }

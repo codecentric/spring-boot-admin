@@ -41,74 +41,80 @@ import com.netflix.discovery.EurekaClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AdminServerDiscoveryAutoConfigurationTest {
-    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
-        AutoConfigurations.of(UtilAutoConfiguration.class,
-            ClientHttpConnectorAutoConfiguration.class,
-            WebClientAutoConfiguration.class,
-            AdminServerAutoConfiguration.class,
-            AdminServerDiscoveryAutoConfiguration.class
-        )).withUserConfiguration(AdminServerMarkerConfiguration.class);
 
-    @Test
-    public void defaultServiceInstanceConverter() {
-        this.contextRunner.withUserConfiguration(SimpleDiscoveryClientAutoConfiguration.class)
-                          .run(context -> assertThat(context.getBean(ServiceInstanceConverter.class)).isInstanceOf(
-                         DefaultServiceInstanceConverter.class));
-    }
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(UtilAutoConfiguration.class,
+					ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class,
+					AdminServerAutoConfiguration.class, AdminServerDiscoveryAutoConfiguration.class))
+			.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
-    @Test
-    public void eurekaServiceInstanceConverter() {
-        this.contextRunner.withUserConfiguration(EurekaClientConfig.class)
-                          .run(context -> assertThat(context).getBean(ServiceInstanceConverter.class)
-                                                        .isInstanceOf(EurekaServiceInstanceConverter.class));
-    }
+	@Test
+	public void defaultServiceInstanceConverter() {
+		this.contextRunner.withUserConfiguration(SimpleDiscoveryClientAutoConfiguration.class)
+				.run(context -> assertThat(context.getBean(ServiceInstanceConverter.class))
+						.isInstanceOf(DefaultServiceInstanceConverter.class));
+	}
 
-    @Test
-    public void kubernetesServiceInstanceConverter() {
-        this.contextRunner.withUserConfiguration(KubernetesClientConfig.class)
-                          .run(context -> assertThat(context).getBean(ServiceInstanceConverter.class)
-                                                             .isInstanceOf(KubernetesServiceInstanceConverter.class));
-    }
+	@Test
+	public void eurekaServiceInstanceConverter() {
+		this.contextRunner.withUserConfiguration(EurekaClientConfig.class).run(context -> assertThat(context)
+				.getBean(ServiceInstanceConverter.class).isInstanceOf(EurekaServiceInstanceConverter.class));
+	}
 
-    @Test
-    public void customServiceInstanceConverter() {
-        this.contextRunner.withUserConfiguration(
-            SimpleDiscoveryClientAutoConfiguration.class,
-            TestCustomServiceInstanceConverterConfig.class
-        ).run(context -> assertThat(context).getBean(ServiceInstanceConverter.class)
-                                            .isInstanceOf(CustomServiceInstanceConverter.class));
-    }
+	@Test
+	public void kubernetesServiceInstanceConverter() {
+		this.contextRunner.withUserConfiguration(KubernetesClientConfig.class).run(context -> assertThat(context)
+				.getBean(ServiceInstanceConverter.class).isInstanceOf(KubernetesServiceInstanceConverter.class));
+	}
 
-    static class TestCustomServiceInstanceConverterConfig {
-        @Bean
-        public CustomServiceInstanceConverter converter() {
-            return new CustomServiceInstanceConverter();
-        }
-    }
+	@Test
+	public void customServiceInstanceConverter() {
+		this.contextRunner
+				.withUserConfiguration(SimpleDiscoveryClientAutoConfiguration.class,
+						TestCustomServiceInstanceConverterConfig.class)
+				.run(context -> assertThat(context).getBean(ServiceInstanceConverter.class)
+						.isInstanceOf(CustomServiceInstanceConverter.class));
+	}
 
-    static class CustomServiceInstanceConverter implements ServiceInstanceConverter {
-        @Override
-        public Registration convert(ServiceInstance instance) {
-            return null;
-        }
-    }
+	static class TestCustomServiceInstanceConverterConfig {
 
-    static class EurekaClientConfig {
-        @Bean
-        public EurekaClient eurekaClient() {
-            return Mockito.mock(EurekaClient.class);
-        }
+		@Bean
+		public CustomServiceInstanceConverter converter() {
+			return new CustomServiceInstanceConverter();
+		}
 
-        @Bean
-        public DiscoveryClient discoveryClient() {
-            return Mockito.mock(DiscoveryClient.class);
-        }
-    }
+	}
 
-    static class KubernetesClientConfig {
-        @Bean
-        public KubernetesDiscoveryClient eurekaClient() {
-            return Mockito.mock(KubernetesDiscoveryClient.class);
-        }
-    }
+	static class CustomServiceInstanceConverter implements ServiceInstanceConverter {
+
+		@Override
+		public Registration convert(ServiceInstance instance) {
+			return null;
+		}
+
+	}
+
+	static class EurekaClientConfig {
+
+		@Bean
+		public EurekaClient eurekaClient() {
+			return Mockito.mock(EurekaClient.class);
+		}
+
+		@Bean
+		public DiscoveryClient discoveryClient() {
+			return Mockito.mock(DiscoveryClient.class);
+		}
+
+	}
+
+	static class KubernetesClientConfig {
+
+		@Bean
+		public KubernetesDiscoveryClient eurekaClient() {
+			return Mockito.mock(KubernetesDiscoveryClient.class);
+		}
+
+	}
+
 }

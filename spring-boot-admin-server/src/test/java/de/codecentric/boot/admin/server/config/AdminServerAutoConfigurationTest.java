@@ -41,42 +41,43 @@ import com.hazelcast.config.Config;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AdminServerAutoConfigurationTest {
-    private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(
-        RestTemplateAutoConfiguration.class,
-        ClientHttpConnectorAutoConfiguration.class,
-        WebClientAutoConfiguration.class,
-        HazelcastAutoConfiguration.class,
-        WebMvcAutoConfiguration.class,
-        AdminServerHazelcastAutoConfiguration.class,
-        AdminServerAutoConfiguration.class
-    )).withUserConfiguration(AdminServerMarkerConfiguration.class);
 
-    @Test
-    public void simpleConfig() {
-        this.contextRunner.run(context -> {
-            assertThat(context).getBean(InstanceRepository.class).isInstanceOf(SnapshottingInstanceRepository.class);
-            assertThat(context).doesNotHaveBean(MailNotifier.class);
-            assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(ConcurrentMapEventStore.class);
-        });
-    }
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
+					ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class,
+					HazelcastAutoConfiguration.class, WebMvcAutoConfiguration.class,
+					AdminServerHazelcastAutoConfiguration.class, AdminServerAutoConfiguration.class))
+			.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
-    @Test
-    public void hazelcastConfig() {
-        this.contextRunner.withUserConfiguration(TestHazelcastConfig.class).run(context -> {
-            assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(HazelcastEventStore.class);
-            assertThat(context).getBean(NotificationTrigger.class).isInstanceOf(HazelcastNotificationTrigger.class);
-        });
-    }
+	@Test
+	public void simpleConfig() {
+		this.contextRunner.run(context -> {
+			assertThat(context).getBean(InstanceRepository.class).isInstanceOf(SnapshottingInstanceRepository.class);
+			assertThat(context).doesNotHaveBean(MailNotifier.class);
+			assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(ConcurrentMapEventStore.class);
+		});
+	}
 
-    static class TestHazelcastConfig {
-        @Bean
-        public Config config() {
-            return new Config();
-        }
+	@Test
+	public void hazelcastConfig() {
+		this.contextRunner.withUserConfiguration(TestHazelcastConfig.class).run(context -> {
+			assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(HazelcastEventStore.class);
+			assertThat(context).getBean(NotificationTrigger.class).isInstanceOf(HazelcastNotificationTrigger.class);
+		});
+	}
 
-        @Bean
-        public Notifier notifier() {
-            return (e) -> Mono.empty();
-        }
-    }
+	static class TestHazelcastConfig {
+
+		@Bean
+		public Config config() {
+			return new Config();
+		}
+
+		@Bean
+		public Notifier notifier() {
+			return (e) -> Mono.empty();
+		}
+
+	}
+
 }

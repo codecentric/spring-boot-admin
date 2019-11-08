@@ -23,15 +23,16 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractAdminUiApplicationTest {
-    private WebTestClient webClient;
 
-    protected void setUp(int port) {
-        this.webClient = createWebClient(port);
-    }
+	private WebTestClient webClient;
 
-    @Test
-    public void should_return_index() {
-        //@formatter:off
+	protected void setUp(int port) {
+		this.webClient = createWebClient(port);
+	}
+
+	@Test
+	public void should_return_index() {
+		//@formatter:off
         this.webClient.get()
                       .uri("/")
                       .accept(MediaType.TEXT_HTML, MediaType.ALL)
@@ -41,11 +42,11 @@ public abstract class AbstractAdminUiApplicationTest {
                       .expectBody(String.class)
                         .value(body -> assertThat(body).contains("<title>Spring Boot Admin</title>"));
         //@formatter:on
-    }
+	}
 
-    @Test
-    public void should_return_api() {
-        //@formatter:off
+	@Test
+	public void should_return_api() {
+		//@formatter:off
         this.webClient.get()
                       .uri("/applications")
                       .accept(MediaType.APPLICATION_JSON)
@@ -55,11 +56,11 @@ public abstract class AbstractAdminUiApplicationTest {
                       .expectBody(String.class)
                         .value(body -> assertThat(body).contains("[]"));
         //@formatter:on
-    }
+	}
 
-    @Test
-    public void should_return_index_for_ui_path() {
-        //@formatter:off
+	@Test
+	public void should_return_index_for_ui_path() {
+		//@formatter:off
         this.webClient.get()
                       .uri("/applications")
                       .accept(MediaType.TEXT_HTML)
@@ -69,20 +70,21 @@ public abstract class AbstractAdminUiApplicationTest {
                       .expectBody(String.class)
                         .value(body -> assertThat(body).contains("<title>Spring Boot Admin</title>"));
         //@formatter:on
-    }
+	}
 
-    @Test
-    public void should_return_404_for_unknown_path() {
-        //@formatter:off
+	@Test
+	public void should_return_404_for_unknown_path() {
+		//@formatter:off
         this.webClient.get()
                       .uri("/unknown")
                       .accept(MediaType.TEXT_HTML)
                       .exchange()
                       .expectStatus().isNotFound();
         //@formatter:on
-    }
+	}
 
-    protected WebTestClient createWebClient(int port) {
-        return WebTestClient.bindToServer().baseUrl("http://localhost:" + port).build();
-    }
+	protected WebTestClient createWebClient(int port) {
+		return WebTestClient.bindToServer().baseUrl("http://localhost:" + port).build();
+	}
+
 }

@@ -41,123 +41,108 @@ import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.groupingBy;
 
 public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
-    private static final Logger log = LoggerFactory.getLogger(ProbeEndpointsStrategy.class);
-    private final List<EndpointDefinition> endpoints;
-    private final InstanceWebClient instanceWebClient;
 
-    public ProbeEndpointsStrategy(InstanceWebClient instanceWebClient, String[] endpoints) {
-        Assert.notNull(endpoints, "'endpoints' must not be null.");
-        Assert.noNullElements(endpoints, "'endpoints' must not contain null.");
-        this.endpoints = Arrays.stream(endpoints).map(EndpointDefinition::create).collect(Collectors.toList());
-        this.instanceWebClient = instanceWebClient;
-    }
+	private static final Logger log = LoggerFactory.getLogger(ProbeEndpointsStrategy.class);
 
-    @Override
-    public Mono<Endpoints> detectEndpoints(Instance instance) {
-        if (instance.getRegistration().getManagementUrl() == null) {
-            log.debug("Endpoint probe for instance {} omitted. No management-url registered.", instance.getId());
-            return Mono.empty();
-        }
+	private final List<EndpointDefinition> endpoints;
 
-        return Flux.fromIterable(this.endpoints)
-                   .flatMap(endpoint -> detectEndpoint(instance, endpoint))
-                   .collectList()
-                   .flatMap(this::convert);
-    }
+	private final InstanceWebClient instanceWebClient;
 
-    protected Mono<DetectedEndpoint> detectEndpoint(Instance instance, EndpointDefinition endpoint) {
-        URI uri = UriComponentsBuilder.fromUriString(instance.getRegistration().getManagementUrl())
-                                      .path("/")
-                                      .path(endpoint.getPath())
-                                      .build()
-                                      .toUri();
-        return this.instanceWebClient.instance(instance)
-                                     .options()
-                                     .uri(uri)
-                                     .exchange()
-                                     .flatMap(this.convert(instance.getId(), endpoint, uri))
-                                     .onErrorResume(e -> {
-                                         log.warn(
-                                             "Endpoint probe for instance {} on endpoint '{}' failed: {}",
-                                             instance.getId(),
-                                             uri,
-                                             e.getMessage()
-                                         );
-                                         log.debug(
-                                             "Endpoint probe for instance {} on endpoint '{}' failed.",
-                                             instance.getId(),
-                                             uri,
-                                             e
-                                         );
-                                         return Mono.empty();
-                                     });
-    }
+	public ProbeEndpointsStrategy(InstanceWebClient instanceWebClient, String[] endpoints) {
+		Assert.notNull(endpoints, "'endpoints' must not be null.");
+		Assert.noNullElements(endpoints, "'endpoints' must not contain null.");
+		this.endpoints = Arrays.stream(endpoints).map(EndpointDefinition::create).collect(Collectors.toList());
+		this.instanceWebClient = instanceWebClient;
+	}
 
-    protected Function<ClientResponse, Mono<DetectedEndpoint>> convert(InstanceId instanceId,
-                                                                       EndpointDefinition endpointDefinition,
-                                                                       URI uri) {
-        return response -> {
-            Mono<DetectedEndpoint> endpoint = Mono.empty();
-            if (response.statusCode().is2xxSuccessful()) {
-                endpoint = Mono.just(DetectedEndpoint.of(endpointDefinition, uri.toString()));
-                log.debug("Endpoint probe for instance {} on endpoint '{}' successful.", instanceId, uri);
-            } else {
-                log.debug(
-                    "Endpoint probe for instance {} on endpoint '{}' failed with status {}.",
-                    instanceId,
-                    uri,
-                    response.rawStatusCode()
-                );
-            }
-            return response.releaseBody().then(endpoint);
-        };
-    }
+	@Override
+	public Mono<Endpoints> detectEndpoints(Instance instance) {
+		if (instance.getRegistration().getManagementUrl() == null) {
+			log.debug("Endpoint probe for instance {} omitted. No management-url registered.", instance.getId());
+			return Mono.empty();
+		}
 
-    protected Mono<Endpoints> convert(List<DetectedEndpoint> endpoints) {
-        if (endpoints.isEmpty()) {
-            return Mono.empty();
-        }
+		return Flux.fromIterable(this.endpoints).flatMap(endpoint -> detectEndpoint(instance, endpoint)).collectList()
+				.flatMap(this::convert);
+	}
 
-        Map<String, List<DetectedEndpoint>> endpointsById = endpoints.stream()
-                                                                     .collect(groupingBy(e -> e.getDefinition()
-                                                                                               .getId()));
-        List<Endpoint> result = endpointsById.values().stream().map(endpointList -> {
-            endpointList.sort(comparingInt(e -> this.endpoints.indexOf(e.getDefinition())));
-            if (endpointList.size() > 1) {
-                log.warn("Duplicate endpoints for id '{}' detected. Omitting: {}",
-                    endpointList.get(0).getDefinition().getId(),
-                    endpointList.subList(1, endpointList.size())
-                );
-            }
-            return endpointList.get(0).getEndpoint();
-        }).collect(Collectors.toList());
-        return Mono.just(Endpoints.of(result));
-    }
+	protected Mono<DetectedEndpoint> detectEndpoint(Instance instance, EndpointDefinition endpoint) {
+		URI uri = UriComponentsBuilder.fromUriString(instance.getRegistration().getManagementUrl()).path("/")
+				.path(endpoint.getPath()).build().toUri();
+		return this.instanceWebClient.instance(instance).options().uri(uri).exchange()
+				.flatMap(this.convert(instance.getId(), endpoint, uri)).onErrorResume(e -> {
+					log.warn("Endpoint probe for instance {} on endpoint '{}' failed: {}", instance.getId(), uri,
+							e.getMessage());
+					log.debug("Endpoint probe for instance {} on endpoint '{}' failed.", instance.getId(), uri, e);
+					return Mono.empty();
+				});
+	}
 
-    @Data
-    protected static class DetectedEndpoint {
-        private final EndpointDefinition definition;
-        private final Endpoint endpoint;
+	protected Function<ClientResponse, Mono<DetectedEndpoint>> convert(InstanceId instanceId,
+			EndpointDefinition endpointDefinition, URI uri) {
+		return response -> {
+			Mono<DetectedEndpoint> endpoint = Mono.empty();
+			if (response.statusCode().is2xxSuccessful()) {
+				endpoint = Mono.just(DetectedEndpoint.of(endpointDefinition, uri.toString()));
+				log.debug("Endpoint probe for instance {} on endpoint '{}' successful.", instanceId, uri);
+			}
+			else {
+				log.debug("Endpoint probe for instance {} on endpoint '{}' failed with status {}.", instanceId, uri,
+						response.rawStatusCode());
+			}
+			return response.releaseBody().then(endpoint);
+		};
+	}
 
-        private static DetectedEndpoint of(EndpointDefinition endpointDefinition, String url) {
-            return new DetectedEndpoint(endpointDefinition, Endpoint.of(endpointDefinition.getId(), url));
-        }
-    }
+	protected Mono<Endpoints> convert(List<DetectedEndpoint> endpoints) {
+		if (endpoints.isEmpty()) {
+			return Mono.empty();
+		}
 
-    @Data
-    protected static class EndpointDefinition {
-        private final String id;
-        private final String path;
+		Map<String, List<DetectedEndpoint>> endpointsById = endpoints.stream()
+				.collect(groupingBy(e -> e.getDefinition().getId()));
+		List<Endpoint> result = endpointsById.values().stream().map(endpointList -> {
+			endpointList.sort(comparingInt(e -> this.endpoints.indexOf(e.getDefinition())));
+			if (endpointList.size() > 1) {
+				log.warn("Duplicate endpoints for id '{}' detected. Omitting: {}",
+						endpointList.get(0).getDefinition().getId(), endpointList.subList(1, endpointList.size()));
+			}
+			return endpointList.get(0).getEndpoint();
+		}).collect(Collectors.toList());
+		return Mono.just(Endpoints.of(result));
+	}
 
-        private static EndpointDefinition create(String idWithPath) {
-            int idxDelimiter = idWithPath.indexOf(':');
-            if (idxDelimiter < 0) {
-                return new EndpointDefinition(idWithPath, idWithPath);
-            } else {
-                return new EndpointDefinition(idWithPath.substring(0, idxDelimiter),
-                    idWithPath.substring(idxDelimiter + 1)
-                );
-            }
-        }
-    }
+	@Data
+	protected static class DetectedEndpoint {
+
+		private final EndpointDefinition definition;
+
+		private final Endpoint endpoint;
+
+		private static DetectedEndpoint of(EndpointDefinition endpointDefinition, String url) {
+			return new DetectedEndpoint(endpointDefinition, Endpoint.of(endpointDefinition.getId(), url));
+		}
+
+	}
+
+	@Data
+	protected static class EndpointDefinition {
+
+		private final String id;
+
+		private final String path;
+
+		private static EndpointDefinition create(String idWithPath) {
+			int idxDelimiter = idWithPath.indexOf(':');
+			if (idxDelimiter < 0) {
+				return new EndpointDefinition(idWithPath, idWithPath);
+			}
+			else {
+				return new EndpointDefinition(idWithPath.substring(0, idxDelimiter),
+						idWithPath.substring(idxDelimiter + 1));
+			}
+		}
+
+	}
+
 }

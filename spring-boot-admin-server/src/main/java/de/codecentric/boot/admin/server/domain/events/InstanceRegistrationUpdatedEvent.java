@@ -30,15 +30,19 @@ import java.time.Instant;
 @lombok.EqualsAndHashCode(callSuper = true)
 @lombok.ToString(callSuper = true)
 public class InstanceRegistrationUpdatedEvent extends InstanceEvent {
-    private static final long serialVersionUID = 1L;
-    private final Registration registration;
 
-    public InstanceRegistrationUpdatedEvent(InstanceId instance, long version, Registration registration) {
-        this(instance, version, Instant.now(), registration);
-    }
+	private static final long serialVersionUID = 1L;
 
-    public InstanceRegistrationUpdatedEvent(InstanceId instance, long version, Instant timestamp, Registration registration) {
-        super(instance, version, "REGISTRATION_UPDATED", timestamp);
-        this.registration = registration;
-    }
+	private final Registration registration;
+
+	public InstanceRegistrationUpdatedEvent(InstanceId instance, long version, Registration registration) {
+		this(instance, version, Instant.now(), registration);
+	}
+
+	public InstanceRegistrationUpdatedEvent(InstanceId instance, long version, Instant timestamp,
+			Registration registration) {
+		super(instance, version, "REGISTRATION_UPDATED", timestamp);
+		this.registration = registration;
+	}
+
 }

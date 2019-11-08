@@ -38,57 +38,55 @@ import org.springframework.http.HttpMethod;
 @Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
 @EnableAdminServer
-@Import({
-    SecurityPermitAllConfig.class,
-    SecuritySecureConfig.class,
-    NotifierConfig.class
-})
+@Import({ SecurityPermitAllConfig.class, SecuritySecureConfig.class, NotifierConfig.class })
 public class SpringBootAdminServletApplication {
-    private static final Logger log = LoggerFactory.getLogger(SpringBootAdminServletApplication.class);
 
-    public static void main(String[] args) {
-        SpringApplication.run(SpringBootAdminServletApplication.class, args);
-    }
+	private static final Logger log = LoggerFactory.getLogger(SpringBootAdminServletApplication.class);
 
-    // tag::customization-instance-exchange-filter-function[]
-    @Bean
-    public InstanceExchangeFilterFunction auditLog() {
-        return (instance, request, next) -> next.exchange(request).doOnSubscribe(s -> {
-            if (HttpMethod.DELETE.equals(request.method()) || HttpMethod.POST.equals(request.method())) {
-                log.info("{} for {} on {}", request.method(), instance.getId(), request.url());
-            }
-        });
-    }
-    // end::customization-instance-exchange-filter-function[]
+	public static void main(String[] args) {
+		SpringApplication.run(SpringBootAdminServletApplication.class, args);
+	}
 
-    @Bean
-    public CustomNotifier customNotifier(InstanceRepository repository) {
-        return new CustomNotifier(repository);
-    }
+	// tag::customization-instance-exchange-filter-function[]
+	@Bean
+	public InstanceExchangeFilterFunction auditLog() {
+		return (instance, request, next) -> next.exchange(request).doOnSubscribe(s -> {
+			if (HttpMethod.DELETE.equals(request.method()) || HttpMethod.POST.equals(request.method())) {
+				log.info("{} for {} on {}", request.method(), instance.getId(), request.url());
+			}
+		});
+	}
+	// end::customization-instance-exchange-filter-function[]
 
-    @Bean
-    public CustomEndpoint customEndpoint() {
-        return new CustomEndpoint();
-    }
+	@Bean
+	public CustomNotifier customNotifier(InstanceRepository repository) {
+		return new CustomNotifier(repository);
+	}
 
-    // tag::customization-http-headers-providers[]
-    @Bean
-    public HttpHeadersProvider customHttpHeadersProvider() {
-        return instance -> {
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.add("X-CUSTOM", "My Custom Value");
-            return httpHeaders;
-        };
-    }
-    // end::customization-http-headers-providers[]
+	@Bean
+	public CustomEndpoint customEndpoint() {
+		return new CustomEndpoint();
+	}
 
-    @Bean
-    public HttpTraceRepository httpTraceRepository() {
-        return new InMemoryHttpTraceRepository();
-    }
+	// tag::customization-http-headers-providers[]
+	@Bean
+	public HttpHeadersProvider customHttpHeadersProvider() {
+		return instance -> {
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.add("X-CUSTOM", "My Custom Value");
+			return httpHeaders;
+		};
+	}
+	// end::customization-http-headers-providers[]
 
-    @Bean
-    public AuditEventRepository auditEventRepository() {
-        return new InMemoryAuditEventRepository();
-    }
+	@Bean
+	public HttpTraceRepository httpTraceRepository() {
+		return new InMemoryHttpTraceRepository();
+	}
+
+	@Bean
+	public AuditEventRepository auditEventRepository() {
+		return new InMemoryAuditEventRepository();
+	}
+
 }
