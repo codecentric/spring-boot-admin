@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -126,6 +127,7 @@ public class UiController {
 
     @lombok.Data
     @JsonInclude(Include.NON_EMPTY)
+    @ConstructorBinding
     public static class ExternalView {
         /**
          * Label to be shown in the navbar.
