@@ -1,0 +1,33 @@
+server:
+  port: 8082
+
+cloudfoundry:
+  uaa:
+    host: localhost
+    port: 8081
+
+spring:
+  application:
+    name: resource-service
+  boot:
+    admin:
+      client:
+        url: http://localhost:8080
+        username: client
+        password: password
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://${cloudfoundry.uaa.host}:${cloudfoundry.uaa.port}/uaa/token_keys
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+security:
+  healthcheck:
+    username: sba
+    password: "{noop}password"

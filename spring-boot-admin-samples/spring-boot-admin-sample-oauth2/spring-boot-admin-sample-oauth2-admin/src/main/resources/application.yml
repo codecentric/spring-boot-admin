@@ -1,0 +1,41 @@
+server:
+  port: 8080
+
+cloudfoundry:
+  uaa:
+    host: localhost
+    port: 8081
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          admin:
+            client-id: admin
+            client-secret: secret
+            provider: cloudfoundry-uaa
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: openid
+        provider:
+          cloudfoundry-uaa:
+            authorization-uri: http://${cloudfoundry.uaa.host}:${cloudfoundry.uaa.port}/uaa/oauth/authorize
+            token-uri: http://${cloudfoundry.uaa.host}:${cloudfoundry.uaa.port}/uaa/oauth/token
+            user-info-uri: http://${cloudfoundry.uaa.host}:${cloudfoundry.uaa.port}/uaa/userinfo
+            user-name-attribute: sub
+            jwk-set-uri: http://${cloudfoundry.uaa.host}:${cloudfoundry.uaa.port}/uaa/token_keys
+
+security:
+  client:
+    registration:
+      username: client
+      password: "{noop}password"
+    healthcheck:
+      username: sba
+      password: password
+  logout:
+    redirect-url: >-
+      http://${cloudfoundry.uaa.host}:${cloudfoundry.uaa.port}/uaa/logout.do?
+      client_id=${spring.security.oauth2.client.registration.admin.client-id}&
+      redirect=http://localhost:${server.port}/login

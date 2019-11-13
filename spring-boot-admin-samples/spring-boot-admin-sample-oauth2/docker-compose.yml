@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  authorization-server:
+    build:
+      context: ./spring-boot-admin-sample-oauth2-authorization
+    environment:
+      REDIRECT_URI: http://localhost:8080,http://localhost:8080/login/oauth2/code/admin
+    container_name: sba-oauth2-auth
+    ports:
+      - 8081:8081
+
+  admin-server:
+    build:
+      context: ./spring-boot-admin-sample-oauth2-admin
+    container_name: sba-oauth2-admin
+    environment:
+      cloudfoundry.uaa.host: authorization-server
+      cloudfoundry.uaa.port: 8081
+      spring.security.oauth2.client.provider.cloudfoundry-uaa.authorization-uri: >-
+        http://localhost:8081/uaa/oauth/authorize
+      security.logout.redirect-url: >-
+        http://localhost:8081/uaa/logout.do?client_id=admin&redirect=http://localhost:8080/login
+    depends_on:
+      - authorization-server
+    command: ["./wait-for-command.sh -t 120 -c 'curl authorization-server:8081/uaa' && java -jar app.jar"]
+    ports:
+      - 8080:8080
+
+  resource-server:
+    build:
+      context: ./spring-boot-admin-sample-oauth2-resource
+    container_name: sba-oauth2-resource
+    environment:
+      cloudfoundry.uaa.host: authorization-server
+      cloudfoundry.uaa.port: 8081
+      spring.boot.admin.client.url: http://admin-server:8080
+    depends_on:
+      - authorization-server
+      - admin-server
+    command: ["./wait-for-command.sh -t 120 -c 'curl admin-server:8080' && java -jar app.jar"]
+    ports:
+      - 8082:8082

@@ -85,7 +85,7 @@ public abstract class ConcurrentMapEventStore extends InstanceEventPublisher imp
         }
 
         List<InstanceEvent> oldEvents = eventLog.computeIfAbsent(id,
-            (key) -> new ArrayList<>(maxLogSizePerAggregate + 1));
+            key -> new ArrayList<>(maxLogSizePerAggregate + 1));
 
         long lastVersion = getLastVersion(oldEvents);
         if (lastVersion >= events.get(0).getVersion()) {
@@ -105,7 +105,7 @@ public abstract class ConcurrentMapEventStore extends InstanceEventPublisher imp
             return true;
         }
 
-        log.debug("Unsuccessful attempot append the events {} ", events);
+        log.debug("Unsuccessful attempt append the events {} ", events);
         return false;
     }
 
@@ -114,12 +114,12 @@ public abstract class ConcurrentMapEventStore extends InstanceEventPublisher imp
         Map<Class<?>, Optional<InstanceEvent>> latestPerType = events.stream()
                                                                      .collect(groupingBy(InstanceEvent::getClass,
                                                                          reducing(latestEvent)));
-        events.removeIf((e) -> !Objects.equals(e, latestPerType.get(e.getClass()).orElse(null)));
+        events.removeIf(e -> !Objects.equals(e, latestPerType.get(e.getClass()).orElse(null)));
     }
 
     private OptimisticLockingException createOptimisticLockException(InstanceEvent event, long lastVersion) {
         return new OptimisticLockingException(
-            "Verison " + event.getVersion() + " was overtaken by " + lastVersion + " for " + event.getInstance());
+            "Version " + event.getVersion() + " was overtaken by " + lastVersion + " for " + event.getInstance());
     }
 
     protected static long getLastVersion(List<InstanceEvent> events) {
