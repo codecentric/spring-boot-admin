@@ -530,7 +530,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.2.0-SNAPSHOT,</span>
-<span id="revdate">12.11.2019</span>
+<span id="revdate">15.11.2019</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -1551,35 +1551,32 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Bean</span>
 <span class="directive">public</span> Config hazelcastConfig() {
-    <span class="comment">//This map is used to store the events.</span>
-    <span class="comment">//It should be configured to reliably hold all the data,</span>
-    <span class="comment">//Spring Boot Admin will compact the events, if there are too many</span>
-    MapConfig eventStoreMap = <span class="keyword">new</span> MapConfig(DEFAULT_NAME_EVENT_STORE_MAP)
-        .setInMemoryFormat(InMemoryFormat.OBJECT)
-        .setBackupCount(<span class="integer">1</span>)
-        .setEvictionPolicy(EvictionPolicy.NONE)
-        .setMergePolicyConfig(<span class="keyword">new</span> MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), <span class="integer">100</span>));
+  <span class="comment">// This map is used to store the events.</span>
+  <span class="comment">// It should be configured to reliably hold all the data,</span>
+  <span class="comment">// Spring Boot Admin will compact the events, if there are too many</span>
+  MapConfig eventStoreMap = <span class="keyword">new</span> MapConfig(DEFAULT_NAME_EVENT_STORE_MAP).setInMemoryFormat(InMemoryFormat.OBJECT)
+      .setBackupCount(<span class="integer">1</span>).setEvictionPolicy(EvictionPolicy.NONE)
+      .setMergePolicyConfig(<span class="keyword">new</span> MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), <span class="integer">100</span>));
 
-    <span class="comment">//This map is used to deduplicate the notifications.</span>
-    <span class="comment">//If data in this map gets lost it should not be a big issue as it will atmost lead to</span>
-    <span class="comment">//the same notification to be sent by multiple instances</span>
-    MapConfig sentNotificationsMap = <span class="keyword">new</span> MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)
-        .setInMemoryFormat(InMemoryFormat.OBJECT)
-        .setBackupCount(<span class="integer">1</span>)
-        .setEvictionPolicy(EvictionPolicy.LRU)
-        .setMergePolicyConfig(<span class="keyword">new</span> MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), <span class="integer">100</span>));
+  <span class="comment">// This map is used to deduplicate the notifications.</span>
+  <span class="comment">// If data in this map gets lost it should not be a big issue as it will atmost</span>
+  <span class="comment">// lead to</span>
+  <span class="comment">// the same notification to be sent by multiple instances</span>
+  MapConfig sentNotificationsMap = <span class="keyword">new</span> MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)
+      .setInMemoryFormat(InMemoryFormat.OBJECT).setBackupCount(<span class="integer">1</span>).setEvictionPolicy(EvictionPolicy.LRU)
+      .setMergePolicyConfig(<span class="keyword">new</span> MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), <span class="integer">100</span>));
 
-    Config config = <span class="keyword">new</span> Config();
-    config.addMapConfig(eventStoreMap);
-    config.addMapConfig(sentNotificationsMap);
-    config.setProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">hazelcast.jmx</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>);
+  Config config = <span class="keyword">new</span> Config();
+  config.addMapConfig(eventStoreMap);
+  config.addMapConfig(sentNotificationsMap);
+  config.setProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">hazelcast.jmx</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>);
 
-    <span class="comment">//WARNING: This setups a local cluster, you change it to fit your needs.</span>
-    config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(<span class="predefined-constant">false</span>);
-    TcpIpConfig tcpIpConfig = config.getNetworkConfig().getJoin().getTcpIpConfig();
-    tcpIpConfig.setEnabled(<span class="predefined-constant">true</span>);
-    tcpIpConfig.setMembers(singletonList(<span class="string"><span class="delimiter">&quot;</span><span class="content">127.0.0.1</span><span class="delimiter">&quot;</span></span>));
-    <span class="keyword">return</span> config;
+  <span class="comment">// WARNING: This setups a local cluster, you change it to fit your needs.</span>
+  config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(<span class="predefined-constant">false</span>);
+  TcpIpConfig tcpIpConfig = config.getNetworkConfig().getJoin().getTcpIpConfig();
+  tcpIpConfig.setEnabled(<span class="predefined-constant">true</span>);
+  tcpIpConfig.setMembers(singletonList(<span class="string"><span class="delimiter">&quot;</span><span class="content">127.0.0.1</span><span class="delimiter">&quot;</span></span>));
+  <span class="keyword">return</span> config;
 }</code></pre>
 </div>
 </div>
@@ -2270,28 +2267,31 @@ account and configure it appropriately.</p>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>(proxyBeanMethods = <span class="predefined-constant">false</span>)
 <span class="directive">public</span> <span class="type">class</span> <span class="class">NotifierConfig</span> {
-    <span class="directive">private</span> <span class="directive">final</span> InstanceRepository repository;
-    <span class="directive">private</span> <span class="directive">final</span> ObjectProvider&lt;<span class="predefined-type">List</span>&lt;Notifier&gt;&gt; otherNotifiers;
 
-    <span class="directive">public</span> NotifierConfig(InstanceRepository repository, ObjectProvider&lt;<span class="predefined-type">List</span>&lt;Notifier&gt;&gt; otherNotifiers) {
-        <span class="local-variable">this</span>.repository = repository;
-        <span class="local-variable">this</span>.otherNotifiers = otherNotifiers;
-    }
+  <span class="directive">private</span> <span class="directive">final</span> InstanceRepository repository;
 
-    <span class="annotation">@Bean</span>
-    <span class="directive">public</span> FilteringNotifier filteringNotifier() { <i class="conum" data-value="1"></i><b>(1)</b>
-        CompositeNotifier delegate = <span class="keyword">new</span> CompositeNotifier(<span class="local-variable">this</span>.otherNotifiers.getIfAvailable(<span class="predefined-type">Collections</span>::emptyList));
-        <span class="keyword">return</span> <span class="keyword">new</span> FilteringNotifier(delegate, <span class="local-variable">this</span>.repository);
-    }
+  <span class="directive">private</span> <span class="directive">final</span> ObjectProvider&lt;<span class="predefined-type">List</span>&lt;Notifier&gt;&gt; otherNotifiers;
 
-    <span class="annotation">@Primary</span>
-    <span class="annotation">@Bean</span>(initMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span>, destroyMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">stop</span><span class="delimiter">&quot;</span></span>)
-    <span class="directive">public</span> RemindingNotifier remindingNotifier() { <i class="conum" data-value="2"></i><b>(2)</b>
-        RemindingNotifier notifier = <span class="keyword">new</span> RemindingNotifier(filteringNotifier(), <span class="local-variable">this</span>.repository);
-        notifier.setReminderPeriod(<span class="predefined-type">Duration</span>.ofMinutes(<span class="integer">10</span>));
-        notifier.setCheckReminderInverval(<span class="predefined-type">Duration</span>.ofSeconds(<span class="integer">10</span>));
-        <span class="keyword">return</span> notifier;
-    }
+  <span class="directive">public</span> NotifierConfig(InstanceRepository repository, ObjectProvider&lt;<span class="predefined-type">List</span>&lt;Notifier&gt;&gt; otherNotifiers) {
+    <span class="local-variable">this</span>.repository = repository;
+    <span class="local-variable">this</span>.otherNotifiers = otherNotifiers;
+  }
+
+  <span class="annotation">@Bean</span>
+  <span class="directive">public</span> FilteringNotifier filteringNotifier() { <i class="conum" data-value="1"></i><b>(1)</b>
+    CompositeNotifier delegate = <span class="keyword">new</span> CompositeNotifier(<span class="local-variable">this</span>.otherNotifiers.getIfAvailable(<span class="predefined-type">Collections</span>::emptyList));
+    <span class="keyword">return</span> <span class="keyword">new</span> FilteringNotifier(delegate, <span class="local-variable">this</span>.repository);
+  }
+
+  <span class="annotation">@Primary</span>
+  <span class="annotation">@Bean</span>(initMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span>, destroyMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">stop</span><span class="delimiter">&quot;</span></span>)
+  <span class="directive">public</span> RemindingNotifier remindingNotifier() { <i class="conum" data-value="2"></i><b>(2)</b>
+    RemindingNotifier notifier = <span class="keyword">new</span> RemindingNotifier(filteringNotifier(), <span class="local-variable">this</span>.repository);
+    notifier.setReminderPeriod(<span class="predefined-type">Duration</span>.ofMinutes(<span class="integer">10</span>));
+    notifier.setCheckReminderInverval(<span class="predefined-type">Duration</span>.ofSeconds(<span class="integer">10</span>));
+    <span class="keyword">return</span> notifier;
+  }
+
 }</code></pre>
 </div>
 </div>
@@ -2339,44 +2339,46 @@ By default <code>spring-boot-admin-server-ui</code> provides a login page and a 
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>(proxyBeanMethods = <span class="predefined-constant">false</span>)
 <span class="directive">public</span> <span class="type">class</span> <span class="class">SecuritySecureConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
-    <span class="directive">private</span> <span class="directive">final</span> AdminServerProperties adminServer;
 
-    <span class="directive">public</span> SecuritySecureConfig(AdminServerProperties adminServer) {
-        <span class="local-variable">this</span>.adminServer = adminServer;
-    }
+  <span class="directive">private</span> <span class="directive">final</span> AdminServerProperties adminServer;
 
-    <span class="annotation">@Override</span>
-    <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
-        <span class="comment">// @formatter:off</span>
-        SavedRequestAwareAuthenticationSuccessHandler successHandler = <span class="keyword">new</span> SavedRequestAwareAuthenticationSuccessHandler();
-        successHandler.setTargetUrlParameter(<span class="string"><span class="delimiter">&quot;</span><span class="content">redirectTo</span><span class="delimiter">&quot;</span></span>);
-        successHandler.setDefaultTargetUrl(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>));
+  <span class="directive">public</span> SecuritySecureConfig(AdminServerProperties adminServer) {
+    <span class="local-variable">this</span>.adminServer = adminServer;
+  }
 
-        http.authorizeRequests()
-            .antMatchers(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/assets/**</span><span class="delimiter">&quot;</span></span>)).permitAll() <i class="conum" data-value="1"></i><b>(1)</b>
-            .antMatchers(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>)).permitAll()
-            .anyRequest().authenticated() <i class="conum" data-value="2"></i><b>(2)</b>
-            .and()
-        .formLogin().loginPage(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>)).successHandler(successHandler).and() <i class="conum" data-value="3"></i><b>(3)</b>
-        .logout().logoutUrl(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/logout</span><span class="delimiter">&quot;</span></span>)).and()
-        .httpBasic().and() <i class="conum" data-value="4"></i><b>(4)</b>
-        .csrf()
-            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) <i class="conum" data-value="5"></i><b>(5)</b>
-            .ignoringRequestMatchers(
-                <span class="keyword">new</span> AntPathRequestMatcher(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/instances</span><span class="delimiter">&quot;</span></span>), HttpMethod.POST.toString()),  <i class="conum" data-value="6"></i><b>(6)</b>
-                <span class="keyword">new</span> AntPathRequestMatcher(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/instances/*</span><span class="delimiter">&quot;</span></span>), HttpMethod.DELETE.toString()),  <i class="conum" data-value="6"></i><b>(6)</b>
-                <span class="keyword">new</span> AntPathRequestMatcher(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/actuator/**</span><span class="delimiter">&quot;</span></span>))  <i class="conum" data-value="7"></i><b>(7)</b>
-            )
-        .and()
-        .rememberMe().key(<span class="predefined-type">UUID</span>.randomUUID().toString()).tokenValiditySeconds(<span class="integer">1209600</span>);
-        <span class="comment">// @formatter:on</span>
-    }
+  <span class="annotation">@Override</span>
+  <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
+    <span class="comment">// @formatter:off</span>
+    SavedRequestAwareAuthenticationSuccessHandler successHandler = <span class="keyword">new</span> SavedRequestAwareAuthenticationSuccessHandler();
+    successHandler.setTargetUrlParameter(<span class="string"><span class="delimiter">&quot;</span><span class="content">redirectTo</span><span class="delimiter">&quot;</span></span>);
+    successHandler.setDefaultTargetUrl(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>));
 
-    <span class="comment">// Required to provide UserDetailsService for &quot;remember functionality&quot;</span>
-    <span class="annotation">@Override</span>
-    <span class="directive">protected</span> <span class="type">void</span> configure(AuthenticationManagerBuilder auth) <span class="directive">throws</span> <span class="exception">Exception</span> {
-        auth.inMemoryAuthentication().withUser(<span class="string"><span class="delimiter">&quot;</span><span class="content">user</span><span class="delimiter">&quot;</span></span>).password(<span class="string"><span class="delimiter">&quot;</span><span class="content">{noop}password</span><span class="delimiter">&quot;</span></span>).roles(<span class="string"><span class="delimiter">&quot;</span><span class="content">USER</span><span class="delimiter">&quot;</span></span>);
-    }
+    http.authorizeRequests()
+      .antMatchers(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/assets/**</span><span class="delimiter">&quot;</span></span>)).permitAll() <i class="conum" data-value="1"></i><b>(1)</b>
+      .antMatchers(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>)).permitAll()
+      .anyRequest().authenticated() <i class="conum" data-value="2"></i><b>(2)</b>
+      .and()
+    .formLogin().loginPage(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>)).successHandler(successHandler).and() <i class="conum" data-value="3"></i><b>(3)</b>
+    .logout().logoutUrl(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/logout</span><span class="delimiter">&quot;</span></span>)).and()
+    .httpBasic().and() <i class="conum" data-value="4"></i><b>(4)</b>
+    .csrf()
+      .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) <i class="conum" data-value="5"></i><b>(5)</b>
+      .ignoringRequestMatchers(
+        <span class="keyword">new</span> AntPathRequestMatcher(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/instances</span><span class="delimiter">&quot;</span></span>), HttpMethod.POST.toString()),  <i class="conum" data-value="6"></i><b>(6)</b>
+        <span class="keyword">new</span> AntPathRequestMatcher(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/instances/*</span><span class="delimiter">&quot;</span></span>), HttpMethod.DELETE.toString()),  <i class="conum" data-value="6"></i><b>(6)</b>
+        <span class="keyword">new</span> AntPathRequestMatcher(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/actuator/**</span><span class="delimiter">&quot;</span></span>))  <i class="conum" data-value="7"></i><b>(7)</b>
+      )
+    .and()
+    .rememberMe().key(<span class="predefined-type">UUID</span>.randomUUID().toString()).tokenValiditySeconds(<span class="integer">1209600</span>);
+    <span class="comment">// @formatter:on</span>
+  }
+
+  <span class="comment">// Required to provide UserDetailsService for &quot;remember functionality&quot;</span>
+  <span class="annotation">@Override</span>
+  <span class="directive">protected</span> <span class="type">void</span> configure(AuthenticationManagerBuilder auth) <span class="directive">throws</span> <span class="exception">Exception</span> {
+    auth.inMemoryAuthentication().withUser(<span class="string"><span class="delimiter">&quot;</span><span class="content">user</span><span class="delimiter">&quot;</span></span>).password(<span class="string"><span class="delimiter">&quot;</span><span class="content">{noop}password</span><span class="delimiter">&quot;</span></span>).roles(<span class="string"><span class="delimiter">&quot;</span><span class="content">USER</span><span class="delimiter">&quot;</span></span>);
+  }
+
 }</code></pre>
 </div>
 </div>
@@ -2568,25 +2570,28 @@ If a custom configured <code>ClientHttpConnector</code> bean is present, Spring 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">class</span> <span class="class">CustomNotifier</span>  <span class="directive">extends</span> AbstractEventNotifier {
-    <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">Logger</span> LOGGER = LoggerFactory.getLogger(LoggingNotifier.class);
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">class</span> <span class="class">CustomNotifier</span> <span class="directive">extends</span> AbstractEventNotifier {
 
-    <span class="directive">public</span> CustomNotifier(InstanceRepository repository) {
-        <span class="local-variable">super</span>(repository);
-    }
+  <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">Logger</span> LOGGER = LoggerFactory.getLogger(LoggingNotifier.class);
 
-    <span class="annotation">@Override</span>
-    <span class="directive">protected</span> Mono&lt;<span class="predefined-type">Void</span>&gt; doNotify(InstanceEvent event, Instance instance) {
-        <span class="keyword">return</span> Mono.fromRunnable(() -&gt; {
-            <span class="keyword">if</span> (event <span class="keyword">instanceof</span> InstanceStatusChangedEvent) {
-                LOGGER.info(<span class="string"><span class="delimiter">&quot;</span><span class="content">Instance {} ({}) is {}</span><span class="delimiter">&quot;</span></span>, instance.getRegistration().getName(), event.getInstance(),
-                    ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus());
-            } <span class="keyword">else</span> {
-                LOGGER.info(<span class="string"><span class="delimiter">&quot;</span><span class="content">Instance {} ({}) {}</span><span class="delimiter">&quot;</span></span>, instance.getRegistration().getName(), event.getInstance(),
-                    event.getType());
-            }
-        });
-    }
+  <span class="directive">public</span> CustomNotifier(InstanceRepository repository) {
+    <span class="local-variable">super</span>(repository);
+  }
+
+  <span class="annotation">@Override</span>
+  <span class="directive">protected</span> Mono&lt;<span class="predefined-type">Void</span>&gt; doNotify(InstanceEvent event, Instance instance) {
+    <span class="keyword">return</span> Mono.fromRunnable(() -&gt; {
+      <span class="keyword">if</span> (event <span class="keyword">instanceof</span> InstanceStatusChangedEvent) {
+        LOGGER.info(<span class="string"><span class="delimiter">&quot;</span><span class="content">Instance {} ({}) is {}</span><span class="delimiter">&quot;</span></span>, instance.getRegistration().getName(), event.getInstance(),
+            ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus());
+      }
+      <span class="keyword">else</span> {
+        LOGGER.info(<span class="string"><span class="delimiter">&quot;</span><span class="content">Instance {} ({}) {}</span><span class="delimiter">&quot;</span></span>, instance.getRegistration().getName(), event.getInstance(),
+            event.getType());
+      }
+    });
+  }
+
 }</code></pre>
 </div>
 </div>
@@ -2600,11 +2605,11 @@ If a custom configured <code>ClientHttpConnector</code> bean is present, Spring 
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Bean</span>
 <span class="directive">public</span> HttpHeadersProvider customHttpHeadersProvider() {
-    <span class="keyword">return</span> instance -&gt; {
-        HttpHeaders httpHeaders = <span class="keyword">new</span> HttpHeaders();
-        httpHeaders.add(<span class="string"><span class="delimiter">&quot;</span><span class="content">X-CUSTOM</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">My Custom Value</span><span class="delimiter">&quot;</span></span>);
-        <span class="keyword">return</span> httpHeaders;
-    };
+  <span class="keyword">return</span> (instance) -&gt; {
+    HttpHeaders httpHeaders = <span class="keyword">new</span> HttpHeaders();
+    httpHeaders.add(<span class="string"><span class="delimiter">&quot;</span><span class="content">X-CUSTOM</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">My Custom Value</span><span class="delimiter">&quot;</span></span>);
+    <span class="keyword">return</span> httpHeaders;
+  };
 }</code></pre>
 </div>
 </div>
@@ -2619,11 +2624,11 @@ This can be useful for auditing or adding some extra security checks.</p>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Bean</span>
 <span class="directive">public</span> InstanceExchangeFilterFunction auditLog() {
-    <span class="keyword">return</span> (instance, request, next) -&gt; next.exchange(request).doOnSubscribe(s -&gt; {
-        <span class="keyword">if</span> (HttpMethod.DELETE.equals(request.method()) || HttpMethod.POST.equals(request.method())) {
-            log.info(<span class="string"><span class="delimiter">&quot;</span><span class="content">{} for {} on {}</span><span class="delimiter">&quot;</span></span>, request.method(), instance.getId(), request.url());
-        }
-    });
+  <span class="keyword">return</span> (instance, request, next) -&gt; next.exchange(request).doOnSubscribe((s) -&gt; {
+    <span class="keyword">if</span> (HttpMethod.DELETE.equals(request.method()) || HttpMethod.POST.equals(request.method())) {
+      log.info(<span class="string"><span class="delimiter">&quot;</span><span class="content">{} for {} on {}</span><span class="delimiter">&quot;</span></span>, request.method(), instance.getId(), request.url());
+    }
+  });
 }</code></pre>
 </div>
 </div>
