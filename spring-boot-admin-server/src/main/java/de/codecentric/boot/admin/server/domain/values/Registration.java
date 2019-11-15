@@ -83,7 +83,7 @@ public class Registration implements Serializable {
 
 	/**
 	 * Checks the syntax of the given URL.
-	 * @param url The URL.
+	 * @param url the URL.
 	 * @return true, if valid.
 	 */
 	private boolean checkUrl(String url) {

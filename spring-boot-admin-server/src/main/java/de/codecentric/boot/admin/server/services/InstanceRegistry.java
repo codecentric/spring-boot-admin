@@ -60,7 +60,7 @@ public class InstanceRegistry {
 
 	/**
 	 * Get a list of all registered instances.
-	 * @return List of all instances.
+	 * @return list of all instances.
 	 */
 	public Flux<Instance> getInstances() {
 		return repository.findAll();
@@ -69,7 +69,7 @@ public class InstanceRegistry {
 	/**
 	 * Get a list of all registered application instances.
 	 * @param name the name to search for.
-	 * @return List of instances for the given application
+	 * @return list of instances for the given application
 	 */
 	public Flux<Instance> getInstances(String name) {
 		return repository.findByName(name);
@@ -77,8 +77,8 @@ public class InstanceRegistry {
 
 	/**
 	 * Get a specific instance
-	 * @param id Id.
-	 * @return Instance.
+	 * @param id the id
+	 * @return a Mono with the Instance.
 	 */
 	public Mono<Instance> getInstance(InstanceId id) {
 		return repository.find(id);
