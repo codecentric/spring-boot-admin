@@ -51,7 +51,7 @@ public class LegacyEndpointConvertersTest {
 		Flux<Object> converted = converter.convert(legacyInput).transform(this::unmarshal);
 		Flux<Object> expected = this.read("health-expected.json").transform(this::unmarshal);
 
-		StepVerifier.create(Flux.zip(converted, expected)).assertNext(t -> assertThat(t.getT1()).isEqualTo(t.getT2()))
+		StepVerifier.create(Flux.zip(converted, expected)).assertNext((t) -> assertThat(t.getT1()).isEqualTo(t.getT2()))
 				.verifyComplete();
 	}
 
@@ -66,7 +66,7 @@ public class LegacyEndpointConvertersTest {
 		Flux<Object> converted = converter.convert(legacyInput).transform(this::unmarshal);
 		Flux<Object> expected = this.read("env-expected.json").transform(this::unmarshal);
 
-		StepVerifier.create(Flux.zip(converted, expected)).assertNext(t -> assertThat(t.getT1()).isEqualTo(t.getT2()))
+		StepVerifier.create(Flux.zip(converted, expected)).assertNext((t) -> assertThat(t.getT1()).isEqualTo(t.getT2()))
 				.verifyComplete();
 	}
 
@@ -81,7 +81,7 @@ public class LegacyEndpointConvertersTest {
 		Flux<Object> converted = converter.convert(legacyInput).transform(this::unmarshal);
 		Flux<Object> expected = this.read("httptrace-expected.json").transform(this::unmarshal);
 
-		StepVerifier.create(Flux.zip(converted, expected)).assertNext(t -> assertThat(t.getT1()).isEqualTo(t.getT2()))
+		StepVerifier.create(Flux.zip(converted, expected)).assertNext((t) -> assertThat(t.getT1()).isEqualTo(t.getT2()))
 				.verifyComplete();
 	}
 
@@ -96,7 +96,7 @@ public class LegacyEndpointConvertersTest {
 		Flux<Object> converted = converter.convert(legacyInput).transform(this::unmarshal);
 		Flux<Object> expected = this.read("threaddump-expected.json").transform(this::unmarshal);
 
-		StepVerifier.create(Flux.zip(converted, expected)).assertNext(t -> assertThat(t.getT1()).isEqualTo(t.getT2()))
+		StepVerifier.create(Flux.zip(converted, expected)).assertNext((t) -> assertThat(t.getT1()).isEqualTo(t.getT2()))
 				.verifyComplete();
 	}
 
@@ -111,7 +111,7 @@ public class LegacyEndpointConvertersTest {
 		Flux<Object> converted = converter.convert(legacyInput).transform(this::unmarshal);
 		Flux<Object> expected = this.read("liquibase-expected.json").transform(this::unmarshal);
 
-		StepVerifier.create(Flux.zip(converted, expected)).assertNext(t -> assertThat(t.getT1()).isEqualTo(t.getT2()))
+		StepVerifier.create(Flux.zip(converted, expected)).assertNext((t) -> assertThat(t.getT1()).isEqualTo(t.getT2()))
 				.verifyComplete();
 	}
 
@@ -126,7 +126,7 @@ public class LegacyEndpointConvertersTest {
 		Flux<Object> converted = converter.convert(legacyInput).transform(this::unmarshal);
 		Flux<Object> expected = this.read("flyway-expected.json").transform(this::unmarshal);
 
-		StepVerifier.create(Flux.zip(converted, expected)).assertNext(t -> assertThat(t.getT1()).isEqualTo(t.getT2()))
+		StepVerifier.create(Flux.zip(converted, expected)).assertNext((t) -> assertThat(t.getT1()).isEqualTo(t.getT2()))
 				.verifyComplete();
 	}
 

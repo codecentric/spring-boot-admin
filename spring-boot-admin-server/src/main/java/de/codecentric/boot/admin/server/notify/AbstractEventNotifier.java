@@ -48,9 +48,9 @@ public abstract class AbstractEventNotifier implements Notifier {
 			return Mono.empty();
 		}
 
-		return repository.find(event.getInstance()).filter(instance -> shouldNotify(event, instance))
-				.flatMap(instance -> doNotify(event, instance))
-				.doOnError(ex -> getLogger().error("Couldn't notify for event {} ", event, ex)).then();
+		return repository.find(event.getInstance()).filter((instance) -> shouldNotify(event, instance))
+				.flatMap((instance) -> doNotify(event, instance))
+				.doOnError((ex) -> getLogger().error("Couldn't notify for event {} ", event, ex)).then();
 	}
 
 	protected boolean shouldNotify(InstanceEvent event, Instance instance) {

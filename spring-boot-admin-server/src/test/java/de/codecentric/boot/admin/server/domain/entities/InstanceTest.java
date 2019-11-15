@@ -196,7 +196,7 @@ public class InstanceTest {
 				.withInfo(Info.from(singletonMap("info", "remove"))).withInfo(Info.from(singletonMap("info", "test2")));
 
 		List<InstanceEvent> relevantEvents = instance.getUnsavedEvents().stream()
-				.filter(e -> !(e instanceof InstanceInfoChangedEvent
+				.filter((e) -> !(e instanceof InstanceInfoChangedEvent
 						&& ((InstanceInfoChangedEvent) e).getInfo().getValues().get("info").equals("remove")))
 				.collect(Collectors.toList());
 

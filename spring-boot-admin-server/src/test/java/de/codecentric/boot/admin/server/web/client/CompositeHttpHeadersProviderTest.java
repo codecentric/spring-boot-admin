@@ -28,12 +28,12 @@ public class CompositeHttpHeadersProviderTest {
 
 	@Test
 	public void should_return_all_headers() {
-		HttpHeadersProvider provider = new CompositeHttpHeadersProvider(asList(i -> {
+		HttpHeadersProvider provider = new CompositeHttpHeadersProvider(asList((i) -> {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("a", "1");
 			headers.set("b", "2-a");
 			return headers;
-		}, i -> {
+		}, (i) -> {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("b", "2-b");
 			headers.set("c", "3");

@@ -38,14 +38,14 @@ public class HomepageForwardingFilter implements WebFilter {
 	public HomepageForwardingFilter(String homepage, List<String> routes) {
 		this.homepage = homepage;
 		this.matcher = new HomepageForwardingMatcher<>(routes, ServerHttpRequest::getMethodValue,
-				r -> r.getPath().pathWithinApplication().toString(), r -> r.getHeaders().getAccept());
+				(r) -> r.getPath().pathWithinApplication().toString(), (r) -> r.getHeaders().getAccept());
 	}
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
 		if (this.matcher.test(exchange.getRequest())) {
 			log.trace("Forwarding request with URL {} to index", exchange.getRequest().getURI());
-			exchange = exchange.mutate().request(request -> request.path(this.homepage)).build();
+			exchange = exchange.mutate().request((request) -> request.path(this.homepage)).build();
 		}
 		return chain.filter(exchange);
 	}

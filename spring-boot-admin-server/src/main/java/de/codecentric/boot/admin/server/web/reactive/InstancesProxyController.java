@@ -84,7 +84,7 @@ public class InstancesProxyController {
 
 		return this.instanceWebProxy.forward(this.registry.getInstance(InstanceId.of(instanceId)), uri,
 				request.getMethod(), this.httpHeadersFilter.filterHeaders(request.getHeaders()),
-				BodyInserters.fromDataBuffers(request.getBody())).flatMap(clientResponse -> {
+				BodyInserters.fromDataBuffers(request.getBody())).flatMap((clientResponse) -> {
 					response.setStatusCode(clientResponse.statusCode());
 					response.getHeaders()
 							.addAll(this.httpHeadersFilter.filterHeaders(clientResponse.headers().asHttpHeaders()));
@@ -101,7 +101,7 @@ public class InstancesProxyController {
 		URI uri = UriComponentsBuilder.fromPath(endpointLocalPath).query(request.getURI().getRawQuery()).build(true)
 				.toUri();
 
-		Flux<DataBuffer> cachedBody = request.getBody().map(b -> this.bufferFactory.wrap(b.asByteBuffer()))
+		Flux<DataBuffer> cachedBody = request.getBody().map((b) -> this.bufferFactory.wrap(b.asByteBuffer()))
 				.doOnDiscard(PooledDataBuffer.class, DataBufferUtils::release).cache();
 
 		return this.instanceWebProxy.forward(this.registry.getInstances(applicationName), uri, request.getMethod(),

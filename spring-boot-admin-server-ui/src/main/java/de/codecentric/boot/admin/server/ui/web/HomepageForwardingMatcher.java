@@ -47,15 +47,15 @@ public class HomepageForwardingMatcher<T> implements Predicate<T> {
 			return false;
 		}
 
-		if (this.routes.stream().noneMatch(p -> p.matcher(this.pathAccessor.apply(request)).matches())) {
+		if (this.routes.stream().noneMatch((p) -> p.matcher(this.pathAccessor.apply(request)).matches())) {
 			return false;
 		}
 
-		return this.acceptsAccessor.apply(request).stream().anyMatch(t -> t.includes(MediaType.TEXT_HTML));
+		return this.acceptsAccessor.apply(request).stream().anyMatch((t) -> t.includes(MediaType.TEXT_HTML));
 	}
 
 	private List<Pattern> toPatterns(List<String> routes) {
-		return routes.stream().map(r -> "^" + r.replaceAll("/[*][*]", "(/.*)?") + "$").map(Pattern::compile)
+		return routes.stream().map((r) -> "^" + r.replaceAll("/[*][*]", "(/.*)?") + "$").map(Pattern::compile)
 				.collect(Collectors.toList());
 	}
 

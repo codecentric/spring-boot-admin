@@ -58,12 +58,12 @@ public class InstanceRegistryTest {
 		Registration registration = Registration.create("abc", "http://localhost:8080/health").build();
 		InstanceId id = registry.register(registration).block();
 
-		StepVerifier.create(registry.getInstance(id)).assertNext(app -> {
+		StepVerifier.create(registry.getInstance(id)).assertNext((app) -> {
 			assertThat(app.getRegistration()).isEqualTo(registration);
 			assertThat(app.getId()).isNotNull();
 		}).verifyComplete();
 
-		StepVerifier.create(registry.getInstances()).assertNext(app -> {
+		StepVerifier.create(registry.getInstances()).assertNext((app) -> {
 			assertThat(app.getRegistration()).isEqualTo(registration);
 			assertThat(app.getId()).isNotNull();
 		}).verifyComplete();
@@ -74,7 +74,7 @@ public class InstanceRegistryTest {
 		InstanceId id = registry.register(Registration.create("abc", "http://localhost:8080/health").build()).block();
 		registry.deregister(id).block();
 
-		StepVerifier.create(registry.getInstance(id)).assertNext(app -> assertThat(app.isRegistered()).isFalse())
+		StepVerifier.create(registry.getInstance(id)).assertNext((app) -> assertThat(app.isRegistered()).isFalse())
 				.verifyComplete();
 	}
 
@@ -93,7 +93,7 @@ public class InstanceRegistryTest {
 				.block();
 
 		assertThat(refreshId).isEqualTo(id);
-		StepVerifier.create(registry.getInstance(id)).assertNext(registered -> {
+		StepVerifier.create(registry.getInstance(id)).assertNext((registered) -> {
 			// Then info and status are retained
 			assertThat(registered.getInfo()).isEqualTo(info);
 			assertThat(registered.getStatusInfo()).isEqualTo(status);
@@ -106,8 +106,8 @@ public class InstanceRegistryTest {
 		InstanceId id2 = registry.register(Registration.create("abc", "http://localhost:8081/health").build()).block();
 		InstanceId id3 = registry.register(Registration.create("zzz", "http://localhost:9999/health").build()).block();
 
-		StepVerifier.create(registry.getInstances("abc")).recordWith(ArrayList::new).thenConsumeWhile(a -> true)
-				.consumeRecordedWith(applications -> assertThat(applications.stream().map(Instance::getId))
+		StepVerifier.create(registry.getInstances("abc")).recordWith(ArrayList::new).thenConsumeWhile((a) -> true)
+				.consumeRecordedWith((applications) -> assertThat(applications.stream().map(Instance::getId))
 						.doesNotContain(id3).containsExactlyInAnyOrder(id1, id2))
 				.verifyComplete();
 	}

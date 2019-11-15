@@ -63,7 +63,7 @@ public final class InstanceExchangeFilterFunctions {
 	public static InstanceExchangeFilterFunction addHeaders(HttpHeadersProvider httpHeadersProvider) {
 		return (instance, request, next) -> {
 			request = ClientRequest.from(request)
-					.headers(headers -> headers.addAll(httpHeadersProvider.getHeaders(instance))).build();
+					.headers((headers) -> headers.addAll(httpHeadersProvider.getHeaders(instance))).build();
 			return next.exchange(request);
 		};
 	}
@@ -118,7 +118,7 @@ public final class InstanceExchangeFilterFunctions {
 
 			for (LegacyEndpointConverter converter : converters) {
 				if (converter.canConvert(endpoint.get())) {
-					return clientResponse.map(response -> {
+					return clientResponse.map((response) -> {
 						if (isLegacyResponse(response)) {
 							return convertLegacyResponse(converter, response);
 						}
@@ -132,12 +132,12 @@ public final class InstanceExchangeFilterFunctions {
 
 	private static Boolean isLegacyResponse(ClientResponse response) {
 		return response.headers().contentType()
-				.map(t -> ACTUATOR_V1_MEDIATYPE.isCompatibleWith(t) || APPLICATION_JSON.isCompatibleWith(t))
+				.map((t) -> ACTUATOR_V1_MEDIATYPE.isCompatibleWith(t) || APPLICATION_JSON.isCompatibleWith(t))
 				.orElse(false);
 	}
 
 	private static ClientResponse convertLegacyResponse(LegacyEndpointConverter converter, ClientResponse response) {
-		return ClientResponse.from(response).headers(headers -> {
+		return ClientResponse.from(response).headers((headers) -> {
 			headers.replace(HttpHeaders.CONTENT_TYPE, singletonList(ActuatorMediaType.V2_JSON));
 			headers.remove(HttpHeaders.CONTENT_LENGTH);
 		}).body(response.bodyToFlux(DataBuffer.class).transform(converter::convert)).build();
@@ -150,7 +150,7 @@ public final class InstanceExchangeFilterFunctions {
 						.orElse(false);
 				List<MediaType> acceptedHeaders = isRequestForLogfile ? DEFAULT_LOGFILE_ACCEPT_MEDIATYPES
 						: DEFAULT_ACCEPT_MEDIATYPES;
-				request = ClientRequest.from(request).headers(headers -> headers.setAccept(acceptedHeaders)).build();
+				request = ClientRequest.from(request).headers((headers) -> headers.setAccept(acceptedHeaders)).build();
 			}
 			return next.exchange(request);
 		};
@@ -184,7 +184,7 @@ public final class InstanceExchangeFilterFunctions {
 				List<MediaType> newAcceptHeaders = Stream
 						.concat(request.headers().getAccept().stream(), Stream.of(MediaType.ALL))
 						.collect(Collectors.toList());
-				request = ClientRequest.from(request).headers(h -> h.setAccept(newAcceptHeaders)).build();
+				request = ClientRequest.from(request).headers((h) -> h.setAccept(newAcceptHeaders)).build();
 			}
 			return next.exchange(request);
 		};

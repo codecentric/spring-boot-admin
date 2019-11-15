@@ -39,12 +39,12 @@ public class EndpointDetectionTrigger extends AbstractEventHandler<InstanceEvent
 
 	@Override
 	protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
-		return publisher.filter(event -> event instanceof InstanceStatusChangedEvent
+		return publisher.filter((event) -> event instanceof InstanceStatusChangedEvent
 				|| event instanceof InstanceRegistrationUpdatedEvent).flatMap(this::detectEndpoints);
 	}
 
 	protected Mono<Void> detectEndpoints(InstanceEvent event) {
-		return this.endpointDetector.detectEndpoints(event.getInstance()).onErrorResume(e -> {
+		return this.endpointDetector.detectEndpoints(event.getInstance()).onErrorResume((e) -> {
 			log.warn("Unexpected error while detecting endpoints for {}", event.getInstance(), e);
 			return Mono.empty();
 		});

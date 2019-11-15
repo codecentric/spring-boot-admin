@@ -52,7 +52,7 @@ public class HomepageForwardingFilter implements Filter {
 		UrlPathHelper urlPathHelper = new UrlPathHelper();
 		this.matcher = new HomepageForwardingMatcher<>(routes, HttpServletRequest::getMethod,
 				urlPathHelper::getPathWithinApplication,
-				r -> MediaType.parseMediaTypes(r.getHeader(HttpHeaders.ACCEPT)));
+				(r) -> MediaType.parseMediaTypes(r.getHeader(HttpHeaders.ACCEPT)));
 	}
 
 	@Override

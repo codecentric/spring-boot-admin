@@ -62,7 +62,7 @@ public class InstanceWebProxy {
 
 	public Mono<ClientResponse> forward(Mono<Instance> instance, URI uri, HttpMethod method, HttpHeaders headers,
 			BodyInserter<?, ? super ClientHttpRequest> bodyInserter) {
-		return instance.flatMap(i -> this.forward(i, uri, method, headers, bodyInserter)).switchIfEmpty(Mono
+		return instance.flatMap((i) -> this.forward(i, uri, method, headers, bodyInserter)).switchIfEmpty(Mono
 				.fromSupplier(() -> ClientResponse.create(HttpStatus.SERVICE_UNAVAILABLE, this.strategies).build()));
 	}
 
@@ -70,7 +70,7 @@ public class InstanceWebProxy {
 			BodyInserter<?, ? super ClientHttpRequest> bodyInserter) {
 		log.trace("Proxy-Request for instance {} with URL '{}'", instance.getId(), uri);
 		WebClient.RequestBodySpec bodySpec = this.instanceWebClient.instance(instance).method(method).uri(uri)
-				.headers(h -> h.addAll(headers));
+				.headers((h) -> h.addAll(headers));
 
 		WebClient.RequestHeadersSpec<?> headersSpec = bodySpec;
 		if (requiresBody(method)) {
@@ -78,16 +78,16 @@ public class InstanceWebProxy {
 		}
 
 		return headersSpec.exchange()
-				.onErrorResume(ex -> ex instanceof ReadTimeoutException || ex instanceof TimeoutException,
-						ex -> Mono.fromSupplier(() -> {
+				.onErrorResume((ex) -> ex instanceof ReadTimeoutException || ex instanceof TimeoutException,
+						(ex) -> Mono.fromSupplier(() -> {
 							log.trace("Timeout for Proxy-Request for instance {} with URL '{}'", instance.getId(), uri);
 							return ClientResponse.create(HttpStatus.GATEWAY_TIMEOUT, this.strategies).build();
 						}))
-				.onErrorResume(ResolveEndpointException.class, ex -> Mono.fromSupplier(() -> {
+				.onErrorResume(ResolveEndpointException.class, (ex) -> Mono.fromSupplier(() -> {
 					log.trace("No Endpoint found for Proxy-Request for instance {} with URL '{}'", instance.getId(),
 							uri);
 					return ClientResponse.create(HttpStatus.NOT_FOUND, this.strategies).build();
-				})).onErrorResume(IOException.class, ex -> Mono.fromSupplier(() -> {
+				})).onErrorResume(IOException.class, (ex) -> Mono.fromSupplier(() -> {
 					log.trace("Proxy-Request for instance {} with URL '{}' errored", instance.getId(), uri, ex);
 					return ClientResponse.create(HttpStatus.BAD_GATEWAY, this.strategies).build();
 				}));
@@ -95,8 +95,8 @@ public class InstanceWebProxy {
 
 	public Flux<InstanceResponse> forward(Flux<Instance> instances, URI uri, HttpMethod method, HttpHeaders headers,
 			BodyInserter<?, ? super ClientHttpRequest> bodyInserter) {
-		return instances.flatMap(instance -> this.forward(instance, uri, method, headers, bodyInserter)
-				.map(clientResponse -> Tuples.of(instance.getId(), clientResponse))).flatMap(t -> {
+		return instances.flatMap((instance) -> this.forward(instance, uri, method, headers, bodyInserter)
+				.map((clientResponse) -> Tuples.of(instance.getId(), clientResponse))).flatMap((t) -> {
 					ClientResponse clientResponse = t.getT2();
 					InstanceResponse.Builder response = InstanceResponse.builder().instanceId(t.getT1())
 							.status(clientResponse.rawStatusCode())

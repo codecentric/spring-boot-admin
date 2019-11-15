@@ -30,12 +30,10 @@ public class ChainingStrategyTest {
 
 	@Test
 	public void invariants() {
-		assertThatThrownBy(() -> {
-			new ChainingStrategy((EndpointDetectionStrategy[]) null);
-		}).isInstanceOf(IllegalArgumentException.class).hasMessage("'delegates' must not be null.");
-		assertThatThrownBy(() -> {
-			new ChainingStrategy((EndpointDetectionStrategy) null);
-		}).isInstanceOf(IllegalArgumentException.class).hasMessage("'delegates' must not contain null.");
+		assertThatThrownBy(() -> new ChainingStrategy((EndpointDetectionStrategy[]) null))
+				.isInstanceOf(IllegalArgumentException.class).hasMessage("'delegates' must not be null.");
+		assertThatThrownBy(() -> new ChainingStrategy((EndpointDetectionStrategy) null))
+				.isInstanceOf(IllegalArgumentException.class).hasMessage("'delegates' must not contain null.");
 	}
 
 	@Test

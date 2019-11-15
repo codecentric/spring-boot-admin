@@ -51,19 +51,19 @@ public class AdminServerDiscoveryAutoConfigurationTest {
 	@Test
 	public void defaultServiceInstanceConverter() {
 		this.contextRunner.withUserConfiguration(SimpleDiscoveryClientAutoConfiguration.class)
-				.run(context -> assertThat(context.getBean(ServiceInstanceConverter.class))
+				.run((context) -> assertThat(context.getBean(ServiceInstanceConverter.class))
 						.isInstanceOf(DefaultServiceInstanceConverter.class));
 	}
 
 	@Test
 	public void eurekaServiceInstanceConverter() {
-		this.contextRunner.withUserConfiguration(EurekaClientConfig.class).run(context -> assertThat(context)
+		this.contextRunner.withUserConfiguration(EurekaClientConfig.class).run((context) -> assertThat(context)
 				.getBean(ServiceInstanceConverter.class).isInstanceOf(EurekaServiceInstanceConverter.class));
 	}
 
 	@Test
 	public void kubernetesServiceInstanceConverter() {
-		this.contextRunner.withUserConfiguration(KubernetesClientConfig.class).run(context -> assertThat(context)
+		this.contextRunner.withUserConfiguration(KubernetesClientConfig.class).run((context) -> assertThat(context)
 				.getBean(ServiceInstanceConverter.class).isInstanceOf(KubernetesServiceInstanceConverter.class));
 	}
 
@@ -72,7 +72,7 @@ public class AdminServerDiscoveryAutoConfigurationTest {
 		this.contextRunner
 				.withUserConfiguration(SimpleDiscoveryClientAutoConfiguration.class,
 						TestCustomServiceInstanceConverterConfig.class)
-				.run(context -> assertThat(context).getBean(ServiceInstanceConverter.class)
+				.run((context) -> assertThat(context).getBean(ServiceInstanceConverter.class)
 						.isInstanceOf(CustomServiceInstanceConverter.class));
 	}
 

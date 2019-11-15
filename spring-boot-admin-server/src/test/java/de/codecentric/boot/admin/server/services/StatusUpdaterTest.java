@@ -100,7 +100,7 @@ public class StatusUpdaterTest {
 
 		StepVerifier.create(this.eventStore).expectSubscription()
 				.then(() -> StepVerifier.create(this.updater.updateStatus(this.instance.getId())).verifyComplete())
-				.assertNext(event -> {
+				.assertNext((event) -> {
 					assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class);
 					assertThat(event.getInstance()).isEqualTo(this.instance.getId());
 					InstanceStatusChangedEvent statusChangedEvent = (InstanceStatusChangedEvent) event;
@@ -109,7 +109,7 @@ public class StatusUpdaterTest {
 				}).thenCancel().verify();
 
 		StepVerifier.create(this.repository.find(this.instance.getId()))
-				.assertNext(app -> assertThat(app.getStatusInfo().getStatus()).isEqualTo("UP")).verifyComplete();
+				.assertNext((app) -> assertThat(app.getStatusInfo().getStatus()).isEqualTo("UP")).verifyComplete();
 
 		StepVerifier
 				.create(this.repository.computeIfPresent(this.instance.getId(),
@@ -118,7 +118,7 @@ public class StatusUpdaterTest {
 				.thenCancel().verify();
 
 		StepVerifier.create(this.repository.find(this.instance.getId()))
-				.assertNext(app -> assertThat(app.getStatusInfo().getStatus()).isEqualTo("UNKNOWN")).verifyComplete();
+				.assertNext((app) -> assertThat(app.getStatusInfo().getStatus()).isEqualTo("UNKNOWN")).verifyComplete();
 	}
 
 	@Test
@@ -138,11 +138,11 @@ public class StatusUpdaterTest {
 
 		StepVerifier.create(this.eventStore).expectSubscription()
 				.then(() -> StepVerifier.create(this.updater.updateStatus(this.instance.getId())).verifyComplete())
-				.assertNext(event -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class)).thenCancel()
+				.assertNext((event) -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class)).thenCancel()
 				.verify();
 
 		StepVerifier.create(this.repository.find(this.instance.getId()))
-				.assertNext(app -> assertThat(app.getStatusInfo().getStatus()).isEqualTo("UP")).verifyComplete();
+				.assertNext((app) -> assertThat(app.getStatusInfo().getStatus()).isEqualTo("UP")).verifyComplete();
 	}
 
 	@Test
@@ -154,10 +154,10 @@ public class StatusUpdaterTest {
 
 		StepVerifier.create(this.eventStore).expectSubscription()
 				.then(() -> StepVerifier.create(this.updater.updateStatus(this.instance.getId())).verifyComplete())
-				.assertNext(event -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class)).thenCancel()
+				.assertNext((event) -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class)).thenCancel()
 				.verify();
 
-		StepVerifier.create(this.repository.find(this.instance.getId())).assertNext(app -> {
+		StepVerifier.create(this.repository.find(this.instance.getId())).assertNext((app) -> {
 			assertThat(app.getStatusInfo().getStatus()).isEqualTo("DOWN");
 			assertThat(app.getStatusInfo().getDetails()).containsEntry("foo", "bar");
 		}).verifyComplete();
@@ -169,10 +169,10 @@ public class StatusUpdaterTest {
 
 		StepVerifier.create(this.eventStore).expectSubscription()
 				.then(() -> StepVerifier.create(this.updater.updateStatus(this.instance.getId())).verifyComplete())
-				.assertNext(event -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class)).thenCancel()
+				.assertNext((event) -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class)).thenCancel()
 				.verify();
 
-		StepVerifier.create(this.repository.find(this.instance.getId())).assertNext(app -> {
+		StepVerifier.create(this.repository.find(this.instance.getId())).assertNext((app) -> {
 			assertThat(app.getStatusInfo().getStatus()).isEqualTo("DOWN");
 			assertThat(app.getStatusInfo().getDetails()).containsEntry("status", 503).containsEntry("error",
 					"Service Unavailable");
@@ -186,10 +186,10 @@ public class StatusUpdaterTest {
 
 		StepVerifier.create(this.eventStore).expectSubscription()
 				.then(() -> StepVerifier.create(this.updater.updateStatus(this.instance.getId())).verifyComplete())
-				.assertNext(event -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class)).thenCancel()
+				.assertNext((event) -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class)).thenCancel()
 				.verify();
 
-		StepVerifier.create(this.repository.find(this.instance.getId())).assertNext(app -> {
+		StepVerifier.create(this.repository.find(this.instance.getId())).assertNext((app) -> {
 			assertThat(app.getStatusInfo().getStatus()).isEqualTo("DOWN");
 			assertThat(app.getStatusInfo().getDetails()).containsEntry("status", 503).containsEntry("error",
 					"Service Unavailable");
@@ -202,10 +202,10 @@ public class StatusUpdaterTest {
 
 		StepVerifier.create(this.eventStore).expectSubscription()
 				.then(() -> StepVerifier.create(this.updater.updateStatus(this.instance.getId())).verifyComplete())
-				.assertNext(event -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class)).thenCancel()
+				.assertNext((event) -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class)).thenCancel()
 				.verify();
 
-		StepVerifier.create(this.repository.find(this.instance.getId())).assertNext(app -> {
+		StepVerifier.create(this.repository.find(this.instance.getId())).assertNext((app) -> {
 			assertThat(app.getStatusInfo().getStatus()).isEqualTo("OFFLINE");
 			assertThat(app.getStatusInfo().getDetails()).containsKeys("message", "exception");
 		}).verifyComplete();
@@ -221,11 +221,11 @@ public class StatusUpdaterTest {
 
 		StepVerifier.create(this.eventStore).expectSubscription()
 				.then(() -> StepVerifier.create(this.updater.updateStatus(this.instance.getId())).verifyComplete())
-				.assertNext(event -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class)).thenCancel()
+				.assertNext((event) -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class)).thenCancel()
 				.verify();
 
 		StepVerifier.create(this.repository.find(this.instance.getId()))
-				.assertNext(app -> assertThat(app.getStatusInfo().getStatus()).isEqualTo("UP")).verifyComplete();
+				.assertNext((app) -> assertThat(app.getStatusInfo().getStatus()).isEqualTo("UP")).verifyComplete();
 	}
 
 }

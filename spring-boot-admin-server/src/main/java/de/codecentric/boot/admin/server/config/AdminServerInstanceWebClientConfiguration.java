@@ -44,7 +44,7 @@ public class AdminServerInstanceWebClientConfiguration {
 	public AdminServerInstanceWebClientConfiguration(ObjectProvider<InstanceWebClientCustomizer> customizers,
 			WebClient.Builder webClient) {
 		this.instanceWebClientBuilder = InstanceWebClient.builder(webClient);
-		customizers.orderedStream().forEach(customizer -> customizer.customize(this.instanceWebClientBuilder));
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(this.instanceWebClientBuilder));
 	}
 
 	@Bean
@@ -62,7 +62,7 @@ public class AdminServerInstanceWebClientConfiguration {
 		@ConditionalOnMissingBean(name = "filterInstanceWebClientCustomizer")
 		public InstanceWebClientCustomizer filterInstanceWebClientCustomizer(
 				List<InstanceExchangeFilterFunction> filters) {
-			return builder -> builder.filters(f -> f.addAll(filters));
+			return (builder) -> builder.filters((f) -> f.addAll(filters));
 		}
 
 		@Configuration(proxyBeanMethods = false)

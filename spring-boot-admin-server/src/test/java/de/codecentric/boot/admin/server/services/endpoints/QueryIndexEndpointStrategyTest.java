@@ -216,7 +216,7 @@ public class QueryIndexEndpointStrategyTest {
 
 	private ReactorClientHttpConnector httpConnector() {
 		SslContextBuilder sslCtx = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE);
-		HttpClient client = HttpClient.create().secure(ssl -> ssl.sslContext(sslCtx));
+		HttpClient client = HttpClient.create().secure((ssl) -> ssl.sslContext(sslCtx));
 		return new ReactorClientHttpConnector(client);
 	}
 

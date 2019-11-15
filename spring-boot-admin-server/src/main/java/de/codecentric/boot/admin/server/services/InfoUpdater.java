@@ -70,13 +70,13 @@ public class InfoUpdater {
 
 		log.debug("Update info for {}", instance);
 		return this.instanceWebClient.instance(instance).get().uri(Endpoint.INFO).exchange()
-				.log(log.getName(), Level.FINEST).flatMap(response -> convertInfo(instance, response))
-				.onErrorResume(ex -> Mono.just(convertInfo(instance, ex))).map(instance::withInfo);
+				.log(log.getName(), Level.FINEST).flatMap((response) -> convertInfo(instance, response))
+				.onErrorResume((ex) -> Mono.just(convertInfo(instance, ex))).map(instance::withInfo);
 	}
 
 	protected Mono<Info> convertInfo(Instance instance, ClientResponse response) {
 		if (response.statusCode().is2xxSuccessful() && response.headers().contentType().map(
-				mt -> mt.isCompatibleWith(MediaType.APPLICATION_JSON) || mt.isCompatibleWith(ACTUATOR_V2_MEDIATYPE))
+				(mt) -> mt.isCompatibleWith(MediaType.APPLICATION_JSON) || mt.isCompatibleWith(ACTUATOR_V2_MEDIATYPE))
 				.orElse(false)) {
 			return response.bodyToMono(RESPONSE_TYPE).map(Info::from).defaultIfEmpty(Info.empty());
 		}

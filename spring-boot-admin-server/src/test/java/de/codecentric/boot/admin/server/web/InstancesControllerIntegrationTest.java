@@ -100,7 +100,7 @@ public class InstancesControllerIntegrationTest {
 		StepVerifier.create(this.getEventStream().log()).expectSubscription().then(() -> {
 			id.set(register());
 			cdl.countDown();
-		}).assertNext(body -> {
+		}).assertNext((body) -> {
 			try {
 				cdl.await();
 			}
@@ -113,13 +113,13 @@ public class InstancesControllerIntegrationTest {
 			assertInstances(id.get());
 			assertInstancesByName(id.get());
 			assertInstanceById(id.get());
-		}).assertNext(body -> assertThat(body).containsEntry("instance", id.get()).containsEntry("version", 1)
+		}).assertNext((body) -> assertThat(body).containsEntry("instance", id.get()).containsEntry("version", 1)
 				.containsEntry("type", "STATUS_CHANGED")).then(() -> registerSecondTime(id.get()))
-				.assertNext(body -> assertThat(body).containsEntry("instance", id.get()).containsEntry("version", 2)
+				.assertNext((body) -> assertThat(body).containsEntry("instance", id.get()).containsEntry("version", 2)
 						.containsEntry("type", "REGISTRATION_UPDATED"))
 				.then(() -> deregister(id.get()))
 
-				.assertNext(body -> assertThat(body).containsEntry("instance", id.get()).containsEntry("version", 3)
+				.assertNext((body) -> assertThat(body).containsEntry("instance", id.get()).containsEntry("version", 3)
 						.containsEntry("type", "DEREGISTERED"))
 				.then(() -> {
 					assertInstanceNotFound(id.get());
@@ -130,7 +130,7 @@ public class InstancesControllerIntegrationTest {
 	private void assertEvents(String id) {
 		this.client.get().uri("/instances/events").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
 				.expectHeader().contentType(MediaType.APPLICATION_JSON).expectBody(String.class)
-				.consumeWith(response -> {
+				.consumeWith((response) -> {
 					DocumentContext json = JsonPath.parse(response.getResponseBody());
 					assertThat(json.read("$[0].instance", String.class)).isEqualTo(id);
 					assertThat(json.read("$[0].version", Long.class)).isEqualTo(0L);

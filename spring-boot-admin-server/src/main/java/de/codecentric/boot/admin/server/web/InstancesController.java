@@ -55,7 +55,7 @@ public class InstancesController {
 	private static final ServerSentEvent<?> PING = ServerSentEvent.builder().comment("ping").build();
 
 	private static final Flux<ServerSentEvent<?>> PING_FLUX = Flux.interval(Duration.ZERO, Duration.ofSeconds(10L))
-			.map(tick -> PING);
+			.map((tick) -> PING);
 
 	private final InstanceRegistry registry;
 
@@ -77,7 +77,7 @@ public class InstancesController {
 			UriComponentsBuilder builder) {
 		Registration withSource = Registration.copyOf(registration).source("http-api").build();
 		LOGGER.debug("Register instance {}", withSource);
-		return registry.register(withSource).map(id -> {
+		return registry.register(withSource).map((id) -> {
 			URI location = builder.replacePath("/instances/{id}").buildAndExpand(id).toUri();
 			return ResponseEntity.created(location).body(Collections.singletonMap("id", id));
 		});
@@ -123,7 +123,7 @@ public class InstancesController {
 	@DeleteMapping(path = "/instances/{id}")
 	public Mono<ResponseEntity<Void>> unregister(@PathVariable String id) {
 		LOGGER.debug("Unregister instance with ID '{}'", id);
-		return registry.deregister(InstanceId.of(id)).map(v -> ResponseEntity.noContent().<Void>build())
+		return registry.deregister(InstanceId.of(id)).map((v) -> ResponseEntity.noContent().<Void>build())
 				.defaultIfEmpty(ResponseEntity.notFound().build());
 	}
 
@@ -134,14 +134,14 @@ public class InstancesController {
 
 	@GetMapping(path = "/instances/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Flux<ServerSentEvent<InstanceEvent>> eventStream() {
-		return Flux.from(eventStore).map(event -> ServerSentEvent.builder(event).build()).mergeWith(ping());
+		return Flux.from(eventStore).map((event) -> ServerSentEvent.builder(event).build()).mergeWith(ping());
 	}
 
 	@GetMapping(path = "/instances/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Flux<ServerSentEvent<Instance>> instanceStream(@PathVariable String id) {
-		return Flux.from(eventStore).filter(event -> event.getInstance().equals(InstanceId.of(id)))
-				.flatMap(event -> registry.getInstance(event.getInstance()))
-				.map(event -> ServerSentEvent.builder(event).build()).mergeWith(ping());
+		return Flux.from(eventStore).filter((event) -> event.getInstance().equals(InstanceId.of(id)))
+				.flatMap((event) -> registry.getInstance(event.getInstance()))
+				.map((event) -> ServerSentEvent.builder(event).build()).mergeWith(ping());
 	}
 
 	@SuppressWarnings("unchecked")

@@ -114,11 +114,11 @@ public class InfoUpdaterTest {
 				.expectNoEvent(Duration.ofMillis(100L))
 				.then(() -> StepVerifier.create(this.updater.updateInfo(instance.getId())).verifyComplete())
 				// then
-				.assertNext(event -> assertThat(event).isInstanceOf(InstanceInfoChangedEvent.class)).thenCancel()
+				.assertNext((event) -> assertThat(event).isInstanceOf(InstanceInfoChangedEvent.class)).thenCancel()
 				.verify();
 
 		StepVerifier.create(this.repository.find(instance.getId()))
-				.assertNext(app -> assertThat(app.getInfo()).isEqualTo(Info.from(singletonMap("foo", "bar"))))
+				.assertNext((app) -> assertThat(app.getInfo()).isEqualTo(Info.from(singletonMap("foo", "bar"))))
 				.verifyComplete();
 	}
 
@@ -137,11 +137,11 @@ public class InfoUpdaterTest {
 		StepVerifier.create(this.eventStore).expectSubscription()
 				.then(() -> StepVerifier.create(this.updater.updateInfo(instance.getId())).verifyComplete())
 				// then
-				.assertNext(event -> assertThat(event).isInstanceOf(InstanceInfoChangedEvent.class)).thenCancel()
+				.assertNext((event) -> assertThat(event).isInstanceOf(InstanceInfoChangedEvent.class)).thenCancel()
 				.verify();
 
 		StepVerifier.create(this.repository.find(instance.getId()))
-				.assertNext(app -> assertThat(app.getInfo()).isEqualTo(Info.empty())).verifyComplete();
+				.assertNext((app) -> assertThat(app.getInfo()).isEqualTo(Info.empty())).verifyComplete();
 	}
 
 	@Test
@@ -161,11 +161,11 @@ public class InfoUpdaterTest {
 		StepVerifier.create(this.eventStore).expectSubscription()
 				.then(() -> StepVerifier.create(this.updater.updateInfo(instance.getId())).verifyComplete())
 				// then
-				.assertNext(event -> assertThat(event).isInstanceOf(InstanceInfoChangedEvent.class)).thenCancel()
+				.assertNext((event) -> assertThat(event).isInstanceOf(InstanceInfoChangedEvent.class)).thenCancel()
 				.verify();
 
 		StepVerifier.create(this.repository.find(instance.getId()))
-				.assertNext(app -> assertThat(app.getInfo()).isEqualTo(Info.empty())).verifyComplete();
+				.assertNext((app) -> assertThat(app.getInfo()).isEqualTo(Info.empty())).verifyComplete();
 	}
 
 	@Test
@@ -187,11 +187,11 @@ public class InfoUpdaterTest {
 		StepVerifier.create(this.eventStore).expectSubscription()
 				.then(() -> StepVerifier.create(this.updater.updateInfo(instance.getId())).verifyComplete())
 				// then
-				.assertNext(event -> assertThat(event).isInstanceOf(InstanceInfoChangedEvent.class)).thenCancel()
+				.assertNext((event) -> assertThat(event).isInstanceOf(InstanceInfoChangedEvent.class)).thenCancel()
 				.verify();
 
 		StepVerifier.create(this.repository.find(instance.getId()))
-				.assertNext(app -> assertThat(app.getInfo()).isEqualTo(Info.from(singletonMap("foo", "bar"))))
+				.assertNext((app) -> assertThat(app.getInfo()).isEqualTo(Info.from(singletonMap("foo", "bar"))))
 				.verifyComplete();
 	}
 
