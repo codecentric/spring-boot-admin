@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.client.registration;
 
 import java.util.Collections;
 import java.util.Map;
+
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

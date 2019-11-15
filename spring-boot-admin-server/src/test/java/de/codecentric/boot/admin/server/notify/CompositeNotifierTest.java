@@ -16,15 +16,16 @@
 
 package de.codecentric.boot.admin.server.notify;
 
+import java.util.Arrays;
+
+import org.junit.Test;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
-import java.util.Arrays;
-import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

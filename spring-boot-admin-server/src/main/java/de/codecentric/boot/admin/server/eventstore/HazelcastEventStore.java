@@ -16,17 +16,18 @@
 
 package de.codecentric.boot.admin.server.eventstore;
 
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
-
 import java.util.List;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import com.hazelcast.core.EntryAdapter;
 import com.hazelcast.core.EntryEvent;
 import com.hazelcast.core.IMap;
 import com.hazelcast.map.listener.MapListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 /**
  * Event-Store backed by a Hazelcast-map.

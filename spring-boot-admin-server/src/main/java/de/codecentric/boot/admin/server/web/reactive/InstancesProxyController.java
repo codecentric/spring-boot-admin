@@ -16,17 +16,9 @@
 
 package de.codecentric.boot.admin.server.web.reactive;
 
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
-import de.codecentric.boot.admin.server.services.InstanceRegistry;
-import de.codecentric.boot.admin.server.web.AdminController;
-import de.codecentric.boot.admin.server.web.HttpHeaderFilter;
-import de.codecentric.boot.admin.server.web.InstanceWebProxy;
-import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import java.net.URI;
 import java.util.Set;
+
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -43,6 +35,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.services.InstanceRegistry;
+import de.codecentric.boot.admin.server.web.AdminController;
+import de.codecentric.boot.admin.server.web.HttpHeaderFilter;
+import de.codecentric.boot.admin.server.web.InstanceWebProxy;
+import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 /**
  * Http Handler for proxied requests

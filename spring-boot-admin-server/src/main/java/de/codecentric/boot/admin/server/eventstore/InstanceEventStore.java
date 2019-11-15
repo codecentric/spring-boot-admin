@@ -16,13 +16,14 @@
 
 package de.codecentric.boot.admin.server.eventstore;
 
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import java.util.List;
+
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-import org.reactivestreams.Publisher;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 /**
  * Interface for storing all instance related Events

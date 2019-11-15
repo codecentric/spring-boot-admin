@@ -16,10 +16,10 @@
 
 package de.codecentric.boot.admin.server.domain.events;
 
+import java.time.Instant;
+
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
-
-import java.time.Instant;
 
 /**
  * This event gets emitted when an instance changes its status.

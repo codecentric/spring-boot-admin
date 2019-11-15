@@ -16,9 +16,9 @@
 
 package de.codecentric.boot.admin.client.registration.metadata;
 
-import de.codecentric.boot.admin.client.config.CloudFoundryApplicationProperties;
-
 import org.junit.Test;
+
+import de.codecentric.boot.admin.client.config.CloudFoundryApplicationProperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -20,11 +20,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.junit.Test;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import org.junit.Test;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;

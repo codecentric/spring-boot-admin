@@ -16,11 +16,12 @@
 
 package de.codecentric.boot.admin.server.domain.events;
 
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
-
 import java.io.Serializable;
 import java.time.Instant;
+
 import org.springframework.util.Assert;
+
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 /**
  * Abstract Event regarding registered instances

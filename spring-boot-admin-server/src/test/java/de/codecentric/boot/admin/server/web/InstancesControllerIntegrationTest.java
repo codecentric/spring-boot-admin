@@ -16,15 +16,14 @@
 
 package de.codecentric.boot.admin.server.web;
 
-import de.codecentric.boot.admin.server.AdminReactiveApplicationTest;
-import reactor.core.publisher.Flux;
-import reactor.test.StepVerifier;
-
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
+
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,8 +34,10 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
+import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
+
+import de.codecentric.boot.admin.server.AdminReactiveApplicationTest;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonMap;

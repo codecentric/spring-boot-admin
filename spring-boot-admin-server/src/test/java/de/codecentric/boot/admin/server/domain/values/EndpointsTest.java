@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.domain.values;
 
 import java.util.Collections;
+
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

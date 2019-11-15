@@ -16,15 +16,15 @@
 
 package de.codecentric.boot.admin.server.services;
 
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdatedEvent;
-import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdatedEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 
 public class EndpointDetectionTrigger extends AbstractEventHandler<InstanceEvent> {
 

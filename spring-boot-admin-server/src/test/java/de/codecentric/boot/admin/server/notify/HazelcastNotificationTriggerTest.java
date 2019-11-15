@@ -16,16 +16,17 @@
 
 package de.codecentric.boot.admin.server.notify;
 
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.junit.jupiter.api.Test;
+import reactor.test.publisher.TestPublisher;
+
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
-import reactor.test.publisher.TestPublisher;
-
-import java.util.concurrent.ConcurrentHashMap;
-import org.junit.jupiter.api.Test;
 
 import static org.awaitility.Awaitility.await;
 import static org.mockito.Mockito.mock;

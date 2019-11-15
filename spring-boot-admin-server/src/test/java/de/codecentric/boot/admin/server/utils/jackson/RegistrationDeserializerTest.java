@@ -16,14 +16,14 @@
 
 package de.codecentric.boot.admin.server.utils.jackson;
 
-import de.codecentric.boot.admin.server.domain.values.Registration;
-
-import org.json.JSONObject;
-import org.junit.Test;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.json.JSONObject;
+import org.junit.Test;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+
+import de.codecentric.boot.admin.server.domain.values.Registration;
 
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;

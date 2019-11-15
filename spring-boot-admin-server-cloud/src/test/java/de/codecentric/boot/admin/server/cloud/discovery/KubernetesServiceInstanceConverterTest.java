@@ -16,12 +16,13 @@
 
 package de.codecentric.boot.admin.server.cloud.discovery;
 
-import de.codecentric.boot.admin.server.domain.values.Registration;
-
 import java.net.URI;
 import java.util.Collections;
+
 import org.junit.Test;
 import org.springframework.cloud.client.ServiceInstance;
+
+import de.codecentric.boot.admin.server.domain.values.Registration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;

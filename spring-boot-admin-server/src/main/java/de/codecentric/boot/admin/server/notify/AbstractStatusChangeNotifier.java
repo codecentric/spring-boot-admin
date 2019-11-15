@@ -16,17 +16,18 @@
 
 package de.codecentric.boot.admin.server.notify;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import reactor.core.publisher.Mono;
+
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
-import reactor.core.publisher.Mono;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Abstract Notifier for status change which allows filtering of certain status changes.

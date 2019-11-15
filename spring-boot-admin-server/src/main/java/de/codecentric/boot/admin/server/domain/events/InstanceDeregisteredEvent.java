@@ -16,9 +16,9 @@
 
 package de.codecentric.boot.admin.server.domain.events;
 
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
-
 import java.time.Instant;
+
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 /**
  * This event gets emitted when an instance is unregistered.

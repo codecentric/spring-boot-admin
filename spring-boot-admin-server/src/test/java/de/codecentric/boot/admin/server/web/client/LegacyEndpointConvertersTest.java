@@ -16,10 +16,8 @@
 
 package de.codecentric.boot.admin.server.web.client;
 
-import reactor.core.publisher.Flux;
-import reactor.test.StepVerifier;
-
 import java.util.Map;
+
 import org.junit.Test;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.ResolvableType;
@@ -28,6 +26,8 @@ import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
+import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

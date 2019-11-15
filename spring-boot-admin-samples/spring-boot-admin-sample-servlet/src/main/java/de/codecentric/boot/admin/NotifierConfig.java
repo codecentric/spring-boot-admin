@@ -16,19 +16,20 @@
 
 package de.codecentric.boot.admin;
 
+import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.notify.CompositeNotifier;
 import de.codecentric.boot.admin.server.notify.Notifier;
 import de.codecentric.boot.admin.server.notify.RemindingNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
-
-import java.time.Duration;
-import java.util.Collections;
-import java.util.List;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 
 // tag::configuration-filtering-notifier[]
 @Configuration(proxyBeanMethods = false)

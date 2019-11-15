@@ -16,8 +16,6 @@
 
 package de.codecentric.boot.admin.server.ui;
 
-import de.codecentric.boot.admin.server.config.EnableAdminServer;
-
 import org.junit.After;
 import org.junit.Before;
 import org.springframework.boot.SpringBootConfiguration;
@@ -28,6 +26,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+
+import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
 public class AdminUiReactiveApplicationTest extends AbstractAdminUiApplicationTest {
 

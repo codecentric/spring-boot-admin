@@ -16,13 +16,14 @@
 
 package de.codecentric.boot.admin.server.cloud.discovery;
 
-import de.codecentric.boot.admin.server.domain.values.Registration;
-
 import java.util.HashMap;
 import java.util.Map;
+
 import org.junit.Test;
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
+
+import de.codecentric.boot.admin.server.domain.values.Registration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

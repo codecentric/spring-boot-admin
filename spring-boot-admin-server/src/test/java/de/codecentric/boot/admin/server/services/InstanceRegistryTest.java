@@ -16,6 +16,12 @@
 
 package de.codecentric.boot.admin.server.services;
 
+import java.util.ArrayList;
+
+import org.junit.Before;
+import org.junit.Test;
+import reactor.test.StepVerifier;
+
 import de.codecentric.boot.admin.server.domain.entities.EventsourcingInstanceRepository;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
@@ -24,11 +30,6 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
-import reactor.test.StepVerifier;
-
-import java.util.ArrayList;
-import org.junit.Before;
-import org.junit.Test;
 
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;

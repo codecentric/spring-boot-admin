@@ -16,17 +16,19 @@
 
 package de.codecentric.boot.admin.server.ui.config;
 
-import de.codecentric.boot.admin.server.ui.web.UiController;
-
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 import javax.annotation.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.http.CacheControl;
+
+import de.codecentric.boot.admin.server.ui.web.UiController;
 
 @lombok.Data
 @ConfigurationProperties("spring.boot.admin.ui")

@@ -16,10 +16,10 @@
 
 package de.codecentric.boot.admin.server.services;
 
+import org.junit.Test;
+
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
-
-import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

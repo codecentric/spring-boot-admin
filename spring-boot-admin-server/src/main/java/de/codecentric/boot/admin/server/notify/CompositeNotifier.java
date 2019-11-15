@@ -16,13 +16,13 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
 /**
  * A notifier delegating notifications to all specified notifiers.

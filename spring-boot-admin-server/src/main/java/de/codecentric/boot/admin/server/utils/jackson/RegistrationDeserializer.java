@@ -16,15 +16,16 @@
 
 package de.codecentric.boot.admin.server.utils.jackson;
 
-import de.codecentric.boot.admin.server.domain.values.Registration;
-
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+
+import de.codecentric.boot.admin.server.domain.values.Registration;
 
 public class RegistrationDeserializer extends StdDeserializer<Registration> {
 

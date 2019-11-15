@@ -16,9 +16,6 @@
 
 package de.codecentric.boot.admin.client.registration;
 
-import de.codecentric.boot.admin.client.config.CloudFoundryApplicationProperties;
-import de.codecentric.boot.admin.client.config.InstanceProperties;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -26,6 +23,9 @@ import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServe
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+
+import de.codecentric.boot.admin.client.config.CloudFoundryApplicationProperties;
+import de.codecentric.boot.admin.client.config.InstanceProperties;
 
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;

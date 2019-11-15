@@ -16,8 +16,6 @@
 
 package de.codecentric.boot.admin.server;
 
-import de.codecentric.boot.admin.server.config.EnableAdminServer;
-
 import org.junit.After;
 import org.junit.Before;
 import org.springframework.boot.SpringBootConfiguration;
@@ -28,6 +26,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
 public class AdminServletApplicationTest extends AbstractAdminApplicationTest {
 

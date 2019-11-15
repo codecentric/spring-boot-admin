@@ -16,14 +16,15 @@
 
 package de.codecentric.boot.admin.server.cloud.discovery;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-
 import java.net.URI;
+
+import com.netflix.appinfo.InstanceInfo;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.netflix.eureka.EurekaServiceInstance;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-import com.netflix.appinfo.InstanceInfo;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
 
 /**
  * Converts {@link EurekaServiceInstance}s to {@link Instance}s

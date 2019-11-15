@@ -18,7 +18,9 @@ package de.codecentric.boot.admin.client.config;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 import javax.annotation.Nullable;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

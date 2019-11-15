@@ -16,19 +16,11 @@
 
 package de.codecentric.boot.admin.server.cloud.discovery;
 
-import de.codecentric.boot.admin.server.domain.entities.EventsourcingInstanceRepository;
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
-import de.codecentric.boot.admin.server.domain.values.Registration;
-import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
-import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
-import de.codecentric.boot.admin.server.services.InstanceRegistry;
-import java.util.HashMap;
-import reactor.test.StepVerifier;
-
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.cloud.client.DefaultServiceInstance;
@@ -37,6 +29,15 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.event.HeartbeatEvent;
 import org.springframework.cloud.client.discovery.event.InstanceRegisteredEvent;
 import org.springframework.cloud.client.discovery.event.ParentHeartbeatEvent;
+import reactor.test.StepVerifier;
+
+import de.codecentric.boot.admin.server.domain.entities.EventsourcingInstanceRepository;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.domain.values.Registration;
+import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
+import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
+import de.codecentric.boot.admin.server.services.InstanceRegistry;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;

@@ -16,11 +16,10 @@
 
 package de.codecentric.boot.admin.client.registration;
 
-import de.codecentric.boot.admin.client.config.InstanceProperties;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -33,6 +32,8 @@ import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.mock.web.MockServletContext;
+
+import de.codecentric.boot.admin.client.config.InstanceProperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;

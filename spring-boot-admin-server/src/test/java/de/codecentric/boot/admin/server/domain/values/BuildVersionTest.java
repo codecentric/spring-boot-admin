@@ -16,11 +16,11 @@
 
 package de.codecentric.boot.admin.server.domain.values;
 
-import org.junit.Test;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import org.junit.Test;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;

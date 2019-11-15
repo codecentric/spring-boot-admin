@@ -16,16 +16,17 @@
 
 package de.codecentric.boot.admin.server.web.servlet;
 
-import de.codecentric.boot.admin.server.web.AdminController;
-import de.codecentric.boot.admin.server.web.PathUtils;
-
 import java.lang.reflect.Method;
 import java.util.Set;
+
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+
+import de.codecentric.boot.admin.server.web.AdminController;
+import de.codecentric.boot.admin.server.web.PathUtils;
 
 public class AdminControllerHandlerMapping extends RequestMappingHandlerMapping {
 

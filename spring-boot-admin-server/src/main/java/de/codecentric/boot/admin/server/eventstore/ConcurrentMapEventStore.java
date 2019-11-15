@@ -16,11 +16,6 @@
 
 package de.codecentric.boot.admin.server.eventstore;
 
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,8 +26,14 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.groupingBy;

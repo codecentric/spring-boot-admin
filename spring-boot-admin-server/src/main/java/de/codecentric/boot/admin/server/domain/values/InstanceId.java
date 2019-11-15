@@ -17,9 +17,10 @@
 package de.codecentric.boot.admin.server.domain.values;
 
 import java.io.Serializable;
-import org.springframework.util.Assert;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import org.springframework.util.Assert;
 
 /**
  * Value type for the instance identifier

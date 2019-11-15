@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.client.registration;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAdder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

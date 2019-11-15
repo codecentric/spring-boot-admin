@@ -16,16 +16,6 @@
 
 package de.codecentric.boot.admin.server.cloud.config;
 
-import de.codecentric.boot.admin.server.cloud.discovery.DefaultServiceInstanceConverter;
-import de.codecentric.boot.admin.server.cloud.discovery.EurekaServiceInstanceConverter;
-import de.codecentric.boot.admin.server.cloud.discovery.InstanceDiscoveryListener;
-import de.codecentric.boot.admin.server.cloud.discovery.KubernetesServiceInstanceConverter;
-import de.codecentric.boot.admin.server.cloud.discovery.ServiceInstanceConverter;
-import de.codecentric.boot.admin.server.config.AdminServerAutoConfiguration;
-import de.codecentric.boot.admin.server.config.AdminServerMarkerConfiguration;
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.services.InstanceRegistry;
-
 import com.netflix.discovery.EurekaClient;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -37,6 +27,16 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.kubernetes.discovery.KubernetesDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import de.codecentric.boot.admin.server.cloud.discovery.DefaultServiceInstanceConverter;
+import de.codecentric.boot.admin.server.cloud.discovery.EurekaServiceInstanceConverter;
+import de.codecentric.boot.admin.server.cloud.discovery.InstanceDiscoveryListener;
+import de.codecentric.boot.admin.server.cloud.discovery.KubernetesServiceInstanceConverter;
+import de.codecentric.boot.admin.server.cloud.discovery.ServiceInstanceConverter;
+import de.codecentric.boot.admin.server.config.AdminServerAutoConfiguration;
+import de.codecentric.boot.admin.server.config.AdminServerMarkerConfiguration;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.services.InstanceRegistry;
 
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnSingleCandidate(DiscoveryClient.class)

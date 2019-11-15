@@ -16,10 +16,10 @@
 
 package de.codecentric.boot.admin.server.domain.events;
 
+import java.time.Instant;
+
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
-
-import java.time.Instant;
 
 /**
  * This event gets emitted when all instance's endpoints are discovered.

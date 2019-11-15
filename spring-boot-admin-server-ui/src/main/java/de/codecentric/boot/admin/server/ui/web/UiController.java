@@ -16,14 +16,15 @@
 
 package de.codecentric.boot.admin.server.ui.web;
 
-import de.codecentric.boot.admin.server.ui.extensions.UiExtension;
-import de.codecentric.boot.admin.server.web.AdminController;
-
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import javax.annotation.Nullable;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
@@ -31,8 +32,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import de.codecentric.boot.admin.server.ui.extensions.UiExtension;
+import de.codecentric.boot.admin.server.web.AdminController;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;

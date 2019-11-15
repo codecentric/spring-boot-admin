@@ -16,13 +16,9 @@
 
 package de.codecentric.boot.admin.client.config;
 
-import de.codecentric.boot.admin.client.registration.CloudFoundryApplicationFactory;
-import de.codecentric.boot.admin.client.registration.metadata.CloudFoundryMetadataContributor;
-import de.codecentric.boot.admin.client.registration.metadata.CompositeMetadataContributor;
-import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
-
 import java.util.Collections;
 import java.util.List;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
@@ -37,6 +33,11 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+
+import de.codecentric.boot.admin.client.registration.CloudFoundryApplicationFactory;
+import de.codecentric.boot.admin.client.registration.metadata.CloudFoundryMetadataContributor;
+import de.codecentric.boot.admin.client.registration.metadata.CompositeMetadataContributor;
+import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
 
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication

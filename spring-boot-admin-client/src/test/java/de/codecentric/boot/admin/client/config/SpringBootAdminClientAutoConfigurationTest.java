@@ -16,8 +16,6 @@
 
 package de.codecentric.boot.admin.client.config;
 
-import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
-
 import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
@@ -28,6 +26,8 @@ import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoC
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+
+import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

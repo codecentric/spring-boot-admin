@@ -16,6 +16,11 @@
 
 package de.codecentric.boot.admin.server.domain.entities;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.junit.Test;
+
 import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceInfoChangedEvent;
@@ -25,10 +30,6 @@ import de.codecentric.boot.admin.server.domain.values.Info;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import org.junit.Test;
 
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;

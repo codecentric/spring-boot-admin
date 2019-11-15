@@ -16,10 +16,10 @@
 
 package de.codecentric.boot.admin.server.cloud.discovery;
 
+import org.springframework.cloud.client.ServiceInstance;
+
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.Registration;
-
-import org.springframework.cloud.client.ServiceInstance;
 
 /**
  * Converts {@link ServiceInstance}s to {@link Instance}s.
