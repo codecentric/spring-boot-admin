@@ -56,17 +56,17 @@ public class SpringBootAdminReactiveApplication {
 	@Profile("secure")
 	public SecurityWebFilterChain securityWebFilterChainSecure(ServerHttpSecurity http) {
 		// @formatter:off
-        return http.authorizeExchange()
-                .pathMatchers(this.adminServer.path("/assets/**")).permitAll()
-                .pathMatchers(this.adminServer.path("/login")).permitAll()
-                .anyExchange().authenticated()
-                .and()
-            .formLogin().loginPage(this.adminServer.path("/login")).and()
-            .logout().logoutUrl(this.adminServer.path("/logout")).and()
-            .httpBasic().and()
-            .csrf().disable()
-            .build();
-        // @formatter:on
+		return http.authorizeExchange()
+				.pathMatchers(this.adminServer.path("/assets/**")).permitAll()
+				.pathMatchers(this.adminServer.path("/login")).permitAll()
+				.anyExchange().authenticated()
+				.and()
+			.formLogin().loginPage(this.adminServer.path("/login")).and()
+			.logout().logoutUrl(this.adminServer.path("/logout")).and()
+			.httpBasic().and()
+			.csrf().disable()
+			.build();
+		// @formatter:on
 	}
 
 	@Bean

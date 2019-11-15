@@ -33,54 +33,54 @@ public abstract class AbstractAdminUiApplicationTest {
 	@Test
 	public void should_return_index() {
 		//@formatter:off
-        this.webClient.get()
-                      .uri("/")
-                      .accept(MediaType.TEXT_HTML, MediaType.ALL)
-                      .exchange()
-                      .expectStatus().isOk()
-                      .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
-                      .expectBody(String.class)
-                        .value((body) -> assertThat(body).contains("<title>Spring Boot Admin</title>"));
-        //@formatter:on
+		this.webClient.get()
+					.uri("/")
+					.accept(MediaType.TEXT_HTML, MediaType.ALL)
+					.exchange()
+					.expectStatus().isOk()
+					.expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
+					.expectBody(String.class)
+					.value((body) -> assertThat(body).contains("<title>Spring Boot Admin</title>"));
+		//@formatter:on
 	}
 
 	@Test
 	public void should_return_api() {
 		//@formatter:off
-        this.webClient.get()
-                      .uri("/applications")
-                      .accept(MediaType.APPLICATION_JSON)
-                      .exchange()
-                      .expectStatus().isOk()
-                      .expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
-                      .expectBody(String.class)
-                        .value((body) -> assertThat(body).contains("[]"));
-        //@formatter:on
+		this.webClient.get()
+					.uri("/applications")
+					.accept(MediaType.APPLICATION_JSON)
+					.exchange()
+					.expectStatus().isOk()
+					.expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
+					.expectBody(String.class)
+					.value((body) -> assertThat(body).contains("[]"));
+		//@formatter:on
 	}
 
 	@Test
 	public void should_return_index_for_ui_path() {
 		//@formatter:off
-        this.webClient.get()
-                      .uri("/applications")
-                      .accept(MediaType.TEXT_HTML)
-                      .exchange()
-                      .expectStatus().isOk()
-                      .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
-                      .expectBody(String.class)
-                        .value((body) -> assertThat(body).contains("<title>Spring Boot Admin</title>"));
-        //@formatter:on
+		this.webClient.get()
+					.uri("/applications")
+					.accept(MediaType.TEXT_HTML)
+					.exchange()
+					.expectStatus().isOk()
+					.expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
+					.expectBody(String.class)
+					.value((body) -> assertThat(body).contains("<title>Spring Boot Admin</title>"));
+		//@formatter:on
 	}
 
 	@Test
 	public void should_return_404_for_unknown_path() {
 		//@formatter:off
-        this.webClient.get()
-                      .uri("/unknown")
-                      .accept(MediaType.TEXT_HTML)
-                      .exchange()
-                      .expectStatus().isNotFound();
-        //@formatter:on
+		this.webClient.get()
+					.uri("/unknown")
+					.accept(MediaType.TEXT_HTML)
+					.exchange()
+					.expectStatus().isNotFound();
+		//@formatter:on
 	}
 
 	protected WebTestClient createWebClient(int port) {

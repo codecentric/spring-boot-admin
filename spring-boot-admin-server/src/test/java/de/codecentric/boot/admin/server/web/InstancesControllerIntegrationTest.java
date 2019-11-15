@@ -179,17 +179,17 @@ public class InstancesControllerIntegrationTest {
 
 	private String register() {
 		//@formatter:off
-        EntityExchangeResult<Map<String, Object>> result = client.post()
-                                                                .uri("/instances")
-                                                                .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
-                                                                .bodyValue(register_as_test)
-                                                                .exchange()
-                                                                .expectStatus().isCreated()
-                                                                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                                                                .expectHeader().valueMatches("location", "http://localhost:" + localPort + "/instances/[0-9a-f]+")
-                                                                .expectBody(RESPONSE_TYPE)
-                                                                .returnResult();
-        //@formatter:on
+		EntityExchangeResult<Map<String, Object>> result = client.post()
+																.uri("/instances")
+																.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+																.bodyValue(register_as_test)
+																.exchange()
+																.expectStatus().isCreated()
+																.expectHeader().contentType(MediaType.APPLICATION_JSON)
+																.expectHeader().valueMatches("location", "http://localhost:" + localPort + "/instances/[0-9a-f]+")
+																.expectBody(RESPONSE_TYPE)
+																.returnResult();
+		//@formatter:on
 		assertThat(result.getResponseBody()).containsKeys("id");
 		return result.getResponseBody().get("id").toString();
 	}
@@ -201,12 +201,12 @@ public class InstancesControllerIntegrationTest {
 
 	private Flux<Map<String, Object>> getEventStream() {
 		//@formatter:off
-        return this.client.get().uri("/instances/events").accept(MediaType.TEXT_EVENT_STREAM)
-                        .exchange()
-                        .expectStatus().isOk()
-                        .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM)
-                        .returnResult(RESPONSE_TYPE).getResponseBody();
-        //@formatter:on
+		return this.client.get().uri("/instances/events").accept(MediaType.TEXT_EVENT_STREAM)
+						.exchange()
+						.expectStatus().isOk()
+						.expectHeader().contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM)
+						.returnResult(RESPONSE_TYPE).getResponseBody();
+		//@formatter:on
 	}
 
 }

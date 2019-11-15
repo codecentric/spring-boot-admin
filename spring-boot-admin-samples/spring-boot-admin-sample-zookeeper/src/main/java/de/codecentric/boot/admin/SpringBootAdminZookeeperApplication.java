@@ -76,26 +76,26 @@ public class SpringBootAdminZookeeperApplication {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			// @formatter:off
-            SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
-            successHandler.setTargetUrlParameter("redirectTo");
-            successHandler.setDefaultTargetUrl(this.adminServer.path("/"));
+			SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+			successHandler.setTargetUrlParameter("redirectTo");
+			successHandler.setDefaultTargetUrl(this.adminServer.path("/"));
 
-            http.authorizeRequests()
-                .antMatchers(this.adminServer.path("/assets/**")).permitAll()
-                .antMatchers(this.adminServer.path("/login")).permitAll()
-                .anyRequest().authenticated()
-                .and()
-            .formLogin().loginPage(this.adminServer.path("/login")).successHandler(successHandler).and()
-            .logout().logoutUrl(this.adminServer.path("/logout")).and()
-            .httpBasic().and()
-            .csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringRequestMatchers(
-                    new AntPathRequestMatcher(this.adminServer.path("/instances"), HttpMethod.POST.toString()),
-                    new AntPathRequestMatcher(this.adminServer.path("/instances/*"), HttpMethod.DELETE.toString()),
-                    new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))
-                );
-            // @formatter:on
+			http.authorizeRequests()
+				.antMatchers(this.adminServer.path("/assets/**")).permitAll()
+				.antMatchers(this.adminServer.path("/login")).permitAll()
+				.anyRequest().authenticated()
+				.and()
+			.formLogin().loginPage(this.adminServer.path("/login")).successHandler(successHandler).and()
+			.logout().logoutUrl(this.adminServer.path("/logout")).and()
+			.httpBasic().and()
+			.csrf()
+				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+				.ignoringRequestMatchers(
+					new AntPathRequestMatcher(this.adminServer.path("/instances"), HttpMethod.POST.toString()),
+					new AntPathRequestMatcher(this.adminServer.path("/instances/*"), HttpMethod.DELETE.toString()),
+					new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))
+				);
+			// @formatter:on
 		}
 
 	}
