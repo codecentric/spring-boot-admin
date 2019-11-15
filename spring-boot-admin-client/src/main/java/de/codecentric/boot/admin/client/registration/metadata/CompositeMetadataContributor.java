@@ -31,7 +31,7 @@ public class CompositeMetadataContributor implements MetadataContributor {
 	@Override
 	public Map<String, String> getMetadata() {
 		Map<String, String> metadata = new LinkedHashMap<>();
-		delegates.forEach(delegate -> metadata.putAll(delegate.getMetadata()));
+		delegates.forEach((delegate) -> metadata.putAll(delegate.getMetadata()));
 		return metadata;
 	}
 

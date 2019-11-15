@@ -67,7 +67,7 @@ public class SnapshottingInstanceRepository extends EventsourcingInstanceReposit
 				return Mono.justOrEmpty(this.snapshots.get(id));
 			}
 			else {
-				return rehydrateSnapshot(id).doOnSuccess(v -> this.oudatedSnapshots.remove(v.getId()));
+				return rehydrateSnapshot(id).doOnSuccess((v) -> this.oudatedSnapshots.remove(v.getId()));
 			}
 		});
 	}
@@ -75,7 +75,7 @@ public class SnapshottingInstanceRepository extends EventsourcingInstanceReposit
 	@Override
 	public Mono<Instance> save(Instance instance) {
 		return super.save(instance).doOnError(OptimisticLockingException.class,
-				e -> this.oudatedSnapshots.add(instance.getId()));
+				(e) -> this.oudatedSnapshots.add(instance.getId()));
 	}
 
 	public void start() {
@@ -90,7 +90,7 @@ public class SnapshottingInstanceRepository extends EventsourcingInstanceReposit
 	}
 
 	protected Mono<Instance> rehydrateSnapshot(InstanceId id) {
-		return super.find(id).map(instance -> this.snapshots.compute(id, (key, snapshot) -> {
+		return super.find(id).map((instance) -> this.snapshots.compute(id, (key, snapshot) -> {
 			// check if the loaded version hasn't been already outdated by a snapshot
 			if (snapshot == null || instance.getVersion() >= snapshot.getVersion()) {
 				return instance;

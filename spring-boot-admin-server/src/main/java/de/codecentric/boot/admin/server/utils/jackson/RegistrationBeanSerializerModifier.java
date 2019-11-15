@@ -41,8 +41,8 @@ public class RegistrationBeanSerializerModifier extends BeanSerializerModifier {
 			return beanProperties;
 		}
 
-		beanProperties.stream().filter(beanProperty -> "metadata".equals(beanProperty.getName()))
-				.forEach(beanProperty -> beanProperty.assignSerializer(metadataSerializer));
+		beanProperties.stream().filter((beanProperty) -> "metadata".equals(beanProperty.getName()))
+				.forEach((beanProperty) -> beanProperty.assignSerializer(metadataSerializer));
 		return beanProperties;
 	}
 

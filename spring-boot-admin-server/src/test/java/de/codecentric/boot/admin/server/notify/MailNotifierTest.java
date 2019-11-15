@@ -72,7 +72,7 @@ public class MailNotifierTest {
 		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 
 		sender = mock(JavaMailSender.class);
-		when(sender.createMimeMessage()).thenAnswer(args -> new MimeMessage(Session.getInstance(new Properties())));
+		when(sender.createMimeMessage()).thenAnswer((args) -> new MimeMessage(Session.getInstance(new Properties())));
 
 		SpringTemplateEngine templateEngine = new SpringTemplateEngine();
 		ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();

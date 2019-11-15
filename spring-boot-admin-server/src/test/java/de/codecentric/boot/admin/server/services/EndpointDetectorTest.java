@@ -88,11 +88,11 @@ public class EndpointDetectorTest {
 				.then(() -> StepVerifier.create(detector.detectEndpoints(noActuator.getId())).verifyComplete())
 				.expectNoEvent(Duration.ofMillis(100L))
 				.then(() -> StepVerifier.create(detector.detectEndpoints(instance.getId())).verifyComplete())
-				.assertNext(event -> assertThat(event).isInstanceOf(InstanceEndpointsDetectedEvent.class)).thenCancel()
-				.verify();
+				.assertNext((event) -> assertThat(event).isInstanceOf(InstanceEndpointsDetectedEvent.class))
+				.thenCancel().verify();
 
 		StepVerifier.create(repository.find(instance.getId()))
-				.assertNext(app -> assertThat(app.getEndpoints())
+				.assertNext((app) -> assertThat(app.getEndpoints())
 						.isEqualTo(Endpoints.single("id", "url").withEndpoint("health", "http://health")))
 				.verifyComplete();
 	}

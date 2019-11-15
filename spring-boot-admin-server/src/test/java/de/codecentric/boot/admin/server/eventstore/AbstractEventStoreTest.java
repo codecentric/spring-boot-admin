@@ -106,9 +106,9 @@ public abstract class AbstractEventStoreTest {
 		InstanceId id = InstanceId.of("a");
 		InstanceEventStore store = createStore(500);
 
-		Function<Integer, InstanceEvent> eventFactory = i -> new InstanceDeregisteredEvent(id, i);
+		Function<Integer, InstanceEvent> eventFactory = (i) -> new InstanceDeregisteredEvent(id, i);
 		Flux<Void> eventgenerator = Flux.range(0, 500).map(eventFactory).buffer(2)
-				.flatMap(events -> store.append(events).onErrorResume(OptimisticLockingException.class, (ex) -> {
+				.flatMap((events) -> store.append(events).onErrorResume(OptimisticLockingException.class, (ex) -> {
 					log.info("skipped {}", ex.getMessage());
 					return Mono.empty();
 				}).delayElement(Duration.ofMillis(5L)));

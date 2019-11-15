@@ -108,15 +108,15 @@ public class LegacyEndpointConverters {
 	}
 
 	public static LegacyEndpointConverter info() {
-		return new LegacyEndpointConverter(Endpoint.INFO, flux -> flux);
+		return new LegacyEndpointConverter(Endpoint.INFO, (flux) -> flux);
 	}
 
 	@SuppressWarnings("unchecked")
 	private static <S, T> Function<Flux<DataBuffer>, Flux<DataBuffer>> convertUsing(
 			ParameterizedTypeReference<S> sourceType, ParameterizedTypeReference<T> targetType,
 			Function<S, T> converterFn) {
-		return input -> DECODER.decodeToMono(input, ResolvableType.forType(sourceType), null, null)
-				.map(body -> converterFn.apply((S) body)).flatMapMany(output -> ENCODER.encode(Mono.just(output),
+		return (input) -> DECODER.decodeToMono(input, ResolvableType.forType(sourceType), null, null)
+				.map((body) -> converterFn.apply((S) body)).flatMapMany((output) -> ENCODER.encode(Mono.just(output),
 						new DefaultDataBufferFactory(), ResolvableType.forType(targetType), null, null));
 	}
 
@@ -224,14 +224,14 @@ public class LegacyEndpointConverters {
 	@SuppressWarnings("unchecked")
 	private static Map<String, Object> convertLiquibase(List<Map<String, Object>> reports) {
 		Map<String, Object> liquibaseBeans = reports.stream().sequential()
-				.collect(toMap(r -> (String) r.get("name"), r -> singletonMap("changeSets", LegacyEndpointConverters
+				.collect(toMap((r) -> (String) r.get("name"), (r) -> singletonMap("changeSets", LegacyEndpointConverters
 						.convertLiquibaseChangesets((List<Map<String, Object>>) r.get("changeLogs")))));
 
 		return singletonMap("contexts", singletonMap("application", singletonMap("liquibaseBeans", liquibaseBeans)));
 	}
 
 	private static List<Map<String, Object>> convertLiquibaseChangesets(List<Map<String, Object>> changeSets) {
-		return changeSets.stream().map(changeset -> {
+		return changeSets.stream().map((changeset) -> {
 			Map<String, Object> converted = new LinkedHashMap<>();
 			converted.put("id", changeset.get("ID"));
 			converted.put("author", changeset.get("AUTHOR"));
@@ -257,13 +257,13 @@ public class LegacyEndpointConverters {
 	@SuppressWarnings("unchecked")
 	private static Map<String, Object> convertFlyway(List<Map<String, Object>> reports) {
 		Map<String, Object> flywayBeans = reports.stream().sequential()
-				.collect(toMap(r -> (String) r.get("name"), r -> singletonMap("migrations", LegacyEndpointConverters
+				.collect(toMap((r) -> (String) r.get("name"), (r) -> singletonMap("migrations", LegacyEndpointConverters
 						.convertFlywayMigrations((List<Map<String, Object>>) r.get("migrations")))));
 		return singletonMap("contexts", singletonMap("application", singletonMap("flywayBeans", flywayBeans)));
 	}
 
 	private static List<Map<String, Object>> convertFlywayMigrations(List<Map<String, Object>> migrations) {
-		return migrations.stream().map(migration -> {
+		return migrations.stream().map((migration) -> {
 			Map<String, Object> converted = new LinkedHashMap<>(migration);
 			if (migration.get("installedOn") instanceof Long) {
 				converted.put("installedOn", new Date((Long) migration.get("installedOn")));

@@ -125,15 +125,16 @@ public class InstanceDiscoveryListener {
 		Flux.fromIterable(discoveryClient.getServices()).filter(this::shouldRegisterService)
 				.flatMapIterable(discoveryClient::getInstances).filter(this::shouldRegisterInstanceBasedOnMetadata)
 				.flatMap(this::registerInstance).collect(Collectors.toSet()).flatMap(this::removeStaleInstances)
-				.subscribe(v -> {
-				}, ex -> log.error("Unexpected error.", ex));
+				.subscribe((v) -> {
+				}, (ex) -> log.error("Unexpected error.", ex));
 	}
 
 	protected Mono<Void> removeStaleInstances(Set<InstanceId> registeredInstanceIds) {
 		return repository.findAll().filter(Instance::isRegistered)
-				.filter(instance -> SOURCE.equals(instance.getRegistration().getSource())).map(Instance::getId)
-				.filter(id -> !registeredInstanceIds.contains(id))
-				.doOnNext(id -> log.info("Instance '{}' missing in DiscoveryClient services and will be removed.", id))
+				.filter((instance) -> SOURCE.equals(instance.getRegistration().getSource())).map(Instance::getId)
+				.filter((id) -> !registeredInstanceIds.contains(id))
+				.doOnNext(
+						(id) -> log.info("Instance '{}' missing in DiscoveryClient services and will be removed.", id))
 				.flatMap(registry::deregister).then();
 	}
 
@@ -146,7 +147,7 @@ public class InstanceDiscoveryListener {
 	}
 
 	protected boolean matchesPattern(String serviceId, Set<String> patterns) {
-		return patterns.stream().anyMatch(pattern -> PatternMatchUtils.simpleMatch(pattern, serviceId));
+		return patterns.stream().anyMatch((pattern) -> PatternMatchUtils.simpleMatch(pattern, serviceId));
 	}
 
 	protected boolean shouldRegisterInstanceBasedOnMetadata(ServiceInstance instance) {

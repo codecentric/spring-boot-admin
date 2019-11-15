@@ -50,7 +50,7 @@ public class SpringBootAdminServletApplication {
 	// tag::customization-instance-exchange-filter-function[]
 	@Bean
 	public InstanceExchangeFilterFunction auditLog() {
-		return (instance, request, next) -> next.exchange(request).doOnSubscribe(s -> {
+		return (instance, request, next) -> next.exchange(request).doOnSubscribe((s) -> {
 			if (HttpMethod.DELETE.equals(request.method()) || HttpMethod.POST.equals(request.method())) {
 				log.info("{} for {} on {}", request.method(), instance.getId(), request.url());
 			}
@@ -71,7 +71,7 @@ public class SpringBootAdminServletApplication {
 	// tag::customization-http-headers-providers[]
 	@Bean
 	public HttpHeadersProvider customHttpHeadersProvider() {
-		return instance -> {
+		return (instance) -> {
 			HttpHeaders httpHeaders = new HttpHeaders();
 			httpHeaders.add("X-CUSTOM", "My Custom Value");
 			return httpHeaders;

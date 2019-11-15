@@ -43,7 +43,7 @@ public class AdminServerCloudFoundryAutoConfigurationTest {
 
 	@Test
 	public void non_cloud_platform() {
-		this.contextRunner.run(context -> {
+		this.contextRunner.run((context) -> {
 			assertThat(context).doesNotHaveBean(CloudFoundryHttpHeaderProvider.class);
 			assertThat(context).getBean(InstanceIdGenerator.class).isInstanceOf(HashingInstanceUrlIdGenerator.class);
 		});
@@ -51,7 +51,7 @@ public class AdminServerCloudFoundryAutoConfigurationTest {
 
 	@Test
 	public void cloudfoundry() {
-		this.contextRunner.withPropertyValues("VCAP_APPLICATION:{}").run(context -> {
+		this.contextRunner.withPropertyValues("VCAP_APPLICATION:{}").run((context) -> {
 			assertThat(context).hasSingleBean(CloudFoundryHttpHeaderProvider.class);
 			assertThat(context).getBean(InstanceIdGenerator.class).isInstanceOf(CloudFoundryInstanceIdGenerator.class);
 		});

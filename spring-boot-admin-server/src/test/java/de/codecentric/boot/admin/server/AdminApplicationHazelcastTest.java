@@ -90,7 +90,7 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
 				.exchange().expectStatus().isOk().returnResult(String.class).getResponseBody()
 				.collect(Collectors.joining());
 
-		StepVerifier.create(events1.zipWith(events2)).assertNext(t -> assertThat(t.getT1()).isEqualTo(t.getT2()))
+		StepVerifier.create(events1.zipWith(events2)).assertNext((t) -> assertThat(t.getT1()).isEqualTo(t.getT2()))
 				.verifyComplete();
 	}
 

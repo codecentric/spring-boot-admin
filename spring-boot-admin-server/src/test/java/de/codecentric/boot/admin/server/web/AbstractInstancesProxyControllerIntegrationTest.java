@@ -207,8 +207,8 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 		AtomicReference<String> instanceId = new AtomicReference<>();
 		StepVerifier.create(getEventStream()).expectSubscription()
 				.then(() -> instanceId.set(sendRegistration(managementPath)))
-				.thenConsumeWhile(event -> !event.get("type").equals("ENDPOINTS_DETECTED"))
-				.assertNext(event -> assertThat(event).containsEntry("type", "ENDPOINTS_DETECTED")).thenCancel()
+				.thenConsumeWhile((event) -> !event.get("type").equals("ENDPOINTS_DETECTED"))
+				.assertNext((event) -> assertThat(event).containsEntry("type", "ENDPOINTS_DETECTED")).thenCancel()
 				.verify();
 		return instanceId.get();
 	}

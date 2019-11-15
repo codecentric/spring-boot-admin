@@ -40,7 +40,7 @@ public class EventsourcingInstanceRepository implements InstanceRepository {
 	private final InstanceEventStore eventStore;
 
 	private final Retry<?> retryOptimisticLockException = Retry.anyOf(OptimisticLockingException.class).retryMax(10)
-			.doOnRetry(ctx -> log.debug("Retrying after OptimisticLockingException", ctx.exception()));
+			.doOnRetry((ctx) -> log.debug("Retrying after OptimisticLockingException", ctx.exception()));
 
 	public EventsourcingInstanceRepository(InstanceEventStore eventStore) {
 		this.eventStore = eventStore;
@@ -54,22 +54,23 @@ public class EventsourcingInstanceRepository implements InstanceRepository {
 	@Override
 	public Flux<Instance> findAll() {
 		return this.eventStore.findAll().groupBy(InstanceEvent::getInstance)
-				.flatMap(f -> f.reduce(Instance.create(f.key()), Instance::apply));
+				.flatMap((f) -> f.reduce(Instance.create(f.key()), Instance::apply));
 	}
 
 	@Override
 	public Mono<Instance> find(InstanceId id) {
-		return this.eventStore.find(id).collectList().filter(e -> !e.isEmpty()).map(e -> Instance.create(id).apply(e));
+		return this.eventStore.find(id).collectList().filter((e) -> !e.isEmpty())
+				.map((e) -> Instance.create(id).apply(e));
 	}
 
 	@Override
 	public Flux<Instance> findByName(String name) {
-		return findAll().filter(a -> a.isRegistered() && name.equals(a.getRegistration().getName()));
+		return findAll().filter((a) -> a.isRegistered() && name.equals(a.getRegistration().getName()));
 	}
 
 	@Override
 	public Mono<Instance> compute(InstanceId id, BiFunction<InstanceId, Instance, Mono<Instance>> remappingFunction) {
-		return this.find(id).flatMap(application -> remappingFunction.apply(id, application))
+		return this.find(id).flatMap((application) -> remappingFunction.apply(id, application))
 				.switchIfEmpty(Mono.defer(() -> remappingFunction.apply(id, null))).flatMap(this::save)
 				.retryWhen(this.retryOptimisticLockException);
 	}
@@ -77,7 +78,7 @@ public class EventsourcingInstanceRepository implements InstanceRepository {
 	@Override
 	public Mono<Instance> computeIfPresent(InstanceId id,
 			BiFunction<InstanceId, Instance, Mono<Instance>> remappingFunction) {
-		return this.find(id).flatMap(application -> remappingFunction.apply(id, application)).flatMap(this::save)
+		return this.find(id).flatMap((application) -> remappingFunction.apply(id, application)).flatMap(this::save)
 				.retryWhen(this.retryOptimisticLockException);
 	}
 

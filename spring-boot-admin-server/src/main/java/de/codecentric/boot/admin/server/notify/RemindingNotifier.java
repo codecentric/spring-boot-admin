@@ -72,23 +72,23 @@ public class RemindingNotifier extends AbstractEventNotifier {
 
 	@Override
 	public Mono<Void> doNotify(InstanceEvent event, Instance instance) {
-		return this.delegate.notify(event).doFinally(s -> {
+		return this.delegate.notify(event).doFinally((s) -> {
 			if (shouldEndReminder(event)) {
 				this.reminders.remove(event.getInstance());
 			}
 			else if (shouldStartReminder(event)) {
 				this.reminders.putIfAbsent(event.getInstance(), new Reminder(event));
 			}
-		}).onErrorResume(e -> Mono.empty());
+		}).onErrorResume((e) -> Mono.empty());
 	}
 
 	public void start() {
 		this.reminderScheduler = Schedulers.newSingle("reminders");
 		this.subscription = Flux.interval(this.checkReminderInverval, this.reminderScheduler)
-				.log(log.getName(), Level.FINEST).doOnSubscribe(s -> log.debug("Started reminders"))
-				.flatMap(i -> this.sendReminders())
+				.log(log.getName(), Level.FINEST).doOnSubscribe((s) -> log.debug("Started reminders"))
+				.flatMap((i) -> this.sendReminders())
 				.retryWhen(Retry.any().retryMax(Long.MAX_VALUE)
-						.doOnRetry(ctx -> log.warn("Unexpected error when sending reminders", ctx.exception())))
+						.doOnRetry((ctx) -> log.warn("Unexpected error when sending reminders", ctx.exception())))
 				.subscribe();
 	}
 
@@ -108,9 +108,9 @@ public class RemindingNotifier extends AbstractEventNotifier {
 		Instant now = Instant.now();
 
 		return Flux.fromIterable(this.reminders.values())
-				.filter(reminder -> reminder.getLastNotification().plus(this.reminderPeriod).isBefore(now))
-				.flatMap(reminder -> this.delegate.notify(reminder.getEvent())
-						.doOnSuccess(signal -> reminder.setLastNotification(now)))
+				.filter((reminder) -> reminder.getLastNotification().plus(this.reminderPeriod).isBefore(now))
+				.flatMap((reminder) -> this.delegate.notify(reminder.getEvent())
+						.doOnSuccess((signal) -> reminder.setLastNotification(now)))
 				.then();
 	}
 

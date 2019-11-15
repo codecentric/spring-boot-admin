@@ -96,7 +96,7 @@ public class SnapshottingInstanceRepositoryTest extends AbstractInstanceReposito
 		reset(this.eventStore);
 		StepVerifier.create(this.repository.find(this.instance.getId())).expectNext(this.instance).verifyComplete();
 		StepVerifier.create(this.repository.find(InstanceId.of("broken")))
-				.assertNext(i -> assertThat(i.getVersion()).isEqualTo(1L)).verifyComplete();
+				.assertNext((i) -> assertThat(i.getVersion()).isEqualTo(1L)).verifyComplete();
 	}
 
 	@Test

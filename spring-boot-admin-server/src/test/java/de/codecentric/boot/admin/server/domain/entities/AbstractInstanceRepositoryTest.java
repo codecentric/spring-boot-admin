@@ -64,12 +64,12 @@ public abstract class AbstractInstanceRepositoryTest {
 		StepVerifier.create(this.repository.find(this.instance2.getId())).expectNext(this.instance2).verifyComplete();
 
 		StepVerifier.create(this.repository.findByName("app").collectList())
-				.assertNext(v -> assertThat(v).containsExactlyInAnyOrder(this.instance1, this.instance2))
+				.assertNext((v) -> assertThat(v).containsExactlyInAnyOrder(this.instance1, this.instance2))
 				.verifyComplete();
 
 		StepVerifier.create(this.repository.findAll().collectList())
 				.assertNext(
-						v -> assertThat(v).containsExactlyInAnyOrder(this.instance1, this.instance2, this.instance3))
+						(v) -> assertThat(v).containsExactlyInAnyOrder(this.instance1, this.instance2, this.instance3))
 				.verifyComplete();
 	}
 
@@ -120,13 +120,13 @@ public abstract class AbstractInstanceRepositoryTest {
 		StepVerifier.create(this.repository.compute(this.instance1.getId(), (key, application) -> {
 			assertThat(application).isNull();
 			return Mono.just(Instance.create(key).register(registration));
-		})).assertNext(v -> {
+		})).assertNext((v) -> {
 			assertThat(v.getId()).isEqualTo(instanceId);
 			assertThat(v.getRegistration()).isEqualTo(registration);
 		}).verifyComplete();
 
 		// then
-		StepVerifier.create(this.repository.find(instanceId)).assertNext(v -> {
+		StepVerifier.create(this.repository.find(instanceId)).assertNext((v) -> {
 			assertThat(v.getId()).isEqualTo(instanceId);
 			assertThat(v.getRegistration()).isEqualTo(registration);
 		}).verifyComplete();

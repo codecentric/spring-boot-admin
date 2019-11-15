@@ -37,7 +37,7 @@ public class IntervalCheckTest {
 	private static final InstanceId INSTANCE_ID = InstanceId.of("Test");
 
 	@SuppressWarnings("unchecked")
-	private final Function<InstanceId, Mono<Void>> checkFn = mock(Function.class, i -> Mono.empty());
+	private final Function<InstanceId, Mono<Void>> checkFn = mock(Function.class, (i) -> Mono.empty());
 
 	private final IntervalCheck intervalCheck = new IntervalCheck("test", this.checkFn, Duration.ofMillis(10),
 			Duration.ofMillis(10));

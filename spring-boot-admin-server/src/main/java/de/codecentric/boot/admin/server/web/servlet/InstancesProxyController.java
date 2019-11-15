@@ -109,7 +109,7 @@ public class InstancesProxyController {
 		response.flush();
 
 		return clientResponse.body(BodyExtractors.toDataBuffers()).window(1)
-				.concatMap(body -> writeAndFlush(body, responseBody)).then();
+				.concatMap((body) -> writeAndFlush(body, responseBody)).then();
 	}
 
 	@ResponseBody
@@ -138,7 +138,7 @@ public class InstancesProxyController {
 	}
 
 	private Mono<Void> writeAndFlush(Flux<DataBuffer> body, OutputStream responseBody) {
-		return DataBufferUtils.write(body, responseBody).map(DataBufferUtils::release).then(Mono.create(sink -> {
+		return DataBufferUtils.write(body, responseBody).map(DataBufferUtils::release).then(Mono.create((sink) -> {
 			try {
 				responseBody.flush();
 				sink.success();

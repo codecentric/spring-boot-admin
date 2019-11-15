@@ -40,13 +40,13 @@ public class SpringBootAdminClientAutoConfigurationTest {
 
 	@Test
 	public void not_active() {
-		this.contextRunner.run(context -> assertThat(context).doesNotHaveBean(ApplicationRegistrator.class));
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ApplicationRegistrator.class));
 	}
 
 	@Test
 	public void active() {
 		this.contextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
-				.run(context -> assertThat(context).hasSingleBean(ApplicationRegistrator.class));
+				.run((context) -> assertThat(context).hasSingleBean(ApplicationRegistrator.class));
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class SpringBootAdminClientAutoConfigurationTest {
 		this.contextRunner
 				.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081",
 						"spring.boot.admin.client.enabled:false")
-				.run(context -> assertThat(context).doesNotHaveBean(ApplicationRegistrator.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(ApplicationRegistrator.class));
 	}
 
 	@Test
@@ -63,7 +63,7 @@ public class SpringBootAdminClientAutoConfigurationTest {
 				.withConfiguration(AutoConfigurations.of(SpringBootAdminClientAutoConfiguration.class));
 
 		nonWebcontextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
-				.run(context -> assertThat(context).doesNotHaveBean(ApplicationRegistrator.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(ApplicationRegistrator.class));
 	}
 
 	@Test
@@ -73,7 +73,7 @@ public class SpringBootAdminClientAutoConfigurationTest {
 						AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 								WebClientAutoConfiguration.class, SpringBootAdminClientAutoConfiguration.class));
 		reactiveContextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
-				.run(context -> assertThat(context).hasSingleBean(ApplicationRegistrator.class));
+				.run((context) -> assertThat(context).hasSingleBean(ApplicationRegistrator.class));
 	}
 
 }

@@ -42,7 +42,7 @@ public class AdminServerInstanceWebClientConfigurationTest {
 
 	@Test
 	public void simpleConfig() {
-		this.contextRunner.run(context -> {
+		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(InstanceWebClient.Builder.class);
 			assertThat(context).hasBean("filterInstanceWebClientCustomizer");
 			assertThat(context).hasSingleBean(BasicAuthHttpHeaderProvider.class);

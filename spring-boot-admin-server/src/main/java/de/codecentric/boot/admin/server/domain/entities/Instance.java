@@ -265,7 +265,7 @@ public class Instance implements Serializable {
 
 	@SafeVarargs
 	private final Tags updateTags(Map<String, ?>... sources) {
-		return Arrays.stream(sources).map(source -> Tags.from(source, "tags")).reduce(Tags.empty(), Tags::append);
+		return Arrays.stream(sources).map((source) -> Tags.from(source, "tags")).reduce(Tags.empty(), Tags::append);
 	}
 
 }

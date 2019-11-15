@@ -45,16 +45,16 @@ public class InfoUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 
 	@Override
 	protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
-		return publisher.filter(event -> event instanceof InstanceEndpointsDetectedEvent
+		return publisher.filter((event) -> event instanceof InstanceEndpointsDetectedEvent
 				|| event instanceof InstanceStatusChangedEvent || event instanceof InstanceRegistrationUpdatedEvent)
-				.flatMap(event -> this.updateInfo(event.getInstance()));
+				.flatMap((event) -> this.updateInfo(event.getInstance()));
 	}
 
 	protected Mono<Void> updateInfo(InstanceId instanceId) {
-		return this.infoUpdater.updateInfo(instanceId).onErrorResume(e -> {
+		return this.infoUpdater.updateInfo(instanceId).onErrorResume((e) -> {
 			log.warn("Unexpected error while updating info for {}", instanceId, e);
 			return Mono.empty();
-		}).doFinally(s -> this.intervalCheck.markAsChecked(instanceId));
+		}).doFinally((s) -> this.intervalCheck.markAsChecked(instanceId));
 	}
 
 	@Override

@@ -38,7 +38,7 @@ public class SanitizingMapSerializer extends StdSerializer<Map<String, String>> 
 	}
 
 	private static Pattern[] createPatterns(String... keys) {
-		return Arrays.stream(keys).map(key -> Pattern.compile(key, Pattern.CASE_INSENSITIVE)).toArray(Pattern[]::new);
+		return Arrays.stream(keys).map((key) -> Pattern.compile(key, Pattern.CASE_INSENSITIVE)).toArray(Pattern[]::new);
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class SanitizingMapSerializer extends StdSerializer<Map<String, String>> 
 		}
 
 		boolean matchesAnyPattern = Arrays.stream(this.keysToSanitize)
-				.anyMatch(pattern -> pattern.matcher(key).matches());
+				.anyMatch((pattern) -> pattern.matcher(key).matches());
 		return matchesAnyPattern ? "******" : value;
 	}
 

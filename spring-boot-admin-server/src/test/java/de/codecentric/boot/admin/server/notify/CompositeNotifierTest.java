@@ -52,7 +52,7 @@ public class CompositeNotifierTest {
 
 	@Test
 	public void should_continue_on_exception() {
-		Notifier notifier1 = ev -> Mono.error(new IllegalStateException("Test"));
+		Notifier notifier1 = (ev) -> Mono.error(new IllegalStateException("Test"));
 		TestNotifier notifier2 = new TestNotifier();
 		CompositeNotifier compositeNotifier = new CompositeNotifier(Arrays.asList(notifier1, notifier2));
 

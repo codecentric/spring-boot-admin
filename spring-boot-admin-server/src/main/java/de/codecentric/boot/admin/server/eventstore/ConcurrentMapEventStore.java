@@ -83,7 +83,7 @@ public abstract class ConcurrentMapEventStore extends InstanceEventPublisher imp
 		}
 
 		InstanceId id = events.get(0).getInstance();
-		if (!events.stream().allMatch(event -> event.getInstance().equals(id))) {
+		if (!events.stream().allMatch((event) -> event.getInstance().equals(id))) {
 			throw new IllegalArgumentException("'events' must only refer to the same instance.");
 		}
 

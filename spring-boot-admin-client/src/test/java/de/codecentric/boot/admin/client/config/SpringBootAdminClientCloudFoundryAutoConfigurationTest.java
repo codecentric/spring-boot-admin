@@ -42,7 +42,7 @@ public class SpringBootAdminClientCloudFoundryAutoConfigurationTest {
 
 	@Test
 	public void non_cloud_platform() {
-		this.contextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081").run(context -> {
+		this.contextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081").run((context) -> {
 			assertThat(context).doesNotHaveBean(CloudFoundryMetadataContributor.class);
 			assertThat(context).getBean(ApplicationFactory.class).isInstanceOf(DefaultApplicationFactory.class);
 		});
@@ -51,7 +51,7 @@ public class SpringBootAdminClientCloudFoundryAutoConfigurationTest {
 	@Test
 	public void cloudfoundry() {
 		this.contextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
-				.withPropertyValues("VCAP_APPLICATION:{}").run(context -> {
+				.withPropertyValues("VCAP_APPLICATION:{}").run((context) -> {
 					assertThat(context).hasSingleBean(CloudFoundryMetadataContributor.class);
 					assertThat(context).getBean(ApplicationFactory.class)
 							.isInstanceOf(CloudFoundryApplicationFactory.class);
@@ -60,7 +60,7 @@ public class SpringBootAdminClientCloudFoundryAutoConfigurationTest {
 
 	@Test
 	public void cloudfoundry_sba_disabled() {
-		this.contextRunner.withPropertyValues("VCAP_APPLICATION:{}").run(context -> {
+		this.contextRunner.withPropertyValues("VCAP_APPLICATION:{}").run((context) -> {
 			assertThat(context).doesNotHaveBean(CloudFoundryMetadataContributor.class);
 			assertThat(context).doesNotHaveBean(ApplicationFactory.class);
 		});

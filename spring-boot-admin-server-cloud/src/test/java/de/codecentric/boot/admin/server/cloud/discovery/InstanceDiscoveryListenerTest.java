@@ -74,7 +74,7 @@ public class InstanceDiscoveryListenerTest {
 		listener.onApplicationReady(null);
 
 		StepVerifier.create(registry.getInstances())
-				.assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
+				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
 	}
 
 	@Test
@@ -135,7 +135,7 @@ public class InstanceDiscoveryListenerTest {
 		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
 		StepVerifier.create(registry.getInstances())
-				.assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
+				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
 	}
 
 	@Test
@@ -152,7 +152,7 @@ public class InstanceDiscoveryListenerTest {
 		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
 		StepVerifier.create(registry.getInstances())
-				.assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
+				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
 	}
 
 	@Test
@@ -165,7 +165,7 @@ public class InstanceDiscoveryListenerTest {
 		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
 		StepVerifier.create(registry.getInstances())
-				.assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
+				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
 	}
 
 	@Test
@@ -182,7 +182,7 @@ public class InstanceDiscoveryListenerTest {
 		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
 		StepVerifier.create(registry.getInstances())
-				.assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
+				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
 	}
 
 	@Test
@@ -198,7 +198,7 @@ public class InstanceDiscoveryListenerTest {
 		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
 		StepVerifier.create(registry.getInstances())
-				.assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
+				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
 	}
 
 	@Test
@@ -224,7 +224,7 @@ public class InstanceDiscoveryListenerTest {
 		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
 		StepVerifier.create(registry.getInstances())
-				.assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service-1")).verifyComplete();
+				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("service-1")).verifyComplete();
 	}
 
 	@Test
@@ -235,7 +235,7 @@ public class InstanceDiscoveryListenerTest {
 
 		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
-		StepVerifier.create(registry.getInstances()).assertNext(application -> {
+		StepVerifier.create(registry.getInstances()).assertNext((application) -> {
 			Registration registration = application.getRegistration();
 			assertThat(registration.getHealthUrl()).isEqualTo("http://localhost:80/actuator/health");
 			assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80/actuator");
@@ -258,18 +258,18 @@ public class InstanceDiscoveryListenerTest {
 
 		listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
 		StepVerifier.create(registry.getInstances())
-				.assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
+				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
 	}
 
 	@Test
 	public void should_remove_instances_when_they_are_no_longer_available_in_discovery() {
 		StepVerifier.create(registry.register(Registration.create("ignored", "http://health").build()))
-				.consumeNextWith(id -> {
+				.consumeNextWith((id) -> {
 				}).verifyComplete();
 		StepVerifier
 				.create(registry
 						.register(Registration.create("different-source", "http://health2").source("http-api").build()))
-				.consumeNextWith(id -> {
+				.consumeNextWith((id) -> {
 				}).verifyComplete();
 		listener.setIgnoredServices(singleton("ignored"));
 
@@ -283,14 +283,14 @@ public class InstanceDiscoveryListenerTest {
 		listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
 
 		StepVerifier.create(registry.getInstances("service"))
-				.assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service"))
-				.assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
+				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("service"))
+				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
 
 		StepVerifier.create(registry.getInstances("ignored"))
-				.assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("ignored")).verifyComplete();
+				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("ignored")).verifyComplete();
 
 		StepVerifier.create(registry.getInstances("different-source"))
-				.assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("different-source"))
+				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("different-source"))
 				.verifyComplete();
 
 		instances.remove(0);
@@ -298,13 +298,13 @@ public class InstanceDiscoveryListenerTest {
 		listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
 
 		StepVerifier.create(registry.getInstances("service"))
-				.assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
+				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
 
 		StepVerifier.create(registry.getInstances("ignored"))
-				.assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("ignored")).verifyComplete();
+				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("ignored")).verifyComplete();
 
 		StepVerifier.create(registry.getInstances("different-source"))
-				.assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("different-source"))
+				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("different-source"))
 				.verifyComplete();
 
 		// shouldn't deregister a second time
@@ -318,7 +318,7 @@ public class InstanceDiscoveryListenerTest {
 		when(discovery.getInstances("service"))
 				.thenReturn(asList(new DefaultServiceInstance("test-1", "service", "localhost", 80, false),
 						new DefaultServiceInstance("error-1", "error", "localhost", 80, false)));
-		listener.setConverter(instance -> {
+		listener.setConverter((instance) -> {
 			if (instance.getServiceId().equals("error")) {
 				throw new IllegalStateException("Test-Error");
 			}
@@ -330,7 +330,7 @@ public class InstanceDiscoveryListenerTest {
 		listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
 
 		StepVerifier.create(registry.getInstances())
-				.assertNext(a -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
+				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
 	}
 
 }

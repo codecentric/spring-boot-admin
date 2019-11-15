@@ -71,7 +71,7 @@ class InstanceExchangeFilterFunctionsTest {
 		private final DataBuffer converted = this.bufferFactory.wrap("CONVERTED".getBytes(StandardCharsets.UTF_8));
 
 		private final InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.convertLegacyEndpoints(
-				singletonList(new LegacyEndpointConverter("test", from -> Flux.just(this.converted)) {
+				singletonList(new LegacyEndpointConverter("test", (from) -> Flux.just(this.converted)) {
 				}));
 
 		@Test
@@ -84,9 +84,9 @@ class InstanceExchangeFilterFunctionsTest {
 					.header(CONTENT_LENGTH, Integer.toString(this.original.readableByteCount()))
 					.body(Flux.just(this.original)).build();
 
-			Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, r -> Mono.just(legacyResponse));
+			Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (r) -> Mono.just(legacyResponse));
 
-			StepVerifier.create(response).assertNext(r -> {
+			StepVerifier.create(response).assertNext((r) -> {
 				assertThat(r.headers().contentType()).hasValue(MediaType.valueOf(ActuatorMediaType.V2_JSON));
 				assertThat(r.headers().contentLength()).isEmpty();
 				StepVerifier.create(r.body(BodyExtractors.toDataBuffers())).expectNext(this.converted).verifyComplete();
@@ -102,9 +102,9 @@ class InstanceExchangeFilterFunctionsTest {
 					.header(CONTENT_LENGTH, Integer.toString(this.original.readableByteCount()))
 					.body(Flux.just(this.original)).build();
 
-			Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, r -> Mono.just(legacyResponse));
+			Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (r) -> Mono.just(legacyResponse));
 
-			StepVerifier.create(response).assertNext(r -> {
+			StepVerifier.create(response).assertNext((r) -> {
 				assertThat(r.headers().contentType()).hasValue(MediaType.valueOf(ActuatorMediaType.V2_JSON));
 				assertThat(r.headers().contentLength()).isEmpty();
 				StepVerifier.create(r.body(BodyExtractors.toDataBuffers())).expectNext(this.converted).verifyComplete();
@@ -114,7 +114,7 @@ class InstanceExchangeFilterFunctionsTest {
 		@Test
 		void should_not_convert_v2_actuator() {
 			InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.convertLegacyEndpoints(
-					singletonList(new LegacyEndpointConverter("test", from -> Flux.just(this.converted)) {
+					singletonList(new LegacyEndpointConverter("test", (from) -> Flux.just(this.converted)) {
 					}));
 
 			ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
@@ -124,9 +124,9 @@ class InstanceExchangeFilterFunctionsTest {
 					.header(CONTENT_LENGTH, Integer.toString(this.original.readableByteCount()))
 					.body(Flux.just(this.original)).build();
 
-			Mono<ClientResponse> convertedResponse = filter.filter(INSTANCE, request, r -> Mono.just(response));
+			Mono<ClientResponse> convertedResponse = filter.filter(INSTANCE, request, (r) -> Mono.just(response));
 
-			StepVerifier.create(convertedResponse).assertNext(r -> {
+			StepVerifier.create(convertedResponse).assertNext((r) -> {
 				assertThat(r.headers().contentType()).hasValue(MediaType.valueOf(ActuatorMediaType.V2_JSON));
 				assertThat(r.headers().contentLength()).hasValue(this.original.readableByteCount());
 				StepVerifier.create(r.body(BodyExtractors.toDataBuffers())).expectNext(this.original).verifyComplete();
@@ -136,7 +136,7 @@ class InstanceExchangeFilterFunctionsTest {
 		@Test
 		void should_not_convert_unknown_endpoint() {
 			InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.convertLegacyEndpoints(
-					singletonList(new LegacyEndpointConverter("test", from -> Flux.just(this.converted)) {
+					singletonList(new LegacyEndpointConverter("test", (from) -> Flux.just(this.converted)) {
 					}));
 
 			ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test")).build();
@@ -144,9 +144,9 @@ class InstanceExchangeFilterFunctionsTest {
 					.header(CONTENT_LENGTH, Integer.toString(this.original.readableByteCount()))
 					.body(Flux.just(this.original)).build();
 
-			Mono<ClientResponse> convertedResponse = filter.filter(INSTANCE, request, r -> Mono.just(response));
+			Mono<ClientResponse> convertedResponse = filter.filter(INSTANCE, request, (r) -> Mono.just(response));
 
-			StepVerifier.create(convertedResponse).assertNext(r -> {
+			StepVerifier.create(convertedResponse).assertNext((r) -> {
 				assertThat(r.headers().contentType()).hasValue(MediaType.APPLICATION_JSON);
 				assertThat(r.headers().contentLength()).hasValue(this.original.readableByteCount());
 				StepVerifier.create(r.body(BodyExtractors.toDataBuffers())).expectNext(this.original).verifyComplete();
@@ -156,7 +156,7 @@ class InstanceExchangeFilterFunctionsTest {
 		@Test
 		void should_not_convert_without_converter() {
 			InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.convertLegacyEndpoints(
-					singletonList(new LegacyEndpointConverter("test", from -> Flux.just(this.converted)) {
+					singletonList(new LegacyEndpointConverter("test", (from) -> Flux.just(this.converted)) {
 					}));
 
 			ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/unknown"))
@@ -165,9 +165,9 @@ class InstanceExchangeFilterFunctionsTest {
 					.header(CONTENT_LENGTH, Integer.toString(this.original.readableByteCount()))
 					.body(Flux.just(this.original)).build();
 
-			Mono<ClientResponse> convertedResponse = filter.filter(INSTANCE, request, r -> Mono.just(response));
+			Mono<ClientResponse> convertedResponse = filter.filter(INSTANCE, request, (r) -> Mono.just(response));
 
-			StepVerifier.create(convertedResponse).assertNext(r -> {
+			StepVerifier.create(convertedResponse).assertNext((r) -> {
 				assertThat(r.headers().contentType()).hasValue(MediaType.APPLICATION_JSON);
 				assertThat(r.headers().contentLength()).hasValue(this.original.readableByteCount());
 				StepVerifier.create(r.body(BodyExtractors.toDataBuffers())).expectNext(this.original).verifyComplete();
@@ -187,7 +187,7 @@ class InstanceExchangeFilterFunctionsTest {
 			ClientResponse response = ClientResponse.create(HttpStatus.OK).build();
 
 			AtomicLong invocationCount = new AtomicLong(0L);
-			ExchangeFunction exchange = r -> Mono.fromSupplier(() -> {
+			ExchangeFunction exchange = (r) -> Mono.fromSupplier(() -> {
 				if (invocationCount.getAndIncrement() == 0) {
 					throw new IllegalStateException("Test");
 				}
@@ -207,7 +207,7 @@ class InstanceExchangeFilterFunctionsTest {
 			ClientResponse response = ClientResponse.create(HttpStatus.OK).build();
 
 			AtomicLong invocationCount = new AtomicLong(0L);
-			ExchangeFunction exchange = r -> Mono.fromSupplier(() -> {
+			ExchangeFunction exchange = (r) -> Mono.fromSupplier(() -> {
 				if (invocationCount.getAndIncrement() == 0) {
 					throw new IllegalStateException("Test");
 				}
@@ -223,7 +223,7 @@ class InstanceExchangeFilterFunctionsTest {
 			InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.retry(1, emptyMap());
 
 			AtomicLong invocationCount = new AtomicLong(0L);
-			ExchangeFunction exchange = r -> Mono.fromSupplier(() -> {
+			ExchangeFunction exchange = (r) -> Mono.fromSupplier(() -> {
 				invocationCount.incrementAndGet();
 				throw new IllegalStateException("Test");
 			});
@@ -256,7 +256,7 @@ class InstanceExchangeFilterFunctionsTest {
 	@Nested
 	class AddHeaders {
 
-		private InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.addHeaders(i -> {
+		private InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.addHeaders((i) -> {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("X-INSTANCE-ID", i.getId().getValue());
 			return headers;
@@ -386,7 +386,7 @@ class InstanceExchangeFilterFunctionsTest {
 			Mono<ClientResponse> response = this.filter.filter(this.instance, request,
 					(req) -> Mono.just(ClientResponse.create(HttpStatus.OK).build()));
 
-			StepVerifier.create(response).verifyErrorSatisfies(e -> assertThat(e)
+			StepVerifier.create(response).verifyErrorSatisfies((e) -> assertThat(e)
 					.isInstanceOf(ResolveEndpointException.class).hasMessage("No endpoint specified"));
 		}
 
@@ -398,7 +398,7 @@ class InstanceExchangeFilterFunctionsTest {
 			Mono<ClientResponse> response = this.filter.filter(this.instance, request,
 					(req) -> Mono.just(ClientResponse.create(HttpStatus.OK).build()));
 
-			StepVerifier.create(response).verifyErrorSatisfies(e -> assertThat(e)
+			StepVerifier.create(response).verifyErrorSatisfies((e) -> assertThat(e)
 					.isInstanceOf(ResolveEndpointException.class).hasMessage("Endpoint 'unknown' not found"));
 		}
 

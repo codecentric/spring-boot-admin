@@ -58,7 +58,7 @@ public class ApplicationRegistrator {
 		boolean isRegistrationSuccessful = false;
 
 		for (String adminUrl : this.adminUrls) {
-			LongAdder attempt = this.attempts.computeIfAbsent(adminUrl, k -> new LongAdder());
+			LongAdder attempt = this.attempts.computeIfAbsent(adminUrl, (k) -> new LongAdder());
 			boolean successful = register(application, adminUrl, attempt.intValue() == 0);
 
 			if (!successful) {

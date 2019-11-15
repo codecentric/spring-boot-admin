@@ -140,7 +140,7 @@ public class RemindingNotifierTest {
 	public void should_resubscribe_after_error() {
 		TestPublisher<InstanceEvent> eventPublisher = TestPublisher.create();
 
-		Flux<InstanceEvent> emittedNotifications = Flux.create(emitter -> {
+		Flux<InstanceEvent> emittedNotifications = Flux.create((emitter) -> {
 			Notifier notifier = (event) -> {
 				emitter.next(event);
 				if (event.equals(errorTriggeringEvent)) {
@@ -158,7 +158,7 @@ public class RemindingNotifierTest {
 
 		StepVerifier.create(emittedNotifications).expectSubscription().then(() -> eventPublisher.next(appDown))
 				.expectNext(appDown, appDown).then(() -> eventPublisher.next(errorTriggeringEvent))
-				.thenConsumeWhile(e -> !e.equals(errorTriggeringEvent))
+				.thenConsumeWhile((e) -> !e.equals(errorTriggeringEvent))
 				.expectNext(errorTriggeringEvent, appDown, appDown).thenCancel().verify();
 	}
 

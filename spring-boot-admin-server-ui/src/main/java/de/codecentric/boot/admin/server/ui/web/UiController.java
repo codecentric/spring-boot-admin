@@ -51,9 +51,9 @@ public class UiController {
 	public UiController(String publicUrl, List<UiExtension> uiExtensions, Settings uiSettings) {
 		this.publicUrl = publicUrl;
 		this.uiSettings = uiSettings;
-		this.cssExtensions = uiExtensions.stream().filter(e -> e.getResourcePath().endsWith(".css"))
+		this.cssExtensions = uiExtensions.stream().filter((e) -> e.getResourcePath().endsWith(".css"))
 				.collect(Collectors.toList());
-		this.jsExtensions = uiExtensions.stream().filter(e -> e.getResourcePath().endsWith(".js"))
+		this.jsExtensions = uiExtensions.stream().filter((e) -> e.getResourcePath().endsWith(".js"))
 				.collect(Collectors.toList());
 	}
 

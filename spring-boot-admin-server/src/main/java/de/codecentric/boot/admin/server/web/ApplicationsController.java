@@ -44,7 +44,7 @@ public class ApplicationsController {
 	private static final ServerSentEvent<?> PING = ServerSentEvent.builder().comment("ping").build();
 
 	private static final Flux<ServerSentEvent<?>> PING_FLUX = Flux.interval(Duration.ZERO, Duration.ofSeconds(10L))
-			.map(tick -> PING);
+			.map((tick) -> PING);
 
 	private final ApplicationRegistry registry;
 
@@ -64,14 +64,14 @@ public class ApplicationsController {
 
 	@GetMapping(path = "/applications", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Flux<ServerSentEvent<Application>> applicationsStream() {
-		return registry.getApplicationStream().map(application -> ServerSentEvent.builder(application).build())
+		return registry.getApplicationStream().map((application) -> ServerSentEvent.builder(application).build())
 				.mergeWith(ping());
 	}
 
 	@DeleteMapping(path = "/applications/{name}")
 	public Mono<ResponseEntity<Void>> unregister(@PathVariable("name") String name) {
 		log.debug("Unregister application with name '{}'", name);
-		return registry.deregister(name).collectList().map(deregistered -> !deregistered.isEmpty()
+		return registry.deregister(name).collectList().map((deregistered) -> !deregistered.isEmpty()
 				? ResponseEntity.noContent().build() : ResponseEntity.notFound().build());
 	}
 

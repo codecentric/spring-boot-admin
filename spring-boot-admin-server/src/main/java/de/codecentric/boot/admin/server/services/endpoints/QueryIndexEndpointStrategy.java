@@ -61,7 +61,7 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
 		}
 
 		return this.instanceWebClient.instance(instance).get().uri(managementUrl).exchange()
-				.flatMap(this.convert(instance, managementUrl)).onErrorResume(e -> {
+				.flatMap(this.convert(instance, managementUrl)).onErrorResume((e) -> {
 					log.warn("Querying actuator-index for instance {} on '{}' failed: {}", instance.getId(),
 							managementUrl, e.getMessage());
 					log.debug("Querying actuator-index for instance {} on '{}' failed.", instance.getId(),
@@ -71,7 +71,7 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
 	}
 
 	protected Function<ClientResponse, Mono<Endpoints>> convert(Instance instance, String managementUrl) {
-		return response -> {
+		return (response) -> {
 			if (!response.statusCode().is2xxSuccessful()) {
 				log.debug("Querying actuator-index for instance {} on '{}' failed with status {}.", instance.getId(),
 						managementUrl, response.rawStatusCode());
@@ -92,27 +92,27 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
 	}
 
 	protected Function<Endpoints, Endpoints> alignWithManagementUrl(InstanceId instanceId, String managementUrl) {
-		return endpoints -> {
+		return (endpoints) -> {
 			if (!managementUrl.startsWith("https:")) {
 				return endpoints;
 			}
-			if (endpoints.stream().noneMatch(e -> e.getUrl().startsWith("http:"))) {
+			if (endpoints.stream().noneMatch((e) -> e.getUrl().startsWith("http:"))) {
 				return endpoints;
 			}
 			log.warn(
 					"Endpoints for instance {} queried from {} are falsely using http. Rewritten to https. Consider configuring this instance to use 'server.forward-headers-strategy=native'.",
 					instanceId, managementUrl);
 
-			return Endpoints
-					.of(endpoints.stream().map(e -> Endpoint.of(e.getId(), e.getUrl().replaceFirst("http:", "https:")))
+			return Endpoints.of(
+					endpoints.stream().map((e) -> Endpoint.of(e.getId(), e.getUrl().replaceFirst("http:", "https:")))
 							.collect(Collectors.toList()));
 		};
 	}
 
 	protected Mono<Endpoints> convertResponse(Response response) {
 		List<Endpoint> endpoints = response.getLinks().entrySet().stream()
-				.filter(e -> !e.getKey().equals("self") && !e.getValue().isTemplated())
-				.map(e -> Endpoint.of(e.getKey(), e.getValue().getHref())).collect(Collectors.toList());
+				.filter((e) -> !e.getKey().equals("self") && !e.getValue().isTemplated())
+				.map((e) -> Endpoint.of(e.getKey(), e.getValue().getHref())).collect(Collectors.toList());
 		return endpoints.isEmpty() ? Mono.empty() : Mono.just(Endpoints.of(endpoints));
 	}
 

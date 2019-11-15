@@ -49,8 +49,8 @@ public class HazelcastEventStore extends ConcurrentMapEventStore {
 			public void entryUpdated(EntryEvent<InstanceId, List<InstanceEvent>> event) {
 				log.debug("Updated {}", event);
 				long lastKnownVersion = getLastVersion(event.getOldValue());
-				List<InstanceEvent> newEvents = event.getValue().stream().filter(e -> e.getVersion() > lastKnownVersion)
-						.collect(Collectors.toList());
+				List<InstanceEvent> newEvents = event.getValue().stream()
+						.filter((e) -> e.getVersion() > lastKnownVersion).collect(Collectors.toList());
 				HazelcastEventStore.this.publish(newEvents);
 			}
 		}, true);

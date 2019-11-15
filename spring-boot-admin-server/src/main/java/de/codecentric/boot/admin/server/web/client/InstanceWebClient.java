@@ -38,7 +38,7 @@ public class InstanceWebClient {
 	}
 
 	public WebClient instance(Mono<Instance> instance) {
-		return this.webClient.mutate().filters(filters -> filters.add(0, setInstance(instance))).build();
+		return this.webClient.mutate().filters((filters) -> filters.add(0, setInstance(instance))).build();
 	}
 
 	public WebClient instance(Instance instance) {
@@ -55,14 +55,14 @@ public class InstanceWebClient {
 
 	private static ExchangeFilterFunction setInstance(Mono<Instance> instance) {
 		return (request, next) -> instance
-				.map(i -> ClientRequest.from(request).attribute(ATTRIBUTE_INSTANCE, i).build())
+				.map((i) -> ClientRequest.from(request).attribute(ATTRIBUTE_INSTANCE, i).build())
 				.switchIfEmpty(Mono.error(() -> new ResolveInstanceException("Could not resolve Instance")))
 				.flatMap(next::exchange);
 	}
 
 	private static ExchangeFilterFunction toExchangeFilterFunction(InstanceExchangeFilterFunction filter) {
 		return (request, next) -> request.attribute(ATTRIBUTE_INSTANCE).filter(Instance.class::isInstance)
-				.map(Instance.class::cast).map(instance -> filter.filter(instance, request, next))
+				.map(Instance.class::cast).map((instance) -> filter.filter(instance, request, next))
 				.orElse(next.exchange(request));
 	}
 

@@ -73,17 +73,18 @@ public class StatusUpdater {
 		log.debug("Update status for {}", instance);
 		return this.instanceWebClient.instance(instance).get().uri(Endpoint.HEALTH).exchange()
 				.log(log.getName(), Level.FINEST).flatMap(this::convertStatusInfo)
-				.doOnError(ex -> logError(instance, ex)).onErrorResume(this::handleError).map(instance::withStatusInfo);
+				.doOnError((ex) -> logError(instance, ex)).onErrorResume(this::handleError)
+				.map(instance::withStatusInfo);
 	}
 
 	protected Mono<StatusInfo> convertStatusInfo(ClientResponse response) {
 		Boolean hasCompatibleContentType = response.headers().contentType().map(
-				mt -> mt.isCompatibleWith(MediaType.APPLICATION_JSON) || mt.isCompatibleWith(ACTUATOR_V2_MEDIATYPE))
+				(mt) -> mt.isCompatibleWith(MediaType.APPLICATION_JSON) || mt.isCompatibleWith(ACTUATOR_V2_MEDIATYPE))
 				.orElse(false);
 
 		StatusInfo statusInfoFromStatus = this.getStatusInfoFromStatus(response.statusCode(), emptyMap());
 		if (hasCompatibleContentType) {
-			return response.bodyToMono(RESPONSE_TYPE).map(body -> {
+			return response.bodyToMono(RESPONSE_TYPE).map((body) -> {
 				if (body.get("status") instanceof String) {
 					return StatusInfo.from(body);
 				}

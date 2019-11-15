@@ -51,7 +51,7 @@ public class AdminServerAutoConfigurationTest {
 
 	@Test
 	public void simpleConfig() {
-		this.contextRunner.run(context -> {
+		this.contextRunner.run((context) -> {
 			assertThat(context).getBean(InstanceRepository.class).isInstanceOf(SnapshottingInstanceRepository.class);
 			assertThat(context).doesNotHaveBean(MailNotifier.class);
 			assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(ConcurrentMapEventStore.class);
@@ -60,7 +60,7 @@ public class AdminServerAutoConfigurationTest {
 
 	@Test
 	public void hazelcastConfig() {
-		this.contextRunner.withUserConfiguration(TestHazelcastConfig.class).run(context -> {
+		this.contextRunner.withUserConfiguration(TestHazelcastConfig.class).run((context) -> {
 			assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(HazelcastEventStore.class);
 			assertThat(context).getBean(NotificationTrigger.class).isInstanceOf(HazelcastNotificationTrigger.class);
 		});

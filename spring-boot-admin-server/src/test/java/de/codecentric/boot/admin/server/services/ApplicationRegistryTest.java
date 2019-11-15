@@ -68,7 +68,7 @@ public class ApplicationRegistryTest {
 		when(this.instanceRegistry.getInstances()).thenReturn(Flux.just(instance1, instance2));
 
 		StepVerifier.create(this.applicationRegistry.getApplications())
-				.assertNext(app -> assertThat(app.getName()).isEqualTo("App1")).verifyComplete();
+				.assertNext((app) -> assertThat(app.getName()).isEqualTo("App1")).verifyComplete();
 	}
 
 	@Test
@@ -79,8 +79,8 @@ public class ApplicationRegistryTest {
 		when(this.instanceRegistry.getInstances()).thenReturn(Flux.just(instance1, instance2));
 
 		StepVerifier.create(this.applicationRegistry.getApplications()).recordWith(ArrayList::new)
-				.thenConsumeWhile(a -> true)
-				.consumeRecordedWith(applications -> assertThat(applications.stream().map(Application::getName))
+				.thenConsumeWhile((a) -> true)
+				.consumeRecordedWith((applications) -> assertThat(applications.stream().map(Application::getName))
 						.containsExactlyInAnyOrder("App1", "App2"))
 				.verifyComplete();
 	}
@@ -114,7 +114,7 @@ public class ApplicationRegistryTest {
 		when(this.instanceRegistry.getInstances("App1")).thenReturn(Flux.just(instance));
 
 		StepVerifier.create(this.applicationRegistry.getApplication("App1"))
-				.assertNext(app -> assertThat(app.getName()).isEqualTo("App1")).verifyComplete();
+				.assertNext((app) -> assertThat(app.getName()).isEqualTo("App1")).verifyComplete();
 	}
 
 	@Test
@@ -126,7 +126,7 @@ public class ApplicationRegistryTest {
 		when(this.instanceRegistry.deregister(instance1Id)).thenReturn(Mono.just(instance1Id));
 
 		StepVerifier.create(this.applicationRegistry.deregister("App1"))
-				.assertNext(instanceId -> assertThat(instanceId).isEqualTo(instance1Id)).verifyComplete();
+				.assertNext((instanceId) -> assertThat(instanceId).isEqualTo(instance1Id)).verifyComplete();
 
 		verify(this.instanceRegistry).deregister(instance1Id);
 	}
