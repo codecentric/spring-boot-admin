@@ -210,8 +210,8 @@ public class DefaultApplicationFactoryTest {
 		try {
 			return InetAddress.getLocalHost().getCanonicalHostName();
 		}
-		catch (UnknownHostException e) {
-			throw new IllegalStateException(e);
+		catch (UnknownHostException ex) {
+			throw new IllegalStateException(ex);
 		}
 	}
 

@@ -104,7 +104,7 @@ public class InstancesControllerIntegrationTest {
 			try {
 				cdl.await();
 			}
-			catch (InterruptedException e) {
+			catch (InterruptedException ex) {
 				Thread.interrupted();
 			}
 			assertThat(body).containsEntry("instance", id.get()).containsEntry("version", 0).containsEntry("type",

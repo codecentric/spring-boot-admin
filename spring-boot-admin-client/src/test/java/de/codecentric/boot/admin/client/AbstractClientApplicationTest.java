@@ -94,7 +94,7 @@ public abstract class AbstractClientApplicationTest {
 						Thread.sleep(500);
 					}
 				}
-				catch (InterruptedException e) {
+				catch (InterruptedException ex) {
 					Thread.interrupted();
 				}
 				cdl.countDown();
