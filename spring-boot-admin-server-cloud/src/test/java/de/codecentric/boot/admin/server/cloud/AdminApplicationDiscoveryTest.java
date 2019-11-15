@@ -119,45 +119,45 @@ public class AdminApplicationDiscoveryTest {
 
 	private Flux<JSONObject> getEventStream() {
 		//@formatter:off
-        return this.webClient.get().uri("/instances/events").accept(MediaType.TEXT_EVENT_STREAM)
-                        .exchange()
-                        .expectStatus().isOk()
-                        .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM)
-                        .returnResult(JSONObject.class).getResponseBody();
-        //@formatter:on
+		return this.webClient.get().uri("/instances/events").accept(MediaType.TEXT_EVENT_STREAM)
+						.exchange()
+						.expectStatus().isOk()
+						.expectHeader().contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM)
+						.returnResult(JSONObject.class).getResponseBody();
+		//@formatter:on
 	}
 
 	private void getInstance(URI uri) {
 		//@formatter:off
-        this.webClient.get().uri(uri).accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody()
-                .jsonPath("$.registration.name").isEqualTo("Test-Instance")
-                .jsonPath("$.statusInfo.status").isEqualTo("UP")
-                .jsonPath("$.info.test").isEqualTo("foobar");
-        //@formatter:on
+		this.webClient.get().uri(uri).accept(MediaType.APPLICATION_JSON)
+				.exchange()
+				.expectStatus().isOk()
+				.expectBody()
+				.jsonPath("$.registration.name").isEqualTo("Test-Instance")
+				.jsonPath("$.statusInfo.status").isEqualTo("UP")
+				.jsonPath("$.info.test").isEqualTo("foobar");
+		//@formatter:on
 	}
 
 	private void listInstances() {
 		//@formatter:off
-        this.webClient.get().uri("/instances").accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody()
-                    .jsonPath("$[0].registration.name").isEqualTo("Test-Instance")
-                    .jsonPath("$[0].statusInfo.status").isEqualTo("UP")
-                    .jsonPath("$[0].info.test").isEqualTo("foobar");
-        //@formatter:on
+		this.webClient.get().uri("/instances").accept(MediaType.APPLICATION_JSON)
+				.exchange()
+				.expectStatus().isOk()
+				.expectBody()
+					.jsonPath("$[0].registration.name").isEqualTo("Test-Instance")
+					.jsonPath("$[0].statusInfo.status").isEqualTo("UP")
+					.jsonPath("$[0].info.test").isEqualTo("foobar");
+		//@formatter:on
 	}
 
 	private void listEmptyInstances() {
 		//@formatter:off
-        this.webClient.get().uri("/instances").accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody().json("[]");
-        //@formatter:on
+		this.webClient.get().uri("/instances").accept(MediaType.APPLICATION_JSON)
+				.exchange()
+				.expectStatus().isOk()
+				.expectBody().json("[]");
+		//@formatter:on
 	}
 
 	private WebTestClient createWebClient(int port) {

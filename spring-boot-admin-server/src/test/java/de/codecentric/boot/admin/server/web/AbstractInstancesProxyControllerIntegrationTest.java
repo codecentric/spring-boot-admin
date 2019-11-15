@@ -172,15 +172,15 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 		String managementUrl = this.wireMock.url(managementPath);
 
 		//@formatter:off
-        String actuatorIndex = "{ \"_links\": { " +
-                               "\"env\": { \"href\": \"" + managementUrl + "/env\", \"templated\": false }," +
-                               "\"test\": { \"href\": \"" + managementUrl + "/test\", \"templated\": false }," +
-                               "\"post\": { \"href\": \"" + managementUrl + "/post\", \"templated\": false }," +
-                               "\"delete\": { \"href\": \"" + managementUrl + "/delete\", \"templated\": false }," +
-                               "\"invalid\": { \"href\": \"" + managementUrl + "/invalid\", \"templated\": false }," +
-                               "\"timeout\": { \"href\": \"" + managementUrl + "/timeout\", \"templated\": false }" +
-                               " } }";
-        //@formatter:on
+		String actuatorIndex = "{ \"_links\": { " +
+							"\"env\": { \"href\": \"" + managementUrl + "/env\", \"templated\": false }," +
+							"\"test\": { \"href\": \"" + managementUrl + "/test\", \"templated\": false }," +
+							"\"post\": { \"href\": \"" + managementUrl + "/post\", \"templated\": false }," +
+							"\"delete\": { \"href\": \"" + managementUrl + "/delete\", \"templated\": false }," +
+							"\"invalid\": { \"href\": \"" + managementUrl + "/invalid\", \"templated\": false }," +
+							"\"timeout\": { \"href\": \"" + managementUrl + "/timeout\", \"templated\": false }" +
+							" } }";
+		//@formatter:on
 		this.wireMock.stubFor(get(urlEqualTo(managementPath + "/health"))
 				.willReturn(ok("{ \"status\" : \"UP\" }").withHeader(CONTENT_TYPE, ActuatorMediaType.V2_JSON)));
 		this.wireMock.stubFor(get(urlEqualTo(managementPath + "/info"))
@@ -217,30 +217,30 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 		String managementUrl = this.wireMock.url(managementPath);
 
 		//@formatter:off
-        String registration = "{ \"name\": \"test\", " +
-                              "\"healthUrl\": \"" + managementUrl + "/health\", " +
-                              "\"managementUrl\": \"" + managementUrl + "\" }";
+		String registration = "{ \"name\": \"test\", " +
+							"\"healthUrl\": \"" + managementUrl + "/health\", " +
+							"\"managementUrl\": \"" + managementUrl + "\" }";
 
-        EntityExchangeResult<Map<String, Object>> result = this.client.post()
-                                                                .uri("/instances")
-                                                                .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
-                                                                .bodyValue(registration)
-                                                                .exchange()
-                                                                .expectStatus().isCreated()
-                                                                .expectBody(RESPONSE_TYPE)
-                                                                .returnResult();
-        //@formatter:on
+		EntityExchangeResult<Map<String, Object>> result = this.client.post()
+																.uri("/instances")
+																.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+																.bodyValue(registration)
+																.exchange()
+																.expectStatus().isCreated()
+																.expectBody(RESPONSE_TYPE)
+																.returnResult();
+		//@formatter:on
 		assertThat(result.getResponseBody()).containsKeys("id");
 		return result.getResponseBody().get("id").toString();
 	}
 
 	private Flux<Map<String, Object>> getEventStream() {
 		//@formatter:off
-        return this.client.get().uri("/instances/events").accept(MediaType.TEXT_EVENT_STREAM)
-                        .exchange()
-                        .expectStatus().isOk()
-                        .returnResult(RESPONSE_TYPE).getResponseBody();
-        //@formatter:on
+		return this.client.get().uri("/instances/events").accept(MediaType.TEXT_EVENT_STREAM)
+						.exchange()
+						.expectStatus().isOk()
+						.returnResult(RESPONSE_TYPE).getResponseBody();
+		//@formatter:on
 	}
 
 }

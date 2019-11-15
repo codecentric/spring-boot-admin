@@ -43,28 +43,28 @@ public class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// @formatter:off
-        SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
-        successHandler.setTargetUrlParameter("redirectTo");
-        successHandler.setDefaultTargetUrl(this.adminServer.path("/"));
+		SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+		successHandler.setTargetUrlParameter("redirectTo");
+		successHandler.setDefaultTargetUrl(this.adminServer.path("/"));
 
-        http.authorizeRequests()
-            .antMatchers(this.adminServer.path("/assets/**")).permitAll() // <1>
-            .antMatchers(this.adminServer.path("/login")).permitAll()
-            .anyRequest().authenticated() // <2>
-            .and()
-        .formLogin().loginPage(this.adminServer.path("/login")).successHandler(successHandler).and() // <3>
-        .logout().logoutUrl(this.adminServer.path("/logout")).and()
-        .httpBasic().and() // <4>
-        .csrf()
-            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // <5>
-            .ignoringRequestMatchers(
-                new AntPathRequestMatcher(this.adminServer.path("/instances"), HttpMethod.POST.toString()),  // <6>
-                new AntPathRequestMatcher(this.adminServer.path("/instances/*"), HttpMethod.DELETE.toString()),  // <6>
-                new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))  // <7>
-            )
-        .and()
-        .rememberMe().key(UUID.randomUUID().toString()).tokenValiditySeconds(1209600);
-        // @formatter:on
+		http.authorizeRequests()
+			.antMatchers(this.adminServer.path("/assets/**")).permitAll() // <1>
+			.antMatchers(this.adminServer.path("/login")).permitAll()
+			.anyRequest().authenticated() // <2>
+			.and()
+		.formLogin().loginPage(this.adminServer.path("/login")).successHandler(successHandler).and() // <3>
+		.logout().logoutUrl(this.adminServer.path("/logout")).and()
+		.httpBasic().and() // <4>
+		.csrf()
+			.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // <5>
+			.ignoringRequestMatchers(
+				new AntPathRequestMatcher(this.adminServer.path("/instances"), HttpMethod.POST.toString()),  // <6>
+				new AntPathRequestMatcher(this.adminServer.path("/instances/*"), HttpMethod.DELETE.toString()),  // <6>
+				new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))  // <7>
+			)
+		.and()
+		.rememberMe().key(UUID.randomUUID().toString()).tokenValiditySeconds(1209600);
+		// @formatter:on
 	}
 
 	// Required to provide UserDetailsService for "remember functionality"

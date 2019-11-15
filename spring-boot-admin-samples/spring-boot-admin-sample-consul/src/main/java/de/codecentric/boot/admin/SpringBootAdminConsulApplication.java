@@ -76,26 +76,26 @@ public class SpringBootAdminConsulApplication {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			// @formatter:off
-            SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
-            successHandler.setTargetUrlParameter("redirectTo");
-            successHandler.setDefaultTargetUrl(this.adminContextPath + "/");
+			SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+			successHandler.setTargetUrlParameter("redirectTo");
+			successHandler.setDefaultTargetUrl(this.adminContextPath + "/");
 
-            http.authorizeRequests()
-                .antMatchers(this.adminContextPath + "/assets/**").permitAll()
-                .antMatchers(this.adminContextPath + "/login").permitAll()
-                .anyRequest().authenticated()
-                .and()
-            .formLogin().loginPage(this.adminContextPath + "/login").successHandler(successHandler).and()
-            .logout().logoutUrl(this.adminContextPath + "/logout").and()
-            .httpBasic().and()
-            .csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringRequestMatchers(
-                    new AntPathRequestMatcher(this.adminContextPath + "/instances", HttpMethod.POST.toString()),
-                    new AntPathRequestMatcher(this.adminContextPath + "/instances/*", HttpMethod.DELETE.toString()),
-                    new AntPathRequestMatcher(this.adminContextPath + "/actuator/**")
-                );
-            // @formatter:on
+			http.authorizeRequests()
+				.antMatchers(this.adminContextPath + "/assets/**").permitAll()
+				.antMatchers(this.adminContextPath + "/login").permitAll()
+				.anyRequest().authenticated()
+				.and()
+			.formLogin().loginPage(this.adminContextPath + "/login").successHandler(successHandler).and()
+			.logout().logoutUrl(this.adminContextPath + "/logout").and()
+			.httpBasic().and()
+			.csrf()
+				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+				.ignoringRequestMatchers(
+					new AntPathRequestMatcher(this.adminContextPath + "/instances", HttpMethod.POST.toString()),
+					new AntPathRequestMatcher(this.adminContextPath + "/instances/*", HttpMethod.DELETE.toString()),
+					new AntPathRequestMatcher(this.adminContextPath + "/actuator/**")
+				);
+			// @formatter:on
 		}
 
 	}
