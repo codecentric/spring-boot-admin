@@ -31,7 +31,7 @@ public interface InstanceRepository {
 
 	/**
 	 * Saves the Instance
-	 * @param app Instance to save
+	 * @param app instance to save
 	 * @return the saved instance
 	 */
 	Mono<Instance> save(Instance app);
@@ -56,7 +56,7 @@ public interface InstanceRepository {
 	/**
 	 * Updates the instance associated with the id using the remapping function. If there
 	 * is no associated instance the function will be called with the id and null.
-	 * @param id Instance to update
+	 * @param id instance to update
 	 * @param remappingFunction function to apply
 	 * @return the saved istance
 	 */
@@ -65,7 +65,7 @@ public interface InstanceRepository {
 	/**
 	 * Updates the instance associated with the id using the remapping function. If there
 	 * is no associated instance the function will not be called.
-	 * @param id Instance to update
+	 * @param id instance to update
 	 * @param remappingFunction function to apply
 	 * @return the saved istance
 	 */

@@ -69,8 +69,8 @@ public class InstancesController {
 	/**
 	 * Register an instance.
 	 * @param registration registration info
-	 * @param builder UriComponentsBuilder
-	 * @return The registered instance id;
+	 * @param builder the UriComponentsBuilder
+	 * @return the registered instance id;
 	 */
 	@PostMapping(path = "/instances", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public Mono<ResponseEntity<Map<String, InstanceId>>> register(@RequestBody Registration registration,
@@ -105,8 +105,8 @@ public class InstancesController {
 
 	/**
 	 * Get a single instance.
-	 * @param id The application identifier.
-	 * @return The registered application.
+	 * @param id the application identifier.
+	 * @return the registered application.
 	 */
 	@GetMapping(path = "/instances/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public Mono<ResponseEntity<Instance>> instance(@PathVariable String id) {
@@ -117,7 +117,7 @@ public class InstancesController {
 
 	/**
 	 * Unregister an instance
-	 * @param id The instance id.
+	 * @param id the instance id.
 	 * @return response indicating the success
 	 */
 	@DeleteMapping(path = "/instances/{id}")

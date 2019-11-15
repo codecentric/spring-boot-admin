@@ -31,7 +31,7 @@ public interface ServiceInstanceConverter {
 	/**
 	 * Converts a service instance to a application instance to be registered.
 	 * @param instance the service instance.
-	 * @return Instance
+	 * @return the Registration
 	 */
 	Registration convert(ServiceInstance instance);
 
