@@ -136,3 +136,6 @@ Please make sure you set `$JAVA_HOME` points to the correct JDK and that the `no
 ```shell
 ./mvnw clean package
 ```
+
+## Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md) file.
