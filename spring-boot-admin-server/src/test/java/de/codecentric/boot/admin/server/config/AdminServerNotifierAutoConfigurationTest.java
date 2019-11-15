@@ -156,7 +156,7 @@ public class AdminServerNotifierAutoConfigurationTest {
 
 	}
 
-	private static class MailSenderConfig {
+	public static class MailSenderConfig {
 
 		@Bean
 		public JavaMailSenderImpl mailSender() {
@@ -165,7 +165,7 @@ public class AdminServerNotifierAutoConfigurationTest {
 
 	}
 
-	private static class TestMultipleNotifierConfig {
+	public static class TestMultipleNotifierConfig {
 
 		@Bean
 		@Qualifier("testNotifier1")
@@ -181,7 +181,7 @@ public class AdminServerNotifierAutoConfigurationTest {
 
 	}
 
-	private static class TestMultipleWithPrimaryNotifierConfig {
+	public static class TestMultipleWithPrimaryNotifierConfig {
 
 		@Bean
 		@Primary

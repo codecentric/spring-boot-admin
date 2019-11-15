@@ -76,7 +76,7 @@ public class AdminServerDiscoveryAutoConfigurationTest {
 						.isInstanceOf(CustomServiceInstanceConverter.class));
 	}
 
-	static class TestCustomServiceInstanceConverterConfig {
+	public static class TestCustomServiceInstanceConverterConfig {
 
 		@Bean
 		public CustomServiceInstanceConverter converter() {
@@ -85,7 +85,7 @@ public class AdminServerDiscoveryAutoConfigurationTest {
 
 	}
 
-	static class CustomServiceInstanceConverter implements ServiceInstanceConverter {
+	public static class CustomServiceInstanceConverter implements ServiceInstanceConverter {
 
 		@Override
 		public Registration convert(ServiceInstance instance) {
@@ -94,7 +94,7 @@ public class AdminServerDiscoveryAutoConfigurationTest {
 
 	}
 
-	static class EurekaClientConfig {
+	public static class EurekaClientConfig {
 
 		@Bean
 		public EurekaClient eurekaClient() {
@@ -108,7 +108,7 @@ public class AdminServerDiscoveryAutoConfigurationTest {
 
 	}
 
-	static class KubernetesClientConfig {
+	public static class KubernetesClientConfig {
 
 		@Bean
 		public KubernetesDiscoveryClient eurekaClient() {
