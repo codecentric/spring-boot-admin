@@ -16,12 +16,13 @@
 
 package de.codecentric.boot.admin.server.web.client;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-
 import java.nio.charset.StandardCharsets;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
 
 /**
  * Provides Basic Auth headers for the {@link Instance} using the metadata for "user.name"

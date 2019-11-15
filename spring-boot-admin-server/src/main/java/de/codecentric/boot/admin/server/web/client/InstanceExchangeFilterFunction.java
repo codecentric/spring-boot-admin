@@ -16,12 +16,12 @@
 
 package de.codecentric.boot.admin.server.web.client;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import reactor.core.publisher.Mono;
-
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
+import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
 
 /**
  * Represents a function that filters an{@linkplain ExchangeFunction exchange function}

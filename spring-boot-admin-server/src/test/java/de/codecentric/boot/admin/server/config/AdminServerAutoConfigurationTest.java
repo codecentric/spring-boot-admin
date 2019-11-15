@@ -16,17 +16,7 @@
 
 package de.codecentric.boot.admin.server.config;
 
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.domain.entities.SnapshottingInstanceRepository;
-import de.codecentric.boot.admin.server.eventstore.ConcurrentMapEventStore;
-import de.codecentric.boot.admin.server.eventstore.HazelcastEventStore;
-import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
-import de.codecentric.boot.admin.server.notify.HazelcastNotificationTrigger;
-import de.codecentric.boot.admin.server.notify.MailNotifier;
-import de.codecentric.boot.admin.server.notify.NotificationTrigger;
-import de.codecentric.boot.admin.server.notify.Notifier;
-import reactor.core.publisher.Mono;
-
+import com.hazelcast.config.Config;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
@@ -36,7 +26,17 @@ import org.springframework.boot.autoconfigure.web.reactive.function.client.WebCl
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
-import com.hazelcast.config.Config;
+import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.entities.SnapshottingInstanceRepository;
+import de.codecentric.boot.admin.server.eventstore.ConcurrentMapEventStore;
+import de.codecentric.boot.admin.server.eventstore.HazelcastEventStore;
+import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
+import de.codecentric.boot.admin.server.notify.HazelcastNotificationTrigger;
+import de.codecentric.boot.admin.server.notify.MailNotifier;
+import de.codecentric.boot.admin.server.notify.NotificationTrigger;
+import de.codecentric.boot.admin.server.notify.Notifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

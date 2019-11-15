@@ -16,14 +16,7 @@
 
 package de.codecentric.boot.admin.server.cloud.config;
 
-import de.codecentric.boot.admin.server.cloud.discovery.DefaultServiceInstanceConverter;
-import de.codecentric.boot.admin.server.cloud.discovery.EurekaServiceInstanceConverter;
-import de.codecentric.boot.admin.server.cloud.discovery.KubernetesServiceInstanceConverter;
-import de.codecentric.boot.admin.server.cloud.discovery.ServiceInstanceConverter;
-import de.codecentric.boot.admin.server.config.AdminServerAutoConfiguration;
-import de.codecentric.boot.admin.server.config.AdminServerMarkerConfiguration;
-import de.codecentric.boot.admin.server.domain.values.Registration;
-
+import com.netflix.discovery.EurekaClient;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -36,7 +29,14 @@ import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAu
 import org.springframework.cloud.commons.util.UtilAutoConfiguration;
 import org.springframework.cloud.kubernetes.discovery.KubernetesDiscoveryClient;
 import org.springframework.context.annotation.Bean;
-import com.netflix.discovery.EurekaClient;
+
+import de.codecentric.boot.admin.server.cloud.discovery.DefaultServiceInstanceConverter;
+import de.codecentric.boot.admin.server.cloud.discovery.EurekaServiceInstanceConverter;
+import de.codecentric.boot.admin.server.cloud.discovery.KubernetesServiceInstanceConverter;
+import de.codecentric.boot.admin.server.cloud.discovery.ServiceInstanceConverter;
+import de.codecentric.boot.admin.server.config.AdminServerAutoConfiguration;
+import de.codecentric.boot.admin.server.config.AdminServerMarkerConfiguration;
+import de.codecentric.boot.admin.server.domain.values.Registration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

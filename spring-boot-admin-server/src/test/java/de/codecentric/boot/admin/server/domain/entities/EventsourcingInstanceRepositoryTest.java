@@ -16,9 +16,9 @@
 
 package de.codecentric.boot.admin.server.domain.entities;
 
-import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
-
 import org.junit.Before;
+
+import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
 
 public class EventsourcingInstanceRepositoryTest extends AbstractInstanceRepositoryTest {
 

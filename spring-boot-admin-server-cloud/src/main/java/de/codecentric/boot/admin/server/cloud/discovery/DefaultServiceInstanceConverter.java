@@ -16,15 +16,16 @@
 
 package de.codecentric.boot.admin.server.cloud.discovery;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.values.Registration;
-
 import java.net.URI;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.values.Registration;
 
 import static java.util.Collections.emptyMap;
 import static org.springframework.util.StringUtils.isEmpty;

@@ -16,14 +16,14 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import de.codecentric.boot.admin.server.services.AbstractEventHandler;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.services.AbstractEventHandler;
 
 public class NotificationTrigger extends AbstractEventHandler<InstanceEvent> {
 

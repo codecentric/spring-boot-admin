@@ -16,12 +16,8 @@
 
 package de.codecentric.boot.admin.server.web;
 
-import de.codecentric.boot.admin.server.domain.entities.Application;
-import de.codecentric.boot.admin.server.services.ApplicationRegistry;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import java.time.Duration;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -31,6 +27,11 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.entities.Application;
+import de.codecentric.boot.admin.server.services.ApplicationRegistry;
 
 /**
  * REST controller for controlling registration of managed instances.

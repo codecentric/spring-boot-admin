@@ -16,28 +16,20 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
-import de.codecentric.boot.admin.server.domain.values.Registration;
-import de.codecentric.boot.admin.server.domain.values.StatusInfo;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
 import javax.activation.DataHandler;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -46,6 +38,16 @@ import org.springframework.util.StreamUtils;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.domain.values.Registration;
+import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;

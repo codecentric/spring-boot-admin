@@ -16,6 +16,11 @@
 
 package de.codecentric.boot.admin.server.services;
 
+import org.junit.Before;
+import org.junit.Test;
+import reactor.core.publisher.Mono;
+import reactor.test.publisher.TestPublisher;
+
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
@@ -24,11 +29,6 @@ import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
-import reactor.core.publisher.Mono;
-import reactor.test.publisher.TestPublisher;
-
-import org.junit.Before;
-import org.junit.Test;
 
 import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;

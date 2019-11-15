@@ -16,17 +16,14 @@
 
 package de.codecentric.boot.admin.server.web;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
-import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
-import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import io.netty.handler.timeout.ReadTimeoutException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.TimeoutException;
+
 import javax.annotation.Nullable;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.netty.handler.timeout.ReadTimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -40,6 +37,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuples;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
+import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
 
 /**
  * Forwards a request to a single instances endpoint and will respond with: - 502 (Bad

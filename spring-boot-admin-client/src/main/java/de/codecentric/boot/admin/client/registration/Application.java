@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.client.registration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.springframework.util.Assert;
 
 /**

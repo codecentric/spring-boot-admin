@@ -16,15 +16,17 @@
 
 package de.codecentric.boot.admin.server.domain.entities;
 
-import de.codecentric.boot.admin.server.domain.values.BuildVersion;
-import de.codecentric.boot.admin.server.domain.values.StatusInfo;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import javax.annotation.Nullable;
+
 import org.springframework.util.Assert;
+
+import de.codecentric.boot.admin.server.domain.values.BuildVersion;
+import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 
 @lombok.Data
 public class Application {

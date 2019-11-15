@@ -16,11 +16,6 @@
 
 package de.codecentric.boot.admin;
 
-import de.codecentric.boot.admin.server.config.AdminServerProperties;
-import de.codecentric.boot.admin.server.config.EnableAdminServer;
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.notify.LoggingNotifier;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +23,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+
+import de.codecentric.boot.admin.server.config.AdminServerProperties;
+import de.codecentric.boot.admin.server.config.EnableAdminServer;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.notify.LoggingNotifier;
 
 @Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration

@@ -16,11 +16,15 @@
 
 package de.codecentric.boot.admin.server;
 
-import de.codecentric.boot.admin.server.config.EnableAdminServer;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import java.util.stream.Collectors;
+
+import com.hazelcast.config.Config;
+import com.hazelcast.config.EvictionPolicy;
+import com.hazelcast.config.InMemoryFormat;
+import com.hazelcast.config.MapConfig;
+import com.hazelcast.config.MergePolicyConfig;
+import com.hazelcast.config.TcpIpConfig;
+import com.hazelcast.map.merge.PutIfAbsentMapMergePolicy;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,13 +39,10 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import com.hazelcast.config.Config;
-import com.hazelcast.config.EvictionPolicy;
-import com.hazelcast.config.InMemoryFormat;
-import com.hazelcast.config.MapConfig;
-import com.hazelcast.config.MergePolicyConfig;
-import com.hazelcast.config.TcpIpConfig;
-import com.hazelcast.map.merge.PutIfAbsentMapMergePolicy;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
 import static de.codecentric.boot.admin.server.config.AdminServerHazelcastAutoConfiguration.DEFAULT_NAME_EVENT_STORE_MAP;
 import static de.codecentric.boot.admin.server.config.AdminServerHazelcastAutoConfiguration.DEFAULT_NAME_SENT_NOTIFICATIONS_MAP;

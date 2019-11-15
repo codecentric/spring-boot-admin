@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.client.registration;
 
 import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
+
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;

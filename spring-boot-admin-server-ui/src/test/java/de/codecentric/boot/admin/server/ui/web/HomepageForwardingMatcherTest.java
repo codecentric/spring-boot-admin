@@ -16,9 +16,9 @@
 
 package de.codecentric.boot.admin.server.ui.web;
 
-import lombok.Data;
-
 import java.util.List;
+
+import lombok.Data;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 

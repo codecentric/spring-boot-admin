@@ -16,11 +16,12 @@
 
 package de.codecentric.boot.admin.server.notify.filter;
 
+import java.time.Instant;
+
+import javax.annotation.Nullable;
+
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-
-import java.time.Instant;
-import javax.annotation.Nullable;
 
 public abstract class ExpiringNotificationFilter extends AbstractNotificationFilter {
 

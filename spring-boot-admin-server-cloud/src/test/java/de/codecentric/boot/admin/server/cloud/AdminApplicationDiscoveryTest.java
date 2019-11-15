@@ -16,14 +16,13 @@
 
 package de.codecentric.boot.admin.server.cloud;
 
-import de.codecentric.boot.admin.server.config.EnableAdminServer;
-import reactor.core.publisher.Flux;
-import reactor.test.StepVerifier;
-
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -44,8 +43,10 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
+import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
+
+import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;

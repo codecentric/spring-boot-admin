@@ -16,26 +16,27 @@
 
 package de.codecentric.boot.admin.server.services.endpoints;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.values.Endpoint;
-import de.codecentric.boot.admin.server.domain.values.Endpoints;
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
-import de.codecentric.boot.admin.server.domain.values.Registration;
-import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
+import java.time.Duration;
+
+import com.github.tomakehurst.wiremock.http.Fault;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
-import reactor.netty.http.client.HttpClient;
-import reactor.test.StepVerifier;
-
-import java.time.Duration;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
-import com.github.tomakehurst.wiremock.http.Fault;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import reactor.netty.http.client.HttpClient;
+import reactor.test.StepVerifier;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.values.Endpoint;
+import de.codecentric.boot.admin.server.domain.values.Endpoints;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.domain.values.Registration;
+import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.anyRequestedFor;

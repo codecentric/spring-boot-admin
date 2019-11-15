@@ -16,26 +16,27 @@
 
 package de.codecentric.boot.admin.server.services.endpoints;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.values.Endpoint;
-import de.codecentric.boot.admin.server.domain.values.Endpoints;
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
-import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
-import lombok.Data;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.values.Endpoint;
+import de.codecentric.boot.admin.server.domain.values.Endpoints;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.groupingBy;

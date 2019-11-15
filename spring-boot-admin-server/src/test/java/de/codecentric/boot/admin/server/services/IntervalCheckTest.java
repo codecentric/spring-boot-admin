@@ -16,13 +16,14 @@
 
 package de.codecentric.boot.admin.server.services;
 
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
-import reactor.core.publisher.Mono;
-
 import java.time.Duration;
 import java.util.function.Function;
+
 import org.junit.After;
 import org.junit.Test;
+import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeast;

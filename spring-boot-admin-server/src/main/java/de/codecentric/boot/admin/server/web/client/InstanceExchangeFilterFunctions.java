@@ -16,10 +16,6 @@
 
 package de.codecentric.boot.admin.server.web.client;
 
-import de.codecentric.boot.admin.server.domain.values.Endpoint;
-import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
-import reactor.core.publisher.Mono;
-
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;
@@ -27,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
@@ -38,6 +35,10 @@ import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.values.Endpoint;
+import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
 
 import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V1_MEDIATYPE;
 import static java.util.Arrays.asList;

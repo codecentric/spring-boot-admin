@@ -16,6 +16,17 @@
 
 package de.codecentric.boot.admin.server.config;
 
+import java.util.List;
+
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.core.annotation.Order;
+import org.springframework.web.reactive.function.client.WebClient;
+
 import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider;
 import de.codecentric.boot.admin.server.web.client.CompositeHttpHeadersProvider;
 import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
@@ -25,16 +36,6 @@ import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClientCustomizer;
 import de.codecentric.boot.admin.server.web.client.LegacyEndpointConverter;
 import de.codecentric.boot.admin.server.web.client.LegacyEndpointConverters;
-
-import java.util.List;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
-import org.springframework.core.annotation.Order;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration(proxyBeanMethods = false)
 public class AdminServerInstanceWebClientConfiguration {

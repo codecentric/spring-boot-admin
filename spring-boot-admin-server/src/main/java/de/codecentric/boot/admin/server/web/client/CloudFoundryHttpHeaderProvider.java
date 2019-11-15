@@ -16,10 +16,10 @@
 
 package de.codecentric.boot.admin.server.web.client;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.StringUtils;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
 
 /**
  * Provides CloudFoundry related X-CF-APP-INSTANCE header for the {@link Instance} using

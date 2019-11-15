@@ -16,15 +16,16 @@
 
 package de.codecentric.boot.admin.server.domain.values;
 
-import lombok.ToString;
-
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 import javax.annotation.Nullable;
+
+import lombok.ToString;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 

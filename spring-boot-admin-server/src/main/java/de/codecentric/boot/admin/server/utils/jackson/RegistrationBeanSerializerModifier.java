@@ -16,14 +16,15 @@
 
 package de.codecentric.boot.admin.server.utils.jackson;
 
-import de.codecentric.boot.admin.server.domain.values.Registration;
-
 import java.util.List;
+
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
+
+import de.codecentric.boot.admin.server.domain.values.Registration;
 
 public class RegistrationBeanSerializerModifier extends BeanSerializerModifier {
 

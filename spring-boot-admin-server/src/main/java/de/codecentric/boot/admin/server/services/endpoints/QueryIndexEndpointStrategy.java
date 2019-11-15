@@ -16,28 +16,29 @@
 
 package de.codecentric.boot.admin.server.services.endpoints;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.values.Endpoint;
-import de.codecentric.boot.admin.server.domain.values.Endpoints;
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
-import de.codecentric.boot.admin.server.domain.values.Registration;
-import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
-import lombok.Data;
-import reactor.core.publisher.Mono;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.ClientResponse;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.values.Endpoint;
+import de.codecentric.boot.admin.server.domain.values.Endpoints;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.domain.values.Registration;
+import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
 

@@ -16,13 +16,13 @@
 
 package de.codecentric.boot.admin.server.services.endpoints;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.values.Endpoints;
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import org.junit.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import org.junit.Test;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.values.Endpoints;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

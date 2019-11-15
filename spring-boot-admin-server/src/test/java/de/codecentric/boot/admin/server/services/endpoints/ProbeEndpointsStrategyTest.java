@@ -16,22 +16,23 @@
 
 package de.codecentric.boot.admin.server.services.endpoints;
 
+import java.time.Duration;
+
+import com.github.tomakehurst.wiremock.core.Options;
+import com.github.tomakehurst.wiremock.http.Fault;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
+import reactor.test.StepVerifier;
+import wiremock.org.eclipse.jetty.http.HttpStatus;
+
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
-import reactor.test.StepVerifier;
-import wiremock.org.eclipse.jetty.http.HttpStatus;
-
-import java.time.Duration;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import com.github.tomakehurst.wiremock.core.Options;
-import com.github.tomakehurst.wiremock.http.Fault;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.notFound;

@@ -16,6 +16,14 @@
 
 package de.codecentric.boot.admin.server.notify.filter;
 
+import java.time.Duration;
+import java.time.Instant;
+
+import org.junit.Before;
+import org.junit.Test;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
@@ -23,13 +31,6 @@ import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.notify.TestNotifier;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
-import java.time.Duration;
-import java.time.Instant;
-import org.junit.Before;
-import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;

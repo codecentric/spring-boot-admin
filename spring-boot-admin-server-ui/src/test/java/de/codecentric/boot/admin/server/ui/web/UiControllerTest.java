@@ -16,12 +16,13 @@
 
 package de.codecentric.boot.admin.server.ui.web;
 
-import de.codecentric.boot.admin.server.web.servlet.AdminControllerHandlerMapping;
-
 import java.util.Collections;
+
 import org.junit.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import de.codecentric.boot.admin.server.web.servlet.AdminControllerHandlerMapping;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;

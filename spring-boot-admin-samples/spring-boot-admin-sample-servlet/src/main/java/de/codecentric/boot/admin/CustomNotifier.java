@@ -16,16 +16,16 @@
 
 package de.codecentric.boot.admin;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Mono;
+
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 import de.codecentric.boot.admin.server.notify.AbstractEventNotifier;
 import de.codecentric.boot.admin.server.notify.LoggingNotifier;
-import reactor.core.publisher.Mono;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 // tag::customization-notifiers[]
 public class CustomNotifier extends AbstractEventNotifier {

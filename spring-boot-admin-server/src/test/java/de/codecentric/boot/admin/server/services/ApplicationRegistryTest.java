@@ -16,21 +16,22 @@
 
 package de.codecentric.boot.admin.server.services;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+
+import org.junit.Before;
+import org.junit.Test;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
 import de.codecentric.boot.admin.server.domain.entities.Application;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.BuildVersion;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventPublisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import org.junit.Before;
-import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;

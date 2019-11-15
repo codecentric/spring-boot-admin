@@ -16,21 +16,12 @@
 
 package de.codecentric.boot.admin.server.ui.config;
 
-import de.codecentric.boot.admin.server.config.AdminServerMarkerConfiguration;
-import de.codecentric.boot.admin.server.config.AdminServerProperties;
-import de.codecentric.boot.admin.server.config.AdminServerWebConfiguration;
-import de.codecentric.boot.admin.server.notify.filter.web.NotificationFilterController;
-import de.codecentric.boot.admin.server.ui.extensions.UiExtension;
-import de.codecentric.boot.admin.server.ui.extensions.UiExtensionsScanner;
-import de.codecentric.boot.admin.server.ui.extensions.UiRoutesScanner;
-import de.codecentric.boot.admin.server.ui.web.UiController;
-import de.codecentric.boot.admin.server.ui.web.UiController.Settings;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -45,6 +36,16 @@ import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
+
+import de.codecentric.boot.admin.server.config.AdminServerMarkerConfiguration;
+import de.codecentric.boot.admin.server.config.AdminServerProperties;
+import de.codecentric.boot.admin.server.config.AdminServerWebConfiguration;
+import de.codecentric.boot.admin.server.notify.filter.web.NotificationFilterController;
+import de.codecentric.boot.admin.server.ui.extensions.UiExtension;
+import de.codecentric.boot.admin.server.ui.extensions.UiExtensionsScanner;
+import de.codecentric.boot.admin.server.ui.extensions.UiRoutesScanner;
+import de.codecentric.boot.admin.server.ui.web.UiController;
+import de.codecentric.boot.admin.server.ui.web.UiController.Settings;
 
 import static java.util.Arrays.asList;
 

@@ -16,12 +16,13 @@
 
 package de.codecentric.boot.admin.client.registration.metadata;
 
-import de.codecentric.boot.admin.client.config.CloudFoundryApplicationProperties;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.springframework.util.StringUtils;
+
+import de.codecentric.boot.admin.client.config.CloudFoundryApplicationProperties;
 
 public class CloudFoundryMetadataContributor implements MetadataContributor {
 

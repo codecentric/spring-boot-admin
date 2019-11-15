@@ -16,12 +16,12 @@
 
 package de.codecentric.boot.admin.server.services;
 
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
-import de.codecentric.boot.admin.server.domain.values.Registration;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.domain.values.Registration;
 
 /**
  * Generates an SHA-1 Hash based on the instance health url.

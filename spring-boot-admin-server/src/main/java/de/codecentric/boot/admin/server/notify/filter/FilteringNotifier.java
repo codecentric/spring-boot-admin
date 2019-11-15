@@ -16,13 +16,6 @@
 
 package de.codecentric.boot.admin.server.notify.filter;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import de.codecentric.boot.admin.server.notify.AbstractEventNotifier;
-import de.codecentric.boot.admin.server.notify.Notifier;
-import reactor.core.publisher.Mono;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
@@ -31,10 +24,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
 import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
+import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.notify.AbstractEventNotifier;
+import de.codecentric.boot.admin.server.notify.Notifier;
 
 /**
  * Notifier that allows to filter certain events based on policies.

@@ -16,10 +16,11 @@
 
 package de.codecentric.boot.admin.server.web.client;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-
 import java.util.Collection;
+
 import org.springframework.http.HttpHeaders;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
 
 public class CompositeHttpHeadersProvider implements HttpHeadersProvider {
 

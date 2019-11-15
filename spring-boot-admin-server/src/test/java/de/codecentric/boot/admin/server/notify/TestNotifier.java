@@ -16,11 +16,12 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import reactor.core.publisher.Mono;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
 public class TestNotifier implements Notifier {
 

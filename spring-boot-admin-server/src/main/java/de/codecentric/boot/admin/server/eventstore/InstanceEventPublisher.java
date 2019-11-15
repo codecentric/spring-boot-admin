@@ -16,16 +16,17 @@
 
 package de.codecentric.boot.admin.server.eventstore;
 
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
-import reactor.core.publisher.UnicastProcessor;
-
 import java.util.List;
+
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
+import reactor.core.publisher.UnicastProcessor;
+
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
 public class InstanceEventPublisher implements Publisher<InstanceEvent> {
 

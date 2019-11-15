@@ -16,17 +16,18 @@
 
 package de.codecentric.boot.admin.server.domain.entities;
 
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
-import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
-import de.codecentric.boot.admin.server.eventstore.OptimisticLockingException;
+import java.util.function.BiFunction;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.retry.Retry;
 
-import java.util.function.BiFunction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
+import de.codecentric.boot.admin.server.eventstore.OptimisticLockingException;
 
 /**
  * InstanceRepository storing instances using an event log.

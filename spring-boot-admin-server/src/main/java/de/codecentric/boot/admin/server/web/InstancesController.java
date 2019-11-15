@@ -16,19 +16,11 @@
 
 package de.codecentric.boot.admin.server.web;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
-import de.codecentric.boot.admin.server.domain.values.Registration;
-import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
-import de.codecentric.boot.admin.server.services.InstanceRegistry;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import java.net.URI;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -42,6 +34,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.domain.values.Registration;
+import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
+import de.codecentric.boot.admin.server.services.InstanceRegistry;
 
 /**
  * REST controller for controlling registration of managed instances.

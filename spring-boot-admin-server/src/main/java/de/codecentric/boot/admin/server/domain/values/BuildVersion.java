@@ -19,9 +19,11 @@ package de.codecentric.boot.admin.server.domain.values;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Scanner;
+
 import javax.annotation.Nullable;
-import org.springframework.util.Assert;
+
 import com.fasterxml.jackson.annotation.JsonValue;
+import org.springframework.util.Assert;
 
 @lombok.Data
 public class BuildVersion implements Serializable, Comparable<BuildVersion> {

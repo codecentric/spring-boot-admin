@@ -16,11 +16,6 @@
 
 package de.codecentric.boot.admin.server.config;
 
-import de.codecentric.boot.admin.server.services.CloudFoundryInstanceIdGenerator;
-import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
-import de.codecentric.boot.admin.server.services.InstanceIdGenerator;
-import de.codecentric.boot.admin.server.web.client.CloudFoundryHttpHeaderProvider;
-
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
@@ -29,6 +24,11 @@ import org.springframework.boot.autoconfigure.web.reactive.function.client.Clien
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+
+import de.codecentric.boot.admin.server.services.CloudFoundryInstanceIdGenerator;
+import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
+import de.codecentric.boot.admin.server.services.InstanceIdGenerator;
+import de.codecentric.boot.admin.server.web.client.CloudFoundryHttpHeaderProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

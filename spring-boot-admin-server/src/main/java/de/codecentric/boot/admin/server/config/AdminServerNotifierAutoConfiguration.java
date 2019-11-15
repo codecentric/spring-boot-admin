@@ -16,28 +16,11 @@
 
 package de.codecentric.boot.admin.server.config;
 
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import de.codecentric.boot.admin.server.notify.CompositeNotifier;
-import de.codecentric.boot.admin.server.notify.DiscordNotifier;
-import de.codecentric.boot.admin.server.notify.HipchatNotifier;
-import de.codecentric.boot.admin.server.notify.LetsChatNotifier;
-import de.codecentric.boot.admin.server.notify.MailNotifier;
-import de.codecentric.boot.admin.server.notify.MicrosoftTeamsNotifier;
-import de.codecentric.boot.admin.server.notify.NotificationTrigger;
-import de.codecentric.boot.admin.server.notify.Notifier;
-import de.codecentric.boot.admin.server.notify.NotifierProxyProperties;
-import de.codecentric.boot.admin.server.notify.OpsGenieNotifier;
-import de.codecentric.boot.admin.server.notify.PagerdutyNotifier;
-import de.codecentric.boot.admin.server.notify.SlackNotifier;
-import de.codecentric.boot.admin.server.notify.TelegramNotifier;
-import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
-import de.codecentric.boot.admin.server.notify.filter.web.NotificationFilterController;
-
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+
 import org.reactivestreams.Publisher;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -62,6 +45,24 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
+
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.notify.CompositeNotifier;
+import de.codecentric.boot.admin.server.notify.DiscordNotifier;
+import de.codecentric.boot.admin.server.notify.HipchatNotifier;
+import de.codecentric.boot.admin.server.notify.LetsChatNotifier;
+import de.codecentric.boot.admin.server.notify.MailNotifier;
+import de.codecentric.boot.admin.server.notify.MicrosoftTeamsNotifier;
+import de.codecentric.boot.admin.server.notify.NotificationTrigger;
+import de.codecentric.boot.admin.server.notify.Notifier;
+import de.codecentric.boot.admin.server.notify.NotifierProxyProperties;
+import de.codecentric.boot.admin.server.notify.OpsGenieNotifier;
+import de.codecentric.boot.admin.server.notify.PagerdutyNotifier;
+import de.codecentric.boot.admin.server.notify.SlackNotifier;
+import de.codecentric.boot.admin.server.notify.TelegramNotifier;
+import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
+import de.codecentric.boot.admin.server.notify.filter.web.NotificationFilterController;
 
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(NotifierProxyProperties.class)

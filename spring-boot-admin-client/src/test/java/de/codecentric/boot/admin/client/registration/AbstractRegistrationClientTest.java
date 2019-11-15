@@ -16,12 +16,12 @@
 
 package de.codecentric.boot.admin.client.registration;
 
-import org.junit.Rule;
-import org.junit.Test;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
+import org.junit.Rule;
+import org.junit.Test;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.created;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;

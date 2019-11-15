@@ -16,11 +16,12 @@
 
 package de.codecentric.boot.admin.server.eventstore;
 
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import reactor.core.publisher.Mono;
-
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+
+import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
 /**
  * Event-Store backed by a ConcurrentHashMap.

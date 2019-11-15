@@ -16,11 +16,11 @@
 
 package de.codecentric.boot.admin.server.services.endpoints;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.values.Endpoints;
+import org.springframework.util.Assert;
 import reactor.core.publisher.Mono;
 
-import org.springframework.util.Assert;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.values.Endpoints;
 
 public class ChainingStrategy implements EndpointDetectionStrategy {
 

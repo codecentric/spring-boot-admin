@@ -16,15 +16,15 @@
 
 package de.codecentric.boot.admin.server.web.client;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
-import de.codecentric.boot.admin.server.web.client.exception.ResolveInstanceException;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.ClientResponse;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.web.client.exception.ResolveInstanceException;
 
 import static de.codecentric.boot.admin.server.web.client.InstanceWebClient.ATTRIBUTE_INSTANCE;
 import static org.assertj.core.api.Assertions.assertThat;

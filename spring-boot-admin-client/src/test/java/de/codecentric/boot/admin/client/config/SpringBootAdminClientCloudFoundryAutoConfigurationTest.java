@@ -16,11 +16,6 @@
 
 package de.codecentric.boot.admin.client.config;
 
-import de.codecentric.boot.admin.client.registration.ApplicationFactory;
-import de.codecentric.boot.admin.client.registration.CloudFoundryApplicationFactory;
-import de.codecentric.boot.admin.client.registration.DefaultApplicationFactory;
-import de.codecentric.boot.admin.client.registration.metadata.CloudFoundryMetadataContributor;
-
 import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
@@ -29,6 +24,11 @@ import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfigu
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+
+import de.codecentric.boot.admin.client.registration.ApplicationFactory;
+import de.codecentric.boot.admin.client.registration.CloudFoundryApplicationFactory;
+import de.codecentric.boot.admin.client.registration.DefaultApplicationFactory;
+import de.codecentric.boot.admin.client.registration.metadata.CloudFoundryMetadataContributor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

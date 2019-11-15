@@ -16,10 +16,10 @@
 
 package de.codecentric.boot.admin.server.web.client;
 
-import reactor.core.publisher.Flux;
-
 import java.util.function.Function;
+
 import org.springframework.core.io.buffer.DataBuffer;
+import reactor.core.publisher.Flux;
 
 /**
  * @author Johannes Edmeier

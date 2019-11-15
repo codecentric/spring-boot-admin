@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.domain.values;
 
 import java.io.Serializable;
+
 import org.springframework.util.Assert;
 
 @lombok.Data

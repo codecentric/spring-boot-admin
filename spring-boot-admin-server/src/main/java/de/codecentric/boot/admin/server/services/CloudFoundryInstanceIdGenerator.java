@@ -16,10 +16,10 @@
 
 package de.codecentric.boot.admin.server.services;
 
+import org.springframework.util.StringUtils;
+
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
-
-import org.springframework.util.StringUtils;
 
 /**
  * Generates CF instance uniqueId "applicationId:instanceId" for CloudFoundry instance.

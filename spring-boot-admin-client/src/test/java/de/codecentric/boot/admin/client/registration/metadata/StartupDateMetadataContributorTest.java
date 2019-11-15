@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.client.registration.metadata;
 
 import java.util.Map;
+
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

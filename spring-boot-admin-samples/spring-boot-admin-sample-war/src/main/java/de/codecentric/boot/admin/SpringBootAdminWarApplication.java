@@ -16,9 +16,6 @@
 
 package de.codecentric.boot.admin;
 
-import de.codecentric.boot.admin.server.config.AdminServerProperties;
-import de.codecentric.boot.admin.server.config.EnableAdminServer;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -31,6 +28,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import de.codecentric.boot.admin.server.config.AdminServerProperties;
+import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
 @Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration

@@ -16,21 +16,23 @@
 
 package de.codecentric.boot.admin.server.ui.web.servlet;
 
-import de.codecentric.boot.admin.server.ui.web.HomepageForwardingMatcher;
-
 import java.io.IOException;
 import java.util.List;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.util.UrlPathHelper;
+
+import de.codecentric.boot.admin.server.ui.web.HomepageForwardingMatcher;
 
 /**
  * A servlet filter that forwards matching HTML requests to the home page. Further routing

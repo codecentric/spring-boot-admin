@@ -16,8 +16,9 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
 /**
  * Interface for components which emits notifications upon status changes in clients

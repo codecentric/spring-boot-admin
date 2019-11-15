@@ -16,21 +16,11 @@
 
 package de.codecentric.boot.admin.client.config;
 
-import de.codecentric.boot.admin.client.registration.ApplicationFactory;
-import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
-import de.codecentric.boot.admin.client.registration.BlockingRegistrationClient;
-import de.codecentric.boot.admin.client.registration.DefaultApplicationFactory;
-import de.codecentric.boot.admin.client.registration.ReactiveRegistrationClient;
-import de.codecentric.boot.admin.client.registration.RegistrationApplicationListener;
-import de.codecentric.boot.admin.client.registration.RegistrationClient;
-import de.codecentric.boot.admin.client.registration.ServletApplicationFactory;
-import de.codecentric.boot.admin.client.registration.metadata.CompositeMetadataContributor;
-import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
-import de.codecentric.boot.admin.client.registration.metadata.StartupDateMetadataContributor;
-
 import java.util.Collections;
 import java.util.List;
+
 import javax.servlet.ServletContext;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -52,6 +42,18 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import de.codecentric.boot.admin.client.registration.ApplicationFactory;
+import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
+import de.codecentric.boot.admin.client.registration.BlockingRegistrationClient;
+import de.codecentric.boot.admin.client.registration.DefaultApplicationFactory;
+import de.codecentric.boot.admin.client.registration.ReactiveRegistrationClient;
+import de.codecentric.boot.admin.client.registration.RegistrationApplicationListener;
+import de.codecentric.boot.admin.client.registration.RegistrationClient;
+import de.codecentric.boot.admin.client.registration.ServletApplicationFactory;
+import de.codecentric.boot.admin.client.registration.metadata.CompositeMetadataContributor;
+import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
+import de.codecentric.boot.admin.client.registration.metadata.StartupDateMetadataContributor;
 
 import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;

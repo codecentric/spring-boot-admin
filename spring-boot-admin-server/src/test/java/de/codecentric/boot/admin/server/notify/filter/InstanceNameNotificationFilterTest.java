@@ -16,15 +16,16 @@
 
 package de.codecentric.boot.admin.server.notify.filter;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.concurrent.TimeUnit;
+
+import org.junit.Test;
+
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
-
-import java.time.Duration;
-import java.time.Instant;
-import java.util.concurrent.TimeUnit;
-import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

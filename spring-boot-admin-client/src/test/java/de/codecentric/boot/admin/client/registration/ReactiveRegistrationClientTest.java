@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.client.registration;
 
 import java.time.Duration;
+
 import org.junit.Before;
 import org.springframework.web.reactive.function.client.WebClient;
 

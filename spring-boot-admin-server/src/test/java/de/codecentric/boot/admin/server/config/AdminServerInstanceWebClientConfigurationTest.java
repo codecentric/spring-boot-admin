@@ -16,11 +16,6 @@
 
 package de.codecentric.boot.admin.server.config;
 
-import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider;
-import de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunction;
-import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
-import de.codecentric.boot.admin.server.web.client.LegacyEndpointConverter;
-
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
@@ -28,6 +23,11 @@ import org.springframework.boot.autoconfigure.web.reactive.function.client.Clien
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+
+import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider;
+import de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunction;
+import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
+import de.codecentric.boot.admin.server.web.client.LegacyEndpointConverter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

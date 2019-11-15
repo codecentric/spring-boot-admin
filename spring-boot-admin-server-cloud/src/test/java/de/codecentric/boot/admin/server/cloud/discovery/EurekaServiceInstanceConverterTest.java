@@ -16,12 +16,13 @@
 
 package de.codecentric.boot.admin.server.cloud.discovery;
 
-import de.codecentric.boot.admin.server.domain.values.Registration;
-
 import java.net.URI;
+
+import com.netflix.appinfo.InstanceInfo;
 import org.junit.Test;
 import org.springframework.cloud.netflix.eureka.EurekaServiceInstance;
-import com.netflix.appinfo.InstanceInfo;
+
+import de.codecentric.boot.admin.server.domain.values.Registration;
 
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;

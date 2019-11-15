@@ -16,8 +16,6 @@
 
 package de.codecentric.boot.admin.server;
 
-import de.codecentric.boot.admin.server.config.EnableAdminServer;
-
 import org.junit.After;
 import org.junit.Before;
 import org.springframework.boot.SpringBootConfiguration;
@@ -29,6 +27,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+
+import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
 public class AdminReactiveApplicationTest extends AbstractAdminApplicationTest {
 

@@ -16,11 +16,12 @@
 
 package de.codecentric.boot.admin.server.domain.entities;
 
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import java.util.function.BiFunction;
+
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.function.BiFunction;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 /**
  * Responsible for storing instances.
