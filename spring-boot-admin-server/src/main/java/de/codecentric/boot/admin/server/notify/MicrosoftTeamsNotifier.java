@@ -169,8 +169,8 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 		try {
 			return String.format(format, args);
 		}
-		catch (MissingFormatArgumentException e) {
-			LOGGER.warn("Exception while trying to format the message. Falling back by using the format string.", e);
+		catch (MissingFormatArgumentException ex) {
+			LOGGER.warn("Exception while trying to format the message. Falling back by using the format string.", ex);
 			return format;
 		}
 	}

@@ -91,7 +91,7 @@ public class Registration implements Serializable {
 			URI uri = new URI(url);
 			return uri.isAbsolute();
 		}
-		catch (URISyntaxException e) {
+		catch (URISyntaxException ex) {
 			return false;
 		}
 	}

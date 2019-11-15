@@ -282,7 +282,7 @@ public class LegacyEndpointConverters {
 				return Instant.ofEpochMilli((Long) o);
 			}
 		}
-		catch (DateTimeException | ClassCastException e) {
+		catch (DateTimeException | ClassCastException ex) {
 			return null;
 		}
 		return null;
