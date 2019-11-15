@@ -127,7 +127,7 @@ public class SpringBootAdminClientAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(RestTemplateBuilder.class)
-	static class BlockingRegistrationClientConfig {
+	public static class BlockingRegistrationClientConfig {
 
 		@Bean
 		@ConditionalOnMissingBean
@@ -145,7 +145,7 @@ public class SpringBootAdminClientAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(WebClient.Builder.class)
 	@ConditionalOnMissingBean(RestTemplateBuilder.class)
-	static class ReactiveRegistrationClientConfig {
+	public static class ReactiveRegistrationClientConfig {
 
 		@Bean
 		@ConditionalOnMissingBean

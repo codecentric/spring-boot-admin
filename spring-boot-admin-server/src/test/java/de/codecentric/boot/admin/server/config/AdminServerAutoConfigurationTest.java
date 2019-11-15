@@ -66,7 +66,7 @@ public class AdminServerAutoConfigurationTest {
 		});
 	}
 
-	static class TestHazelcastConfig {
+	public static class TestHazelcastConfig {
 
 		@Bean
 		public Config config() {
