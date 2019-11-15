@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import org.springframework.util.Assert;
 
 @lombok.Data
-public class BuildVersion implements Serializable, Comparable<BuildVersion> {
+public final class BuildVersion implements Serializable, Comparable<BuildVersion> {
 
 	private final String value;
 

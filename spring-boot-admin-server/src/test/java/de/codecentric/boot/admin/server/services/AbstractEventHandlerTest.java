@@ -78,7 +78,7 @@ public class AbstractEventHandlerTest {
 				.expectNext(firstEvent, secondEvent).thenCancel().verify(Duration.ofSeconds(1));
 	}
 
-	public class TestEventHandler extends AbstractEventHandler<InstanceRegisteredEvent> {
+	public final class TestEventHandler extends AbstractEventHandler<InstanceRegisteredEvent> {
 
 		private final FluxSink<InstanceEvent> sink;
 

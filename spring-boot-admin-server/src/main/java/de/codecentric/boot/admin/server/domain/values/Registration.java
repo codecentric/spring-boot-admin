@@ -36,7 +36,7 @@ import org.springframework.util.StringUtils;
  */
 @lombok.Data
 @ToString(exclude = "metadata")
-public class Registration implements Serializable {
+public final class Registration implements Serializable {
 
 	private final String name;
 

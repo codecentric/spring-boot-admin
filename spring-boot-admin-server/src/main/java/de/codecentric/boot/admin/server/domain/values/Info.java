@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
  * @author Johannes Edmeier
  */
 @lombok.Data
-public class Info implements Serializable {
+public final class Info implements Serializable {
 
 	private static final Info EMPTY = new Info(Collections.emptyMap());
 

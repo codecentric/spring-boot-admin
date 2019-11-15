@@ -57,7 +57,7 @@ import static java.util.Collections.unmodifiableList;
 @lombok.Data
 @lombok.EqualsAndHashCode(exclude = { "unsavedEvents", "statusTimestamp" })
 @lombok.ToString(exclude = "unsavedEvents")
-public class Instance implements Serializable {
+public final class Instance implements Serializable {
 
 	private final InstanceId id;
 

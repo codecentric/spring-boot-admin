@@ -32,7 +32,7 @@ import static java.util.stream.Collectors.toMap;
 
 @lombok.EqualsAndHashCode
 @lombok.ToString
-public class Endpoints implements Iterable<Endpoint>, Serializable {
+public final class Endpoints implements Iterable<Endpoint>, Serializable {
 
 	private final Map<String, Endpoint> endpoints;
 
@@ -86,7 +86,7 @@ public class Endpoints implements Iterable<Endpoint>, Serializable {
 		return this.endpoints.values().stream();
 	}
 
-	private static class UnmodifiableIterator<T> implements Iterator<T> {
+	private static final class UnmodifiableIterator<T> implements Iterator<T> {
 
 		private final Iterator<T> delegate;
 

@@ -149,7 +149,7 @@ public class RemindingNotifier extends AbstractEventNotifier {
 		this.checkReminderInverval = checkReminderInverval;
 	}
 
-	protected static class Reminder {
+	protected static final class Reminder {
 
 		private final InstanceEvent event;
 
