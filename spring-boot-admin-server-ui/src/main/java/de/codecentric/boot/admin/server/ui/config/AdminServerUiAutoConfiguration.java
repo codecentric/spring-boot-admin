@@ -88,7 +88,7 @@ public class AdminServerUiAutoConfiguration {
 				.routes(routes).rememberMeEnabled(this.adminUi.isRememberMeEnabled())
 				.externalViews(this.adminUi.getExternalViews()).build();
 
-		String publicUrl = this.adminUi.getPublicUrl() != null ? this.adminUi.getPublicUrl()
+		String publicUrl = (this.adminUi.getPublicUrl() != null) ? this.adminUi.getPublicUrl()
 				: this.adminServer.getContextPath();
 		return new UiController(publicUrl, this.uiExtensions(), uiSettings);
 	}

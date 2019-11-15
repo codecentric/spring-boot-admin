@@ -137,7 +137,7 @@ public class ApplicationRegistry {
 	}
 
 	protected Instant getMax(Instant t1, Instant t2) {
-		return t1.compareTo(t2) >= 0 ? t1 : t2;
+		return (t1.compareTo(t2) >= 0) ? t1 : t2;
 	}
 
 }
