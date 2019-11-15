@@ -25,6 +25,7 @@ import javax.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -140,6 +141,7 @@ public class UiController {
 
 	@lombok.Data
 	@JsonInclude(Include.NON_EMPTY)
+	@ConstructorBinding
 	public static class ExternalView {
 
 		/**
