@@ -147,6 +147,14 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
+                <configuration>
+                    <configLocation>src/checkstyle/checkstyle.xml</configLocation>
+                    <headerLocation>src/checkstyle/checkstyle-header.txt</headerLocation>
+                    <encoding>UTF-8</encoding>
+                    <consoleOutput>true</consoleOutput>
+                    <failOnViolation>true</failOnViolation>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                </configuration>
                 <executions>
                     <execution>
                         <id>checkstyle-validation</id>
