@@ -245,9 +245,9 @@ public class LegacyEndpointConverters {
 			converted.put("description", changeset.get("DESCRIPTION"));
 			converted.put("comments", changeset.get("COMMENTS"));
 			converted.put("tag", changeset.get("TAG"));
-			converted.put("contexts", changeset.get("CONTEXTS") instanceof String
+			converted.put("contexts", (changeset.get("CONTEXTS") instanceof String)
 					? new LinkedHashSet<>(asList(((String) changeset.get("CONTEXTS")).split(",\\s*"))) : emptySet());
-			converted.put("labels", changeset.get("LABELS") instanceof String
+			converted.put("labels", (changeset.get("LABELS") instanceof String)
 					? new LinkedHashSet<>(asList(((String) changeset.get("LABELS")).split(",\\s*"))) : emptySet());
 			converted.put("deploymentId", changeset.get("DEPLOYMENT_ID"));
 			return converted;

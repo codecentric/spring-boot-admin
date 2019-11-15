@@ -104,7 +104,7 @@ public class SnapshottingInstanceRepository extends EventsourcingInstanceReposit
 	protected void updateSnapshot(InstanceEvent event) {
 		try {
 			this.snapshots.compute(event.getInstance(), (key, old) -> {
-				Instance instance = old != null ? old : Instance.create(key);
+				Instance instance = (old != null) ? old : Instance.create(key);
 				if (event.getVersion() > instance.getVersion()) {
 					return instance.apply(event);
 				}

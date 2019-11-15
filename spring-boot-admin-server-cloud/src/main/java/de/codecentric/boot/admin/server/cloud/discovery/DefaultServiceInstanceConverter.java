@@ -124,7 +124,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 	}
 
 	protected Map<String, String> getMetadata(ServiceInstance instance) {
-		return instance.getMetadata() != null ? instance.getMetadata() : emptyMap();
+		return (instance.getMetadata() != null) ? instance.getMetadata() : emptyMap();
 	}
 
 	public void setManagementContextPath(String managementContextPath) {

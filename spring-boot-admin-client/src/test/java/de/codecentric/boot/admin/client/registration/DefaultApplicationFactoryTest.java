@@ -218,8 +218,8 @@ public class DefaultApplicationFactoryTest {
 	private void publishApplicationReadyEvent(DefaultApplicationFactory factory, Integer serverport,
 			Integer managementport) {
 		factory.onWebServerInitialized(new TestWebServerInitializedEvent("server", serverport));
-		factory.onWebServerInitialized(
-				new TestWebServerInitializedEvent("management", managementport != null ? managementport : serverport));
+		factory.onWebServerInitialized(new TestWebServerInitializedEvent("management",
+				(managementport != null) ? managementport : serverport));
 	}
 
 	private static class TestWebServerInitializedEvent extends WebServerInitializedEvent {

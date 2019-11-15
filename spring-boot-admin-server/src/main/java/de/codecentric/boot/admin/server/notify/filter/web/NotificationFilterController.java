@@ -83,7 +83,7 @@ public class NotificationFilterController {
 	}
 
 	private NotificationFilter createFilter(@Nullable InstanceId id, String name, @Nullable Long ttl) {
-		Instant expiry = ttl != null && ttl >= 0 ? Instant.now().plusMillis(ttl) : null;
+		Instant expiry = ((ttl != null) && (ttl >= 0)) ? Instant.now().plusMillis(ttl) : null;
 		if (id != null) {
 			return new InstanceIdNotificationFilter(id, expiry);
 		}

@@ -46,8 +46,8 @@ public class Application {
 		Assert.notNull(name, "'name' must not be null");
 		this.name = name;
 		this.buildVersion = buildVersion;
-		this.status = status != null ? status : StatusInfo.STATUS_UNKNOWN;
-		this.statusTimestamp = statusTimestamp != null ? statusTimestamp : Instant.now();
+		this.status = (status != null) ? status : StatusInfo.STATUS_UNKNOWN;
+		this.statusTimestamp = (statusTimestamp != null) ? statusTimestamp : Instant.now();
 		if (instances.isEmpty()) {
 			this.instances = Collections.emptyList();
 		}

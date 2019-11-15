@@ -132,7 +132,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 			return this.getServiceUrl();
 		}
 
-		Ssl ssl = management.getSsl() != null ? management.getSsl() : server.getSsl();
+		Ssl ssl = (management.getSsl() != null) ? management.getSsl() : server.getSsl();
 		return UriComponentsBuilder.newInstance().scheme(getScheme(ssl)).host(getManagementHost())
 				.port(getLocalManagementPort()).toUriString();
 	}
@@ -213,7 +213,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 	}
 
 	protected String getScheme(@Nullable Ssl ssl) {
-		return ssl != null && ssl.isEnabled() ? "https" : "http";
+		return ((ssl != null) && ssl.isEnabled()) ? "https" : "http";
 	}
 
 	protected String getHost(InetAddress address) {

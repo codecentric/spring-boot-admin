@@ -76,7 +76,7 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
 					.path(getManagementContextPath()).toUriString();
 		}
 
-		Ssl ssl = management.getSsl() != null ? management.getSsl() : server.getSsl();
+		Ssl ssl = (management.getSsl() != null) ? management.getSsl() : server.getSsl();
 		return UriComponentsBuilder.newInstance().scheme(getScheme(ssl)).host(getManagementHost())
 				.port(getLocalManagementPort()).path(getManagementContextPath()).toUriString();
 	}

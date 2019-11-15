@@ -99,7 +99,8 @@ public class ClientProperties {
 	}
 
 	public boolean isAutoDeregistration(Environment environment) {
-		return this.autoDeregistration != null ? this.autoDeregistration : CloudPlatform.getActive(environment) != null;
+		return (this.autoDeregistration != null) ? this.autoDeregistration
+				: (CloudPlatform.getActive(environment) != null);
 	}
 
 }

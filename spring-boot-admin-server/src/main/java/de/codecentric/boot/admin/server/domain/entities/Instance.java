@@ -100,7 +100,7 @@ public class Instance implements Serializable {
 		this.statusInfo = statusInfo;
 		this.statusTimestamp = statusTimestamp;
 		this.info = info;
-		this.endpoints = registered && registration != null
+		this.endpoints = (registered && (registration != null))
 				? endpoints.withEndpoint(Endpoint.HEALTH, registration.getHealthUrl()) : endpoints;
 		this.unsavedEvents = unsavedEvents;
 		this.buildVersion = buildVersion;
@@ -150,7 +150,7 @@ public class Instance implements Serializable {
 
 	public Instance withEndpoints(Endpoints endpoints) {
 		Assert.notNull(endpoints, "'endpoints' must not be null");
-		Endpoints endpointsWithHealth = this.registration != null
+		Endpoints endpointsWithHealth = (this.registration != null)
 				? endpoints.withEndpoint(Endpoint.HEALTH, this.registration.getHealthUrl()) : endpoints;
 		if (Objects.equals(this.endpoints, endpointsWithHealth)) {
 			return this;
@@ -229,7 +229,7 @@ public class Instance implements Serializable {
 		}
 		else if (event instanceof InstanceInfoChangedEvent) {
 			Info info = ((InstanceInfoChangedEvent) event).getInfo();
-			Map<String, ?> metaData = this.registration != null ? this.registration.getMetadata() : emptyMap();
+			Map<String, ?> metaData = (this.registration != null) ? this.registration.getMetadata() : emptyMap();
 			return new Instance(this.id, event.getVersion(), this.registration, this.registered, this.statusInfo,
 					this.statusTimestamp, info, this.endpoints, updateBuildVersion(metaData, info.getValues()),
 					updateTags(metaData, info.getValues()), unsavedEvents);
