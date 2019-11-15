@@ -29,7 +29,7 @@ import de.codecentric.boot.admin.server.domain.values.BuildVersion;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 
 @lombok.Data
-public class Application {
+public final class Application {
 
 	private final String name;
 

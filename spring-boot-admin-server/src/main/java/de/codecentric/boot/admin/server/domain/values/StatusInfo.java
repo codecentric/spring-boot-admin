@@ -36,7 +36,7 @@ import static java.util.Arrays.asList;
  * @author Johannes Edmeier
  */
 @lombok.Data
-public class StatusInfo implements Serializable {
+public final class StatusInfo implements Serializable {
 
 	public static final String STATUS_UNKNOWN = "UNKNOWN";
 

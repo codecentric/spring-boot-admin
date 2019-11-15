@@ -144,7 +144,7 @@ public class ServletApplicationFactoryTest {
 				(managementport != null) ? managementport : serverport));
 	}
 
-	private static class TestWebServerInitializedEvent extends WebServerInitializedEvent {
+	private static final class TestWebServerInitializedEvent extends WebServerInitializedEvent {
 
 		private final WebServer server = mock(WebServer.class);
 

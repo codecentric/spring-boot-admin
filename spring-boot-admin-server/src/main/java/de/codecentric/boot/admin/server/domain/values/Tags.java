@@ -33,7 +33,7 @@ import static java.util.stream.Collectors.toMap;
 
 @lombok.EqualsAndHashCode
 @lombok.ToString
-public class Tags implements Serializable {
+public final class Tags implements Serializable {
 
 	private final Map<String, String> values;
 

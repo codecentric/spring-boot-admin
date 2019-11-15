@@ -51,7 +51,7 @@ import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
-public class LegacyEndpointConverters {
+public final class LegacyEndpointConverters {
 
 	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE_MAP = new ParameterizedTypeReference<Map<String, Object>>() {
 	};
