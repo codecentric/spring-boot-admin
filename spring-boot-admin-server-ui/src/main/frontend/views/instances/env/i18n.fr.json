@@ -5,6 +5,7 @@
       "manager": "Gestionnaire d'environnement",
       "active_profile": "Profil",
       "context_refresh": "Rafraîchir le contexte",
+      "context_refresh_all_instances": "Rafraîchir le contexte pour toutes les instances",
       "context_refresh_failed": "Echec",
       "context_refreshed": "Contexte rafraîchi",
       "context_reset": "Réinitialiser",

@@ -16,9 +16,9 @@
 
 <template>
   <div class="box">
-    <h1 class="is-size-6" v-text="$t('instances.env.manager')" />
+    <h1 class="is-size-6" v-text="$t('instances.env.manager')"/>
     <datalist id="allPropertyNames">
-      <option v-for="name in allPropertyNames" :key="name" v-text="name" />
+      <option v-for="name in allPropertyNames" :key="name" v-text="name"/>
     </datalist>
     <div class="field is-horizontal" v-for="(prop, index) in managedProperties" :key="`managed-${index}`">
       <div class="field-body">
@@ -28,7 +28,7 @@
                    v-model="prop.name" @input="handlePropertyNameChange(prop, index)"
             >
           </div>
-          <p class="help is-danger" v-text="prop.validation" />
+          <p class="help is-danger" v-text="prop.validation"/>
         </div>
         <div class="field">
           <div class="control has-icons-right" :class="{'is-loading' : prop.status === 'executing'}">
@@ -36,13 +36,13 @@
                    @input="prop.status = null"
             >
             <span class="icon is-right has-text-success" v-if="prop.status === 'completed'">
-              <font-awesome-icon icon="check" />
+              <font-awesome-icon icon="check"/>
             </span>
             <span class="icon is-right has-text-warning" v-else-if="prop.status === 'failed'">
-              <font-awesome-icon icon="exclamation-triangle" />
+              <font-awesome-icon icon="exclamation-triangle"/>
             </span>
             <span class="icon is-right" v-else-if="prop.input !== prop.value">
-              <font-awesome-icon icon="pencil-alt" />
+              <font-awesome-icon icon="pencil-alt"/>
             </span>
           </div>
         </div>
@@ -50,16 +50,27 @@
     </div>
     <div class="field is-horizontal">
       <div class="field-body" v-if="instance.hasEndpoint('refresh')">
-        <div class="field">
+        <div class="field is-grouped is-grouped-left">
           <div class="control">
             <sba-confirm-button class="button is-light"
                                 :class="{'is-loading' : refreshStatus === 'executing', 'is-danger' : refreshStatus === 'failed', 'is-info' : refreshStatus === 'completed'}"
                                 :disabled="refreshStatus === 'executing'"
                                 @click="refreshContext"
             >
-              <span v-if="refreshStatus === 'completed'" v-text="$t('instances.env.context_refreshed')" />
-              <span v-else-if="refreshStatus === 'failed'" v-text="$t('instances.env.context_refresh_failed')" />
-              <span v-else v-text="$t('instances.env.context_refresh')" />
+              <span v-if="refreshStatus === 'completed'" v-text="$t('instances.env.context_refreshed')"/>
+              <span v-else-if="refreshStatus === 'failed'" v-text="$t('instances.env.context_refresh_failed')"/>
+              <span v-else v-text="$t('instances.env.context_refresh')"/>
+            </sba-confirm-button>
+          </div>
+          <div class="control">
+            <sba-confirm-button class="button is-light"
+                                :class="{'is-loading' : refreshStatusAllInstances === 'executing', 'is-danger' : refreshStatusAllInstances === 'failed', 'is-info' : refreshStatusAllInstances === 'completed'}"
+                                :disabled="refreshStatusAllInstances === 'executing'"
+                                @click="refreshContextAllInstances"
+            >
+              <span v-if="refreshStatusAllInstances === 'completed'" v-text="$t('instances.env.context_refreshed')"/>
+              <span v-else-if="refreshStatusAllInstances === 'failed'" v-text="$t('instances.env.context_refresh_failed')"/>
+              <span v-else v-text="$t('instances.env.context_refresh_all_instances')"/>
             </sba-confirm-button>
           </div>
         </div>
@@ -72,9 +83,9 @@
                     :disabled="!hasManagedProperty || resetStatus === 'executing'"
                     @click="resetEnvironment"
             >
-              <span v-if="resetStatus === 'completed'" v-text="$t('instances.env.context_resetted')" />
-              <span v-else-if="resetStatus === 'failed'" v-text="$t('instances.env.context_reset_failed')" />
-              <span v-else v-text="$t('instances.env.context_reset')" />
+              <span v-if="resetStatus === 'completed'" v-text="$t('instances.env.context_resetted')"/>
+              <span v-else-if="resetStatus === 'failed'" v-text="$t('instances.env.context_reset_failed')"/>
+              <span v-else v-text="$t('instances.env.context_reset')"/>
             </button>
           </div>
           <div class="control">
@@ -83,9 +94,9 @@
                     :disabled="hasErrorProperty || !hasChangedProperty || updateStatus === 'executing'"
                     @click="updateEnvironment"
             >
-              <span v-if="updateStatus === 'completed'" v-text="$t('instances.env.context_updated')" />
-              <span v-else-if="updateStatus === 'failed'" v-text="$t('instances.env.context_update_failed')" />
-              <span v-else v-text="$t('instances.env.context_updated')" />
+              <span v-if="updateStatus === 'completed'" v-text="$t('instances.env.context_updated')"/>
+              <span v-else-if="updateStatus === 'failed'" v-text="$t('instances.env.context_update_failed')"/>
+              <span v-else v-text="$t('instances.env.context_updated')"/>
             </button>
           </div>
         </div>
@@ -115,6 +126,7 @@
     data: () => ({
       error: null,
       refreshStatus: null,
+      refreshStatusAllInstances: null,
       resetStatus: null,
       updateStatus: null,
       managedProperties: [{
@@ -163,6 +175,18 @@
           .subscribe({
             complete: () => {
               setTimeout(() => vm.refreshStatus = null, 2500);
+              return vm.$emit('reset');
+            },
+            error: () => vm.$emit('reset')
+          });
+      },
+      refreshContextAllInstances() {
+        const vm = this;
+        from(vm.instance.refreshContextAllInstances())
+          .pipe(listen(status => vm.refreshStatusAllInstances = status))
+          .subscribe({
+            complete: () => {
+              setTimeout(() => vm.refreshStatusAllInstances = null, 2500);
               return vm.$emit('reset');
             },
             error: () => vm.$emit('reset')

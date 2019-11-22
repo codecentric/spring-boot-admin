@@ -5,6 +5,7 @@
       "manager": "환경 관리자",
       "active_profile": "프로파일",
       "context_refresh": "컨텍스트 갱신",
+      "context_refresh_all_instances": "모든 인스턴스의 컨텍스트를 새로 고칩니다",
       "context_refresh_failed": "실패",
       "context_refreshed": "컨텍스트가 갱신되었습니다.",
       "context_reset": "초기화",

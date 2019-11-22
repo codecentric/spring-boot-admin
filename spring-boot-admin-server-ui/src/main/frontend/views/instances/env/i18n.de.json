@@ -5,6 +5,7 @@
       "manager": "Umgebungskonfiguration anpassen",
       "active_profile": "Profil",
       "context_refresh": "Kontext neuladen",
+      "context_refresh_all_instances": "Aktualisieren Sie den Kontext aller Instanzen",
       "context_refresh_failed": "Fehlgeschlagen",
       "context_refreshed": "Kontext neu geladen",
       "context_reset": "Zurücksetzen",
