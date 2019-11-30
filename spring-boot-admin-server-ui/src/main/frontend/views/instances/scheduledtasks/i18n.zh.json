@@ -1,10 +1,10 @@
 {
   "instances": {
     "scheduledtasks": {
-      "label" : "计划任务",
+      "label": "计划任务",
+      "no_scheduledtasks": "没有计划任务。",
       "cron": {
         "expression": "表达式",
-        "no_scheduledtasks": "没有计划任务。",
         "runnable": "可运行",
         "title": "计划任务"
       },
