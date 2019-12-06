@@ -20,7 +20,9 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 import javax.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 
 /**
@@ -29,32 +31,35 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
  * @author Johannes Edmeier
  */
 @lombok.Data
-public class Info implements Serializable {
-    private static final Info EMPTY = new Info(Collections.emptyMap());
+public final class Info implements Serializable {
 
-    private final Map<String, Object> values;
+	private static final Info EMPTY = new Info(Collections.emptyMap());
 
-    private Info(Map<String, Object> values) {
-        if (values.isEmpty()) {
-            this.values = Collections.emptyMap();
-        } else {
-            this.values = Collections.unmodifiableMap(new LinkedHashMap<>(values));
-        }
-    }
+	private final Map<String, Object> values;
 
-    public static Info from(@Nullable Map<String, Object> values) {
-        if (values == null || values.isEmpty()) {
-            return empty();
-        }
-        return new Info(values);
-    }
+	private Info(Map<String, Object> values) {
+		if (values.isEmpty()) {
+			this.values = Collections.emptyMap();
+		}
+		else {
+			this.values = Collections.unmodifiableMap(new LinkedHashMap<>(values));
+		}
+	}
 
-    public static Info empty() {
-        return EMPTY;
-    }
+	public static Info from(@Nullable Map<String, Object> values) {
+		if (values == null || values.isEmpty()) {
+			return empty();
+		}
+		return new Info(values);
+	}
 
-    @JsonAnyGetter
-    public Map<String, Object> getValues() {
-        return this.values;
-    }
+	public static Info empty() {
+		return EMPTY;
+	}
+
+	@JsonAnyGetter
+	public Map<String, Object> getValues() {
+		return this.values;
+	}
+
 }

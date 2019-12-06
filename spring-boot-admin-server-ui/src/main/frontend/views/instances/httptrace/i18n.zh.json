@@ -1,0 +1,31 @@
+{
+  "instances": {
+    "httptrace": {
+      "label": "HTTP跟踪",
+      "chart": {
+        "avg_time": "平均时长",
+        "max_time": "最大时长",
+        "status_4xx": "4xx失败总数",
+        "status_5xx": "5xx失败总数",
+        "successful_requests": "请求成功",
+        "total_requests": "请求总数"
+      },
+      "content_type": "内容类型",
+      "fetching_failed": "获取跟踪信息失败。",
+      "limit": "limit",
+      "filter": {
+        "client_errors": "客户端错误",
+        "exclude_actuator": "排除 {actuator}/**",
+        "server_errors": "服务器错误",
+        "success": "请求成功"
+      },
+      "length": "长度",
+      "method": "方法",
+      "no_traces_found": "没有跟踪信息。",
+      "status": "状态",
+      "time": "时长",
+      "timestamp": "时间戳",
+      "uri": "路径"
+    }
+  }
+}

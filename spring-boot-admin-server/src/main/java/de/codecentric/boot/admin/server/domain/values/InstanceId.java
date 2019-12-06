@@ -17,35 +17,38 @@
 package de.codecentric.boot.admin.server.domain.values;
 
 import java.io.Serializable;
-import org.springframework.util.Assert;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import org.springframework.util.Assert;
 
 /**
  * Value type for the instance identifier
  */
 @lombok.Data
 public final class InstanceId implements Serializable, Comparable<InstanceId> {
-    private final String value;
 
-    private InstanceId(String value) {
-        Assert.hasText(value, "'value' must have text");
-        this.value = value;
-    }
+	private final String value;
 
-    @JsonCreator
-    public static InstanceId of(String value) {
-        return new InstanceId(value);
-    }
+	private InstanceId(String value) {
+		Assert.hasText(value, "'value' must have text");
+		this.value = value;
+	}
 
-    @JsonValue
-    @Override
-    public String toString() {
-        return value;
-    }
+	@JsonCreator
+	public static InstanceId of(String value) {
+		return new InstanceId(value);
+	}
 
-    @Override
-    public int compareTo(InstanceId that) {
-        return this.value.compareTo(that.value);
-    }
+	@JsonValue
+	@Override
+	public String toString() {
+		return value;
+	}
+
+	@Override
+	public int compareTo(InstanceId that) {
+		return this.value.compareTo(that.value);
+	}
+
 }

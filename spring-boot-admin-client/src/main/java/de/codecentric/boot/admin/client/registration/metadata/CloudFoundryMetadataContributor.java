@@ -16,29 +16,32 @@
 
 package de.codecentric.boot.admin.client.registration.metadata;
 
-import de.codecentric.boot.admin.client.config.CloudFoundryApplicationProperties;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.springframework.util.StringUtils;
 
+import de.codecentric.boot.admin.client.config.CloudFoundryApplicationProperties;
+
 public class CloudFoundryMetadataContributor implements MetadataContributor {
-    private final CloudFoundryApplicationProperties cfApplicationProperties;
 
-    public CloudFoundryMetadataContributor(CloudFoundryApplicationProperties cfApplicationProperties) {
-        this.cfApplicationProperties = cfApplicationProperties;
-    }
+	private final CloudFoundryApplicationProperties cfApplicationProperties;
 
-    @Override
-    public Map<String, String> getMetadata() {
-        if (StringUtils.hasText(this.cfApplicationProperties.getApplicationId()) &&
-            StringUtils.hasText(this.cfApplicationProperties.getInstanceIndex())) {
-            Map<String, String> map = new HashMap<>();
-            map.put("applicationId", this.cfApplicationProperties.getApplicationId());
-            map.put("instanceId", this.cfApplicationProperties.getInstanceIndex());
-            return map;
-        }
-        return Collections.emptyMap();
-    }
+	public CloudFoundryMetadataContributor(CloudFoundryApplicationProperties cfApplicationProperties) {
+		this.cfApplicationProperties = cfApplicationProperties;
+	}
+
+	@Override
+	public Map<String, String> getMetadata() {
+		if (StringUtils.hasText(this.cfApplicationProperties.getApplicationId())
+				&& StringUtils.hasText(this.cfApplicationProperties.getInstanceIndex())) {
+			Map<String, String> map = new HashMap<>();
+			map.put("applicationId", this.cfApplicationProperties.getApplicationId());
+			map.put("instanceId", this.cfApplicationProperties.getInstanceIndex());
+			return map;
+		}
+		return Collections.emptyMap();
+	}
+
 }

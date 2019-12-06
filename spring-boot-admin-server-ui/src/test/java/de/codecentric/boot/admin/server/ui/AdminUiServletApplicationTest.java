@@ -16,8 +16,6 @@
 
 package de.codecentric.boot.admin.server.ui;
 
-import de.codecentric.boot.admin.server.config.EnableAdminServer;
-
 import org.junit.After;
 import org.junit.Before;
 import org.springframework.boot.SpringBootConfiguration;
@@ -29,35 +27,41 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+import de.codecentric.boot.admin.server.config.EnableAdminServer;
+
 public class AdminUiServletApplicationTest extends AbstractAdminUiApplicationTest {
-    private ConfigurableApplicationContext instance;
 
-    @Before
-    public void setUp() {
-        this.instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
-                                                      .web(WebApplicationType.SERVLET)
-                                                      .run("--server.port=0");
+	private ConfigurableApplicationContext instance;
 
-        super.setUp(this.instance.getEnvironment().getProperty("local.server.port", Integer.class, 0));
-    }
+	@Before
+	public void setUp() {
+		this.instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
+				.web(WebApplicationType.SERVLET).run("--server.port=0");
 
-    @After
-    public void shutdown() {
-        this.instance.close();
-    }
+		super.setUp(this.instance.getEnvironment().getProperty("local.server.port", Integer.class, 0));
+	}
 
-    @EnableAdminServer
-    @EnableAutoConfiguration
-    @SpringBootConfiguration
-    public static class TestAdminApplication {
-        @Configuration
-        public static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-            @Override
-            protected void configure(HttpSecurity http) throws Exception {
-                http.authorizeRequests().anyRequest().permitAll()//
-                    .and().csrf().disable();
-            }
-        }
-    }
+	@After
+	public void shutdown() {
+		this.instance.close();
+	}
+
+	@EnableAdminServer
+	@EnableAutoConfiguration
+	@SpringBootConfiguration
+	public static class TestAdminApplication {
+
+		@Configuration(proxyBeanMethods = false)
+		public static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+			@Override
+			protected void configure(HttpSecurity http) throws Exception {
+				http.authorizeRequests().anyRequest().permitAll()//
+						.and().csrf().disable();
+			}
+
+		}
+
+	}
 
 }

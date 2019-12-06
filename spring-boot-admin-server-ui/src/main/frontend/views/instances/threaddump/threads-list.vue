@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2019 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -26,15 +26,13 @@
     </thead>
     <tbody>
       <template v-for="thread in threadTimelines">
-        <tr class="is-selectable" :key="thread.threadId"
-            @click="showDetails[thread.threadId] ? $delete(showDetails, thread.threadId) : $set(showDetails, thread.threadId, true)"
-        >
+        <tr class="is-selectable" :key="thread.threadId">
           <td class="threads__thread-name">
             <thread-tag :thread-state="thread.threadState" />
             <span v-text="thread.threadName" />
           </td>
           <td class="threads__timeline">
-            <svg :id="`thread-${thread.threadId}`" height="26px" />
+            <svg :id="`thread-${thread.threadId}`" height="32px" />
           </td>
         </tr>
         <tr :key="`${thread.threadId}-detail`"
@@ -50,44 +48,44 @@
                 <td v-text="$t('instances.threaddump.thread_name')" />
                 <td v-text="thread.threadName" />
               </tr>
-              <tr>
-                <td v-text="$t('instances.threaddump.thread_state')" />
-                <td v-text="thread.threadState" />
-              </tr>
-              <template v-if="thread.details !== null">
+              <template v-if="getThreadDetails(thread) !== null">
+                <tr>
+                  <td v-text="$t('instances.threaddump.thread_state')" />
+                  <td v-text="getThreadDetails(thread).threadState" />
+                </tr>
                 <tr>
                   <td v-text="$t('instances.threaddump.thread_details_blocked_count')" />
-                  <td v-text="thread.details.blockedCount" />
+                  <td v-text="getThreadDetails(thread).blockedCount" />
                 </tr>
                 <tr>
                   <td v-text="$t('instances.threaddump.thread_details_blocked_time')" />
-                  <td v-text="thread.details.blockedTime" />
+                  <td v-text="getThreadDetails(thread).blockedTime" />
                 </tr>
                 <tr>
                   <td v-text="$t('instances.threaddump.thread_details_waited_count')" />
-                  <td v-text="thread.details.waitedCount" />
+                  <td v-text="getThreadDetails(thread).waitedCount" />
                 </tr>
                 <tr>
                   <td v-text="$t('instances.threaddump.thread_details_waited_time')" />
-                  <td v-text="thread.details.waitedTime" />
+                  <td v-text="getThreadDetails(thread).waitedTime" />
                 </tr>
                 <tr>
                   <td v-text="$t('instances.threaddump.thread_details_lock_name')" />
-                  <td v-text="thread.details.lockName" />
+                  <td v-text="getThreadDetails(thread).lockName" />
                 </tr>
                 <tr>
                   <td v-text="$t('instances.threaddump.thread_details_lock_owner_id')" />
-                  <td v-text="thread.details.lockOwnerId" />
+                  <td v-text="getThreadDetails(thread).lockOwnerId" />
                 </tr>
                 <tr>
                   <td v-text="$t('instances.threaddump.thread_details_lock_owner_name')" />
-                  <td v-text="thread.details.lockOwnerName" />
+                  <td v-text="getThreadDetails(thread).lockOwnerName" />
                 </tr>
-                <tr v-if="thread.details.stackTrace.length > 0">
+                <tr v-if="getThreadDetails(thread).stackTrace.length > 0">
                   <td colspan="2">
                     <span v-text="$t('term.stacktrace')" />
                     <pre class="threads__thread-stacktrace"><template
-                      v-for="(frame, idx) in thread.details.stackTrace"
+                      v-for="(frame, idx) in getThreadDetails(thread).stackTrace"
                     ><span
                       :key="`frame-${thread.threadId}-${idx}`"
                       v-text="`${frame.className}.${frame.methodName}(${frame.fileName}:${frame.lineNumber})`"
@@ -107,11 +105,11 @@
   </table>
 </template>
 <script>
-  import d3 from '@/utils/d3';
-  import moment from 'moment';
-  import threadTag from './thread-tag';
+    import d3 from '@/utils/d3';
+    import moment from 'moment';
+    import threadTag from './thread-tag';
 
-  const maxPixelsPerSeconds = 15;
+    const maxPixelsPerSeconds = 15;
 
   export default {
     props: {
@@ -133,6 +131,9 @@
       }
     },
     methods: {
+      getThreadDetails(thread) {
+        return thread.timeline.find(entry => entry.start === this.showDetails[thread.threadId]).details
+      },
       getTimeExtent(timelines) {
         return Object.entries(timelines).map(([, value]) => value.timeline)
           .map(timeline => ({
@@ -143,6 +144,21 @@
             start: Math.min(current.start, next.start),
             end: Math.max(current.end, next.end)
           }), {start: Number.MAX_SAFE_INTEGER, end: Number.MIN_SAFE_INTEGER});
+      },
+      showThreadDetails({threadId, start}) {
+        const previousSelectedStart = this.showDetails[threadId];
+        if (previousSelectedStart) {
+          d3.selectAll('#rect-threadid-' + threadId + '-start-' + previousSelectedStart)
+            .attr('class', d => `thread thread--${d.threadState.toLowerCase()}`);
+        }
+
+        if (previousSelectedStart === start) {
+          this.$delete(this.showDetails, threadId)
+        } else {
+          this.$set(this.showDetails, threadId, start);
+          d3.selectAll('#rect-threadid-' + threadId + '-start-' + start)
+            .attr('class', d => `thread thread--${d.threadState.toLowerCase()} thread--clicked`)
+        }
       },
       async drawTimelines(timelines) {
         if (timelines) {
@@ -169,13 +185,17 @@
 
             d.enter()
               .append('rect')
+              .attr('id', 'rect-threadid-' + threadId + '-start-' + value.timeline[value.timeline.length - 1].start)
+              .attr('class', d => `thread thread--${d.threadState.toLowerCase()}`)
               .merge(d)
-              .attr('class', d => `thread--${d.threadState.toLowerCase()}`)
               .attr('height', '2em')
               .attr('x', d => x(d.start))
               .transition(150)
-              .attr('width', d => Math.max(x(d.end) - x(d.start), x(d.start + 500) - x(d.start)))
-          });
+              .attr('width', d => Math.max(x(d.end) - x(d.start), x(d.start + 500) - x(d.start)));
+
+            d3.selectAll('#rect-threadid-' + threadId + '-start-' + value.timeline[value.timeline.length - 1].start)
+              .on('click', d => this.showThreadDetails({threadId: threadId, start: d.start}))
+         });
 
           this.lastEndPosition = x(end);
           if (wasInView && !this.isInView(this.lastEndPosition)) {
@@ -236,17 +256,44 @@
   }
 
   .thread {
+    stroke: $black;
+    stroke-width: 1px;
+    stroke-opacity: .1;
+
     &--runnable {
       fill: $success;
+
+      &:hover,
+      &.thread--clicked {
+        fill: darken($success, 20%)
+      }
     }
 
-    &--timed_waiting,
     &--waiting {
       fill: $warning;
+
+      &:hover,
+      &.thread--clicked {
+        fill: darken($warning, 20%)
+      }
+    }
+
+    &--timed_waiting {
+      fill: $warning;
+
+      &:hover,
+      &.thread--clicked {
+        fill: darken($warning, 20%)
+      }
     }
 
     &--blocked {
       fill: $danger;
+
+      &:hover,
+      &.thread--clicked {
+        fill: darken($warning, 20%)
+      }
     }
   }
 </style>

@@ -21,10 +21,10 @@ import com.hazelcast.test.TestHazelcastInstanceFactory;
 
 public class HazelcastEventStoreTest extends AbstractEventStoreTest {
 
-    @Override
-    protected InstanceEventStore createStore(int maxLogSizePerAggregate) {
-        HazelcastInstance hazelcast = new TestHazelcastInstanceFactory(1).newHazelcastInstance();
-        return new HazelcastEventStore(maxLogSizePerAggregate, hazelcast.getMap("testList"));
-    }
+	@Override
+	protected InstanceEventStore createStore(int maxLogSizePerAggregate) {
+		HazelcastInstance hazelcast = new TestHazelcastInstanceFactory(1).newHazelcastInstance();
+		return new HazelcastEventStore(maxLogSizePerAggregate, hazelcast.getMap("testList"));
+	}
 
 }

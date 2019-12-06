@@ -16,16 +16,13 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import reactor.core.publisher.Mono;
-
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.Nullable;
+
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
@@ -37,7 +34,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.client.RestTemplate;
+import reactor.core.publisher.Mono;
 
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
 /**
  * Notifier submitting events to let´s Chat.
@@ -45,127 +46,129 @@ import org.springframework.web.client.RestTemplate;
  * @author Rico Pahlisch
  */
 public class LetsChatNotifier extends AbstractStatusChangeNotifier {
-    private static final String DEFAULT_MESSAGE = "*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*";
 
-    private final SpelExpressionParser parser = new SpelExpressionParser();
-    private RestTemplate restTemplate = new RestTemplate();
+	private static final String DEFAULT_MESSAGE = "*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*";
 
-    /**
-     * Host URL for Let´s Chat
-     */
-    @Nullable
-    private URI url;
+	private final SpelExpressionParser parser = new SpelExpressionParser();
 
-    /**
-     * Name of the room
-     */
-    @Nullable
-    private String room;
+	private RestTemplate restTemplate;
 
-    /**
-     * Token for the Let´s chat API
-     */
-    @Nullable
-    private String token;
+	/**
+	 * Host URL for Let´s Chat
+	 */
+	@Nullable
+	private URI url;
 
-    /**
-     * username which sends notification
-     */
-    private String username = "Spring Boot Admin";
+	/**
+	 * Name of the room
+	 */
+	@Nullable
+	private String room;
 
-    /**
-     * Message template. SpEL template using event as root
-     */
-    private Expression message;
+	/**
+	 * Token for the Let´s chat API
+	 */
+	@Nullable
+	private String token;
 
-    public LetsChatNotifier(InstanceRepository repository) {
-        super(repository);
-        this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
-    }
+	/**
+	 * username which sends notification
+	 */
+	private String username = "Spring Boot Admin";
 
-    @Override
-    protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        // Let's Chat requiers the token as basic username, the password can be an arbitrary string.
-        String auth = Base64Utils.encodeToString(String.format("%s:%s", token, username)
-                                                       .getBytes(StandardCharsets.UTF_8));
-        headers.add(HttpHeaders.AUTHORIZATION, String.format("Basic %s", auth));
-        return Mono.fromRunnable(() -> restTemplate.exchange(createUrl(),
-            HttpMethod.POST,
-            new HttpEntity<>(createMessage(event, instance), headers),
-            Void.class
-        ));
-    }
+	/**
+	 * Message template. SpEL template using event as root
+	 */
+	private Expression message;
 
-    private URI createUrl() {
-        if (url == null) {
-            throw new IllegalStateException("'url' must not be null.");
-        }
-        return URI.create(String.format("%s/rooms/%s/messages", url, room));
-    }
+	public LetsChatNotifier(InstanceRepository repository, RestTemplate restTemplate) {
+		super(repository);
+		this.restTemplate = restTemplate;
+		this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
+	}
 
-    protected Object createMessage(InstanceEvent event, Instance instance) {
-        Map<String, String> messageJson = new HashMap<>();
-        messageJson.put("text", getText(event, instance));
-        return messageJson;
-    }
+	@Override
+	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		// Let's Chat requiers the token as basic username, the password can be an
+		// arbitrary string.
+		String auth = Base64Utils
+				.encodeToString(String.format("%s:%s", token, username).getBytes(StandardCharsets.UTF_8));
+		headers.add(HttpHeaders.AUTHORIZATION, String.format("Basic %s", auth));
+		return Mono.fromRunnable(() -> restTemplate.exchange(createUrl(), HttpMethod.POST,
+				new HttpEntity<>(createMessage(event, instance), headers), Void.class));
+	}
 
-    @Nullable
-    protected String getText(InstanceEvent event, Instance instance) {
-        Map<String, Object> root = new HashMap<>();
-        root.put("event", event);
-        root.put("instance", instance);
-        root.put("lastStatus", getLastStatus(event.getInstance()));
-        StandardEvaluationContext context = new StandardEvaluationContext(root);
-        context.addPropertyAccessor(new MapAccessor());
-        return message.getValue(context, String.class);
-    }
+	private URI createUrl() {
+		if (url == null) {
+			throw new IllegalStateException("'url' must not be null.");
+		}
+		return URI.create(String.format("%s/rooms/%s/messages", url, room));
+	}
 
-    public void setRestTemplate(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+	protected Object createMessage(InstanceEvent event, Instance instance) {
+		Map<String, String> messageJson = new HashMap<>();
+		messageJson.put("text", getText(event, instance));
+		return messageJson;
+	}
 
-    public void setUrl(@Nullable URI url) {
-        this.url = url;
-    }
+	@Nullable
+	protected String getText(InstanceEvent event, Instance instance) {
+		Map<String, Object> root = new HashMap<>();
+		root.put("event", event);
+		root.put("instance", instance);
+		root.put("lastStatus", getLastStatus(event.getInstance()));
+		StandardEvaluationContext context = new StandardEvaluationContext(root);
+		context.addPropertyAccessor(new MapAccessor());
+		return message.getValue(context, String.class);
+	}
 
-    @Nullable
-    public URI getUrl() {
-        return url;
-    }
+	public void setRestTemplate(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	public void setUrl(@Nullable URI url) {
+		this.url = url;
+	}
 
-    public String getUsername() {
-        return username;
-    }
+	@Nullable
+	public URI getUrl() {
+		return url;
+	}
 
-    public void setRoom(@Nullable String room) {
-        this.room = room;
-    }
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
-    @Nullable
-    public String getRoom() {
-        return room;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    public void setToken(@Nullable String token) {
-        this.token = token;
-    }
+	public void setRoom(@Nullable String room) {
+		this.room = room;
+	}
 
-    @Nullable
-    public String getToken() {
-        return token;
-    }
+	@Nullable
+	public String getRoom() {
+		return room;
+	}
 
-    public void setMessage(String message) {
-        this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
-    }
+	public void setToken(@Nullable String token) {
+		this.token = token;
+	}
 
-    public String getMessage() {
-        return message.getExpressionString();
-    }
+	@Nullable
+	public String getToken() {
+		return token;
+	}
+
+	public void setMessage(String message) {
+		this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
+	}
+
+	public String getMessage() {
+		return message.getExpressionString();
+	}
+
 }

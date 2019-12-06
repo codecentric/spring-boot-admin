@@ -16,32 +16,35 @@
 
 package de.codecentric.boot.admin.server.notify.filter;
 
+import java.time.Instant;
+
+import javax.annotation.Nullable;
+
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
-import java.time.Instant;
-import javax.annotation.Nullable;
-
 public class InstanceIdNotificationFilter extends ExpiringNotificationFilter {
-    private final InstanceId instanceId;
 
-    public InstanceIdNotificationFilter(InstanceId instanceId,  @Nullable Instant expiry) {
-        super(expiry);
-        this.instanceId = instanceId;
-    }
+	private final InstanceId instanceId;
 
-    @Override
-    protected boolean doFilter(InstanceEvent event, Instance instance) {
-        return instanceId.equals(event.getInstance());
-    }
+	public InstanceIdNotificationFilter(InstanceId instanceId, @Nullable Instant expiry) {
+		super(expiry);
+		this.instanceId = instanceId;
+	}
 
-    public InstanceId getInstanceId() {
-        return instanceId;
-    }
+	@Override
+	protected boolean doFilter(InstanceEvent event, Instance instance) {
+		return instanceId.equals(event.getInstance());
+	}
 
-    @Override
-    public String toString() {
-        return "NotificationFilter [instanceId=" + instanceId + ", expiry=" + getExpiry() + "]";
-    }
+	public InstanceId getInstanceId() {
+		return instanceId;
+	}
+
+	@Override
+	public String toString() {
+		return "NotificationFilter [instanceId=" + instanceId + ", expiry=" + getExpiry() + "]";
+	}
+
 }

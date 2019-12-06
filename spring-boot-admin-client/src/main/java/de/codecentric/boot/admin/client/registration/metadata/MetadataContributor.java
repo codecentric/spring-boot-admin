@@ -21,6 +21,6 @@ import java.util.Map;
 @FunctionalInterface
 public interface MetadataContributor {
 
-    Map<String, String> getMetadata();
+	Map<String, String> getMetadata();
 
 }

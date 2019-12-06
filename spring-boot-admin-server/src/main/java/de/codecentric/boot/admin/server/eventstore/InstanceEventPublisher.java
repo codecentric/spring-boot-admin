@@ -16,37 +16,42 @@
 
 package de.codecentric.boot.admin.server.eventstore;
 
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
-import reactor.core.publisher.UnicastProcessor;
-
 import java.util.List;
+
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
+import reactor.core.publisher.UnicastProcessor;
+
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
 public class InstanceEventPublisher implements Publisher<InstanceEvent> {
-    private static final Logger log = LoggerFactory.getLogger(InstanceEventPublisher.class);
-    private final Flux<InstanceEvent> publishedFlux;
-    private final FluxSink<InstanceEvent> sink;
 
-    protected InstanceEventPublisher() {
-        UnicastProcessor<InstanceEvent> unicastProcessor = UnicastProcessor.create();
-        this.publishedFlux = unicastProcessor.publish().autoConnect(0);
-        this.sink = unicastProcessor.sink();
-    }
+	private static final Logger log = LoggerFactory.getLogger(InstanceEventPublisher.class);
 
-    protected void publish(List<InstanceEvent> events) {
-        events.forEach(event -> {
-            log.debug("Event published {}", event);
-            this.sink.next(event);
-        });
-    }
+	private final Flux<InstanceEvent> publishedFlux;
 
-    @Override
-    public void subscribe(Subscriber<? super InstanceEvent> s) {
-        publishedFlux.subscribe(s);
-    }
+	private final FluxSink<InstanceEvent> sink;
+
+	protected InstanceEventPublisher() {
+		UnicastProcessor<InstanceEvent> unicastProcessor = UnicastProcessor.create();
+		this.publishedFlux = unicastProcessor.publish().autoConnect(0);
+		this.sink = unicastProcessor.sink();
+	}
+
+	protected void publish(List<InstanceEvent> events) {
+		events.forEach((event) -> {
+			log.debug("Event published {}", event);
+			this.sink.next(event);
+		});
+	}
+
+	@Override
+	public void subscribe(Subscriber<? super InstanceEvent> s) {
+		publishedFlux.subscribe(s);
+	}
+
 }

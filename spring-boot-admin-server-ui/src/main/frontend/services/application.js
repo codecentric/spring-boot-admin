@@ -106,7 +106,7 @@ class Application {
 
   async fetchLoggers() {
     const responses = convertBody(
-      (await this.axios.get(uri`actuator/loggers`, {headers: {'Accept': actuatorMimeTypes}})).data
+      (await this.axios.get(uri`actuator/loggers`, {headers: {'Accept': actuatorMimeTypes.join(',')}})).data
     );
     throwOnError(responses);
     return {responses};

@@ -17,11 +17,13 @@
 package de.codecentric.boot.admin.server.web.client.exception;
 
 public class InstanceWebClientException extends RuntimeException {
-    public InstanceWebClientException(String message) {
-        super(message);
-    }
 
-    public InstanceWebClientException(String message, Throwable cause) {
-        super(message, cause);
-    }
+	public InstanceWebClientException(String message) {
+		super(message);
+	}
+
+	public InstanceWebClientException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,16 @@ package de.codecentric.boot.admin.server.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class AdminServerMarkerConfiguration {
-    @Bean
-    public Marker adminServerMarker() {
-        return new Marker();
-    }
 
-    public static class Marker {
-    }
+	@Bean
+	public Marker adminServerMarker() {
+		return new Marker();
+	}
+
+	public static class Marker {
+
+	}
+
 }

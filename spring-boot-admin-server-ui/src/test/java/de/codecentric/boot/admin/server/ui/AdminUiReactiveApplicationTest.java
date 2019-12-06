@@ -16,8 +16,6 @@
 
 package de.codecentric.boot.admin.server.ui;
 
-import de.codecentric.boot.admin.server.config.EnableAdminServer;
-
 import org.junit.After;
 import org.junit.Before;
 import org.springframework.boot.SpringBootConfiguration;
@@ -29,31 +27,35 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
+import de.codecentric.boot.admin.server.config.EnableAdminServer;
+
 public class AdminUiReactiveApplicationTest extends AbstractAdminUiApplicationTest {
-    private ConfigurableApplicationContext instance;
 
-    @Before
-    public void setUp() {
-        this.instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
-                                                      .web(WebApplicationType.REACTIVE)
-                                                      .run("--server.port=0");
+	private ConfigurableApplicationContext instance;
 
-        super.setUp(this.instance.getEnvironment().getProperty("local.server.port", Integer.class, 0));
-    }
+	@Before
+	public void setUp() {
+		this.instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
+				.web(WebApplicationType.REACTIVE).run("--server.port=0");
 
-    @After
-    public void shutdown() {
-        this.instance.close();
-    }
+		super.setUp(this.instance.getEnvironment().getProperty("local.server.port", Integer.class, 0));
+	}
 
-    @EnableAdminServer
-    @EnableAutoConfiguration
-    @SpringBootConfiguration
-    public static class TestAdminApplication {
-        @Bean
-        public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-            return http.authorizeExchange().anyExchange().permitAll().and().csrf().disable().build();
-        }
-    }
+	@After
+	public void shutdown() {
+		this.instance.close();
+	}
+
+	@EnableAdminServer
+	@EnableAutoConfiguration
+	@SpringBootConfiguration
+	public static class TestAdminApplication {
+
+		@Bean
+		public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+			return http.authorizeExchange().anyExchange().permitAll().and().csrf().disable().build();
+		}
+
+	}
 
 }

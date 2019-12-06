@@ -1,0 +1,13 @@
+{
+  "instances": {
+    "metrics": {
+      "label": "性能",
+      "add_metric": "添加指标",
+      "fetch_failed": "获取性能指标失败。",
+      "fetching_tags": "正在获取可用标签",
+      "no_tags": "(没有标签)",
+      "no_tags_available": "没有可用的标签。",
+      "metrics_not_supported_spring_boot_1": "Spring Boot 1.x 的应用无法获取性能指标。"
+    }
+  }
+}

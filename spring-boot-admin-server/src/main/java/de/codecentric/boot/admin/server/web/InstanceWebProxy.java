@@ -16,19 +16,14 @@
 
 package de.codecentric.boot.admin.server.web;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
-import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
-import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
-import io.netty.handler.timeout.ReadTimeoutException;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.util.function.Tuples;
-
 import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.TimeoutException;
+
 import javax.annotation.Nullable;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.netty.handler.timeout.ReadTimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -39,124 +34,107 @@ import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.util.function.Tuples;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
+import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
 
 /**
- * Forwards a request to a single instances endpoint and will respond with:
- * - 502 (Bad Gateway) when any error occurs during the request
- * - 503 (Service unavailable) when the instance is not found
- * - 504 (Gateway timeout) when the request exceeds the timeout
+ * Forwards a request to a single instances endpoint and will respond with: - 502 (Bad
+ * Gateway) when any error occurs during the request - 503 (Service unavailable) when the
+ * instance is not found - 504 (Gateway timeout) when the request exceeds the timeout
  *
  * @author Johannes Edmeier
  */
 public class InstanceWebProxy {
-    private static final Logger log = LoggerFactory.getLogger(InstanceWebProxy.class);
-    private final InstanceWebClient instanceWebClient;
-    private final ExchangeStrategies strategies = ExchangeStrategies.withDefaults();
 
-    public InstanceWebProxy(InstanceWebClient instanceWebClient) {
-        this.instanceWebClient = instanceWebClient;
-    }
+	private static final Logger log = LoggerFactory.getLogger(InstanceWebProxy.class);
 
-    public Mono<ClientResponse> forward(Mono<Instance> instance,
-                                        URI uri,
-                                        HttpMethod method,
-                                        HttpHeaders headers,
-                                        BodyInserter<?, ? super ClientHttpRequest> bodyInserter) {
-        return instance.flatMap(i -> this.forward(i, uri, method, headers, bodyInserter))
-                       .switchIfEmpty(Mono.fromSupplier(() -> ClientResponse.create(HttpStatus.SERVICE_UNAVAILABLE,
-                           this.strategies
-                       ).build()));
-    }
+	private final InstanceWebClient instanceWebClient;
 
-    public Mono<ClientResponse> forward(Instance instance,
-                                        URI uri,
-                                        HttpMethod method,
-                                        HttpHeaders headers,
-                                        BodyInserter<?, ? super ClientHttpRequest> bodyInserter) {
-        log.trace("Proxy-Request for instance {} with URL '{}'", instance.getId(), uri);
-        WebClient.RequestBodySpec bodySpec = this.instanceWebClient.instance(instance)
-                                                                   .method(method)
-                                                                   .uri(uri)
-                                                                   .headers(h -> h.addAll(headers));
+	private final ExchangeStrategies strategies = ExchangeStrategies.withDefaults();
 
-        WebClient.RequestHeadersSpec<?> headersSpec = bodySpec;
-        if (requiresBody(method)) {
-            headersSpec = bodySpec.body(bodyInserter);
-        }
+	public InstanceWebProxy(InstanceWebClient instanceWebClient) {
+		this.instanceWebClient = instanceWebClient;
+	}
 
-        return headersSpec.exchange()
-                          .onErrorResume(ex -> ex instanceof ReadTimeoutException || ex instanceof TimeoutException,
-                              ex -> Mono.fromSupplier(() -> {
-                                  log.trace("Timeout for Proxy-Request for instance {} with URL '{}'",
-                                      instance.getId(),
-                                      uri
-                                  );
-                                  return ClientResponse.create(HttpStatus.GATEWAY_TIMEOUT, this.strategies).build();
-                              })
-                          )
-                          .onErrorResume(ResolveEndpointException.class, ex -> Mono.fromSupplier(() -> {
-                              log.trace("No Endpoint found for Proxy-Request for instance {} with URL '{}'",
-                                  instance.getId(),
-                                  uri
-                              );
-                              return ClientResponse.create(HttpStatus.NOT_FOUND, this.strategies).build();
-                          }))
-                          .onErrorResume(IOException.class, ex -> Mono.fromSupplier(() -> {
-                              log.trace("Proxy-Request for instance {} with URL '{}' errored",
-                                  instance.getId(),
-                                  uri,
-                                  ex
-                              );
-                              return ClientResponse.create(HttpStatus.BAD_GATEWAY, this.strategies).build();
-                          }));
-    }
+	public Mono<ClientResponse> forward(Mono<Instance> instance, URI uri, HttpMethod method, HttpHeaders headers,
+			BodyInserter<?, ? super ClientHttpRequest> bodyInserter) {
+		return instance.flatMap((i) -> this.forward(i, uri, method, headers, bodyInserter)).switchIfEmpty(Mono
+				.fromSupplier(() -> ClientResponse.create(HttpStatus.SERVICE_UNAVAILABLE, this.strategies).build()));
+	}
 
-    public Flux<InstanceResponse> forward(Flux<Instance> instances,
-                                          URI uri,
-                                          HttpMethod method,
-                                          HttpHeaders headers,
-                                          BodyInserter<?, ? super ClientHttpRequest> bodyInserter) {
-        return instances.flatMap(instance -> this.forward(instance, uri, method, headers, bodyInserter)
-                                                 .map(clientResponse -> Tuples.of(instance.getId(), clientResponse)))
-                        .flatMap(t -> {
-                            ClientResponse clientResponse = t.getT2();
-                            InstanceResponse.Builder response = InstanceResponse.builder()
-                                                                                .instanceId(t.getT1())
-                                                                                .status(clientResponse.rawStatusCode())
-                                                                                .contentType(String.join(
-                                                                                    ", ",
-                                                                                    clientResponse.headers()
-                                                                                                  .header(HttpHeaders.CONTENT_TYPE)
-                                                                                ));
-                            return clientResponse.bodyToMono(String.class)
-                                                 .map(response::body)
-                                                 .defaultIfEmpty(response)
-                                                 .map(InstanceResponse.Builder::build);
-                        });
-    }
+	public Mono<ClientResponse> forward(Instance instance, URI uri, HttpMethod method, HttpHeaders headers,
+			BodyInserter<?, ? super ClientHttpRequest> bodyInserter) {
+		log.trace("Proxy-Request for instance {} with URL '{}'", instance.getId(), uri);
+		WebClient.RequestBodySpec bodySpec = this.instanceWebClient.instance(instance).method(method).uri(uri)
+				.headers((h) -> h.addAll(headers));
 
-    @lombok.Data
-    @lombok.Builder(builderClassName = "Builder")
-    public static class InstanceResponse {
-        private final InstanceId instanceId;
-        private final int status;
-        @Nullable
-        @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        private final String body;
-        @Nullable
-        @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        private final String contentType;
-    }
+		WebClient.RequestHeadersSpec<?> headersSpec = bodySpec;
+		if (requiresBody(method)) {
+			headersSpec = bodySpec.body(bodyInserter);
+		}
 
-    private boolean requiresBody(HttpMethod method) {
-        switch (method) {
-            case PUT:
-            case POST:
-            case PATCH:
-                return true;
-            default:
-                return false;
-        }
-    }
+		return headersSpec.exchange()
+				.onErrorResume((ex) -> ex instanceof ReadTimeoutException || ex instanceof TimeoutException,
+						(ex) -> Mono.fromSupplier(() -> {
+							log.trace("Timeout for Proxy-Request for instance {} with URL '{}'", instance.getId(), uri);
+							return ClientResponse.create(HttpStatus.GATEWAY_TIMEOUT, this.strategies).build();
+						}))
+				.onErrorResume(ResolveEndpointException.class, (ex) -> Mono.fromSupplier(() -> {
+					log.trace("No Endpoint found for Proxy-Request for instance {} with URL '{}'", instance.getId(),
+							uri);
+					return ClientResponse.create(HttpStatus.NOT_FOUND, this.strategies).build();
+				})).onErrorResume(IOException.class, (ex) -> Mono.fromSupplier(() -> {
+					log.trace("Proxy-Request for instance {} with URL '{}' errored", instance.getId(), uri, ex);
+					return ClientResponse.create(HttpStatus.BAD_GATEWAY, this.strategies).build();
+				}));
+	}
+
+	public Flux<InstanceResponse> forward(Flux<Instance> instances, URI uri, HttpMethod method, HttpHeaders headers,
+			BodyInserter<?, ? super ClientHttpRequest> bodyInserter) {
+		return instances.flatMap((instance) -> this.forward(instance, uri, method, headers, bodyInserter)
+				.map((clientResponse) -> Tuples.of(instance.getId(), clientResponse))).flatMap((t) -> {
+					ClientResponse clientResponse = t.getT2();
+					InstanceResponse.Builder response = InstanceResponse.builder().instanceId(t.getT1())
+							.status(clientResponse.rawStatusCode())
+							.contentType(String.join(", ", clientResponse.headers().header(HttpHeaders.CONTENT_TYPE)));
+					return clientResponse.bodyToMono(String.class).map(response::body).defaultIfEmpty(response)
+							.map(InstanceResponse.Builder::build);
+				});
+	}
+
+	private boolean requiresBody(HttpMethod method) {
+		switch (method) {
+		case PUT:
+		case POST:
+		case PATCH:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	@lombok.Data
+	@lombok.Builder(builderClassName = "Builder")
+	public static class InstanceResponse {
+
+		private final InstanceId instanceId;
+
+		private final int status;
+
+		@Nullable
+		@JsonInclude(JsonInclude.Include.NON_EMPTY)
+		private final String body;
+
+		@Nullable
+		@JsonInclude(JsonInclude.Include.NON_EMPTY)
+		private final String contentType;
+
+	}
+
 }

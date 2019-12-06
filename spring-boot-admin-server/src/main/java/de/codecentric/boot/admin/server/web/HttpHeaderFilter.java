@@ -21,35 +21,39 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.springframework.http.HttpHeaders;
 
 import static java.util.stream.Collectors.toMap;
 
 /**
- * Returns a new HttpHeaders from the given one but omits the hop-by-hop headers and specified headers.
+ * Returns a new HttpHeaders from the given one but omits the hop-by-hop headers and
+ * specified headers.
  *
  * @author Johannes Edmeier
  */
 public class HttpHeaderFilter {
-    private static final String[] HOP_BY_HOP_HEADERS = new String[]{"Host", "Connection", "Keep-Alive", "Proxy-Authenticate", "Proxy-Authorization", "TE", "Trailer", "Transfer-Encoding", "Upgrade", "X-Application-Context"};
-    private final Set<String> ignoredHeaders;
 
-    public HttpHeaderFilter(Set<String> ignoredHeaders) {
-        this.ignoredHeaders = Stream.concat(ignoredHeaders.stream(), Arrays.stream(HOP_BY_HOP_HEADERS))
-                                    .map(String::toLowerCase)
-                                    .collect(Collectors.toSet());
-    }
+	private static final String[] HOP_BY_HOP_HEADERS = new String[] { "Host", "Connection", "Keep-Alive",
+			"Proxy-Authenticate", "Proxy-Authorization", "TE", "Trailer", "Transfer-Encoding", "Upgrade",
+			"X-Application-Context" };
 
-    public HttpHeaders filterHeaders(HttpHeaders headers) {
-        HttpHeaders filtered = new HttpHeaders();
-        filtered.putAll(headers.entrySet()
-                               .stream()
-                               .filter(e -> this.includeHeader(e.getKey()))
-                               .collect(toMap(Map.Entry::getKey, Map.Entry::getValue)));
-        return filtered;
-    }
+	private final Set<String> ignoredHeaders;
 
-    private boolean includeHeader(String header) {
-        return !this.ignoredHeaders.contains(header.toLowerCase());
-    }
+	public HttpHeaderFilter(Set<String> ignoredHeaders) {
+		this.ignoredHeaders = Stream.concat(ignoredHeaders.stream(), Arrays.stream(HOP_BY_HOP_HEADERS))
+				.map(String::toLowerCase).collect(Collectors.toSet());
+	}
+
+	public HttpHeaders filterHeaders(HttpHeaders headers) {
+		HttpHeaders filtered = new HttpHeaders();
+		filtered.putAll(headers.entrySet().stream().filter((e) -> this.includeHeader(e.getKey()))
+				.collect(toMap(Map.Entry::getKey, Map.Entry::getValue)));
+		return filtered;
+	}
+
+	private boolean includeHeader(String header) {
+		return !this.ignoredHeaders.contains(header.toLowerCase());
+	}
+
 }

@@ -16,33 +16,36 @@
 
 package de.codecentric.boot.admin.server.notify.filter;
 
+import java.time.Instant;
+
+import javax.annotation.Nullable;
+
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
-import java.time.Instant;
-import javax.annotation.Nullable;
-
 public abstract class ExpiringNotificationFilter extends AbstractNotificationFilter {
-    @Nullable
-    private final Instant expiry;
 
-    public ExpiringNotificationFilter(@Nullable Instant expiry) {
-        this.expiry = expiry;
-    }
+	@Nullable
+	private final Instant expiry;
 
-    public boolean isExpired() {
-        return expiry != null && expiry.isBefore(Instant.now());
-    }
+	public ExpiringNotificationFilter(@Nullable Instant expiry) {
+		this.expiry = expiry;
+	}
 
-    @Override
-    public boolean filter(InstanceEvent event, Instance instance) {
-        return !isExpired() && doFilter(event, instance);
-    }
+	public boolean isExpired() {
+		return expiry != null && expiry.isBefore(Instant.now());
+	}
 
-    protected abstract boolean doFilter(InstanceEvent event, Instance instance);
+	@Override
+	public boolean filter(InstanceEvent event, Instance instance) {
+		return !isExpired() && doFilter(event, instance);
+	}
 
-    @Nullable
-    public Instant getExpiry() {
-        return expiry;
-    }
+	protected abstract boolean doFilter(InstanceEvent event, Instance instance);
+
+	@Nullable
+	public Instant getExpiry() {
+		return expiry;
+	}
+
 }

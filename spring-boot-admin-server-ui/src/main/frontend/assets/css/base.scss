@@ -140,9 +140,6 @@ path.domain {
   }
 }
 
-//animation
-@import "~@/assets/css/utilities";
-
 .fade-in-enter-active {
   animation: .5s fade-in forwards;
 }

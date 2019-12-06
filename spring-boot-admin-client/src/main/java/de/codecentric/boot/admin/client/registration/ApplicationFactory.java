@@ -17,15 +17,16 @@
 package de.codecentric.boot.admin.client.registration;
 
 /**
- * Classes implementing this interface are responsible for creating an {@link Application} class
- * which is used to register at the admin server.
+ * Classes implementing this interface are responsible for creating an {@link Application}
+ * class which is used to register at the admin server.
  *
  * @author Johannes Edmeier
  */
 public interface ApplicationFactory {
-    /**
-     * @return {@link Application} instance;
-     */
-    Application createApplication();
+
+	/**
+	 * @return {@link Application} instance;
+	 */
+	Application createApplication();
 
 }

@@ -16,44 +16,48 @@
 
 package de.codecentric.boot.admin;
 
+import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.notify.CompositeNotifier;
 import de.codecentric.boot.admin.server.notify.Notifier;
 import de.codecentric.boot.admin.server.notify.RemindingNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
 
-import java.time.Duration;
-import java.util.Collections;
-import java.util.List;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-
 // tag::configuration-filtering-notifier[]
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class NotifierConfig {
-    private final InstanceRepository repository;
-    private final ObjectProvider<List<Notifier>> otherNotifiers;
 
-    public NotifierConfig(InstanceRepository repository, ObjectProvider<List<Notifier>> otherNotifiers) {
-        this.repository = repository;
-        this.otherNotifiers = otherNotifiers;
-    }
+	private final InstanceRepository repository;
 
-    @Bean
-    public FilteringNotifier filteringNotifier() { // <1>
-        CompositeNotifier delegate = new CompositeNotifier(this.otherNotifiers.getIfAvailable(Collections::emptyList));
-        return new FilteringNotifier(delegate, this.repository);
-    }
+	private final ObjectProvider<List<Notifier>> otherNotifiers;
 
-    @Primary
-    @Bean(initMethod = "start", destroyMethod = "stop")
-    public RemindingNotifier remindingNotifier() { // <2>
-        RemindingNotifier notifier = new RemindingNotifier(filteringNotifier(), this.repository);
-        notifier.setReminderPeriod(Duration.ofMinutes(10));
-        notifier.setCheckReminderInverval(Duration.ofSeconds(10));
-        return notifier;
-    }
+	public NotifierConfig(InstanceRepository repository, ObjectProvider<List<Notifier>> otherNotifiers) {
+		this.repository = repository;
+		this.otherNotifiers = otherNotifiers;
+	}
+
+	@Bean
+	public FilteringNotifier filteringNotifier() { // <1>
+		CompositeNotifier delegate = new CompositeNotifier(this.otherNotifiers.getIfAvailable(Collections::emptyList));
+		return new FilteringNotifier(delegate, this.repository);
+	}
+
+	@Primary
+	@Bean(initMethod = "start", destroyMethod = "stop")
+	public RemindingNotifier remindingNotifier() { // <2>
+		RemindingNotifier notifier = new RemindingNotifier(filteringNotifier(), this.repository);
+		notifier.setReminderPeriod(Duration.ofMinutes(10));
+		notifier.setCheckReminderInverval(Duration.ofSeconds(10));
+		return notifier;
+	}
+
 }
 // end::configuration-filtering-notifier[]

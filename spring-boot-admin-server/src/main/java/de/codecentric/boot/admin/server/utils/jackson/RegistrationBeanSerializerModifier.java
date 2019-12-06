@@ -16,35 +16,35 @@
 
 package de.codecentric.boot.admin.server.utils.jackson;
 
-import de.codecentric.boot.admin.server.domain.values.Registration;
-
 import java.util.List;
+
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 
+import de.codecentric.boot.admin.server.domain.values.Registration;
+
 public class RegistrationBeanSerializerModifier extends BeanSerializerModifier {
 
-    private final JsonSerializer<Object> metadataSerializer;
+	private final JsonSerializer<Object> metadataSerializer;
 
-    @SuppressWarnings("unchecked")
-    public RegistrationBeanSerializerModifier(SanitizingMapSerializer metadataSerializer) {
-        this.metadataSerializer = (JsonSerializer<Object>) (JsonSerializer) metadataSerializer;
-    }
+	@SuppressWarnings("unchecked")
+	public RegistrationBeanSerializerModifier(SanitizingMapSerializer metadataSerializer) {
+		this.metadataSerializer = (JsonSerializer<Object>) (JsonSerializer) metadataSerializer;
+	}
 
-    @Override
-    public List<BeanPropertyWriter> changeProperties(SerializationConfig config,
-                                                     BeanDescription beanDesc,
-                                                     List<BeanPropertyWriter> beanProperties) {
-        if (!Registration.class.isAssignableFrom(beanDesc.getBeanClass())) {
-            return beanProperties;
-        }
+	@Override
+	public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription beanDesc,
+			List<BeanPropertyWriter> beanProperties) {
+		if (!Registration.class.isAssignableFrom(beanDesc.getBeanClass())) {
+			return beanProperties;
+		}
 
-        beanProperties.stream()
-                      .filter(beanProperty -> "metadata".equals(beanProperty.getName()))
-                      .forEach(beanProperty -> beanProperty.assignSerializer(metadataSerializer));
-        return beanProperties;
-    }
+		beanProperties.stream().filter((beanProperty) -> "metadata".equals(beanProperty.getName()))
+				.forEach((beanProperty) -> beanProperty.assignSerializer(metadataSerializer));
+		return beanProperties;
+	}
+
 }

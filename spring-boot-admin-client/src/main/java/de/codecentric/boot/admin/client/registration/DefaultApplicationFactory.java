@@ -16,14 +16,13 @@
 
 package de.codecentric.boot.admin.client.registration;
 
-import de.codecentric.boot.admin.client.config.InstanceProperties;
-import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 import javax.annotation.Nullable;
+
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.EndpointId;
@@ -35,197 +34,203 @@ import org.springframework.context.event.EventListener;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import de.codecentric.boot.admin.client.config.InstanceProperties;
+import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
+
 /**
- * Default implementation for creating the {@link Application} instance which gets registered at the
- * admin server.
+ * Default implementation for creating the {@link Application} instance which gets
+ * registered at the admin server.
  *
  * @author Johannes Edmeier
  * @author Rene Felgenträger
  */
 public class DefaultApplicationFactory implements ApplicationFactory {
-    private final InstanceProperties instance;
-    private final ServerProperties server;
-    private final ManagementServerProperties management;
-    private final PathMappedEndpoints pathMappedEndpoints;
-    private final WebEndpointProperties webEndpoint;
-    private final MetadataContributor metadataContributor;
-    @Nullable
-    private Integer localServerPort;
-    @Nullable
-    private Integer localManagementPort;
 
+	private final InstanceProperties instance;
 
-    public DefaultApplicationFactory(InstanceProperties instance,
-                                     ManagementServerProperties management,
-                                     ServerProperties server,
-                                     PathMappedEndpoints pathMappedEndpoints,
-                                     WebEndpointProperties webEndpoint,
-                                     MetadataContributor metadataContributor) {
-        this.instance = instance;
-        this.management = management;
-        this.server = server;
-        this.pathMappedEndpoints = pathMappedEndpoints;
-        this.webEndpoint = webEndpoint;
-        this.metadataContributor = metadataContributor;
-    }
+	private final ServerProperties server;
 
-    @Override
-    public Application createApplication() {
-        return Application.create(getName())
-                          .healthUrl(getHealthUrl())
-                          .managementUrl(getManagementUrl())
-                          .serviceUrl(getServiceUrl())
-                          .metadata(getMetadata())
-                          .build();
-    }
+	private final ManagementServerProperties management;
 
-    protected String getName() {
-        return instance.getName();
-    }
+	private final PathMappedEndpoints pathMappedEndpoints;
 
-    protected String getServiceUrl() {
-        if (instance.getServiceUrl() != null) {
-            return instance.getServiceUrl();
-        }
+	private final WebEndpointProperties webEndpoint;
 
-        return UriComponentsBuilder.fromUriString(getServiceBaseUrl()).path("/").toUriString();
-    }
+	private final MetadataContributor metadataContributor;
 
-    protected String getServiceBaseUrl() {
-        String baseUrl = instance.getServiceBaseUrl();
+	@Nullable
+	private Integer localServerPort;
 
-        if (!StringUtils.isEmpty(baseUrl)) {
-            return baseUrl;
-        }
+	@Nullable
+	private Integer localManagementPort;
 
-        return UriComponentsBuilder.newInstance()
-                                   .scheme(getScheme(server.getSsl()))
-                                   .host(getServiceHost())
-                                   .port(getLocalServerPort())
-                                   .toUriString();
-    }
+	public DefaultApplicationFactory(InstanceProperties instance, ManagementServerProperties management,
+			ServerProperties server, PathMappedEndpoints pathMappedEndpoints, WebEndpointProperties webEndpoint,
+			MetadataContributor metadataContributor) {
+		this.instance = instance;
+		this.management = management;
+		this.server = server;
+		this.pathMappedEndpoints = pathMappedEndpoints;
+		this.webEndpoint = webEndpoint;
+		this.metadataContributor = metadataContributor;
+	}
 
-    protected String getManagementUrl() {
-        if (instance.getManagementUrl() != null) {
-            return instance.getManagementUrl();
-        }
+	@Override
+	public Application createApplication() {
+		return Application.create(getName()).healthUrl(getHealthUrl()).managementUrl(getManagementUrl())
+				.serviceUrl(getServiceUrl()).metadata(getMetadata()).build();
+	}
 
-        return UriComponentsBuilder.fromUriString(getManagementBaseUrl())
-                                   .path("/")
-                                   .path(getEndpointsWebPath())
-                                   .toUriString();
-    }
+	protected String getName() {
+		return instance.getName();
+	}
 
-    protected String getManagementBaseUrl() {
-        String baseUrl = instance.getManagementBaseUrl();
+	protected String getServiceUrl() {
+		if (instance.getServiceUrl() != null) {
+			return instance.getServiceUrl();
+		}
 
-        if (!StringUtils.isEmpty(baseUrl)) {
-            return baseUrl;
-        }
+		return UriComponentsBuilder.fromUriString(getServiceBaseUrl()).path(getServicePath()).toUriString();
+	}
 
-        if (isManagementPortEqual()) {
-            return this.getServiceUrl();
-        }
+	protected String getServiceBaseUrl() {
+		String baseUrl = instance.getServiceBaseUrl();
 
-        Ssl ssl = management.getSsl() != null ? management.getSsl() : server.getSsl();
-        return UriComponentsBuilder.newInstance()
-                                   .scheme(getScheme(ssl))
-                                   .host(getManagementHost())
-                                   .port(getLocalManagementPort())
-                                   .toUriString();
-    }
+		if (!StringUtils.isEmpty(baseUrl)) {
+			return baseUrl;
+		}
 
-    protected boolean isManagementPortEqual() {
-        return this.localManagementPort == null || this.localManagementPort.equals(this.localServerPort);
-    }
+		return UriComponentsBuilder.newInstance().scheme(getScheme(server.getSsl())).host(getServiceHost())
+				.port(getLocalServerPort()).toUriString();
+	}
 
-    protected String getEndpointsWebPath() {
-        return webEndpoint.getBasePath();
-    }
+	protected String getServicePath() {
+		String path = instance.getServicePath();
 
-    protected String getHealthUrl() {
-        if (instance.getHealthUrl() != null) {
-            return instance.getHealthUrl();
-        }
-        return UriComponentsBuilder.fromHttpUrl(getManagementBaseUrl())
-                                   .path("/")
-                                   .path(getHealthEndpointPath())
-                                   .toUriString();
-    }
+		if (!StringUtils.isEmpty(path)) {
+			return path;
+		}
 
-    protected Map<String, String> getMetadata() {
-        Map<String, String> metadata = new LinkedHashMap<>();
-        metadata.putAll(metadataContributor.getMetadata());
-        metadata.putAll(instance.getMetadata());
-        return metadata;
-    }
+		return "/";
+	}
 
-    protected String getServiceHost() {
-        InetAddress address = server.getAddress();
-        if (address == null) {
-            address = getLocalHost();
-        }
-        return getHost(address);
-    }
+	protected String getManagementUrl() {
+		if (instance.getManagementUrl() != null) {
+			return instance.getManagementUrl();
+		}
 
-    protected String getManagementHost() {
-        InetAddress address = management.getAddress();
-        if (address != null) {
-            return getHost(address);
-        }
-        return getServiceHost();
-    }
+		return UriComponentsBuilder.fromUriString(getManagementBaseUrl()).path("/").path(getEndpointsWebPath())
+				.toUriString();
+	}
 
-    protected InetAddress getLocalHost() {
-        try {
-            return InetAddress.getLocalHost();
-        } catch (UnknownHostException ex) {
-            throw new IllegalArgumentException(ex.getMessage(), ex);
-        }
-    }
+	protected String getManagementBaseUrl() {
+		String baseUrl = instance.getManagementBaseUrl();
 
-    protected Integer getLocalServerPort() {
-        if (this.localServerPort == null) {
-            throw new IllegalStateException(
-                "couldn't determine local port. Please set spring.boot.admin.client.instance.service-base-url.");
-        }
-        return this.localServerPort;
-    }
+		if (!StringUtils.isEmpty(baseUrl)) {
+			return baseUrl;
+		}
 
-    protected Integer getLocalManagementPort() {
-        if (this.localManagementPort == null) {
-            return this.getLocalServerPort();
-        }
-        return localManagementPort;
-    }
+		if (isManagementPortEqual()) {
+			return this.getServiceUrl();
+		}
 
-    protected String getHealthEndpointPath() {
-        String health = pathMappedEndpoints.getPath(EndpointId.of("health"));
-        if (StringUtils.hasText(health)) {
-            return health;
-        }
-        String status = pathMappedEndpoints.getPath(EndpointId.of("status"));
-        if (StringUtils.hasText(status)) {
-            return status;
-        }
-        throw new IllegalStateException("Either health or status endpoint must be enabled!");
-    }
+		Ssl ssl = (management.getSsl() != null) ? management.getSsl() : server.getSsl();
+		return UriComponentsBuilder.newInstance().scheme(getScheme(ssl)).host(getManagementHost())
+				.port(getLocalManagementPort()).toUriString();
+	}
 
-    protected String getScheme(@Nullable Ssl ssl) {
-        return ssl != null && ssl.isEnabled() ? "https" : "http";
-    }
+	protected boolean isManagementPortEqual() {
+		return this.localManagementPort == null || this.localManagementPort.equals(this.localServerPort);
+	}
 
-    protected String getHost(InetAddress address) {
-        return instance.isPreferIp() ? address.getHostAddress() : address.getCanonicalHostName();
-    }
+	protected String getEndpointsWebPath() {
+		return webEndpoint.getBasePath();
+	}
 
-    @EventListener
-    public void onWebServerInitialized(WebServerInitializedEvent event) {
-        String name = event.getApplicationContext().getServerNamespace();
-        if ("server".equals(name) || !StringUtils.hasText(name)) {
-            localServerPort = event.getWebServer().getPort();
-        } else if ("management".equals(name)) {
-            localManagementPort = event.getWebServer().getPort();
-        }
-    }
+	protected String getHealthUrl() {
+		if (instance.getHealthUrl() != null) {
+			return instance.getHealthUrl();
+		}
+		return UriComponentsBuilder.fromHttpUrl(getManagementBaseUrl()).path("/").path(getHealthEndpointPath())
+				.toUriString();
+	}
+
+	protected Map<String, String> getMetadata() {
+		Map<String, String> metadata = new LinkedHashMap<>();
+		metadata.putAll(metadataContributor.getMetadata());
+		metadata.putAll(instance.getMetadata());
+		return metadata;
+	}
+
+	protected String getServiceHost() {
+		InetAddress address = server.getAddress();
+		if (address == null) {
+			address = getLocalHost();
+		}
+		return getHost(address);
+	}
+
+	protected String getManagementHost() {
+		InetAddress address = management.getAddress();
+		if (address != null) {
+			return getHost(address);
+		}
+		return getServiceHost();
+	}
+
+	protected InetAddress getLocalHost() {
+		try {
+			return InetAddress.getLocalHost();
+		}
+		catch (UnknownHostException ex) {
+			throw new IllegalArgumentException(ex.getMessage(), ex);
+		}
+	}
+
+	protected Integer getLocalServerPort() {
+		if (this.localServerPort == null) {
+			throw new IllegalStateException(
+					"couldn't determine local port. Please set spring.boot.admin.client.instance.service-base-url.");
+		}
+		return this.localServerPort;
+	}
+
+	protected Integer getLocalManagementPort() {
+		if (this.localManagementPort == null) {
+			return this.getLocalServerPort();
+		}
+		return localManagementPort;
+	}
+
+	protected String getHealthEndpointPath() {
+		String health = pathMappedEndpoints.getPath(EndpointId.of("health"));
+		if (StringUtils.hasText(health)) {
+			return health;
+		}
+		String status = pathMappedEndpoints.getPath(EndpointId.of("status"));
+		if (StringUtils.hasText(status)) {
+			return status;
+		}
+		throw new IllegalStateException("Either health or status endpoint must be enabled!");
+	}
+
+	protected String getScheme(@Nullable Ssl ssl) {
+		return ((ssl != null) && ssl.isEnabled()) ? "https" : "http";
+	}
+
+	protected String getHost(InetAddress address) {
+		return instance.isPreferIp() ? address.getHostAddress() : address.getCanonicalHostName();
+	}
+
+	@EventListener
+	public void onWebServerInitialized(WebServerInitializedEvent event) {
+		String name = event.getApplicationContext().getServerNamespace();
+		if ("server".equals(name) || !StringUtils.hasText(name)) {
+			localServerPort = event.getWebServer().getPort();
+		}
+		else if ("management".equals(name)) {
+			localManagementPort = event.getWebServer().getPort();
+		}
+	}
+
 }

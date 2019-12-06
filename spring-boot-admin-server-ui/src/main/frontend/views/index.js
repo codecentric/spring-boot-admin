@@ -16,7 +16,6 @@
 
 const views = [];
 
-/* global require */
 const context = require.context('.', true, /^\.\/.+\/index\.(js|vue)$/);
 context.keys().forEach(function (key) {
   const defaultExport = context(key).default;

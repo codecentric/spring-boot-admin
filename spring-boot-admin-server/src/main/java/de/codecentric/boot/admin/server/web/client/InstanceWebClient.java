@@ -16,99 +16,101 @@
 
 package de.codecentric.boot.admin.server.web.client;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.web.client.exception.ResolveInstanceException;
-import reactor.core.publisher.Mono;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.web.client.exception.ResolveInstanceException;
 
 public class InstanceWebClient {
-    public static final String ATTRIBUTE_INSTANCE = "instance";
-    private final WebClient webClient;
 
-    protected InstanceWebClient(WebClient webClient) {
-        this.webClient = webClient;
-    }
+	public static final String ATTRIBUTE_INSTANCE = "instance";
 
-    public WebClient instance(Mono<Instance> instance) {
-        return this.webClient.mutate().filters(filters -> filters.add(0, setInstance(instance))).build();
-    }
+	private final WebClient webClient;
 
-    public WebClient instance(Instance instance) {
-        return this.instance(Mono.justOrEmpty(instance));
-    }
+	protected InstanceWebClient(WebClient webClient) {
+		this.webClient = webClient;
+	}
 
-    public static InstanceWebClient.Builder builder() {
-        return new InstanceWebClient.Builder();
-    }
+	public WebClient instance(Mono<Instance> instance) {
+		return this.webClient.mutate().filters((filters) -> filters.add(0, setInstance(instance))).build();
+	}
 
-    public static InstanceWebClient.Builder builder(WebClient.Builder webClient) {
-        return new InstanceWebClient.Builder(webClient);
-    }
+	public WebClient instance(Instance instance) {
+		return this.instance(Mono.justOrEmpty(instance));
+	}
 
-    private static ExchangeFilterFunction setInstance(Mono<Instance> instance) {
-        return (request, next) -> instance.map(i -> ClientRequest.from(request)
-                                                                 .attribute(ATTRIBUTE_INSTANCE, i)
-                                                                 .build())
-                                          .switchIfEmpty(Mono.error(() -> new ResolveInstanceException(
-                                              "Could not resolve Instance")))
-                                          .flatMap(next::exchange);
-    }
+	public static InstanceWebClient.Builder builder() {
+		return new InstanceWebClient.Builder();
+	}
 
-    private static ExchangeFilterFunction toExchangeFilterFunction(InstanceExchangeFilterFunction filter) {
-        return (request, next) -> request.attribute(ATTRIBUTE_INSTANCE)
-                                         .filter(Instance.class::isInstance)
-                                         .map(Instance.class::cast)
-                                         .map(instance -> filter.filter(instance, request, next))
-                                         .orElse(next.exchange(request));
-    }
+	public static InstanceWebClient.Builder builder(WebClient.Builder webClient) {
+		return new InstanceWebClient.Builder(webClient);
+	}
 
-    public static class Builder {
-        private List<InstanceExchangeFilterFunction> filters = new ArrayList<>();
-        private WebClient.Builder webClientBuilder;
+	private static ExchangeFilterFunction setInstance(Mono<Instance> instance) {
+		return (request, next) -> instance
+				.map((i) -> ClientRequest.from(request).attribute(ATTRIBUTE_INSTANCE, i).build())
+				.switchIfEmpty(Mono.error(() -> new ResolveInstanceException("Could not resolve Instance")))
+				.flatMap(next::exchange);
+	}
 
-        public Builder() {
-            this(WebClient.builder());
-        }
+	private static ExchangeFilterFunction toExchangeFilterFunction(InstanceExchangeFilterFunction filter) {
+		return (request, next) -> request.attribute(ATTRIBUTE_INSTANCE).filter(Instance.class::isInstance)
+				.map(Instance.class::cast).map((instance) -> filter.filter(instance, request, next))
+				.orElse(next.exchange(request));
+	}
 
-        public Builder(WebClient.Builder webClientBuilder) {
-            this.webClientBuilder = webClientBuilder;
-        }
+	public static class Builder {
 
-        protected Builder(Builder other) {
-            this.filters = new ArrayList<>(other.filters);
-            this.webClientBuilder = other.webClientBuilder.clone();
-        }
+		private List<InstanceExchangeFilterFunction> filters = new ArrayList<>();
 
-        public Builder filter(InstanceExchangeFilterFunction filter) {
-            this.filters.add(filter);
-            return this;
-        }
+		private WebClient.Builder webClientBuilder;
 
-        public Builder filters(Consumer<List<InstanceExchangeFilterFunction>> filtersConsumer) {
-            filtersConsumer.accept(this.filters);
-            return this;
-        }
+		public Builder() {
+			this(WebClient.builder());
+		}
 
-        public Builder webClient(WebClient.Builder builder) {
-            this.webClientBuilder = builder;
-            return this;
-        }
+		public Builder(WebClient.Builder webClientBuilder) {
+			this.webClientBuilder = webClientBuilder;
+		}
 
-        public Builder clone() {
-            return new Builder(this);
-        }
+		protected Builder(Builder other) {
+			this.filters = new ArrayList<>(other.filters);
+			this.webClientBuilder = other.webClientBuilder.clone();
+		}
 
-        public InstanceWebClient build() {
-            this.filters.stream()
-                        .map(InstanceWebClient::toExchangeFilterFunction)
-                        .forEach(this.webClientBuilder::filter);
-            return new InstanceWebClient(this.webClientBuilder.build());
-        }
-    }
+		public Builder filter(InstanceExchangeFilterFunction filter) {
+			this.filters.add(filter);
+			return this;
+		}
+
+		public Builder filters(Consumer<List<InstanceExchangeFilterFunction>> filtersConsumer) {
+			filtersConsumer.accept(this.filters);
+			return this;
+		}
+
+		public Builder webClient(WebClient.Builder builder) {
+			this.webClientBuilder = builder;
+			return this;
+		}
+
+		public Builder clone() {
+			return new Builder(this);
+		}
+
+		public InstanceWebClient build() {
+			this.filters.stream().map(InstanceWebClient::toExchangeFilterFunction)
+					.forEach(this.webClientBuilder::filter);
+			return new InstanceWebClient(this.webClientBuilder.build());
+		}
+
+	}
+
 }

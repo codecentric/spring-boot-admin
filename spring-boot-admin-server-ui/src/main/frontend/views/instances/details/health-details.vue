@@ -52,7 +52,7 @@
   import prettyBytes from 'pretty-bytes';
 
   const isChildHealth = (value) => {
-    return value !== null && typeof value === 'object' && value.hasOwnProperty('status');
+    return value !== null && typeof value === 'object' && 'status' in value;
   };
 
   export default {

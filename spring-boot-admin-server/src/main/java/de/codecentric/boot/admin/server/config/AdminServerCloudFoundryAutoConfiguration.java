@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,6 @@
 
 package de.codecentric.boot.admin.server.config;
 
-import de.codecentric.boot.admin.server.services.CloudFoundryInstanceIdGenerator;
-import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
-import de.codecentric.boot.admin.server.services.InstanceIdGenerator;
-import de.codecentric.boot.admin.server.web.client.CloudFoundryHttpHeaderProvider;
-
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -28,20 +23,26 @@ import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+import de.codecentric.boot.admin.server.services.CloudFoundryInstanceIdGenerator;
+import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
+import de.codecentric.boot.admin.server.services.InstanceIdGenerator;
+import de.codecentric.boot.admin.server.web.client.CloudFoundryHttpHeaderProvider;
+
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
-@AutoConfigureBefore({AdminServerAutoConfiguration.class})
+@AutoConfigureBefore({ AdminServerAutoConfiguration.class })
 public class AdminServerCloudFoundryAutoConfiguration {
 
-    @Bean
-    @ConditionalOnMissingBean
-    public InstanceIdGenerator instanceIdGenerator() {
-        return new CloudFoundryInstanceIdGenerator(new HashingInstanceUrlIdGenerator());
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public InstanceIdGenerator instanceIdGenerator() {
+		return new CloudFoundryInstanceIdGenerator(new HashingInstanceUrlIdGenerator());
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public CloudFoundryHttpHeaderProvider cloudFoundryHttpHeaderProvider() {
-        return new CloudFoundryHttpHeaderProvider();
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public CloudFoundryHttpHeaderProvider cloudFoundryHttpHeaderProvider() {
+		return new CloudFoundryHttpHeaderProvider();
+	}
+
 }

@@ -16,142 +16,150 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import reactor.core.publisher.Mono;
-
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.Nullable;
+
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.web.client.RestTemplate;
+import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
 /**
  * Notifier submitting events to Telegram.
  */
 public class TelegramNotifier extends AbstractStatusChangeNotifier {
-    private static final String DEFAULT_MESSAGE = "<strong>#{instance.registration.name}</strong>/#{instance.id} is <strong>#{event.statusInfo.status}</strong>";
-    private final SpelExpressionParser parser = new SpelExpressionParser();
-    private RestTemplate restTemplate = new RestTemplate();
 
-    /**
-     * base url for telegram (i.e. https://api.telegram.org)
-     */
-    private String apiUrl = "https://api.telegram.org";
+	private static final String DEFAULT_MESSAGE = "<strong>#{instance.registration.name}</strong>/#{instance.id} is <strong>#{event.statusInfo.status}</strong>";
 
-    /**
-     * Unique identifier for the target chat or username of the target channel
-     */
-    @Nullable
-    private String chatId;
+	private final SpelExpressionParser parser = new SpelExpressionParser();
 
-    /**
-     * The token identifiying und authorizing your Telegram bot (e.g. `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`)
-     */
-    @Nullable
-    private String authToken;
+	private RestTemplate restTemplate;
 
-    /**
-     * Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width text or
-     * inline URLs in your bot's message.
-     */
-    private String parseMode = "HTML";
+	/**
+	 * base url for telegram (i.e. https://api.telegram.org)
+	 */
+	private String apiUrl = "https://api.telegram.org";
 
-    /**
-     * If true users will receive a notification with no sound.
-     */
-    private boolean disableNotify = false;
+	/**
+	 * Unique identifier for the target chat or username of the target channel
+	 */
+	@Nullable
+	private String chatId;
 
-    private Expression message;
+	/**
+	 * The token identifiying und authorizing your Telegram bot (e.g.
+	 * `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`)
+	 */
+	@Nullable
+	private String authToken;
 
-    public TelegramNotifier(InstanceRepository repository) {
-        super(repository);
-        this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
-    }
+	/**
+	 * Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width
+	 * text or inline URLs in your bot's message.
+	 */
+	private String parseMode = "HTML";
 
-    @Override
-    protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
-        return Mono.fromRunnable(
-            () -> restTemplate.getForObject(buildUrl(), Void.class, createMessage(event, instance)));
-    }
+	/**
+	 * If true users will receive a notification with no sound.
+	 */
+	private boolean disableNotify = false;
 
-    protected String buildUrl() {
-        return String.format("%s/bot%s/sendmessage?chat_id={chat_id}&text={text}&parse_mode={parse_mode}" +
-                             "&disable_notification={disable_notification}", this.apiUrl, this.authToken);
-    }
+	private Expression message;
 
-    private Map<String, Object> createMessage(InstanceEvent event, Instance instance) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("chat_id", this.chatId);
-        parameters.put("parse_mode", this.parseMode);
-        parameters.put("disable_notification", this.disableNotify);
-        parameters.put("text", getText(event, instance));
-        return parameters;
-    }
+	public TelegramNotifier(InstanceRepository repository, RestTemplate restTemplate) {
+		super(repository);
+		this.restTemplate = restTemplate;
+		this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
+	}
 
-    @Nullable
-    protected String getText(InstanceEvent event, Instance instance) {
-        Map<String, Object> root = new HashMap<>();
-        root.put("event", event);
-        root.put("instance", instance);
-        root.put("lastStatus", getLastStatus(event.getInstance()));
-        StandardEvaluationContext context = new StandardEvaluationContext(root);
-        context.addPropertyAccessor(new MapAccessor());
-        return message.getValue(context, String.class);
-    }
+	@Override
+	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
+		return Mono
+				.fromRunnable(() -> restTemplate.getForObject(buildUrl(), Void.class, createMessage(event, instance)));
+	}
 
-    public void setRestTemplate(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+	protected String buildUrl() {
+		return String.format("%s/bot%s/sendmessage?chat_id={chat_id}&text={text}&parse_mode={parse_mode}"
+				+ "&disable_notification={disable_notification}", this.apiUrl, this.authToken);
+	}
 
-    public String getApiUrl() {
-        return apiUrl;
-    }
+	private Map<String, Object> createMessage(InstanceEvent event, Instance instance) {
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put("chat_id", this.chatId);
+		parameters.put("parse_mode", this.parseMode);
+		parameters.put("disable_notification", this.disableNotify);
+		parameters.put("text", getText(event, instance));
+		return parameters;
+	}
 
-    public void setApiUrl(String apiUrl) {
-        this.apiUrl = apiUrl;
-    }
+	@Nullable
+	protected String getText(InstanceEvent event, Instance instance) {
+		Map<String, Object> root = new HashMap<>();
+		root.put("event", event);
+		root.put("instance", instance);
+		root.put("lastStatus", getLastStatus(event.getInstance()));
+		StandardEvaluationContext context = new StandardEvaluationContext(root);
+		context.addPropertyAccessor(new MapAccessor());
+		return message.getValue(context, String.class);
+	}
 
-    @Nullable
-    public String getChatId() {
-        return chatId;
-    }
+	public void setRestTemplate(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
 
-    public void setChatId(@Nullable String chatId) {
-        this.chatId = chatId;
-    }
+	public String getApiUrl() {
+		return apiUrl;
+	}
 
-    @Nullable
-    public String getAuthToken() {
-        return authToken;
-    }
+	public void setApiUrl(String apiUrl) {
+		this.apiUrl = apiUrl;
+	}
 
-    public void setAuthToken(@Nullable String authToken) {
-        this.authToken = authToken;
-    }
+	@Nullable
+	public String getChatId() {
+		return chatId;
+	}
 
-    public boolean isDisableNotify() {
-        return disableNotify;
-    }
+	public void setChatId(@Nullable String chatId) {
+		this.chatId = chatId;
+	}
 
-    public void setDisableNotify(boolean disableNotify) {
-        this.disableNotify = disableNotify;
-    }
+	@Nullable
+	public String getAuthToken() {
+		return authToken;
+	}
 
-    public String getParseMode() {
-        return parseMode;
-    }
+	public void setAuthToken(@Nullable String authToken) {
+		this.authToken = authToken;
+	}
 
-    public void setParseMode(String parseMode) {
-        this.parseMode = parseMode;
-    }
+	public boolean isDisableNotify() {
+		return disableNotify;
+	}
 
-    public void setMessage(String message) {
-        this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
-    }
+	public void setDisableNotify(boolean disableNotify) {
+		this.disableNotify = disableNotify;
+	}
+
+	public String getParseMode() {
+		return parseMode;
+	}
+
+	public void setParseMode(String parseMode) {
+		this.parseMode = parseMode;
+	}
+
+	public void setMessage(String message) {
+		this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
+	}
+
 }

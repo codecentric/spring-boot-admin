@@ -25,31 +25,27 @@ import org.springframework.mock.env.MockEnvironment;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CloudFoundryApplicationPropertiesTest {
-    @Test
-    public void bind() {
-        String vcap = "{\"application_users\":[]," +
-                      "\"application_id\":\"9958288f-9842-4ddc-93dd-1ea3c90634cd\"," +
-                      "\"instance_id\":\"bb7935245adf3e650dfb7c58a06e9ece\"," +
-                      "\"instance_index\":0,\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\"," +
-                      "\"name\":\"foo\",\"uris\":[\"foo.cfapps.io\"]," +
-                      "\"started_at\":\"2013-05-29 02:37:59 +0000\"," +
-                      "\"started_at_timestamp\":1369795079," +
-                      "\"host\":\"0.0.0.0\",\"port\":61034," +
-                      "\"limits\":{\"mem\":128,\"disk\":1024,\"fds\":16384}," +
-                      "\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\"," +
-                      "\"name\":\"dsyerenv\",\"uris\":[\"dsyerenv.cfapps.io\"]," +
-                      "\"users\":[],\"start\":\"2013-05-29 02:37:59 +0000\"," +
-                      "\"state_timestamp\":1369795079}";
 
-        MockEnvironment env = new MockEnvironment();
-        env.setProperty("VCAP_APPLICATION", vcap);
-        new CloudFoundryVcapEnvironmentPostProcessor().postProcessEnvironment(env, null);
+	@Test
+	public void bind() {
+		String vcap = "{\"application_users\":[]," + "\"application_id\":\"9958288f-9842-4ddc-93dd-1ea3c90634cd\","
+				+ "\"instance_id\":\"bb7935245adf3e650dfb7c58a06e9ece\","
+				+ "\"instance_index\":0,\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\","
+				+ "\"name\":\"foo\",\"uris\":[\"foo.cfapps.io\"]," + "\"started_at\":\"2013-05-29 02:37:59 +0000\","
+				+ "\"started_at_timestamp\":1369795079," + "\"host\":\"0.0.0.0\",\"port\":61034,"
+				+ "\"limits\":{\"mem\":128,\"disk\":1024,\"fds\":16384},"
+				+ "\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\","
+				+ "\"name\":\"dsyerenv\",\"uris\":[\"dsyerenv.cfapps.io\"],"
+				+ "\"users\":[],\"start\":\"2013-05-29 02:37:59 +0000\"," + "\"state_timestamp\":1369795079}";
 
-        CloudFoundryApplicationProperties cfProperties = Binder.get(env)
-                                                               .bind("vcap.application",
-                                                                   Bindable.of(CloudFoundryApplicationProperties.class))
-                                                               .get();
-        assertThat(cfProperties.getApplicationId()).isEqualTo("9958288f-9842-4ddc-93dd-1ea3c90634cd");
-        assertThat(cfProperties.getInstanceIndex()).isEqualTo("0");
-    }
+		MockEnvironment env = new MockEnvironment();
+		env.setProperty("VCAP_APPLICATION", vcap);
+		new CloudFoundryVcapEnvironmentPostProcessor().postProcessEnvironment(env, null);
+
+		CloudFoundryApplicationProperties cfProperties = Binder.get(env)
+				.bind("vcap.application", Bindable.of(CloudFoundryApplicationProperties.class)).get();
+		assertThat(cfProperties.getApplicationId()).isEqualTo("9958288f-9842-4ddc-93dd-1ea3c90634cd");
+		assertThat(cfProperties.getInstanceIndex()).isEqualTo("0");
+	}
+
 }

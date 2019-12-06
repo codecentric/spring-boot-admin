@@ -16,6 +16,16 @@
 
 package de.codecentric.boot.admin.server.config;
 
+import org.reactivestreams.Publisher;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.entities.SnapshottingInstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
@@ -37,108 +47,98 @@ import de.codecentric.boot.admin.server.services.endpoints.ProbeEndpointsStrateg
 import de.codecentric.boot.admin.server.services.endpoints.QueryIndexEndpointStrategy;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
-import org.reactivestreams.Publisher;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
 @EnableConfigurationProperties(AdminServerProperties.class)
-@Import({AdminServerInstanceWebClientConfiguration.class, AdminServerWebConfiguration.class})
-@AutoConfigureAfter({WebClientAutoConfiguration.class})
+@ImportAutoConfiguration({ AdminServerInstanceWebClientConfiguration.class, AdminServerWebConfiguration.class })
+@AutoConfigureAfter({ WebClientAutoConfiguration.class })
 public class AdminServerAutoConfiguration {
-    private final AdminServerProperties adminServerProperties;
 
-    public AdminServerAutoConfiguration(AdminServerProperties adminServerProperties) {
-        this.adminServerProperties = adminServerProperties;
-    }
+	private final AdminServerProperties adminServerProperties;
 
-    @Bean
-    @ConditionalOnMissingBean
-    public InstanceRegistry instanceRegistry(InstanceRepository instanceRepository,
-                                             InstanceIdGenerator instanceIdGenerator) {
-        return new InstanceRegistry(instanceRepository, instanceIdGenerator);
-    }
+	public AdminServerAutoConfiguration(AdminServerProperties adminServerProperties) {
+		this.adminServerProperties = adminServerProperties;
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public ApplicationRegistry applicationRegistry(InstanceRegistry instanceRegistry,
-                                                   InstanceEventPublisher instanceEventPublisher) {
-        return new ApplicationRegistry(instanceRegistry, instanceEventPublisher);
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public InstanceRegistry instanceRegistry(InstanceRepository instanceRepository,
+			InstanceIdGenerator instanceIdGenerator) {
+		return new InstanceRegistry(instanceRepository, instanceIdGenerator);
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public InstanceIdGenerator instanceIdGenerator() {
-        return new HashingInstanceUrlIdGenerator();
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public ApplicationRegistry applicationRegistry(InstanceRegistry instanceRegistry,
+			InstanceEventPublisher instanceEventPublisher) {
+		return new ApplicationRegistry(instanceRegistry, instanceEventPublisher);
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public StatusUpdater statusUpdater(InstanceRepository instanceRepository,
-                                       InstanceWebClient.Builder instanceWebClientBulder) {
-        return new StatusUpdater(instanceRepository, instanceWebClientBulder.build());
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public InstanceIdGenerator instanceIdGenerator() {
+		return new HashingInstanceUrlIdGenerator();
+	}
 
-    @Bean(initMethod = "start", destroyMethod = "stop")
-    @ConditionalOnMissingBean
-    public StatusUpdateTrigger statusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> events) {
-        StatusUpdateTrigger trigger = new StatusUpdateTrigger(statusUpdater, events);
-        trigger.setInterval(this.adminServerProperties.getMonitor().getStatusInterval());
-        trigger.setLifetime(this.adminServerProperties.getMonitor().getStatusLifetime());
-        return trigger;
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public StatusUpdater statusUpdater(InstanceRepository instanceRepository,
+			InstanceWebClient.Builder instanceWebClientBulder) {
+		return new StatusUpdater(instanceRepository, instanceWebClientBulder.build());
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public EndpointDetector endpointDetector(InstanceRepository instanceRepository,
-                                             InstanceWebClient.Builder instanceWebClientBuilder) {
-        InstanceWebClient instanceWebClient = instanceWebClientBuilder.build();
-        ChainingStrategy strategy = new ChainingStrategy(
-            new QueryIndexEndpointStrategy(instanceWebClient),
-            new ProbeEndpointsStrategy(instanceWebClient, this.adminServerProperties.getProbedEndpoints())
-        );
-        return new EndpointDetector(instanceRepository, strategy);
-    }
+	@Bean(initMethod = "start", destroyMethod = "stop")
+	@ConditionalOnMissingBean
+	public StatusUpdateTrigger statusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> events) {
+		StatusUpdateTrigger trigger = new StatusUpdateTrigger(statusUpdater, events);
+		trigger.setInterval(this.adminServerProperties.getMonitor().getStatusInterval());
+		trigger.setLifetime(this.adminServerProperties.getMonitor().getStatusLifetime());
+		return trigger;
+	}
 
-    @Bean(initMethod = "start", destroyMethod = "stop")
-    @ConditionalOnMissingBean
-    public EndpointDetectionTrigger endpointDetectionTrigger(EndpointDetector endpointDetector,
-                                                             Publisher<InstanceEvent> events) {
-        return new EndpointDetectionTrigger(endpointDetector, events);
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public EndpointDetector endpointDetector(InstanceRepository instanceRepository,
+			InstanceWebClient.Builder instanceWebClientBuilder) {
+		InstanceWebClient instanceWebClient = instanceWebClientBuilder.build();
+		ChainingStrategy strategy = new ChainingStrategy(new QueryIndexEndpointStrategy(instanceWebClient),
+				new ProbeEndpointsStrategy(instanceWebClient, this.adminServerProperties.getProbedEndpoints()));
+		return new EndpointDetector(instanceRepository, strategy);
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public InfoUpdater infoUpdater(InstanceRepository instanceRepository,
-                                   InstanceWebClient.Builder instanceWebClientBuilder) {
-        return new InfoUpdater(instanceRepository, instanceWebClientBuilder.build());
-    }
+	@Bean(initMethod = "start", destroyMethod = "stop")
+	@ConditionalOnMissingBean
+	public EndpointDetectionTrigger endpointDetectionTrigger(EndpointDetector endpointDetector,
+			Publisher<InstanceEvent> events) {
+		return new EndpointDetectionTrigger(endpointDetector, events);
+	}
 
-    @Bean(initMethod = "start", destroyMethod = "stop")
-    @ConditionalOnMissingBean
-    public InfoUpdateTrigger infoUpdateTrigger(InfoUpdater infoUpdater, Publisher<InstanceEvent> events) {
-        InfoUpdateTrigger trigger = new InfoUpdateTrigger(infoUpdater, events);
-        trigger.setInterval(this.adminServerProperties.getMonitor().getInfoInterval());
-        trigger.setLifetime(this.adminServerProperties.getMonitor().getInfoLifetime());
-        return trigger;
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public InfoUpdater infoUpdater(InstanceRepository instanceRepository,
+			InstanceWebClient.Builder instanceWebClientBuilder) {
+		return new InfoUpdater(instanceRepository, instanceWebClientBuilder.build());
+	}
 
-    @Bean
-    @ConditionalOnMissingBean(InstanceEventStore.class)
-    public InMemoryEventStore eventStore() {
-        return new InMemoryEventStore();
-    }
+	@Bean(initMethod = "start", destroyMethod = "stop")
+	@ConditionalOnMissingBean
+	public InfoUpdateTrigger infoUpdateTrigger(InfoUpdater infoUpdater, Publisher<InstanceEvent> events) {
+		InfoUpdateTrigger trigger = new InfoUpdateTrigger(infoUpdater, events);
+		trigger.setInterval(this.adminServerProperties.getMonitor().getInfoInterval());
+		trigger.setLifetime(this.adminServerProperties.getMonitor().getInfoLifetime());
+		return trigger;
+	}
 
-    @Bean(initMethod = "start", destroyMethod = "stop")
-    @ConditionalOnMissingBean(InstanceRepository.class)
-    public SnapshottingInstanceRepository instanceRepository(InstanceEventStore eventStore) {
-        return new SnapshottingInstanceRepository(eventStore);
-    }
+	@Bean
+	@ConditionalOnMissingBean(InstanceEventStore.class)
+	public InMemoryEventStore eventStore() {
+		return new InMemoryEventStore();
+	}
+
+	@Bean(initMethod = "start", destroyMethod = "stop")
+	@ConditionalOnMissingBean(InstanceRepository.class)
+	public SnapshottingInstanceRepository instanceRepository(InstanceEventStore eventStore) {
+		return new SnapshottingInstanceRepository(eventStore);
+	}
+
 }

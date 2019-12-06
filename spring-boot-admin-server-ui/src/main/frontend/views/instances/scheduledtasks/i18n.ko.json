@@ -1,10 +1,10 @@
 {
   "instances": {
     "scheduledtasks": {
-      "label" : "스케쥴 작업",
+      "label": "스케쥴 작업",
+      "no_scheduledtasks": "스케쥴 작업이 없습니다.",
       "cron": {
         "expression": "표현식",
-        "no_scheduledtasks": "스케쥴 작업이 없습니다.",
         "runnable": "실행가능",
         "title": "Cron"
       },

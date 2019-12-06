@@ -16,23 +16,25 @@
 
 package de.codecentric.boot.admin.server.web.client;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-
 import java.util.Collection;
+
 import org.springframework.http.HttpHeaders;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
 
 public class CompositeHttpHeadersProvider implements HttpHeadersProvider {
 
-    private final Collection<HttpHeadersProvider> delegates;
+	private final Collection<HttpHeadersProvider> delegates;
 
-    public CompositeHttpHeadersProvider(Collection<HttpHeadersProvider> delegates) {
-        this.delegates = delegates;
-    }
+	public CompositeHttpHeadersProvider(Collection<HttpHeadersProvider> delegates) {
+		this.delegates = delegates;
+	}
 
-    @Override
-    public HttpHeaders getHeaders(Instance instance) {
-        HttpHeaders headers = new HttpHeaders();
-        delegates.forEach(delegate -> headers.addAll(delegate.getHeaders(instance)));
-        return headers;
-    }
+	@Override
+	public HttpHeaders getHeaders(Instance instance) {
+		HttpHeaders headers = new HttpHeaders();
+		delegates.forEach((delegate) -> headers.addAll(delegate.getHeaders(instance)));
+		return headers;
+	}
+
 }

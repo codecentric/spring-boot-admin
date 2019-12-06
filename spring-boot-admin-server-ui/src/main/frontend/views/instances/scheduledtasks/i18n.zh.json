@@ -1,0 +1,26 @@
+{
+  "instances": {
+    "scheduledtasks": {
+      "label": "计划任务",
+      "no_scheduledtasks": "没有计划任务。",
+      "cron": {
+        "expression": "表达式",
+        "runnable": "可运行",
+        "title": "计划任务"
+      },
+      "fetch_failed": "获取计划任务失败。",
+      "fixed_delay": {
+        "initial_delay_ms": "初始延迟(毫秒)",
+        "interval_ms": "间隔(毫秒)",
+        "runnable": "可运行",
+        "title": "固定延迟"
+      },
+      "fixed_rate": {
+        "initial_delay_ms": "初始延迟(毫秒)",
+        "interval_ms": "间隔(毫秒)",
+        "runnable": "可运行",
+        "title": "固定速度"
+      }
+    }
+  }
+}

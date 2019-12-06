@@ -17,18 +17,20 @@
 package de.codecentric.boot.admin.client.registration.metadata;
 
 import java.util.Map;
+
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class StartupDateMetadataContributorTest {
 
-    @Test
-    public void should_return_startupdate() {
-        StartupDateMetadataContributor contributor = new StartupDateMetadataContributor();
+	@Test
+	public void should_return_startupdate() {
+		StartupDateMetadataContributor contributor = new StartupDateMetadataContributor();
 
-        Map<String, String> metadata = contributor.getMetadata();
+		Map<String, String> metadata = contributor.getMetadata();
 
-        assertThat(metadata).hasSize(1).hasEntrySatisfying("startup", (value) -> assertThat(value).isNotEmpty());
-    }
+		assertThat(metadata).hasSize(1).hasEntrySatisfying("startup", (value) -> assertThat(value).isNotEmpty());
+	}
+
 }

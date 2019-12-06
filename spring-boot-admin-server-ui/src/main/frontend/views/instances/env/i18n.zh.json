@@ -1,0 +1,21 @@
+{
+  "instances": {
+    "env": {
+      "label": "环境",
+      "manager": "环境管理",
+      "active_profile": "配置文件",
+      "context_refresh": "刷新内容",
+      "context_refresh_failed": "失败",
+      "context_refreshed": "内容已刷新",
+      "context_reset": "重置",
+      "context_reset_failed": "失败",
+      "context_resetted": "已重置",
+      "context_update": "更新",
+      "context_update_failed": "失败",
+      "context_updated": "已更新",
+      "fetch_failed": "获取环境信息失败。",
+      "no_properties": "属性未设置。",
+      "title": "环境管理"
+    }
+  }
+}

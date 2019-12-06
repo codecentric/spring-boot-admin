@@ -16,30 +16,31 @@
 
 package de.codecentric.boot.admin.server.web.client;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.StringUtils;
 
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+
 /**
- * Provides CloudFoundry related X-CF-APP-INSTANCE header for the {@link Instance} using the metadata for
- * "applicationId" and "instanceId".
+ * Provides CloudFoundry related X-CF-APP-INSTANCE header for the {@link Instance} using
+ * the metadata for "applicationId" and "instanceId".
  *
  * @author Tetsushi Awano
  */
 public class CloudFoundryHttpHeaderProvider implements HttpHeadersProvider {
 
-    @Override
-    public HttpHeaders getHeaders(Instance instance) {
-        String applicationId = instance.getRegistration().getMetadata().get("applicationId");
-        String instanceId = instance.getRegistration().getMetadata().get("instanceId");
+	@Override
+	public HttpHeaders getHeaders(Instance instance) {
+		String applicationId = instance.getRegistration().getMetadata().get("applicationId");
+		String instanceId = instance.getRegistration().getMetadata().get("instanceId");
 
-        if (StringUtils.hasText(applicationId) && StringUtils.hasText(instanceId)) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("X-CF-APP-INSTANCE", applicationId + ":" + instanceId);
-            return headers;
-        }
+		if (StringUtils.hasText(applicationId) && StringUtils.hasText(instanceId)) {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("X-CF-APP-INSTANCE", applicationId + ":" + instanceId);
+			return headers;
+		}
 
-        return HttpHeaders.EMPTY;
-    }
+		return HttpHeaders.EMPTY;
+	}
+
 }

@@ -16,24 +16,25 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
-import de.codecentric.boot.admin.server.domain.values.Registration;
-import de.codecentric.boot.admin.server.domain.values.StatusInfo;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.domain.values.Registration;
+import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
@@ -42,87 +43,93 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class DiscordNotifierTest {
-    private static final String avatarUrl = "http://avatarUrl";
-    private static final String username = "user";
-    private static final String appName = "App";
-    private static final URI webhookUri = URI.create("http://localhost/");
-    private static final Instance INSTANCE = Instance.create(InstanceId.of("-id-"))
-                                                     .register(Registration.create(appName, "http://health").build());
 
-    private DiscordNotifier notifier;
-    private RestTemplate restTemplate;
-    private InstanceRepository repository;
+	private static final String avatarUrl = "http://avatarUrl";
 
-    @Before
-    public void setUp() {
-        repository = mock(InstanceRepository.class);
-        when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE));
-        restTemplate = mock(RestTemplate.class);
-        notifier = new DiscordNotifier(repository);
-        notifier.setRestTemplate(restTemplate);
-        notifier.setWebhookUrl(webhookUri);
-    }
+	private static final String username = "user";
 
-    @Test
-    public void test_onApplicationEvent_resolve() {
-        notifier.setUsername(username);
-        notifier.setAvatarUrl(avatarUrl);
-        notifier.setTts(true);
+	private static final String appName = "App";
 
-        StepVerifier.create(notifier.notify(new InstanceStatusChangedEvent(INSTANCE.getId(),
-            INSTANCE.getVersion(),
-            StatusInfo.ofDown()
-        ))).verifyComplete();
-        clearInvocations(restTemplate);
-        StepVerifier.create(notifier.notify(new InstanceStatusChangedEvent(INSTANCE.getId(),
-            INSTANCE.getVersion(),
-            StatusInfo.ofUp()
-        ))).verifyComplete();
+	private static final URI webhookUri = URI.create("http://localhost/");
 
-        Object expected = expectedMessage(username, true, avatarUrl, standardMessage("UP"));
+	private static final Instance INSTANCE = Instance.create(InstanceId.of("-id-"))
+			.register(Registration.create(appName, "http://health").build());
 
-        verify(restTemplate).postForEntity(eq(webhookUri), eq(expected), eq(Void.class));
-    }
+	private DiscordNotifier notifier;
 
-    @Test
-    public void test_onApplicationEvent_resolve_minimum_configuration() {
-        StepVerifier.create(notifier.notify(new InstanceStatusChangedEvent(INSTANCE.getId(),
-            INSTANCE.getVersion(),
-            StatusInfo.ofDown()
-        ))).verifyComplete();
-        clearInvocations(restTemplate);
-        StepVerifier.create(notifier.notify(new InstanceStatusChangedEvent(INSTANCE.getId(),
-            INSTANCE.getVersion(),
-            StatusInfo.ofUp()
-        ))).verifyComplete();
+	private RestTemplate restTemplate;
 
-        Object expected = expectedMessage(null, false, null, standardMessage("UP"));
+	private InstanceRepository repository;
 
-        verify(restTemplate).postForEntity(eq(webhookUri), eq(expected), eq(Void.class));
-    }
+	@Before
+	public void setUp() {
+		repository = mock(InstanceRepository.class);
+		when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE));
+		restTemplate = mock(RestTemplate.class);
+		notifier = new DiscordNotifier(repository, restTemplate);
+		notifier.setWebhookUrl(webhookUri);
+	}
 
-    private HttpEntity<Map<String, Object>> expectedMessage(String username,
-                                                            boolean tts,
-                                                            String avatarUrl, String message) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("content", message);
-        body.put("tts", tts);
+	@Test
+	public void test_onApplicationEvent_resolve() {
+		notifier.setUsername(username);
+		notifier.setAvatarUrl(avatarUrl);
+		notifier.setTts(true);
 
-        if (avatarUrl != null) {
-            body.put("avatar_url", avatarUrl);
-        }
-        if (username != null) {
-            body.put("username", username);
-        }
+		StepVerifier
+				.create(notifier.notify(
+						new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofDown())))
+				.verifyComplete();
+		clearInvocations(restTemplate);
+		StepVerifier
+				.create(notifier.notify(
+						new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
+				.verifyComplete();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(HttpHeaders.USER_AGENT, "RestTemplate");
+		Object expected = expectedMessage(username, true, avatarUrl, standardMessage("UP"));
 
-        return new HttpEntity<>(body, headers);
-    }
+		verify(restTemplate).postForEntity(eq(webhookUri), eq(expected), eq(Void.class));
+	}
 
-    private String standardMessage(String status) {
-        return "*" + INSTANCE.getRegistration().getName() + "* (" + INSTANCE.getId() + ") is *" + status + "*";
-    }
+	@Test
+	public void test_onApplicationEvent_resolve_minimum_configuration() {
+		StepVerifier
+				.create(notifier.notify(
+						new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofDown())))
+				.verifyComplete();
+		clearInvocations(restTemplate);
+		StepVerifier
+				.create(notifier.notify(
+						new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
+				.verifyComplete();
+
+		Object expected = expectedMessage(null, false, null, standardMessage("UP"));
+
+		verify(restTemplate).postForEntity(eq(webhookUri), eq(expected), eq(Void.class));
+	}
+
+	private HttpEntity<Map<String, Object>> expectedMessage(String username, boolean tts, String avatarUrl,
+			String message) {
+		Map<String, Object> body = new HashMap<>();
+		body.put("content", message);
+		body.put("tts", tts);
+
+		if (avatarUrl != null) {
+			body.put("avatar_url", avatarUrl);
+		}
+		if (username != null) {
+			body.put("username", username);
+		}
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.USER_AGENT, "RestTemplate");
+
+		return new HttpEntity<>(body, headers);
+	}
+
+	private String standardMessage(String status) {
+		return "*" + INSTANCE.getRegistration().getName() + "* (" + INSTANCE.getId() + ") is *" + status + "*";
+	}
+
 }

@@ -16,97 +16,143 @@
 
 package de.codecentric.boot.admin;
 
-import de.codecentric.boot.admin.server.config.AdminServerProperties;
-import de.codecentric.boot.admin.server.config.EnableAdminServer;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.EvictionPolicy;
 import com.hazelcast.config.InMemoryFormat;
 import com.hazelcast.config.MapConfig;
 import com.hazelcast.config.MergePolicyConfig;
+import com.hazelcast.config.TcpIpConfig;
 import com.hazelcast.map.merge.PutIfAbsentMapMergePolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import reactor.core.publisher.Mono;
 
-@Configuration
+import de.codecentric.boot.admin.server.config.AdminServerProperties;
+import de.codecentric.boot.admin.server.config.EnableAdminServer;
+import de.codecentric.boot.admin.server.notify.Notifier;
+
+import static de.codecentric.boot.admin.server.config.AdminServerHazelcastAutoConfiguration.DEFAULT_NAME_EVENT_STORE_MAP;
+import static de.codecentric.boot.admin.server.config.AdminServerHazelcastAutoConfiguration.DEFAULT_NAME_SENT_NOTIFICATIONS_MAP;
+import static java.util.Collections.singletonList;
+
+@Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
 @EnableAdminServer
 public class SpringBootAdminHazelcastApplication {
-    // tag::application-hazelcast[]
-    @Bean
-    public Config hazelcastConfig() {
-        MapConfig mapConfig = new MapConfig("spring-boot-admin-event-store").setInMemoryFormat(InMemoryFormat.OBJECT)
-                                                                            .setBackupCount(1)
-                                                                            .setEvictionPolicy(EvictionPolicy.NONE)
-                                                                            .setMergePolicyConfig(new MergePolicyConfig(
-                                                                                PutIfAbsentMapMergePolicy.class.getName(),
-                                                                                100
-                                                                            ));
-        return new Config().setProperty("hazelcast.jmx", "true").addMapConfig(mapConfig);
-    }
-    // end::application-hazelcast[]
 
-    @Profile("insecure")
-    @Configuration
-    public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
-        private final AdminServerProperties adminServer;
+	private static final Logger log = LoggerFactory.getLogger(SpringBootAdminHazelcastApplication.class);
 
-        public SecurityPermitAllConfig(AdminServerProperties adminServer) {
-            this.adminServer = adminServer;
-        }
+	public static void main(String[] args) {
+		SpringApplication.run(SpringBootAdminHazelcastApplication.class, args);
+	}
 
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http.authorizeRequests()
-                .anyRequest()
-                .permitAll()
-                .and()
-                .csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringAntMatchers(this.adminServer.path("/instances"), this.adminServer.path("/actuator/**"));
-        }
-    }
+	// tag::application-hazelcast[]
+	@Bean
+	public Config hazelcastConfig() {
+		// This map is used to store the events.
+		// It should be configured to reliably hold all the data,
+		// Spring Boot Admin will compact the events, if there are too many
+		MapConfig eventStoreMap = new MapConfig(DEFAULT_NAME_EVENT_STORE_MAP).setInMemoryFormat(InMemoryFormat.OBJECT)
+				.setBackupCount(1).setEvictionPolicy(EvictionPolicy.NONE)
+				.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), 100));
 
-    @Profile("secure")
-    @Configuration
-    public static class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
-        private final AdminServerProperties adminServer;
+		// This map is used to deduplicate the notifications.
+		// If data in this map gets lost it should not be a big issue as it will atmost
+		// lead to
+		// the same notification to be sent by multiple instances
+		MapConfig sentNotificationsMap = new MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)
+				.setInMemoryFormat(InMemoryFormat.OBJECT).setBackupCount(1).setEvictionPolicy(EvictionPolicy.LRU)
+				.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), 100));
 
-        public SecuritySecureConfig(AdminServerProperties adminServer) {
-            this.adminServer = adminServer;
-        }
+		Config config = new Config();
+		config.addMapConfig(eventStoreMap);
+		config.addMapConfig(sentNotificationsMap);
+		config.setProperty("hazelcast.jmx", "true");
 
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            // @formatter:off
-            SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
-            successHandler.setTargetUrlParameter("redirectTo");
-            successHandler.setDefaultTargetUrl(this.adminServer.path("/"));
+		// WARNING: This setups a local cluster, you change it to fit your needs.
+		config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
+		TcpIpConfig tcpIpConfig = config.getNetworkConfig().getJoin().getTcpIpConfig();
+		tcpIpConfig.setEnabled(true);
+		tcpIpConfig.setMembers(singletonList("127.0.0.1"));
+		return config;
+	}
+	// end::application-hazelcast[]
 
-            http.authorizeRequests()
-                .antMatchers(this.adminServer.path("/assets/**")).permitAll()
-                .antMatchers(this.adminServer.path("/login")).permitAll()
-                .anyRequest().authenticated()
-                .and()
-            .formLogin().loginPage(this.adminServer.path("/login")).successHandler(successHandler).and()
-            .logout().logoutUrl(this.adminServer.path("/logout")).and()
-            .httpBasic().and()
-            .csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringAntMatchers(this.adminServer.path("/instances"), this.adminServer.path("/actuator/**"));
-            // @formatter:on
-        }
-    }
+	@Bean
+	public Notifier loggingNotifier() {
+		return (event) -> Mono.fromRunnable(() -> log.info("Event occured: {}", event));
+	}
 
-    public static void main(String[] args) {
-        SpringApplication.run(SpringBootAdminHazelcastApplication.class, args);
-    }
+	@Profile("insecure")
+	@Configuration(proxyBeanMethods = false)
+	public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
+
+		private final AdminServerProperties adminServer;
+
+		public SecurityPermitAllConfig(AdminServerProperties adminServer) {
+			this.adminServer = adminServer;
+		}
+
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			http.authorizeRequests().anyRequest().permitAll().and().csrf()
+					.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+					.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).ignoringRequestMatchers(
+							new AntPathRequestMatcher(this.adminServer.path("/instances"), HttpMethod.POST.toString()),
+							new AntPathRequestMatcher(this.adminServer.path("/instances/*"),
+									HttpMethod.DELETE.toString()),
+							new AntPathRequestMatcher(this.adminServer.path("/actuator/**")));
+		}
+
+	}
+
+	@Profile("secure")
+	@Configuration(proxyBeanMethods = false)
+	public static class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
+
+		private final AdminServerProperties adminServer;
+
+		public SecuritySecureConfig(AdminServerProperties adminServer) {
+			this.adminServer = adminServer;
+		}
+
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			// @formatter:off
+			SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+			successHandler.setTargetUrlParameter("redirectTo");
+			successHandler.setDefaultTargetUrl(this.adminServer.path("/"));
+
+			http.authorizeRequests()
+				.antMatchers(this.adminServer.path("/assets/**")).permitAll()
+				.antMatchers(this.adminServer.path("/login")).permitAll()
+				.anyRequest().authenticated()
+				.and()
+			.formLogin().loginPage(this.adminServer.path("/login")).successHandler(successHandler).and()
+			.logout().logoutUrl(this.adminServer.path("/logout")).and()
+			.httpBasic().and()
+			.csrf()
+				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+								.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+				.ignoringRequestMatchers(
+					new AntPathRequestMatcher(this.adminServer.path("/instances"), HttpMethod.POST.toString()),
+					new AntPathRequestMatcher(this.adminServer.path("/instances/*"), HttpMethod.DELETE.toString()),
+					new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))
+				);
+			// @formatter:on
+		}
+
+	}
 
 }
