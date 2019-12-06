@@ -25,6 +25,7 @@ const requestPermissions = async () => {
     granted = (window.Notification.permission === 'granted');
     if (!granted && window.Notification.permission !== 'denied') {
       const permission = await window.Notification.requestPermission();
+      // eslint-disable-next-line require-atomic-updates
       granted = permission === 'granted';
     }
   }

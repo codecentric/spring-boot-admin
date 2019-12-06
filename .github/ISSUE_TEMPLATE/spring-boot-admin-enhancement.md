@@ -1,6 +1,11 @@
 ---
 name: Enhancement / Feature Request
-about: Spring Boot Admin issue template for proposing Enhancements or making feature requests
+about: Spring Boot Admin issue template for proposing Enhancements or making feature
+  requests
+title: ''
+labels: enhancement, waiting-for-triage
+assignees: ''
+
 ---
 
 <!--

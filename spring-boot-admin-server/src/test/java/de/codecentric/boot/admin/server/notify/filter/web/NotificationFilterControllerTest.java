@@ -16,18 +16,19 @@
 
 package de.codecentric.boot.admin.server.notify.filter.web;
 
+import java.io.IOException;
+import java.util.Map;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Test;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import de.codecentric.boot.admin.server.domain.entities.EventsourcingInstanceRepository;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
 import de.codecentric.boot.admin.server.notify.LoggingNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
-
-import java.io.IOException;
-import java.util.Map;
-import org.junit.Test;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.not;
@@ -40,44 +41,41 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class NotificationFilterControllerTest {
 
-    private final InstanceRepository repository = new EventsourcingInstanceRepository(new InMemoryEventStore());
-    private final NotificationFilterController controller = new NotificationFilterController(
-        new FilteringNotifier(new LoggingNotifier(this.repository), this.repository));
-    private MockMvc mvc = MockMvcBuilders.standaloneSetup(this.controller)
-                                         .setCustomHandlerMapping(
-                                             () -> new de.codecentric.boot.admin.server.web.servlet.AdminControllerHandlerMapping(
-                                                 "/"))
-                                         .build();
+	private final InstanceRepository repository = new EventsourcingInstanceRepository(new InMemoryEventStore());
 
-    @Test
-    public void test_missing_parameters() throws Exception {
-        this.mvc.perform(post("/notifications/filters")).andExpect(status().isBadRequest());
-    }
+	private final NotificationFilterController controller = new NotificationFilterController(
+			new FilteringNotifier(new LoggingNotifier(this.repository), this.repository));
 
-    @Test
-    public void test_delete_notfound() throws Exception {
-        this.mvc.perform(delete("/notifications/filters/abcdef")).andExpect(status().isNotFound());
-    }
+	private MockMvc mvc = MockMvcBuilders.standaloneSetup(this.controller).setCustomHandlerMapping(
+			() -> new de.codecentric.boot.admin.server.web.servlet.AdminControllerHandlerMapping("/")).build();
 
-    @Test
-    public void test_post_delete() throws Exception {
-        String response = this.mvc.perform(post("/notifications/filters?instanceId=1337&ttl=10000"))
-                                  .andExpect(status().isOk())
-                                  .andExpect(content().string(not(emptyString())))
-                                  .andReturn()
-                                  .getResponse()
-                                  .getContentAsString();
-        String id = extractId(response);
+	@Test
+	public void test_missing_parameters() throws Exception {
+		this.mvc.perform(post("/notifications/filters")).andExpect(status().isBadRequest());
+	}
 
-        this.mvc.perform(get("/notifications/filters")).andExpect(status().isOk());
+	@Test
+	public void test_delete_notfound() throws Exception {
+		this.mvc.perform(delete("/notifications/filters/abcdef")).andExpect(status().isNotFound());
+	}
 
-        this.mvc.perform(delete("/notifications/filters/{id}", id)).andExpect(status().isOk());
+	@Test
+	public void test_post_delete() throws Exception {
+		String response = this.mvc.perform(post("/notifications/filters?instanceId=1337&ttl=10000"))
+				.andExpect(status().isOk()).andExpect(content().string(not(emptyString()))).andReturn().getResponse()
+				.getContentAsString();
+		String id = extractId(response);
 
-        this.mvc.perform(get("/notifications/filters")).andExpect(status().isOk()).andExpect(jsonPath("$").isEmpty());
-    }
+		this.mvc.perform(get("/notifications/filters")).andExpect(status().isOk());
 
-    private String extractId(String response) throws IOException {
-        Map<?, ?> map = new ObjectMapper().readerFor(Map.class).readValue(response);
-        return map.get("id").toString();
-    }
+		this.mvc.perform(delete("/notifications/filters/{id}", id)).andExpect(status().isOk());
+
+		this.mvc.perform(get("/notifications/filters")).andExpect(status().isOk()).andExpect(jsonPath("$").isEmpty());
+	}
+
+	private String extractId(String response) throws IOException {
+		Map<?, ?> map = new ObjectMapper().readerFor(Map.class).readValue(response);
+		return map.get("id").toString();
+	}
+
 }

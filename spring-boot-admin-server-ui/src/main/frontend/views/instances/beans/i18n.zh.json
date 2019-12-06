@@ -1,0 +1,12 @@
+{
+  "instances": {
+    "beans": {
+      "label": "类",
+      "name": "名称",
+      "aliases": "别名",
+      "type": "类型",
+      "resource": "资源",
+      "dependencies": "依赖关系"
+    }
+  }
+}

@@ -16,18 +16,13 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
-import de.codecentric.boot.admin.server.domain.values.StatusInfo;
-import reactor.core.publisher.Mono;
-
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.Nullable;
+
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
@@ -37,6 +32,13 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
+import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 
 /**
  * Notifier submitting events to Slack.
@@ -44,141 +46,145 @@ import org.springframework.web.client.RestTemplate;
  * @author Artur Dobosiewicz
  */
 public class SlackNotifier extends AbstractStatusChangeNotifier {
-    private static final String DEFAULT_MESSAGE = "*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*";
 
-    private final SpelExpressionParser parser = new SpelExpressionParser();
-    private RestTemplate restTemplate = new RestTemplate();
+	private static final String DEFAULT_MESSAGE = "*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*";
 
-    /**
-     * Webhook url for Slack API (i.e. https://hooks.slack.com/services/xxx)
-     */
-    @Nullable
-    private URI webhookUrl;
+	private final SpelExpressionParser parser = new SpelExpressionParser();
 
-    /**
-     * Optional channel name without # sign (i.e. somechannel)
-     */
-    @Nullable
-    private String channel;
+	private RestTemplate restTemplate;
 
-    /**
-     * Optional emoji icon without colons (i.e. my-emoji)
-     */
-    @Nullable
-    private String icon;
+	/**
+	 * Webhook url for Slack API (i.e. https://hooks.slack.com/services/xxx)
+	 */
+	@Nullable
+	private URI webhookUrl;
 
-    /**
-     * Optional username which sends notification
-     */
-    @Nullable
-    private String username = "Spring Boot Admin";
+	/**
+	 * Optional channel name without # sign (i.e. somechannel)
+	 */
+	@Nullable
+	private String channel;
 
-    /**
-     * Message formatted using Slack markups. SpEL template using event as root
-     */
-    private Expression message;
+	/**
+	 * Optional emoji icon without colons (i.e. my-emoji)
+	 */
+	@Nullable
+	private String icon;
 
-    public SlackNotifier(InstanceRepository repository) {
-        super(repository);
-        this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
-    }
+	/**
+	 * Optional username which sends notification
+	 */
+	@Nullable
+	private String username = "Spring Boot Admin";
 
-    @Override
-    protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
-        if (webhookUrl == null) {
-            return Mono.error(new IllegalStateException("'webhookUrl' must not be null."));
-        }
-        return Mono.fromRunnable(
-            () -> restTemplate.postForEntity(webhookUrl, createMessage(event, instance), Void.class));
-    }
+	/**
+	 * Message formatted using Slack markups. SpEL template using event as root
+	 */
+	private Expression message;
 
-    public void setRestTemplate(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+	public SlackNotifier(InstanceRepository repository, RestTemplate restTemplate) {
+		super(repository);
+		this.restTemplate = restTemplate;
+		this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
+	}
 
-    protected Object createMessage(InstanceEvent event, Instance instance) {
-        Map<String, Object> messageJson = new HashMap<>();
-        messageJson.put("username", username);
-        if (icon != null) {
-            messageJson.put("icon_emoji", ":" + icon + ":");
-        }
-        if (channel != null) {
-            messageJson.put("channel", channel);
-        }
+	@Override
+	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
+		if (webhookUrl == null) {
+			return Mono.error(new IllegalStateException("'webhookUrl' must not be null."));
+		}
+		return Mono
+				.fromRunnable(() -> restTemplate.postForEntity(webhookUrl, createMessage(event, instance), Void.class));
+	}
 
-        Map<String, Object> attachments = new HashMap<>();
-        attachments.put("text", getText(event, instance));
-        attachments.put("color", getColor(event));
-        attachments.put("mrkdwn_in", Collections.singletonList("text"));
-        messageJson.put("attachments", Collections.singletonList(attachments));
+	public void setRestTemplate(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new HttpEntity<>(messageJson, headers);
-    }
+	protected Object createMessage(InstanceEvent event, Instance instance) {
+		Map<String, Object> messageJson = new HashMap<>();
+		messageJson.put("username", username);
+		if (icon != null) {
+			messageJson.put("icon_emoji", ":" + icon + ":");
+		}
+		if (channel != null) {
+			messageJson.put("channel", channel);
+		}
 
-    @Nullable
-    protected String getText(InstanceEvent event, Instance instance) {
-        Map<String, Object> root = new HashMap<>();
-        root.put("event", event);
-        root.put("instance", instance);
-        root.put("lastStatus", getLastStatus(event.getInstance()));
-        StandardEvaluationContext context = new StandardEvaluationContext(root);
-        context.addPropertyAccessor(new MapAccessor());
-        return message.getValue(context, String.class);
-    }
+		Map<String, Object> attachments = new HashMap<>();
+		attachments.put("text", getText(event, instance));
+		attachments.put("color", getColor(event));
+		attachments.put("mrkdwn_in", Collections.singletonList("text"));
+		messageJson.put("attachments", Collections.singletonList(attachments));
 
-    protected String getColor(InstanceEvent event) {
-        if (event instanceof InstanceStatusChangedEvent) {
-            return StatusInfo.STATUS_UP.equals(((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()) ?
-                "good" :
-                "danger";
-        } else {
-            return "#439FE0";
-        }
-    }
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		return new HttpEntity<>(messageJson, headers);
+	}
 
-    @Nullable
-    public URI getWebhookUrl() {
-        return webhookUrl;
-    }
+	@Nullable
+	protected String getText(InstanceEvent event, Instance instance) {
+		Map<String, Object> root = new HashMap<>();
+		root.put("event", event);
+		root.put("instance", instance);
+		root.put("lastStatus", getLastStatus(event.getInstance()));
+		StandardEvaluationContext context = new StandardEvaluationContext(root);
+		context.addPropertyAccessor(new MapAccessor());
+		return message.getValue(context, String.class);
+	}
 
-    public void setWebhookUrl(@Nullable URI webhookUrl) {
-        this.webhookUrl = webhookUrl;
-    }
+	protected String getColor(InstanceEvent event) {
+		if (event instanceof InstanceStatusChangedEvent) {
+			return StatusInfo.STATUS_UP.equals(((InstanceStatusChangedEvent) event).getStatusInfo().getStatus())
+					? "good" : "danger";
+		}
+		else {
+			return "#439FE0";
+		}
+	}
 
-    @Nullable
-    public String getChannel() {
-        return channel;
-    }
+	@Nullable
+	public URI getWebhookUrl() {
+		return webhookUrl;
+	}
 
-    public void setChannel(@Nullable String channel) {
-        this.channel = channel;
-    }
+	public void setWebhookUrl(@Nullable URI webhookUrl) {
+		this.webhookUrl = webhookUrl;
+	}
 
-    @Nullable
-    public String getIcon() {
-        return icon;
-    }
+	@Nullable
+	public String getChannel() {
+		return channel;
+	}
 
-    public void setIcon(@Nullable String icon) {
-        this.icon = icon;
-    }
+	public void setChannel(@Nullable String channel) {
+		this.channel = channel;
+	}
 
-    @Nullable
-    public String getUsername() {
-        return username;
-    }
+	@Nullable
+	public String getIcon() {
+		return icon;
+	}
 
-    public void setUsername(@Nullable String username) {
-        this.username = username;
-    }
+	public void setIcon(@Nullable String icon) {
+		this.icon = icon;
+	}
 
-    public String getMessage() {
-        return message.getExpressionString();
-    }
+	@Nullable
+	public String getUsername() {
+		return username;
+	}
 
-    public void setMessage(String message) {
-        this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
-    }
+	public void setUsername(@Nullable String username) {
+		this.username = username;
+	}
+
+	public String getMessage() {
+		return message.getExpressionString();
+	}
+
+	public void setMessage(String message) {
+		this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
+	}
+
 }

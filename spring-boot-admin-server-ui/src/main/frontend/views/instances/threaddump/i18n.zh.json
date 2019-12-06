@@ -1,0 +1,20 @@
+{
+  "instances": {
+    "threaddump": {
+      "label": "线程转储",
+      "download": "下载线程",
+      "fetch_failed": "获取线程失败。",
+      "download_failed": "线程无法下载。",
+      "thread_details_blocked_count": "阻塞数",
+      "thread_details_blocked_time": "阻塞时间",
+      "thread_details_lock_name": "锁名称",
+      "thread_details_lock_owner_id": "锁拥有者ID",
+      "thread_details_lock_owner_name": "锁拥有者名称",
+      "thread_details_waited_count": "等待数",
+      "thread_details_waited_time": "等待时间",
+      "thread_id": "线程ID",
+      "thread_name": "线程名称",
+      "thread_state": "线程状态"
+    }
+  }
+}

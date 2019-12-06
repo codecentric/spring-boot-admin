@@ -1,0 +1,9 @@
+{
+  "instances": {
+    "configprops": {
+      "label": "配置属性",
+      "fetch_failed": "获取属性配置失败。",
+      "no_properties_set": "未设置属性"
+    }
+  }
+}

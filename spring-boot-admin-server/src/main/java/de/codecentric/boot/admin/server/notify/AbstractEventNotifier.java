@@ -16,13 +16,13 @@
 
 package de.codecentric.boot.admin.server.notify;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Mono;
+
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import reactor.core.publisher.Mono;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Abstract Notifier which allows disabling and filtering of events.
@@ -30,44 +30,45 @@ import org.slf4j.LoggerFactory;
  * @author Johannes Edmeier
  */
 public abstract class AbstractEventNotifier implements Notifier {
-    private final InstanceRepository repository;
-    /**
-     * Enables the notification.
-     */
-    private boolean enabled = true;
 
-    protected AbstractEventNotifier(InstanceRepository repository) {
-        this.repository = repository;
-    }
+	private final InstanceRepository repository;
 
-    @Override
-    public Mono<Void> notify(InstanceEvent event) {
-        if (!enabled) {
-            return Mono.empty();
-        }
+	/**
+	 * Enables the notification.
+	 */
+	private boolean enabled = true;
 
-        return repository.find(event.getInstance())
-                         .filter(instance -> shouldNotify(event, instance))
-                         .flatMap(instance -> doNotify(event, instance))
-                         .doOnError(ex -> getLogger().error("Couldn't notify for event {} ", event, ex))
-                         .then();
-    }
+	protected AbstractEventNotifier(InstanceRepository repository) {
+		this.repository = repository;
+	}
 
-    protected boolean shouldNotify(InstanceEvent event, Instance instance) {
-        return true;
-    }
+	@Override
+	public Mono<Void> notify(InstanceEvent event) {
+		if (!enabled) {
+			return Mono.empty();
+		}
 
-    protected abstract Mono<Void> doNotify(InstanceEvent event, Instance instance);
+		return repository.find(event.getInstance()).filter((instance) -> shouldNotify(event, instance))
+				.flatMap((instance) -> doNotify(event, instance))
+				.doOnError((ex) -> getLogger().error("Couldn't notify for event {} ", event, ex)).then();
+	}
 
-    private Logger getLogger() {
-        return LoggerFactory.getLogger(this.getClass());
-    }
+	protected boolean shouldNotify(InstanceEvent event, Instance instance) {
+		return true;
+	}
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+	protected abstract Mono<Void> doNotify(InstanceEvent event, Instance instance);
 
-    public boolean isEnabled() {
-        return enabled;
-    }
+	private Logger getLogger() {
+		return LoggerFactory.getLogger(this.getClass());
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,13 @@
 
 package de.codecentric.boot.admin.server.cloud.discovery;
 
-import de.codecentric.boot.admin.server.domain.values.Registration;
-
 import java.net.URI;
-import org.junit.Test;
-import org.springframework.cloud.netflix.eureka.EurekaDiscoveryClient.EurekaServiceInstance;
+
 import com.netflix.appinfo.InstanceInfo;
+import org.junit.Test;
+import org.springframework.cloud.netflix.eureka.EurekaServiceInstance;
+
+import de.codecentric.boot.admin.server.domain.values.Registration;
 
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,50 +31,51 @@ import static org.mockito.Mockito.when;
 
 public class EurekaServiceInstanceConverterTest {
 
-    @Test
-    public void convert_secure() {
-        InstanceInfo instanceInfo = mock(InstanceInfo.class);
-        when(instanceInfo.getSecureHealthCheckUrl()).thenReturn("");
-        when(instanceInfo.getHealthCheckUrl()).thenReturn("http://localhost:80/mgmt/ping");
-        EurekaServiceInstance service = mock(EurekaServiceInstance.class);
-        when(service.getInstanceInfo()).thenReturn(instanceInfo);
-        when(service.getUri()).thenReturn(URI.create("http://localhost:80"));
-        when(service.getServiceId()).thenReturn("test");
-        when(service.getMetadata()).thenReturn(singletonMap("management.context-path", "/mgmt"));
+	@Test
+	public void convert_secure() {
+		InstanceInfo instanceInfo = mock(InstanceInfo.class);
+		when(instanceInfo.getSecureHealthCheckUrl()).thenReturn("");
+		when(instanceInfo.getHealthCheckUrl()).thenReturn("http://localhost:80/mgmt/ping");
+		EurekaServiceInstance service = mock(EurekaServiceInstance.class);
+		when(service.getInstanceInfo()).thenReturn(instanceInfo);
+		when(service.getUri()).thenReturn(URI.create("http://localhost:80"));
+		when(service.getServiceId()).thenReturn("test");
+		when(service.getMetadata()).thenReturn(singletonMap("management.context-path", "/mgmt"));
 
-        Registration registration = new EurekaServiceInstanceConverter().convert(service);
+		Registration registration = new EurekaServiceInstanceConverter().convert(service);
 
-        assertThat(registration.getName()).isEqualTo("test");
-        assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80/");
-        assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80/mgmt");
-        assertThat(registration.getHealthUrl()).isEqualTo("http://localhost:80/mgmt/ping");
-    }
+		assertThat(registration.getName()).isEqualTo("test");
+		assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80/");
+		assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80/mgmt");
+		assertThat(registration.getHealthUrl()).isEqualTo("http://localhost:80/mgmt/ping");
+	}
 
-    @Test
-    public void convert_missing_mgmtpath() {
-        InstanceInfo instanceInfo = mock(InstanceInfo.class);
-        when(instanceInfo.getHealthCheckUrl()).thenReturn("http://localhost:80/mgmt/ping");
-        EurekaServiceInstance service = mock(EurekaServiceInstance.class);
-        when(service.getInstanceInfo()).thenReturn(instanceInfo);
-        when(service.getUri()).thenReturn(URI.create("http://localhost:80"));
-        when(service.getServiceId()).thenReturn("test");
+	@Test
+	public void convert_missing_mgmtpath() {
+		InstanceInfo instanceInfo = mock(InstanceInfo.class);
+		when(instanceInfo.getHealthCheckUrl()).thenReturn("http://localhost:80/mgmt/ping");
+		EurekaServiceInstance service = mock(EurekaServiceInstance.class);
+		when(service.getInstanceInfo()).thenReturn(instanceInfo);
+		when(service.getUri()).thenReturn(URI.create("http://localhost:80"));
+		when(service.getServiceId()).thenReturn("test");
 
-        Registration registration = new EurekaServiceInstanceConverter().convert(service);
+		Registration registration = new EurekaServiceInstanceConverter().convert(service);
 
-        assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80/actuator");
-    }
+		assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80/actuator");
+	}
 
-    @Test
-    public void convert_secure_healthUrl() {
-        InstanceInfo instanceInfo = mock(InstanceInfo.class);
-        when(instanceInfo.getSecureHealthCheckUrl()).thenReturn("https://localhost:80/health");
-        EurekaServiceInstance service = mock(EurekaServiceInstance.class);
-        when(service.getInstanceInfo()).thenReturn(instanceInfo);
-        when(service.getUri()).thenReturn(URI.create("http://localhost:80"));
-        when(service.getServiceId()).thenReturn("test");
+	@Test
+	public void convert_secure_healthUrl() {
+		InstanceInfo instanceInfo = mock(InstanceInfo.class);
+		when(instanceInfo.getSecureHealthCheckUrl()).thenReturn("https://localhost:80/health");
+		EurekaServiceInstance service = mock(EurekaServiceInstance.class);
+		when(service.getInstanceInfo()).thenReturn(instanceInfo);
+		when(service.getUri()).thenReturn(URI.create("http://localhost:80"));
+		when(service.getServiceId()).thenReturn("test");
 
-        Registration registration = new EurekaServiceInstanceConverter().convert(service);
+		Registration registration = new EurekaServiceInstanceConverter().convert(service);
 
-        assertThat(registration.getHealthUrl()).isEqualTo("https://localhost:80/health");
-    }
+		assertThat(registration.getHealthUrl()).isEqualTo("https://localhost:80/health");
+	}
+
 }

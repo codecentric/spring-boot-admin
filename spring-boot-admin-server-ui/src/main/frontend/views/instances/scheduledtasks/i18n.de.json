@@ -2,9 +2,9 @@
   "instances": {
     "scheduledtasks": {
       "label": "Geplante Tasks",
+      "no_scheduledtasks": "Keine geplanten Aufgaben.",
       "cron": {
         "expression": "Expression",
-        "no_scheduledtasks": "Keine geplanten Aufgaben.",
         "runnable": "Runnable",
         "title": "Cron"
       },

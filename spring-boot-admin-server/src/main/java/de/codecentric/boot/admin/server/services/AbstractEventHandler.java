@@ -16,47 +16,64 @@
 
 package de.codecentric.boot.admin.server.services;
 
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import reactor.core.Disposable;
-import reactor.core.publisher.Flux;
-import reactor.retry.Retry;
-
 import java.util.logging.Level;
+
 import javax.annotation.Nullable;
+
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.Disposable;
+import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
+import reactor.retry.Retry;
+
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
 public abstract class AbstractEventHandler<T extends InstanceEvent> {
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private final Publisher<InstanceEvent> publisher;
-    private final Class<T> eventType;
-    @Nullable
-    private Disposable subscription;
 
-    protected AbstractEventHandler(Publisher<InstanceEvent> publisher, Class<T> eventType) {
-        this.publisher = publisher;
-        this.eventType = eventType;
-    }
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public void start() {
-        this.subscription = Flux.from(this.publisher)
-                                .log(this.log.getName(), Level.FINEST)
-                                .doOnSubscribe(s -> this.log.debug("Subscribed to {} events", this.eventType))
-                                .ofType(this.eventType)
-                                .cast(this.eventType)
-                                .transform(this::handle)
-                                .retryWhen(Retry.any()
-                                                .retryMax(Long.MAX_VALUE)
-                                                .doOnRetry(ctx -> this.log.warn("Unexpected error", ctx.exception())))
-                                .subscribe();
-    }
+	private final Publisher<InstanceEvent> publisher;
 
-    protected abstract Publisher<Void> handle(Flux<T> publisher);
+	private final Class<T> eventType;
 
-    public void stop() {
-        if (this.subscription != null) {
-            this.subscription.dispose();
-        }
-    }
+	@Nullable
+	private Disposable subscription;
+
+	@Nullable
+	private Scheduler scheduler;
+
+	protected AbstractEventHandler(Publisher<InstanceEvent> publisher, Class<T> eventType) {
+		this.publisher = publisher;
+		this.eventType = eventType;
+	}
+
+	public void start() {
+		this.scheduler = this.createScheduler();
+		this.subscription = Flux.from(this.publisher).subscribeOn(this.scheduler).log(this.log.getName(), Level.FINEST)
+				.doOnSubscribe((s) -> this.log.debug("Subscribed to {} events", this.eventType)).ofType(this.eventType)
+				.cast(this.eventType).transform(this::handle).retryWhen(Retry.any().retryMax(Long.MAX_VALUE)
+						.doOnRetry((ctx) -> this.log.warn("Unexpected error", ctx.exception())))
+				.subscribe();
+	}
+
+	protected abstract Publisher<Void> handle(Flux<T> publisher);
+
+	protected Scheduler createScheduler() {
+		return Schedulers.newElastic(this.getClass().getSimpleName());
+	}
+
+	public void stop() {
+		if (this.subscription != null) {
+			this.subscription.dispose();
+			this.subscription = null;
+		}
+		if (this.scheduler != null) {
+			this.scheduler.dispose();
+			this.scheduler = null;
+		}
+	}
+
 }

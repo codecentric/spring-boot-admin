@@ -19,15 +19,18 @@ package de.codecentric.boot.admin.server.notify.filter;
 import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class AbstractNotificationFilter implements NotificationFilter {
-    private static final AtomicLong instanceCounter = new AtomicLong(0L);
-    private final String id;
 
-    public AbstractNotificationFilter() {
-        this.id = "F-" + instanceCounter.getAndIncrement();
-    }
+	private static final AtomicLong instanceCounter = new AtomicLong(0L);
 
-    @Override
-    public String getId() {
-        return id;
-    }
+	private final String id;
+
+	public AbstractNotificationFilter() {
+		this.id = "F-" + instanceCounter.getAndIncrement();
+	}
+
+	@Override
+	public String getId() {
+		return id;
+	}
+
 }

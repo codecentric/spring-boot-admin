@@ -99,16 +99,30 @@
 </template>
 
 <script>
-  import sticksBelow from '@/directives/sticks-below';
-  import {finalize, from, listen} from '@/utils/rxjs';
-  import LoggersList from './loggers-list';
+    import sticksBelow from '@/directives/sticks-below';
+    import {finalize, from, listen} from '@/utils/rxjs';
+    import LoggersList from './loggers-list';
 
-  const isClassName = name => /\.[A-Z]/.test(name);
+    const isClassName = name => /\.[A-Z]/.test(name);
 
   const addToFilter = (oldFilter, addedFilter) =>
     !oldFilter
       ? addedFilter
       : (val, key) => oldFilter(val, key) && addedFilter(val, key);
+
+  const addLoggerCreationEntryIfLoggerNotPresent = (nameFilter, loggers) => {
+      if (nameFilter && !loggers.some(logger => logger.name === nameFilter)) {
+          loggers.unshift({
+              level:[{
+                  configuredLevel: null,
+                  effectiveLevel: null,
+                  instanceId: null
+              }],
+              name: nameFilter,
+              isNew: true
+          })
+      }
+  };
 
   export default {
     components: {LoggersList},
@@ -141,7 +155,9 @@
     computed: {
       filteredLoggers() {
         const filterFn = this.getFilterFn();
-        return filterFn ? this.loggerConfig.loggers.filter(filterFn) : this.loggerConfig.loggers;
+        const filteredLoggers = filterFn ? this.loggerConfig.loggers.filter(filterFn) : this.loggerConfig.loggers;
+        addLoggerCreationEntryIfLoggerNotPresent(this.filter.name, filteredLoggers);
+        return filteredLoggers;
       }
     },
     watch: {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,6 @@
 
 package de.codecentric.boot.admin.client.registration;
 
-import de.codecentric.boot.admin.client.config.CloudFoundryApplicationProperties;
-import de.codecentric.boot.admin.client.config.InstanceProperties;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -27,6 +24,9 @@ import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 
+import de.codecentric.boot.admin.client.config.CloudFoundryApplicationProperties;
+import de.codecentric.boot.admin.client.config.InstanceProperties;
+
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,30 +34,51 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class CloudFoundryApplicationFactoryTest {
-    private InstanceProperties instanceProperties = new InstanceProperties();
-    private ServerProperties server = new ServerProperties();
-    private ManagementServerProperties management = new ManagementServerProperties();
-    private PathMappedEndpoints pathMappedEndpoints = mock(PathMappedEndpoints.class);
-    private WebEndpointProperties webEndpoint = new WebEndpointProperties();
-    private CloudFoundryApplicationProperties cfApplicationProperties = new CloudFoundryApplicationProperties();
-    private CloudFoundryApplicationFactory factory = new CloudFoundryApplicationFactory(instanceProperties, management,
-        server, pathMappedEndpoints, webEndpoint, () -> singletonMap("contributor", "test"), cfApplicationProperties);
 
-    @Before
-    public void setup() {
-        instanceProperties.setName("test");
-    }
+	private InstanceProperties instanceProperties = new InstanceProperties();
 
-    @Test
-    public void should_use_application_uri() {
-        when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
-        cfApplicationProperties.setUris(singletonList("application/Uppercase"));
+	private ServerProperties server = new ServerProperties();
 
-        Application app = factory.createApplication();
+	private ManagementServerProperties management = new ManagementServerProperties();
 
-        assertThat(app.getManagementUrl()).isEqualTo("http://application/Uppercase/actuator");
-        assertThat(app.getHealthUrl()).isEqualTo("http://application/Uppercase/actuator/health");
-        assertThat(app.getServiceUrl()).isEqualTo("http://application/Uppercase/");
-    }
+	private PathMappedEndpoints pathMappedEndpoints = mock(PathMappedEndpoints.class);
+
+	private WebEndpointProperties webEndpoint = new WebEndpointProperties();
+
+	private CloudFoundryApplicationProperties cfApplicationProperties = new CloudFoundryApplicationProperties();
+
+	private CloudFoundryApplicationFactory factory = new CloudFoundryApplicationFactory(this.instanceProperties,
+			this.management, this.server, this.pathMappedEndpoints, this.webEndpoint,
+			() -> singletonMap("contributor", "test"), this.cfApplicationProperties);
+
+	@Before
+	public void setup() {
+		this.instanceProperties.setName("test");
+	}
+
+	@Test
+	public void should_use_application_uri() {
+		when(this.pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
+		this.cfApplicationProperties.setUris(singletonList("application/Uppercase"));
+
+		Application app = this.factory.createApplication();
+
+		assertThat(app.getManagementUrl()).isEqualTo("http://application/Uppercase/actuator");
+		assertThat(app.getHealthUrl()).isEqualTo("http://application/Uppercase/actuator/health");
+		assertThat(app.getServiceUrl()).isEqualTo("http://application/Uppercase/");
+	}
+
+	@Test
+	public void should_use_service_base_uri() {
+		when(this.pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
+		this.cfApplicationProperties.setUris(singletonList("application/Uppercase"));
+		this.instanceProperties.setServiceBaseUrl("https://serviceBaseUrl");
+
+		Application app = this.factory.createApplication();
+
+		assertThat(app.getManagementUrl()).isEqualTo("https://serviceBaseUrl/actuator");
+		assertThat(app.getHealthUrl()).isEqualTo("https://serviceBaseUrl/actuator/health");
+		assertThat(app.getServiceUrl()).isEqualTo("https://serviceBaseUrl/");
+	}
 
 }

@@ -16,11 +16,12 @@
 
 package de.codecentric.boot.admin.server.domain.entities;
 
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import java.util.function.BiFunction;
+
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.function.BiFunction;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 /**
  * Responsible for storing instances.
@@ -29,49 +30,46 @@ import java.util.function.BiFunction;
  */
 public interface InstanceRepository {
 
-    /**
-     * Saves the Instance
-     *
-     * @param app Instance to save
-     * @return the saved instance
-     */
-    Mono<Instance> save(Instance app);
+	/**
+	 * Saves the Instance
+	 * @param app instance to save
+	 * @return the saved instance
+	 */
+	Mono<Instance> save(Instance app);
 
-    /**
-     * @return all instances in the repository;
-     */
-    Flux<Instance> findAll();
+	/**
+	 * @return all instances in the repository;
+	 */
+	Flux<Instance> findAll();
 
-    /**
-     * @param id the instances id
-     * @return the instance with the specified id;
-     */
-    Mono<Instance> find(InstanceId id);
+	/**
+	 * @param id the instances id
+	 * @return the instance with the specified id;
+	 */
+	Mono<Instance> find(InstanceId id);
 
-    /**
-     * @param name the instances name
-     * @return all instance with the specified name;
-     */
-    Flux<Instance> findByName(String name);
+	/**
+	 * @param name the instances name
+	 * @return all instance with the specified name;
+	 */
+	Flux<Instance> findByName(String name);
 
+	/**
+	 * Updates the instance associated with the id using the remapping function. If there
+	 * is no associated instance the function will be called with the id and null.
+	 * @param id instance to update
+	 * @param remappingFunction function to apply
+	 * @return the saved istance
+	 */
+	Mono<Instance> compute(InstanceId id, BiFunction<InstanceId, Instance, Mono<Instance>> remappingFunction);
 
-    /**
-     * Updates the instance associated with the id using the remapping function.
-     * If there is no associated instance the function will be called with the id and null.
-     *
-     * @param id                Instance to update
-     * @param remappingFunction function to apply
-     * @return the saved istance
-     */
-    Mono<Instance> compute(InstanceId id, BiFunction<InstanceId, Instance, Mono<Instance>> remappingFunction);
+	/**
+	 * Updates the instance associated with the id using the remapping function. If there
+	 * is no associated instance the function will not be called.
+	 * @param id instance to update
+	 * @param remappingFunction function to apply
+	 * @return the saved istance
+	 */
+	Mono<Instance> computeIfPresent(InstanceId id, BiFunction<InstanceId, Instance, Mono<Instance>> remappingFunction);
 
-    /**
-     * Updates the instance associated with the id using the remapping function.
-     * If there is no associated instance the function will not be called.
-     *
-     * @param id                Instance to update
-     * @param remappingFunction function to apply
-     * @return the saved istance
-     */
-    Mono<Instance> computeIfPresent(InstanceId id, BiFunction<InstanceId, Instance, Mono<Instance>> remappingFunction);
 }

@@ -16,18 +16,12 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
-import de.codecentric.boot.admin.server.domain.values.StatusInfo;
-import reactor.core.publisher.Mono;
-
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.Nullable;
+
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
@@ -38,6 +32,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
+import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 
 /**
  * Notifier submitting events to opsgenie.com.
@@ -45,209 +46,215 @@ import org.springframework.web.client.RestTemplate;
  * @author Fernando Sure
  */
 public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
-    private static final URI DEFAULT_URI = URI.create("https://api.opsgenie.com/v2/alerts");
-    private static final String DEFAULT_MESSAGE = "#{instance.registration.name}/#{instance.id} is #{instance.statusInfo.status}";
-    private final SpelExpressionParser parser = new SpelExpressionParser();
-    private RestTemplate restTemplate = new RestTemplate();
 
-    /**
-     * BASE URL for OpsGenie API
-     */
-    private URI url = DEFAULT_URI;
+	private static final URI DEFAULT_URI = URI.create("https://api.opsgenie.com/v2/alerts");
 
-    /**
-     * Integration ApiKey
-     */
-    @Nullable
-    private String apiKey;
+	private static final String DEFAULT_MESSAGE = "#{instance.registration.name}/#{instance.id} is #{instance.statusInfo.status}";
 
-    /**
-     * Comma separated list of actions that can be executed.
-     */
-    @Nullable
-    private String actions;
+	private final SpelExpressionParser parser = new SpelExpressionParser();
 
-    /**
-     * Field to specify source of alert. By default, it will be assigned to IP address of incoming request
-     */
-    @Nullable
-    private String source;
+	private RestTemplate restTemplate;
 
-    /**
-     * Comma separated list of labels attached to the alert
-     */
-    @Nullable
-    private String tags;
+	/**
+	 * BASE URL for OpsGenie API
+	 */
+	private URI url = DEFAULT_URI;
 
-    /**
-     * The entity the alert is related to.
-     */
-    @Nullable
-    private String entity;
+	/**
+	 * Integration ApiKey
+	 */
+	@Nullable
+	private String apiKey;
 
-    /**
-     * Default owner of the execution. If user is not specified, the system becomes owner of the execution.
-     */
-    @Nullable
-    private String user;
+	/**
+	 * Comma separated list of actions that can be executed.
+	 */
+	@Nullable
+	private String actions;
 
-    /**
-     * Trigger description. SpEL template using event as root;
-     */
-    private Expression description;
+	/**
+	 * Field to specify source of alert. By default, it will be assigned to IP address of
+	 * incoming request
+	 */
+	@Nullable
+	private String source;
 
-    public OpsGenieNotifier(InstanceRepository repository) {
-        super(repository);
-        this.description = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
-    }
+	/**
+	 * Comma separated list of labels attached to the alert
+	 */
+	@Nullable
+	private String tags;
 
+	/**
+	 * The entity the alert is related to.
+	 */
+	@Nullable
+	private String entity;
 
-    @Override
-    protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
-        return Mono.fromRunnable(
-            () -> restTemplate.exchange(buildUrl(event, instance), HttpMethod.POST, createRequest(event, instance),
-                Void.class));
-    }
+	/**
+	 * Default owner of the execution. If user is not specified, the system becomes owner
+	 * of the execution.
+	 */
+	@Nullable
+	private String user;
 
-    protected String buildUrl(InstanceEvent event, Instance instance) {
-        if ((event instanceof InstanceStatusChangedEvent) &&
-            (StatusInfo.STATUS_UP.equals(((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()))) {
-            return String.format("%s/%s/close", url.toString(), generateAlias(instance));
-        }
-        return url.toString();
-    }
+	/**
+	 * Trigger description. SpEL template using event as root;
+	 */
+	private Expression description;
 
-    protected HttpEntity<?> createRequest(InstanceEvent event, Instance instance) {
-        Map<String, Object> body = new HashMap<>();
+	public OpsGenieNotifier(InstanceRepository repository, RestTemplate restTemplate) {
+		super(repository);
+		this.restTemplate = restTemplate;
+		this.description = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
+	}
 
-        if (user != null) {
-            body.put("user", user);
-        }
-        if (source != null) {
-            body.put("source", source);
-        }
+	@Override
+	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
+		return Mono.fromRunnable(() -> restTemplate.exchange(buildUrl(event, instance), HttpMethod.POST,
+				createRequest(event, instance), Void.class));
+	}
 
-        if (event instanceof InstanceStatusChangedEvent &&
-            !StatusInfo.STATUS_UP.equals(((InstanceStatusChangedEvent) event).getStatusInfo().getStatus())) {
+	protected String buildUrl(InstanceEvent event, Instance instance) {
+		if ((event instanceof InstanceStatusChangedEvent)
+				&& (StatusInfo.STATUS_UP.equals(((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()))) {
+			return String.format("%s/%s/close", url.toString(), generateAlias(instance));
+		}
+		return url.toString();
+	}
 
-            body.put("message", getMessage(event, instance));
-            body.put("alias", generateAlias(instance));
-            body.put("description", getDescription(event, instance));
-            if (actions != null) {
-                body.put("actions", actions);
-            }
-            if (tags != null) {
-                body.put("tags", tags);
-            }
-            if (entity != null) {
-                body.put("entity", entity);
-            }
+	protected HttpEntity<?> createRequest(InstanceEvent event, Instance instance) {
+		Map<String, Object> body = new HashMap<>();
 
-            Map<String, Object> details = new HashMap<>();
-            details.put("type", "link");
-            details.put("href", instance.getRegistration().getHealthUrl());
-            details.put("text", "Instance health-endpoint");
-            body.put("details", details);
-        }
+		if (user != null) {
+			body.put("user", user);
+		}
+		if (source != null) {
+			body.put("source", source);
+		}
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set(HttpHeaders.AUTHORIZATION, "GenieKey " + apiKey);
-        return new HttpEntity<>(body, headers);
-    }
+		if (event instanceof InstanceStatusChangedEvent
+				&& !StatusInfo.STATUS_UP.equals(((InstanceStatusChangedEvent) event).getStatusInfo().getStatus())) {
 
-    protected String generateAlias(Instance instance) {
-        return instance.getRegistration().getName() + "_" + instance.getId();
-    }
+			body.put("message", getMessage(event, instance));
+			body.put("alias", generateAlias(instance));
+			body.put("description", getDescription(event, instance));
+			if (actions != null) {
+				body.put("actions", actions);
+			}
+			if (tags != null) {
+				body.put("tags", tags);
+			}
+			if (entity != null) {
+				body.put("entity", entity);
+			}
 
-    @Nullable
-    protected String getMessage(InstanceEvent event, Instance instance) {
-        Map<String, Object> root = new HashMap<>();
-        root.put("event", event);
-        root.put("instance", instance);
-        root.put("lastStatus", getLastStatus(event.getInstance()));
-        StandardEvaluationContext context = new StandardEvaluationContext(root);
-        context.addPropertyAccessor(new MapAccessor());
-        return description.getValue(context, String.class);
-    }
+			Map<String, Object> details = new HashMap<>();
+			details.put("type", "link");
+			details.put("href", instance.getRegistration().getHealthUrl());
+			details.put("text", "Instance health-endpoint");
+			body.put("details", details);
+		}
 
-    protected String getDescription(InstanceEvent event, Instance instance) {
-        return String.format("Instance %s (%s) went from %s to %s", instance.getRegistration().getName(),
-            instance.getId(), getLastStatus(instance.getId()),
-            ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus());
-    }
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.set(HttpHeaders.AUTHORIZATION, "GenieKey " + apiKey);
+		return new HttpEntity<>(body, headers);
+	}
 
-    public void setApiKey(@Nullable String apiKey) {
-        this.apiKey = apiKey;
-    }
+	protected String generateAlias(Instance instance) {
+		return instance.getRegistration().getName() + "_" + instance.getId();
+	}
 
-    @Nullable
-    public String getApiKey() {
-        return apiKey;
-    }
+	@Nullable
+	protected String getMessage(InstanceEvent event, Instance instance) {
+		Map<String, Object> root = new HashMap<>();
+		root.put("event", event);
+		root.put("instance", instance);
+		root.put("lastStatus", getLastStatus(event.getInstance()));
+		StandardEvaluationContext context = new StandardEvaluationContext(root);
+		context.addPropertyAccessor(new MapAccessor());
+		return description.getValue(context, String.class);
+	}
 
-    public void setDescription(String description) {
-        this.description = parser.parseExpression(description, ParserContext.TEMPLATE_EXPRESSION);
-    }
+	protected String getDescription(InstanceEvent event, Instance instance) {
+		return String.format("Instance %s (%s) went from %s to %s", instance.getRegistration().getName(),
+				instance.getId(), getLastStatus(instance.getId()),
+				((InstanceStatusChangedEvent) event).getStatusInfo().getStatus());
+	}
 
-    public String getMessage() {
-        return description.getExpressionString();
-    }
+	public void setApiKey(@Nullable String apiKey) {
+		this.apiKey = apiKey;
+	}
 
-    public void setRestTemplate(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+	@Nullable
+	public String getApiKey() {
+		return apiKey;
+	}
 
-    @Nullable
-    public String getActions() {
-        return actions;
-    }
+	public void setDescription(String description) {
+		this.description = parser.parseExpression(description, ParserContext.TEMPLATE_EXPRESSION);
+	}
 
-    public void setActions(@Nullable String actions) {
-        this.actions = actions;
-    }
+	public String getMessage() {
+		return description.getExpressionString();
+	}
 
-    @Nullable
-    public String getSource() {
-        return source;
-    }
+	public void setRestTemplate(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
 
-    public void setSource(@Nullable String source) {
-        this.source = source;
-    }
+	@Nullable
+	public String getActions() {
+		return actions;
+	}
 
-    @Nullable
-    public String getTags() {
-        return tags;
-    }
+	public void setActions(@Nullable String actions) {
+		this.actions = actions;
+	}
 
-    public void setTags(@Nullable String tags) {
-        this.tags = tags;
-    }
+	@Nullable
+	public String getSource() {
+		return source;
+	}
 
-    @Nullable
-    public String getEntity() {
-        return entity;
-    }
+	public void setSource(@Nullable String source) {
+		this.source = source;
+	}
 
-    public void setEntity(@Nullable String entity) {
-        this.entity = entity;
-    }
+	@Nullable
+	public String getTags() {
+		return tags;
+	}
 
-    @Nullable
-    public String getUser() {
-        return user;
-    }
+	public void setTags(@Nullable String tags) {
+		this.tags = tags;
+	}
 
-    public void setUser(@Nullable String user) {
-        this.user = user;
-    }
+	@Nullable
+	public String getEntity() {
+		return entity;
+	}
 
-    public URI getUrl() {
-        return url;
-    }
+	public void setEntity(@Nullable String entity) {
+		this.entity = entity;
+	}
 
-    public void setUrl(URI url) {
-        this.url = url;
-    }
+	@Nullable
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(@Nullable String user) {
+		this.user = user;
+	}
+
+	public URI getUrl() {
+		return url;
+	}
+
+	public void setUrl(URI url) {
+		this.url = url;
+	}
+
 }

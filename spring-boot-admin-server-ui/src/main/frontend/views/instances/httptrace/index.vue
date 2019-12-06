@@ -105,24 +105,29 @@
 </template>
 
 <script>
-  import subscribing from '@/mixins/subscribing';
-  import Instance from '@/services/instance';
-  import {concatMap, timer} from '@/utils/rxjs';
-  import debounce from 'lodash/debounce';
-  import moment from 'moment';
-  import sbaTracesChart from './traces-chart';
-  import sbaTracesList from './traces-list';
-  import {VIEW_GROUP} from '../../index';
+    import subscribing from '@/mixins/subscribing';
+    import Instance from '@/services/instance';
+    import {concatMap, timer} from '@/utils/rxjs';
+    import debounce from 'lodash/debounce';
+    import mapKeys from 'lodash/mapKeys';
+    import moment from 'moment';
+    import {VIEW_GROUP} from '../../index';
+    import sbaTracesChart from './traces-chart';
+    import sbaTracesList from './traces-list';
 
-  const addToFilter = (oldFilter, addedFilter) =>
+    const addToFilter = (oldFilter, addedFilter) =>
     !oldFilter
       ? addedFilter
       : (val, key) => oldFilter(val, key) && addedFilter(val, key);
 
+  const normalize = (obj) => mapKeys(obj, (value, key) => key.toLowerCase());
+
   class Trace {
-    constructor({timestamp, ...trace}) {
+    constructor({timestamp, request, response, ...trace}) {
       Object.assign(this, trace);
       this.timestamp = moment(timestamp);
+      this.request = {...request, headers: normalize(request.headers)};
+      this.response = {...response, headers: normalize(response.headers)};
     }
 
     get key() {
@@ -130,7 +135,7 @@
     }
 
     get contentLength() {
-      const contentLength = this.response.headers['Content-Length'] && this.response.headers['Content-Length'][0];
+      const contentLength = this.response.headers['content-length'] && this.response.headers['content-length'][0];
       if (contentLength && /^\d+$/.test(contentLength)) {
         return parseInt(contentLength);
       }
@@ -138,7 +143,7 @@
     }
 
     get contentType() {
-      const contentType = this.response.headers['Content-Type'] && this.response.headers['Content-Type'][0];
+      const contentType = this.response.headers['content-type'] && this.response.headers['content-type'][0];
       if (contentType) {
         const idx = contentType.indexOf(';');
         return idx >= 0 ? contentType.substring(0, idx) : contentType;

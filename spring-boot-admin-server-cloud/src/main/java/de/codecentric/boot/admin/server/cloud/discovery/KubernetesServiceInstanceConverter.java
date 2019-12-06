@@ -22,12 +22,13 @@ import static org.springframework.util.StringUtils.isEmpty;
 
 public class KubernetesServiceInstanceConverter extends DefaultServiceInstanceConverter {
 
-    @Override
-    protected String getManagementPort(ServiceInstance instance) {
-        String managementPort = instance.getMetadata().get("port.management");
-        if (!isEmpty(managementPort)) {
-            return managementPort;
-        }
-        return super.getManagementPort(instance);
-    }
+	@Override
+	protected String getManagementPort(ServiceInstance instance) {
+		String managementPort = instance.getMetadata().get("port.management");
+		if (!isEmpty(managementPort)) {
+			return managementPort;
+		}
+		return super.getManagementPort(instance);
+	}
+
 }

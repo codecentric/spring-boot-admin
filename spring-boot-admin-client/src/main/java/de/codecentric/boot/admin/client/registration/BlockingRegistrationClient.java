@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.client.registration;
 
 import java.util.Collections;
 import java.util.Map;
+
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -27,34 +28,33 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 public class BlockingRegistrationClient implements RegistrationClient {
-    private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
-    };
-    private final HttpHeaders httpHeaders = createHttpHeaders();
-    private final RestTemplate restTemplate;
 
-    public BlockingRegistrationClient(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
+	};
 
-    @Override
-    public String register(String adminUrl, Application application) {
-        ResponseEntity<Map<String, Object>> response = this.restTemplate.exchange(adminUrl,
-            HttpMethod.POST,
-            new HttpEntity<>(application, this.httpHeaders),
-            RESPONSE_TYPE
-        );
-        return response.getBody().get("id").toString();
-    }
+	private final RestTemplate restTemplate;
 
-    @Override
-    public void deregister(String adminUrl, String id) {
-        this.restTemplate.delete(adminUrl + '/' + id);
-    }
+	public BlockingRegistrationClient(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
 
-    private HttpHeaders createHttpHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        return HttpHeaders.readOnlyHttpHeaders(headers);
-    }
+	@Override
+	public String register(String adminUrl, Application application) {
+		ResponseEntity<Map<String, Object>> response = this.restTemplate.exchange(adminUrl, HttpMethod.POST,
+				new HttpEntity<>(application, this.createRequestHeaders()), RESPONSE_TYPE);
+		return response.getBody().get("id").toString();
+	}
+
+	@Override
+	public void deregister(String adminUrl, String id) {
+		this.restTemplate.delete(adminUrl + '/' + id);
+	}
+
+	protected HttpHeaders createRequestHeaders() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+		return HttpHeaders.readOnlyHttpHeaders(headers);
+	}
+
 }

@@ -16,10 +16,8 @@
 
 package de.codecentric.boot.admin.server.web.servlet;
 
-import de.codecentric.boot.admin.server.AdminServletApplicationTest;
-import de.codecentric.boot.admin.server.web.AbstractInstancesProxyControllerIntegrationTest;
-
 import javax.annotation.Nullable;
+
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -27,30 +25,32 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import de.codecentric.boot.admin.server.AdminServletApplicationTest;
+import de.codecentric.boot.admin.server.web.AbstractInstancesProxyControllerIntegrationTest;
+
 public class InstancesProxyControllerIntegrationTest extends AbstractInstancesProxyControllerIntegrationTest {
-    @Nullable
-    private static ConfigurableApplicationContext context;
 
-    @BeforeClass
-    public static void setUpContext() {
-        context = new SpringApplicationBuilder().sources(AdminServletApplicationTest.TestAdminApplication.class)
-                                                .web(WebApplicationType.SERVLET)
-                                                .run(
-                                                    "--server.port=0",
-                                                    "--spring.boot.admin.monitor.default-timeout=2500"
-                                                );
+	@Nullable
+	private static ConfigurableApplicationContext context;
 
-    }
+	@BeforeClass
+	public static void setUpContext() {
+		context = new SpringApplicationBuilder().sources(AdminServletApplicationTest.TestAdminApplication.class)
+				.web(WebApplicationType.SERVLET)
+				.run("--server.port=0", "--spring.boot.admin.monitor.default-timeout=2500");
 
-    @Before
-    public void setUpClient() {
-        super.setUpClient(context);
-    }
+	}
 
-    @AfterClass
-    public static void tearDownContext() {
-        if (context != null) {
-            context.close();
-        }
-    }
+	@Before
+	public void setUpClient() {
+		super.setUpClient(context);
+	}
+
+	@AfterClass
+	public static void tearDownContext() {
+		if (context != null) {
+			context.close();
+		}
+	}
+
 }

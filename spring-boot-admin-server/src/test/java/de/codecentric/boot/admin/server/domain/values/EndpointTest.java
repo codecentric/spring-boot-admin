@@ -22,11 +22,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class EndpointTest {
 
-    @Test
-    public void invariants() {
-        assertThatThrownBy(() -> Endpoint.of("", "")).isInstanceOf(IllegalArgumentException.class)
-                                                     .hasMessage("'id' must not be empty.");
-        assertThatThrownBy(() -> Endpoint.of("id", "")).isInstanceOf(IllegalArgumentException.class)
-                                                       .hasMessage("'url' must not be empty.");
-    }
+	@Test
+	public void invariants() {
+		assertThatThrownBy(() -> Endpoint.of("", "")).isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("'id' must not be empty.");
+		assertThatThrownBy(() -> Endpoint.of("id", "")).isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("'url' must not be empty.");
+	}
+
 }

@@ -16,22 +16,24 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
-import reactor.core.publisher.Mono;
-
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.Nullable;
+
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.web.client.RestTemplate;
+import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 
 import static java.util.Collections.singletonList;
 
@@ -41,153 +43,155 @@ import static java.util.Collections.singletonList;
  * @author Johannes Edmeier
  */
 public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
-    public static final URI DEFAULT_URI = URI.create(
-        "https://events.pagerduty.com/generic/2010-04-15/create_event.json");
 
-    private static final String DEFAULT_DESCRIPTION = "#{instance.registration.name}/#{instance.id} is #{instance.statusInfo.status}";
+	public static final URI DEFAULT_URI = URI
+			.create("https://events.pagerduty.com/generic/2010-04-15/create_event.json");
 
-    private final SpelExpressionParser parser = new SpelExpressionParser();
-    private RestTemplate restTemplate = new RestTemplate();
+	private static final String DEFAULT_DESCRIPTION = "#{instance.registration.name}/#{instance.id} is #{instance.statusInfo.status}";
 
-    /**
-     * URI for pagerduty-REST-API
-     */
-    private URI url = DEFAULT_URI;
+	private final SpelExpressionParser parser = new SpelExpressionParser();
 
-    /**
-     * Service-Key for pagerduty-REST-API
-     */
-    @Nullable
-    private String serviceKey;
+	private RestTemplate restTemplate;
 
-    /**
-     * Client for pagerduty-REST-API
-     */
-    @Nullable
-    private String client;
+	/**
+	 * URI for pagerduty-REST-API
+	 */
+	private URI url = DEFAULT_URI;
 
-    /**
-     * Client-url for pagerduty-REST-API
-     */
-    @Nullable
-    private URI clientUrl;
+	/**
+	 * Service-Key for pagerduty-REST-API
+	 */
+	@Nullable
+	private String serviceKey;
 
-    /**
-     * Trigger description. SpEL template using event as root;
-     */
-    private Expression description;
+	/**
+	 * Client for pagerduty-REST-API
+	 */
+	@Nullable
+	private String client;
 
-    public PagerdutyNotifier(InstanceRepository repository) {
-        super(repository);
-        this.description = parser.parseExpression(DEFAULT_DESCRIPTION, ParserContext.TEMPLATE_EXPRESSION);
-    }
+	/**
+	 * Client-url for pagerduty-REST-API
+	 */
+	@Nullable
+	private URI clientUrl;
 
+	/**
+	 * Trigger description. SpEL template using event as root;
+	 */
+	private Expression description;
 
-    @Override
-    protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
-        return Mono.fromRunnable(
-            () -> restTemplate.postForEntity(url, createPagerdutyEvent(event, instance), Void.class));
-    }
+	public PagerdutyNotifier(InstanceRepository repository, RestTemplate restTemplate) {
+		super(repository);
+		this.restTemplate = restTemplate;
+		this.description = parser.parseExpression(DEFAULT_DESCRIPTION, ParserContext.TEMPLATE_EXPRESSION);
+	}
 
+	@Override
+	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
+		return Mono
+				.fromRunnable(() -> restTemplate.postForEntity(url, createPagerdutyEvent(event, instance), Void.class));
+	}
 
-    protected Map<String, Object> createPagerdutyEvent(InstanceEvent event, Instance instance) {
-        Map<String, Object> result = new HashMap<>();
-        result.put("service_key", serviceKey);
-        result.put("incident_key", instance.getRegistration().getName() + "/" + event.getInstance());
-        result.put("description", getDescription(event, instance));
+	protected Map<String, Object> createPagerdutyEvent(InstanceEvent event, Instance instance) {
+		Map<String, Object> result = new HashMap<>();
+		result.put("service_key", serviceKey);
+		result.put("incident_key", instance.getRegistration().getName() + "/" + event.getInstance());
+		result.put("description", getDescription(event, instance));
 
-        Map<String, Object> details = getDetails(event);
-        result.put("details", details);
+		Map<String, Object> details = getDetails(event);
+		result.put("details", details);
 
-        if (event instanceof InstanceStatusChangedEvent) {
-            if ("UP".equals(((InstanceStatusChangedEvent) event).getStatusInfo().getStatus())) {
-                result.put("event_type", "resolve");
-            } else {
-                result.put("event_type", "trigger");
-                if (client != null) {
-                    result.put("client", client);
-                }
-                if (clientUrl != null) {
-                    result.put("client_url", clientUrl);
-                }
+		if (event instanceof InstanceStatusChangedEvent) {
+			if ("UP".equals(((InstanceStatusChangedEvent) event).getStatusInfo().getStatus())) {
+				result.put("event_type", "resolve");
+			}
+			else {
+				result.put("event_type", "trigger");
+				if (client != null) {
+					result.put("client", client);
+				}
+				if (clientUrl != null) {
+					result.put("client_url", clientUrl);
+				}
 
-                Map<String, Object> context = new HashMap<>();
-                context.put("type", "link");
-                context.put("href", instance.getRegistration().getHealthUrl());
-                context.put("text", "Application health-endpoint");
-                result.put("contexts", singletonList(context));
-            }
-        }
+				Map<String, Object> context = new HashMap<>();
+				context.put("type", "link");
+				context.put("href", instance.getRegistration().getHealthUrl());
+				context.put("text", "Application health-endpoint");
+				result.put("contexts", singletonList(context));
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    @Nullable
-    protected String getDescription(InstanceEvent event, Instance instance) {
-        Map<String, Object> root = new HashMap<>();
-        root.put("event", event);
-        root.put("instance", instance);
-        root.put("lastStatus", getLastStatus(event.getInstance()));
-        StandardEvaluationContext context = new StandardEvaluationContext(root);
-        context.addPropertyAccessor(new MapAccessor());
+	@Nullable
+	protected String getDescription(InstanceEvent event, Instance instance) {
+		Map<String, Object> root = new HashMap<>();
+		root.put("event", event);
+		root.put("instance", instance);
+		root.put("lastStatus", getLastStatus(event.getInstance()));
+		StandardEvaluationContext context = new StandardEvaluationContext(root);
+		context.addPropertyAccessor(new MapAccessor());
 
-        return description.getValue(context, String.class);
-    }
+		return description.getValue(context, String.class);
+	}
 
-    protected Map<String, Object> getDetails(InstanceEvent event) {
-        Map<String, Object> details = new HashMap<>();
-        if (event instanceof InstanceStatusChangedEvent) {
-            details.put("from", this.getLastStatus(event.getInstance()));
-            details.put("to", ((InstanceStatusChangedEvent) event).getStatusInfo());
-        }
-        return details;
-    }
+	protected Map<String, Object> getDetails(InstanceEvent event) {
+		Map<String, Object> details = new HashMap<>();
+		if (event instanceof InstanceStatusChangedEvent) {
+			details.put("from", this.getLastStatus(event.getInstance()));
+			details.put("to", ((InstanceStatusChangedEvent) event).getStatusInfo());
+		}
+		return details;
+	}
 
-    public void setUrl(URI url) {
-        this.url = url;
-    }
+	public void setUrl(URI url) {
+		this.url = url;
+	}
 
-    public URI getUrl() {
-        return url;
-    }
+	public URI getUrl() {
+		return url;
+	}
 
-    public void setClient(@Nullable String client) {
-        this.client = client;
-    }
+	public void setClient(@Nullable String client) {
+		this.client = client;
+	}
 
-    @Nullable
-    public String getClient() {
-        return client;
-    }
+	@Nullable
+	public String getClient() {
+		return client;
+	}
 
-    public void setClientUrl(@Nullable URI clientUrl) {
-        this.clientUrl = clientUrl;
-    }
+	public void setClientUrl(@Nullable URI clientUrl) {
+		this.clientUrl = clientUrl;
+	}
 
-    @Nullable
-    public URI getClientUrl() {
-        return clientUrl;
-    }
+	@Nullable
+	public URI getClientUrl() {
+		return clientUrl;
+	}
 
-    public void setServiceKey(@Nullable String serviceKey) {
-        this.serviceKey = serviceKey;
-    }
+	public void setServiceKey(@Nullable String serviceKey) {
+		this.serviceKey = serviceKey;
+	}
 
-    @Nullable
-    public String getServiceKey() {
-        return serviceKey;
-    }
+	@Nullable
+	public String getServiceKey() {
+		return serviceKey;
+	}
 
-    public void setDescription(String description) {
-        this.description = parser.parseExpression(description, ParserContext.TEMPLATE_EXPRESSION);
-    }
+	public void setDescription(String description) {
+		this.description = parser.parseExpression(description, ParserContext.TEMPLATE_EXPRESSION);
+	}
 
-    public String getDescription() {
-        return description.getExpressionString();
-    }
+	public String getDescription() {
+		return description.getExpressionString();
+	}
 
-    public void setRestTemplate(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+	public void setRestTemplate(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
 
 }

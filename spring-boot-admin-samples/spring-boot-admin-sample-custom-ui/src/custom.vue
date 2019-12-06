@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <pre v-text="stringify(applications, null, 4)"/>
+  <pre v-text="stringify(applications, null, 4)" />
 </template>
 
 <script>

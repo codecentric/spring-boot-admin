@@ -17,12 +17,14 @@
 package de.codecentric.boot.admin.server.web.client;
 
 /**
- * Callback interface that can be used to customize a
- * {@link InstanceWebClient.Builder InstanceWebClient.Builder}
+ * Callback interface that can be used to customize a {@link InstanceWebClient.Builder
+ * InstanceWebClient.Builder}
  *
  * @author Johannes Edmeier
  */
 @FunctionalInterface
 public interface InstanceWebClientCustomizer {
-    void customize(InstanceWebClient.Builder instanceWebClientBuilder);
+
+	void customize(InstanceWebClient.Builder instanceWebClientBuilder);
+
 }

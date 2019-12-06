@@ -1,0 +1,19 @@
+{
+  "instances": {
+    "loggers": {
+      "label": "日志配置",
+      "affects_all_instances": "{count} 个实例被影响",
+      "affects_this_instance_only": "只影响当前实例",
+      "application": "应用",
+      "fetch_failed": "获取日志配置失败。",
+      "filter": {
+        "class_only": "只显示类",
+        "configured": "已配置"
+      },
+      "instance": "实例",
+      "new": "新",
+      "no_loggers_found": "未找到日志配置。",
+      "reset": "重置",
+      "setting_loglevel_failed": "设置 {logger} {loglevel} 失败。"
+    }    }
+}

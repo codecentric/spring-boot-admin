@@ -16,65 +16,66 @@
 
 package de.codecentric.boot.admin.server.services;
 
+import java.time.Duration;
+
+import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdatedEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Scheduler;
-import reactor.core.scheduler.Schedulers;
-
-import java.time.Duration;
-import org.reactivestreams.Publisher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
-    private static final Logger log = LoggerFactory.getLogger(StatusUpdateTrigger.class);
-    private final StatusUpdater statusUpdater;
-    private final IntervalCheck intervalCheck;
 
-    public StatusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> publisher) {
-        super(publisher, InstanceEvent.class);
-        this.statusUpdater = statusUpdater;
-        this.intervalCheck = new IntervalCheck("status", this::updateStatus);
-    }
+	private static final Logger log = LoggerFactory.getLogger(StatusUpdateTrigger.class);
 
-    @Override
-    protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
-        Scheduler scheduler = Schedulers.newSingle("status-updater");
-        return publisher.subscribeOn(scheduler)
-                        .filter(event -> event instanceof InstanceRegisteredEvent ||
-                                         event instanceof InstanceRegistrationUpdatedEvent)
-                        .flatMap(event -> updateStatus(event.getInstance()))
-                        .doFinally(s -> scheduler.dispose());
-    }
+	private final StatusUpdater statusUpdater;
 
-    protected Mono<Void> updateStatus(InstanceId instanceId) {
-        return this.statusUpdater.updateStatus(instanceId).onErrorResume(e -> {
-            log.warn("Unexpected error while updating status for {}", instanceId, e);
-            return Mono.empty();
-        }).doFinally(s -> this.intervalCheck.markAsChecked(instanceId));
-    }
+	private final IntervalCheck intervalCheck;
 
-    @Override
-    public void start() {
-        super.start();
-        this.intervalCheck.start();
-    }
+	public StatusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> publisher) {
+		super(publisher, InstanceEvent.class);
+		this.statusUpdater = statusUpdater;
+		this.intervalCheck = new IntervalCheck("status", this::updateStatus);
+	}
 
-    @Override
-    public void stop() {
-        super.stop();
-        this.intervalCheck.stop();
-    }
+	@Override
+	protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
+		return publisher
+				.filter((event) -> event instanceof InstanceRegisteredEvent
+						|| event instanceof InstanceRegistrationUpdatedEvent)
+				.flatMap((event) -> updateStatus(event.getInstance()));
+	}
 
-    public void setInterval(Duration updateInterval) {
-        this.intervalCheck.setInterval(updateInterval);
-    }
+	protected Mono<Void> updateStatus(InstanceId instanceId) {
+		return this.statusUpdater.updateStatus(instanceId).onErrorResume((e) -> {
+			log.warn("Unexpected error while updating status for {}", instanceId, e);
+			return Mono.empty();
+		}).doFinally((s) -> this.intervalCheck.markAsChecked(instanceId));
+	}
 
-    public void setLifetime(Duration statusLifetime) {
-        this.intervalCheck.setMinRetention(statusLifetime);
-    }
+	@Override
+	public void start() {
+		super.start();
+		this.intervalCheck.start();
+	}
+
+	@Override
+	public void stop() {
+		super.stop();
+		this.intervalCheck.stop();
+	}
+
+	public void setInterval(Duration updateInterval) {
+		this.intervalCheck.setInterval(updateInterval);
+	}
+
+	public void setLifetime(Duration statusLifetime) {
+		this.intervalCheck.setMinRetention(statusLifetime);
+	}
+
 }

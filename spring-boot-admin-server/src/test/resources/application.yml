@@ -1,7 +1,7 @@
 server:
     port: 8080
 spring:
-    instance:
+    application:
         name: spring-boot-admin-server-test
     jmx:
         enabled: false

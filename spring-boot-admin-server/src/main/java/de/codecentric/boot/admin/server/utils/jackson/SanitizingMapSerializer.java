@@ -16,50 +16,52 @@
 
 package de.codecentric.boot.admin.server.utils.jackson;
 
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.regex.Pattern;
+
 import javax.annotation.Nullable;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
-
 public class SanitizingMapSerializer extends StdSerializer<Map<String, String>> {
-    private static final long serialVersionUID = 1L;
-    private final Pattern[] keysToSanitize;
 
-    @SuppressWarnings("unchecked")
-    public SanitizingMapSerializer(String[] patterns) {
-        super((Class<Map<String, String>>) (Class<?>) Map.class);
-        this.keysToSanitize = createPatterns(patterns);
-    }
+	private static final long serialVersionUID = 1L;
 
-    private static Pattern[] createPatterns(String... keys) {
-        return Arrays.stream(keys).map(key -> Pattern.compile(key, Pattern.CASE_INSENSITIVE)).toArray(Pattern[]::new);
-    }
+	private final Pattern[] keysToSanitize;
 
-    @Override
-    public void serialize(Map<String, String> value,
-                          JsonGenerator gen,
-                          SerializerProvider provider) throws IOException {
-        gen.writeStartObject();
-        for (Map.Entry<String, String> entry : value.entrySet()) {
-            gen.writeStringField(entry.getKey(), sanitize(entry.getKey(), entry.getValue()));
-        }
-        gen.writeEndObject();
-    }
+	@SuppressWarnings("unchecked")
+	public SanitizingMapSerializer(String[] patterns) {
+		super((Class<Map<String, String>>) (Class<?>) Map.class);
+		this.keysToSanitize = createPatterns(patterns);
+	}
 
-    @Nullable
-    private String sanitize(String key, @Nullable String value) {
-        if (value == null) {
-            return null;
-        }
+	private static Pattern[] createPatterns(String... keys) {
+		return Arrays.stream(keys).map((key) -> Pattern.compile(key, Pattern.CASE_INSENSITIVE)).toArray(Pattern[]::new);
+	}
 
-        boolean matchesAnyPattern = Arrays.stream(this.keysToSanitize)
-                                          .anyMatch(pattern -> pattern.matcher(key).matches());
-        return matchesAnyPattern ? "******" : value;
-    }
+	@Override
+	public void serialize(Map<String, String> value, JsonGenerator gen, SerializerProvider provider)
+			throws IOException {
+		gen.writeStartObject();
+		for (Map.Entry<String, String> entry : value.entrySet()) {
+			gen.writeStringField(entry.getKey(), sanitize(entry.getKey(), entry.getValue()));
+		}
+		gen.writeEndObject();
+	}
+
+	@Nullable
+	private String sanitize(String key, @Nullable String value) {
+		if (value == null) {
+			return null;
+		}
+
+		boolean matchesAnyPattern = Arrays.stream(this.keysToSanitize)
+				.anyMatch((pattern) -> pattern.matcher(key).matches());
+		return matchesAnyPattern ? "******" : value;
+	}
+
 }

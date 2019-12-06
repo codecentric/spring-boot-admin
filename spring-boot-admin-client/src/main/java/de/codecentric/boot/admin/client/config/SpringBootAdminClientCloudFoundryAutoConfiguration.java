@@ -16,13 +16,9 @@
 
 package de.codecentric.boot.admin.client.config;
 
-import de.codecentric.boot.admin.client.registration.CloudFoundryApplicationFactory;
-import de.codecentric.boot.admin.client.registration.metadata.CloudFoundryMetadataContributor;
-import de.codecentric.boot.admin.client.registration.metadata.CompositeMetadataContributor;
-import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
-
 import java.util.Collections;
 import java.util.List;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
@@ -38,36 +34,35 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+import de.codecentric.boot.admin.client.registration.CloudFoundryApplicationFactory;
+import de.codecentric.boot.admin.client.registration.metadata.CloudFoundryMetadataContributor;
+import de.codecentric.boot.admin.client.registration.metadata.CompositeMetadataContributor;
+import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
+
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication
 @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
 @Conditional(SpringBootAdminClientEnabledCondition.class)
 @EnableConfigurationProperties(CloudFoundryApplicationProperties.class)
-@AutoConfigureBefore({SpringBootAdminClientAutoConfiguration.class})
+@AutoConfigureBefore({ SpringBootAdminClientAutoConfiguration.class })
 public class SpringBootAdminClientCloudFoundryAutoConfiguration {
-    @Bean
-    @ConditionalOnMissingBean
-    public CloudFoundryMetadataContributor cloudFoundryMetadataContributor(CloudFoundryApplicationProperties cloudFoundryApplicationProperties) {
-        return new CloudFoundryMetadataContributor(cloudFoundryApplicationProperties);
-    }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public CloudFoundryApplicationFactory applicationFactory(InstanceProperties instance,
-                                                             ManagementServerProperties management,
-                                                             ServerProperties server,
-                                                             PathMappedEndpoints pathMappedEndpoints,
-                                                             WebEndpointProperties webEndpoint,
-                                                             ObjectProvider<List<MetadataContributor>> metadataContributors,
-                                                             CloudFoundryApplicationProperties cfApplicationProperties) {
-        return new CloudFoundryApplicationFactory(
-            instance,
-            management,
-            server,
-            pathMappedEndpoints,
-            webEndpoint,
-            new CompositeMetadataContributor(metadataContributors.getIfAvailable(Collections::emptyList)),
-            cfApplicationProperties
-        );
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public CloudFoundryMetadataContributor cloudFoundryMetadataContributor(
+			CloudFoundryApplicationProperties cloudFoundryApplicationProperties) {
+		return new CloudFoundryMetadataContributor(cloudFoundryApplicationProperties);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public CloudFoundryApplicationFactory applicationFactory(InstanceProperties instance,
+			ManagementServerProperties management, ServerProperties server, PathMappedEndpoints pathMappedEndpoints,
+			WebEndpointProperties webEndpoint, ObjectProvider<List<MetadataContributor>> metadataContributors,
+			CloudFoundryApplicationProperties cfApplicationProperties) {
+		return new CloudFoundryApplicationFactory(instance, management, server, pathMappedEndpoints, webEndpoint,
+				new CompositeMetadataContributor(metadataContributors.getIfAvailable(Collections::emptyList)),
+				cfApplicationProperties);
+	}
+
 }

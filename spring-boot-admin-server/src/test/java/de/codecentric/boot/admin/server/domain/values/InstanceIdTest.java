@@ -16,25 +16,26 @@
 
 package de.codecentric.boot.admin.server.domain.values;
 
-
-import org.junit.Test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class InstanceIdTest {
-    @Test
-    public void invariants() {
-        assertThatThrownBy(() -> InstanceId.of(null)).isInstanceOf(IllegalArgumentException.class)
-                                                     .hasMessage("'value' must have text");
-        assertThatThrownBy(() -> InstanceId.of("")).isInstanceOf(IllegalArgumentException.class)
-                                                   .hasMessage("'value' must have text");
-    }
 
-    @Test
-    public void json() throws JsonProcessingException {
-        assertThat(new ObjectMapper().writeValueAsString(InstanceId.of("abc"))).isEqualTo("\"abc\"");
-    }
+	@Test
+	public void invariants() {
+		assertThatThrownBy(() -> InstanceId.of(null)).isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("'value' must have text");
+		assertThatThrownBy(() -> InstanceId.of("")).isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("'value' must have text");
+	}
+
+	@Test
+	public void json() throws JsonProcessingException {
+		assertThat(new ObjectMapper().writeValueAsString(InstanceId.of("abc"))).isEqualTo("\"abc\"");
+	}
+
 }

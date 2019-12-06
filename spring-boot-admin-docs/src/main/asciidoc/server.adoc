@@ -4,7 +4,7 @@
 === Running Behind a Front-end Proxy Server ===
 
 In case the Spring Boot Admin server is running behind a reverse proxy, it may be requried to configure the public url where the server is reachable via (`spring.boot.admin.ui.public-url`).
-In addition when the reverse proxy terminates the https connection, it may be necessary to configure `server.use-forward-headers=true` (also see https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto-use-tomcat-behind-a-proxy-server[Spring Boot Reference Guide]).
+In addition when the reverse proxy terminates the https connection, it may be necessary to configure `server.forward-headers-strategy=native` (also see https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto-use-tomcat-behind-a-proxy-server[Spring Boot Reference Guide]).
 
 === Configuration Options ===
 |===

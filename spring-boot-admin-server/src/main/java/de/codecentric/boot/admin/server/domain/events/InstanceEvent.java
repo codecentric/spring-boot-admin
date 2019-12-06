@@ -16,11 +16,12 @@
 
 package de.codecentric.boot.admin.server.domain.events;
 
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
-
 import java.io.Serializable;
 import java.time.Instant;
+
 import org.springframework.util.Assert;
+
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 /**
  * Abstract Event regarding registered instances
@@ -29,19 +30,25 @@ import org.springframework.util.Assert;
  */
 @lombok.Data
 public abstract class InstanceEvent implements Serializable {
-    private static final long serialVersionUID = 1L;
-    private final InstanceId instance;
-    private final long version;
-    private final Instant timestamp;
-    private final String type;
 
-    protected InstanceEvent(InstanceId instance, long version, String type, Instant timestamp) {
-        Assert.notNull(instance, "'instance' must not be null");
-        Assert.notNull(timestamp, "'timestamp' must not be null");
-        Assert.hasText(type, "'type' must not be empty");
-        this.instance = instance;
-        this.version = version;
-        this.timestamp = timestamp;
-        this.type = type;
-    }
+	private static final long serialVersionUID = 1L;
+
+	private final InstanceId instance;
+
+	private final long version;
+
+	private final Instant timestamp;
+
+	private final String type;
+
+	protected InstanceEvent(InstanceId instance, long version, String type, Instant timestamp) {
+		Assert.notNull(instance, "'instance' must not be null");
+		Assert.notNull(timestamp, "'timestamp' must not be null");
+		Assert.hasText(type, "'type' must not be empty");
+		this.instance = instance;
+		this.version = version;
+		this.timestamp = timestamp;
+		this.type = type;
+	}
+
 }

@@ -36,8 +36,7 @@
         </div>
       </div>
       <div v-if="threads" class="control">
-        <button class="button is-primary"
-                @click="downloadThreaddump">
+        <button class="button is-primary" @click="downloadThreaddump">
           <font-awesome-icon icon="download" />&nbsp;
           <span v-text="$t('instances.threaddump.download')" />
         </button>
@@ -89,21 +88,22 @@
                 threadId: thread.threadId,
                 threadState: thread.threadState,
                 threadName: thread.threadName,
-                details: thread,
                 timeline: [{
                   start: now,
                   end: now,
+                  details: thread,
                   threadState: thread.threadState,
                 }]
               });
             } else {
               const entry = vm.threads[thread.threadId];
-              entry.details = thread;
               if (entry.threadState !== thread.threadState) {
                 entry.threadState = thread.threadState;
+                entry.timeline[entry.timeline.length - 1].end = now;
                 entry.timeline.push({
-                  start: entry.timeline[entry.timeline.length - 1].end,
+                  start: now,
                   end: now,
+                  details: thread,
                   threadState: thread.threadState,
                 });
               } else {
@@ -116,7 +116,6 @@
         terminatedThreads.forEach(threadId => {
           const entry = vm.threads[threadId];
           entry.threadState = 'TERMINATED';
-          entry.details = null;
           entry.timeline[entry.timeline.length - 1].end = now;
         });
       },
@@ -130,7 +129,7 @@
         try {
           await this.instance.downloadThreaddump();
         } catch(error) {
-          console.warn('Downloading threaddump failed.', error);
+          console.warn('Downloading thread dump failed.', error);
           vm.errorDownload = error;
         }
       },

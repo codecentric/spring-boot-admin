@@ -24,6 +24,7 @@ jest.setTimeout(500);
 describe('store', () => {
   describe('given no registered applications', function () {
     Application.list = jest.fn(() => EMPTY);
+    Application.getStream = jest.fn(() => EMPTY);
 
     it('it should emit a connected event after start', async () => {
       const store = new Store();

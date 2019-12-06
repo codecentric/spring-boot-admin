@@ -16,27 +16,29 @@
 
 package de.codecentric.boot.admin.server.services.endpoints;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.values.Endpoints;
+import org.springframework.util.Assert;
 import reactor.core.publisher.Mono;
 
-import org.springframework.util.Assert;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.values.Endpoints;
 
 public class ChainingStrategy implements EndpointDetectionStrategy {
-    private final EndpointDetectionStrategy[] delegates;
 
-    public ChainingStrategy(EndpointDetectionStrategy... delegates) {
-        Assert.notNull(delegates, "'delegates' must not be null.");
-        Assert.noNullElements(delegates, "'delegates' must not contain null.");
-        this.delegates = delegates;
-    }
+	private final EndpointDetectionStrategy[] delegates;
 
-    @Override
-    public Mono<Endpoints> detectEndpoints(Instance instance) {
-        Mono<Endpoints> result = Mono.empty();
-        for (EndpointDetectionStrategy delegate : delegates) {
-            result = result.switchIfEmpty(delegate.detectEndpoints(instance));
-        }
-        return result.switchIfEmpty(Mono.just(Endpoints.empty()));
-    }
+	public ChainingStrategy(EndpointDetectionStrategy... delegates) {
+		Assert.notNull(delegates, "'delegates' must not be null.");
+		Assert.noNullElements(delegates, "'delegates' must not contain null.");
+		this.delegates = delegates;
+	}
+
+	@Override
+	public Mono<Endpoints> detectEndpoints(Instance instance) {
+		Mono<Endpoints> result = Mono.empty();
+		for (EndpointDetectionStrategy delegate : delegates) {
+			result = result.switchIfEmpty(delegate.detectEndpoints(instance));
+		}
+		return result.switchIfEmpty(Mono.just(Endpoints.empty()));
+	}
+
 }

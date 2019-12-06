@@ -32,22 +32,22 @@
       <template v-for="(context, ctxName) in contexts">
         <h3 class="title" v-text="ctxName" :key="ctxName" />
 
-        <DispatcherMappings v-if="!isEmpty(context.mappings.dispatcherServlets)"
-                            :key="`${ctxName}_dispatcherServlets`"
-                            :dispatchers="context.mappings.dispatcherServlets"
+        <dispatcher-mappings v-if="!isEmpty(context.mappings.dispatcherServlets)"
+                             :key="`${ctxName}_dispatcherServlets`"
+                             :dispatchers="context.mappings.dispatcherServlets"
         />
 
-        <DispatcherMappings v-if="!isEmpty(context.mappings.dispatcherHandlers)"
-                            :key="`${ctxName}_dispatcherHandlers`"
-                            :dispatchers="context.mappings.dispatcherHandlers"
+        <dispatcher-mappings v-if="!isEmpty(context.mappings.dispatcherHandlers)"
+                             :key="`${ctxName}_dispatcherHandlers`"
+                             :dispatchers="context.mappings.dispatcherHandlers"
         />
 
-        <ServletMappings :key="`${ctxName}_servlets`"
-                         :servlets="context.mappings.servlets"
+        <servlet-mappings :key="`${ctxName}_servlets`"
+                          :servlets="context.mappings.servlets"
         />
 
-        <ServletFilterMappings :key="`${ctxName}_servletFilters`"
-                               :servlet-filters="context.mappings.servletFilters"
+        <servlet-filter-mappings :key="`${ctxName}_servletFilters`"
+                                 :servlet-filters="context.mappings.servletFilters"
         />
       </template>
     </template>

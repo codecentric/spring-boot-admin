@@ -16,11 +16,6 @@
 
 package de.codecentric.boot.admin;
 
-import de.codecentric.boot.admin.server.config.AdminServerProperties;
-import de.codecentric.boot.admin.server.config.EnableAdminServer;
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.notify.LoggingNotifier;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -29,47 +24,54 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
-@Configuration
+import de.codecentric.boot.admin.server.config.AdminServerProperties;
+import de.codecentric.boot.admin.server.config.EnableAdminServer;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.notify.LoggingNotifier;
+
+@Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
 @EnableAdminServer
 public class SpringBootAdminReactiveApplication {
-    private final AdminServerProperties adminServer;
 
-    public SpringBootAdminReactiveApplication(AdminServerProperties adminServer) {
-        this.adminServer = adminServer;
-    }
+	private final AdminServerProperties adminServer;
 
-    public static void main(String[] args) {
-        SpringApplication.run(SpringBootAdminReactiveApplication.class, args);
-    }
+	public SpringBootAdminReactiveApplication(AdminServerProperties adminServer) {
+		this.adminServer = adminServer;
+	}
 
-    @Bean
-    @Profile("insecure")
-    public SecurityWebFilterChain securityWebFilterChainPermitAll(ServerHttpSecurity http) {
-        return http.authorizeExchange().anyExchange().permitAll()//
-                   .and().csrf().disable()//
-                   .build();
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(SpringBootAdminReactiveApplication.class, args);
+	}
 
-    @Bean
-    @Profile("secure")
-    public SecurityWebFilterChain securityWebFilterChainSecure(ServerHttpSecurity http) {
-        // @formatter:off
-        return http.authorizeExchange()
-                .pathMatchers(this.adminServer.path("/assets/**")).permitAll()
-                .pathMatchers(this.adminServer.path("/login")).permitAll()
-                .anyExchange().authenticated()
-                .and()
-            .formLogin().loginPage(this.adminServer.path("/login")).and()
-            .logout().logoutUrl(this.adminServer.path("/logout")).and()
-            .httpBasic().and()
-            .csrf().disable()
-            .build();
-        // @formatter:on
-    }
+	@Bean
+	@Profile("insecure")
+	public SecurityWebFilterChain securityWebFilterChainPermitAll(ServerHttpSecurity http) {
+		return http.authorizeExchange().anyExchange().permitAll()//
+				.and().csrf().disable()//
+				.build();
+	}
 
-    @Bean
-    public LoggingNotifier loggerNotifier(InstanceRepository repository) {
-        return new LoggingNotifier(repository);
-    }
+	@Bean
+	@Profile("secure")
+	public SecurityWebFilterChain securityWebFilterChainSecure(ServerHttpSecurity http) {
+		// @formatter:off
+		return http.authorizeExchange()
+				.pathMatchers(this.adminServer.path("/assets/**")).permitAll()
+				.pathMatchers(this.adminServer.path("/login")).permitAll()
+				.anyExchange().authenticated()
+				.and()
+			.formLogin().loginPage(this.adminServer.path("/login")).and()
+			.logout().logoutUrl(this.adminServer.path("/logout")).and()
+			.httpBasic().and()
+			.csrf().disable()
+			.build();
+		// @formatter:on
+	}
+
+	@Bean
+	public LoggingNotifier loggerNotifier(InstanceRepository repository) {
+		return new LoggingNotifier(repository);
+	}
+
 }

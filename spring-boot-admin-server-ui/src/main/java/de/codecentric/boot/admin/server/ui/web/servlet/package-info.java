@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-@NonNullApi @NonNullFields
+@NonNullApi
+@NonNullFields
 package de.codecentric.boot.admin.server.ui.web.servlet;
 
 import org.springframework.lang.NonNullApi;

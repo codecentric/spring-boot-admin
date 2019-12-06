@@ -16,15 +16,12 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import reactor.core.publisher.Mono;
-
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.Nullable;
+
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
@@ -34,132 +31,142 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
+import reactor.core.publisher.Mono;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
 /**
  * Notifier submitting events to Discord by webhooks.
  *
  * @author Movitz Sunar
- * @see <a href="https://discordapp.com/developers/docs/resources/webhook#execute-webhook">https://discordapp.com/developers/docs/resources/webhook#execute-webhook</a>
+ * @see <a href=
+ * "https://discordapp.com/developers/docs/resources/webhook#execute-webhook">https://discordapp.com/developers/docs/resources/webhook#execute-webhook</a>
  */
 public class DiscordNotifier extends AbstractStatusChangeNotifier {
-    private static final String DEFAULT_MESSAGE = "*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*";
-    private final SpelExpressionParser parser = new SpelExpressionParser();
-    private RestTemplate restTemplate = new RestTemplate();
-    private Expression message;
 
-    /**
-     * Webhook URI for the Discord API (i.e. https://discordapp.com/api/webhooks/{webhook.id}/{webhook.token})
-     */
-    @Nullable
-    private URI webhookUrl;
+	private static final String DEFAULT_MESSAGE = "*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*";
 
-    /**
-     * If the message is a text to speech message. False by default.
-     */
-    private boolean tts = false;
+	private final SpelExpressionParser parser = new SpelExpressionParser();
 
-    /**
-     * Optional username. Default is set in Discord.
-     */
-    @Nullable
-    private String username;
+	private RestTemplate restTemplate;
 
-    /**
-     * Optional URL to avatar.
-     */
-    @Nullable
-    private String avatarUrl;
+	private Expression message;
 
-    public DiscordNotifier(InstanceRepository repository) {
-        super(repository);
-        this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
-    }
+	/**
+	 * Webhook URI for the Discord API (i.e.
+	 * https://discordapp.com/api/webhooks/{webhook.id}/{webhook.token})
+	 */
+	@Nullable
+	private URI webhookUrl;
 
-    @Override
-    protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
-        if (webhookUrl == null) {
-            return Mono.error(new IllegalStateException("'webhookUrl' must not be null."));
-        }
-        return Mono.fromRunnable(() -> restTemplate.postForEntity(
-            webhookUrl,
-            createDiscordNotification(event, instance),
-            Void.class
-        ));
-    }
+	/**
+	 * If the message is a text to speech message. False by default.
+	 */
+	private boolean tts = false;
 
-    protected Object createDiscordNotification(InstanceEvent event, Instance instance) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("content", createContent(event, instance));
-        body.put("tts", tts);
+	/**
+	 * Optional username. Default is set in Discord.
+	 */
+	@Nullable
+	private String username;
 
-        if (avatarUrl != null) {
-            body.put("avatar_url", avatarUrl);
-        }
-        if (username != null) {
-            body.put("username", username);
-        }
+	/**
+	 * Optional URL to avatar.
+	 */
+	@Nullable
+	private String avatarUrl;
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(HttpHeaders.USER_AGENT, "RestTemplate");
-        return new HttpEntity<>(body, headers);
-    }
+	public DiscordNotifier(InstanceRepository repository, RestTemplate restTemplate) {
+		super(repository);
+		this.restTemplate = restTemplate;
+		this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
+	}
 
-    @Nullable
-    protected String createContent(InstanceEvent event, Instance instance) {
-        Map<String, Object> root = new HashMap<>();
-        root.put("event", event);
-        root.put("instance", instance);
-        root.put("lastStatus", getLastStatus(event.getInstance()));
-        StandardEvaluationContext context = new StandardEvaluationContext(root);
-        context.addPropertyAccessor(new MapAccessor());
-        return message.getValue(context, String.class);
-    }
+	@Override
+	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
+		if (webhookUrl == null) {
+			return Mono.error(new IllegalStateException("'webhookUrl' must not be null."));
+		}
+		return Mono.fromRunnable(
+				() -> restTemplate.postForEntity(webhookUrl, createDiscordNotification(event, instance), Void.class));
+	}
 
-    @Nullable
-    public URI getWebhookUrl() {
-        return webhookUrl;
-    }
+	protected Object createDiscordNotification(InstanceEvent event, Instance instance) {
+		Map<String, Object> body = new HashMap<>();
+		body.put("content", createContent(event, instance));
+		body.put("tts", tts);
 
-    public void setWebhookUrl(@Nullable URI webhookUrl) {
-        this.webhookUrl = webhookUrl;
-    }
+		if (avatarUrl != null) {
+			body.put("avatar_url", avatarUrl);
+		}
+		if (username != null) {
+			body.put("username", username);
+		}
 
-    public boolean isTts() {
-        return tts;
-    }
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.USER_AGENT, "RestTemplate");
+		return new HttpEntity<>(body, headers);
+	}
 
-    public void setTts(boolean tts) {
-        this.tts = tts;
-    }
+	@Nullable
+	protected String createContent(InstanceEvent event, Instance instance) {
+		Map<String, Object> root = new HashMap<>();
+		root.put("event", event);
+		root.put("instance", instance);
+		root.put("lastStatus", getLastStatus(event.getInstance()));
+		StandardEvaluationContext context = new StandardEvaluationContext(root);
+		context.addPropertyAccessor(new MapAccessor());
+		return message.getValue(context, String.class);
+	}
 
-    @Nullable
-    public String getUsername() {
-        return username;
-    }
+	@Nullable
+	public URI getWebhookUrl() {
+		return webhookUrl;
+	}
 
-    public void setUsername(@Nullable String username) {
-        this.username = username;
-    }
+	public void setWebhookUrl(@Nullable URI webhookUrl) {
+		this.webhookUrl = webhookUrl;
+	}
 
-    @Nullable
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
+	public boolean isTts() {
+		return tts;
+	}
 
-    public void setAvatarUrl(@Nullable String avatarUrl) {
-        this.avatarUrl = avatarUrl;
-    }
+	public void setTts(boolean tts) {
+		this.tts = tts;
+	}
 
-    public String getMessage() {
-        return message.getExpressionString();
-    }
+	@Nullable
+	public String getUsername() {
+		return username;
+	}
 
-    public void setMessage(String message) {
-        this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
-    }
+	public void setUsername(@Nullable String username) {
+		this.username = username;
+	}
 
-    public void setRestTemplate(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+	@Nullable
+	public String getAvatarUrl() {
+		return avatarUrl;
+	}
+
+	public void setAvatarUrl(@Nullable String avatarUrl) {
+		this.avatarUrl = avatarUrl;
+	}
+
+	public String getMessage() {
+		return message.getExpressionString();
+	}
+
+	public void setMessage(String message) {
+		this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
+	}
+
+	public void setRestTemplate(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
+
 }

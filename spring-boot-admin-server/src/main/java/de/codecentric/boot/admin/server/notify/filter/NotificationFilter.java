@@ -20,6 +20,9 @@ import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
 public interface NotificationFilter {
-    String getId();
-    boolean filter(InstanceEvent event, Instance instance);
+
+	String getId();
+
+	boolean filter(InstanceEvent event, Instance instance);
+
 }

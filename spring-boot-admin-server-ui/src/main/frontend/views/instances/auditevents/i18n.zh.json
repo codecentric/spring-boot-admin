@@ -1,0 +1,17 @@
+{
+  "instances": {
+    "auditevents": {
+      "audit_log_not_supported_spring_boot_1": "Spring Boot 1.x的应用不支持审计日志。",
+      "event": "事件",
+      "fetch_failed": "获取审计事件失败。",
+      "loading_audit_events": "加载审计事件中...",
+      "no_audit_events_found": "没有审计事件。",
+      "principal": "当事人",
+      "remote_address": "远程地址",
+      "session_id": "会话ID",
+      "timestamp": "时间戳",
+      "type": "类型",
+      "label": "审计日志"
+    }
+  }
+}

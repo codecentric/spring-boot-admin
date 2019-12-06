@@ -16,10 +16,13 @@
 
 package de.codecentric.boot.admin.server.services.endpoints;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import reactor.core.publisher.Mono;
 
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.values.Endpoints;
+
 public interface EndpointDetectionStrategy {
-    Mono<Endpoints> detectEndpoints(Instance instance);
+
+	Mono<Endpoints> detectEndpoints(Instance instance);
+
 }

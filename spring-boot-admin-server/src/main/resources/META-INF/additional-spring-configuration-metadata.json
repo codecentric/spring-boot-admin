@@ -15,6 +15,12 @@
       "defaultValue": "spring-boot-admin-application-store"
     },
     {
+      "name": "spring.boot.admin.hazelcast.sent-notifications",
+      "type": "java.lang.String",
+      "description": "Name of backing Hazelcast-Map for storing the sent notifications.",
+      "defaultValue": "spring-boot-admin-sent-notifications"
+    },
+    {
       "name": "spring.boot.admin.monitor.period",
       "deprecation": {
         "level": "warning",

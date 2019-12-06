@@ -16,33 +16,33 @@
 
 package de.codecentric.boot.admin.server.web.client;
 
+import org.junit.Test;
+import org.springframework.http.HttpHeaders;
+
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 
-import org.junit.Test;
-import org.springframework.http.HttpHeaders;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class BasicAuthHttpHeaderProviderTest {
-    private BasicAuthHttpHeaderProvider headersProvider = new BasicAuthHttpHeaderProvider();
 
-    @Test
-    public void test_auth_header() {
-        Registration registration = Registration.create("foo", "http://health")
-                                                .metadata("user.name", "test")
-                                                .metadata("user.password", "drowssap")
-                                                .build();
-        Instance instance = Instance.create(InstanceId.of("id")).register(registration);
-        assertThat(headersProvider.getHeaders(instance).get(HttpHeaders.AUTHORIZATION)).containsOnly(
-            "Basic dGVzdDpkcm93c3NhcA==");
-    }
+	private BasicAuthHttpHeaderProvider headersProvider = new BasicAuthHttpHeaderProvider();
 
-    @Test
-    public void test_no_header() {
-        Registration registration = Registration.create("foo", "http://health").build();
-        Instance instance = Instance.create(InstanceId.of("id")).register(registration);
-        assertThat(headersProvider.getHeaders(instance)).isEmpty();
-    }
+	@Test
+	public void test_auth_header() {
+		Registration registration = Registration.create("foo", "http://health").metadata("user.name", "test")
+				.metadata("user.password", "drowssap").build();
+		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
+		assertThat(headersProvider.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
+				.containsOnly("Basic dGVzdDpkcm93c3NhcA==");
+	}
+
+	@Test
+	public void test_no_header() {
+		Registration registration = Registration.create("foo", "http://health").build();
+		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
+		assertThat(headersProvider.getHeaders(instance)).isEmpty();
+	}
+
 }
