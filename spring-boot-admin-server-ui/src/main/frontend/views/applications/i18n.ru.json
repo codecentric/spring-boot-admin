@@ -1,0 +1,17 @@
+{
+  "applications": {
+    "all_up": "все доступны",
+    "applications": "Приложения",
+    "instances": "Экземпляры",
+    "instances_down": "экземпляры недоступны",
+    "loading_applications": "Загрузка приложений...",
+    "no_applications_registered": "Нет зарегистрированных приложений.",
+    "notifications_suppressed_for": "Уведомления для <code>{name}</code> отключены на",
+    "restricted": "ограничен",
+    "server_connection_failed": "Ошибка при подключении к серверу.",
+    "suppress_notifications_on": "Скрыть уведомления для <code>{name}</code> на",
+    "status": "Статус",
+    "label": "Приложения",
+    "up": "ОК"
+  }
+}

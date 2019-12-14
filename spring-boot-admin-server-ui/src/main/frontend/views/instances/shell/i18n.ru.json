@@ -1,0 +1,25 @@
+{
+  "sidebar": {
+    "data": {
+      "title": "Данные"
+    },
+    "insights": {
+      "title": "Анализ"
+    },
+    "instances_caches": {
+      "title": "Кэши"
+    },
+    "jvm": {
+      "title": "JVM"
+    },
+    "logging": {
+      "title": "Журналирование"
+    },
+    "security": {
+      "title": "Безопасность"
+    },
+    "web": {
+      "title": "Web"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "instances": {
+    "threaddump": {
+      "label": "Дамп потоков",
+      "download": "Загрузить дамп потоков",
+      "fetch_failed": "Ошибка при получении дампа потоков.",
+      "download_failed": "Ошибка при загрузке дампа потоков.",
+      "thread_details_blocked_count": "Количество блокировок",
+      "thread_details_blocked_time": "Время блокировки",
+      "thread_details_lock_name": "Имя Lock-а",
+      "thread_details_lock_owner_id": "Id владельца Lock-а",
+      "thread_details_lock_owner_name": "Имя владельца Lock-а",
+      "thread_details_waited_count": "Количество ожиданий",
+      "thread_details_waited_time": "Время ожиданий",
+      "thread_id": "Id потока",
+      "thread_name": "Имя потока",
+      "thread_state": "Статс потока"
+    }
+  }
+}

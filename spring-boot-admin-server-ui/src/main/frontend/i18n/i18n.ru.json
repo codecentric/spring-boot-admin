@@ -1,0 +1,38 @@
+{
+  "error": {
+    "server_connection_failed": "Ошибка подключения к серверу.  "
+  },
+  "term": {
+    "application": "Приложение",
+    "attributes": "Атрибуты",
+    "bytes": "Байты",
+    "cancel": "Отменить",
+    "clear": "Очистить",
+    "cleared": "Очищено",
+    "close": "Закрыть",
+    "confirm": "Подтвердить",
+    "delete": "Удалить",
+    "deleted": "Удален",
+    "duration": "Задержка",
+    "event": "Событие",
+    "ever": "всегда",
+    "executing": "Выполнение...",
+    "execution_failed": "Ошибка при выполнении.",
+    "execution_successful": "Успешно выполнено.",
+    "failed": "Ошибка",
+    "float": "Float",
+    "hours": "{count} ч. | {count} ч.",
+    "instances": "Экземпляры",
+    "integer": "Integer",
+    "milliseconds": "Мс.",
+    "minutes": "{count} мин. | {count} мин.",
+    "name": "Имя",
+    "operations": "Операции",
+    "save": "Сохранить",
+    "stacktrace": "Stacktrace",
+    "suppress": "Скрыть",
+    "time": "Время",
+    "unsuppress": "Включить",
+    "username": "Имя пользователя"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "instances": {
+    "logfile": {
+      "label": "Лог-файл",
+      "download": "Загрузить",
+      "fetch_failed": "Ошибка при получении файла."
+    }
+  }
+}

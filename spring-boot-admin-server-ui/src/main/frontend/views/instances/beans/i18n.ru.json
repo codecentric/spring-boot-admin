@@ -1,0 +1,12 @@
+{
+  "instances": {
+    "beans": {
+      "label": "Бины",
+      "name": "Имя",
+      "aliases": "Псевдонимы",
+      "type": "Тип",
+      "resource": "Ресурс",
+      "dependencies": "Зависимости"
+    }
+  }
+}

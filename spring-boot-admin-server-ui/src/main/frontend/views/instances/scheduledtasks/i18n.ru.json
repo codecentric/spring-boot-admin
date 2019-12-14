@@ -1,0 +1,26 @@
+{
+  "instances": {
+    "scheduledtasks": {
+      "label" : "Планировщик заданий",
+      "no_scheduledtasks": "Нет запланированных заданий.",
+      "cron": {
+        "expression": "Expression",
+        "runnable": "Runnable",
+        "title": "Cron"
+      },
+      "fetch_failed": "Ошибка при получении запланированных заданий.",
+      "fixed_delay": {
+        "initial_delay_ms": "Начальная задержка (мс)",
+        "interval_ms": "Интервал (мс)",
+        "runnable": "Runnable",
+        "title": "Фиксированная задержка"
+      },
+      "fixed_rate": {
+        "initial_delay_ms": "Начальная задержка (мс)",
+        "interval_ms": "Интервал (мс)",
+        "runnable": "Runnable",
+        "title": "Фиксированный темп"
+      }
+    }
+  }
+}
