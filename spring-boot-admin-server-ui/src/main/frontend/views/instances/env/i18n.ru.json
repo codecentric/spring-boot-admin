@@ -1,0 +1,21 @@
+{
+  "instances": {
+    "env": {
+      "label": "Окружение",
+      "manager": "Менеджер окружения",
+      "active_profile": "Профиль",
+      "context_refresh": "Обновление контекста",
+      "context_refresh_failed": "Ошибка",
+      "context_refreshed": "Контекст обновлен",
+      "context_reset": "Сброс",
+      "context_reset_failed": "Ошибка",
+      "context_resetted": "Перезапущен",
+      "context_update": "Обновить",
+      "context_update_failed": "Ошибка",
+      "context_updated": "Обновлено",
+      "fetch_failed": "Ошибка получения окружения.",
+      "no_properties": "Параметры не установлены",
+      "title": "Менеджер окружения"
+    }
+  }
+}

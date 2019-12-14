@@ -1,0 +1,18 @@
+{
+  "instances": {
+    "sessions": {
+      "label": "Сессии",
+      "attributes": "Атрибуты",
+      "created_at": "Создано",
+      "expired": "Истекла",
+      "expiry": "Истечение",
+      "fetch_failed": "Ошибка при получении сессий.",
+      "last_accessed_at": "Последний доступ",
+      "loading_sessions": "Загрузка сессий...",
+      "max_inactive_interval": "Максимальный неактивный<br>интервал",
+      "no_sessions_found": "Сессии не найдены",
+      "session_id": "Id сессии",
+      "unlimited": "Неограничен"
+    }
+  }
+}

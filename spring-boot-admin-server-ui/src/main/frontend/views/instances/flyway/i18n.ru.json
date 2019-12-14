@@ -1,0 +1,18 @@
+{
+  "instances": {
+    "flyway": {
+      "label": "Flyway",
+      "fetch_failed": "Ошибка при получении отчетов Flyway.",
+      "type": "Тип",
+      "checksum": "Контрольная сумма",
+      "version": "Версия",
+      "description": "Описание",
+      "script": "Скрипт",
+      "state": "Статус",
+      "installed_by": "Кем установлено",
+      "installed_on": "Когда установлено",
+      "installed_rank": "Установленный ранг",
+      "execution_time": "Время выполнения"
+    }
+  }
+}

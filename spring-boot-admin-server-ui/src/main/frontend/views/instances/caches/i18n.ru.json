@@ -1,0 +1,12 @@
+{
+  "instances": {
+    "caches": {
+      "label": "Кэши",
+      "cache_manager": "Кэш-менеджер",
+      "fetch_failed": "Ошибка при получении кэшей.",
+      "loading": "Загрузка кэшей...",
+      "name": "Имя",
+      "no_caches_found": "Кэши не найдены."
+    }
+  }
+}

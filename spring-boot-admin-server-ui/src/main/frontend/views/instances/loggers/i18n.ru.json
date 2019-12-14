@@ -1,0 +1,20 @@
+{
+  "instances": {
+    "loggers": {
+      "label": "Журналы",
+      "affects_all_instances": "Влияет на все экземпляры ({count}) ",
+      "affects_this_instance_only": "Влияет только на этот экземпляр",
+      "application": "Приложение",
+      "fetch_failed": "Ошибка при получении журналов.",
+      "filter": {
+        "class_only": "только класс",
+        "configured": "настроенные"
+      },
+      "instance": "Экземпляр",
+      "new": "новый",
+      "no_loggers_found": "Журналы не найдены.",
+      "reset": "Сбросить",
+      "setting_loglevel_failed": "Ошибка при установке {logger} на {loglevel}."
+    }
+  }
+}

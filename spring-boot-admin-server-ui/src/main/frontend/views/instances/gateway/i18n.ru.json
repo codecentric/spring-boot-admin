@@ -1,0 +1,33 @@
+{
+  "instances": {
+    "gateway": {
+      "label": "Шлюз",
+      "route":{
+        "add_route": "Добавить маршрут",
+        "adding_failed": "Ошибка при добавлении маршрута.",
+        "cache_refreshed": "Кэш маршрутов обновлен",
+        "cache_refresh": "Обновление кэша маршрутов",
+        "cache_refresh_failed": "Ошибка",
+        "deleted": "Удален",
+        "delete": "Удалить",
+        "delete_failed": "Ошибка",
+        "fetch_failed": "Ошибка при получении маршрутов.",
+        "filters": "Фильтры",
+        "id": "Id",
+        "loading": "Загрузка маршрутов...",
+        "no_definition_provided": "Определение маршрута не предоставлено.",
+        "no_routes_found": "Маршруты не найдены.",
+        "order": "Порядок",
+        "predicates": "Предикаты",
+        "uri": "URI"
+      },
+      "filters": {
+        "fetch_failed": "Ошибка при получении глобальных фильтров",
+        "filter_name": "Название фильтра",
+        "loading": "Загрузка глобальный фильтров...",
+        "no_filters_found": "Глобальные фильтра не найдены.",
+        "order": "Порядок"
+      }
+    }
+  }
+}

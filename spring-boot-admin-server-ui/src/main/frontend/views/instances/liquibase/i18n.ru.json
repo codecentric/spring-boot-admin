@@ -1,0 +1,21 @@
+{
+  "instances": {
+    "liquibase": {
+      "label": "Liquibase",
+      "author": "Автор",
+      "changelog": "Журнал изменений",
+      "checksum": "Контрольная сумма",
+      "comments": "Комментарии",
+      "contexts": "Контексты",
+      "deployment_id": "Id развертывания",
+      "description": "Описание",
+      "execution": "Выполнение",
+      "execution_date": "Дата выполнения",
+      "execution_order": "Порядок выполнения",
+      "fetch_failed": "Ошибка при получении Liquibase миграций.",
+      "id": "Id",
+      "labels": "Метки",
+      "tag": "Тег"
+    }
+  }
+}
