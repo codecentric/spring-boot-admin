@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "babel-eslint": "^10.0.3",
-    "core-js": "^3.4.7",
+    "core-js": "^3.6.0",
     "eslint-plugin-vue": "^6.0.1"
   },
   "devDependencies": {
@@ -16,9 +16,9 @@
     "@vue/cli-plugin-eslint": "^4.1.1",
     "@vue/cli-service": "^4.1.1",
     "@vue/eslint-config-standard": "^4.0.0",
-    "copy-webpack-plugin": "^5.0.5",
-    "eslint": "^6.7.2",
-    "vue-template-compiler": "^2.6.10"
+    "copy-webpack-plugin": "^5.1.1",
+    "eslint": "^6.8.0",
+    "vue-template-compiler": "^2.6.11"
   },
   "peerDependencies": {
     "vue": "^2.5.16"
