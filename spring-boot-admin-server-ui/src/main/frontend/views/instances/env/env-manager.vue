@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2020 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@
             >
               <span v-if="updateStatus === 'completed'" v-text="$t('instances.env.context_updated')" />
               <span v-else-if="updateStatus === 'failed'" v-text="$t('instances.env.context_update_failed')" />
-              <span v-else v-text="$t('instances.env.context_updated')" />
+              <span v-else v-text="$t('instances.env.context_update')" />
             </button>
           </div>
         </div>
