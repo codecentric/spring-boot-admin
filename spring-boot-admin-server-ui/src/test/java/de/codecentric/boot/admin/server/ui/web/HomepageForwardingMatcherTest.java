@@ -28,7 +28,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HomepageForwardingMatcherTest {
 
 	private final HomepageForwardingMatcher<MockRequest> matcher = new HomepageForwardingMatcher<>(
-			singletonList("/viewRoute/**"), MockRequest::getMethod, MockRequest::getPath, MockRequest::getAccepts);
+			singletonList("/viewRoute/**"), singletonList("/viewRoute/*/exclude"), MockRequest::getMethod,
+			MockRequest::getPath, MockRequest::getAccepts);
 
 	@Test
 	public void should_return_false_when_method_is_not_get() {
@@ -45,6 +46,13 @@ public class HomepageForwardingMatcherTest {
 	public void should_return_false_when_accepts_does_not_match() {
 		assertThat(this.matcher.test(new MockRequest("GET", "/viewRoute", singletonList(MediaType.APPLICATION_XML))))
 				.isFalse();
+	}
+
+	@Test
+	public void should_return_false_when_path_is_excluded() {
+		assertThat(this.matcher
+				.test(new MockRequest("GET", "/viewRoute/12345/exclude", singletonList(MediaType.TEXT_HTML))))
+						.isFalse();
 	}
 
 	@Test

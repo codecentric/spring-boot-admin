@@ -27,7 +27,9 @@ import org.springframework.http.MediaType;
 
 public class HomepageForwardingMatcher<T> implements Predicate<T> {
 
-	private final List<Pattern> routes;
+	private final List<Pattern> includeRoutes;
+
+	private final List<Pattern> excludeRoutes;
 
 	private final Function<T, String> methodAccessor;
 
@@ -35,9 +37,11 @@ public class HomepageForwardingMatcher<T> implements Predicate<T> {
 
 	private final Function<T, List<MediaType>> acceptsAccessor;
 
-	public HomepageForwardingMatcher(List<String> routes, Function<T, String> methodAccessor,
-			Function<T, String> pathAccessor, Function<T, List<MediaType>> acceptsAccessor) {
-		this.routes = toPatterns(routes);
+	public HomepageForwardingMatcher(List<String> includeRoutes, List<String> excludeRoutes,
+			Function<T, String> methodAccessor, Function<T, String> pathAccessor,
+			Function<T, List<MediaType>> acceptsAccessor) {
+		this.includeRoutes = toPatterns(includeRoutes);
+		this.excludeRoutes = toPatterns(excludeRoutes);
 		this.methodAccessor = methodAccessor;
 		this.pathAccessor = pathAccessor;
 		this.acceptsAccessor = acceptsAccessor;
@@ -48,7 +52,9 @@ public class HomepageForwardingMatcher<T> implements Predicate<T> {
 			return false;
 		}
 
-		if (this.routes.stream().noneMatch((p) -> p.matcher(this.pathAccessor.apply(request)).matches())) {
+		String path = this.pathAccessor.apply(request);
+		if (this.excludeRoutes.stream().anyMatch((p) -> p.matcher(path).matches())
+				|| this.includeRoutes.stream().noneMatch((p) -> p.matcher(path).matches())) {
 			return false;
 		}
 
@@ -56,8 +62,8 @@ public class HomepageForwardingMatcher<T> implements Predicate<T> {
 	}
 
 	private List<Pattern> toPatterns(List<String> routes) {
-		return routes.stream().map((r) -> "^" + r.replaceAll("/[*][*]", "(/.*)?") + "$").map(Pattern::compile)
-				.collect(Collectors.toList());
+		return routes.stream().map((r) -> "^" + r.replaceAll("/[*][*]", "(/.*)?").replaceAll("/[*]/", "/[^/]+/") + "$")
+				.map(Pattern::compile).collect(Collectors.toList());
 	}
 
 }

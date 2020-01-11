@@ -49,10 +49,10 @@ public class HomepageForwardingFilter implements Filter {
 
 	private final HomepageForwardingMatcher<HttpServletRequest> matcher;
 
-	public HomepageForwardingFilter(String homepage, List<String> routes) {
+	public HomepageForwardingFilter(String homepage, List<String> routes, List<String> excludedRoutes) {
 		this.homepage = homepage;
 		UrlPathHelper urlPathHelper = new UrlPathHelper();
-		this.matcher = new HomepageForwardingMatcher<>(routes, HttpServletRequest::getMethod,
+		this.matcher = new HomepageForwardingMatcher<>(routes, excludedRoutes, HttpServletRequest::getMethod,
 				urlPathHelper::getPathWithinApplication,
 				(r) -> MediaType.parseMediaTypes(r.getHeader(HttpHeaders.ACCEPT)));
 	}

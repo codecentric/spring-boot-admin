@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.ui;
 
 import org.junit.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -41,6 +42,17 @@ public abstract class AbstractAdminUiApplicationTest {
 					.expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
 					.expectBody(String.class)
 					.value((body) -> assertThat(body).contains("<title>Spring Boot Admin</title>"));
+		//@formatter:on
+	}
+
+	@Test
+	public void should_not_return_index_for_logfile() {
+		//@formatter:off
+		this.webClient.get()
+						.uri("/instances/a973ff14be49/actuator/logfile")
+						.accept(MediaType.TEXT_HTML, MediaType.ALL)
+						.exchange()
+						.expectStatus().isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
 		//@formatter:on
 	}
 
