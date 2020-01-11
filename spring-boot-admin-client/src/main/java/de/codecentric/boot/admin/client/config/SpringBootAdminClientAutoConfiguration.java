@@ -40,6 +40,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -99,6 +100,7 @@ public class SpringBootAdminClientAutoConfiguration {
 	public static class ServletConfiguration {
 
 		@Bean
+		@Lazy(false)
 		@ConditionalOnMissingBean
 		public ApplicationFactory applicationFactory(InstanceProperties instance, ManagementServerProperties management,
 				ServerProperties server, ServletContext servletContext, PathMappedEndpoints pathMappedEndpoints,
@@ -117,6 +119,7 @@ public class SpringBootAdminClientAutoConfiguration {
 	public static class ReactiveConfiguration {
 
 		@Bean
+		@Lazy(false)
 		@ConditionalOnMissingBean
 		public ApplicationFactory applicationFactory(InstanceProperties instance, ManagementServerProperties management,
 				ServerProperties server, PathMappedEndpoints pathMappedEndpoints, WebEndpointProperties webEndpoint,

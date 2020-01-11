@@ -33,6 +33,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import de.codecentric.boot.admin.client.registration.CloudFoundryApplicationFactory;
 import de.codecentric.boot.admin.client.registration.metadata.CloudFoundryMetadataContributor;
@@ -55,6 +56,7 @@ public class SpringBootAdminClientCloudFoundryAutoConfiguration {
 	}
 
 	@Bean
+	@Lazy(false)
 	@ConditionalOnMissingBean
 	public CloudFoundryApplicationFactory applicationFactory(InstanceProperties instance,
 			ManagementServerProperties management, ServerProperties server, PathMappedEndpoints pathMappedEndpoints,
