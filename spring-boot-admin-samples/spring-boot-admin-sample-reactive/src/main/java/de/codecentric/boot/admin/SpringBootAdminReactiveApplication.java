@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
@@ -47,26 +48,20 @@ public class SpringBootAdminReactiveApplication {
 	@Bean
 	@Profile("insecure")
 	public SecurityWebFilterChain securityWebFilterChainPermitAll(ServerHttpSecurity http) {
-		return http.authorizeExchange().anyExchange().permitAll()//
-				.and().csrf().disable()//
-				.build();
+		return http.authorizeExchange((authorizeExchange) -> authorizeExchange.anyExchange().permitAll())
+				.csrf(ServerHttpSecurity.CsrfSpec::disable).build();
 	}
 
 	@Bean
 	@Profile("secure")
 	public SecurityWebFilterChain securityWebFilterChainSecure(ServerHttpSecurity http) {
-		// @formatter:off
-		return http.authorizeExchange()
-				.pathMatchers(this.adminServer.path("/assets/**")).permitAll()
-				.pathMatchers(this.adminServer.path("/login")).permitAll()
-				.anyExchange().authenticated()
-				.and()
-			.formLogin().loginPage(this.adminServer.path("/login")).and()
-			.logout().logoutUrl(this.adminServer.path("/logout")).and()
-			.httpBasic().and()
-			.csrf().disable()
-			.build();
-		// @formatter:on
+		return http
+				.authorizeExchange((authorizeExchange) -> authorizeExchange
+						.pathMatchers(this.adminServer.path("/assets/**")).permitAll()
+						.pathMatchers(this.adminServer.path("/login")).permitAll().anyExchange().authenticated())
+				.formLogin((formLogin) -> formLogin.loginPage(this.adminServer.path("/login")))
+				.logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout")))
+				.httpBasic(Customizer.withDefaults()).csrf(ServerHttpSecurity.CsrfSpec::disable).build();
 	}
 
 	@Bean
