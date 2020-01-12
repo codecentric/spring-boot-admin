@@ -530,7 +530,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.2.0-SNAPSHOT,</span>
-<span id="revdate">11.01.2020</span>
+<span id="revdate">12.01.2020</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -2348,29 +2348,25 @@ By default <code>spring-boot-admin-server-ui</code> provides a login page and a 
 
   <span class="annotation">@Override</span>
   <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
-    <span class="comment">// @formatter:off</span>
     SavedRequestAwareAuthenticationSuccessHandler successHandler = <span class="keyword">new</span> SavedRequestAwareAuthenticationSuccessHandler();
     successHandler.setTargetUrlParameter(<span class="string"><span class="delimiter">&quot;</span><span class="content">redirectTo</span><span class="delimiter">&quot;</span></span>);
     successHandler.setDefaultTargetUrl(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>));
 
-    http.authorizeRequests()
-      .antMatchers(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/assets/**</span><span class="delimiter">&quot;</span></span>)).permitAll() <i class="conum" data-value="1"></i><b>(1)</b>
-      .antMatchers(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>)).permitAll()
-      .anyRequest().authenticated() <i class="conum" data-value="2"></i><b>(2)</b>
-      .and()
-    .formLogin().loginPage(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>)).successHandler(successHandler).and() <i class="conum" data-value="3"></i><b>(3)</b>
-    .logout().logoutUrl(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/logout</span><span class="delimiter">&quot;</span></span>)).and()
-    .httpBasic().and() <i class="conum" data-value="4"></i><b>(4)</b>
-    .csrf()
-      .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) <i class="conum" data-value="5"></i><b>(5)</b>
-      .ignoringRequestMatchers(
-        <span class="keyword">new</span> AntPathRequestMatcher(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/instances</span><span class="delimiter">&quot;</span></span>), HttpMethod.POST.toString()),  <i class="conum" data-value="6"></i><b>(6)</b>
-        <span class="keyword">new</span> AntPathRequestMatcher(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/instances/*</span><span class="delimiter">&quot;</span></span>), HttpMethod.DELETE.toString()),  <i class="conum" data-value="6"></i><b>(6)</b>
-        <span class="keyword">new</span> AntPathRequestMatcher(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/actuator/**</span><span class="delimiter">&quot;</span></span>))  <i class="conum" data-value="7"></i><b>(7)</b>
-      )
-    .and()
-    .rememberMe().key(<span class="predefined-type">UUID</span>.randomUUID().toString()).tokenValiditySeconds(<span class="integer">1209600</span>);
-    <span class="comment">// @formatter:on</span>
+    http.authorizeRequests(
+        (authorizeRequests) -&gt; authorizeRequests.antMatchers(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/assets/**</span><span class="delimiter">&quot;</span></span>)).permitAll() <i class="conum" data-value="1"></i><b>(1)</b>
+            .antMatchers(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>)).permitAll().anyRequest().authenticated() <i class="conum" data-value="2"></i><b>(2)</b>
+    ).formLogin(
+        (formLogin) -&gt; formLogin.loginPage(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>)).successHandler(successHandler).and() <i class="conum" data-value="3"></i><b>(3)</b>
+    ).logout((logout) -&gt; logout.logoutUrl(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/logout</span><span class="delimiter">&quot;</span></span>))).httpBasic(<span class="predefined-type">Customizer</span>.withDefaults()) <i class="conum" data-value="4"></i><b>(4)</b>
+        .csrf((csrf) -&gt; csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) <i class="conum" data-value="5"></i><b>(5)</b>
+            .ignoringRequestMatchers(
+                <span class="keyword">new</span> AntPathRequestMatcher(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/instances</span><span class="delimiter">&quot;</span></span>),
+                    HttpMethod.POST.toString()), <i class="conum" data-value="6"></i><b>(6)</b>
+                <span class="keyword">new</span> AntPathRequestMatcher(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/instances/*</span><span class="delimiter">&quot;</span></span>),
+                    HttpMethod.DELETE.toString()), <i class="conum" data-value="6"></i><b>(6)</b>
+                <span class="keyword">new</span> AntPathRequestMatcher(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/actuator/**</span><span class="delimiter">&quot;</span></span>)) <i class="conum" data-value="7"></i><b>(7)</b>
+            ))
+        .rememberMe((rememberMe) -&gt; rememberMe.key(<span class="predefined-type">UUID</span>.randomUUID().toString()).tokenValiditySeconds(<span class="integer">1209600</span>));
   }
 
   <span class="comment">// Required to provide UserDetailsService for &quot;remember functionality&quot;</span>
