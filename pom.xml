@@ -525,21 +525,21 @@
                     <snapshots>
                         <enabled>false</enabled>
                     </snapshots>
-                    <url>http://repo.spring.io/release</url>
+                    <url>https://repo.spring.io/release</url>
                 </repository>
                 <repository>
                     <id>spring-milestone</id>
                     <snapshots>
                         <enabled>false</enabled>
                     </snapshots>
-                    <url>http://repo.spring.io/milestone</url>
+                    <url>https://repo.spring.io/milestone</url>
                 </repository>
                 <repository>
                     <id>spring-snapshot</id>
                     <snapshots>
                         <enabled>true</enabled>
                     </snapshots>
-                    <url>http://repo.spring.io/snapshot</url>
+                    <url>https://repo.spring.io/snapshot</url>
                 </repository>
             </repositories>
             <pluginRepositories>
@@ -548,21 +548,21 @@
                     <snapshots>
                         <enabled>false</enabled>
                     </snapshots>
-                    <url>http://repo.spring.io/release</url>
+                    <url>https://repo.spring.io/release</url>
                 </pluginRepository>
                 <pluginRepository>
                     <id>spring-milestone</id>
                     <snapshots>
                         <enabled>false</enabled>
                     </snapshots>
-                    <url>http://repo.spring.io/milestone</url>
+                    <url>https://repo.spring.io/milestone</url>
                 </pluginRepository>
                 <pluginRepository>
                     <id>spring-snapshot</id>
                     <snapshots>
                         <enabled>true</enabled>
                     </snapshots>
-                    <url>http://repo.spring.io/snapshot</url>
+                    <url>https://repo.spring.io/snapshot</url>
                 </pluginRepository>
             </pluginRepositories>
         </profile>
