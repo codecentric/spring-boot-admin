@@ -70,7 +70,7 @@ Enables the logfile actuator endpoint.
 [[show-instance-tags]]
 === Show Tags per Instance ===
 
-`Tags` are a way to add visual markers per instanace, they will appear in the application list as well as in the instance view.
+`Tags` are a way to add visual markers per instance, they will appear in the application list as well as in the instance view.
 By default no tags are added to instances, and it's up to the client to specify the desired tags by adding the information to the metadata or info endpoint.
 
 .application.properties
