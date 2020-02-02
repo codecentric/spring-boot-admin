@@ -119,9 +119,7 @@
         <!--            <property name="scope" value="package"/>-->
         <!--            <property name="authorFormat" value=".+\s.+"/>-->
         <!--        </module>-->
-        <module name="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck">
-            <property name="allowMissingJavadoc" value="true"/>
-        </module>
+        <module name="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck"/>
         <!--        <module name="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocVariableCheck">-->
         <!--            <property name="scope" value="public"/>-->
         <!--        </module>-->
