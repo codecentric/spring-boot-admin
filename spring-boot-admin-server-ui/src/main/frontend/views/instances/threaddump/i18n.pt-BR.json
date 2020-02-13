@@ -1,0 +1,20 @@
+{
+  "instances": {
+    "threaddump": {
+      "label": "Despejo de Thread",
+      "download": "Download do despejo de Thread",
+      "fetch_failed": "Falha na busca do despejo de thread.",
+      "download_failed": "Falha no download do despejo de thread.",
+      "thread_details_blocked_count": "Contagem de bloqueio",
+      "thread_details_blocked_time": "Tempo bloqueado",
+      "thread_details_lock_name": "Nome do bloqueio",
+      "thread_details_lock_owner_id": "Bloquear ID do proprietário",
+      "thread_details_lock_owner_name": "Bloquear nome do proprietário",
+      "thread_details_waited_count": "Número pendente",
+      "thread_details_waited_time": "Tempo de espera",
+      "thread_id": "Id da Thread",
+      "thread_name": "Nome da Thread",
+      "thread_state": "Estado da Thread"
+    }
+  }
+}

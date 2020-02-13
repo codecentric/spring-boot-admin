@@ -1,0 +1,18 @@
+{
+  "instances": {
+    "flyway": {
+      "label": "Flyway",
+      "fetch_failed": "Falha na obtenção dos relatórios do Flyway.",
+      "type": "Tipo",
+      "checksum": "Checksum",
+      "version": "Versão",
+      "description": "Descrição",
+      "script": "Script",
+      "state": "Estado",
+      "installed_by": "Instalado por",
+      "installed_on": "Instalado em",
+      "installed_rank": "Classificação instalada",
+      "execution_time": "Tempo de Execução"
+    }
+  }
+}

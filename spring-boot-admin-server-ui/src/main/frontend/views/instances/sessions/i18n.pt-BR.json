@@ -1,0 +1,18 @@
+{
+  "instances": {
+    "sessions": {
+      "label": "Sessões",
+      "attributes": "Atributos",
+      "created_at": "Criado Em",
+      "expired": "Expirado",
+      "expiry": "Expiração",
+      "fetch_failed": "Falha na busca das sessões.",
+      "last_accessed_at": "Último Acesso Em",
+      "loading_sessions": "Carregando Sessões...",
+      "max_inactive_interval": "Intervalo Máximo<br>Inativo",
+      "no_sessions_found": "Nunhuma Sessão Encontrada",
+      "session_id": "Id de Sessão",
+      "unlimited": "Ilimitado"
+    }
+  }
+}

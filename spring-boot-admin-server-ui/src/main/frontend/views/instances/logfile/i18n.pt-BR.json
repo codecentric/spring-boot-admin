@@ -1,0 +1,9 @@
+{
+  "instances": {
+    "logfile": {
+      "label": "Arquivo de Log",
+      "download": "Download",
+      "fetch_failed": "Falha na busca do arquivo de log."
+    }
+  }
+}

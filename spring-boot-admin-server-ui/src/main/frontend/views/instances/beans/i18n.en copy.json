@@ -1,0 +1,12 @@
+{
+  "instances": {
+    "beans": {
+      "label": "Beans",
+      "name": "Nome",
+      "aliases": "Aliases",
+      "type": "Tipo",
+      "resource": "Recurso",
+      "dependencies": "Dependências"
+    }
+  }
+}

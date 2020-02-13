@@ -1,0 +1,38 @@
+{
+  "error": {
+    "server_connection_failed": "Falha na conexão com o servidor.  "
+  },
+  "term": {
+    "application": "Aplicação",
+    "attributes": "Atributos",
+    "bytes": "Bytes",
+    "cancel": "Cancelar",
+    "clear": "Clear",
+    "cleared": "Limpo",
+    "close": "Fechar",
+    "confirm": "Confirmar",
+    "delete": "Remover",
+    "deleted": "Removido",
+    "duration": "Duração",
+    "event": "Evento",
+    "ever": "nunca",
+    "executing": "Executando...",
+    "execution_failed": "Falha na execução.",
+    "execution_successful": "Executado com sucesso.",
+    "failed": "Falha",
+    "float": "Float",
+    "hours": "{count} hora | {count} horas",
+    "instances": "Instâncias",
+    "integer": "Integer",
+    "milliseconds": "Milissegundos",
+    "minutes": "{count} minuto | {count} minutos",
+    "name": "Nome",
+    "operations": "Operações",
+    "save": "Salvar",
+    "stacktrace": "Stacktrace",
+    "suppress": "Esconder",
+    "time": "Tempo",
+    "unsuppress": "Exibir",
+    "username": "Nome do usuário"
+  }
+}
