@@ -1,0 +1,17 @@
+{
+  "applications": {
+    "all_up": "Todas up",
+    "applications": "Aplicações",
+    "instances": "Instâncias",
+    "instances_down": "Instâncias down",
+    "loading_applications": "Carregando aplicações...",
+    "no_applications_registered": "Nenhuma aplicação registrada.",
+    "notifications_suppressed_for": "As notificações de <code>{name}</code> estão suspensas por",
+    "restricted": "restrito",
+    "server_connection_failed": "Falha na conexão do servidor.",
+    "suppress_notifications_on": "Suspenda notificações de <code>{name}</code> por",
+    "status": "Estado",
+    "label": "Aplicações",
+    "up": "up"
+  }
+}

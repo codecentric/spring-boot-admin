@@ -1,0 +1,33 @@
+{
+  "instances": {
+    "gateway": {
+      "label": "Gateway",
+      "route": {
+        "add_route": "Adicionar rota",
+        "adding_failed": "Falha ao adicionar rota.",
+        "cache_refreshed": "Cache de rotas atualizado",
+        "cache_refresh": "Atualizar cache de rotas",
+        "cache_refresh_failed": "Falha",
+        "deleted": "Removido",
+        "delete": "Remover",
+        "delete_failed": "Falha",
+        "fetch_failed": "Falha na busca das rotas do gateway.",
+        "filters": "Filtros",
+        "id": "Id",
+        "loading": "Carregando Rotas...",
+        "no_definition_provided": "Nenhuma definição de Rota fornecida.",
+        "no_routes_found": "Nenhuma Rota foi encontrada.",
+        "order": "Ordem",
+        "predicates": "Predicates",
+        "uri": "URI"
+      },
+      "filters": {
+        "fetch_failed": "Falha na busca dos Filtros Globais.",
+        "filter_name": "Nome do filtro",
+        "loading": "Carregando Filtros Globais...",
+        "no_filters_found": "Nunhum Filtro Global foi encontrado.",
+        "order": "Ordem"
+      }
+    }
+  }
+}

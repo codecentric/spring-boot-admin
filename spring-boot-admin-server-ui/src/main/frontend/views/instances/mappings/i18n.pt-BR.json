@@ -1,0 +1,19 @@
+{
+  "instances": {
+    "mappings": {
+      "label": "Mappings",
+      "class": "Calsses",
+      "consumes": "Consumidores",
+      "fetch_failed": "Falha na busca de mapeamentos.",
+      "filter_name": "Nome do Filtro",
+      "handler": "Handler",
+      "headers": "Cabeçalhos",
+      "http-verb": "Método",
+      "mappings_not_supported_spring_boot_1": "Mappings não são suportados para aplicações Spring Boot 1.x.",
+      "parameters": "Parâmetros",
+      "produces": "Produtores",
+      "servlet_name": "Nome do Servlet",
+      "url_pattern": "Padrão de URL"
+    }
+  }
+}

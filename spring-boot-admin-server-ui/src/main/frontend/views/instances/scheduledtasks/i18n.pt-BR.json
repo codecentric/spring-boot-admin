@@ -1,0 +1,26 @@
+{
+  "instances": {
+    "scheduledtasks": {
+      "label": "Tarefas Agendados",
+      "no_scheduledtasks": "Nenhuma tarefa agendada presente.",
+      "cron": {
+        "expression": "Expressão",
+        "runnable": "Executável",
+        "title": "Cron"
+      },
+      "fetch_failed": "Falha na busca de tarefas agendadas.",
+      "fixed_delay": {
+        "initial_delay_ms": "Delay Inicial (ms)",
+        "interval_ms": "Intervalo (ms)",
+        "runnable": "Executável",
+        "title": "Delay Fixo"
+      },
+      "fixed_rate": {
+        "initial_delay_ms": "Delay Inicial (ms)",
+        "interval_ms": "Intervalo (ms)",
+        "runnable": "Executável",
+        "title": "Taxa Fixa"
+      }
+    }
+  }
+}

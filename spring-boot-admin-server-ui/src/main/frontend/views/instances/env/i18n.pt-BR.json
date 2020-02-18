@@ -1,0 +1,21 @@
+{
+  "instances": {
+    "env": {
+      "label": "Ambiente",
+      "manager": "Gerenciador de Ambiente",
+      "active_profile": "Perfil",
+      "context_refresh": "Atualizar contexto",
+      "context_refresh_failed": "Falha",
+      "context_refreshed": "Contexto atualizado",
+      "context_reset": "Redefinir",
+      "context_reset_failed": "Falhou",
+      "context_resetted": "Redefinido",
+      "context_update": "Atualizado",
+      "context_update_failed": "Falhou",
+      "context_updated": "Atualizado",
+      "fetch_failed": "Falha na busca de ambiente.",
+      "no_properties": "Nenhuma propriedade definida",
+      "title": "Gerenciador de Ambiente"
+    }
+  }
+}

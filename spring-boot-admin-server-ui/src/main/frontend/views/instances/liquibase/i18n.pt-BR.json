@@ -1,0 +1,21 @@
+{
+  "instances": {
+    "liquibase": {
+      "label": "Liquibase",
+      "author": "Autor",
+      "changelog": "Changelog",
+      "checksum": "Checksum",
+      "comments": "Comentários",
+      "contexts": "Contextos",
+      "deployment_id": "ID de implantação",
+      "description": "Descrição",
+      "execution": "Execução",
+      "execution_date": "Data da Execução",
+      "execution_order": "Ordem de Execução",
+      "fetch_failed": "Falha na busca das migrações do Liquibase.",
+      "id": "Id",
+      "labels": "Labels",
+      "tag": "Tag"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "instances": {
+    "jolokia": {
+      "label": "JMX",
+      "close": "Fechar",
+      "domains": "Domínios",
+      "execute": "Executar",
+      "executing": "Executando...",
+      "execution_failed": "Falha na execução.",
+      "execution_successful": "Execução bem sucedida.",
+      "fetch_failed": "Falha na busca de Beans JMX.",
+      "mbean": {
+        "fetch_failed": "Falha na busca de atributos."
+      },
+      "mbeans": "MBeans"
+    }
+  }
+}

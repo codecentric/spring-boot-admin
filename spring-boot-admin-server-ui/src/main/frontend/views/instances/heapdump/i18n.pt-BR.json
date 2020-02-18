@@ -1,0 +1,10 @@
+{
+  "instances": {
+    "heapdump": {
+      "label": "Despejo de Pilha",
+      "download": "Download de Despejo de Pilha",
+      "warn_dump_expensive": "Descarregar o heap pode ser caro em termos de CPU e espaço em disco.",
+      "warn_sensitive_data": "Um descarregamento de heap pode conter <strong> dados sensíveis </strong>. Por favor, manuseie com cuidado."
+    }
+  }
+}
