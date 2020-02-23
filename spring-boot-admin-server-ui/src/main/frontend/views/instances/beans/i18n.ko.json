@@ -6,7 +6,8 @@
       "aliases": "별칭",
       "type": "타입",
       "resource": "리소스",
-      "dependencies": "의존성"
+      "dependencies": "의존성",
+      "fetch_failed": "Fetching beans failed."
     }
   }
 }

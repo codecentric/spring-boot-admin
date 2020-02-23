@@ -6,7 +6,8 @@
       "aliases": "Alias",
       "type": "Type",
       "resource": "Ressource",
-      "dependencies": "Dépendances"
+      "dependencies": "Dépendances",
+      "fetch_failed": "Fetching beans failed."
     }
   }
 }

@@ -1,6 +1,6 @@
 {
   "wallboard": {
-    "instances_count": "нет экземпляров | всего экземпляров: {count} | всего экземпляров: {count}",
+    "instances_count": "нет экземпляров | всего: {count} | всего: {count}",
     "label": "Главная"
   }
 }
