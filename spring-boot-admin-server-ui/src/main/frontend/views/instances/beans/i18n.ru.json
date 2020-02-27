@@ -6,7 +6,8 @@
       "aliases": "Псевдонимы",
       "type": "Тип",
       "resource": "Ресурс",
-      "dependencies": "Зависимости"
+      "dependencies": "Зависимости",
+      "fetch_failed": "Ошибка при получении бинов."
     }
   }
 }

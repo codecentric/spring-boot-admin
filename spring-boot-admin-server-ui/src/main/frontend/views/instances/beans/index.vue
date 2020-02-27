@@ -26,7 +26,7 @@
             class="has-text-danger"
             icon="exclamation-triangle"
           />
-          Fetching beans failed.
+          <span v-text="$t('instances.beans.fetch_failed')" />
         </strong>
         <p v-text="error.message" />
       </div>
