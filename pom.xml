@@ -37,10 +37,10 @@
         <!-- used dependencies versions -->
         <spring-boot.version>2.2.5.RELEASE</spring-boot.version>
         <spring-cloud.version>Hoxton.SR2</spring-cloud.version>
-        <wiremock.version>2.25.1</wiremock.version>
-        <hazelcast-tests.version>3.12.4</hazelcast-tests.version>
+        <wiremock.version>2.26.1</wiremock.version>
+        <hazelcast-tests.version>3.12.6</hazelcast-tests.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
-        <awaitility.version>4.0.1</awaitility.version>
+        <awaitility.version>4.0.2</awaitility.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
@@ -49,14 +49,14 @@
         <maven-site-plugin.version>3.8.2</maven-site-plugin.version>
         <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
         <maven-deploy-plugin.version>3.0.0-M1</maven-deploy-plugin.version>
-        <maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version>
+        <maven-enforcer-plugin.version>3.0.0-M3</maven-enforcer-plugin.version>
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
         <maven-install-plugin.version>2.5.2</maven-install-plugin.version>
         <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
         <maven-javadoc-plugin.version>3.1.1</maven-javadoc-plugin.version>
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
-        <maven-source-plugin.version>3.1.0</maven-source-plugin.version>
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-war-plugin.version>3.2.3</maven-war-plugin.version>
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
         <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
@@ -64,10 +64,10 @@
         <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
         <asciidoctor-maven-plugin.version>1.6.0</asciidoctor-maven-plugin.version>
         <git-commit-id-plugin.version>3.0.1</git-commit-id-plugin.version>
-        <flatten-maven-plugin.version>1.1.0</flatten-maven-plugin.version>
-        <maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
+        <flatten-maven-plugin.version>1.2.1</flatten-maven-plugin.version>
+        <maven-checkstyle-plugin.version>3.1.1</maven-checkstyle-plugin.version>
         <checkstyle.version>8.29</checkstyle.version>
-        <spring-javaformat-checkstyle.version>0.0.15</spring-javaformat-checkstyle.version>
+        <spring-javaformat-checkstyle.version>0.0.20</spring-javaformat-checkstyle.version>
         <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
     </properties>
     <modules>
