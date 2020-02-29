@@ -48,7 +48,7 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 
 | spring.boot.admin.metadata-keys-to-sanitize
 | Metadata values for the keys matching these regex patterns will be sanitized in all json output.
-| `".*password$", ".*secret$", ".*key$", ".*$token$", ".*credentials.*", ".*vcap_services$"`
+| `".*password$", ".*secret$", ".*key$", ".*token$", ".*credentials.*", ".*vcap_services$"`
 
 | spring.boot.admin.probed-endpoints
 | For Spring Boot 1.x client applications SBA probes for the specified endpoints using an OPTIONS request.
