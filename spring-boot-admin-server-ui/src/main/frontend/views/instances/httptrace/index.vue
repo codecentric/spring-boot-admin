@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2019 the original author or authors.
+  - Copyright 2014-2020 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -105,17 +105,17 @@
 </template>
 
 <script>
-    import subscribing from '@/mixins/subscribing';
-    import Instance from '@/services/instance';
-    import {concatMap, timer} from '@/utils/rxjs';
-    import debounce from 'lodash/debounce';
-    import mapKeys from 'lodash/mapKeys';
-    import moment from 'moment';
-    import {VIEW_GROUP} from '../../index';
-    import sbaTracesChart from './traces-chart';
-    import sbaTracesList from './traces-list';
+  import subscribing from '@/mixins/subscribing';
+  import Instance from '@/services/instance';
+  import {concatMap, timer} from '@/utils/rxjs';
+  import debounce from 'lodash/debounce';
+  import mapKeys from 'lodash/mapKeys';
+  import moment from 'moment';
+  import {VIEW_GROUP} from '../../index';
+  import sbaTracesChart from './traces-chart';
+  import sbaTracesList from './traces-list';
 
-    const addToFilter = (oldFilter, addedFilter) =>
+  const addToFilter = (oldFilter, addedFilter) =>
     !oldFilter
       ? addedFilter
       : (val, key) => oldFilter(val, key) && addedFilter(val, key);
@@ -127,7 +127,7 @@
       Object.assign(this, trace);
       this.timestamp = moment(timestamp);
       this.request = {...request, headers: normalize(request.headers)};
-      this.response = {...response, headers: normalize(response.headers)};
+      this.response = response ? {...response, headers: normalize(response.headers)} : null;
     }
 
     get key() {
@@ -135,7 +135,7 @@
     }
 
     get contentLength() {
-      const contentLength = this.response.headers['content-length'] && this.response.headers['content-length'][0];
+      const contentLength = this.response && this.response.headers['content-length'] && this.response.headers['content-length'][0];
       if (contentLength && /^\d+$/.test(contentLength)) {
         return parseInt(contentLength);
       }
@@ -143,7 +143,7 @@
     }
 
     get contentType() {
-      const contentType = this.response.headers['content-type'] && this.response.headers['content-type'][0];
+      const contentType = this.response &&  this.response.headers['content-type'] && this.response.headers['content-type'][0];
       if (contentType) {
         const idx = contentType.indexOf(';');
         return idx >= 0 ? contentType.substring(0, idx) : contentType;
@@ -156,15 +156,15 @@
     }
 
     isSuccess() {
-      return this.response.status <= 399
+      return this.response && this.response.status <= 399
     }
 
     isClientError() {
-      return this.response.status >= 400 && this.response.status <= 499
+      return this.response && this.response.status >= 400 && this.response.status <= 499
     }
 
     isServerError() {
-      return this.response.status >= 500 && this.response.status <= 599
+      return this.response && this.response.status >= 500 && this.response.status <= 599
     }
   }
 
