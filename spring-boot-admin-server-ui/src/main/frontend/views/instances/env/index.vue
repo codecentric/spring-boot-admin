@@ -54,7 +54,7 @@
                :title="propertySource.name"
     >
       <table class="table is-fullwidth"
-             v-if="Object.keys(propertySource.properties).length > 0"
+             v-if="Object.keys(propertySource).includes('properties') && Object.keys(propertySource.properties).length > 0"
       >
         <tr v-for="(value, name) in propertySource.properties" :key="`${propertySource.name}-${name}`">
           <td>
