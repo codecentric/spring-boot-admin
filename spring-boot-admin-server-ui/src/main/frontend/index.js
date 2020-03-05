@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,19 @@
  */
 
 import '@/assets/css/base.scss';
-import moment from 'moment';
 import axios from '@/utils/axios';
+import moment from 'moment';
 import 'moment/locale/de';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import components from './components';
+import i18n from './i18n';
 import Notifications from './notifications';
 import sbaConfig from './sba-config'
 import sbaShell from './shell';
 import Store from './store';
 import ViewRegistry from './viewRegistry';
 import views from './views';
-import i18n from './i18n';
 
 moment.locale(navigator.language.split('-')[0]);
 Vue.use(VueRouter);
@@ -46,6 +46,7 @@ installables.forEach(view => view.install({
   viewRegistry,
   applicationStore,
   vue: Vue,
+  vueI18n: i18n,
   axios
 }));
 
