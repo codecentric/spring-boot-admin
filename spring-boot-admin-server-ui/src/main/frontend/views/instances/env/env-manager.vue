@@ -127,7 +127,7 @@
     }),
     computed: {
       allPropertyNames() {
-        return uniq(this.propertySources.filter(ps => Object.keys(ps).includes('properties')).map(ps =>  Object.keys(ps.properties))
+        return uniq(this.propertySources.map(ps => ps.properties ? Object.keys(ps.properties) : [])
           .reduce((result, names) => result.concat(names))
           .sort());
       },

@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2020 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@
                :title="propertySource.name"
     >
       <table class="table is-fullwidth"
-             v-if="Object.keys(propertySource).includes('properties') && Object.keys(propertySource.properties).length > 0"
+             v-if="propertySource.properties && Object.keys(propertySource.properties).length > 0"
       >
         <tr v-for="(value, name) in propertySource.properties" :key="`${propertySource.name}-${name}`">
           <td>
@@ -72,8 +72,8 @@
 <script>
   import Instance from '@/services/instance';
   import pickBy from 'lodash/pickBy';
-  import sbaEnvManager from './env-manager';
   import {VIEW_GROUP} from '../../index';
+  import sbaEnvManager from './env-manager';
 
   const filterProperty = (needle) => (property, name) => {
     return name.toString().toLowerCase().includes(needle) || property.value.toString().toLowerCase().includes(needle);
