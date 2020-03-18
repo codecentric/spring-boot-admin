@@ -38,8 +38,8 @@
     "rxjs": "^6.5.4",
     "vue": "^2.6.11",
     "vue-clickaway2": "^2.3.1",
-    "vue-i18n": "^8.15.4",
-    "vue-infinite-loading": "^2.4.4",
+    "vue-i18n": "^8.15.5",
+    "vue-infinite-loading": "^2.4.5",
     "vue-router": "^3.1.6"
   },
   "devDependencies": {
@@ -48,18 +48,18 @@
     "@vue/cli-plugin-unit-jest": "^4.2.3",
     "@vue/cli-service": "^4.2.3",
     "@vue/eslint-config-standard": "^4.0.0",
-    "@vue/test-utils": "^1.0.0-beta.31",
+    "@vue/test-utils": "^1.0.0-beta.32",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^24.9.0",
     "eslint": "^6.8.0",
-    "eslint-plugin-vue": "^6.2.1",
+    "eslint-plugin-vue": "^6.2.2",
     "html-loader": "^0.5.5",
     "jest": "^24.9.0",
     "node-sass": "^4.13.1",
     "sass-loader": "^8.0.2",
     "vue-template-compiler": "^2.6.11",
-    "webpack-bundle-analyzer": "^3.6.0"
+    "webpack-bundle-analyzer": "^3.6.1"
   },
   "eslintConfig": {
     "root": true,

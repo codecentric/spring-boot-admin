@@ -9,7 +9,7 @@
   "dependencies": {
     "babel-eslint": "^10.1.0",
     "core-js": "^3.6.4",
-    "eslint-plugin-vue": "^6.2.1"
+    "eslint-plugin-vue": "^6.2.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.2.3",
