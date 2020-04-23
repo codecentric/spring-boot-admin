@@ -35,7 +35,7 @@
             </td>
           </tr>
         </table>
-        <p v-else class="is-muted" v-text="$('instances.details.info.no_info_provided')" />
+        <p v-else class="is-muted" v-text="$t('instances.details.info.no_info_provided')" />
       </div>
     </div>
   </sba-panel>
