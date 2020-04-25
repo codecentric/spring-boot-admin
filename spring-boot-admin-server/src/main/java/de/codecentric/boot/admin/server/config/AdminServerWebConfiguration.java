@@ -26,13 +26,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
 
-import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import de.codecentric.boot.admin.server.services.ApplicationRegistry;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
-import de.codecentric.boot.admin.server.utils.jackson.RegistrationBeanSerializerModifier;
-import de.codecentric.boot.admin.server.utils.jackson.RegistrationDeserializer;
-import de.codecentric.boot.admin.server.utils.jackson.SanitizingMapSerializer;
+import de.codecentric.boot.admin.server.utils.jackson.AdminServerModule;
 import de.codecentric.boot.admin.server.web.ApplicationsController;
 import de.codecentric.boot.admin.server.web.InstancesController;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
@@ -48,11 +45,7 @@ public class AdminServerWebConfiguration {
 
 	@Bean
 	public SimpleModule adminJacksonModule() {
-		SimpleModule module = new SimpleModule();
-		module.addDeserializer(Registration.class, new RegistrationDeserializer());
-		module.setSerializerModifier(new RegistrationBeanSerializerModifier(
-				new SanitizingMapSerializer(this.adminServerProperties.getMetadataKeysToSanitize())));
-		return module;
+		return new AdminServerModule(this.adminServerProperties.getMetadataKeysToSanitize());
 	}
 
 	@Bean

@@ -18,7 +18,6 @@ package de.codecentric.boot.admin.server.utils.jackson;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -33,10 +32,7 @@ public class RegistrationDeserializerTest {
 	private final ObjectMapper objectMapper;
 
 	public RegistrationDeserializerTest() {
-		SimpleModule module = new SimpleModule();
-		module.addDeserializer(Registration.class, new RegistrationDeserializer());
-		module.setSerializerModifier(
-				new RegistrationBeanSerializerModifier(new SanitizingMapSerializer(new String[] { ".*password$" })));
+		AdminServerModule module = new AdminServerModule(new String[] { ".*password$" });
 		objectMapper = Jackson2ObjectMapperBuilder.json().modules(module).build();
 	}
 
