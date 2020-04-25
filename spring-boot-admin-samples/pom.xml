@@ -33,6 +33,7 @@
         <module>spring-boot-admin-sample-reactive</module>
         <module>spring-boot-admin-sample-war</module>
         <module>spring-boot-admin-sample-hazelcast</module>
+        <module>spring-boot-admin-sample-redis</module>
         <module>spring-boot-admin-sample-custom-ui</module>
     </modules>
     <dependencyManagement>

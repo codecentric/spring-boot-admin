@@ -2,4 +2,8 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   de.codecentric.boot.admin.server.config.AdminServerAutoConfiguration,\
   de.codecentric.boot.admin.server.config.AdminServerNotifierAutoConfiguration,\
   de.codecentric.boot.admin.server.config.AdminServerHazelcastAutoConfiguration,\
+  de.codecentric.boot.admin.server.config.AdminServerRedisAutoConfiguration,\
   de.codecentric.boot.admin.server.config.AdminServerCloudFoundryAutoConfiguration
+
+org.springframework.boot.autoconfigure.AutoConfigurationImportFilter=\
+  de.codecentric.boot.admin.server.config.AdminServerRedisAutoConfiguration.RedisAutoConfigurationImportFilter

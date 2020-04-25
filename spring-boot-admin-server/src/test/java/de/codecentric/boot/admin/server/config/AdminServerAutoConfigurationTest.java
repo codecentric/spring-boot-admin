@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.hazelcast.config.Config;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
@@ -33,20 +34,22 @@ import de.codecentric.boot.admin.server.domain.entities.SnapshottingInstanceRepo
 import de.codecentric.boot.admin.server.eventstore.ConcurrentMapEventStore;
 import de.codecentric.boot.admin.server.eventstore.HazelcastEventStore;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
+import de.codecentric.boot.admin.server.eventstore.RedisEventStore;
 import de.codecentric.boot.admin.server.notify.HazelcastNotificationTrigger;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
 import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
+import de.codecentric.boot.admin.server.notify.RedisNotificationTrigger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AdminServerAutoConfigurationTest {
 
-	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
-					ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class,
-					HazelcastAutoConfiguration.class, WebMvcAutoConfiguration.class,
-					AdminServerHazelcastAutoConfiguration.class, AdminServerAutoConfiguration.class))
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
+			AutoConfigurations.of(RestTemplateAutoConfiguration.class, ClientHttpConnectorAutoConfiguration.class,
+					WebClientAutoConfiguration.class, HazelcastAutoConfiguration.class, WebMvcAutoConfiguration.class,
+					JacksonAutoConfiguration.class, AdminServerHazelcastAutoConfiguration.class,
+					AdminServerRedisAutoConfiguration.class, AdminServerAutoConfiguration.class))
 			.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
 	@Test
@@ -66,12 +69,30 @@ public class AdminServerAutoConfigurationTest {
 		});
 	}
 
+	@Test
+	public void redisConfig() {
+		this.contextRunner.withUserConfiguration(TestRedisConfig.class)
+				.withPropertyValues("spring.boot.admin.redis.enabled=true").run((context) -> {
+					assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(RedisEventStore.class);
+					assertThat(context).getBean(NotificationTrigger.class).isInstanceOf(RedisNotificationTrigger.class);
+				});
+	}
+
 	public static class TestHazelcastConfig {
 
 		@Bean
 		public Config config() {
 			return new Config();
 		}
+
+		@Bean
+		public Notifier notifier() {
+			return (e) -> Mono.empty();
+		}
+
+	}
+
+	public static class TestRedisConfig {
 
 		@Bean
 		public Notifier notifier() {
