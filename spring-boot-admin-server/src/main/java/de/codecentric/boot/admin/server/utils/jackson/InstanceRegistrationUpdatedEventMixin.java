@@ -14,36 +14,29 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin.server.domain.events;
+package de.codecentric.boot.admin.server.utils.jackson;
 
 import java.time.Instant;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdatedEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 
 /**
- * This event gets emitted when an instance is registered.
+ * Jackson Mixin class helps in serialize/deserialize
+ * {@link InstanceRegistrationUpdatedEvent}.
  *
- * @author Johannes Edmeier
+ * @author Stefan Rempfer
  */
-@lombok.Data
-@lombok.EqualsAndHashCode(callSuper = true)
-@lombok.ToString(callSuper = true)
-public class InstanceRegisteredEvent extends InstanceEvent {
+public abstract class InstanceRegistrationUpdatedEventMixin {
 
-	public static final String TYPE = "REGISTERED";
-
-	private static final long serialVersionUID = 1L;
-
-	private final Registration registration;
-
-	public InstanceRegisteredEvent(InstanceId instance, long version, Registration registration) {
-		this(instance, version, Instant.now(), registration);
-	}
-
-	public InstanceRegisteredEvent(InstanceId instance, long version, Instant timestamp, Registration registration) {
-		super(instance, version, TYPE, timestamp);
-		this.registration = registration;
+	@JsonCreator
+	public InstanceRegistrationUpdatedEventMixin(@JsonProperty("instance") InstanceId instance,
+			@JsonProperty("version") long version, @JsonProperty("timestamp") Instant timestamp,
+			@JsonProperty("registration") Registration registration) {
 	}
 
 }
