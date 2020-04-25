@@ -43,6 +43,7 @@ import de.codecentric.boot.admin.server.ui.web.HomepageForwardingMatcher;
  * history mode</a>
  */
 public class HomepageForwardingFilter implements Filter {
+
 	private static final Logger log = LoggerFactory.getLogger(HomepageForwardingFilter.class);
 
 	private final String homepage;
@@ -79,4 +80,5 @@ public class HomepageForwardingFilter implements Filter {
 	@Override
 	public void destroy() {
 	}
+
 }
