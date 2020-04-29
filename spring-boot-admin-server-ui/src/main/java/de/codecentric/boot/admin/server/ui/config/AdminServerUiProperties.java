@@ -37,7 +37,7 @@ public class AdminServerUiProperties {
 	private static final String[] CLASSPATH_RESOURCE_LOCATIONS = { "classpath:/META-INF/spring-boot-admin-server-ui/" };
 
 	private static final String[] CLASSPATH_EXTENSION_RESOURCE_LOCATIONS = {
-			"classpath:/META-INF/spring-boot-admin-server-ui/extensions/" };
+			"classpath:/META-INF/spring-boot-admin-server-ui/assets/extensions/" };
 
 	/**
 	 * Locations of SBA ui resources.

@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.ui.extensions;
 import java.io.IOException;
 import java.util.List;
 
+import de.codecentric.boot.admin.server.ui.config.AdminServerUiProperties;
 import org.junit.Test;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
@@ -27,21 +28,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class UiExtensionsScannerTest {
 
 	private final UiExtensionsScanner scanner = new UiExtensionsScanner(new PathMatchingResourcePatternResolver());
+	private final AdminServerUiProperties adminUi = new AdminServerUiProperties();
 
 	@Test
 	public void should_find_extensions() throws IOException {
-		List<UiExtension> extensions = this.scanner.scan("classpath:/META-INF/test-extensions/");
+		List<UiExtension> extensions = this.scanner.scan(this.adminUi.getExtensionResourceLocations(), this.adminUi.getResourceLocations());
 		assertThat(extensions).containsExactlyInAnyOrder(
-				new UiExtension("custom/custom.abcdef.js",
-						"classpath:/META-INF/test-extensions/custom/custom.abcdef.js"),
-				new UiExtension("custom/custom.abcdef.css",
-						"classpath:/META-INF/test-extensions/custom/custom.abcdef.css"));
+				new UiExtension("assets/extensions/custom/custom.abcdef.js",
+						"classpath:/META-INF/spring-boot-admin-server-ui/assets/extensions/assets/extensions/custom/custom.abcdef.js"),
+				new UiExtension("assets/extensions/custom/custom.abcdef.css",
+						"classpath:/META-INF/spring-boot-admin-server-ui/assets/extensions/assets/extensions/custom/custom.abcdef.css"));
 	}
 
 	@Test
 	public void should_not_find_extensions() throws IOException {
-		List<UiExtension> extensions = this.scanner.scan("classpath:/META-INF/NO-test-extensions/");
-		assertThat(extensions).isEmpty();
+		assertThat(this.scanner.scan(new String[]{"classpath:/META-INF/NO-test-extensions/"}, new String[]{"classpath:/META-INF/test-extensions/"})).isEmpty();
+		assertThat(this.scanner.scan(new String[]{"classpath:/META-INF/NO-test-extensions/"}, new String[]{})).isEmpty();
+		assertThat(this.scanner.scan(this.adminUi.getExtensionResourceLocations(), new String[]{"classpath:/META-INF/NO-test-extensions/"})).isEmpty();
 	}
 
 }
