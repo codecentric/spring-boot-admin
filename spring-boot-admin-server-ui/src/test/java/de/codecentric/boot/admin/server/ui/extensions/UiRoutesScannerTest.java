@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class UiRoutesScannerTest {
 
 	private final UiRoutesScanner scanner = new UiRoutesScanner(new PathMatchingResourcePatternResolver());
+
 	private final AdminServerUiProperties adminUi = new AdminServerUiProperties();
 
 	@Test

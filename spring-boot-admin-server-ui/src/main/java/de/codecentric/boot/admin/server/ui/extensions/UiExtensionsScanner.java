@@ -42,13 +42,17 @@ public class UiExtensionsScanner {
 		this.resolver = resolver;
 	}
 
-	public List<UiExtension> scan(String[] locations, String[] resourceLocations) throws IOException {
+	public List<UiExtension> scan(String[] locations, String[] resourceRootLocations) throws IOException {
 		List<UiExtension> extensions = new ArrayList<>();
+		String resourceLocation = null;
 		for (int i = 0; i < locations.length; i++) {
 			String location = locations[i];
-			String resourceLocation = i >= resourceLocations.length ? null : resourceLocations[i];
+			if (i < resourceRootLocations.length) {
+				resourceLocation = resourceRootLocations[i];
+			}
 			for (Resource resource : resolveAssets(location)) {
-				String resourcePath = this.getResourcePath(resourceLocation != null ? resourceLocation : location, resource);
+				String resourcePath = this.getResourcePath((resourceLocation != null) ? resourceLocation : location,
+						resource);
 				if (resourcePath != null && resource.isReadable()) {
 					UiExtension extension = new UiExtension(resourcePath, location + resourcePath);
 					log.debug("Found UiExtension {}", extension);
