@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package de.codecentric.boot.admin.server.domain.values;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
 import org.springframework.util.Assert;
 
 /**
@@ -35,12 +33,10 @@ public final class InstanceId implements Serializable, Comparable<InstanceId> {
 		this.value = value;
 	}
 
-	@JsonCreator
 	public static InstanceId of(String value) {
 		return new InstanceId(value);
 	}
 
-	@JsonValue
 	@Override
 	public String toString() {
 		return value;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.util.Scanner;
 
 import javax.annotation.Nullable;
 
-import com.fasterxml.jackson.annotation.JsonValue;
 import org.springframework.util.Assert;
 
 @lombok.Data
@@ -65,7 +64,6 @@ public final class BuildVersion implements Serializable, Comparable<BuildVersion
 		return null;
 	}
 
-	@JsonValue
 	public String getValue() {
 		return this.value;
 	}

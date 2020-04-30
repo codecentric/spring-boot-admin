@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.util.Assert;
 
 import static java.util.Arrays.asList;
@@ -103,22 +102,18 @@ public final class StatusInfo implements Serializable {
 		return Collections.unmodifiableMap(details);
 	}
 
-	@JsonIgnore
 	public boolean isUp() {
 		return STATUS_UP.equals(status);
 	}
 
-	@JsonIgnore
 	public boolean isOffline() {
 		return STATUS_OFFLINE.equals(status);
 	}
 
-	@JsonIgnore
 	public boolean isDown() {
 		return STATUS_DOWN.equals(status);
 	}
 
-	@JsonIgnore
 	public boolean isUnknown() {
 		return STATUS_UNKNOWN.equals(status);
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.annotation.Nullable;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 
 /**
  * Represents the info fetched from the info actuator endpoint
@@ -57,7 +55,6 @@ public final class Info implements Serializable {
 		return EMPTY;
 	}
 
-	@JsonAnyGetter
 	public Map<String, Object> getValues() {
 		return this.values;
 	}

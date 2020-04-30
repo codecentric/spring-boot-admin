@@ -20,6 +20,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 import de.codecentric.boot.admin.server.domain.values.Info;
@@ -35,5 +36,8 @@ public abstract class InfoMixin {
 	public static Info from(@Nullable Map<String, Object> values) {
 		return Info.from(values);
 	}
+
+	@JsonAnyGetter
+	public abstract Map<String, Object> getValues();
 
 }
