@@ -35,13 +35,13 @@ public abstract class AbstractAdminUiApplicationTest {
 	public void should_return_index() {
 		//@formatter:off
 		this.webClient.get()
-					.uri("/")
-					.accept(MediaType.TEXT_HTML, MediaType.ALL)
-					.exchange()
-					.expectStatus().isOk()
-					.expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
-					.expectBody(String.class)
-					.value((body) -> assertThat(body).contains("<title>Spring Boot Admin</title>"));
+			.uri("/")
+			.accept(MediaType.TEXT_HTML, MediaType.ALL)
+			.exchange()
+			.expectStatus().isOk()
+			.expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("<title>Spring Boot Admin</title>"));
 		//@formatter:on
 	}
 
@@ -49,10 +49,10 @@ public abstract class AbstractAdminUiApplicationTest {
 	public void should_not_return_index_for_logfile() {
 		//@formatter:off
 		this.webClient.get()
-						.uri("/instances/a973ff14be49/actuator/logfile")
-						.accept(MediaType.TEXT_HTML, MediaType.ALL)
-						.exchange()
-						.expectStatus().isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+			.uri("/instances/a973ff14be49/actuator/logfile")
+			.accept(MediaType.TEXT_HTML, MediaType.ALL)
+			.exchange()
+			.expectStatus().isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
 		//@formatter:on
 	}
 
@@ -60,13 +60,13 @@ public abstract class AbstractAdminUiApplicationTest {
 	public void should_return_api() {
 		//@formatter:off
 		this.webClient.get()
-					.uri("/applications")
-					.accept(MediaType.APPLICATION_JSON)
-					.exchange()
-					.expectStatus().isOk()
-					.expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
-					.expectBody(String.class)
-					.value((body) -> assertThat(body).contains("[]"));
+			.uri("/applications")
+			.accept(MediaType.APPLICATION_JSON)
+			.exchange()
+			.expectStatus().isOk()
+			.expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("[]"));
 		//@formatter:on
 	}
 
@@ -74,13 +74,13 @@ public abstract class AbstractAdminUiApplicationTest {
 	public void should_return_index_for_ui_path() {
 		//@formatter:off
 		this.webClient.get()
-					.uri("/applications")
-					.accept(MediaType.TEXT_HTML)
-					.exchange()
-					.expectStatus().isOk()
-					.expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
-					.expectBody(String.class)
-					.value((body) -> assertThat(body).contains("<title>Spring Boot Admin</title>"));
+			.uri("/applications")
+			.accept(MediaType.TEXT_HTML)
+			.exchange()
+			.expectStatus().isOk()
+			.expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("<title>Spring Boot Admin</title>"));
 		//@formatter:on
 	}
 
@@ -88,10 +88,63 @@ public abstract class AbstractAdminUiApplicationTest {
 	public void should_return_404_for_unknown_path() {
 		//@formatter:off
 		this.webClient.get()
-					.uri("/unknown")
-					.accept(MediaType.TEXT_HTML)
-					.exchange()
-					.expectStatus().isNotFound();
+			.uri("/unknown")
+			.accept(MediaType.TEXT_HTML)
+			.exchange()
+			.expectStatus().isNotFound();
+		//@formatter:on
+	}
+
+	@Test
+	public void should_return_html() {
+		//@formatter:off
+		this.webClient.get()
+			.uri("custom/custom.abcdef.js")
+			.accept(MediaType.TEXT_HTML, MediaType.ALL)
+			.exchange()
+			.expectStatus().isOk()
+			.expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
+			.expectHeader().value("X-Content-Type-Options", "nosniff"::equals)
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).startsWith("<!DOCTYPE html><html>"));
+		this.webClient.get()
+			.uri("custom/custom.abcdef.css")
+			.accept(MediaType.TEXT_HTML, MediaType.ALL)
+			.exchange()
+			.expectStatus().isOk()
+			.expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
+			.expectHeader().value("X-Content-Type-Options", "nosniff"::equals)
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).startsWith("<!DOCTYPE html><html>"));
+		this.webClient.get()
+			.uri("custom.abcdef.css")
+			.accept(MediaType.TEXT_HTML, MediaType.ALL)
+			.exchange()
+			.expectStatus().is4xxClientError();
+		//@formatter:on
+	}
+
+	@Test
+	public void should_return_asset() {
+		//@formatter:off
+		this.webClient.get()
+			.uri("extensions/custom/custom.abcdef.js")
+			.accept(MediaType.TEXT_HTML, MediaType.ALL)
+			.exchange()
+			.expectStatus().isOk()
+			.expectHeader().contentTypeCompatibleWith("application/javascript")
+			.expectHeader().value("X-Content-Type-Options", "nosniff"::equals)
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).startsWith("/*\n * Copyright"));
+		this.webClient.get()
+			.uri("extensions/custom/custom.abcdef.css")
+			.accept(MediaType.TEXT_HTML, MediaType.ALL)
+			.exchange()
+			.expectStatus().isOk()
+			.expectHeader().contentTypeCompatibleWith("text/css")
+			.expectHeader().value("X-Content-Type-Options", "nosniff"::equals)
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).startsWith("/*\n * Copyright"));
 		//@formatter:on
 	}
 

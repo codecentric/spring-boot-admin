@@ -48,21 +48,24 @@ public class UiExtensionsScanner {
 		for (int i = 0; i < locations.length; i++) {
 			String location = locations[i];
 			String rootLocation = resolveRootLocation(resourceRootLocations, location);
-			for (Resource resource : resolveAssets(location)) {
-				String resourcePath = this.getResourcePath(rootLocation, resource);
-				if (resourcePath != null && resource.isReadable()) {
-					UiExtension extension = new UiExtension(resourcePath, rootLocation + resourcePath);
-					log.debug("Found UiExtension {}", extension);
-					extensions.add(extension);
+			if (rootLocation != null) {
+				for (Resource resource : resolveAssets(location)) {
+					String resourcePath = this.getResourcePath(rootLocation, resource);
+					if (resourcePath != null && resource.isReadable()) {
+						UiExtension extension = new UiExtension(resourcePath, rootLocation + resourcePath);
+						log.debug("Found UiExtension {}", extension);
+						extensions.add(extension);
+					}
 				}
 			}
 		}
 		return extensions;
 	}
 
+	@Nullable
 	private String resolveRootLocation(String[] resourceRootLocations, String location) {
 		return Stream.of(resourceRootLocations).filter(Objects::nonNull).filter((rl) -> !rl.isEmpty())
-				.filter(location::contains).findFirst().orElse(location);
+				.filter(location::contains).findFirst().orElse(null);
 	}
 
 	private List<Resource> resolveAssets(String location) throws IOException {
