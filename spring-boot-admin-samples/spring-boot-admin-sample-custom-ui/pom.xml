@@ -76,7 +76,7 @@
         <resources>
             <resource>
                 <directory>target/dist</directory>
-                <targetPath>META-INF/spring-boot-admin-server-ui/assets/extensions/custom</targetPath>
+                <targetPath>META-INF/spring-boot-admin-server-ui/extensions/custom</targetPath>
                 <filtering>false</filtering>
             </resource>
         </resources>

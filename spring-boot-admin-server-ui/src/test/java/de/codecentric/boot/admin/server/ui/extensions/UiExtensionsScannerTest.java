@@ -36,10 +36,10 @@ public class UiExtensionsScannerTest {
 	public void should_find_extensions() throws IOException {
 		List<UiExtension> extensions = this.scanner.scan(this.adminUi.getExtensionResourceLocations(),
 				this.adminUi.getResourceLocations());
-		assertThat(extensions).containsExactlyInAnyOrder(new UiExtension("assets/extensions/custom/custom.abcdef.js",
-				"classpath:/META-INF/spring-boot-admin-server-ui/assets/extensions/assets/extensions/custom/custom.abcdef.js"),
-				new UiExtension("assets/extensions/custom/custom.abcdef.css",
-						"classpath:/META-INF/spring-boot-admin-server-ui/assets/extensions/assets/extensions/custom/custom.abcdef.css"));
+		assertThat(extensions).containsExactlyInAnyOrder(new UiExtension("extensions/custom/custom.abcdef.js",
+				"classpath:/META-INF/spring-boot-admin-server-ui/extensions/custom/custom.abcdef.js"),
+				new UiExtension("extensions/custom/custom.abcdef.css",
+						"classpath:/META-INF/spring-boot-admin-server-ui/extensions/custom/custom.abcdef.css"));
 	}
 
 	@Test
