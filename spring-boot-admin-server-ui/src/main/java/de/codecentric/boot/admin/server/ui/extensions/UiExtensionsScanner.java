@@ -63,7 +63,7 @@ public class UiExtensionsScanner {
 	private String resolveRootLocation(String[] resourceRootLocations, String location) {
 		return Stream.of(resourceRootLocations)
 			.filter(Objects::nonNull)
-			.filter(rl -> !rl.isEmpty())
+			.filter((rl) -> !rl.isEmpty())
 			.filter(location::contains)
 			.findFirst()
 			.orElse(location);
