@@ -93,8 +93,8 @@ public class InstanceDiscoveryListenerTest {
 	@Test
 	public void should_not_register_instance_when_instanceMetadata_is_ignored() {
 		when(this.discovery.getServices()).thenReturn(singletonList("service"));
-		when(this.discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("test-1", "service",
-				"localhost", 80, false, Collections.singletonMap("monitoring", "false"))));
+		when(this.discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("test-1",
+				"service", "localhost", 80, false, Collections.singletonMap("monitoring", "false"))));
 
 		this.listener.setIgnoredInstancesMetadata(Collections.singletonMap("monitoring", "false"));
 		this.listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
@@ -117,8 +117,8 @@ public class InstanceDiscoveryListenerTest {
 	@Test
 	public void should_register_instance_when_instanceMetadata_is_not_ignored() {
 		when(this.discovery.getServices()).thenReturn(singletonList("service"));
-		when(this.discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("test-1", "service",
-				"localhost", 80, false, Collections.singletonMap("monitoring", "true"))));
+		when(this.discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("test-1",
+				"service", "localhost", 80, false, Collections.singletonMap("monitoring", "true"))));
 
 		this.listener.setInstancesMetadata(Collections.singletonMap("monitoring", "false"));
 		this.listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
@@ -142,12 +142,14 @@ public class InstanceDiscoveryListenerTest {
 	@Test
 	public void should_not_register_instance_when_instanceMetadata_matches_ignored_metadata() {
 		when(this.discovery.getServices()).thenReturn(asList("service", "rabbit-1", "rabbit-2"));
-		when(this.discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("test-1", "service",
-				"localhost", 80, false, Collections.singletonMap("monitoring", "true"))));
-		when(this.discovery.getInstances("rabbit-1")).thenReturn(singletonList(new DefaultServiceInstance("rabbit-test-1",
-				"rabbit-1", "localhost", 80, false, Collections.singletonMap("monitoring", "false"))));
-		when(this.discovery.getInstances("rabbit-2")).thenReturn(singletonList(new DefaultServiceInstance("rabbit-test-1",
-				"rabbit-2", "localhost", 80, false, Collections.singletonMap("monitoring", "false"))));
+		when(this.discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("test-1",
+				"service", "localhost", 80, false, Collections.singletonMap("monitoring", "true"))));
+		when(this.discovery.getInstances("rabbit-1"))
+				.thenReturn(singletonList(new DefaultServiceInstance("rabbit-test-1", "rabbit-1", "localhost", 80,
+						false, Collections.singletonMap("monitoring", "false"))));
+		when(this.discovery.getInstances("rabbit-2"))
+				.thenReturn(singletonList(new DefaultServiceInstance("rabbit-test-1", "rabbit-2", "localhost", 80,
+						false, Collections.singletonMap("monitoring", "false"))));
 
 		this.listener.setIgnoredInstancesMetadata(Collections.singletonMap("monitoring", "false"));
 		this.listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
@@ -172,12 +174,14 @@ public class InstanceDiscoveryListenerTest {
 	@Test
 	public void should_register_instances_when_instanceMetadata_matches_wanted_metadata() {
 		when(this.discovery.getServices()).thenReturn(asList("service", "rabbit-1", "rabbit-2"));
-		when(this.discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("test-1", "service",
-				"localhost", 80, false, Collections.singletonMap("monitoring", "true"))));
-		when(this.discovery.getInstances("rabbit-1")).thenReturn(singletonList(new DefaultServiceInstance("rabbit-test-1",
-				"rabbit-1", "localhost", 80, false, Collections.singletonMap("monitoring", "false"))));
-		when(this.discovery.getInstances("rabbit-2")).thenReturn(singletonList(new DefaultServiceInstance("rabbit-test-1",
-				"rabbit-2", "localhost", 80, false, Collections.singletonMap("monitoring", "false"))));
+		when(this.discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("test-1",
+				"service", "localhost", 80, false, Collections.singletonMap("monitoring", "true"))));
+		when(this.discovery.getInstances("rabbit-1"))
+				.thenReturn(singletonList(new DefaultServiceInstance("rabbit-test-1", "rabbit-1", "localhost", 80,
+						false, Collections.singletonMap("monitoring", "false"))));
+		when(this.discovery.getInstances("rabbit-2"))
+				.thenReturn(singletonList(new DefaultServiceInstance("rabbit-test-1", "rabbit-2", "localhost", 80,
+						false, Collections.singletonMap("monitoring", "false"))));
 
 		this.listener.setInstancesMetadata(Collections.singletonMap("monitoring", "true"));
 		this.listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
