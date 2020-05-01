@@ -60,8 +60,8 @@ public class AdminServerUiAutoConfiguration {
 	private static final List<String> DEFAULT_UI_ROUTES = asList("/about/**", "/applications/**", "/instances/**",
 			"/journal/**", "/wallboard/**", "/external/**");
 
-	private static final List<String> DEFAULT_UI_ROUTE_EXCLUDES = asList("/extensions/**", "/instances/*/actuator/heapdump",
-			"/instances/*/actuator/logfile");
+	private static final List<String> DEFAULT_UI_ROUTE_EXCLUDES = asList("/extensions/**",
+			"/instances/*/actuator/heapdump", "/instances/*/actuator/logfile");
 
 	private final AdminServerUiProperties adminUi;
 
@@ -159,8 +159,7 @@ public class AdminServerUiAutoConfiguration {
 						.map(this.adminServer::path).collect(Collectors.toList());
 				String homepage = this.adminServer.path("/");
 				return new de.codecentric.boot.admin.server.ui.web.reactive.HomepageForwardingFilter(homepage, routes,
-					DEFAULT_UI_ROUTE_EXCLUDES
-				);
+						DEFAULT_UI_ROUTE_EXCLUDES);
 			}
 
 		}
@@ -208,8 +207,7 @@ public class AdminServerUiAutoConfiguration {
 						.map(this.adminServer::path).collect(Collectors.toList());
 				String homepage = this.adminServer.path("/");
 				return new de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter(homepage, routes,
-					DEFAULT_UI_ROUTE_EXCLUDES
-				);
+						DEFAULT_UI_ROUTE_EXCLUDES);
 			}
 
 		}
