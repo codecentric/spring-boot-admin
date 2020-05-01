@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ import de.codecentric.boot.admin.server.config.AdminServerMarkerConfiguration;
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.AdminServerWebConfiguration;
 import de.codecentric.boot.admin.server.notify.filter.web.NotificationFilterController;
-import de.codecentric.boot.admin.server.ui.extensions.UiExtension;
+import de.codecentric.boot.admin.server.ui.extensions.UiExtensions;
 import de.codecentric.boot.admin.server.ui.extensions.UiExtensionsScanner;
 import de.codecentric.boot.admin.server.ui.extensions.UiRoutesScanner;
 import de.codecentric.boot.admin.server.ui.web.UiController;
@@ -60,7 +60,7 @@ public class AdminServerUiAutoConfiguration {
 	private static final List<String> DEFAULT_UI_ROUTES = asList("/about/**", "/applications/**", "/instances/**",
 			"/journal/**", "/wallboard/**", "/external/**");
 
-	private static final List<String> DEFAULT_UI_EXCLUDED_ROUTE = asList("/instances/*/actuator/heapdump",
+	private static final List<String> DEFAULT_UI_ROUTE_EXCLUDES = asList("/extensions/**", "/instances/*/actuator/heapdump",
 			"/instances/*/actuator/logfile");
 
 	private final AdminServerUiProperties adminUi;
@@ -78,7 +78,7 @@ public class AdminServerUiAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public UiController homeUiController() throws IOException {
+	public UiController homeUiController(UiExtensions uiExtensions) throws IOException {
 		List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
 				.scan(this.adminUi.getExtensionResourceLocations());
 		List<String> routes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream())
@@ -94,12 +94,13 @@ public class AdminServerUiAutoConfiguration {
 
 		String publicUrl = (this.adminUi.getPublicUrl() != null) ? this.adminUi.getPublicUrl()
 				: this.adminServer.getContextPath();
-		return new UiController(publicUrl, this.uiExtensions(), uiSettings);
+		return new UiController(publicUrl, uiExtensions, uiSettings);
 	}
 
-	private List<UiExtension> uiExtensions() throws IOException {
+	@Bean
+	UiExtensions uiExtensions() throws IOException {
 		UiExtensionsScanner scanner = new UiExtensionsScanner(this.applicationContext);
-		List<UiExtension> uiExtensions = scanner.scan(this.adminUi.getExtensionResourceLocations());
+		UiExtensions uiExtensions = scanner.scan(this.adminUi.getExtensionResourceLocations());
 		uiExtensions.forEach((e) -> log.info("Loaded Spring Boot Admin UI Extension: {}", e));
 		return uiExtensions;
 	}
@@ -142,6 +143,8 @@ public class AdminServerUiAutoConfiguration {
 			public void addResourceHandlers(org.springframework.web.reactive.config.ResourceHandlerRegistry registry) {
 				registry.addResourceHandler(this.adminServer.path("/**"))
 						.addResourceLocations(this.adminUi.getResourceLocations())
+						.setCacheControl(this.adminUi.getCache().toCacheControl());
+				registry.addResourceHandler(this.adminServer.path("/extensions/**"))
 						.addResourceLocations(this.adminUi.getExtensionResourceLocations())
 						.setCacheControl(this.adminUi.getCache().toCacheControl());
 			}
@@ -156,7 +159,8 @@ public class AdminServerUiAutoConfiguration {
 						.map(this.adminServer::path).collect(Collectors.toList());
 				String homepage = this.adminServer.path("/");
 				return new de.codecentric.boot.admin.server.ui.web.reactive.HomepageForwardingFilter(homepage, routes,
-						DEFAULT_UI_EXCLUDED_ROUTE);
+					DEFAULT_UI_ROUTE_EXCLUDES
+				);
 			}
 
 		}
@@ -188,6 +192,8 @@ public class AdminServerUiAutoConfiguration {
 					org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
 				registry.addResourceHandler(this.adminServer.path("/**"))
 						.addResourceLocations(this.adminUi.getResourceLocations())
+						.setCacheControl(this.adminUi.getCache().toCacheControl());
+				registry.addResourceHandler(this.adminServer.path("/extensions/**"))
 						.addResourceLocations(this.adminUi.getExtensionResourceLocations())
 						.setCacheControl(this.adminUi.getCache().toCacheControl());
 			}
@@ -202,7 +208,8 @@ public class AdminServerUiAutoConfiguration {
 						.map(this.adminServer::path).collect(Collectors.toList());
 				String homepage = this.adminServer.path("/");
 				return new de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter(homepage, routes,
-						DEFAULT_UI_EXCLUDED_ROUTE);
+					DEFAULT_UI_ROUTE_EXCLUDES
+				);
 			}
 
 		}

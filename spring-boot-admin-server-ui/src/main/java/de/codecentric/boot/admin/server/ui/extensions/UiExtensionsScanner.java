@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class UiExtensionsScanner {
 		this.resolver = resolver;
 	}
 
-	public List<UiExtension> scan(String... locations) throws IOException {
+	public UiExtensions scan(String... locations) throws IOException {
 		List<UiExtension> extensions = new ArrayList<>();
 		for (String location : locations) {
 			for (Resource resource : resolveAssets(location)) {
@@ -54,7 +54,7 @@ public class UiExtensionsScanner {
 				}
 			}
 		}
-		return extensions;
+		return new UiExtensions(extensions);
 	}
 
 	private List<Resource> resolveAssets(String location) throws IOException {
@@ -72,8 +72,8 @@ public class UiExtensionsScanner {
 
 	@Nullable
 	private String getResourcePath(String location, Resource resource) throws IOException {
-		String locationWithouPrefix = location.replaceFirst("^[^:]+:", "");
-		Matcher m = Pattern.compile(Pattern.quote(locationWithouPrefix) + "(.+)$")
+		String locationWithoutPrefix = location.replaceFirst("^[^:]+:", "");
+		Matcher m = Pattern.compile(Pattern.quote(locationWithoutPrefix) + "(.+)$")
 				.matcher(resource.getURI().toString());
 		if (m.find()) {
 			return m.group(1);

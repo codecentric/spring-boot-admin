@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,8 @@ public class AdminUiServletApplicationTest extends AbstractAdminUiApplicationTes
 	@Before
 	public void setUp() {
 		this.instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
-				.web(WebApplicationType.SERVLET).run("--server.port=0");
+				.web(WebApplicationType.SERVLET).run("--server.port=0",
+						"--spring.boot.admin.ui.extension-resource-locations=classpath:/META-INF/test-extensions/");
 
 		super.setUp(this.instance.getEnvironment().getProperty("local.server.port", Integer.class, 0));
 	}

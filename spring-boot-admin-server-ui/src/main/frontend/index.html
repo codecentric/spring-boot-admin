@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2014-2019 the original author or authors.
+  ~ Copyright 2014-2020 the original author or authors.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -25,14 +25,14 @@
     <meta name="theme-color" content="#42d3a5">
 
     <!-- include extensions -->
-    <th:block th:each="cssFile : ${cssExtensions}">
-        <link rel="preload" th:href="${cssFile.resourcePath}" as="style">
+    <th:block th:each="cssExtension : ${cssExtensions}">
+        <link rel="preload" th:href="'/extensions/' + ${cssExtension.resourcePath}" as="style">
     </th:block>
-    <th:block th:each="jsFile : ${jsExtensions}">
-        <link rel="preload" th:href="${jsFile.resourcePath}" as="script">
+    <th:block th:each="jsExtension : ${jsExtensions}">
+        <link rel="preload" th:href="'/extensions/' + ${jsExtension.resourcePath}" as="script">
     </th:block>
-    <th:block th:each="cssFile : ${cssExtensions}">
-        <link th:href="${cssFile.resourcePath}" rel="stylesheet">
+    <th:block th:each="cssExtension : ${cssExtensions}">
+        <link th:href="'/extensions/' + ${cssExtension.resourcePath}" rel="stylesheet">
     </th:block>
 
     <link rel="shortcut icon" th:href="${uiSettings.favicon}" type="image/png">
@@ -44,8 +44,8 @@
 
 <script lang="javascript" src="sba-settings.js"></script>
 <!-- include extensions -->
-<th:block th:each="jsFile : ${jsExtensions}">
-    <script lang="javascript" th:src="${jsFile.resourcePath}"></script>
+<th:block th:each="jsExtension : ${jsExtensions}">
+    <script lang="javascript" th:src="'/extensions/' + ${jsExtension.resourcePath}"></script>
 </th:block>
 </body>
 </html>

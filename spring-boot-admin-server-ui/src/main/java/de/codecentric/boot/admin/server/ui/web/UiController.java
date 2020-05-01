@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package de.codecentric.boot.admin.server.ui.web;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -34,6 +33,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import de.codecentric.boot.admin.server.ui.extensions.UiExtension;
+import de.codecentric.boot.admin.server.ui.extensions.UiExtensions;
 import de.codecentric.boot.admin.server.web.AdminController;
 
 import static java.util.Collections.emptyMap;
@@ -44,19 +44,14 @@ public class UiController {
 
 	private final String publicUrl;
 
-	private final List<UiExtension> cssExtensions;
-
-	private final List<UiExtension> jsExtensions;
+	private final UiExtensions uiExtensions;
 
 	private final Settings uiSettings;
 
-	public UiController(String publicUrl, List<UiExtension> uiExtensions, Settings uiSettings) {
+	public UiController(String publicUrl, UiExtensions uiExtensions, Settings uiSettings) {
 		this.publicUrl = publicUrl;
+		this.uiExtensions = uiExtensions;
 		this.uiSettings = uiSettings;
-		this.cssExtensions = uiExtensions.stream().filter((e) -> e.getResourcePath().endsWith(".css"))
-				.collect(Collectors.toList());
-		this.jsExtensions = uiExtensions.stream().filter((e) -> e.getResourcePath().endsWith(".js"))
-				.collect(Collectors.toList());
 	}
 
 	@ModelAttribute(value = "baseUrl", binding = false)
@@ -84,12 +79,12 @@ public class UiController {
 
 	@ModelAttribute(value = "cssExtensions", binding = false)
 	public List<UiExtension> getCssExtensions() {
-		return this.cssExtensions;
+		return this.uiExtensions.getCssExtensions();
 	}
 
 	@ModelAttribute(value = "jsExtensions", binding = false)
 	public List<UiExtension> getJsExtensions() {
-		return this.jsExtensions;
+		return this.uiExtensions.getJsExtensions();
 	}
 
 	@ModelAttribute(value = "user", binding = false)

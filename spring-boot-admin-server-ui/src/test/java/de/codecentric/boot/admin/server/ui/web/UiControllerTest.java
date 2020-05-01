@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,11 @@
 
 package de.codecentric.boot.admin.server.ui.web;
 
-import java.util.Collections;
-
 import org.junit.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import de.codecentric.boot.admin.server.ui.extensions.UiExtensions;
 import de.codecentric.boot.admin.server.web.servlet.AdminControllerHandlerMapping;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -66,7 +65,7 @@ public class UiControllerTest {
 	private MockMvc setupController(String publicUrl) {
 		return MockMvcBuilders
 				.standaloneSetup(
-						new UiController(publicUrl, Collections.emptyList(), UiController.Settings.builder().build()))
+						new UiController(publicUrl, UiExtensions.EMPTY, UiController.Settings.builder().build()))
 				.setCustomHandlerMapping(() -> new AdminControllerHandlerMapping("")).build();
 	}
 
