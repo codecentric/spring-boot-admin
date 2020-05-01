@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 @lombok.ToString(callSuper = true)
 public class InstanceEndpointsDetectedEvent extends InstanceEvent {
 
+	public static final String TYPE = "ENDPOINTS_DETECTED";
+
 	private static final long serialVersionUID = 1L;
 
 	private final Endpoints endpoints;
@@ -40,7 +42,7 @@ public class InstanceEndpointsDetectedEvent extends InstanceEvent {
 	}
 
 	public InstanceEndpointsDetectedEvent(InstanceId instance, long version, Instant timestamp, Endpoints endpoints) {
-		super(instance, version, "ENDPOINTS_DETECTED", timestamp);
+		super(instance, version, TYPE, timestamp);
 		this.endpoints = endpoints;
 	}
 

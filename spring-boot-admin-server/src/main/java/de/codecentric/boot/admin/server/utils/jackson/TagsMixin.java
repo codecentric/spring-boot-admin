@@ -14,37 +14,28 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin.server.domain.values;
+package de.codecentric.boot.admin.server.utils.jackson;
 
-import java.io.Serializable;
+import java.util.Map;
 
-import org.springframework.util.Assert;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonCreator;
+
+import de.codecentric.boot.admin.server.domain.values.Tags;
 
 /**
- * Value type for the instance identifier
+ * Jackson Mixin class helps in serialize/deserialize {@link Tags}.
+ *
+ * @author Stefan Rempfer
  */
-@lombok.Data
-public final class InstanceId implements Serializable, Comparable<InstanceId> {
+public abstract class TagsMixin {
 
-	private final String value;
-
-	private InstanceId(String value) {
-		Assert.hasText(value, "'value' must have text");
-		this.value = value;
+	@JsonCreator
+	public static Tags from(Map<String, ?> map) {
+		return Tags.from(map);
 	}
 
-	public static InstanceId of(String value) {
-		return new InstanceId(value);
-	}
-
-	@Override
-	public String toString() {
-		return value;
-	}
-
-	@Override
-	public int compareTo(InstanceId that) {
-		return this.value.compareTo(that.value);
-	}
+	@JsonAnyGetter
+	public abstract Map<String, String> getValues();
 
 }

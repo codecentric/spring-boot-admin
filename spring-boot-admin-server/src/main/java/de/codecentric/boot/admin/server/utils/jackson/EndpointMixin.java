@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin.server.domain.values;
+package de.codecentric.boot.admin.server.utils.jackson;
 
-import org.junit.Test;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import de.codecentric.boot.admin.server.domain.values.Endpoint;
 
-public class InstanceIdTest {
+/**
+ * Jackson Mixin class helps in serialize/deserialize {@link Endpoint}.
+ *
+ * @author Stefan Rempfer
+ */
+public abstract class EndpointMixin {
 
-	@Test
-	public void invariants() {
-		assertThatThrownBy(() -> InstanceId.of(null)).isInstanceOf(IllegalArgumentException.class)
-				.hasMessage("'value' must have text");
-		assertThatThrownBy(() -> InstanceId.of("")).isInstanceOf(IllegalArgumentException.class)
-				.hasMessage("'value' must have text");
+	@JsonCreator
+	public static Endpoint of(@JsonProperty("id") String id, @JsonProperty("url") String url) {
+		return Endpoint.of(id, url);
 	}
 
 }

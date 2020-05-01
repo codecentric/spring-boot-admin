@@ -14,32 +14,26 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin.server.domain.events;
+package de.codecentric.boot.admin.server.utils.jackson;
 
-import java.time.Instant;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 /**
- * This event gets emitted when an instance is unregistered.
+ * Jackson Mixin class helps in serialize/deserialize {@link InstanceId}.
  *
- * @author Johannes Edmeier
+ * @author Stefan Rempfer
  */
-@lombok.Data
-@lombok.EqualsAndHashCode(callSuper = true)
-@lombok.ToString(callSuper = true)
-public class InstanceDeregisteredEvent extends InstanceEvent {
+public abstract class InstanceIdMixin {
 
-	public static final String TYPE = "DEREGISTERED";
-
-	private static final long serialVersionUID = 1L;
-
-	public InstanceDeregisteredEvent(InstanceId instance, long version) {
-		this(instance, version, Instant.now());
+	@JsonCreator
+	public static InstanceId of(String value) {
+		return InstanceId.of(value);
 	}
 
-	public InstanceDeregisteredEvent(InstanceId instance, long version, Instant timestamp) {
-		super(instance, version, TYPE, timestamp);
-	}
+	@JsonValue
+	public abstract String getValue();
 
 }

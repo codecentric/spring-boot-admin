@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,8 @@ package de.codecentric.boot.admin.server.web.reactive;
 
 import javax.annotation.Nullable;
 
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -33,20 +32,17 @@ public class InstancesProxyControllerIntegrationTest extends AbstractInstancesPr
 	@Nullable
 	private static ConfigurableApplicationContext context;
 
-	@BeforeClass
-	public static void setUpContext() {
+	@Before
+	public void setUpClient() {
 		context = new SpringApplicationBuilder().sources(AdminReactiveApplicationTest.TestAdminApplication.class)
 				.web(WebApplicationType.REACTIVE)
 				.run("--server.port=0", "--spring.boot.admin.monitor.default-timeout=2500");
-	}
 
-	@Before
-	public void setUpClient() {
 		super.setUpClient(context);
 	}
 
-	@AfterClass
-	public static void tearDownContext() {
+	@After
+	public void tearDownContext() {
 		if (context != null) {
 			context.close();
 		}

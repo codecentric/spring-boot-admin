@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import de.codecentric.boot.admin.server.domain.values.Registration;
 @lombok.ToString(callSuper = true)
 public class InstanceRegistrationUpdatedEvent extends InstanceEvent {
 
+	public static final String TYPE = "REGISTRATION_UPDATED";
+
 	private static final long serialVersionUID = 1L;
 
 	private final Registration registration;
@@ -41,7 +43,7 @@ public class InstanceRegistrationUpdatedEvent extends InstanceEvent {
 
 	public InstanceRegistrationUpdatedEvent(InstanceId instance, long version, Instant timestamp,
 			Registration registration) {
-		super(instance, version, "REGISTRATION_UPDATED", timestamp);
+		super(instance, version, TYPE, timestamp);
 		this.registration = registration;
 	}
 

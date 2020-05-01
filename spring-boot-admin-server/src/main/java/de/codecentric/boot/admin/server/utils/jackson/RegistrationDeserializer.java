@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,21 +40,21 @@ public class RegistrationDeserializer extends StdDeserializer<Registration> {
 		JsonNode node = p.readValueAsTree();
 		Registration.Builder builder = Registration.builder();
 
-		if (node.has("name")) {
+		if (node.hasNonNull("name")) {
 			builder.name(node.get("name").asText());
 		}
-		if (node.has("url")) {
+		if (node.hasNonNull("url")) {
 			String url = node.get("url").asText();
 			builder.healthUrl(url.replaceFirst("/+$", "") + "/health").managementUrl(url);
 		}
 		else {
-			if (node.has("healthUrl")) {
+			if (node.hasNonNull("healthUrl")) {
 				builder.healthUrl(node.get("healthUrl").asText());
 			}
-			if (node.has("managementUrl")) {
+			if (node.hasNonNull("managementUrl")) {
 				builder.managementUrl(node.get("managementUrl").asText());
 			}
-			if (node.has("serviceUrl")) {
+			if (node.hasNonNull("serviceUrl")) {
 				builder.serviceUrl(node.get("serviceUrl").asText());
 			}
 		}
@@ -66,6 +66,11 @@ public class RegistrationDeserializer extends StdDeserializer<Registration> {
 				builder.metadata(entry.getKey(), entry.getValue().asText());
 			}
 		}
+
+		if (node.hasNonNull("source")) {
+			builder.source(node.get("source").asText());
+		}
+
 		return builder.build();
 	}
 

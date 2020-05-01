@@ -14,37 +14,26 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin.server.domain.values;
+package de.codecentric.boot.admin.server.utils.jackson;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
-import org.springframework.util.Assert;
+import de.codecentric.boot.admin.server.domain.values.BuildVersion;
 
 /**
- * Value type for the instance identifier
+ * Jackson Mixin class helps in serialize/deserialize {@link BuildVersion}.
+ *
+ * @author Stefan Rempfer
  */
-@lombok.Data
-public final class InstanceId implements Serializable, Comparable<InstanceId> {
+public abstract class BuildVersionMixin {
 
-	private final String value;
-
-	private InstanceId(String value) {
-		Assert.hasText(value, "'value' must have text");
-		this.value = value;
+	@JsonCreator
+	public static BuildVersion valueOf(String s) {
+		return BuildVersion.valueOf(s);
 	}
 
-	public static InstanceId of(String value) {
-		return new InstanceId(value);
-	}
-
-	@Override
-	public String toString() {
-		return value;
-	}
-
-	@Override
-	public int compareTo(InstanceId that) {
-		return this.value.compareTo(that.value);
-	}
+	@JsonValue
+	public abstract String getValue();
 
 }
