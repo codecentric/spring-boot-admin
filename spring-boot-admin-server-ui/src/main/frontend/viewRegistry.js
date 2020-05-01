@@ -16,6 +16,8 @@
 
 import {VIEW_GROUP} from './views';
 
+import remove from 'lodash/remove';
+
 const createTextVNode = (label) => {
   return {
     render() {
@@ -62,6 +64,12 @@ export default class ViewRegistry {
     }
 
     this._views.push(view);
+  }
+
+  _removeExistingView(view) {
+    remove(this._views, (v) => {
+      return v.name === view.name && v.group === view.group
+    });
   }
 
   _toRoutes(views, filter) {
