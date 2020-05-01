@@ -41,8 +41,9 @@ SBA.use({
       path: 'custom',
       component: customEndpoint,
       label: 'Custom',
+      group: 'Group', // <2>
       order: 1000,
-      isEnabled: ({instance}) => instance.hasEndpoint('custom') // <2>
+      isEnabled: ({instance}) => instance.hasEndpoint('custom') // <3>
     });
   }
 });
