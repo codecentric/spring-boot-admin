@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public class EurekaServiceInstanceConverterTest {
 		Registration registration = new EurekaServiceInstanceConverter().convert(service);
 
 		assertThat(registration.getName()).isEqualTo("test");
-		assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80/");
+		assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80");
 		assertThat(registration.getManagementUrl()).isEqualTo("http://localhost:80/mgmt");
 		assertThat(registration.getHealthUrl()).isEqualTo("http://localhost:80/mgmt/ping");
 	}

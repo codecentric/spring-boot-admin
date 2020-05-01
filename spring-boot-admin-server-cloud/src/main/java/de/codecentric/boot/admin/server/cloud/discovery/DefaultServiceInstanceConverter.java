@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,9 +87,24 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 	}
 
 	protected URI getManagementUrl(ServiceInstance instance) {
-		return UriComponentsBuilder.newInstance().scheme(getManagementScheme(instance))
-				.host(getManagementHost(instance)).port(getManagementPort(instance)).path("/")
-				.path(getManagementPath(instance)).build().toUri();
+		URI serviceUrl = this.getServiceUrl(instance);
+		String managementScheme = this.getManagementScheme(instance);
+		String managementHost = this.getManagementHost(instance);
+		int managementPort = this.getManagementPort(instance);
+
+		UriComponentsBuilder builder;
+		if (serviceUrl.getHost().equals(managementHost) && serviceUrl.getScheme().equals(managementScheme)
+				&& serviceUrl.getPort() == managementPort) {
+			builder = UriComponentsBuilder.fromUri(serviceUrl);
+		}
+		else {
+			builder = UriComponentsBuilder.newInstance().scheme(managementScheme).host(managementHost);
+			if (managementPort != -1) {
+				builder.port(managementPort);
+			}
+		}
+
+		return builder.path("/").path(getManagementPath(instance)).build().toUri();
 	}
 
 	private String getManagementScheme(ServiceInstance instance) {
@@ -104,12 +119,12 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 		return getServiceUrl(instance).getHost();
 	}
 
-	protected String getManagementPort(ServiceInstance instance) {
+	protected int getManagementPort(ServiceInstance instance) {
 		String managementPort = instance.getMetadata().get(KEY_MANAGEMENT_PORT);
 		if (!isEmpty(managementPort)) {
-			return managementPort;
+			return Integer.parseInt(managementPort);
 		}
-		return String.valueOf(getServiceUrl(instance).getPort());
+		return getServiceUrl(instance).getPort();
 	}
 
 	protected String getManagementPath(ServiceInstance instance) {
@@ -121,7 +136,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 	}
 
 	protected URI getServiceUrl(ServiceInstance instance) {
-		return UriComponentsBuilder.fromUri(instance.getUri()).path("/").build().toUri();
+		return instance.getUri();
 	}
 
 	protected Map<String, String> getMetadata(ServiceInstance instance) {
