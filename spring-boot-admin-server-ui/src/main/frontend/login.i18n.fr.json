@@ -1,0 +1,12 @@
+{
+  "login": {
+    "button_login": "Se Connecter",
+    "invalid_username_or_password": "Nom d'utilisateur ou mot de passe incorrect",
+    "logout_successful": "Déconnexion réussie",
+    "remember_me": "Se souvenir de moi",
+    "placeholder": {
+      "username": "Nom d'utilisateur",
+      "password": "Mot de passe"
+    }
+  }
+}
