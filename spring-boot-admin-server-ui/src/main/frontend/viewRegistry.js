@@ -62,7 +62,7 @@ export default class ViewRegistry {
     if (!view.group) {
       view.group = VIEW_GROUP.NONE;
     }
-
+    this._removeExistingView(view);
     this._views.push(view);
   }
 
