@@ -1,0 +1,50 @@
+---
+logging:
+  file: "target/boot-admin-sample-redis.log"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+spring:
+  application:
+    name: spring-boot-admin-sample-redis
+  boot:
+    admin:
+      client:
+        url: http://localhost:${server.port:8080}
+      redis:
+        enabled: true
+  profiles:
+    active:
+      - insecure
+#  redis:
+#    host:
+
+---
+spring:
+  profiles: insecure
+
+---
+spring:
+  profiles: secure
+  security:
+    user:
+      name: "user"
+      password: "password"
+  boot:
+    admin:
+      client:
+        username: "user"       #These two are needed so that the client
+        password: "password"   #can register at the protected server api
+        instance:
+          metadata:
+            user.name: "user"         #These two are needed so that the server
+            user.password: "password" #can access the protected client endpoints
+
+
