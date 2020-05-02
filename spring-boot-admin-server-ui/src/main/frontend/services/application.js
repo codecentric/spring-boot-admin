@@ -20,12 +20,22 @@ import {concat, from, ignoreElements, Observable} from '@/utils/rxjs';
 import uri from '@/utils/uri';
 import sortBy from 'lodash/sortBy';
 import Instance from './instance';
+import {anyValueMatches} from '../utils/collections';
 
 const actuatorMimeTypes = [
   'application/vnd.spring-boot.actuator.v2+json',
   'application/vnd.spring-boot.actuator.v1+json',
   'application/json'
 ];
+
+export  const instanceMatchesFilter = (term, instance) => {
+  const predicate = value => String(value).toLowerCase().includes(term);
+  return anyValueMatches(instance.registration, predicate) ||
+    anyValueMatches(instance.buildVersion, predicate) ||
+    anyValueMatches(instance.id, predicate) ||
+    anyValueMatches(instance.tags, predicate);
+};
+
 
 export const hasMatchingContentType = (contentType, compatibleContentTypes) =>
   Boolean(contentType) && compatibleContentTypes.includes(contentType.replace(/;.*$/, ''));

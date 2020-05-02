@@ -81,7 +81,6 @@
   import Popper from '@/directives/popper';
   import subscribing from '@/mixins/subscribing';
   import NotificationFilter from '@/services/notification-filter';
-  import {anyValueMatches} from '@/utils/collections';
   import {concatMap, merge, Subject, timer} from '@/utils/rxjs';
   import groupBy from 'lodash/groupBy';
   import sortBy from 'lodash/sortBy';
@@ -91,14 +90,7 @@
   import applicationsStats from './applications-stats';
   import handle from './handle';
   import NotificationFilterSettings from './notification-filter-settings';
-
-  const instanceMatchesFilter = (term, instance) => {
-    const predicate = value => String(value).toLowerCase().includes(term);
-    return anyValueMatches(instance.registration, predicate) ||
-      anyValueMatches(instance.buildVersion, predicate) ||
-      anyValueMatches(instance.id, predicate) ||
-      anyValueMatches(instance.tags, predicate);
-  };
+  import {instanceMatchesFilter} from '@/services/application';
 
   export default {
     props: {

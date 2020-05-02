@@ -19,8 +19,39 @@
     <p v-if="!applicationsInitialized" class="is-muted is-loading">
       Loading applications...
     </p>
+
+    <div class="field is-grouped-right">
+      <sba-icon-button icon="filter" icon-class="filter-icon-color" @click="toggleFilter" />
+    </div>
+
+    <div class="modal" :class="displayFilter ? 'is-active' : ''">
+      <div class="modal-background" />
+      <div class="modal-card">
+        <div class="modal-background" />
+        <div class="modal-content">
+          <div class="field">
+            <p class="control is-expanded has-icons-left">
+              <input
+                id="filter-wallboard"
+                class="input"
+                type="search"
+                :value="filter"
+                @input="handleFilterInput"
+                @keyup.enter="toggleFilter"
+              >
+              <span class="icon is-small is-left">
+                <font-awesome-icon icon="filter" />
+              </span>
+            </p>
+          </div>
+          <button class="modal-close is-large" aria-label="close" @click="toggleFilter" />
+        </div>
+      </div>
+    </div>
+
+
     <hex-mesh v-if="applicationsInitialized"
-              :items="applications"
+              :items="filteredApplications"
               :class-for-item="classForApplication"
               @click="select"
     >
@@ -30,7 +61,9 @@
         </div>
         <div class="application__body">
           <h1 class="application__name" v-text="application.name" />
-          <p class="application__instances is-muted" v-text="$tc('wallboard.instances_count', application.instances.length)" />
+          <p class="application__instances is-muted"
+             v-text="$tc('wallboard.instances_count', application.instances.length)"
+          />
         </div>
         <h2 class="application__footer application__version" v-text="application.buildVersion" />
       </div>
@@ -40,9 +73,36 @@
 
 <script>
   import hexMesh from './hex-mesh';
+  import SbaIconButton from '../../components/sba-icon-button';
+  import {instanceMatchesFilter} from '@/services/application';
 
   export default {
-    components: {hexMesh},
+    data: () => ({
+      filter: null,
+      displayFilter: false
+    }),
+    components: {SbaIconButton, hexMesh},
+    computed: {
+      filteredApplications() {
+        if (!this.applications) {
+          return [];
+        }
+        if (!this.filter) {
+          return this.applications;
+        }
+        return this.applications
+          .map(a => a.filterInstances(i => instanceMatchesFilter(this.filter.toLowerCase(), i)))
+          .filter(a => a.instances.length > 0);
+      }
+    },
+    watch: {
+      '$route.query': {
+        immediate: true,
+        handler() {
+          this.filter = this.$route.query.q;
+        }
+      },
+    },
     props: {
       applications: {
         type: Array,
@@ -85,6 +145,15 @@
         } else {
           this.$router.push({name: 'applications', params: {selected: application.name}});
         }
+      },
+      handleFilterInput(event) {
+        this.$router.replace({
+          name: 'wallboard',
+          query: event.target.value ? {q: event.target.value} : null
+        });
+      },
+      toggleFilter() {
+        this.displayFilter = !this.displayFilter;
       }
     },
     install({viewRegistry}) {
@@ -102,10 +171,16 @@
 <style lang="scss">
   @import "~@/assets/css/utilities";
 
+
+
   .wallboard {
     background-color: $grey-dark;
     height: calc(100vh - #{$navbar-height-px});
     width: 100%;
+
+    .filter-icon-color {
+      color: $black;
+    }
 
     & .application {
       color: $white-ter;
