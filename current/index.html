@@ -530,7 +530,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.2.3-SNAPSHOT,</span>
-<span id="revdate">01.05.2020</span>
+<span id="revdate">02.05.2020</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -2840,8 +2840,9 @@ There are some helpful methods on the application and instances object available
       <span class="key">path</span>: <span class="string"><span class="delimiter">'</span><span class="content">custom</span><span class="delimiter">'</span></span>,
       <span class="key">component</span>: customEndpoint,
       <span class="key">label</span>: <span class="string"><span class="delimiter">'</span><span class="content">Custom</span><span class="delimiter">'</span></span>,
+      <span class="key">group</span>: <span class="string"><span class="delimiter">'</span><span class="content">Group</span><span class="delimiter">'</span></span>, <i class="conum" data-value="2"></i><b>(2)</b>
       <span class="key">order</span>: <span class="integer">1000</span>,
-      <span class="key">isEnabled</span>: ({instance}) =&gt; instance.hasEndpoint(<span class="string"><span class="delimiter">'</span><span class="content">custom</span><span class="delimiter">'</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+      <span class="key">isEnabled</span>: ({instance}) =&gt; instance.hasEndpoint(<span class="string"><span class="delimiter">'</span><span class="content">custom</span><span class="delimiter">'</span></span>) <i class="conum" data-value="3"></i><b>(3)</b>
     });
   }
 });</code></pre>
@@ -2855,7 +2856,23 @@ There are some helpful methods on the application and instances object available
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>You can group views by assigning them to a group.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
 <td>If you add a <code>isEnabled</code> callback you can figure out dynamically if the view should be show for the particular instance.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You can override default views by putting the same group and name as the one you want to override.
+</td>
 </tr>
 </table>
 </div>
