@@ -19,8 +19,8 @@ package de.codecentric.boot.admin.client.registration;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.EndpointId;
@@ -55,7 +55,7 @@ public class DefaultApplicationFactoryTest {
 	private DefaultApplicationFactory factory = new DefaultApplicationFactory(instanceProperties, management, server,
 			pathMappedEndpoints, webEndpoint, () -> singletonMap("contributor", "test"));
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		instanceProperties.setName("test");
 	}

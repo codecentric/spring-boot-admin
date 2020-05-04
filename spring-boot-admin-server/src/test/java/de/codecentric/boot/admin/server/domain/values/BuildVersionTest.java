@@ -16,7 +16,7 @@
 
 package de.codecentric.boot.admin.server.domain.values;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;

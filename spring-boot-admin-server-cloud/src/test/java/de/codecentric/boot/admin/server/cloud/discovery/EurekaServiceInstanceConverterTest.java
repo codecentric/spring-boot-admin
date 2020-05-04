@@ -19,7 +19,7 @@ package de.codecentric.boot.admin.server.cloud.discovery;
 import java.net.URI;
 
 import com.netflix.appinfo.InstanceInfo;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.cloud.netflix.eureka.EurekaServiceInstance;
 
 import de.codecentric.boot.admin.server.domain.values.Registration;

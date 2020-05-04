@@ -21,8 +21,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -58,7 +58,7 @@ public class InstanceDiscoveryListenerTest {
 
 	private InstanceRegistry registry;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.discovery = mock(DiscoveryClient.class);
 		InstanceRepository repository = new EventsourcingInstanceRepository(new InMemoryEventStore());

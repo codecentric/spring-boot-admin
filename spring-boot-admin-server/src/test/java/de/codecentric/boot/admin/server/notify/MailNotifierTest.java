@@ -30,8 +30,8 @@ import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.util.StreamUtils;
@@ -68,7 +68,7 @@ public class MailNotifierTest {
 
 	private InstanceRepository repository;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		repository = mock(InstanceRepository.class);
 		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));

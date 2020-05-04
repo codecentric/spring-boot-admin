@@ -53,9 +53,8 @@ public final class InstanceExchangeFilterFunctions {
 	public static final String ATTRIBUTE_ENDPOINT = "endpointId";
 
 	@SuppressWarnings("deprecation") // We need to support Spring Boot 1.x apps...
-	private static final List<MediaType> DEFAULT_ACCEPT_MEDIATYPES = asList(
-		ACTUATOR_V2_MEDIATYPE, ACTUATOR_V1_MEDIATYPE,
-			MediaType.APPLICATION_JSON);
+	private static final List<MediaType> DEFAULT_ACCEPT_MEDIATYPES = asList(ACTUATOR_V2_MEDIATYPE,
+			ACTUATOR_V1_MEDIATYPE, MediaType.APPLICATION_JSON);
 
 	private static final List<MediaType> DEFAULT_LOGFILE_ACCEPT_MEDIATYPES = singletonList(MediaType.TEXT_PLAIN);
 

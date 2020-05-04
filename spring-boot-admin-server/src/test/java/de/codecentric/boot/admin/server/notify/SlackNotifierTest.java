@@ -21,8 +21,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -65,7 +65,7 @@ public class SlackNotifierTest {
 
 	private InstanceRepository repository;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		repository = mock(InstanceRepository.class);
 		when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE));

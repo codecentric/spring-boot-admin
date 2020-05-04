@@ -25,9 +25,9 @@ import com.hazelcast.config.MapConfig;
 import com.hazelcast.config.MergePolicyConfig;
 import com.hazelcast.config.TcpIpConfig;
 import com.hazelcast.map.merge.PutIfAbsentMapMergePolicy;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -62,7 +62,7 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
 
 	private WebTestClient webClient2;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		System.setProperty("hazelcast.wait.seconds.before.join", "0");
 		this.instance1 = new SpringApplicationBuilder().sources(TestAdminApplication.class)
@@ -95,7 +95,7 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
 				.verifyComplete();
 	}
 
-	@After
+	@AfterEach
 	public void shutdown() {
 		this.instance1.close();
 		this.instance2.close();

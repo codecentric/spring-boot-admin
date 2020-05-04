@@ -16,7 +16,7 @@
 
 package de.codecentric.boot.admin.server.config;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;

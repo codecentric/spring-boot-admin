@@ -18,12 +18,13 @@ package de.codecentric.boot.admin.server.services.endpoints;
 
 import java.time.Duration;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.http.Fault;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -55,13 +56,22 @@ import static java.util.Collections.singletonMap;
 
 public class QueryIndexEndpointStrategyTest {
 
-	@Rule
-	public WireMockRule wireMock = new WireMockRule(wireMockConfig().dynamicPort().dynamicHttpsPort());
+	public WireMockServer wireMock = new WireMockServer(wireMockConfig().dynamicPort().dynamicHttpsPort());
 
 	private InstanceWebClient instanceWebClient = InstanceWebClient.builder()
 			.webClient(WebClient.builder().clientConnector(httpConnector())).filter(rewriteEndpointUrl())
 			.filter(retry(0, singletonMap(Endpoint.ACTUATOR_INDEX, 1)))
 			.filter(timeout(Duration.ofSeconds(1), emptyMap())).build();
+
+	@BeforeEach
+	void setUp() {
+		wireMock.start();
+	}
+
+	@AfterEach
+	void tearDown() {
+		wireMock.stop();
+	}
 
 	@Test
 	public void should_return_endpoints() {

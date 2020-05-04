@@ -24,9 +24,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -61,7 +61,7 @@ public class AdminApplicationDiscoveryTest {
 
 	private int port;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		this.instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
 				.web(WebApplicationType.REACTIVE).run("--server.port=0", "--management.endpoints.web.base-path=/mgmt",
@@ -170,7 +170,7 @@ public class AdminApplicationDiscoveryTest {
 				}).build()).build();
 	}
 
-	@After
+	@AfterEach
 	public void shutdown() {
 		this.instance.close();
 	}

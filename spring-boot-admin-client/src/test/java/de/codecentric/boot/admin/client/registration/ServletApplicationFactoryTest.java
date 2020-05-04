@@ -20,8 +20,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.EndpointId;
@@ -58,7 +58,7 @@ public class ServletApplicationFactoryTest {
 	private ServletApplicationFactory factory = new ServletApplicationFactory(instance, management, server,
 			servletContext, pathMappedEndpoints, webEndpoint, Collections::emptyMap, dispatcherServletPath);
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		instance.setName("test");
 		when(dispatcherServletPath.getPrefix()).thenReturn("");

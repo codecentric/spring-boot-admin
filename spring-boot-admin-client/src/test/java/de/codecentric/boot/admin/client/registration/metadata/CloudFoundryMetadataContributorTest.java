@@ -16,7 +16,7 @@
 
 package de.codecentric.boot.admin.client.registration.metadata;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.codecentric.boot.admin.client.config.CloudFoundryApplicationProperties;
 

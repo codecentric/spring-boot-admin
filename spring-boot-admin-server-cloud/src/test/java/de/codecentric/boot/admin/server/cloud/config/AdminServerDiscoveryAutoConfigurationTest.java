@@ -17,7 +17,7 @@
 package de.codecentric.boot.admin.server.cloud.config;
 
 import com.netflix.discovery.EurekaClient;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorAutoConfiguration;

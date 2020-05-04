@@ -24,9 +24,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -58,7 +58,7 @@ public class InstancesControllerIntegrationTest {
 	private ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
 	};
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		instance = new SpringApplicationBuilder().sources(AdminReactiveApplicationTest.TestAdminApplication.class)
 				.web(WebApplicationType.REACTIVE).run("--server.port=0", "--eureka.client.enabled=false");
@@ -72,7 +72,7 @@ public class InstancesControllerIntegrationTest {
 				+ "/application/health\" }";
 	}
 
-	@After
+	@AfterEach
 	public void shutdown() {
 		instance.close();
 	}

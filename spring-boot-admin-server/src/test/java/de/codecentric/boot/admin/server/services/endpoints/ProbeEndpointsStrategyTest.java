@@ -18,13 +18,14 @@ package de.codecentric.boot.admin.server.services.endpoints;
 
 import java.time.Duration;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.Options;
 import com.github.tomakehurst.wiremock.http.Fault;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 import wiremock.org.eclipse.jetty.http.HttpStatus;
 
@@ -48,20 +49,29 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ProbeEndpointsStrategyTest {
 
-	@Rule
-	public WireMockRule wireMock = new WireMockRule(Options.DYNAMIC_PORT);
+	public WireMockServer wireMock = new WireMockServer(Options.DYNAMIC_PORT);
 
 	private InstanceWebClient instanceWebClient = InstanceWebClient.builder().filter(retry(1, emptyMap()))
 			.filter(timeout(Duration.ofSeconds(1), emptyMap())).build();
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp() {
 		StepVerifier.setDefaultTimeout(Duration.ofSeconds(5));
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void tearDown() {
 		StepVerifier.resetDefaultTimeout();
+	}
+
+	@BeforeEach
+	void setup() {
+		wireMock.start();
+	}
+
+	@AfterEach
+	void teardsown() {
+		wireMock.stop();
 	}
 
 	@Test

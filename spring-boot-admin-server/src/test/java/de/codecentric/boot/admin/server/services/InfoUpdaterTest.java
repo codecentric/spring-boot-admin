@@ -18,13 +18,13 @@ package de.codecentric.boot.admin.server.services;
 
 import java.time.Duration;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.Options;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
 import de.codecentric.boot.admin.server.domain.entities.EventsourcingInstanceRepository;
@@ -54,8 +54,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class InfoUpdaterTest {
 
-	@Rule
-	public WireMockRule wireMock = new WireMockRule(Options.DYNAMIC_PORT);
+	public WireMockServer wireMock = new WireMockServer(Options.DYNAMIC_PORT);
 
 	private InfoUpdater updater;
 
@@ -63,7 +62,7 @@ public class InfoUpdaterTest {
 
 	private InstanceRepository repository;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.eventStore = new InMemoryEventStore();
 		this.repository = new EventsourcingInstanceRepository(this.eventStore);
@@ -71,14 +70,20 @@ public class InfoUpdaterTest {
 				InstanceWebClient.builder().filter(rewriteEndpointUrl())
 						.filter(retry(0, singletonMap(Endpoint.INFO, 1)))
 						.filter(timeout(Duration.ofSeconds(2), emptyMap())).build());
+		this.wireMock.start();
 	}
 
-	@BeforeClass
+	@AfterEach
+	public void teardown() {
+		this.wireMock.stop();
+	}
+
+	@BeforeAll
 	public static void setUp() {
 		StepVerifier.setDefaultTimeout(Duration.ofSeconds(5));
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void tearDown() {
 		StepVerifier.resetDefaultTimeout();
 	}

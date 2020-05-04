@@ -290,8 +290,8 @@ class InstanceExchangeFilterFunctionsTest {
 			ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test")).build();
 
 			Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (req) -> {
-				assertThat(req.headers().getAccept()).containsExactly(ACTUATOR_V2_MEDIATYPE,
-					ACTUATOR_V1_MEDIATYPE, MediaType.APPLICATION_JSON);
+				assertThat(req.headers().getAccept()).containsExactly(ACTUATOR_V2_MEDIATYPE, ACTUATOR_V1_MEDIATYPE,
+						MediaType.APPLICATION_JSON);
 				return Mono.just(ClientResponse.create(HttpStatus.OK).build());
 			});
 

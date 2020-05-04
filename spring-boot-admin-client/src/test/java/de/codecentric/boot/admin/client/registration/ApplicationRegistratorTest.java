@@ -16,7 +16,7 @@
 
 package de.codecentric.boot.admin.client.registration;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestClientException;
 
 import static org.assertj.core.api.Assertions.assertThat;

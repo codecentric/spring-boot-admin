@@ -19,8 +19,8 @@ package de.codecentric.boot.admin.server.notify;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -53,7 +53,7 @@ public class OpsGenieNotifierTest {
 	private static final Instance INSTANCE = Instance.create(InstanceId.of("-id-"))
 			.register(Registration.create("App", "http://health").build());
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		repository = mock(InstanceRepository.class);
 		when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE));

@@ -20,12 +20,12 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.CountDownLatch;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -41,21 +41,25 @@ import static com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
 public abstract class AbstractClientApplicationTest {
 
-	@Rule
-	public WireMockRule wireMock = new WireMockRule(options().dynamicPort().notifier(new ConsoleNotifier(true)));
+	public WireMockServer wireMock = new WireMockServer(options().dynamicPort().notifier(new ConsoleNotifier(true)));
 
 	private static final CountDownLatch cdl = new CountDownLatch(1);
 
 	public void setUp() throws Exception {
+		wireMock.start();
 		ResponseDefinitionBuilder response = created().withHeader("Content-Type", "application/json")
 				.withHeader("Connection", "close").withHeader("Location", wireMock.url("/instances/abcdef"))
 				.withBody("{ \"id\" : \"abcdef\" }");
 		wireMock.stubFor(post(urlEqualTo("/instances")).willReturn(response));
+	}
+
+	@AfterEach
+	void tearDown() {
+		wireMock.stop();
 	}
 
 	@Test
@@ -73,7 +77,7 @@ public abstract class AbstractClientApplicationTest {
 				.withRequestBody(matchingJsonPath("$.serviceUrl", equalTo(serviceHost + "/")))
 				.withRequestBody(matchingJsonPath("$.metadata.startup", matching(".+")));
 
-		verify(request);
+		wireMock.verify(request);
 	}
 
 	protected abstract int getServerPort();

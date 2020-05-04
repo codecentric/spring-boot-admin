@@ -16,12 +16,12 @@
 
 package de.codecentric.boot.admin.client.registration;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.web.client.RestTemplate;
 
 public class BlockingRegistrationClientTest extends AbstractRegistrationClientTest {
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		super.setUp(new BlockingRegistrationClient(new RestTemplate()));
 	}

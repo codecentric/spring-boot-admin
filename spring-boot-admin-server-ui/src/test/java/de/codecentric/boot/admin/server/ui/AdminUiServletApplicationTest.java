@@ -16,8 +16,8 @@
 
 package de.codecentric.boot.admin.server.ui;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -33,7 +33,7 @@ public class AdminUiServletApplicationTest extends AbstractAdminUiApplicationTes
 
 	private ConfigurableApplicationContext instance;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		this.instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
 				.web(WebApplicationType.SERVLET).run("--server.port=0",
@@ -43,7 +43,7 @@ public class AdminUiServletApplicationTest extends AbstractAdminUiApplicationTes
 		super.setUp(this.instance.getEnvironment().getProperty("local.server.port", Integer.class, 0));
 	}
 
-	@After
+	@AfterEach
 	public void shutdown() {
 		this.instance.close();
 	}

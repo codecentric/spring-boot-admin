@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -47,7 +47,7 @@ public class ApplicationRegistryTest {
 
 	private ApplicationRegistry applicationRegistry;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		this.instanceRegistry = mock(InstanceRegistry.class);
 		this.instanceEventPublisher = mock(InstanceEventPublisher.class);

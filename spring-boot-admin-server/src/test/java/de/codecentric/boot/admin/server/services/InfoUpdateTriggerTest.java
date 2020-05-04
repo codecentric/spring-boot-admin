@@ -18,8 +18,8 @@ package de.codecentric.boot.admin.server.services;
 
 import java.time.Duration;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.publisher.TestPublisher;
 
@@ -56,7 +56,7 @@ public class InfoUpdateTriggerTest {
 
 	private InfoUpdateTrigger trigger;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		when(this.updater.updateInfo(any(InstanceId.class))).thenReturn(Mono.empty());
 

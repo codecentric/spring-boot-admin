@@ -16,13 +16,13 @@
 
 package de.codecentric.boot.admin.server.domain.entities;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
 
 public class EventsourcingInstanceRepositoryTest extends AbstractInstanceRepositoryTest {
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		super.setUp(new EventsourcingInstanceRepository(new InMemoryEventStore()));
 	}

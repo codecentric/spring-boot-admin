@@ -16,7 +16,7 @@
 
 package de.codecentric.boot.admin.server.ui.web;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 

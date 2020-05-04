@@ -18,9 +18,9 @@ package de.codecentric.boot.admin.server.web.servlet;
 
 import javax.annotation.Nullable;
 
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -33,7 +33,7 @@ public class InstancesProxyControllerIntegrationTest extends AbstractInstancesPr
 	@Nullable
 	private static ConfigurableApplicationContext context;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUpContext() {
 		context = new SpringApplicationBuilder().sources(AdminServletApplicationTest.TestAdminApplication.class)
 				.web(WebApplicationType.SERVLET)
@@ -41,12 +41,12 @@ public class InstancesProxyControllerIntegrationTest extends AbstractInstancesPr
 
 	}
 
-	@Before
+	@BeforeEach
 	public void setUpClient() {
 		super.setUpClient(context);
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void tearDownContext() {
 		if (context != null) {
 			context.close();
