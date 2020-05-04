@@ -33,11 +33,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class LegacyEndpointConvertersTest {
 
-	private DataBufferFactory bufferFactory = new DefaultDataBufferFactory();
+	private final DataBufferFactory bufferFactory = new DefaultDataBufferFactory();
 
-	private Jackson2JsonDecoder decoder = new Jackson2JsonDecoder();
+	private final Jackson2JsonDecoder decoder = new Jackson2JsonDecoder();
 
-	private ResolvableType type = ResolvableType.forType(new ParameterizedTypeReference<Map<String, Object>>() {
+	private final ResolvableType type = ResolvableType.forType(new ParameterizedTypeReference<Map<String, Object>>() {
 	});
 
 	@Test
@@ -130,7 +130,6 @@ public class LegacyEndpointConvertersTest {
 				.verifyComplete();
 	}
 
-	@SuppressWarnings("unchecked")
 	private Flux<Object> unmarshal(Flux<DataBuffer> buffer) {
 		return decoder.decode(buffer, type, null, null);
 	}

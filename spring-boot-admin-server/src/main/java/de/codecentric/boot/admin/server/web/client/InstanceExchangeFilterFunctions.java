@@ -41,6 +41,7 @@ import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
 
 import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V1_MEDIATYPE;
+import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V2_MEDIATYPE;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -53,7 +54,7 @@ public final class InstanceExchangeFilterFunctions {
 
 	@SuppressWarnings("deprecation") // We need to support Spring Boot 1.x apps...
 	private static final List<MediaType> DEFAULT_ACCEPT_MEDIATYPES = asList(
-			MediaType.parseMediaType(ActuatorMediaType.V2_JSON), MediaType.parseMediaType(ActuatorMediaType.V1_JSON),
+		ACTUATOR_V2_MEDIATYPE, ACTUATOR_V1_MEDIATYPE,
 			MediaType.APPLICATION_JSON);
 
 	private static final List<MediaType> DEFAULT_LOGFILE_ACCEPT_MEDIATYPES = singletonList(MediaType.TEXT_PLAIN);
