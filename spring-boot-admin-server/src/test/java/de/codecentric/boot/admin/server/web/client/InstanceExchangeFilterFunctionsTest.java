@@ -46,6 +46,8 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
 
+import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V1_MEDIATYPE;
+import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V2_MEDIATYPE;
 import static de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunctions.ATTRIBUTE_ENDPOINT;
 import static de.codecentric.boot.admin.server.web.client.InstanceWebClient.ATTRIBUTE_INSTANCE;
 import static java.util.Collections.emptyMap;
@@ -81,7 +83,7 @@ class InstanceExchangeFilterFunctionsTest {
 					.attribute(ATTRIBUTE_ENDPOINT, "test").build();
 			@SuppressWarnings("deprecation")
 			ClientResponse legacyResponse = ClientResponse.create(HttpStatus.OK)
-					.header(CONTENT_TYPE, ActuatorMediaType.V1_JSON)
+					.header(CONTENT_TYPE, ACTUATOR_V1_MEDIATYPE.toString())
 					.header(CONTENT_LENGTH, Integer.toString(this.original.readableByteCount()))
 					.body(Flux.just(this.original)).build();
 
@@ -284,13 +286,12 @@ class InstanceExchangeFilterFunctionsTest {
 		private final InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.setDefaultAcceptHeader();
 
 		@Test
-		@SuppressWarnings("deprecation")
 		void should_add_default_accept_headers() {
 			ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test")).build();
 
 			Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (req) -> {
-				assertThat(req.headers().getAccept()).containsExactly(MediaType.valueOf(ActuatorMediaType.V2_JSON),
-						MediaType.valueOf(ActuatorMediaType.V1_JSON), MediaType.APPLICATION_JSON);
+				assertThat(req.headers().getAccept()).containsExactly(ACTUATOR_V2_MEDIATYPE,
+					ACTUATOR_V1_MEDIATYPE, MediaType.APPLICATION_JSON);
 				return Mono.just(ClientResponse.create(HttpStatus.OK).build());
 			});
 

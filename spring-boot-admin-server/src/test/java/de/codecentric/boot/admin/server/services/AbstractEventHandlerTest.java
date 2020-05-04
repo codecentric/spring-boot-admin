@@ -61,7 +61,8 @@ public class AbstractEventHandlerTest {
 		eventHandler.start();
 
 		StepVerifier.create(eventHandler.getFlux()).expectSubscription()
-				.then(() -> testPublisher.next(firstEvent, errorEvent, secondEvent)).expectNext(firstEvent, secondEvent)
+				.then(() -> testPublisher.next(firstEvent, errorEvent, secondEvent))
+				.expectNext(firstEvent, secondEvent)
 				.thenCancel().verify(Duration.ofSeconds(1));
 
 	}
@@ -78,7 +79,7 @@ public class AbstractEventHandlerTest {
 				.expectNext(firstEvent, secondEvent).thenCancel().verify(Duration.ofSeconds(1));
 	}
 
-	public final class TestEventHandler extends AbstractEventHandler<InstanceRegisteredEvent> {
+	public static final class TestEventHandler extends AbstractEventHandler<InstanceRegisteredEvent> {
 
 		private final FluxSink<InstanceEvent> sink;
 
