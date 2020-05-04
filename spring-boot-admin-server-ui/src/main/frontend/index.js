@@ -17,7 +17,6 @@
 import '@/assets/css/base.scss';
 import axios from '@/utils/axios';
 import moment from 'moment';
-import 'moment/locale/de';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import components from './components';

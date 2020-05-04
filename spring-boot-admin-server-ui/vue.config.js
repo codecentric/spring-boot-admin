@@ -89,8 +89,7 @@ module.exports = {
         analyzerMode: 'static',
         openAnalyzer: false,
         reportFilename: '../report.html'
-      }),
-      new IgnorePlugin(/^\.\/locale$/, /moment$/),
+      })
     ]
   }
 };

@@ -14,7 +14,37 @@
  * limitations under the License.
  */
 
-import moment from 'moment-shortformat';
+import moment from 'moment';
+
+const minute = 60 * 1000;
+const hour = 60 * minute;
+const day = 24 * hour;
+const week = 7 * day;
+
+function shortFormat(aMoment, withoutPreOrSuffix, now = moment()) {
+  let diff = Math.abs(aMoment.diff(now));
+  let unit;
+  if (diff < minute) {
+    unit = 'seconds';
+  } else if (diff < hour) {
+    unit = 'minutes';
+  } else if (diff < day) {
+    unit = 'hours';
+  } else if (diff < week) {
+    unit = 'days';
+  } else if (aMoment.year() !== now.year()) {
+    return aMoment.format('MMM D, YYYY');
+  } else {
+    return aMoment.format('MMM D');
+  }
+  let num = Math.max(1, moment.duration(diff)[unit]());
+
+  let result = num + unit.charAt(0);
+  if (!withoutPreOrSuffix) {
+    result = moment.localeData().pastFuture(aMoment.diff(now), result);
+  }
+  return result;
+}
 
 export default {
   props: {
@@ -29,7 +59,7 @@ export default {
   }),
   computed: {
     timeAgo() {
-      return moment(this.date).short(true, this.now);
+      return shortFormat(moment(this.date), true, this.now);
     }
   },
   created() {

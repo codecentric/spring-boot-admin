@@ -51,7 +51,7 @@
   import Instance from '@/services/instance';
   import {concatMap, timer} from '@/utils/rxjs';
   import remove from 'lodash/remove';
-  import moment from 'moment-shortformat';
+  import moment from 'moment';
   import threadsList from './threads-list';
   import {VIEW_GROUP} from '../../index';
 
