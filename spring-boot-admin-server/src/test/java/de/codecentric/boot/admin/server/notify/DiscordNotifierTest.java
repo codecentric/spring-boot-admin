@@ -20,8 +20,8 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -61,7 +61,7 @@ public class DiscordNotifierTest {
 
 	private InstanceRepository repository;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		repository = mock(InstanceRepository.class);
 		when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE));

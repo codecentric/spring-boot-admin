@@ -19,8 +19,8 @@ package de.codecentric.boot.admin.server.services;
 import java.time.Duration;
 import java.util.function.Function;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
@@ -92,7 +92,7 @@ public class IntervalCheckTest {
 		verify(this.checkFn, atLeast(2)).apply(InstanceId.of("Test"));
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		this.intervalCheck.stop();
 	}

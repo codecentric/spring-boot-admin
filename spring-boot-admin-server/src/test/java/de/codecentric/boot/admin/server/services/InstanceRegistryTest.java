@@ -18,8 +18,8 @@ package de.codecentric.boot.admin.server.services;
 
 import java.util.ArrayList;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
 import de.codecentric.boot.admin.server.domain.entities.EventsourcingInstanceRepository;
@@ -33,6 +33,7 @@ import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
 
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class InstanceRegistryTest {
 
@@ -42,16 +43,16 @@ public class InstanceRegistryTest {
 
 	private InstanceRegistry registry;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		repository = new EventsourcingInstanceRepository(new InMemoryEventStore());
 		idGenerator = new HashingInstanceUrlIdGenerator();
 		registry = new InstanceRegistry(repository, idGenerator);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void registerFailed_null() {
-		registry.register(null);
+		assertThatThrownBy(() -> registry.register(null)).isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test

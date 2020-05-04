@@ -21,8 +21,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -53,7 +53,7 @@ public class PagerdutyNotifierTest {
 	private static final Instance INSTANCE = Instance.create(InstanceId.of("-id-"))
 			.register(Registration.create(appName, "http://health").build());
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		repository = mock(InstanceRepository.class);
 		when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE));

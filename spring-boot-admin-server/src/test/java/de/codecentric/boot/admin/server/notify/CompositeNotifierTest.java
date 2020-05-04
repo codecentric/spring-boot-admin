@@ -18,7 +18,7 @@ package de.codecentric.boot.admin.server.notify;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -28,15 +28,16 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class CompositeNotifierTest {
 
 	private static final InstanceEvent APP_DOWN = new InstanceStatusChangedEvent(InstanceId.of("-"), 0L,
 			StatusInfo.ofDown());
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void should_throw_for_invariants() {
-		new CompositeNotifier(null);
+		assertThatThrownBy(() -> new CompositeNotifier(null)).isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test

@@ -16,8 +16,8 @@
 
 package de.codecentric.boot.admin.client.registration;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.EndpointId;
@@ -51,7 +51,7 @@ public class CloudFoundryApplicationFactoryTest {
 			this.management, this.server, this.pathMappedEndpoints, this.webEndpoint,
 			() -> singletonMap("contributor", "test"), this.cfApplicationProperties);
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.instanceProperties.setName("test");
 	}

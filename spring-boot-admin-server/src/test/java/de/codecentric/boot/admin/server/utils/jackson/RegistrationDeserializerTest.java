@@ -19,13 +19,14 @@ package de.codecentric.boot.admin.server.utils.jackson;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import de.codecentric.boot.admin.server.domain.values.Registration;
 
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class RegistrationDeserializerTest {
 
@@ -81,18 +82,21 @@ public class RegistrationDeserializerTest {
 		assertThat(value.getServiceUrl()).isNull();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void test_name_expected() throws Exception {
 		String json = new JSONObject().put("name", "").put("managementUrl", "http://test")
 				.put("healthUrl", "http://health").put("serviceUrl", "http://service").toString();
-		objectMapper.readValue(json, Registration.class);
+
+		assertThatThrownBy(() -> objectMapper.readValue(json, Registration.class))
+				.isInstanceOf(IllegalArgumentException.class);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void test_healthUrl_expected() throws Exception {
 		String json = new JSONObject().put("name", "test").put("managementUrl", "http://test").put("healthUrl", "")
 				.put("serviceUrl", "http://service").toString();
-		objectMapper.readValue(json, Registration.class);
+		assertThatThrownBy(() -> objectMapper.readValue(json, Registration.class))
+				.isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test

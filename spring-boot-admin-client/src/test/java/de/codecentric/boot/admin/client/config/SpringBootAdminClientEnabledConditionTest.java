@@ -16,8 +16,8 @@
 
 package de.codecentric.boot.admin.client.config;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -34,7 +34,7 @@ public class SpringBootAdminClientEnabledConditionTest {
 
 	private ConditionContext conditionContext;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		condition = new SpringBootAdminClientEnabledCondition();
 		annotatedTypeMetadata = mock(AnnotatedTypeMetadata.class);

@@ -19,7 +19,7 @@ package de.codecentric.boot.admin.server.cloud.discovery;
 import java.net.URI;
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.cloud.client.ServiceInstance;
 
 import de.codecentric.boot.admin.server.domain.values.Registration;

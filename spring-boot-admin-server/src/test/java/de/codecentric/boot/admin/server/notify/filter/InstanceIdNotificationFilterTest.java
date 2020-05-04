@@ -16,7 +16,7 @@
 
 package de.codecentric.boot.admin.server.notify.filter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;

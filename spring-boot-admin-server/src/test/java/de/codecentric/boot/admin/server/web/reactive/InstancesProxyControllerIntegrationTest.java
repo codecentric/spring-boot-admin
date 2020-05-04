@@ -18,8 +18,8 @@ package de.codecentric.boot.admin.server.web.reactive;
 
 import javax.annotation.Nullable;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -32,7 +32,7 @@ public class InstancesProxyControllerIntegrationTest extends AbstractInstancesPr
 	@Nullable
 	private static ConfigurableApplicationContext context;
 
-	@Before
+	@BeforeEach
 	public void setUpClient() {
 		context = new SpringApplicationBuilder().sources(AdminReactiveApplicationTest.TestAdminApplication.class)
 				.web(WebApplicationType.REACTIVE)
@@ -41,7 +41,7 @@ public class InstancesProxyControllerIntegrationTest extends AbstractInstancesPr
 		super.setUpClient(context);
 	}
 
-	@After
+	@AfterEach
 	public void tearDownContext() {
 		if (context != null) {
 			context.close();

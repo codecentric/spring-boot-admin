@@ -18,8 +18,8 @@ package de.codecentric.boot.admin.server.domain.entities;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import junit.framework.AssertionFailedError;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 

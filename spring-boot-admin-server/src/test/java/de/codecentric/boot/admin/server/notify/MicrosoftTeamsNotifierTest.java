@@ -18,8 +18,8 @@ package de.codecentric.boot.admin.server.notify;
 
 import java.net.URI;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
@@ -63,7 +63,7 @@ public class MicrosoftTeamsNotifierTest {
 
 	private InstanceRepository repository;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		instance = Instance.create(InstanceId.of(appId)).register(
 				Registration.create(appName, healthUrl).managementUrl(managementUrl).serviceUrl(serviceUrl).build());

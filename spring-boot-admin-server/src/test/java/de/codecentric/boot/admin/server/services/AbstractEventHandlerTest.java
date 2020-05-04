@@ -18,7 +18,7 @@ package de.codecentric.boot.admin.server.services;
 
 import java.time.Duration;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,8 +61,7 @@ public class AbstractEventHandlerTest {
 		eventHandler.start();
 
 		StepVerifier.create(eventHandler.getFlux()).expectSubscription()
-				.then(() -> testPublisher.next(firstEvent, errorEvent, secondEvent))
-				.expectNext(firstEvent, secondEvent)
+				.then(() -> testPublisher.next(firstEvent, errorEvent, secondEvent)).expectNext(firstEvent, secondEvent)
 				.thenCancel().verify(Duration.ofSeconds(1));
 
 	}

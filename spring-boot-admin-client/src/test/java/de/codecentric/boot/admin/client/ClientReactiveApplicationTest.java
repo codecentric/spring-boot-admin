@@ -16,8 +16,8 @@
 
 package de.codecentric.boot.admin.client;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -26,7 +26,7 @@ public class ClientReactiveApplicationTest extends AbstractClientApplicationTest
 
 	private ConfigurableApplicationContext instance;
 
-	@Before
+	@BeforeEach
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
@@ -38,7 +38,7 @@ public class ClientReactiveApplicationTest extends AbstractClientApplicationTest
 				"--spring.boot.admin.client.url=" + wireMock.url("/"));
 	}
 
-	@After
+	@AfterEach
 	public void shutdown() {
 		instance.close();
 	}

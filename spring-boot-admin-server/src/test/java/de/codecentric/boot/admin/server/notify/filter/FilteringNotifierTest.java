@@ -19,8 +19,9 @@ package de.codecentric.boot.admin.server.notify.filter;
 import java.time.Duration;
 import java.time.Instant;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -46,15 +47,16 @@ public class FilteringNotifierTest {
 
 	private InstanceRepository repository;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		repository = mock(InstanceRepository.class);
 		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void test_ctor_assert() {
-		new FilteringNotifier(null, repository);
+		Assertions.assertThatThrownBy(() -> new FilteringNotifier(null, repository))
+				.isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test

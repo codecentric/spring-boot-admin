@@ -21,7 +21,9 @@ import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.created;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
@@ -48,6 +50,16 @@ public abstract class AbstractRegistrationClientTest {
 
 	public void setUp(RegistrationClient registrationClient) {
 		this.registrationClient = registrationClient;
+	}
+
+	@BeforeEach
+	void setUpWiremock() {
+		wireMock.start();
+	}
+
+	@AfterEach
+	void tearDown() {
+		wireMock.stop();
 	}
 
 	@Test

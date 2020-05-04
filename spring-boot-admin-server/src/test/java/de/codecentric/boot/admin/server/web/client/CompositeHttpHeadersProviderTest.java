@@ -16,7 +16,7 @@
 
 package de.codecentric.boot.admin.server.web.client;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 
 import static java.util.Arrays.asList;

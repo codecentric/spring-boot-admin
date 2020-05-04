@@ -20,13 +20,14 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.http.Fault;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.ParameterizedTypeReference;
@@ -62,22 +63,31 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 	private static ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
 	};
 
-	@Rule
-	public WireMockRule wireMock = new WireMockRule(
+	public WireMockServer wireMock = new WireMockServer(
 			WireMockConfiguration.options().dynamicPort().extensions(new ConnectionCloseExtension()));
 
 	private WebTestClient client;
 
 	private String instanceId;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp() {
 		StepVerifier.setDefaultTimeout(Duration.ofSeconds(5));
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void tearDown() {
 		StepVerifier.resetDefaultTimeout();
+	}
+
+	@BeforeEach
+	void setup() {
+		wireMock.start();
+	}
+
+	@AfterEach
+	void teardown() {
+		wireMock.stop();
 	}
 
 	protected void setUpClient(ConfigurableApplicationContext context) {

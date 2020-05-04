@@ -16,9 +16,9 @@
 
 package de.codecentric.boot.admin.server.domain.entities;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -47,14 +47,14 @@ public class SnapshottingInstanceRepositoryTest extends AbstractInstanceReposito
 
 	private SnapshottingInstanceRepository repository;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		this.repository = new SnapshottingInstanceRepository(this.eventStore);
 		this.repository.start();
 		super.setUp(this.repository);
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		this.repository.stop();
 	}
