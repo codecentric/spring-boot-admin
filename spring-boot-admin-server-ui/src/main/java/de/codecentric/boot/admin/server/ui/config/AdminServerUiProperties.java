@@ -107,6 +107,12 @@ public class AdminServerUiProperties {
 	 */
 	private boolean rememberMeEnabled = true;
 
+	/**
+	 * Limit languages to this list. Intersection of all supported languages and this list
+	 * will be used.
+	 */
+	private List<String> availableLanguages = new ArrayList<>();
+
 	@lombok.Data
 	public static class Cache {
 

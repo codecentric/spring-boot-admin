@@ -83,6 +83,7 @@
   import {compareBy} from '@/utils/collections';
   import {AVAILABLE_LANGUAGES} from '@/i18n';
   import moment from 'moment';
+  import isEmpty from 'lodash/isEmpty';
 
   const readCookie = (name) => {
     const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
@@ -132,7 +133,9 @@
       this.userName = sbaConfig.user ? sbaConfig.user.name : null;
       this.csrfToken = readCookie('XSRF-TOKEN');
       this.csrfParameterName = sbaConfig.csrf.parameterName;
-      this.availableLanguages = AVAILABLE_LANGUAGES;
+      this.availableLanguages = (isEmpty(sbaConfig.uiSettings.availableLanguages)) ?
+        AVAILABLE_LANGUAGES :
+        sbaConfig.uiSettings.availableLanguages.filter(language => AVAILABLE_LANGUAGES.includes(language))
       this.currentLanguage = this.$i18n.locale;
     },
     mounted() {

@@ -140,3 +140,8 @@ It is possible to use a custom favicon, which is also used for desktop notificat
 2. Configure the icons to use using the following properties:
   - `spring.boot.admin.ui.favicon`: Used as default icon. (e.g `assets/img/custom-favicon.png`
   - `spring.boot.admin.ui.favicon-danger`: Used when one or more service is down. (e.g `assets/img/custom-favicon-danger.png`)
+
+=== Customizing Available Languages ===
+To filter languages to a subset of all supported languages:
+
+- **spring.boot.admin.ui.available-languages**: Used as a filter of existing languages. (e.g `en,de` out of existing `de,en,fr,ko,pt-BR,ru,zh`)
