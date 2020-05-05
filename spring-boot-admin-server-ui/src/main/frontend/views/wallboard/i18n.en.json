@@ -1,6 +1,7 @@
 {
   "wallboard": {
     "instances_count": "no instances | {count} instance | {count} instances",
+    "filter_count": "No applications filtered | {count} application filtered | {count} applications filtered",
     "label": "Wallboard"
   }
 }

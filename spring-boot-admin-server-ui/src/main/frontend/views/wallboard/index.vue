@@ -20,31 +20,30 @@
       Loading applications...
     </p>
 
-    <div class="field is-grouped-right">
-      <sba-icon-button icon="filter" icon-class="filter-icon-color" @click="toggleFilter" />
-    </div>
 
-    <div class="modal" :class="displayFilter ? 'is-active' : ''">
-      <div class="modal-background" />
-      <div class="modal-card">
-        <div class="modal-background" />
-        <div class="modal-content">
-          <div class="field">
-            <p class="control is-expanded has-icons-left">
-              <input
-                id="filter-wallboard"
-                class="input"
-                type="search"
-                :value="filter"
-                @input="handleFilterInput"
-                @keyup.enter="toggleFilter"
-              >
-              <span class="icon is-small is-left">
-                <font-awesome-icon icon="filter" />
-              </span>
-            </p>
-          </div>
-          <button class="modal-close is-large" aria-label="close" @click="toggleFilter" />
+    <div class="level has-text-black">
+      <div class="level-left">
+        <div class="level-item">
+          <sba-icon-button icon="filter" icon-class="fa-lg" @click="toggleFilter"/>
+        </div>
+        <div class="level-item">
+          <transition name="fade">
+            <input
+              id="filter-wallboard"
+              v-if="displayFilter"
+              class="input"
+              type="search"
+              :value="filter"
+              @input="handleFilterInput"
+              @keyup.enter="toggleFilter"
+            >
+          </transition>
+        </div>
+        <div class="level-item">
+          <transition name="fade">
+            <p v-if="filter"
+               v-text="$tc('wallboard.filter_count', applications.length - filteredApplications.length)"/>
+          </transition>
         </div>
       </div>
     </div>
@@ -57,15 +56,15 @@
     >
       <div class="hex__body application" slot="item" slot-scope="{item: application}" :key="application.name">
         <div class="application__header application__time-ago is-muted">
-          <sba-time-ago :date="application.statusTimestamp" />
+          <sba-time-ago :date="application.statusTimestamp"/>
         </div>
         <div class="application__body">
-          <h1 class="application__name" v-text="application.name" />
+          <h1 class="application__name" v-text="application.name"/>
           <p class="application__instances is-muted"
              v-text="$tc('wallboard.instances_count', application.instances.length)"
           />
         </div>
-        <h2 class="application__footer application__version" v-text="application.buildVersion" />
+        <h2 class="application__footer application__version" v-text="application.buildVersion"/>
       </div>
     </hex-mesh>
   </section>
@@ -172,15 +171,10 @@
   @import "~@/assets/css/utilities";
 
 
-
   .wallboard {
     background-color: $grey-dark;
     height: calc(100vh - #{$navbar-height-px});
     width: 100%;
-
-    .filter-icon-color {
-      color: $black;
-    }
 
     & .application {
       color: $white-ter;
@@ -219,4 +213,13 @@
       }
     }
   }
+
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .5s
+  }
+
+  .fade-enter, .fade-leave-to {
+    opacity: 0
+  }
+
 </style>
