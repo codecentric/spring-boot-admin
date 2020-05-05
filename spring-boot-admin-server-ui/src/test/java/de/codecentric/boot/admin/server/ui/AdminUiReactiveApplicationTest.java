@@ -37,7 +37,8 @@ public class AdminUiReactiveApplicationTest extends AbstractAdminUiApplicationTe
 	public void setUp() {
 		this.instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
 				.web(WebApplicationType.REACTIVE).run("--server.port=0",
-						"--spring.boot.admin.ui.extension-resource-locations=classpath:/META-INF/test-extensions/");
+						"--spring.boot.admin.ui.extension-resource-locations=classpath:/META-INF/test-extensions/",
+						"--spring.boot.admin.ui.available-languages=de");
 
 		super.setUp(this.instance.getEnvironment().getProperty("local.server.port", Integer.class, 0));
 	}

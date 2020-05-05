@@ -119,6 +119,20 @@ public abstract class AbstractAdminUiApplicationTest {
 		//@formatter:on
 	}
 
+	@Test
+	public void should_contain_only_one_language() {
+		//@formatter:off
+		this.webClient.get()
+					.uri("/sba-settings.js")
+					.accept(MediaType.ALL)
+					.exchange()
+					.expectStatus().isOk()
+					.expectHeader().contentTypeCompatibleWith("application/javascript")
+					.expectBody(String.class)
+					.value((body) -> assertThat(body).contains("\"availableLanguages\":[\"de\"]"));
+		//@formatter:on
+	}
+
 	protected WebTestClient createWebClient(int port) {
 		return WebTestClient.bindToServer().baseUrl("http://localhost:" + port).build();
 	}
