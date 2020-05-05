@@ -128,6 +128,8 @@ public class UiController {
 
 		private final boolean rememberMeEnabled;
 
+		private final List<String> availableLanguages;
+
 		private final List<String> routes;
 
 		private final List<ExternalView> externalViews;
