@@ -53,7 +53,8 @@ public class AdminServerInstanceWebClientConfigurationTest {
 			assertThat(context).getBeanNames(LegacyEndpointConverter.class).containsExactly(
 					"healthLegacyEndpointConverter", "infoLegacyEndpointConverter", "envLegacyEndpointConverter",
 					"httptraceLegacyEndpointConverter", "threaddumpLegacyEndpointConverter",
-					"liquibaseLegacyEndpointConverter", "flywayLegacyEndpointConverter");
+					"liquibaseLegacyEndpointConverter", "flywayLegacyEndpointConverter", "beansLegacyEndpointConverter",
+					"configpropsLegacyEndpointConverter", "mappingsLegacyEndpointConverter");
 		});
 	}
 

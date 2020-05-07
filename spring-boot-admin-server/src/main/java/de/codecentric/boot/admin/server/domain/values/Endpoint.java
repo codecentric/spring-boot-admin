@@ -41,6 +41,12 @@ public final class Endpoint implements Serializable {
 
 	public static final String ACTUATOR_INDEX = "actuator-index";
 
+	public static final String BEANS = "beans";
+
+	public static final String CONFIGPROPS = "configprops";
+
+	public static final String MAPPINGS = "mappings";
+
 	private final String id;
 
 	private final String url;
