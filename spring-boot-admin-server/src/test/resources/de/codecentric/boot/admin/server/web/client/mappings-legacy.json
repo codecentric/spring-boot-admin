@@ -1,0 +1,13 @@
+{
+  "/**/favicon.ico": {
+    "bean": "faviconHandlerMapping"
+  },
+  "{[/error]}": {
+    "bean": "requestMappingHandlerMapping",
+    "method": "public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)"
+  },
+  "{[/actuator/loggers/{name:.*}],methods=[POST],consumes=[application/vnd.spring-boot.actuator.v1+json || application/json],produces=[application/vnd.spring-boot.actuator.v1+json || application/json]}": {
+    "bean": "endpointHandlerMapping",
+    "method": "public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.LoggersMvcEndpoint.set(java.lang.String,java.util.Map<java.lang.String, java.lang.String>)"
+  }
+}

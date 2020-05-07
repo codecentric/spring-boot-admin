@@ -130,7 +130,51 @@ public class LegacyEndpointConvertersTest {
 				.verifyComplete();
 	}
 
-	@SuppressWarnings("unchecked")
+	@Test
+	public void should_convert_beans() {
+		LegacyEndpointConverter converter = LegacyEndpointConverters.beans();
+		assertThat(converter.canConvert("beans")).isTrue();
+		assertThat(converter.canConvert("foo")).isFalse();
+
+		Flux<DataBuffer> legacyInput = this.read("beans-legacy.json");
+
+		Flux<Object> converted = converter.convert(legacyInput).transform(this::unmarshal);
+		Flux<Object> expected = this.read("beans-expected.json").transform(this::unmarshal);
+
+		StepVerifier.create(Flux.zip(converted, expected)).assertNext((t) -> assertThat(t.getT1()).isEqualTo(t.getT2()))
+				.verifyComplete();
+	}
+
+	@Test
+	public void should_convert_configprops() {
+		LegacyEndpointConverter converter = LegacyEndpointConverters.configprops();
+		assertThat(converter.canConvert("configprops")).isTrue();
+		assertThat(converter.canConvert("foo")).isFalse();
+
+		Flux<DataBuffer> legacyInput = this.read("configprops-legacy.json");
+
+		Flux<Object> converted = converter.convert(legacyInput).transform(this::unmarshal);
+		Flux<Object> expected = this.read("configprops-expected.json").transform(this::unmarshal);
+
+		StepVerifier.create(Flux.zip(converted, expected)).assertNext((t) -> assertThat(t.getT1()).isEqualTo(t.getT2()))
+				.verifyComplete();
+	}
+
+	@Test
+	public void should_convert_mappings() {
+		LegacyEndpointConverter converter = LegacyEndpointConverters.mappings();
+		assertThat(converter.canConvert("mappings")).isTrue();
+		assertThat(converter.canConvert("foo")).isFalse();
+
+		Flux<DataBuffer> legacyInput = this.read("mappings-legacy.json");
+
+		Flux<Object> converted = converter.convert(legacyInput).transform(this::unmarshal);
+		Flux<Object> expected = this.read("mappings-expected.json").transform(this::unmarshal);
+
+		StepVerifier.create(Flux.zip(converted, expected)).assertNext((t) -> assertThat(t.getT1()).isEqualTo(t.getT2()))
+				.verifyComplete();
+	}
+
 	private Flux<Object> unmarshal(Flux<DataBuffer> buffer) {
 		return decoder.decode(buffer, type, null, null);
 	}

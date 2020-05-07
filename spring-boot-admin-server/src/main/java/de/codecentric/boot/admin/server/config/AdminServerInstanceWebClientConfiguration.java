@@ -186,6 +186,24 @@ public class AdminServerInstanceWebClientConfiguration {
 			return LegacyEndpointConverters.flyway();
 		}
 
+		@Bean
+		@ConditionalOnMissingBean(name = "beansLegacyEndpointConverter")
+		public LegacyEndpointConverter beansLegacyEndpointConverter() {
+			return LegacyEndpointConverters.beans();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(name = "configpropsLegacyEndpointConverter")
+		public LegacyEndpointConverter configpropsLegacyEndpointConverter() {
+			return LegacyEndpointConverters.configprops();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(name = "mappingsLegacyEndpointConverter")
+		public LegacyEndpointConverter mappingsLegacyEndpointConverter() {
+			return LegacyEndpointConverters.mappings();
+		}
+
 	}
 
 }

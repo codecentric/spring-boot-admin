@@ -1,0 +1,42 @@
+{
+  "contexts": {
+    "sample-project:8080": {
+      "beans": {
+        "propertySourcesPlaceholderConfigurer": {
+          "aliases": [],
+          "bean": "propertySourcesPlaceholderConfigurer",
+          "dependencies": [],
+          "resource": "class path resource [org/springframework/boot/autoconfigure/context/PropertyPlaceholderAutoConfiguration.class]",
+          "scope": "singleton",
+          "type": "org.springframework.context.support.PropertySourcesPlaceholderConfigurer"
+        }
+      },
+      "contextName": "sample-project:8080",
+      "parentId": null
+    },
+    "sample-project:8080.child": {
+      "beans": {
+        "configClientProperties": {
+          "aliases": [],
+          "bean": "configClientProperties",
+          "dependencies": [],
+          "resource": "org.springframework.cloud.config.client.ConfigServiceBootstrapConfiguration",
+          "scope": "singleton",
+          "type": "org.springframework.cloud.config.client.ConfigClientProperties"
+        },
+        "configServicePropertySource": {
+          "aliases": [],
+          "bean": "configServicePropertySource",
+          "dependencies": [
+            "configClientProperties"
+          ],
+          "resource": "org.springframework.cloud.config.client.ConfigServiceBootstrapConfiguration",
+          "scope": "singleton",
+          "type": "org.springframework.cloud.config.client.ConfigServicePropertySourceLocator"
+        }
+      },
+      "contextName": "sample-project:8080.child",
+      "parentId": "sample-project:8080"
+    }
+  }
+}

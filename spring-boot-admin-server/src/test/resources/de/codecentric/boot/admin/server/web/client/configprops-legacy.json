@@ -1,0 +1,25 @@
+{
+  "spring.jpa-org.springframework.boot.autoconfigure.orm.jpa.JpaProperties": {
+    "prefix": "spring.jpa",
+    "properties": {
+      "error": "Cannot serialize 'spring.jpa'"
+    }
+  },
+  "endpoints-org.springframework.boot.actuate.endpoint.EndpointProperties": {
+    "prefix": "endpoints",
+    "properties": {
+      "enabled": true,
+      "sensitive": null
+    }
+  },
+  "parent": {
+    "spring.cloud.config-org.springframework.cloud.bootstrap.config.PropertySourceBootstrapProperties": {
+      "prefix": "spring.cloud.config",
+      "properties": {
+        "overrideSystemProperties": true,
+        "overrideNone": false,
+        "allowOverride": true
+      }
+    }
+  }
+}
