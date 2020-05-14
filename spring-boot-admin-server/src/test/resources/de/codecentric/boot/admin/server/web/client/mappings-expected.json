@@ -1,0 +1,85 @@
+{
+  "contexts": {
+    "application": {
+      "mappings": {
+        "dispatcherServlets": {
+          "dispatcherServlet": [
+            {
+              "details": {
+                "requestMappingConditions": {
+                  "consumes": [],
+                  "headers": [],
+                  "methods": [],
+                  "params": [],
+                  "patterns": [
+                    "/**/favicon.ico"
+                  ],
+                  "produces": []
+                }
+              },
+              "predicate": "/**/favicon.ico"
+            },
+            {
+              "details": {
+                "handlerMethod": {
+                  "className": "org.springframework.boot.autoconfigure.web.BasicErrorController",
+                  "descriptor": "(Ljavax/servlet/http/HttpServletRequest;)Lorg/springframework/http/ResponseEntity;",
+                  "name": "error"
+                },
+                "requestMappingConditions": {
+                  "consumes": [],
+                  "headers": [],
+                  "methods": [],
+                  "params": [],
+                  "patterns": [
+                    "/error"
+                  ],
+                  "produces": []
+                }
+              },
+              "predicate": "{[/error]}",
+              "handler": "public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)"
+            },
+            {
+              "details": {
+                "handlerMethod": {
+                  "className": "org.springframework.boot.actuate.endpoint.mvc.LoggersMvcEndpoint",
+                  "descriptor": "(Ljava/lang/String;Ljava/util/Map;)Ljava/lang/Object;",
+                  "name": "set"
+                },
+                "requestMappingConditions": {
+                  "consumes": [
+                    {
+                      "mediaType": "application/vnd.spring-boot.actuator.v1+json"
+                    },
+                    {
+                      "mediaType": "application/json"
+                    }
+                  ],
+                  "headers": [],
+                  "methods": [
+                    "POST"
+                  ],
+                  "params": [],
+                  "patterns": [
+                    "/actuator/loggers/{name:.*}"
+                  ],
+                  "produces": [
+                    {
+                      "mediaType": "application/vnd.spring-boot.actuator.v1+json"
+                    },
+                    {
+                      "mediaType": "application/json"
+                    }
+                  ]
+                }
+              },
+              "predicate": "{[/actuator/loggers/{name:.*}],methods=[POST],consumes=[application/vnd.spring-boot.actuator.v1+json || application/json],produces=[application/vnd.spring-boot.actuator.v1+json || application/json]}",
+              "handler": "public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.LoggersMvcEndpoint.set(java.lang.String,java.util.Map<java.lang.String, java.lang.String>)"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
