@@ -28,7 +28,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class ApplicationRegistratorTest {
+public class DefaultApplicationRegistratorTest {
 
 	private final Application application = Application.create("AppName").managementUrl("http://localhost:8080/mgmt")
 			.healthUrl("http://localhost:8080/health").serviceUrl("http://localhost:8080").build();
@@ -37,8 +37,9 @@ public class ApplicationRegistratorTest {
 
 	@Test
 	public void register_should_return_true_when_successful() {
-		ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application, this.registrationClient,
-				new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" }, true);
+		ApplicationRegistrator registrator = new DefaultApplicationRegistrator(() -> this.application,
+				this.registrationClient, new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" },
+				true);
 
 		when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
 		assertThat(registrator.register()).isTrue();
@@ -47,8 +48,9 @@ public class ApplicationRegistratorTest {
 
 	@Test
 	public void register_should_return_false_when_failed() {
-		ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application, this.registrationClient,
-				new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" }, true);
+		ApplicationRegistrator registrator = new DefaultApplicationRegistrator(() -> this.application,
+				this.registrationClient, new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" },
+				true);
 
 		when(this.registrationClient.register(any(), eq(this.application))).thenThrow(new RestClientException("Error"));
 
@@ -59,8 +61,9 @@ public class ApplicationRegistratorTest {
 
 	@Test
 	public void register_should_try_next_on_error() {
-		ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application, this.registrationClient,
-				new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" }, true);
+		ApplicationRegistrator registrator = new DefaultApplicationRegistrator(() -> this.application,
+				this.registrationClient, new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" },
+				true);
 
 		when(this.registrationClient.register("http://sba:8080/instances", this.application))
 				.thenThrow(new RestClientException("Error"));
@@ -72,8 +75,9 @@ public class ApplicationRegistratorTest {
 
 	@Test
 	public void deregister_should_deregister_at_server() {
-		ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application, this.registrationClient,
-				new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" }, true);
+		ApplicationRegistrator registrator = new DefaultApplicationRegistrator(() -> this.application,
+				this.registrationClient, new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" },
+				true);
 
 		when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
 
@@ -86,8 +90,9 @@ public class ApplicationRegistratorTest {
 
 	@Test
 	public void deregister_should_not_deregister_when_not_registered() {
-		ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application, this.registrationClient,
-				new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" }, true);
+		ApplicationRegistrator registrator = new DefaultApplicationRegistrator(() -> this.application,
+				this.registrationClient, new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" },
+				true);
 
 		registrator.deregister();
 
@@ -96,8 +101,9 @@ public class ApplicationRegistratorTest {
 
 	@Test
 	public void deregister_should_try_next_on_error() {
-		ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application, this.registrationClient,
-				new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" }, true);
+		ApplicationRegistrator registrator = new DefaultApplicationRegistrator(() -> this.application,
+				this.registrationClient, new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" },
+				true);
 
 		when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
 		doThrow(new RestClientException("Error")).when(this.registrationClient).deregister("http://sba:8080/instances",
@@ -113,8 +119,9 @@ public class ApplicationRegistratorTest {
 
 	@Test
 	public void register_should_register_on_multiple_servers() {
-		ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application, this.registrationClient,
-				new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" }, false);
+		ApplicationRegistrator registrator = new DefaultApplicationRegistrator(() -> this.application,
+				this.registrationClient, new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" },
+				false);
 
 		when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
 
@@ -127,8 +134,9 @@ public class ApplicationRegistratorTest {
 
 	@Test
 	public void deregister_should_deregister_on_multiple_servers() {
-		ApplicationRegistrator registrator = new ApplicationRegistrator(() -> this.application, this.registrationClient,
-				new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" }, false);
+		ApplicationRegistrator registrator = new DefaultApplicationRegistrator(() -> this.application,
+				this.registrationClient, new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" },
+				false);
 
 		when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
 

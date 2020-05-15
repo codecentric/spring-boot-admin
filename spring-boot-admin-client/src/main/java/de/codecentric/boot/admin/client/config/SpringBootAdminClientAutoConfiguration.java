@@ -48,6 +48,7 @@ import de.codecentric.boot.admin.client.registration.ApplicationFactory;
 import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
 import de.codecentric.boot.admin.client.registration.BlockingRegistrationClient;
 import de.codecentric.boot.admin.client.registration.DefaultApplicationFactory;
+import de.codecentric.boot.admin.client.registration.DefaultApplicationRegistrator;
 import de.codecentric.boot.admin.client.registration.ReactiveRegistrationClient;
 import de.codecentric.boot.admin.client.registration.RegistrationApplicationListener;
 import de.codecentric.boot.admin.client.registration.RegistrationClient;
@@ -73,7 +74,7 @@ public class SpringBootAdminClientAutoConfiguration {
 	public ApplicationRegistrator registrator(RegistrationClient registrationClient, ClientProperties client,
 			ApplicationFactory applicationFactory) {
 
-		return new ApplicationRegistrator(applicationFactory, registrationClient, client.getAdminUrl(),
+		return new DefaultApplicationRegistrator(applicationFactory, registrationClient, client.getAdminUrl(),
 				client.isRegisterOnce());
 	}
 
