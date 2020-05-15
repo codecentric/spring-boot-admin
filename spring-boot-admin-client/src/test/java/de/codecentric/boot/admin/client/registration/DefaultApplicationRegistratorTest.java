@@ -28,7 +28,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class ApplicationRegistratorTest {
+public class DefaultApplicationRegistratorTest {
 
 	private final Application application = Application.create("AppName").managementUrl("http://localhost:8080/mgmt")
 			.healthUrl("http://localhost:8080/health").serviceUrl("http://localhost:8080").build();
