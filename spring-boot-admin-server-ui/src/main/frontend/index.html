@@ -26,13 +26,13 @@
 
     <!-- include extensions -->
     <th:block th:each="cssExtension : ${cssExtensions}">
-        <link rel="preload" th:href="'/extensions/' + ${cssExtension.resourcePath}" as="style">
+        <link rel="preload" th:href="'extensions/' + ${cssExtension.resourcePath}" as="style">
     </th:block>
     <th:block th:each="jsExtension : ${jsExtensions}">
-        <link rel="preload" th:href="'/extensions/' + ${jsExtension.resourcePath}" as="script">
+        <link rel="preload" th:href="'extensions/' + ${jsExtension.resourcePath}" as="script">
     </th:block>
     <th:block th:each="cssExtension : ${cssExtensions}">
-        <link th:href="'/extensions/' + ${cssExtension.resourcePath}" rel="stylesheet">
+        <link th:href="'extensions/' + ${cssExtension.resourcePath}" rel="stylesheet">
     </th:block>
 
     <link rel="shortcut icon" th:href="${uiSettings.favicon}" type="image/png">
@@ -45,7 +45,7 @@
 <script lang="javascript" src="sba-settings.js"></script>
 <!-- include extensions -->
 <th:block th:each="jsExtension : ${jsExtensions}">
-    <script lang="javascript" th:src="'/extensions/' + ${jsExtension.resourcePath}"></script>
+    <script lang="javascript" th:src="'extensions/' + ${jsExtension.resourcePath}"></script>
 </th:block>
 </body>
 </html>
