@@ -51,7 +51,7 @@ With Spring Boot 2.2.0 you might want to set `spring.jmx.enabled=true` if you wa
 
 By default the logfile is not accessible via actuator endpoints and therefore not visible in Spring Boot Admin.
 In order to enable the logfile actuator endpoint you need to configure Spring Boot to write a logfile, either by setting
-`logging.path` or `logging.file`.
+`logging.file.path` or `logging.file.name`.
 
 Spring Boot Admin will detect everything that looks like an URL and render it as hyperlink.
 
@@ -60,7 +60,7 @@ You need to set a custom file log pattern as Spring Boot's default one doesn't u
 
 .application.properties
 ----
-logging.file=/var/log/sample-boot-application.log <1>
+logging.file.name=/var/log/sample-boot-application.log <1>
 logging.pattern.file=%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID}){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx <2>
 ----
 <1> Destination the logfile is written to.
