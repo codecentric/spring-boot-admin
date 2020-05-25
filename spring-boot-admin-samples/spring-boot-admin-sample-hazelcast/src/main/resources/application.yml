@@ -1,6 +1,7 @@
 ---
 logging:
-  file: "target/boot-admin-sample-hazelcast.log"
+  file:
+    name: "target/boot-admin-sample-hazelcast.log"
 
 management:
   endpoints:
