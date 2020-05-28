@@ -1,8 +1,8 @@
 {
   "applications": {
     "all_up": "全部在线",
-    "applications": "应用",
-    "instances": "个实例",
+    "applications": "应用数",
+    "instances": "实例数",
     "instances_down": "离线实例",
     "loading_applications": "应用加载中...",
     "no_applications_registered": "暂无应用注册。",
