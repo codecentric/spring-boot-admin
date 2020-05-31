@@ -1,0 +1,18 @@
+{
+  "instances": {
+    "jolokia": {
+      "label": "Java管理擴充",
+      "close": "關閉",
+      "domains": "網域",
+      "execute": "執行",
+      "executing": "執行中...",
+      "execution_failed": "執行失敗。",
+      "execution_successful": "執行成功。",
+      "fetch_failed": "找不到Java管理擴充類。",
+      "mbean": {
+        "fetch_failed": "抓取屬性失敗。"
+      },
+      "mbeans": "可管理資源"
+    }
+  }
+}

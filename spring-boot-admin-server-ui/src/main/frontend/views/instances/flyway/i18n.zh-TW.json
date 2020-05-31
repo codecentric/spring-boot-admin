@@ -1,0 +1,18 @@
+{
+  "instances": {
+    "flyway": {
+      "label": "Flyway",
+      "fetch_failed": "抓取Flyway報告失敗。",
+      "type": "類型",
+      "checksum": "驗證碼",
+      "version": "版本",
+      "description": "描述",
+      "script": "腳本",
+      "state": "狀態",
+      "installed_by": "安裝人",
+      "installed_on": "安裝位置",
+      "installed_rank": "安裝等級",
+      "execution_time": "執行時間"
+    }
+  }
+}

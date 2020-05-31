@@ -21,11 +21,14 @@ const messages = context.keys()
 
 export const AVAILABLE_LANGUAGES = Object.keys(messages);
 
-const browserLanguage = navigator.language.split('-')[0];
+let browserLanguage = navigator.language;
+if (!browserLanguage.includes('zh')) {
+  browserLanguage = browserLanguage.split('-')[0];
+}
 
 const i18n = new VueI18n({
   fallbackLocale: 'en',
-  locale:  AVAILABLE_LANGUAGES.includes(browserLanguage) ? browserLanguage : 'en',
+  locale: AVAILABLE_LANGUAGES.includes(browserLanguage) ? browserLanguage : 'en',
   silentFallbackWarn: process.env.NODE_ENV === 'production',
   silentTranslationWarn: process.env.NODE_ENV === 'production',
   messages

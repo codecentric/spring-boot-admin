@@ -1,0 +1,65 @@
+{
+  "instances": {
+    "details": {
+      "label": "細節",
+      "fetch_failed": "抓取指標失敗。",
+      "cache":{
+        "fetch_failed": "抓取暫存指標失敗。",
+        "hit_ratio": "命中率",
+        "hits": "命中次數",
+        "size": "粒度"
+      },
+      "datasource": {
+        "fetch_failed": "抓取資料源指標失敗。",
+        "active_connections": "活動連接數",
+        "min_connections": "最小連接數",
+        "max_connections": "最大連接數",
+        "title": "資料來源: {datasource}",
+        "unlimited": "unlimited"
+      },
+      "gc": {
+        "count": "總計",
+        "time_spent_max": "最大耗時",
+        "time_spent_total": "總耗時",
+        "title": "垃圾回收"
+      },
+      "health": {
+        "fetch_failed": "抓取實例實時健康訊息狀態失敗。這是最後的訊息。",
+        "title": "健康"
+      },
+      "info": {
+        "fetch_failed": "抓取實時訊息失敗。這是最後的訊息。",
+        "no_info_provided": "未提供任何訊息。",
+        "title": "訊息"
+      },
+      "memory": {
+        "fetch_failed": "抓取記憶體資料失敗。",
+        "max": "最大",
+        "metaspace": "初始空間",
+        "size": "當前可用",
+        "title": "記憶體",
+        "used": "已用"
+      },
+      "metadata": {
+        "no_data_provided": "未提供Metadata。",
+        "title": "Metadata"
+      },
+      "process": {
+        "cpus": "CPU核心數",
+        "fetch_failed": "抓取Process資料失敗。",
+        "pid": "Process ID",
+        "process_cpu_usage": "ProcessCPU使用率",
+        "system_cpu_usage": "係統CPU使用率",
+        "title": "Process",
+        "uptime": "執行時間"
+      },
+      "threads": {
+        "daemon": "Daemon",
+        "fetch_failed": "抓取執行緒指標失敗。",
+        "live": "活動執行緒",
+        "peak_live": "執行緒峰值",
+        "title": "執行緒"
+      }
+    }
+  }
+}

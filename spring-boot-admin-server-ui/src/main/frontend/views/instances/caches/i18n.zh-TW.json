@@ -1,0 +1,12 @@
+{
+  "instances": {
+    "caches": {
+      "label": "暫存",
+      "cache_manager": "暫存管理",
+      "fetch_failed": "抓取暫存失敗。",
+      "loading": "下載暫存中...",
+      "name": "名稱",
+      "no_caches_found": "找不到暫存。"
+    }
+  }
+}

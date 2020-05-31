@@ -1,0 +1,19 @@
+{
+  "instances": {
+    "mappings": {
+      "label": "映射",
+      "class": "類型",
+      "consumes": "提交內容類型",
+      "fetch_failed": "抓取映射失敗。",
+      "filter_name": "過濾器名稱",
+      "handler": "處理程式",
+      "headers": "請求頭",
+      "http-verb": "方法",
+      "mappings_not_supported_spring_boot_1": "Spring Boot 1.x的應用不支援映射。",
+      "parameters": "參數",
+      "produces": "返回內容類型",
+      "servlet_name": "程式名稱",
+      "url_pattern": "URL模式"
+    }
+  }
+}

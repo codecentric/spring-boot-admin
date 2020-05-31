@@ -1,0 +1,10 @@
+{
+  "instances": {
+    "heapdump": {
+      "label": "記憶體轉存",
+      "download": "下載記憶體轉存文件",
+      "warn_dump_expensive": "從CPU和硬碟空間來看，記憶體轉存文件可能很大。",
+      "warn_sensitive_data": "記憶體轉存文件可能包含<strong>敏感資料</strong>。請小心處理。"
+    }
+  }
+}
