@@ -1,0 +1,33 @@
+{
+  "instances": {
+    "gateway": {
+      "label": "Gateway",
+      "route":{
+        "add_route": "添加路由",
+        "adding_failed": "添加路由失敗。",
+        "cache_refreshed": "路由緩存已刷新",
+        "cache_refresh": "刷新路由暫存",
+        "cache_refresh_failed": "刷新失敗",
+        "deleted": "已刪除",
+        "delete": "刪除",
+        "delete_failed": "刪除失敗",
+        "fetch_failed": "抓取Gateway路由失敗。",
+        "filters": "過濾器",
+        "id": "Id",
+        "loading": "下載路由中...",
+        "no_definition_provided": "沒有提供路由定義。",
+        "no_routes_found": "未找到路由。",
+        "order": "列表",
+        "predicates": "謂語",
+        "uri": "URI"
+      },
+      "filters": {
+        "fetch_failed": "抓取全域過濾器失敗。",
+        "filter_name": "過濾器名稱",
+        "loading": "下載全局過濾器中...",
+        "no_filters_found": "未找到全局過濾器。",
+        "order": "列表"
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "instances": {
+    "threaddump": {
+      "label": "執行緒轉存",
+      "download": "下載執行緒",
+      "fetch_failed": "抓取執行緒失敗。",
+      "download_failed": "執行緒無法下載。",
+      "thread_details_blocked_count": "阻塞數",
+      "thread_details_blocked_time": "阻塞時間",
+      "thread_details_lock_name": "Lock名稱",
+      "thread_details_lock_owner_id": "Lock擁有者ID",
+      "thread_details_lock_owner_name": "Lock擁有者名稱",
+      "thread_details_waited_count": "等待數",
+      "thread_details_waited_time": "等待時間",
+      "thread_id": "執行緒ID",
+      "thread_name": "執行緒名稱",
+      "thread_state": "執行緒狀態"
+    }
+  }
+}

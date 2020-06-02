@@ -1,0 +1,26 @@
+{
+  "instances": {
+    "scheduledtasks": {
+      "label": "排程",
+      "no_scheduledtasks": "沒有排程。",
+      "cron": {
+        "expression": "表達式",
+        "runnable": "可執行",
+        "title": "排程"
+      },
+      "fetch_failed": "抓取排程失敗。",
+      "fixed_delay": {
+        "initial_delay_ms": "初始延遲(毫秒)",
+        "interval_ms": "間隔(毫秒)",
+        "runnable": "可執行",
+        "title": "固定延遲"
+      },
+      "fixed_rate": {
+        "initial_delay_ms": "初始延遲(毫秒)",
+        "interval_ms": "間隔(毫秒)",
+        "runnable": "可執行",
+        "title": "固定速度"
+      }
+    }
+  }
+}

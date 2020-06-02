@@ -1,0 +1,38 @@
+{
+  "error": {
+    "server_connection_failed": "伺服器連接失敗。"
+  },
+  "term": {
+    "application": "應用程式",
+    "attributes": "屬性",
+    "bytes": "位元組",
+    "cancel": "取消",
+    "clear": "清除",
+    "cleared": "已清除",
+    "close": "關閉",
+    "confirm": "確認",
+    "delete": "刪除",
+    "deleted": "已刪除",
+    "duration": "持續時間",
+    "event": "事件",
+    "ever": "ever",
+    "executing": "執行中...",
+    "execution_failed": "執行失敗。",
+    "execution_successful": "執行成功。",
+    "failed": "失敗",
+    "float": "浮點數",
+    "hours": "{count} 小時 | {count} 小時",
+    "instances": "實例",
+    "integer": "整數",
+    "milliseconds": "毫秒",
+    "minutes": "{count} 分鐘 | {count} 分鐘",
+    "name": "名稱",
+    "operations": "操作",
+    "save": "保存",
+    "stacktrace": "堆疊資訊",
+    "suppress": "Suppress",
+    "time": "時間",
+    "unsuppress": "Unsuppress",
+    "username": "使用者"
+  }
+}

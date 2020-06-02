@@ -1,0 +1,13 @@
+{
+  "instances": {
+    "metrics": {
+      "label": "效能",
+      "add_metric": "添加指標",
+      "fetch_failed": "抓取效能指標失敗。",
+      "fetching_tags": "正在抓取可用標簽",
+      "no_tags": "(沒有標籤)",
+      "no_tags_available": "沒有可用的標籤。",
+      "metrics_not_supported_spring_boot_1": "Spring Boot 1.x 的應用無法抓取效能指標。"
+    }
+  }
+}

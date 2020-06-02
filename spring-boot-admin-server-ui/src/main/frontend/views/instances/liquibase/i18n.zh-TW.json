@@ -1,0 +1,21 @@
+{
+  "instances": {
+    "liquibase": {
+      "label": "Liquibase",
+      "author": "作者",
+      "changelog": "更新日誌",
+      "checksum": "驗證碼",
+      "comments": "備註",
+      "contexts": "執行環境",
+      "deployment_id": "部署ID",
+      "description": "說明",
+      "execution": "執行",
+      "execution_date": "執行日期",
+      "execution_order": "執行順序",
+      "fetch_failed": "抓取Liquibase遷移失敗。",
+      "id": "ID",
+      "labels": "標籤",
+      "tag": "標記"
+    }
+  }
+}

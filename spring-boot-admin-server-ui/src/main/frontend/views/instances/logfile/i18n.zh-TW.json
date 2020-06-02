@@ -1,0 +1,9 @@
+{
+  "instances": {
+    "logfile": {
+      "label": "日誌文件",
+      "download": "下載",
+      "fetch_failed": "抓取日誌文件失敗。"
+    }
+  }
+}

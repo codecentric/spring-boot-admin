@@ -1,0 +1,17 @@
+{
+  "applications": {
+    "all_up": "全部正常",
+    "applications": "應用數",
+    "instances": "實例數",
+    "instances_down": "離線實例",
+    "loading_applications": "應用下載中...",
+    "no_applications_registered": "暫無應用註冊。",
+    "notifications_suppressed_for": "Notifications on <code>{name}</code> are suppressed for",
+    "restricted": "受限的",
+    "server_connection_failed": "伺服器連接失敗。",
+    "suppress_notifications_on": "Suppress notifications on <code>{name}</code> for",
+    "status": "實例狀態",
+    "label": "應用",
+    "up": "正常"
+  }
+}

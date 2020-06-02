@@ -1,0 +1,25 @@
+{
+  "sidebar": {
+    "data": {
+      "title": "資料"
+    },
+    "insights": {
+      "title": "Insights"
+    },
+    "instances_caches": {
+      "title": "暫存"
+    },
+    "jvm": {
+      "title": "JVM"
+    },
+    "logging": {
+      "title": "日志"
+    },
+    "security": {
+      "title": "網路安全"
+    },
+    "web": {
+      "title": "Web"
+    }
+  }
+}

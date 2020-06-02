@@ -1,0 +1,17 @@
+{
+  "instances": {
+    "auditevents": {
+      "audit_log_not_supported_spring_boot_1": "Spring Boot 1.x的應用不支援審查日誌。",
+      "event": "事件",
+      "fetch_failed": "抓取審查事件失敗。",
+      "loading_audit_events": "下載審查事件中...",
+      "no_audit_events_found": "沒有審查事件。",
+      "principal": "當事人",
+      "remote_address": "遠端地址",
+      "session_id": "Session ID",
+      "timestamp": "時間戳記",
+      "type": "類型",
+      "label": "審查日誌"
+    }
+  }
+}
