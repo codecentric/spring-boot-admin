@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -38,6 +39,7 @@ import de.codecentric.boot.admin.server.web.client.LegacyEndpointConverter;
 import de.codecentric.boot.admin.server.web.client.LegacyEndpointConverters;
 
 @Configuration(proxyBeanMethods = false)
+@Lazy(false)
 public class AdminServerInstanceWebClientConfiguration {
 
 	private final InstanceWebClient.Builder instanceWebClientBuilder;

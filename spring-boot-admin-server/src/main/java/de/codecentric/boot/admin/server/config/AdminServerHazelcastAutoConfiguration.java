@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
@@ -46,6 +47,7 @@ import de.codecentric.boot.admin.server.notify.Notifier;
 @ConditionalOnProperty(prefix = "spring.boot.admin.hazelcast", name = "enabled", matchIfMissing = true)
 @AutoConfigureBefore({ AdminServerAutoConfiguration.class, AdminServerNotifierAutoConfiguration.class })
 @AutoConfigureAfter(HazelcastAutoConfiguration.class)
+@Lazy(false)
 public class AdminServerHazelcastAutoConfiguration {
 
 	public static final String DEFAULT_NAME_EVENT_STORE_MAP = "spring-boot-admin-event-store";
@@ -53,7 +55,7 @@ public class AdminServerHazelcastAutoConfiguration {
 	public static final String DEFAULT_NAME_SENT_NOTIFICATIONS_MAP = "spring-boot-admin-sent-notifications";
 
 	@Value("${spring.boot.admin.hazelcast.event-store:" + DEFAULT_NAME_EVENT_STORE_MAP + "}")
-	private String nameEventStoreMap = DEFAULT_NAME_EVENT_STORE_MAP;
+	private final String nameEventStoreMap = DEFAULT_NAME_EVENT_STORE_MAP;
 
 	@Bean
 	@ConditionalOnMissingBean(InstanceEventStore.class)
@@ -67,7 +69,7 @@ public class AdminServerHazelcastAutoConfiguration {
 	public static class NotifierTriggerConfiguration {
 
 		@Value("${spring.boot.admin.hazelcast.sent-notifications:" + DEFAULT_NAME_SENT_NOTIFICATIONS_MAP + "}")
-		private String nameSentNotificationsMap = DEFAULT_NAME_SENT_NOTIFICATIONS_MAP;
+		private final String nameSentNotificationsMap = DEFAULT_NAME_SENT_NOTIFICATIONS_MAP;
 
 		@Bean(initMethod = "start", destroyMethod = "stop")
 		@ConditionalOnMissingBean(NotificationTrigger.class)
