@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import de.codecentric.boot.admin.server.services.CloudFoundryInstanceIdGenerator;
 import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
@@ -31,6 +32,7 @@ import de.codecentric.boot.admin.server.web.client.CloudFoundryHttpHeaderProvide
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
 @AutoConfigureBefore({ AdminServerAutoConfiguration.class })
+@Lazy(false)
 public class AdminServerCloudFoundryAutoConfiguration {
 
 	@Bean
