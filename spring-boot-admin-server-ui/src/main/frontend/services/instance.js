@@ -181,7 +181,7 @@ class Instance {
   }
 
   async downloadThreaddump() {
-    const res = await axios.get(uri`actuator/threaddump`, {headers: {'Accept': 'text/plain'}});
+    const res = await this.axios.get(uri`actuator/threaddump`, {headers: {'Accept': 'text/plain'}});
     const blob = new Blob([res.data], {type: 'text/plain;charset=utf-8'});
     saveAs(blob, this.registration.name + '-threaddump.txt');
   }
