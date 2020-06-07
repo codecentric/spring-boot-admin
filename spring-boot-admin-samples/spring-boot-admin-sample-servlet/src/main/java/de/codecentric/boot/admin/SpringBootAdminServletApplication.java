@@ -30,6 +30,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
@@ -89,6 +92,12 @@ public class SpringBootAdminServletApplication {
 	@Bean
 	public AuditEventRepository auditEventRepository() {
 		return new InMemoryAuditEventRepository();
+	}
+
+	@Bean
+	public EmbeddedDatabase dataSource() {
+		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.HSQL)
+				.addScript("org/springframework/session/jdbc/schema-hsqldb.sql").build();
 	}
 
 }
