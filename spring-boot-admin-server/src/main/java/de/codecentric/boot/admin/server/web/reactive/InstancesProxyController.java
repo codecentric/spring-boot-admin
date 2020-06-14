@@ -23,7 +23,6 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
-import org.springframework.core.io.buffer.PooledDataBuffer;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.util.AntPathMatcher;
@@ -102,8 +101,11 @@ public class InstancesProxyController {
 		URI uri = UriComponentsBuilder.fromPath(endpointLocalPath).query(request.getURI().getRawQuery()).build(true)
 				.toUri();
 
-		Flux<DataBuffer> cachedBody = request.getBody().map((b) -> this.bufferFactory.wrap(b.asByteBuffer()))
-				.doOnDiscard(PooledDataBuffer.class, DataBufferUtils::release).cache();
+		Flux<DataBuffer> cachedBody = request.getBody().map((b) -> {
+			DataBuffer wrap = this.bufferFactory.wrap(b.asByteBuffer());
+			DataBufferUtils.release(b);
+			return wrap;
+		}).cache();
 
 		return this.instanceWebProxy.forward(this.registry.getInstances(applicationName), uri, request.getMethod(),
 				this.httpHeadersFilter.filterHeaders(request.getHeaders()), BodyInserters.fromDataBuffers(cachedBody));
