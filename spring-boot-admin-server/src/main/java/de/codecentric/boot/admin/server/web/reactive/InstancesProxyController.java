@@ -102,9 +102,11 @@ public class InstancesProxyController {
 				.toUri();
 
 		Flux<DataBuffer> cachedBody = request.getBody().map((b) -> {
-			DataBuffer wrap = this.bufferFactory.wrap(b.asByteBuffer());
+			int readableByteCount = b.readableByteCount();
+			DataBuffer dataBuffer = this.bufferFactory.allocateBuffer(readableByteCount);
+			dataBuffer.write(b.asByteBuffer());
 			DataBufferUtils.release(b);
-			return wrap;
+			return dataBuffer;
 		}).cache();
 
 		return this.instanceWebProxy.forward(this.registry.getInstances(applicationName), uri, request.getMethod(),
