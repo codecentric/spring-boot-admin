@@ -530,7 +530,7 @@ table.CodeRay td.code>pre{padding:0}
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.3.0-SNAPSHOT,</span>
-<span id="revdate">14.06.2020</span>
+<span id="revdate">22.06.2020</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -543,6 +543,7 @@ table.CodeRay td.code>pre{padding:0}
 <ul class="sectlevel3">
 <li><a href="#register-clients-via-spring-boot-admin">2.2.1. Spring Boot Admin Client</a></li>
 <li><a href="#discover-clients-via-spring-cloud-discovery">2.2.2. Spring Cloud Discovery</a></li>
+<li><a href="#register-python-applications">2.2.3. Registering Python Applications Using Pyctuator</a></li>
 </ul>
 </li>
 </ul>
@@ -636,6 +637,9 @@ table.CodeRay td.code>pre{padding:0}
 <p>codecentric&#8217;s Spring Boot Admin is a community project to manage and monitor your <a href="http://projects.spring.io/spring-boot/">Spring Boot</a> <sup>&#174;</sup> applications.
 The applications register with our Spring Boot Admin Client (via HTTP) or are discovered using Spring Cloud <sup>&#174;</sup> (e.g. Eureka, Consul).
 The UI is just a Vue.js application on top of the Spring Boot Actuator endpoints.</p>
+</div>
+<div class="paragraph">
+<p>Support for Python applications is available using <a href="https://github.com/SolarEdgeTech/pyctuator">Pyctuator</a>.</p>
 </div>
 </div>
 </div>
@@ -939,6 +943,59 @@ You can include the Spring Boot Admin Server to your Eureka server. Setup everyt
 </td>
 </tr>
 </table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="register-python-applications"><a class="anchor" href="#register-python-applications"></a><a class="link" href="#register-python-applications">2.2.3. Registering Python Applications Using Pyctuator</a></h4>
+<div class="paragraph">
+<p>You can easily integrate Spring Boot Admin with <a href="https://flask.palletsprojects.com">Flask</a> or <a href="https://fastapi.tiangolo.com/">FastAPI</a> Python applications using the <a href="https://github.com/SolarEdgeTech/pyctuator">Pyctuator</a> project.</p>
+</div>
+<div class="paragraph">
+<p>The following steps uses Flask, but other web frameworks are supported as well. See Pyctuator&#8217;s documentation for an updated list of supported frameworks and features.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Install the pyctuator package:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">pip install pyctuator</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Enable pyctuator by pointing it to your Flask app and letting it know where Spring Boot Admin is running:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="python"><span class="keyword">import</span> <span class="include">os</span>
+<span class="keyword">from</span> <span class="include">flask</span> <span class="keyword">import</span> <span class="include">Flask</span>
+<span class="keyword">from</span> <span class="include">pyctuator.pyctuator</span> <span class="keyword">import</span> <span class="include">Pyctuator</span>
+
+app_name = <span class="string"><span class="delimiter">&quot;</span><span class="content">Flask App with Pyctuator</span><span class="delimiter">&quot;</span></span>
+app = Flask(app_name)
+
+
+<span class="decorator">@app.route</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>)
+<span class="keyword">def</span> <span class="function">hello</span>():
+    <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello World!</span><span class="delimiter">&quot;</span></span>
+
+
+Pyctuator(
+    app,
+    app_name,
+    app_url=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://example-app.com</span><span class="delimiter">&quot;</span></span>,
+    pyctuator_endpoint_url=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://example-app.com/pyctuator</span><span class="delimiter">&quot;</span></span>,
+    registration_url=os.getenv(<span class="string"><span class="delimiter">&quot;</span><span class="content">SPRING_BOOT_ADMIN_URL</span><span class="delimiter">&quot;</span></span>)
+)
+
+app.run()</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>For further details and examples, see Pyctuator&#8217;s <a href="https://github.com/SolarEdgeTech/pyctuator/blob/master/README.md">documentation</a> and <a href="https://github.com/SolarEdgeTech/pyctuator/tree/master/examples">examples</a>.</p>
 </div>
 </div>
 </div>
