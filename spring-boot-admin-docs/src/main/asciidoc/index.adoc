@@ -19,6 +19,8 @@ codecentric's Spring Boot Admin is a community project to manage and monitor you
 The applications register with our Spring Boot Admin Client (via HTTP) or are discovered using Spring Cloud ^(R)^ (e.g. Eureka, Consul).
 The UI is just a Vue.js application on top of the Spring Boot Actuator endpoints.
 
+Support for Python applications is available using https://github.com/SolarEdgeTech/pyctuator[Pyctuator].
+
 include::getting-started.adoc[]
 
 include::client.adoc[]

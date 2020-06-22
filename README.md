@@ -10,7 +10,9 @@ codecentric's Spring Boot Admin
 
 This community project provides an admin interface for [Spring Boot <sup>®</sup>](http://projects.spring.io/spring-boot/ "Official Spring-Boot website") applications.
 
-It provides the following features for registered applications.
+Monitoring Python applications is available using [Pyctuator](https://github.com/SolarEdgeTech/pyctuator).
+
+Spring Boot Admin provides the following features for registered applications:
 
 * Show health status
 * Show details, like
