@@ -28,11 +28,14 @@ import org.springframework.core.io.buffer.NettyDataBufferFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test to illustrate the usage of how to cache org.springframework.http.ReactiveHttpInputMessage#getBody()
+ * Test to illustrate the usage of how to cache
+ * org.springframework.http.ReactiveHttpInputMessage#getBody()
  *
- * @see InstancesProxyController#endpointProxy(java.lang.String, org.springframework.http.server.reactive.ServerHttpRequest)
+ * @see InstancesProxyController#endpointProxy(java.lang.String,
+ * org.springframework.http.server.reactive.ServerHttpRequest)
  */
 public class DataBufferTest {
+
 	@Test
 	public void testWrapByteBuffer() {
 
@@ -45,8 +48,10 @@ public class DataBufferTest {
 		DataBuffer dataBuffer2 = defaultDataBufferFactory.wrap(byteBuffer1);
 		ByteBuffer byteBuffer2 = dataBuffer2.asByteBuffer();
 
-		// when DataBufferUtils.release(dataBuffer1); called (always need to when we subscribe the request body), will cause the undergroud bytes released
-		// So DefaultDataBufferFactory.wrap(java.nio.ByteBuffer) share the same bytes, so is not a good way to cache body.
+		// when DataBufferUtils.release(dataBuffer1); called (always need to when we
+		// subscribe the request body), will cause the undergroud bytes released
+		// So DefaultDataBufferFactory.wrap(java.nio.ByteBuffer) share the same bytes, so
+		// is not a good way to cache body.
 		assertThat(byteBuffer2.array()).isEqualTo(byteBuffer1.array());
 
 		assertThat(byteBuffer2.array().hashCode()).isEqualTo(byteBuffer1.array().hashCode());
@@ -78,4 +83,5 @@ public class DataBufferTest {
 		DataBufferUtils.release(dataBuffer1);
 
 	}
+
 }
