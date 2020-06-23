@@ -188,3 +188,48 @@ include::{samples-dir}/spring-boot-admin-sample-eureka/src/main/resources/applic
 See also {github-src}/spring-boot-admin-samples/spring-boot-admin-sample-eureka/[spring-boot-admin-sample-eureka].
 
 TIP: You can include the Spring Boot Admin Server to your Eureka server. Setup everything as described above and set `spring.boot.admin.context-path` to something different than `"/"` so that the Spring Boot Admin Server UI won't clash with Eureka's one.
+
+[[register-python-applications]]
+==== Registering Python Applications Using Pyctuator ====
+
+You can easily integrate Spring Boot Admin with https://flask.palletsprojects.com[Flask] or https://fastapi.tiangolo.com/[FastAPI] Python applications using the https://github.com/SolarEdgeTech/pyctuator[Pyctuator] project.
+
+
+The following steps uses Flask, but other web frameworks are supported as well. See Pyctuator's documentation for an updated list of supported frameworks and features.
+
+. Install the pyctuator package:
++
+[source,bash]
+----
+pip install pyctuator
+----
+
+. Enable pyctuator by pointing it to your Flask app and letting it know where Spring Boot Admin is running:
++
+[source,python]
+----
+import os
+from flask import Flask
+from pyctuator.pyctuator import Pyctuator
+
+app_name = "Flask App with Pyctuator"
+app = Flask(app_name)
+
+
+@app.route("/")
+def hello():
+    return "Hello World!"
+
+
+Pyctuator(
+    app,
+    app_name,
+    app_url="http://example-app.com",
+    pyctuator_endpoint_url="http://example-app.com/pyctuator",
+    registration_url=os.getenv("SPRING_BOOT_ADMIN_URL")
+)
+
+app.run()
+----
+
+For further details and examples, see Pyctuator's https://github.com/SolarEdgeTech/pyctuator/blob/master/README.md[documentation] and https://github.com/SolarEdgeTech/pyctuator/tree/master/examples[examples].
