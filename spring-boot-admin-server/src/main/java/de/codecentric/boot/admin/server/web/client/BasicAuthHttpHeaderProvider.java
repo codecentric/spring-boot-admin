@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.web.client;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.Base64Utils;
@@ -28,27 +29,53 @@ import de.codecentric.boot.admin.server.domain.entities.Instance;
  * Provides Basic Auth headers for the {@link Instance} using the metadata for "user.name"
  * and "user.password".
  *
+ * Other allowed key names:
+ * 	- "user-name" / "user-password"
+ * 	- "username" / "userpassword"
+ *
  * @author Johannes Edmeier
  */
 public class BasicAuthHttpHeaderProvider implements HttpHeadersProvider {
 
+	private static final String USERNAME_KEY = "user{separator}name";
+	private static final String PASSWORD_KEY = "user{separator}password";
+	private static final String[] ALLOWED_SEPARATORS = {".", "-", ""};
+
 	@Override
 	public HttpHeaders getHeaders(Instance instance) {
-		String username = instance.getRegistration().getMetadata().get("user.name");
-		String password = instance.getRegistration().getMetadata().get("user.password");
-
 		HttpHeaders headers = new HttpHeaders();
-
-		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
-			headers.set(HttpHeaders.AUTHORIZATION, encode(username, password));
-		}
-
+		// add basic auth header if credentials are found in the instance's metadata
+		Optional<String> basicAuth = buildEncodedBasicAuth(instance);
+		basicAuth.ifPresent(auth -> headers.set(HttpHeaders.AUTHORIZATION, auth));
 		return headers;
 	}
 
 	protected String encode(String username, String password) {
 		String token = Base64Utils.encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8));
 		return "Basic " + token;
+	}
+
+	/**
+	 * Return B64 encoded auth if any valid credential keys are found in the instance metadata.
+	 * The leniency on the keys is due to Consul not allowing dots (".") in a key name.
+	 */
+	private Optional<String> buildEncodedBasicAuth(Instance instance) {
+		for (String separator : ALLOWED_SEPARATORS) {
+			String username = getUsername(instance, separator);
+			String password = getPassword(instance, separator);
+			if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
+				return Optional.of(encode(username, password));
+			}
+		}
+		return Optional.empty();
+	}
+
+	private static String getUsername(Instance instance, String separator) {
+		return instance.getRegistration().getMetadata().get(USERNAME_KEY.replace("{separator}", separator));
+	}
+
+	private static String getPassword(Instance instance, String separator) {
+		return instance.getRegistration().getMetadata().get(PASSWORD_KEY.replace("{separator}", separator));
 	}
 
 }

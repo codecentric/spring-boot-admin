@@ -31,11 +31,35 @@ public class BasicAuthHttpHeaderProviderTest {
 
 	@Test
 	public void test_auth_header() {
-		Registration registration = Registration.create("foo", "http://health").metadata("user.name", "test")
-				.metadata("user.password", "drowssap").build();
+		Registration registration = Registration.create("foo", "http://health")
+			.metadata("user.name", "test")
+			.metadata("user.password", "drowssap")
+			.build();
 		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
 		assertThat(headersProvider.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
 				.containsOnly("Basic dGVzdDpkcm93c3NhcA==");
+	}
+
+	@Test
+	public void test_auth_header_with_dashes() {
+		Registration registration = Registration.create("foo", "http://health")
+			.metadata("user-name", "test")
+			.metadata("user-password", "drowssap")
+			.build();
+		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
+		assertThat(headersProvider.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
+			.containsOnly("Basic dGVzdDpkcm93c3NhcA==");
+	}
+
+	@Test
+	public void test_auth_header_no_separator() {
+		Registration registration = Registration.create("foo", "http://health")
+			.metadata("username", "test")
+			.metadata("userpassword", "drowssap")
+			.build();
+		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
+		assertThat(headersProvider.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
+			.containsOnly("Basic dGVzdDpkcm93c3NhcA==");
 	}
 
 	@Test

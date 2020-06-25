@@ -36,7 +36,16 @@ NOTE: If you protect the `/instances` endpoint don't forget to configure the use
 
 When the actuator endpoints are secured using HTTP Basic authentication the SBA Server needs credentials to access them. You can submit the credentials in the metadata when registering the application. The `BasicAuthHttpHeaderProvider` then uses this metadata to add the `Authorization` header to access your application's actuator endpoints. You can provide your own `HttpHeadersProvider` to alter the behaviour (e.g. add some decryption) or add extra headers.
 
-Submitting the credentials using SBA Client:
+NOTE: The SBA Server masks certain metadata in the HTTP interface to prevent leaking of sensitive information.
+
+WARNING: You should configure HTTPS for your SBA Server or (service registry) when submitting credentials via the metadata.
+
+WARNING: When using Spring Cloud Discovery, you must be aware that anybody who can query your service registry can obtain the credentials.
+
+TIP: When using this approach the SBA Server decides whether or not the user can access the registered applications. There are more complex solutions possible (using OAuth2) to let the clients decide if the user can access the endpoints. For that please have a look at the samples in https://github.com/joshiste/spring-boot-admin-samples[joshiste/spring-boot-admin-samples^].
+
+
+==== SBA Client ====
 [source,yaml]
 .application.yml
 ----
@@ -48,7 +57,7 @@ spring.boot.admin.client:
         user.password: ${spring.security.user.password}
 ----
 
-Submitting the credentials using Eureka:
+==== Eureka ====
 [source,yaml]
 .application.yml
 ----
@@ -59,13 +68,19 @@ eureka:
       user.password: ${spring.security.user.password}
 ----
 
-NOTE: The SBA Server masks certain metadata in the HTTP interface to prevent leaking of sensitive information.
+==== Consul ====
+[source,yaml]
+.application.yml
+----
+spring.cloud.consul:
+  discovery:
+    metadata:
+        user-name: ${spring.security.user.name}
+        user-password: ${spring.security.user.password}
+----
 
-WARNING: You should configure HTTPS for your SBA Server or (service registry) when submitting credentials via the metadata.
+WARNING: Consul does not allow dots (".") in metadata keys, use dashes instead.
 
-WARNING: When using Spring Cloud Discovery, you must be aware that anybody who can query your service registry can obtain the credentials.
-
-TIP: When using this approach the SBA Server decides whether or not the user can access the registered applications. There are more complex solutions possible (using OAuth2) to let the clients decide if the user can access the endpoints. For that please have a look at the samples in https://github.com/joshiste/spring-boot-admin-samples[joshiste/spring-boot-admin-samples^].
 
 ==== CSRF on Actuator Endpoints ====
 
