@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,46 +27,40 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class BasicAuthHttpHeaderProviderTest {
 
-	private BasicAuthHttpHeaderProvider headersProvider = new BasicAuthHttpHeaderProvider();
+	private final BasicAuthHttpHeaderProvider headersProvider = new BasicAuthHttpHeaderProvider();
 
 	@Test
 	public void test_auth_header() {
-		Registration registration = Registration.create("foo", "http://health")
-			.metadata("user.name", "test")
-			.metadata("user.password", "drowssap")
-			.build();
+		Registration registration = Registration.create("foo", "http://health").metadata("user.name", "test")
+				.metadata("user.password", "drowssap").build();
 		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
-		assertThat(headersProvider.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
+		assertThat(this.headersProvider.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
 				.containsOnly("Basic dGVzdDpkcm93c3NhcA==");
 	}
 
 	@Test
 	public void test_auth_header_with_dashes() {
-		Registration registration = Registration.create("foo", "http://health")
-			.metadata("user-name", "test")
-			.metadata("user-password", "drowssap")
-			.build();
+		Registration registration = Registration.create("foo", "http://health").metadata("user-name", "test")
+				.metadata("user-password", "drowssap").build();
 		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
-		assertThat(headersProvider.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
-			.containsOnly("Basic dGVzdDpkcm93c3NhcA==");
+		assertThat(this.headersProvider.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
+				.containsOnly("Basic dGVzdDpkcm93c3NhcA==");
 	}
 
 	@Test
 	public void test_auth_header_no_separator() {
-		Registration registration = Registration.create("foo", "http://health")
-			.metadata("username", "test")
-			.metadata("userpassword", "drowssap")
-			.build();
+		Registration registration = Registration.create("foo", "http://health").metadata("username", "test")
+				.metadata("userpassword", "drowssap").build();
 		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
-		assertThat(headersProvider.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
-			.containsOnly("Basic dGVzdDpkcm93c3NhcA==");
+		assertThat(this.headersProvider.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
+				.containsOnly("Basic dGVzdDpkcm93c3NhcA==");
 	}
 
 	@Test
 	public void test_no_header() {
 		Registration registration = Registration.create("foo", "http://health").build();
 		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
-		assertThat(headersProvider.getHeaders(instance)).isEmpty();
+		assertThat(this.headersProvider.getHeaders(instance)).isEmpty();
 	}
 
 }
