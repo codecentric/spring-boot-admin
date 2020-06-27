@@ -71,7 +71,7 @@ public class DefaultServiceInstanceConverterTest {
 		Registration registration = new DefaultServiceInstanceConverter().convert(service);
 
 		assertThat(registration.getName()).isEqualTo("test");
-		assertThat(registration.getServiceUrl()).isEqualTo("https://localhost:80");
+		assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80");
 		assertThat(registration.getManagementUrl()).isEqualTo("https://127.0.0.1:1234/mgmt");
 		assertThat(registration.getHealthUrl()).isEqualTo("https://127.0.0.1:1234/mgmt/ping");
 		assertThat(registration.getMetadata()).isEqualTo(metadata);
