@@ -56,6 +56,10 @@ user.password
 | Credentials being used to access the endpoints.
 |
 
+| management.scheme
+| The scheme is substituted in the service URL and will be used for accessing the actuator endpoints.
+|
+
 | management.address
 | The address is substituted in the service URL and will be used for accessing the actuator endpoints.
 |

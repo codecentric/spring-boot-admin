@@ -34,8 +34,9 @@ import static org.springframework.util.StringUtils.isEmpty;
  * Converts any {@link ServiceInstance}s to {@link Instance}s. To customize the health- or
  * management-url for all instances you can set healthEndpointPath or
  * managementContextPath respectively. If you want to influence the url per service you
- * can add <code>management.context-path</code>, <code>management.port</code>,
- * <code>management.address</code> or <code>health.path</code> to the instances metadata.
+ * can add <code>management.scheme</code>, <code>management.address</code>,
+ * <code>management.port</code>, <code>management.context-path</code> or
+ * <code>health.path</code> to the instances metadata.
  *
  * @author Johannes Edmeier
  */
@@ -43,11 +44,13 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultServiceInstanceConverter.class);
 
+	private static final String KEY_MANAGEMENT_SCHEME = "management.scheme";
+
+	private static final String KEY_MANAGEMENT_ADDRESS = "management.address";
+
 	private static final String KEY_MANAGEMENT_PORT = "management.port";
 
 	private static final String KEY_MANAGEMENT_PATH = "management.context-path";
-
-	private static final String KEY_MANAGEMENT_ADDRESS = "management.address";
 
 	private static final String KEY_HEALTH_PATH = "health.path";
 
@@ -108,7 +111,11 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 	}
 
 	private String getManagementScheme(ServiceInstance instance) {
-		return this.getServiceUrl(instance).getScheme();
+		String managementServerScheme = instance.getMetadata().get(KEY_MANAGEMENT_SCHEME);
+		if (!isEmpty(managementServerScheme)) {
+			return managementServerScheme;
+		}
+		return getServiceUrl(instance).getScheme();
 	}
 
 	protected String getManagementHost(ServiceInstance instance) {
