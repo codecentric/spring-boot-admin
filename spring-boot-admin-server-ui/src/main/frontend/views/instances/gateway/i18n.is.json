@@ -1,0 +1,33 @@
+{
+  "instances": {
+    "gateway": {
+      "label": "Gátt",
+      "route":{
+        "add_route": "Bæta við vegi",
+        "adding_failed": "Mistókst að bæta við vegi.",
+        "cache_refreshed": "Skyndiminni vega uppfært",
+        "cache_refresh": "Uppfæra skyndiminni vega",
+        "cache_refresh_failed": "Mistekist",
+        "deleted": "Eytt",
+        "delete": "Eyða",
+        "delete_failed": "Mistekist",
+        "fetch_failed": "Mistókst að sækja vegir gátta.",
+        "filters": "Síur",
+        "id": "Id",
+        "loading": "Hlaða vegir…",
+        "no_definition_provided": "Engin skilgreining vegs í boði.",
+        "no_routes_found": "Fundið engir vegir.",
+        "order": "Röð",
+        "predicates": "Umsagnir",
+        "uri": "URI"
+      },
+      "filters": {
+        "fetch_failed": "Mistókst að sækja alheims-síur.",
+        "filter_name": "Nafn síu",
+        "loading": "Hlaða alheims-síur…",
+        "no_filters_found": "Fundið engar alheims-síur.",
+        "order": "Röð"
+      }
+    }
+  }
+}

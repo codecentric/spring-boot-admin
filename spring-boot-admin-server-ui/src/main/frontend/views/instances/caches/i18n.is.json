@@ -1,0 +1,12 @@
+{
+  "instances": {
+    "caches": {
+      "label": "Skyndiminni",
+      "cache_manager": "Skyndiminnastjórnandi",
+      "fetch_failed": "Mistókst að sækja skyndiminni.",
+      "loading_caches": "Skyndiminnaupplýsingar eru að hlaða…",
+      "name": "Nafn",
+      "no_caches_found": "Engar skyndiminnaupplýsingar eru í boði."
+    }
+  }
+}

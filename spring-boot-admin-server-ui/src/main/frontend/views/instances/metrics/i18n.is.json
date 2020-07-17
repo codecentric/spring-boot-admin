@@ -1,0 +1,13 @@
+{
+  "instances": {
+    "metrics": {
+      "label": "Firð",
+      "add_metric": "Bæta við firð",
+      "fetch_failed": "Mistókst að sækja firð.",
+      "fetching_tags": "Sækja tilbuin merki…",
+      "no_tags": "(engin merki)",
+      "no_tags_available": "Engin merki í boði.",
+      "metrics_not_supported_spring_boot_1": "Firð eru ekki í boði fyrir Spring Boot 1.x forrit."
+    }
+  }
+}
