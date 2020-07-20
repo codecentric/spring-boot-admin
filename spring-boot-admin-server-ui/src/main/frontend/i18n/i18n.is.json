@@ -1,0 +1,38 @@
+{
+  "error": {
+    "server_connection_failed": "Mistókst sambandið við þjón."
+  },
+  "term": {
+    "application": "Forrit",
+    "attributes": "Einkenni",
+    "bytes": "Bæti",
+    "cancel": "Hætta við",
+    "clear": "Tæma",
+    "cleared": "Tæmt",
+    "close": "Ljúka",
+    "confirm": "Staðfesta",
+    "delete": "Eyđa",
+    "deleted": "Eytt",
+    "duration": "Tímalengd",
+    "event": "Atburður",
+    "ever": "alltaf",
+    "executing": "Í vinnslu…",
+    "execution_failed": "Framkvæmd mistekist.",
+    "execution_successful": "Framkvæmd farsæl.",
+    "failed": "Mistekist",
+    "float": "Float",
+    "hours": "{count} klst. | {count} klst.",
+    "instances": "Eintök",
+    "integer": "Integer",
+    "milliseconds": "Millisekúndar",
+    "minutes": "{count} Mínúta | {count} Mínútur",
+    "name": "Nafn",
+    "operations": "Rökaðgerðir",
+    "save": "Vista",
+    "stacktrace": "Stacktrace",
+    "suppress": "Hunsa",
+    "time": "Tími",
+    "unsuppress": "Endurvekja",
+    "username": "Notandanafn"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "instances": {
+    "flyway": {
+      "label": "Flyway",
+      "fetch_failed": "Mistókst að sækja Flyway skyrslur.",
+      "type": "Gerð",
+      "checksum": "Checksum",
+      "version": "Útgafa",
+      "description": "Lýsing",
+      "script": "Forskrift",
+      "state": "Staða",
+      "installed_by": " Sett upp af",
+      "installed_on": "Sett upp á",
+      "installed_rank": "Uppsett staða",
+      "execution_time": "Tími framkvæmdarinnar"
+    }
+  }
+}

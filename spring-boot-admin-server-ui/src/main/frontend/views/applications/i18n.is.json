@@ -1,0 +1,17 @@
+{
+  "applications": {
+    "all_up": "Öll fáanleg",
+    "applications": "Forrit",
+    "instances": "Eintök",
+    "instances_down": "Eintök ekki fáanleg",
+    "loading_applications": "Forrit eru að ræsa…",
+    "no_applications_registered": "Engin forrit skráð.",
+    "notifications_suppressed_for": "Tilkynningar fyrir <code>{name}</code> eru hunsuð fyrir",
+    "restricted": "skert",
+    "server_connection_failed": "Mistókst sambandið við þjón.",
+    "suppress_notifications_on": "Tilkynningar fyrir <code>{name}</code> fyrir",
+    "status": "Staða",
+    "label": "Forrit",
+    "up": "OK"
+  }
+}

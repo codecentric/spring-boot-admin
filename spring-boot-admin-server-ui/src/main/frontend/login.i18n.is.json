@@ -1,0 +1,12 @@
+{
+  "login": {
+    "button_login": "Skrá inn",
+    "invalid_username_or_password": "Notandanafn eða lykilorð rángt",
+    "logout_successful": "Skráð út",
+    "remember_me": "Mundu eftir mér",
+    "placeholder": {
+      "username": "Notandanafn",
+      "password": "Lykilorð"
+    }
+  }
+}

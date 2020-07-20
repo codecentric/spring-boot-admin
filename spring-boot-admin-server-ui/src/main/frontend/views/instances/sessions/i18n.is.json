@@ -1,0 +1,18 @@
+{
+  "instances": {
+    "sessions": {
+      "label": "Setur",
+      "attributes": "Einkenni",
+      "created_at": "Búið til á",
+      "expired": "Útrunnið",
+      "expiry": "Falla úr gildi",
+        "fetch_failed": "Misókst að sækja setur.",
+      "last_accessed_at": "Síðastur aðgangur á",
+      "loading_sessions": "Sækja setur…",
+      "max_inactive_interval": "Max Inactive<br>Interval",
+      "no_sessions_found": "Fundið engar setur",
+      "session_id": "Seta Id",
+      "unlimited": "Ótakmarkaður"
+    }
+  }
+}

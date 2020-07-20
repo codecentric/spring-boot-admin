@@ -1,0 +1,9 @@
+{
+  "instances": {
+    "configprops": {
+      "label": "Stillingareiginleikar",
+      "fetch_failed": "Mistókst að sækja stillingareiginleikar.",
+      "no_properties_set": "Engin stilling í boði."
+    }
+  }
+}

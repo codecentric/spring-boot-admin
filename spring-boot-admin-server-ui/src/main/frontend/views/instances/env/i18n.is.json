@@ -1,0 +1,21 @@
+{
+  "instances": {
+    "env": {
+      "label": "Umhverfi",
+      "manager": "Umhverfisstjórnandi",
+      "active_profile": "Profile",
+      "context_refresh": "Uppfæra samhengi",
+      "context_refresh_failed": "Mistekist",
+      "context_refreshed": "Samhengi uppfært",
+      "context_reset": "Núllstilla",
+      "context_reset_failed": "Mistekist",
+      "context_resetted": "Núllstillt",
+      "context_update": "Uppfærsla",
+      "context_update_failed": "Mistekist",
+      "context_updated": "Uppfært",
+      "fetch_failed": "Mistókst að sækja umhverfi.",
+      "no_properties": "Engir eiginleikar stillt",
+      "title": "Umhverfisstjórnandi"
+    }
+  }
+}

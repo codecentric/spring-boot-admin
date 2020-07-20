@@ -1,0 +1,25 @@
+{
+  "sidebar": {
+    "data": {
+      "title": "Gögn"
+    },
+    "insights": {
+      "title": "Innsýn"
+    },
+    "instances_caches": {
+      "title": "Skyndiminni"
+    },
+    "jvm": {
+      "title": "JVM"
+    },
+    "logging": {
+      "title": "Skrá í annál"
+    },
+    "security": {
+      "title": "Öryggi"
+    },
+    "web": {
+      "title": "Vefur"
+    }
+  }
+}

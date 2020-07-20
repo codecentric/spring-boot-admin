@@ -1,0 +1,20 @@
+{
+  "instances": {
+    "loggers": {
+      "label": "Annálsritarar",
+      "affects_all_instances": "Hefur áhrif á öll {count} eintök",
+      "affects_this_instance_only": "Hefur bara áhrif á þetta eintak",
+      "application": "Forrit",
+      "fetch_failed": "Mistókst að sækja annálsritarar.",
+      "filter": {
+        "class_only": "class only",
+        "configured": "stillt"
+      },
+      "instance": "Eintak",
+      "new": "nýtt",
+      "no_loggers_found": "Fundið engar annálsritarar.",
+      "reset": "Núllstilla",
+      "setting_loglevel_failed": "Stilla {logger} á {loglevel} mistekist."
+    }
+  }
+}
