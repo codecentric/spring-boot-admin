@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2020 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@
         <table class="health-details table is-fullwidth">
           <tr class="health-details__detail" v-for="detail in details" :key="detail.name">
             <td v-text="detail.name" />
-            <td v-if="name === 'diskSpace'" v-text="prettyBytes(detail.value)" />
+            <td v-if="name === 'diskSpace'" v-text="typeof detail.value === 'number' ? prettyBytes(detail.value) : detail.value" />
             <td v-else-if="typeof detail.value === 'object'">
               <pre class="is-breakable" v-text="toJson(detail.value)" />
             </td>

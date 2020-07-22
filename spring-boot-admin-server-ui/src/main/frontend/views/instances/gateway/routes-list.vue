@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2019 the original author or authors.
+  - Copyright 2014-2020 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -52,6 +52,10 @@
               v-if="route.route_definition"
               :route-definition="route.route_definition"
             />
+            <route
+              v-if="route.uri"
+              :route="route"
+            />
             <pre
               v-else-if="route.route_object"
               v-text="toJson(route.route_object)"
@@ -77,10 +81,11 @@
 <script>
   import Instance from '@/services/instance';
   import {from, listen} from '@/utils/rxjs';
+  import Route from './route'
   import RouteDefinition from './route-definition'
 
   export default {
-    components: {RouteDefinition},
+    components: {RouteDefinition, Route},
     props: {
       instance: {
         type: Instance,
