@@ -21,10 +21,13 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
 
+import de.codecentric.boot.admin.server.config.AdminServerProperties;
+import de.codecentric.boot.admin.server.config.AdminServerProperties.InstanceCredentials;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 
 /**
@@ -41,10 +44,24 @@ public class BasicAuthHttpHeaderProvider implements HttpHeadersProvider {
 
 	private static final String[] PASSWORD_KEYS = { "user.password", "user-password", "userpassword" };
 
+	@Autowired
+	AdminServerProperties adminServerProperties;
+
 	@Override
 	public HttpHeaders getHeaders(Instance instance) {
 		String username = getMetadataValue(instance, USERNAME_KEYS);
 		String password = getMetadataValue(instance, PASSWORD_KEYS);
+
+		if (adminServerProperties.getInstanceAuth().isEnabled()) {
+			String registeredName = instance.getRegistration().getName();
+			username = adminServerProperties.getInstanceAuth().getDefaultUserName();
+			password = adminServerProperties.getInstanceAuth().getDefaultPassword();
+			if (adminServerProperties.getInstanceAuth().getService().containsKey(registeredName)) {
+				InstanceCredentials creds = adminServerProperties.getInstanceAuth().getService().get(registeredName);
+				username = creds.getUserName();
+				password = creds.getUserPassword();
+			}
+		}
 
 		HttpHeaders headers = new HttpHeaders();
 		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {

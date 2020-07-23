@@ -42,6 +42,8 @@ public class AdminServerProperties {
 
 	private MonitorProperties monitor = new MonitorProperties();
 
+	private InstanceAuthProperties instanceAuth = new InstanceAuthProperties();
+
 	private InstanceProxyProperties instanceProxy = new InstanceProxyProperties();
 
 	/**
@@ -125,6 +127,52 @@ public class AdminServerProperties {
 		@DurationUnit(ChronoUnit.MILLIS)
 		private Map<String, Duration> timeout = new HashMap<>();
 
+	}
+
+	@lombok.Data
+	public static class InstanceAuthProperties {
+
+		/**
+		 * Whether or not to use configuration properties as a source for instance credentials
+		 * <br/>
+		 * Default: false
+		 */
+		private boolean enabled = false;
+
+		/**
+		 * Default username used for authentication to each instance. Individual values for specific instances
+		 * can be overriden using `spring.boot.admin.instance-auth.service.*.user-name`.
+		 * <br/>
+		 * Default: admin
+		 */
+		private String defaultUserName = "admin";
+
+		/**
+		 * Default userpassword used for authentication to each instance. Individual values for specific instances
+		 * can be overriden using `spring.boot.admin.instance-auth.service.*.user-password`.
+		 * <br/>
+		 * Default: admin
+		 */
+		private String defaultPassword = "admin";
+
+		/**
+		 * Map of instance credentials per registered service name
+		 */
+		private Map<String, InstanceCredentials> service = new HashMap<>();
+	}
+
+	@lombok.Data
+	public static class InstanceCredentials {
+
+		/**
+		 * user name for this instance
+		 */
+		private String userName;
+
+		/**
+		 * user password for this instance
+		 */
+		private String userPassword;
 	}
 
 	@lombok.Data
