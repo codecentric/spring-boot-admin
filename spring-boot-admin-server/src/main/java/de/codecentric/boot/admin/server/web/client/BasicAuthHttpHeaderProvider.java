@@ -21,12 +21,10 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
 
-import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.AdminServerProperties.InstanceCredentials;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 
@@ -38,26 +36,34 @@ import de.codecentric.boot.admin.server.domain.entities.Instance;
  *
  * @author Johannes Edmeier
  */
+@lombok.Data
+@lombok.AllArgsConstructor(staticName = "of")
+@lombok.NoArgsConstructor
 public class BasicAuthHttpHeaderProvider implements HttpHeadersProvider {
 
 	private static final String[] USERNAME_KEYS = { "user.name", "user-name", "username" };
 
 	private static final String[] PASSWORD_KEYS = { "user.password", "user-password", "userpassword" };
 
-	@Autowired
-	AdminServerProperties adminServerProperties;
+	private Boolean instanceAuthEnabled = Boolean.FALSE;
+
+	private String defaultUserName;
+
+	private String defaultPassword;
+
+	private Map<String, InstanceCredentials> serviceMap;
 
 	@Override
 	public HttpHeaders getHeaders(Instance instance) {
 		String username = getMetadataValue(instance, USERNAME_KEYS);
 		String password = getMetadataValue(instance, PASSWORD_KEYS);
 
-		if (adminServerProperties.getInstanceAuth().isEnabled()) {
+		if (this.instanceAuthEnabled && !(StringUtils.hasText(username) && StringUtils.hasText(password))) {
 			String registeredName = instance.getRegistration().getName();
-			username = adminServerProperties.getInstanceAuth().getDefaultUserName();
-			password = adminServerProperties.getInstanceAuth().getDefaultPassword();
-			if (adminServerProperties.getInstanceAuth().getService().containsKey(registeredName)) {
-				InstanceCredentials creds = adminServerProperties.getInstanceAuth().getService().get(registeredName);
+			username = this.defaultUserName;
+			password = this.defaultPassword;
+			if (serviceMap.containsKey(registeredName)) {
+				InstanceCredentials creds = serviceMap.get(registeredName);
 				username = creds.getUserName();
 				password = creds.getUserPassword();
 			}

@@ -133,46 +133,50 @@ public class AdminServerProperties {
 	public static class InstanceAuthProperties {
 
 		/**
-		 * Whether or not to use configuration properties as a source for instance credentials
-		 * <br/>
+		 * Whether or not to use configuration properties as a source for instance
+		 * credentials <br/>
 		 * Default: false
 		 */
 		private boolean enabled = false;
 
 		/**
-		 * Default username used for authentication to each instance. Individual values for specific instances
-		 * can be overriden using `spring.boot.admin.instance-auth.service.*.user-name`.
-		 * <br/>
-		 * Default: admin
+		 * Default username used for authentication to each instance. Individual values
+		 * for specific instances can be overriden using
+		 * `spring.boot.admin.instance-auth.service-map.*.user-name`. <br/>
+		 * Default: client
 		 */
-		private String defaultUserName = "admin";
+		private String defaultUserName = "client";
 
 		/**
-		 * Default userpassword used for authentication to each instance. Individual values for specific instances
-		 * can be overriden using `spring.boot.admin.instance-auth.service.*.user-password`.
-		 * <br/>
-		 * Default: admin
+		 * Default userpassword used for authentication to each instance. Individual
+		 * values for specific instances can be overriden using
+		 * `spring.boot.admin.instance-auth.service-map.*.user-password`. <br/>
+		 * Default: client
 		 */
-		private String defaultPassword = "admin";
+		private String defaultPassword = "client";
 
 		/**
 		 * Map of instance credentials per registered service name
 		 */
-		private Map<String, InstanceCredentials> service = new HashMap<>();
+		private Map<String, InstanceCredentials> serviceMap = new HashMap<>();
+
 	}
 
-	@lombok.Data
+	@lombok.Data(staticConstructor = "of")
 	public static class InstanceCredentials {
 
 		/**
 		 * user name for this instance
 		 */
+		@lombok.NonNull
 		private String userName;
 
 		/**
 		 * user password for this instance
 		 */
+		@lombok.NonNull
 		private String userPassword;
+
 	}
 
 	@lombok.Data
