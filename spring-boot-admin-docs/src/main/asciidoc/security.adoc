@@ -67,7 +67,7 @@ To enable pulling credentials from properties you must set `spring.boot.admin.in
 
 NOTE: If your clients provide credentials via metadata (i.e., via service annotations), that metadata will be used instead of the properites.
 
-You can provide a default username and password by setting `spring.boot.admin.instance-auth.default-user-name` and `spring.boot.admin.instance-auth.default-user-password`. Optionally you can provide credentials for specific services (by name) using the `spring.boot.admin.instance-auth.service-map.*.user-name` pattern, replacing `*` with the service name.
+You can provide a default username and password by setting `spring.boot.admin.instance-auth.default-user-name` and `spring.boot.admin.instance-auth.default-user-password`. Optionally you can provide credentials for specific services (by name) using the `spring.boot.admin.instance-auth.service-map.\*.user-name` pattern, replacing `*` with the service name.
 [source,yaml]
 .application.yml
 ----
