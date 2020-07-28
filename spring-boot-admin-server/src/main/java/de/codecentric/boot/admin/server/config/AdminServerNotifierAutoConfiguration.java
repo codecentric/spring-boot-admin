@@ -16,11 +16,15 @@
 
 package de.codecentric.boot.admin.server.config;
 
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.reactivestreams.Publisher;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -38,7 +42,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.client.RestTemplate;
@@ -73,11 +77,17 @@ public class AdminServerNotifierAutoConfiguration {
 	private static RestTemplate createNotifierRestTemplate(NotifierProxyProperties proxyProperties) {
 		RestTemplate restTemplate = new RestTemplate();
 		if (proxyProperties.getHost() != null) {
-			SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-			Proxy proxy = new Proxy(Proxy.Type.HTTP,
-					new InetSocketAddress(proxyProperties.getHost(), proxyProperties.getPort()));
-			requestFactory.setProxy(proxy);
-			restTemplate.setRequestFactory(requestFactory);
+			HttpClientBuilder builder = HttpClientBuilder.create();
+			builder.setProxy(new HttpHost(proxyProperties.getHost(), proxyProperties.getPort()));
+
+			if (proxyProperties.getUsername() != null && proxyProperties.getPassword() != null) {
+				CredentialsProvider credsProvider = new BasicCredentialsProvider();
+				credsProvider.setCredentials(new AuthScope(proxyProperties.getHost(), proxyProperties.getPort()),
+						new UsernamePasswordCredentials(proxyProperties.getUsername(), proxyProperties.getPassword()));
+				builder.setDefaultCredentialsProvider(credsProvider);
+			}
+
+			restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(builder.build()));
 		}
 		return restTemplate;
 	}
