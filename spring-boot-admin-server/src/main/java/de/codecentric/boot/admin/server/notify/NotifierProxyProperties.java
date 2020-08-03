@@ -32,4 +32,14 @@ public class NotifierProxyProperties {
 	 */
 	private int port;
 
+	/**
+	 * Proxy-User for sending notifications (if proxy requires authentication).
+	 */
+	private String username;
+
+	/**
+	 * Proxy-Password for sending notifications (if proxy requires authentication).
+	 */
+	private String password;
+
 }
