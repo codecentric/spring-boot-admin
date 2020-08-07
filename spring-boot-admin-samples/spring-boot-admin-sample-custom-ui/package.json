@@ -12,9 +12,9 @@
     "eslint-plugin-vue": "^6.2.2"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^4.4.1",
-    "@vue/cli-plugin-eslint": "^4.4.1",
-    "@vue/cli-service": "^4.4.1",
+    "@vue/cli-plugin-babel": "^4.4.6",
+    "@vue/cli-plugin-eslint": "^4.4.6",
+    "@vue/cli-service": "^4.4.6",
     "@vue/eslint-config-standard": "^4.0.0",
     "copy-webpack-plugin": "^5.1.1",
     "eslint": "^6.8.0",
