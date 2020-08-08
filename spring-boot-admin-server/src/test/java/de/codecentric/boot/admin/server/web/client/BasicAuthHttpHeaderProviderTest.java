@@ -21,10 +21,10 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 
-import de.codecentric.boot.admin.server.config.AdminServerProperties.InstanceCredentials;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
+import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider.InstanceCredentials;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,7 +32,7 @@ public class BasicAuthHttpHeaderProviderTest {
 
 	private final BasicAuthHttpHeaderProvider headersProvider = new BasicAuthHttpHeaderProvider();
 
-	private final BasicAuthHttpHeaderProvider headersProvideEnableInstanceAuth = BasicAuthHttpHeaderProvider.of(true,
+	private final BasicAuthHttpHeaderProvider headersProviderEnableInstanceAuth = BasicAuthHttpHeaderProvider.of(true,
 			"client", "client", Collections.singletonMap("sb-admin-server", InstanceCredentials.of("admin", "admin")));
 
 	@Test
@@ -73,7 +73,7 @@ public class BasicAuthHttpHeaderProviderTest {
 	public void test_auth_instance_enabled_use_default_creds() {
 		Registration registration = Registration.create("foo", "http://health").name("xyz-server").build();
 		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
-		assertThat(this.headersProvideEnableInstanceAuth.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
+		assertThat(this.headersProviderEnableInstanceAuth.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
 				.containsOnly("Basic Y2xpZW50OmNsaWVudA==");
 	}
 
@@ -81,7 +81,7 @@ public class BasicAuthHttpHeaderProviderTest {
 	public void test_auth_instance_enabled_use_service_specific_creds() {
 		Registration registration = Registration.create("foo", "http://health").name("sb-admin-server").build();
 		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
-		assertThat(this.headersProvideEnableInstanceAuth.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
+		assertThat(this.headersProviderEnableInstanceAuth.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
 				.containsOnly("Basic YWRtaW46YWRtaW4=");
 	}
 
@@ -90,7 +90,7 @@ public class BasicAuthHttpHeaderProviderTest {
 		Registration registration = Registration.create("foo", "http://health").metadata("username", "test")
 				.metadata("userpassword", "drowssap").name("xyz-server").build();
 		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
-		assertThat(this.headersProvideEnableInstanceAuth.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
+		assertThat(this.headersProviderEnableInstanceAuth.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
 				.containsOnly("Basic dGVzdDpkcm93c3NhcA==");
 	}
 

@@ -57,15 +57,15 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 
 | spring.boot.admin.instance-auth.enabled
 | Enable pulling credentials from spring configuration properties
-| `false`
+| `true`
 
 | spring.boot.admin.instance-auth.default-user-name
 | A default user name used to authenticate to registered services. The `spring.boot.admin.instance-auth.enabled` property must be `true`.
-| `"client"`
+| `null`
 
 | spring.boot.admin.instance-auth.default-user-password
 | A default user password used to authenticate to registered services. The `spring.boot.admin.instance-auth.enabled` property must be `true`.
-| `"client"`
+| `null`
 
 | spring.boot.admin.instance-auth.service-map.*.user-name
 | A user name used to authenticate to the registered service with the specified name. The `spring.boot.admin.instance-auth.enabled` property must be `true`.

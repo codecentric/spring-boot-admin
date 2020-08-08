@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 
 import de.codecentric.boot.admin.server.web.PathUtils;
+import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider.InstanceCredentials;
 
 import static java.util.Arrays.asList;
 
@@ -135,47 +136,30 @@ public class AdminServerProperties {
 		/**
 		 * Whether or not to use configuration properties as a source for instance
 		 * credentials <br/>
-		 * Default: false
+		 * Default: true
 		 */
-		private boolean enabled = false;
+		private boolean enabled = true;
 
 		/**
 		 * Default username used for authentication to each instance. Individual values
 		 * for specific instances can be overriden using
 		 * `spring.boot.admin.instance-auth.service-map.*.user-name`. <br/>
-		 * Default: client
+		 * Default: null
 		 */
-		private String defaultUserName = "client";
+		private String defaultUserName = null;
 
 		/**
 		 * Default userpassword used for authentication to each instance. Individual
 		 * values for specific instances can be overriden using
 		 * `spring.boot.admin.instance-auth.service-map.*.user-password`. <br/>
-		 * Default: client
+		 * Default: null
 		 */
-		private String defaultPassword = "client";
+		private String defaultPassword = null;
 
 		/**
 		 * Map of instance credentials per registered service name
 		 */
 		private Map<String, InstanceCredentials> serviceMap = new HashMap<>();
-
-	}
-
-	@lombok.Data(staticConstructor = "of")
-	public static class InstanceCredentials {
-
-		/**
-		 * user name for this instance
-		 */
-		@lombok.NonNull
-		private String userName;
-
-		/**
-		 * user password for this instance
-		 */
-		@lombok.NonNull
-		private String userPassword;
 
 	}
 

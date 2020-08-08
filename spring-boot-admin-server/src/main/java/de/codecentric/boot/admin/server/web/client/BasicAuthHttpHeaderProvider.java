@@ -25,7 +25,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
 
-import de.codecentric.boot.admin.server.config.AdminServerProperties.InstanceCredentials;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 
 /**
@@ -92,4 +91,20 @@ public class BasicAuthHttpHeaderProvider implements HttpHeadersProvider {
 		return null;
 	}
 
+	@lombok.Data(staticConstructor = "of")
+	public static class InstanceCredentials {
+
+		/**
+		 * user name for this instance
+		 */
+		@lombok.NonNull
+		private String userName;
+
+		/**
+		 * user password for this instance
+		 */
+		@lombok.NonNull
+		private String userPassword;
+
+	}
 }
