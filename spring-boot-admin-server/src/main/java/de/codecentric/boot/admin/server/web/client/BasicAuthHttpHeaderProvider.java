@@ -107,4 +107,5 @@ public class BasicAuthHttpHeaderProvider implements HttpHeadersProvider {
 		private String userPassword;
 
 	}
+
 }
