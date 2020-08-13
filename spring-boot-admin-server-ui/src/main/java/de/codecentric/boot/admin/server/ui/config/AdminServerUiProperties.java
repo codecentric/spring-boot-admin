@@ -147,6 +147,7 @@ public class AdminServerUiProperties {
 		 * Time in milliseconds to refresh data in threads view.
 		 */
 		private int threads = 2500;
+
 	}
 
 	@lombok.Data

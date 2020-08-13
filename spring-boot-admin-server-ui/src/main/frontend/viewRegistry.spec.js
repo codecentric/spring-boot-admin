@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import ViewRegistry from "./viewRegistry";
+import ViewRegistry from './viewRegistry';
 
 describe('viewRegistry', () => {
     describe('given view already in the registry', function () {
