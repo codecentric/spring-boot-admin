@@ -55,9 +55,29 @@ In addition when the reverse proxy terminates the https connection, it may be ne
   If the path differs from the id you can specify this as id:path (e.g. health:ping)..
 | `"health", "env", "metrics", "httptrace:trace", "threaddump:dump", "jolokia", "info", "logfile", "refresh", "flyway", "liquibase", "heapdump", "loggers", "auditevents"`
 
+| spring.boot.admin.instance-auth.enabled
+| Enable pulling credentials from spring configuration properties
+| `true`
+
+| spring.boot.admin.instance-auth.default-user-name
+| A default user name used to authenticate to registered services. The `spring.boot.admin.instance-auth.enabled` property must be `true`.
+| `null`
+
+| spring.boot.admin.instance-auth.default-user-password
+| A default user password used to authenticate to registered services. The `spring.boot.admin.instance-auth.enabled` property must be `true`.
+| `null`
+
+| spring.boot.admin.instance-auth.service-map.*.user-name
+| A user name used to authenticate to the registered service with the specified name. The `spring.boot.admin.instance-auth.enabled` property must be `true`.
+| 
+
+| spring.boot.admin.instance-auth.service-map.*.user-password
+| A user password used to authenticate to the registered service with the specified name. The `spring.boot.admin.instance-auth.enabled` property must be `true`.
+| 
+
 | spring.boot.admin.instance-proxy.ignored-headers
 |  Headers not to be forwarded when making requests to clients.
-| `"Cookie", "Set-Cookie", "Authorization"
+| `"Cookie", "Set-Cookie", "Authorization"`
 
 | spring.boot.admin.ui.public-url
 | Base url to use to build the base href in the ui.

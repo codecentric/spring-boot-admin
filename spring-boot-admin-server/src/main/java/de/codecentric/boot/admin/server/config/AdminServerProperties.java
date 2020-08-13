@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 
 import de.codecentric.boot.admin.server.web.PathUtils;
+import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider.InstanceCredentials;
 
 import static java.util.Arrays.asList;
 
@@ -41,6 +42,8 @@ public class AdminServerProperties {
 	private String contextPath = "";
 
 	private MonitorProperties monitor = new MonitorProperties();
+
+	private InstanceAuthProperties instanceAuth = new InstanceAuthProperties();
 
 	private InstanceProxyProperties instanceProxy = new InstanceProxyProperties();
 
@@ -124,6 +127,39 @@ public class AdminServerProperties {
 		 */
 		@DurationUnit(ChronoUnit.MILLIS)
 		private Map<String, Duration> timeout = new HashMap<>();
+
+	}
+
+	@lombok.Data
+	public static class InstanceAuthProperties {
+
+		/**
+		 * Whether or not to use configuration properties as a source for instance
+		 * credentials <br/>
+		 * Default: true
+		 */
+		private boolean enabled = true;
+
+		/**
+		 * Default username used for authentication to each instance. Individual values
+		 * for specific instances can be overriden using
+		 * `spring.boot.admin.instance-auth.service-map.*.user-name`. <br/>
+		 * Default: null
+		 */
+		private String defaultUserName = null;
+
+		/**
+		 * Default userpassword used for authentication to each instance. Individual
+		 * values for specific instances can be overriden using
+		 * `spring.boot.admin.instance-auth.service-map.*.user-password`. <br/>
+		 * Default: null
+		 */
+		private String defaultPassword = null;
+
+		/**
+		 * Map of instance credentials per registered service name
+		 */
+		private Map<String, InstanceCredentials> serviceMap = new HashMap<>();
 
 	}
 

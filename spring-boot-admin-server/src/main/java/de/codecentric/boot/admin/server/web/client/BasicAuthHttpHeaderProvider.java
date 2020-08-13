@@ -35,16 +35,38 @@ import de.codecentric.boot.admin.server.domain.entities.Instance;
  *
  * @author Johannes Edmeier
  */
+@lombok.Data
+@lombok.AllArgsConstructor(staticName = "of")
+@lombok.NoArgsConstructor
 public class BasicAuthHttpHeaderProvider implements HttpHeadersProvider {
 
 	private static final String[] USERNAME_KEYS = { "user.name", "user-name", "username" };
 
 	private static final String[] PASSWORD_KEYS = { "user.password", "user-password", "userpassword" };
 
+	private Boolean instanceAuthEnabled = Boolean.FALSE;
+
+	private String defaultUserName;
+
+	private String defaultPassword;
+
+	private Map<String, InstanceCredentials> serviceMap;
+
 	@Override
 	public HttpHeaders getHeaders(Instance instance) {
 		String username = getMetadataValue(instance, USERNAME_KEYS);
 		String password = getMetadataValue(instance, PASSWORD_KEYS);
+
+		if (this.instanceAuthEnabled && !(StringUtils.hasText(username) && StringUtils.hasText(password))) {
+			String registeredName = instance.getRegistration().getName();
+			username = this.defaultUserName;
+			password = this.defaultPassword;
+			if (serviceMap.containsKey(registeredName)) {
+				InstanceCredentials creds = serviceMap.get(registeredName);
+				username = creds.getUserName();
+				password = creds.getUserPassword();
+			}
+		}
 
 		HttpHeaders headers = new HttpHeaders();
 		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
@@ -67,6 +89,23 @@ public class BasicAuthHttpHeaderProvider implements HttpHeadersProvider {
 			}
 		}
 		return null;
+	}
+
+	@lombok.Data(staticConstructor = "of")
+	public static class InstanceCredentials {
+
+		/**
+		 * user name for this instance
+		 */
+		@lombok.NonNull
+		private String userName;
+
+		/**
+		 * user password for this instance
+		 */
+		@lombok.NonNull
+		private String userPassword;
+
 	}
 
 }
