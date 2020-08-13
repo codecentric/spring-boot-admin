@@ -32,7 +32,7 @@ public class BasicAuthHttpHeaderProviderTest {
 
 	private final BasicAuthHttpHeaderProvider headersProvider = new BasicAuthHttpHeaderProvider();
 
-	private final BasicAuthHttpHeaderProvider headersProviderEnableInstanceAuth = BasicAuthHttpHeaderProvider.of(true,
+	private final BasicAuthHttpHeaderProvider headersProviderEnableInstanceAuth = new BasicAuthHttpHeaderProvider(
 			"client", "client", Collections.singletonMap("sb-admin-server", InstanceCredentials.of("admin", "admin")));
 
 	@Test
