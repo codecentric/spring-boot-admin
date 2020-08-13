@@ -48,8 +48,9 @@ module.exports = {
       .use('html-loader')
       .loader('html-loader')
       .options({
-        root: resolve(__dirname, 'src/main/frontend'),
-        attrs: []
+        attributes: {
+          root: resolve(__dirname, 'src/main/frontend')
+        }
       })
       .end();
     config.plugin('prefetch-sba-core')

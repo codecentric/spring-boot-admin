@@ -35,12 +35,12 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>2.3.2.RELEASE</spring-boot.version>
+        <spring-boot.version>2.3.3.RELEASE</spring-boot.version>
         <spring-cloud.version>Hoxton.SR7</spring-cloud.version>
-        <wiremock.version>2.26.1</wiremock.version>
-        <hazelcast-tests.version>3.12.6</hazelcast-tests.version>
+        <wiremock.version>2.27.1</wiremock.version>
+        <hazelcast-tests.version>3.12.8</hazelcast-tests.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
-        <awaitility.version>4.0.2</awaitility.version>
+        <awaitility.version>4.0.3</awaitility.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
