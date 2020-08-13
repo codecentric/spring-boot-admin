@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import de.codecentric.boot.admin.server.ui.config.AdminServerUiProperties.PollTimer;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
@@ -123,6 +124,8 @@ public class UiController {
 		private final String favicon;
 
 		private final String faviconDanger;
+
+		private final PollTimer pollTimer;
 
 		private final boolean notificationFilterEnabled;
 

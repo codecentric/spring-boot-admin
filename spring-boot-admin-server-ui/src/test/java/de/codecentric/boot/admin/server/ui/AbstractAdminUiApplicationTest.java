@@ -133,6 +133,21 @@ public abstract class AbstractAdminUiApplicationTest {
 		//@formatter:on
 	}
 
+	@Test
+	public void should_return_defaults_for_pollTimers() {
+		//@formatter:off
+		this.webClient.get()
+			.uri("/sba-settings.js")
+			.accept(MediaType.ALL)
+			.exchange()
+			.expectStatus().isOk()
+			.expectHeader().contentTypeCompatibleWith("application/javascript")
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("\"pollTimer\""))
+			.value((body) -> assertThat(body).contains("\"cache\":2500"));
+		//@formatter:on
+	}
+
 	protected WebTestClient createWebClient(int port) {
 		return WebTestClient.bindToServer().baseUrl("http://localhost:" + port).build();
 	}
