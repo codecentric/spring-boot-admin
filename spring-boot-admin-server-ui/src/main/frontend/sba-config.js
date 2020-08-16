@@ -25,7 +25,8 @@ const DEFAULT_CONFIG = {
     faviconDanger: 'assets/img/favicon-danger.png',
     notificationFilterEnabled: false,
     routes: [],
-    availableLanguages: []
+    availableLanguages: [],
+    viewSettings: []
   },
   user: null,
   extensions: [],

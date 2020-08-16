@@ -103,6 +103,11 @@ public class AdminServerUiProperties {
 	private List<UiController.ExternalView> externalViews = new ArrayList<>();
 
 	/**
+	 * External views shown in the navbar.
+	 */
+	private List<UiController.ViewSettings> viewSettings = new ArrayList<>();
+
+	/**
 	 * Whether the option to remember a user should be available.
 	 */
 	private boolean rememberMeEnabled = true;
