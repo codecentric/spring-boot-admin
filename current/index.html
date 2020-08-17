@@ -619,6 +619,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_customizing_login_logo">6.7. Customizing Login Logo</a></li>
 <li><a href="#_customizing_favicon">6.8. Customizing Favicon</a></li>
 <li><a href="#_customizing_available_languages">6.9. Customizing Available Languages</a></li>
+<li><a href="#_showing_hiding_views">6.10. Showing / Hiding views</a></li>
 </ul>
 </li>
 <li><a href="#monitoring-spring-boot-1.5.x">7. Monitoring Spring Boot 1.5.x</a></li>
@@ -3138,6 +3139,23 @@ or you must ensure yourself that the image gets served correctly (e.g. by regist
 <p><strong>spring.boot.admin.ui.available-languages</strong>: Used as a filter of existing languages. (e.g <code>en,de</code> out of existing <code>de,en,fr,ko,pt-BR,ru,zh</code>)</p>
 </li>
 </ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_showing_hiding_views"><a class="anchor" href="#_showing_hiding_views"></a><a class="link" href="#_showing_hiding_views">6.10. Showing / Hiding views</a></h3>
+<div class="paragraph">
+<p>You can very simply hide views in the navbar:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">spring</span>:
+  <span class="key">boot</span>:
+    <span class="key">admin</span>:
+      <span class="key">ui</span>:
+        <span class="key">view-settings</span>:
+          - <span class="string"><span class="content">name: &quot;journal&quot;</span></span>
+            <span class="key">enabled</span>: <span class="string"><span class="content">false</span></span></code></pre>
+</div>
 </div>
 </div>
 </div>
