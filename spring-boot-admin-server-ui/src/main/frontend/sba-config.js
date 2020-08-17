@@ -26,6 +26,7 @@ const DEFAULT_CONFIG = {
     notificationFilterEnabled: false,
     routes: [],
     availableLanguages: [],
+    viewSettings: [],
     pollTimer: {
       cache: 2500,
       datasource: 2500,

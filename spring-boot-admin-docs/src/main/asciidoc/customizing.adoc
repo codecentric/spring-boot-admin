@@ -145,3 +145,12 @@ It is possible to use a custom favicon, which is also used for desktop notificat
 To filter languages to a subset of all supported languages:
 
 - **spring.boot.admin.ui.available-languages**: Used as a filter of existing languages. (e.g `en,de` out of existing `de,en,fr,ko,pt-BR,ru,zh`)
+
+=== Showing / Hiding views ===
+
+You can very simply hide views in the navbar:
+
+[source,yaml,indent=0]
+----
+include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/resources/application.yml[tags=customization-view-settings]
+----
