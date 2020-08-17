@@ -58,6 +58,7 @@
 </template>
 
 <script>
+  import sbaConfig from '@/sba-config';
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
   import {concatMap, timer} from '@/utils/rxjs';
@@ -143,7 +144,7 @@
       },
       createSubscription() {
         const vm = this;
-        return timer(0, 2500)
+        return timer(0, sbaConfig.uiSettings.pollTimer.cache)
           .pipe(concatMap(vm.fetchMetrics))
           .subscribe({
             next: data => {

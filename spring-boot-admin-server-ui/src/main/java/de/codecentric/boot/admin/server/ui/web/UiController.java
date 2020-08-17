@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import de.codecentric.boot.admin.server.ui.config.AdminServerUiProperties.PollTimer;
 import de.codecentric.boot.admin.server.ui.extensions.UiExtension;
 import de.codecentric.boot.admin.server.ui.extensions.UiExtensions;
 import de.codecentric.boot.admin.server.web.AdminController;
@@ -123,6 +124,8 @@ public class UiController {
 		private final String favicon;
 
 		private final String faviconDanger;
+
+		private final PollTimer pollTimer;
 
 		private final boolean notificationFilterEnabled;
 
