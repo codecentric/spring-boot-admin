@@ -134,6 +134,8 @@ public class UiController {
 
 		private final List<ExternalView> externalViews;
 
+		private final List<ViewSettings> viewSettings;
+
 	}
 
 	@lombok.Data
@@ -168,6 +170,29 @@ public class UiController {
 			this.url = url;
 			this.order = order;
 			this.iframe = iframe;
+		}
+
+	}
+
+	@lombok.Data
+	@JsonInclude(Include.NON_EMPTY)
+	@ConstructorBinding
+	public static class ViewSettings {
+
+		/**
+		 * Name of the view to address.
+		 */
+		private final String name;
+
+		/**
+		 * Set view enabled.
+		 */
+		private boolean enabled = true;
+
+		public ViewSettings(String name, boolean enabled) {
+			Assert.hasText(name, "'name' must not be empty");
+			this.name = name;
+			this.enabled = enabled;
 		}
 
 	}

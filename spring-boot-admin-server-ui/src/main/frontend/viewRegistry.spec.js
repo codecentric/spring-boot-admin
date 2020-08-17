@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import ViewRegistry from "./viewRegistry";
+import sbaConfig from '@/sba-config'
+import ViewRegistry from './viewRegistry';
 
 describe('viewRegistry', () => {
     describe('given view already in the registry', function () {
@@ -32,5 +32,31 @@ describe('viewRegistry', () => {
             expect(viewRegistry.views).toHaveLength(2);
         });
 
+    });
+
+    it('hide or show views depending on their settings', () => {
+        sbaConfig.uiSettings.viewSettings = [
+          {name: 'disabledView', enabled: false},
+          {name: 'explicitlyEnabledView', enabled: true}
+        ];
+
+        const viewRegistry = new ViewRegistry();
+        viewRegistry.addView(...[
+            {name: 'disabledView', group: 'group'},
+            {name: 'explicitlyEnabledView', group: 'group'},
+            {name: 'implicitlyEnabledView', group: 'group'}
+        ])
+
+        let disabledView = viewRegistry.getViewByName('disabledView');
+        expect(disabledView).toBeDefined();
+        expect(disabledView.isEnabled()).toBeFalsy();
+
+        let implicitlyEnabledView = viewRegistry.getViewByName('implicitlyEnabledView');
+        expect(implicitlyEnabledView).toBeDefined();
+        expect(implicitlyEnabledView.isEnabled()).toBeTruthy();
+
+        let explicitlyEnabledView = viewRegistry.getViewByName('explicitlyEnabledView');
+        expect(explicitlyEnabledView).toBeDefined();
+        expect(explicitlyEnabledView.isEnabled()).toBeTruthy();
     });
 });
