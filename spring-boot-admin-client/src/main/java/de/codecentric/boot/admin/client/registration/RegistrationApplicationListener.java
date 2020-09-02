@@ -99,7 +99,7 @@ public class RegistrationApplicationListener implements InitializingBean, Dispos
 		}
 
 		scheduledTask = taskScheduler.scheduleAtFixedRate(registrator::register, registerPeriod);
-		LOGGER.debug("Scheduled registration task for every {}ms", registerPeriod);
+		LOGGER.debug("Scheduled registration task for every {}s", registerPeriod.getSeconds());
 	}
 
 	public void stopRegisterTask() {
