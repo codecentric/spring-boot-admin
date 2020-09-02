@@ -137,8 +137,16 @@ public class AdminServerInstanceWebClientConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public BasicAuthHttpHeaderProvider basicAuthHttpHeadersProvider() {
-			return new BasicAuthHttpHeaderProvider();
+		public BasicAuthHttpHeaderProvider basicAuthHttpHeadersProvider(AdminServerProperties adminServerProperties) {
+			AdminServerProperties.InstanceAuthProperties instanceAuth = adminServerProperties.getInstanceAuth();
+
+			if (instanceAuth.isEnabled()) {
+				return new BasicAuthHttpHeaderProvider(instanceAuth.getDefaultUserName(),
+						instanceAuth.getDefaultPassword(), instanceAuth.getServiceMap());
+			}
+			else {
+				return new BasicAuthHttpHeaderProvider();
+			}
 		}
 
 	}

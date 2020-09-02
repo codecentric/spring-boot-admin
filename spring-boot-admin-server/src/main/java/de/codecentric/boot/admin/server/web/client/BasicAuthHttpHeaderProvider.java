@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.web.client;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -41,10 +42,42 @@ public class BasicAuthHttpHeaderProvider implements HttpHeadersProvider {
 
 	private static final String[] PASSWORD_KEYS = { "user.password", "user-password", "userpassword" };
 
+	@Nullable
+	private final String defaultUserName;
+
+	@Nullable
+	private final String defaultPassword;
+
+	private final Map<String, InstanceCredentials> serviceMap;
+
+	public BasicAuthHttpHeaderProvider(@Nullable String defaultUserName, @Nullable String defaultPassword,
+			Map<String, InstanceCredentials> serviceMap) {
+		this.defaultUserName = defaultUserName;
+		this.defaultPassword = defaultPassword;
+		this.serviceMap = serviceMap;
+	}
+
+	public BasicAuthHttpHeaderProvider() {
+		this(null, null, Collections.emptyMap());
+	}
+
 	@Override
 	public HttpHeaders getHeaders(Instance instance) {
 		String username = getMetadataValue(instance, USERNAME_KEYS);
 		String password = getMetadataValue(instance, PASSWORD_KEYS);
+
+		if (!(StringUtils.hasText(username) && StringUtils.hasText(password))) {
+			String registeredName = instance.getRegistration().getName();
+			InstanceCredentials credentials = this.serviceMap.get(registeredName);
+			if (credentials != null) {
+				username = credentials.getUserName();
+				password = credentials.getUserPassword();
+			}
+			else {
+				username = this.defaultUserName;
+				password = this.defaultPassword;
+			}
+		}
 
 		HttpHeaders headers = new HttpHeaders();
 		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
@@ -67,6 +100,23 @@ public class BasicAuthHttpHeaderProvider implements HttpHeadersProvider {
 			}
 		}
 		return null;
+	}
+
+	@lombok.Data(staticConstructor = "of")
+	public static class InstanceCredentials {
+
+		/**
+		 * user name for this instance
+		 */
+		@lombok.NonNull
+		private String userName;
+
+		/**
+		 * user password for this instance
+		 */
+		@lombok.NonNull
+		private String userPassword;
+
 	}
 
 }

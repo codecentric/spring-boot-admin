@@ -103,6 +103,11 @@ public class AdminServerUiProperties {
 	private List<UiController.ExternalView> externalViews = new ArrayList<>();
 
 	/**
+	 * External views shown in the navbar.
+	 */
+	private List<UiController.ViewSettings> viewSettings = new ArrayList<>();
+
+	/**
 	 * Whether the option to remember a user should be available.
 	 */
 	private boolean rememberMeEnabled = true;
@@ -112,6 +117,43 @@ public class AdminServerUiProperties {
 	 * will be used.
 	 */
 	private List<String> availableLanguages = new ArrayList<>();
+
+	private PollTimer pollTimer = new PollTimer();
+
+	@lombok.Data
+	public static class PollTimer {
+
+		/**
+		 * Time in milliseconds to refresh data in caches view.
+		 */
+		private int cache = 2500;
+
+		/**
+		 * Time in milliseconds to refresh data in datasource view.
+		 */
+		private int datasource = 2500;
+
+		/**
+		 * Time in milliseconds to refresh data in gc view.
+		 */
+		private int gc = 2500;
+
+		/**
+		 * Time in milliseconds to refresh data in process view.
+		 */
+		private int process = 2500;
+
+		/**
+		 * Time in milliseconds to refresh data in memory view.
+		 */
+		private int memory = 2500;
+
+		/**
+		 * Time in milliseconds to refresh data in threads view.
+		 */
+		private int threads = 2500;
+
+	}
 
 	@lombok.Data
 	public static class Cache {

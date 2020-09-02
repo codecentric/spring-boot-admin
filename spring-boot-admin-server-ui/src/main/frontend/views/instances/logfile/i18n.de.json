@@ -3,7 +3,8 @@
     "logfile": {
       "label": "Log",
       "download": "Herunterladen",
-      "fetch_failed": "Das Laden des Logfiles ist fehlgeschlagen."
+      "fetch_failed": "Das Laden des Logfiles ist fehlgeschlagen.",
+      "wrap_lines": "Zeilen umbrechen"
     }
   }
 }

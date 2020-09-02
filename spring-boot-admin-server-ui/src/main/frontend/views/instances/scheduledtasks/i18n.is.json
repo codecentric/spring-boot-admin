@@ -1,0 +1,26 @@
+{
+  "instances": {
+    "scheduledtasks": {
+      "label": "Fastsett verkefni",
+      "no_scheduledtasks": "Engin fastsett verkefni",
+      "cron": {
+        "expression": "Expression",
+        "runnable": "Runnable",
+        "title": "Cron"
+      },
+      "fetch_failed": "Mistókst að sækja fastsett verkefni.",
+      "fixed_delay": {
+        "initial_delay_ms": "Töf framan af (ms)",
+        "interval_ms": "Tíðni (ms)",
+        "runnable": "Runnable",
+        "title": "Föst töf"
+      },
+      "fixed_rate": {
+        "initial_delay_ms": "Töf framan af (ms)",
+        "interval_ms": "Tíðni (ms)",
+        "runnable": "Runnable",
+        "title": "Fixed rate"
+      }
+    }
+  }
+}

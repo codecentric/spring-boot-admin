@@ -1,0 +1,19 @@
+{
+  "instances": {
+    "mappings": {
+      "label": "Mappings",
+      "class": "Klasi",
+      "consumes": "Neyta",
+      "fetch_failed": "Mistókst að sækja mappings.",
+      "filter_name": "Nafn síu",
+      "handler": "Handler",
+      "headers": "Hausar",
+      "http-verb": "Gerð",
+      "mappings_not_supported_spring_boot_1": "Mappings eru ekki í boði fyrir Spring Boot 1.x forrit.",
+      "parameters": "Færibreyta",
+      "produces": "Framleiða",
+      "servlet_name": "Nafn servlet",
+      "url_pattern": "URL Pattern"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "instances": {
+    "jolokia": {
+      "label": "JMX",
+      "close": "Ljúka",
+      "domains": "Lén",
+      "execute": "Framkvæma",
+      "executing": "Framkvæma…",
+      "execution_failed": "Framkvæmd mistekist.",
+      "execution_successful": "Framkvæmd farsæl.",
+      "fetch_failed": "Mistókst að sækja JMX baunir.",
+      "mbean": {
+        "fetch_failed": "Mistókst að sækja einkenni."
+      },
+      "mbeans": "MBeans"
+    }
+  }
+}

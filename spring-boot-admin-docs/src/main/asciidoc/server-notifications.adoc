@@ -378,6 +378,14 @@ All Notifiers which are using a `RestTemplate` can be configured to use a proxy.
 | spring.boot.admin.notify.proxy.port
 | The proxy port
 |
+
+| spring.boot.admin.notify.proxy.username
+| The proxy username (if proxy requires authentication)
+|
+
+| spring.boot.admin.notify.proxy.password
+| The proxy password (if proxy requires authentication)
+|
 |===
 
 

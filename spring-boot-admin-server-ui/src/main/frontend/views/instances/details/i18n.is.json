@@ -1,0 +1,66 @@
+{
+  "instances": {
+    "details": {
+      "label": "Smáatriði",
+      "fetch_failed": "Mistókst að sækja firð.",
+      "cache":{
+        "fetch_failed": "Mistókst að sækja firð skyndiminna.",
+        "hit_ratio": "Hit ratio",
+        "hits": "Hits",
+        "misses": "Misses",
+        "size": "Stærð"
+      },
+      "datasource": {
+        "fetch_failed": "Mistókst að sækja firð gagnagjafa.",
+        "active_connections": "Virk tengsl",
+        "min_connections": "Lágmarksfjöldi af tengslum",
+        "max_connections": "Hámarksfjöldi af tengslunum",
+        "title": "Gagnagjafi: {datasource}",
+        "unlimited": "ótakmarkaður"
+      },
+      "gc": {
+        "count": "Fjöldi",
+        "time_spent_max": "Hámarkstímalengd",
+        "time_spent_total": "Heildartími",
+        "title": "GC hlé"
+      },
+      "health": {
+        "fetch_failed": "Mistókst að sækja heilbrigðiupplýsingar.",
+        "title": "Staða"
+      },
+      "info": {
+        "fetch_failed": "Mistókst að sækja beinar upplýsingar. Engar frekar upplýsingar eru í boði.",
+        "no_info_provided": "Engar upplýsingar eru í boði.",
+        "title": "Upplýsingar"
+      },
+      "memory": {
+        "fetch_failed": "Mistókst að sækja geymaupplýsingar.",
+        "max": "Hámark",
+        "metaspace": "Metaspace",
+        "size": "Stærð",
+        "title": "Geymir",
+        "used": "I notkun"
+      },
+      "metadata": {
+        "no_data_provided": "Engin lysigögn i boði.",
+        "title": "Lysigögn"
+      },
+      "process": {
+        "cpus": "CPUs",
+        "fetch_failed": "Mistókst að sækja firð ferlanna.",
+        "pid": "PID",
+        "process_cpu_usage": "CPU notkun (%)",
+        "system_cpu_usage": "Kerfi notkun (%)",
+        "title": "Ferli",
+        "uptime": "Uptime"
+      },
+      "threads": {
+        "daemon": "Þjónn (daemon)",
+        "fetch_failed": "Mistókst að sækja firð þráðanna.",
+        "live": "Live",
+        "peak_live": "Peak Live",
+        "title": "Þræðir"
+      }
+    }
+  }
+}

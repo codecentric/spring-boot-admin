@@ -64,6 +64,18 @@ spring:
         extension-resource-locations: file:@project.basedir@/../spring-boot-admin-sample-custom-ui/target/dist/
 
 ---
+
+# tag::customization-view-settings[]
+spring:
+  boot:
+    admin:
+      ui:
+        view-settings:
+          - name: "journal"
+            enabled: false
+# end::customization-view-settings[]
+
+---
 spring:
   profiles: insecure
 

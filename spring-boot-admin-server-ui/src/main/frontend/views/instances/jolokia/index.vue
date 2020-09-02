@@ -26,7 +26,7 @@
       </div>
     </div>
     <div class="columns">
-      <div class="column" v-if="selectedDomain">
+      <div class="column is-four-fifths" v-if="selectedDomain">
         <h1 class="heading" v-text="$t('instances.jolokia.mbeans')" />
         <div class="m-bean card" :class="{'is-active': mBean === selectedMBean}"
              v-for="mBean in selectedDomain.mBeans" :key="mBean.descriptor.raw" :id="mBean.descriptor.raw"
@@ -75,7 +75,7 @@
           </div>
         </div>
       </div>
-      <div class="column is-narrow">
+      <div class="column is-one-fifth">
         <nav class="menu" v-sticks-below="['#navigation']">
           <p class="menu-label" v-text="$t('instances.jolokia.domains')" />
           <ul class="menu-list">

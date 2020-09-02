@@ -3,7 +3,8 @@
     "logfile": {
       "label": "Logfile",
       "download": "Download",
-      "fetch_failed": "Fetching logfile failed."
+      "fetch_failed": "Fetching logfile failed.",
+      "wrap_lines": "Wrap lines"
     }
   }
 }

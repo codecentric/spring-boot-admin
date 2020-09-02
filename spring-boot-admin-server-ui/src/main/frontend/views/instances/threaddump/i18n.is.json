@@ -1,0 +1,20 @@
+{
+  "instances": {
+    "threaddump": {
+      "label": "Thread Dump",
+      "download": "Hala Thread Dump niður",
+      "fetch_failed": "Mistókst að sækja thread dump.",
+      "download_failed": "Mistókst að hala thread dump niður.",
+      "thread_details_blocked_count": "Fjöldi lokað",
+      "thread_details_blocked_time": "Tími lokað",
+      "thread_details_lock_name": "Nafn lokunar",
+      "thread_details_lock_owner_id": "Id eiganda lokunar",
+      "thread_details_lock_owner_name": "Nafn eiganda lokunar",
+      "thread_details_waited_count": "Fjöldi beðið",
+      "thread_details_waited_time": "Tími beðið",
+      "thread_id": "Id þráðar",
+      "thread_name": "Nafn þráðar",
+      "thread_state": "Staða þráðar"
+    }
+  }
+}

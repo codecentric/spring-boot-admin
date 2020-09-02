@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import sbaConfig from '@/sba-config'
 import {VIEW_GROUP} from './views';
 
 import remove from 'lodash/remove';
@@ -43,6 +44,10 @@ export default class ViewRegistry {
     ]
   }
 
+  getViewByName(name) {
+    return this._views.find(v => v.name === name);
+  }
+
   addView(...views) {
     views.forEach(view => this._addView(view));
   }
@@ -61,6 +66,13 @@ export default class ViewRegistry {
     }
     if (!view.group) {
       view.group = VIEW_GROUP.NONE;
+    }
+
+    if (!view.isEnabled) {
+      view.isEnabled = () => {
+        let viewSettings = sbaConfig.uiSettings.viewSettings.find(vs => vs.name === view.name);
+        return (!viewSettings || viewSettings.enabled === true);
+      }
     }
     this._removeExistingView(view);
     this._views.push(view);
