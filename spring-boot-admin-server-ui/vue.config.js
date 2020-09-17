@@ -17,8 +17,6 @@
 const {resolve} = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const CopyPlugin = require('copy-webpack-plugin');
-const IgnorePlugin = require('webpack').IgnorePlugin;
-
 
 module.exports = {
   publicPath: './',
@@ -49,6 +47,7 @@ module.exports = {
       .loader('html-loader')
       .options({
         attributes: {
+          urlFilter: (attribute, value) => value !== 'sba-settings.js',
           root: resolve(__dirname, 'src/main/frontend')
         }
       })
