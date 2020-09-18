@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2020 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -52,12 +52,11 @@
 </template>
 
 <script>
-  //see https://github.com/d3/d3/issues/2733#issuecomment-190743489
-  import d3 from '@/utils/d3';
-  import {event as d3Event} from 'd3-selection';
-  import moment from 'moment';
+//see https://github.com/d3/d3/issues/2733#issuecomment-190743489
+import d3 from '@/utils/d3';
+import moment from 'moment';
 
-  const interval = 1000;
+const interval = 1000;
   export default {
     props: {
       traces: {
@@ -193,37 +192,37 @@
         //draw brush selection
         const brush = d3.brushX()
           .extent([[0, 0], [vm.width, vm.height]])
-          .on('start', () => {
-            if (d3Event.selection) {
+          .on('start', (event) => {
+            if (event.selection) {
               vm.isBrushing = true;
               vm.hovered = null;
             }
           })
-          .on('brush', function () {
-            if (d3Event.sourceEvent === null || d3Event.sourceEvent.type === 'brush') {
+          .on('brush', function (event) {
+            if (!event.sourceEvent) {
               return;
             }
 
-            if (d3Event.selection) {
-              const floor = Math.floor(x.invert(d3Event.selection[0]) / interval) * interval;
-              const ceil = Math.ceil(x.invert(d3Event.selection[1]) / interval) * interval;
-              d3.select(this).call(d3Event.target.move, [floor, ceil].map(x));
+            if (event.selection) {
+              const floor = Math.floor(x.invert(event.selection[0]) / interval) * interval;
+              const ceil = Math.ceil(x.invert(event.selection[1]) / interval) * interval;
+              d3.select(this).call(event.target.move, [floor, ceil].map(x));
               vm.brushSelection = [floor, ceil];
             }
           })
-          .on('end', () => {
+          .on('end', (event) => {
             vm.isBrushing = false;
-            if (!d3Event.selection) {
+            if (!event.selection) {
               vm.brushSelection = null;
             }
           });
 
         vm.brushGroup.call(brush)
-          .on('mousemove', () => {
+          .on('mousemove', (event) => {
             if (vm.isBrushing) {
               return;
             }
-            const mouseX = d3.mouse(vm.brushGroup.select('.overlay').node())[0];
+            const mouseX = d3.pointer(event, vm.brushGroup.select('.overlay').node())[0];
             vm.hovered = Math.floor(x.invert(mouseX) / interval) * interval;
           }).on('mouseout', () => {
           vm.hovered = null;

@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2019 the original author or authors.
+  - Copyright 2014-2020 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -105,11 +105,11 @@
   </table>
 </template>
 <script>
-    import d3 from '@/utils/d3';
-    import moment from 'moment';
-    import threadTag from './thread-tag';
+import d3 from '@/utils/d3';
+import moment from 'moment';
+import threadTag from './thread-tag';
 
-    const maxPixelsPerSeconds = 15;
+const maxPixelsPerSeconds = 15;
 
   export default {
     props: {
@@ -194,7 +194,7 @@
               .attr('width', d => Math.max(x(d.end) - x(d.start), x(d.start + 500) - x(d.start)));
 
             d3.selectAll('#rect-threadid-' + threadId + '-start-' + value.timeline[value.timeline.length - 1].start)
-              .on('click', d => this.showThreadDetails({threadId: threadId, start: d.start}))
+              .on('click', (event, d) => this.showThreadDetails({threadId: threadId, start: d.start}))
          });
 
           this.lastEndPosition = x(end);
