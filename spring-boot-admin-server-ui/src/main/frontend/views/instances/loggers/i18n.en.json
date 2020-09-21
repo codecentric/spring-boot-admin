@@ -6,6 +6,7 @@
       "affects_this_instance_only": "Affects this instance only",
       "application": "Application",
       "fetch_failed": "Fetching loggers failed.",
+      "fetch_failed_some_instances": "Fetching loggers for {failed} of {count} instances failed. Configuring loggers for those are likely to fail.",
       "filter": {
         "class_only": "class only",
         "configured": "configured"

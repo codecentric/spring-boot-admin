@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,14 +29,6 @@ const actuatorMimeTypes = [
 
 export const hasMatchingContentType = (contentType, compatibleContentTypes) =>
   Boolean(contentType) && compatibleContentTypes.includes(contentType.replace(/;.*$/, ''));
-
-export const throwOnError = (responses) => responses.forEach(r => {
-  if (r.status >= 400) {
-    const error = new Error(`Request for Instance '${r.instanceId}' failed with status ${r.status}`);
-    error.responses = responses;
-    throw error
-  }
-});
 
 export const convertBody = (responses) => responses.map(res => {
   if (res.body && hasMatchingContentType(res.contentType, actuatorMimeTypes)) {
@@ -108,7 +100,6 @@ class Application {
     const responses = convertBody(
       (await this.axios.get(uri`actuator/loggers`, {headers: {'Accept': actuatorMimeTypes.join(',')}})).data
     );
-    throwOnError(responses);
     return {responses};
   }
 
@@ -118,7 +109,7 @@ class Application {
       {configuredLevel: level},
       {headers: {'Content-Type': 'application/json'}}
     )).data;
-    throwOnError(responses);
+    return {responses};
   }
 
   static _transformResponse(data) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {convertBody, hasMatchingContentType, throwOnError} from './application';
+import {convertBody, hasMatchingContentType} from './application';
 
 describe('hasMatchingContentType', () => {
   it('should match content-type', () => {
@@ -39,20 +39,6 @@ describe('hasMatchingContentType', () => {
       ['application/vnd.spring-boot.actuator.v1+json', 'application/json']
     );
     expect(matches).toBe(false);
-  });
-});
-
-describe('throwOnError', () => {
-  it('should not throw on no response', () => {
-    throwOnError([])
-  });
-
-  it('should not throw on no error', () => {
-    throwOnError([{status: 200}, {status: 100}, {status: 302}])
-  });
-
-  it('should not throw on error', () => {
-    expect(() => throwOnError([{status: 200}, {status: 400}, {status: 302}])).toThrow()
   });
 });
 

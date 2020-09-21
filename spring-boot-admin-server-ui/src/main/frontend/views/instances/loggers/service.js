@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ export class InstanceLoggers {
   async fetchLoggers() {
     const loggerConfig = (await this.instance.fetchLoggers()).data;
     return {
+      errors: [],
       levels: loggerConfig.levels,
       loggers: convertLoggers(loggerConfig.loggers, this.instance.id)
     }
@@ -48,11 +49,14 @@ export class ApplicationLoggers {
 
   async fetchLoggers() {
     const responses = (await this.application.fetchLoggers()).responses;
+    const successful = responses.filter(r => r.body && r.status >= 200 && r.status < 299);
+    const errors = responses.filter(r => r.status >= 400).map(r => ({instanceId: r.instanceId, error: 'HTTP Status ' + r.status}));
     return {
-      levels: union(...responses.map(r => r.body.levels)),
+      errors,
+      levels: union(...successful.map(r => r.body.levels)),
       loggers: Object.entries(
         groupBy(
-          flatMap(responses, r => convertLoggers(r.body.loggers, r.instanceId)),
+          flatMap(successful, r => convertLoggers(r.body.loggers, r.instanceId)),
           l => l.name
         )
       ).map(([name, configs]) => ({name, level: flatMap(configs, c => c.level)}))
@@ -60,6 +64,10 @@ export class ApplicationLoggers {
   }
 
   async configureLogger(name, level) {
-    await this.application.configureLogger(name, level);
+    const responses = (await this.application.configureLogger(name, level)).responses;
+    const errors = responses.filter(r => r.status >= 400).map(r => ({instanceId: r.instanceId, error: 'HTTP Status ' + r.status}));
+    if (errors.length > 0) {
+      console.warn('Failed to set loglevel for some instances', errors)
+    }
   }
 }

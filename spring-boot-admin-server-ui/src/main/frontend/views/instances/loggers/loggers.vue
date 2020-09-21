@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2019 the original author or authors.
+  - Copyright 2014-2020 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -89,6 +89,11 @@
         </div>
       </div>
     </div>
+    <div v-if="failedInstances > 0" class="message is-warning">
+      <div class="message-body">
+        <font-awesome-icon class="has-text-warning" icon="exclamation-triangle" /> <span v-text="$t('instances.loggers.fetch_failed_some_instances', {failed: failedInstances, count: instanceCount})" />
+      </div>
+    </div>
     <loggers-list
       :levels="loggerConfig.levels"
       :loggers="filteredLoggers"
@@ -99,11 +104,11 @@
 </template>
 
 <script>
-    import sticksBelow from '@/directives/sticks-below';
-    import {finalize, from, listen} from '@/utils/rxjs';
-    import LoggersList from './loggers-list';
+import sticksBelow from '@/directives/sticks-below';
+import {finalize, from, listen} from '@/utils/rxjs';
+import LoggersList from './loggers-list';
 
-    const isClassName = name => /\.[A-Z]/.test(name);
+const isClassName = name => /\.[A-Z]/.test(name);
 
   const addToFilter = (oldFilter, addedFilter) =>
     !oldFilter
@@ -144,6 +149,7 @@
     data: () => ({
       hasLoaded: false,
       error: null,
+      failedInstances: 0,
       loggerConfig: {loggers: [], levels: []},
       filter: {
         name: '',
@@ -182,8 +188,11 @@
       },
       async fetchLoggers() {
         this.error = null;
+        this.failedInstances = 0;
         try {
-          this.loggerConfig = Object.freeze(await this.loggersService.fetchLoggers());
+          const {errors, ...loggerConfig} = await this.loggersService.fetchLoggers();
+          this.loggerConfig = Object.freeze(loggerConfig);
+          this.failedInstances = errors.length;
         } catch (error) {
           console.warn('Fetching loggers failed:', error);
           this.error = error;
