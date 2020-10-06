@@ -51,6 +51,7 @@ describe('InstanceLoggers', () => {
     const cfg = await service.fetchLoggers();
 
     expect(cfg).toEqual({
+      errors: [],
       levels: ['TRACE', 'INFO', 'FATAL'],
       loggers: [{
         name: 'ROOT',
@@ -89,6 +90,7 @@ describe('ApplicationLoggers', () => {
         responses: [
           {
             instanceId: 'test-1',
+            status: 200,
             body: {
               levels: ['TRACE', 'FATAL'],
               loggers: {
@@ -105,6 +107,7 @@ describe('ApplicationLoggers', () => {
           },
           {
             instanceId: 'test-2',
+            status: 200,
             body: {
               levels: ['INFO'],
               loggers: {
@@ -126,6 +129,7 @@ describe('ApplicationLoggers', () => {
     const cfg = await service.fetchLoggers();
 
     expect(cfg).toEqual({
+      errors: [],
       levels: ['TRACE', 'FATAL', 'INFO'],
       loggers: [{
         name: 'ROOT',
