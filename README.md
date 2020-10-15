@@ -40,7 +40,7 @@ Spring Boot Admin provides the following features for registered applications:
 
 ## Getting Started
 
-[A quick guide](http://codecentric.github.io/spring-boot-admin/2.2.3/#getting-started) to get started can be found in our docs.
+[A quick guide](http://codecentric.github.io/spring-boot-admin/2.3.0/#getting-started) to get started can be found in our docs.
 
 There are introductory talks available on YouTube:
 
