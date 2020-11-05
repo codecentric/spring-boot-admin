@@ -50,7 +50,7 @@
         "pid": "PID",
         "process_cpu_usage": "프로세스 CPU 사용량",
         "system_cpu_usage": "시스템 CPU 사용량",
-        "title": "프로세",
+        "title": "프로세스",
         "uptime": "가동시간"
       },
       "threads": {
