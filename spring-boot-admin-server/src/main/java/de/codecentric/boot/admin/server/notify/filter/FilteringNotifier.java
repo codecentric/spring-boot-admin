@@ -68,12 +68,7 @@ public class FilteringNotifier extends AbstractEventNotifier {
 
 	@Override
 	public Mono<Void> doNotify(InstanceEvent event, Instance instance) {
-		if (!filter(event, instance)) {
-			return delegate.notify(event);
-		}
-		else {
-			return Mono.empty();
-		}
+		return delegate.notify(event);
 	}
 
 	private boolean filter(InstanceEvent event, Instance instance) {
