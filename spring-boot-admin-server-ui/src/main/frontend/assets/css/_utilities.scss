@@ -24,7 +24,7 @@ $primary: $turquoise;
 $primary-invert: $white;
 
 //  Add new color variables to the color map.
-@import "~bulma/sass/utilities/derived-variables.scss";
+@import "~bulma/sass/utilities/derived-variables";
 
 $addColors: ();
 $colors: map-merge($colors, $addColors);
