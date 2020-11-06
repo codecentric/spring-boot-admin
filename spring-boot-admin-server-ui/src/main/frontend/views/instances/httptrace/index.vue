@@ -105,17 +105,17 @@
 </template>
 
 <script>
-  import subscribing from '@/mixins/subscribing';
-  import Instance from '@/services/instance';
-  import {concatMap, timer} from '@/utils/rxjs';
-  import debounce from 'lodash/debounce';
-  import mapKeys from 'lodash/mapKeys';
-  import moment from 'moment';
-  import {VIEW_GROUP} from '../../index';
-  import sbaTracesChart from './traces-chart';
-  import sbaTracesList from './traces-list';
+import subscribing from '@/mixins/subscribing';
+import Instance from '@/services/instance';
+import {concatMap, timer} from '@/utils/rxjs';
+import debounce from 'lodash/debounce';
+import mapKeys from 'lodash/mapKeys';
+import moment from 'moment';
+import {VIEW_GROUP} from '../../index';
+import sbaTracesChart from './traces-chart';
+import sbaTracesList from './traces-list';
 
-  const addToFilter = (oldFilter, addedFilter) =>
+const addToFilter = (oldFilter, addedFilter) =>
     !oldFilter
       ? addedFilter
       : (val, key) => oldFilter(val, key) && addedFilter(val, key);
@@ -153,6 +153,10 @@
 
     compareTo(other) {
       return this.timestamp - other.timestamp;
+    }
+
+    isPending() {
+      return !this.response;
     }
 
     isSuccess() {

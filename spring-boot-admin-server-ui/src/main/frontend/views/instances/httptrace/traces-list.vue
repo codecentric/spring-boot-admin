@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2019 the original author or authors.
+  - Copyright 2014-2020 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -46,8 +46,8 @@
           <td class="httptraces__trace-method" v-text="trace.request.method" />
           <td class="httptraces__trace-uri" v-text="trace.request.uri" />
           <td class="httptraces__trace-status">
-            <span v-text="trace.response.status" class="tag"
-                  :class="{ 'is-success' : trace.isSuccess(), 'is-warning' : trace.isClientError(), 'is-danger' : trace.isServerError() }"
+            <span v-text="trace.response ? trace.response.status : 'pending'" class="tag"
+                  :class="{ 'is-muted' : trace.isPending(), 'is-success' : trace.isSuccess(), 'is-warning' : trace.isClientError(), 'is-danger' : trace.isServerError() }"
             />
           </td>
           <td class="httptraces__trace-contentType" v-text="trace.contentType" />
@@ -72,9 +72,9 @@
 </template>
 
 <script>
-  import prettyBytes from 'pretty-bytes';
+import prettyBytes from 'pretty-bytes';
 
-  export default {
+export default {
     props: {
       newTracesCount: {
         type: Number,
