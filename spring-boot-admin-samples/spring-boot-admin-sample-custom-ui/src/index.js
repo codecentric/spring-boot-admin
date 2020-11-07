@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,16 +34,24 @@ SBA.use({
 
 // tag::customization-ui-endpoint[]
 SBA.use({
-  install({viewRegistry}) {
+  install({viewRegistry, vueI18n}) {
     viewRegistry.addView({
       name: 'instances/custom',
       parent: 'instances', // <1>
       path: 'custom',
       component: customEndpoint,
       label: 'Custom',
-      group: 'Group', // <2>
+      group: 'custom', // <2>
       order: 1000,
       isEnabled: ({instance}) => instance.hasEndpoint('custom') // <3>
+    });
+
+    vueI18n.mergeLocaleMessage('en', { // <4>
+      sidebar: {
+        custom : {
+          title : "My Custom Extensions"
+        }
+      }
     });
   }
 });

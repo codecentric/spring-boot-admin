@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2019 the original author or authors.
+  - Copyright 2014-2020 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@
       >
         <router-link
           :to="{ name: group.views[0].name, params: { 'instanceId' : instance.id } }"
-          v-text="hasMultipleViews(group) ? $t('sidebar.' + group.id + '.title') : ($t(group.views[0].label))"
+          v-text="hasMultipleViews(group) ? getGroupTitle(group.id) : $t(group.views[0].label)"
           active-class=""
           exact-active-class=""
           :class="{'is-active' : isActiveGroup(group) }"
@@ -65,22 +65,22 @@
 </template>
 
 <script>
-  import sticksBelow from '@/directives/sticks-below';
-  import Application from '@/services/application';
-  import Instance from '@/services/instance';
-  import {compareBy} from '@/utils/collections';
+import sticksBelow from '@/directives/sticks-below';
+import Application from '@/services/application';
+import Instance from '@/services/instance';
+import {compareBy} from '@/utils/collections';
 
-  export default {
-    props: {
-      views: {
-        type: Array,
-        default: () => []
-      },
-      instance: {
-        type: Instance,
-        default: null
-      },
-      application: {
+export default {
+  props: {
+    views: {
+      type: Array,
+      default: () => []
+    },
+    instance: {
+      type: Instance,
+      default: null
+    },
+    application: {
         type: Application,
         default: null
       }
@@ -119,6 +119,11 @@
       }
     },
     methods: {
+      getGroupTitle(groupId) {
+        const key = 'sidebar.' + groupId + '.title'
+        const translated = this.$t(key);
+        return key === translated ? groupId : translated;
+      },
       isActiveGroup(group) {
         return group.views.includes(this.$route.meta.view);
       },
