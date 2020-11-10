@@ -73,14 +73,16 @@ public class EventsourcingInstanceRepository implements InstanceRepository {
 	public Mono<Instance> compute(InstanceId id, BiFunction<InstanceId, Instance, Mono<Instance>> remappingFunction) {
 		return this.find(id).flatMap((application) -> remappingFunction.apply(id, application))
 				.switchIfEmpty(Mono.defer(() -> remappingFunction.apply(id, null))).flatMap(this::save)
-				.retryWhen(this.retryOptimisticLockException);
+				.retryWhen(reactor.util.retry.Retry.from((fluxRetryWhenState) -> fluxRetryWhenState
+						.map(reactor.util.retry.Retry.RetrySignal::failure).as(this.retryOptimisticLockException)));
 	}
 
 	@Override
 	public Mono<Instance> computeIfPresent(InstanceId id,
 			BiFunction<InstanceId, Instance, Mono<Instance>> remappingFunction) {
 		return this.find(id).flatMap((application) -> remappingFunction.apply(id, application)).flatMap(this::save)
-				.retryWhen(this.retryOptimisticLockException);
+				.retryWhen(reactor.util.retry.Retry.from((fluxRetryWhenState) -> fluxRetryWhenState
+						.map(reactor.util.retry.Retry.RetrySignal::failure).as(this.retryOptimisticLockException)));
 	}
 
 }

@@ -39,6 +39,9 @@ public abstract class AbstractEventHandler<T extends InstanceEvent> {
 
 	private final Class<T> eventType;
 
+	private final Retry<?> retryAttemptOnError = Retry.any().retryMax(Long.MAX_VALUE)
+			.doOnRetry((ctx) -> this.log.warn("Unexpected error", ctx.exception()));
+
 	@Nullable
 	private Disposable subscription;
 
@@ -54,8 +57,9 @@ public abstract class AbstractEventHandler<T extends InstanceEvent> {
 		this.scheduler = this.createScheduler();
 		this.subscription = Flux.from(this.publisher).subscribeOn(this.scheduler).log(this.log.getName(), Level.FINEST)
 				.doOnSubscribe((s) -> this.log.debug("Subscribed to {} events", this.eventType)).ofType(this.eventType)
-				.cast(this.eventType).transform(this::handle).retryWhen(Retry.any().retryMax(Long.MAX_VALUE)
-						.doOnRetry((ctx) -> this.log.warn("Unexpected error", ctx.exception())))
+				.cast(this.eventType).transform(this::handle)
+				.retryWhen(reactor.util.retry.Retry.from((fluxRetryWhenState) -> fluxRetryWhenState
+						.map(reactor.util.retry.Retry.RetrySignal::failure).as(this.retryAttemptOnError)))
 				.subscribe();
 	}
 

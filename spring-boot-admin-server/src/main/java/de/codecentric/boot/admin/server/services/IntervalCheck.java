@@ -76,12 +76,14 @@ public class IntervalCheck {
 	}
 
 	public void start() {
+		Retry<?> whenFactory = Retry.any().retryMax(Long.MAX_VALUE)
+				.doOnRetry((ctx) -> log.warn("Unexpected error in {}-check", this.name, ctx.exception()));
 		this.scheduler = Schedulers.newSingle(this.name + "-check");
 		this.subscription = Flux.interval(this.interval)
 				.doOnSubscribe((s) -> log.debug("Scheduled {}-check every {}", this.name, this.interval))
 				.log(log.getName(), Level.FINEST).subscribeOn(this.scheduler).concatMap((i) -> this.checkAllInstances())
-				.retryWhen(Retry.any().retryMax(Long.MAX_VALUE)
-						.doOnRetry((ctx) -> log.warn("Unexpected error in {}-check", this.name, ctx.exception())))
+				.retryWhen(reactor.util.retry.Retry.from((fluxRetryWhenState) -> fluxRetryWhenState
+						.map(reactor.util.retry.Retry.RetrySignal::failure).as(whenFactory)))
 				.subscribe();
 	}
 
