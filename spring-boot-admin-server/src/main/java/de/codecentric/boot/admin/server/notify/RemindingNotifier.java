@@ -32,7 +32,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
-import reactor.retry.Retry;
+import reactor.util.retry.Retry;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
@@ -89,8 +89,8 @@ public class RemindingNotifier extends AbstractEventNotifier {
 		this.subscription = Flux.interval(this.checkReminderInverval, this.reminderScheduler)
 				.log(log.getName(), Level.FINEST).doOnSubscribe((s) -> log.debug("Started reminders"))
 				.flatMap((i) -> this.sendReminders())
-				.retryWhen(Retry.any().retryMax(Long.MAX_VALUE)
-						.doOnRetry((ctx) -> log.warn("Unexpected error when sending reminders", ctx.exception())))
+				.retryWhen(Retry.indefinitely()
+						.doBeforeRetry((s) -> log.warn("Unexpected error when sending reminders", s.failure())))
 				.subscribe();
 	}
 

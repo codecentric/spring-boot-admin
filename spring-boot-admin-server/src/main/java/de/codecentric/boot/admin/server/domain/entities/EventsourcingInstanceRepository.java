@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.retry.Retry;
+import reactor.util.retry.Retry;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
@@ -40,8 +40,9 @@ public class EventsourcingInstanceRepository implements InstanceRepository {
 
 	private final InstanceEventStore eventStore;
 
-	private final Retry<?> retryOptimisticLockException = Retry.anyOf(OptimisticLockingException.class).retryMax(10)
-			.doOnRetry((ctx) -> log.debug("Retrying after OptimisticLockingException", ctx.exception()));
+	private final Retry retryOptimisticLockException = Retry.max(10)
+			.doBeforeRetry((s) -> log.debug("Retrying after OptimisticLockingException", s.failure()))
+			.filter(OptimisticLockingException.class::isInstance);
 
 	public EventsourcingInstanceRepository(InstanceEventStore eventStore) {
 		this.eventStore = eventStore;

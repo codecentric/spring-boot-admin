@@ -32,7 +32,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
-import reactor.retry.Retry;
+import reactor.util.retry.Retry;
 
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
@@ -80,8 +80,8 @@ public class IntervalCheck {
 		this.subscription = Flux.interval(this.interval)
 				.doOnSubscribe((s) -> log.debug("Scheduled {}-check every {}", this.name, this.interval))
 				.log(log.getName(), Level.FINEST).subscribeOn(this.scheduler).concatMap((i) -> this.checkAllInstances())
-				.retryWhen(Retry.any().retryMax(Long.MAX_VALUE)
-						.doOnRetry((ctx) -> log.warn("Unexpected error in {}-check", this.name, ctx.exception())))
+				.retryWhen(Retry.indefinitely()
+						.doBeforeRetry((s) -> log.warn("Unexpected error in {}-check", this.name, s.failure())))
 				.subscribe();
 	}
 
