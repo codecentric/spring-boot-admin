@@ -49,7 +49,8 @@ public abstract class AbstractEventStoreTest {
 
 	private final InstanceId id = InstanceId.of("id");
 
-	private final Registration registration = Registration.create("foo", "http://health").build();
+	private final Registration registration = Registration.create("foo", "http://health").metadata("test", "dummy")
+			.build();
 
 	protected abstract InstanceEventStore createStore(int maxLogSizePerAggregate);
 
