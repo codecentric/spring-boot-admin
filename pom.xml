@@ -41,6 +41,7 @@
         <hazelcast-tests.version>3.12.8</hazelcast-tests.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
         <awaitility.version>4.0.3</awaitility.version>
+        <testcontainers.version>1.14.3</testcontainers.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
