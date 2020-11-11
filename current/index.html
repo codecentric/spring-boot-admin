@@ -445,7 +445,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.3.0-SNAPSHOT,</span>
-<span id="revdate">10.11.2020</span>
+<span id="revdate">11.11.2020</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -578,15 +578,15 @@ The UI is just a Vue.js application on top of the Spring Boot Actuator endpoints
 <div class="listingblock">
 <div class="title">pom.xml</div>
 <div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
-    &lt;groupId&gt;de.codecentric&lt;/groupId&gt;
-    &lt;artifactId&gt;spring-boot-admin-starter-server&lt;/artifactId&gt;
-    &lt;version&gt;2.3.0-SNAPSHOT&lt;/version&gt;
-&lt;/dependency&gt;
-&lt;dependency&gt;
-    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-    &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
-&lt;/dependency&gt;</code></pre>
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-starter-server<span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;version&gt;</span>2.3.0-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span>
+<span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>org.springframework.boot<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>spring-boot-starter-web<span class="tag">&lt;/artifactId&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
 </li>
@@ -605,33 +605,33 @@ The UI is just a Vue.js application on top of the Spring Boot Actuator endpoints
 <div class="listingblock">
 <div class="title">pom.xml</div>
 <div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;repositories&gt;
-    &lt;repository&gt;
-        &lt;id&gt;spring-milestone&lt;/id&gt;
-        &lt;snapshots&gt;
-            &lt;enabled&gt;false&lt;/enabled&gt;
-        &lt;/snapshots&gt;
-        &lt;url&gt;http://repo.spring.io/milestone&lt;/url&gt;
-    &lt;/repository&gt;
-    &lt;repository&gt;
-        &lt;id&gt;spring-snapshot&lt;/id&gt;
-        &lt;snapshots&gt;
-            &lt;enabled&gt;true&lt;/enabled&gt;
-        &lt;/snapshots&gt;
-        &lt;url&gt;http://repo.spring.io/snapshot&lt;/url&gt;
-    &lt;/repository&gt;
-    &lt;repository&gt;
-        &lt;id&gt;sonatype-nexus-snapshots&lt;/id&gt;
-        &lt;name&gt;Sonatype Nexus Snapshots&lt;/name&gt;
-        &lt;url&gt;https://oss.sonatype.org/content/repositories/snapshots/&lt;/url&gt;
-        &lt;snapshots&gt;
-            &lt;enabled&gt;true&lt;/enabled&gt;
-        &lt;/snapshots&gt;
-        &lt;releases&gt;
-            &lt;enabled&gt;false&lt;/enabled&gt;
-        &lt;/releases&gt;
-    &lt;/repository&gt;
-&lt;/repositories&gt;</code></pre>
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;repositories&gt;</span>
+    <span class="tag">&lt;repository&gt;</span>
+        <span class="tag">&lt;id&gt;</span>spring-milestone<span class="tag">&lt;/id&gt;</span>
+        <span class="tag">&lt;snapshots&gt;</span>
+            <span class="tag">&lt;enabled&gt;</span>false<span class="tag">&lt;/enabled&gt;</span>
+        <span class="tag">&lt;/snapshots&gt;</span>
+        <span class="tag">&lt;url&gt;</span>http://repo.spring.io/milestone<span class="tag">&lt;/url&gt;</span>
+    <span class="tag">&lt;/repository&gt;</span>
+    <span class="tag">&lt;repository&gt;</span>
+        <span class="tag">&lt;id&gt;</span>spring-snapshot<span class="tag">&lt;/id&gt;</span>
+        <span class="tag">&lt;snapshots&gt;</span>
+            <span class="tag">&lt;enabled&gt;</span>true<span class="tag">&lt;/enabled&gt;</span>
+        <span class="tag">&lt;/snapshots&gt;</span>
+        <span class="tag">&lt;url&gt;</span>http://repo.spring.io/snapshot<span class="tag">&lt;/url&gt;</span>
+    <span class="tag">&lt;/repository&gt;</span>
+    <span class="tag">&lt;repository&gt;</span>
+        <span class="tag">&lt;id&gt;</span>sonatype-nexus-snapshots<span class="tag">&lt;/id&gt;</span>
+        <span class="tag">&lt;name&gt;</span>Sonatype Nexus Snapshots<span class="tag">&lt;/name&gt;</span>
+        <span class="tag">&lt;url&gt;</span>https://oss.sonatype.org/content/repositories/snapshots/<span class="tag">&lt;/url&gt;</span>
+        <span class="tag">&lt;snapshots&gt;</span>
+            <span class="tag">&lt;enabled&gt;</span>true<span class="tag">&lt;/enabled&gt;</span>
+        <span class="tag">&lt;/snapshots&gt;</span>
+        <span class="tag">&lt;releases&gt;</span>
+            <span class="tag">&lt;enabled&gt;</span>false<span class="tag">&lt;/enabled&gt;</span>
+        <span class="tag">&lt;/releases&gt;</span>
+    <span class="tag">&lt;/repository&gt;</span>
+<span class="tag">&lt;/repositories&gt;</span></code></pre>
 </div>
 </div>
 </td>
@@ -644,11 +644,11 @@ The UI is just a Vue.js application on top of the Spring Boot Actuator endpoints
 <p>Pull in the Spring Boot Admin Server configuration via adding <code>@EnableAdminServer</code> to your configuration:</p>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">@Configuration
-@EnableAutoConfiguration
-@EnableAdminServer
-public class SpringBootAdminApplication {
-    public static void main(String[] args) {
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
+<span class="annotation">@EnableAutoConfiguration</span>
+<span class="annotation">@EnableAdminServer</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">SpringBootAdminApplication</span> {
+    <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
         SpringApplication.run(SpringBootAdminApplication.class, args);
     }
 }</code></pre>
@@ -690,15 +690,15 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <div class="listingblock">
 <div class="title">pom.xml</div>
 <div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
-    &lt;groupId&gt;de.codecentric&lt;/groupId&gt;
-    &lt;artifactId&gt;spring-boot-admin-starter-client&lt;/artifactId&gt;
-    &lt;version&gt;2.3.0-SNAPSHOT&lt;/version&gt;
-&lt;/dependency&gt;
-&lt;dependency&gt;
-    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-    &lt;artifactId&gt;spring-boot-starter-security&lt;/artifactId&gt;
-&lt;/dependency&gt;</code></pre>
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-starter-client<span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;version&gt;</span>2.3.0-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span>
+<span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>org.springframework.boot<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>spring-boot-starter-security<span class="tag">&lt;/artifactId&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
 </li>
@@ -707,7 +707,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <div class="listingblock">
 <div class="title">application.properties</div>
 <div class="content">
-<pre class="highlight"><code>spring.boot.admin.client.url=http://localhost:8080  <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="CodeRay highlight"><code>spring.boot.admin.client.url=http://localhost:8080  <i class="conum" data-value="1"></i><b>(1)</b>
 management.endpoints.web.exposure.include=*  <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
@@ -728,10 +728,10 @@ management.endpoints.web.exposure.include=*  <i class="conum" data-value="2"></i
 <p>Make the actuator endpoints accessible:</p>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">@Configuration
-public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
+<span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SecurityPermitAllConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
+    <span class="annotation">@Override</span>
+    <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
         http.authorizeRequests().anyRequest().permitAll()  <i class="conum" data-value="1"></i><b>(1)</b>
             .and().csrf().disable();
     }
@@ -768,10 +768,10 @@ public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter
 <div class="listingblock">
 <div class="title">pom.xml</div>
 <div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
-    &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
-    &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
-&lt;/dependency&gt;</code></pre>
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>org.springframework.cloud<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="tag">&lt;/artifactId&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
 </li>
@@ -779,19 +779,19 @@ public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter
 <p>Enable discovery by adding <code>@EnableDiscoveryClient</code> to your configuration:</p>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">@Configuration
-@EnableAutoConfiguration
-@EnableDiscoveryClient
-@EnableAdminServer
-public class SpringBootAdminApplication {
-    public static void main(String[] args) {
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
+<span class="annotation">@EnableAutoConfiguration</span>
+<span class="annotation">@EnableDiscoveryClient</span>
+<span class="annotation">@EnableAdminServer</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">SpringBootAdminApplication</span> {
+    <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
         SpringApplication.run(SpringBootAdminApplication.class, args);
     }
 
-    @Configuration
-    public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
+    <span class="annotation">@Configuration</span>
+    <span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SecurityPermitAllConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
+        <span class="annotation">@Override</span>
+        <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
             http.authorizeRequests().anyRequest().permitAll()  <i class="conum" data-value="1"></i><b>(1)</b>
                 .and().csrf().disable();
         }
@@ -813,25 +813,25 @@ public class SpringBootAdminApplication {
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="highlight"><code class="language-yml" data-lang="yml">eureka:   <i class="conum" data-value="1"></i><b>(1)</b>
-  instance:
-    leaseRenewalIntervalInSeconds: 10
-    health-check-url-path: /actuator/health
-    metadata-map:
-      startup: ${random.int}    #needed to trigger info and endpoint update after restart
-  client:
-    registryFetchIntervalSeconds: 5
-    serviceUrl:
-      defaultZone: ${EUREKA_SERVICE_URL:http://localhost:8761}/eureka/
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">eureka</span>:   <i class="conum" data-value="1"></i><b>(1)</b>
+  <span class="key">instance</span>:
+    <span class="key">leaseRenewalIntervalInSeconds</span>: <span class="string"><span class="content">10</span></span>
+    <span class="key">health-check-url-path</span>: <span class="string"><span class="content">/actuator/health</span></span>
+    <span class="key">metadata-map</span>:
+      <span class="key">startup</span>: <span class="string"><span class="content">${random.int}</span></span>    <span class="comment">#needed to trigger info and endpoint update after restart</span>
+  <span class="key">client</span>:
+    <span class="key">registryFetchIntervalSeconds</span>: <span class="string"><span class="content">5</span></span>
+    <span class="key">serviceUrl</span>:
+      <span class="key">defaultZone</span>: <span class="string"><span class="content">${EUREKA_SERVICE_URL:http://localhost:8761}/eureka/</span></span>
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"  <i class="conum" data-value="2"></i><b>(2)</b>
-  endpoint:
-    health:
-      show-details: ALWAYS</code></pre>
+<span class="key">management</span>:
+  <span class="key">endpoints</span>:
+    <span class="key">web</span>:
+      <span class="key">exposure</span>:
+        <span class="key">include</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">*</span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="2"></i><b>(2)</b>
+  <span class="key">endpoint</span>:
+    <span class="key">health</span>:
+      <span class="key">show-details</span>: <span class="string"><span class="content">ALWAYS</span></span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -879,7 +879,7 @@ You can include the Spring Boot Admin Server to your Eureka server. Setup everyt
 <p>Install the pyctuator package:</p>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">pip install pyctuator</code></pre>
+<pre class="CodeRay highlight"><code data-lang="bash">pip install pyctuator</code></pre>
 </div>
 </div>
 </li>
@@ -887,25 +887,25 @@ You can include the Spring Boot Admin Server to your Eureka server. Setup everyt
 <p>Enable pyctuator by pointing it to your Flask app and letting it know where Spring Boot Admin is running:</p>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-python" data-lang="python">import os
-from flask import Flask
-from pyctuator.pyctuator import Pyctuator
+<pre class="CodeRay highlight"><code data-lang="python"><span class="keyword">import</span> <span class="include">os</span>
+<span class="keyword">from</span> <span class="include">flask</span> <span class="keyword">import</span> <span class="include">Flask</span>
+<span class="keyword">from</span> <span class="include">pyctuator.pyctuator</span> <span class="keyword">import</span> <span class="include">Pyctuator</span>
 
-app_name = "Flask App with Pyctuator"
+app_name = <span class="string"><span class="delimiter">&quot;</span><span class="content">Flask App with Pyctuator</span><span class="delimiter">&quot;</span></span>
 app = Flask(app_name)
 
 
-@app.route("/")
-def hello():
-    return "Hello World!"
+<span class="decorator">@app.route</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>)
+<span class="keyword">def</span> <span class="function">hello</span>():
+    <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello World!</span><span class="delimiter">&quot;</span></span>
 
 
 Pyctuator(
     app,
     app_name,
-    app_url="http://example-app.com",
-    pyctuator_endpoint_url="http://example-app.com/pyctuator",
-    registration_url=os.getenv("SPRING_BOOT_ADMIN_URL")
+    app_url=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://example-app.com</span><span class="delimiter">&quot;</span></span>,
+    pyctuator_endpoint_url=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://example-app.com/pyctuator</span><span class="delimiter">&quot;</span></span>,
+    registration_url=os.getenv(<span class="string"><span class="delimiter">&quot;</span><span class="content">SPRING_BOOT_ADMIN_URL</span><span class="delimiter">&quot;</span></span>)
 )
 
 app.run()</code></pre>
@@ -936,21 +936,21 @@ See also the <a href="http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/re
 <div class="listingblock">
 <div class="title">pom.xml</div>
 <div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;build&gt;
-    &lt;plugins&gt;
-        &lt;plugin&gt;
-            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-            &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
-            &lt;executions&gt;
-                &lt;execution&gt;
-                    &lt;goals&gt;
-                        &lt;goal&gt;build-info&lt;/goal&gt;
-                    &lt;/goals&gt;
-                &lt;/execution&gt;
-            &lt;/executions&gt;
-        &lt;/plugin&gt;
-    &lt;/plugins&gt;
-&lt;/build&gt;</code></pre>
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;build&gt;</span>
+    <span class="tag">&lt;plugins&gt;</span>
+        <span class="tag">&lt;plugin&gt;</span>
+            <span class="tag">&lt;groupId&gt;</span>org.springframework.boot<span class="tag">&lt;/groupId&gt;</span>
+            <span class="tag">&lt;artifactId&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/artifactId&gt;</span>
+            <span class="tag">&lt;executions&gt;</span>
+                <span class="tag">&lt;execution&gt;</span>
+                    <span class="tag">&lt;goals&gt;</span>
+                        <span class="tag">&lt;goal&gt;</span>build-info<span class="tag">&lt;/goal&gt;</span>
+                    <span class="tag">&lt;/goals&gt;</span>
+                <span class="tag">&lt;/execution&gt;</span>
+            <span class="tag">&lt;/executions&gt;</span>
+        <span class="tag">&lt;/plugin&gt;</span>
+    <span class="tag">&lt;/plugins&gt;</span>
+<span class="tag">&lt;/build&gt;</span></code></pre>
 </div>
 </div>
 </div>
@@ -965,10 +965,10 @@ With Spring Boot 2.2.0 you might want to set <code>spring.jmx.enabled=true</code
 <div class="listingblock">
 <div class="title">pom.xml</div>
 <div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
-    &lt;groupId&gt;org.jolokia&lt;/groupId&gt;
-    &lt;artifactId&gt;jolokia-core&lt;/artifactId&gt;
-&lt;/dependency&gt;</code></pre>
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>org.jolokia<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>jolokia-core<span class="tag">&lt;/artifactId&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
 </div>
@@ -1380,28 +1380,28 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 <div class="listingblock">
 <div class="title">pom.xml</div>
 <div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
-    &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
-    &lt;artifactId&gt;spring-cloud-starter&lt;/artifactId&gt;
-&lt;/dependency&gt;</code></pre>
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>org.springframework.cloud<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>spring-cloud-starter<span class="tag">&lt;/artifactId&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="highlight"><code class="language-yml" data-lang="yml">spring:
-  cloud:
-    discovery:
-      client:
-        simple:
-          instances:
-            test:
-              - uri: http://instance1.intern:8080
-                metadata:
-                  management.context-path: /actuator
-              - uri: http://instance2.intern:8080
-                metadata:
-                  management.context-path: /actuator</code></pre>
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring</span>:
+  <span class="key">cloud</span>:
+    <span class="key">discovery</span>:
+      <span class="key">client</span>:
+        <span class="key">simple</span>:
+          <span class="key">instances</span>:
+            <span class="key">test</span>:
+              - <span class="string"><span class="content">uri: http://instance1.intern:8080</span></span>
+                <span class="key">metadata</span>:
+                  <span class="key">management.context-path</span>: <span class="string"><span class="content">/actuator</span></span>
+              - <span class="string"><span class="content">uri: http://instance2.intern:8080</span></span>
+                <span class="key">metadata</span>:
+                  <span class="key">management.context-path</span>: <span class="string"><span class="content">/actuator</span></span></code></pre>
 </div>
 </div>
 </div>
@@ -1551,13 +1551,13 @@ Here is a sample configuration for Eureka:</p>
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="highlight"><code class="language-yml" data-lang="yml">eureka:
-  instance:
-    hostname: ${vcap.application.uris[0]}
-    nonSecurePort: 80
-    metadata-map:
-      applicationId: ${vcap.application.application_id}
-      instanceId: ${vcap.application.instance_index}</code></pre>
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">eureka</span>:
+  <span class="key">instance</span>:
+    <span class="key">hostname</span>: <span class="string"><span class="content">${vcap.application.uris[0]}</span></span>
+    <span class="key">nonSecurePort</span>: <span class="string"><span class="content">80</span></span>
+    <span class="key">metadata-map</span>:
+      <span class="key">applicationId</span>: <span class="string"><span class="content">${vcap.application.application_id}</span></span>
+      <span class="key">instanceId</span>: <span class="string"><span class="content">${vcap.application.instance_index}</span></span></code></pre>
 </div>
 </div>
 </div>
@@ -1575,10 +1575,10 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <div class="listingblock">
 <div class="title">pom.xml</div>
 <div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
-    &lt;groupId&gt;com.hazelcast&lt;/groupId&gt;
-    &lt;artifactId&gt;hazelcast&lt;/artifactId&gt;
-&lt;/dependency&gt;</code></pre>
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>com.hazelcast<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>hazelcast<span class="tag">&lt;/artifactId&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
 </li>
@@ -1586,34 +1586,34 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
 <p>Instantiate a HazelcastConfig:</p>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">@Bean
-public Config hazelcastConfig() {
-  // This map is used to store the events.
-  // It should be configured to reliably hold all the data,
-  // Spring Boot Admin will compact the events, if there are too many
-  MapConfig eventStoreMap = new MapConfig(DEFAULT_NAME_EVENT_STORE_MAP).setInMemoryFormat(InMemoryFormat.OBJECT)
-      .setBackupCount(1).setEvictionPolicy(EvictionPolicy.NONE)
-      .setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), 100));
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Bean</span>
+<span class="directive">public</span> Config hazelcastConfig() {
+  <span class="comment">// This map is used to store the events.</span>
+  <span class="comment">// It should be configured to reliably hold all the data,</span>
+  <span class="comment">// Spring Boot Admin will compact the events, if there are too many</span>
+  MapConfig eventStoreMap = <span class="keyword">new</span> MapConfig(DEFAULT_NAME_EVENT_STORE_MAP).setInMemoryFormat(InMemoryFormat.OBJECT)
+      .setBackupCount(<span class="integer">1</span>).setEvictionPolicy(EvictionPolicy.NONE)
+      .setMergePolicyConfig(<span class="keyword">new</span> MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), <span class="integer">100</span>));
 
-  // This map is used to deduplicate the notifications.
-  // If data in this map gets lost it should not be a big issue as it will atmost
-  // lead to
-  // the same notification to be sent by multiple instances
-  MapConfig sentNotificationsMap = new MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)
-      .setInMemoryFormat(InMemoryFormat.OBJECT).setBackupCount(1).setEvictionPolicy(EvictionPolicy.LRU)
-      .setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), 100));
+  <span class="comment">// This map is used to deduplicate the notifications.</span>
+  <span class="comment">// If data in this map gets lost it should not be a big issue as it will atmost</span>
+  <span class="comment">// lead to</span>
+  <span class="comment">// the same notification to be sent by multiple instances</span>
+  MapConfig sentNotificationsMap = <span class="keyword">new</span> MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)
+      .setInMemoryFormat(InMemoryFormat.OBJECT).setBackupCount(<span class="integer">1</span>).setEvictionPolicy(EvictionPolicy.LRU)
+      .setMergePolicyConfig(<span class="keyword">new</span> MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), <span class="integer">100</span>));
 
-  Config config = new Config();
+  Config config = <span class="keyword">new</span> Config();
   config.addMapConfig(eventStoreMap);
   config.addMapConfig(sentNotificationsMap);
-  config.setProperty("hazelcast.jmx", "true");
+  config.setProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">hazelcast.jmx</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>);
 
-  // WARNING: This setups a local cluster, you change it to fit your needs.
-  config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
+  <span class="comment">// WARNING: This setups a local cluster, you change it to fit your needs.</span>
+  config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(<span class="predefined-constant">false</span>);
   TcpIpConfig tcpIpConfig = config.getNetworkConfig().getJoin().getTcpIpConfig();
-  tcpIpConfig.setEnabled(true);
-  tcpIpConfig.setMembers(singletonList("127.0.0.1"));
-  return config;
+  tcpIpConfig.setEnabled(<span class="predefined-constant">true</span>);
+  tcpIpConfig.setMembers(singletonList(<span class="string"><span class="delimiter">&quot;</span><span class="content">127.0.0.1</span><span class="delimiter">&quot;</span></span>));
+  <span class="keyword">return</span> config;
 }</code></pre>
 </div>
 </div>
@@ -1687,10 +1687,10 @@ the instance. If you want to you show some of the metadata you can use a custom 
 <div class="listingblock">
 <div class="title">pom.xml</div>
 <div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
-    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-    &lt;artifactId&gt;spring-boot-starter-mail&lt;/artifactId&gt;
-&lt;/dependency&gt;</code></pre>
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>org.springframework.boot<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>spring-boot-starter-mail<span class="tag">&lt;/artifactId&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
 </li>
@@ -2269,18 +2269,18 @@ account and configure it appropriately.</p>
 <div class="listingblock">
 <div class="title">How to configure reminders</div>
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">@Configuration
-public class NotifierConfiguration {
-    @Autowired
-    private Notifier notifier;
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">NotifierConfiguration</span> {
+    <span class="annotation">@Autowired</span>
+    <span class="directive">private</span> Notifier notifier;
 
-    @Primary
-    @Bean(initMethod = "start", destroyMethod = "stop")
-    public RemindingNotifier remindingNotifier() {
-        RemindingNotifier notifier = new RemindingNotifier(notifier, repository);
-        notifier.setReminderPeriod(Duration.ofMinutes(10)); <i class="conum" data-value="1"></i><b>(1)</b>
-        notifier.setCheckReminderInverval(Duration.ofSeconds(10)); <i class="conum" data-value="2"></i><b>(2)</b>
-        return notifier;
+    <span class="annotation">@Primary</span>
+    <span class="annotation">@Bean</span>(initMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span>, destroyMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">stop</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">public</span> RemindingNotifier remindingNotifier() {
+        RemindingNotifier notifier = <span class="keyword">new</span> RemindingNotifier(notifier, repository);
+        notifier.setReminderPeriod(<span class="predefined-type">Duration</span>.ofMinutes(<span class="integer">10</span>)); <i class="conum" data-value="1"></i><b>(1)</b>
+        notifier.setCheckReminderInverval(<span class="predefined-type">Duration</span>.ofSeconds(<span class="integer">10</span>)); <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="keyword">return</span> notifier;
     }
 }</code></pre>
 </div>
@@ -2312,31 +2312,31 @@ public class NotifierConfiguration {
 <div class="listingblock">
 <div class="title">How to configure filtering</div>
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">@Configuration(proxyBeanMethods = false)
-public class NotifierConfig {
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>(proxyBeanMethods = <span class="predefined-constant">false</span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">NotifierConfig</span> {
 
-  private final InstanceRepository repository;
+  <span class="directive">private</span> <span class="directive">final</span> InstanceRepository repository;
 
-  private final ObjectProvider&lt;List&lt;Notifier&gt;&gt; otherNotifiers;
+  <span class="directive">private</span> <span class="directive">final</span> ObjectProvider&lt;<span class="predefined-type">List</span>&lt;Notifier&gt;&gt; otherNotifiers;
 
-  public NotifierConfig(InstanceRepository repository, ObjectProvider&lt;List&lt;Notifier&gt;&gt; otherNotifiers) {
-    this.repository = repository;
-    this.otherNotifiers = otherNotifiers;
+  <span class="directive">public</span> NotifierConfig(InstanceRepository repository, ObjectProvider&lt;<span class="predefined-type">List</span>&lt;Notifier&gt;&gt; otherNotifiers) {
+    <span class="local-variable">this</span>.repository = repository;
+    <span class="local-variable">this</span>.otherNotifiers = otherNotifiers;
   }
 
-  @Bean
-  public FilteringNotifier filteringNotifier() { <i class="conum" data-value="1"></i><b>(1)</b>
-    CompositeNotifier delegate = new CompositeNotifier(this.otherNotifiers.getIfAvailable(Collections::emptyList));
-    return new FilteringNotifier(delegate, this.repository);
+  <span class="annotation">@Bean</span>
+  <span class="directive">public</span> FilteringNotifier filteringNotifier() { <i class="conum" data-value="1"></i><b>(1)</b>
+    CompositeNotifier delegate = <span class="keyword">new</span> CompositeNotifier(<span class="local-variable">this</span>.otherNotifiers.getIfAvailable(<span class="predefined-type">Collections</span>::emptyList));
+    <span class="keyword">return</span> <span class="keyword">new</span> FilteringNotifier(delegate, <span class="local-variable">this</span>.repository);
   }
 
-  @Primary
-  @Bean(initMethod = "start", destroyMethod = "stop")
-  public RemindingNotifier remindingNotifier() { <i class="conum" data-value="2"></i><b>(2)</b>
-    RemindingNotifier notifier = new RemindingNotifier(filteringNotifier(), this.repository);
-    notifier.setReminderPeriod(Duration.ofMinutes(10));
-    notifier.setCheckReminderInverval(Duration.ofSeconds(10));
-    return notifier;
+  <span class="annotation">@Primary</span>
+  <span class="annotation">@Bean</span>(initMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span>, destroyMethod = <span class="string"><span class="delimiter">&quot;</span><span class="content">stop</span><span class="delimiter">&quot;</span></span>)
+  <span class="directive">public</span> RemindingNotifier remindingNotifier() { <i class="conum" data-value="2"></i><b>(2)</b>
+    RemindingNotifier notifier = <span class="keyword">new</span> RemindingNotifier(filteringNotifier(), <span class="local-variable">this</span>.repository);
+    notifier.setReminderPeriod(<span class="predefined-type">Duration</span>.ofMinutes(<span class="integer">10</span>));
+    notifier.setCheckReminderInverval(<span class="predefined-type">Duration</span>.ofSeconds(<span class="integer">10</span>));
+    <span class="keyword">return</span> notifier;
   }
 
 }</code></pre>
@@ -2384,42 +2384,42 @@ By default <code>spring-boot-admin-server-ui</code> provides a login page and a 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">@Configuration(proxyBeanMethods = false)
-public class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>(proxyBeanMethods = <span class="predefined-constant">false</span>)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">SecuritySecureConfig</span> <span class="directive">extends</span> WebSecurityConfigurerAdapter {
 
-  private final AdminServerProperties adminServer;
+  <span class="directive">private</span> <span class="directive">final</span> AdminServerProperties adminServer;
 
-  public SecuritySecureConfig(AdminServerProperties adminServer) {
-    this.adminServer = adminServer;
+  <span class="directive">public</span> SecuritySecureConfig(AdminServerProperties adminServer) {
+    <span class="local-variable">this</span>.adminServer = adminServer;
   }
 
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
-    SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
-    successHandler.setTargetUrlParameter("redirectTo");
-    successHandler.setDefaultTargetUrl(this.adminServer.path("/"));
+  <span class="annotation">@Override</span>
+  <span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
+    SavedRequestAwareAuthenticationSuccessHandler successHandler = <span class="keyword">new</span> SavedRequestAwareAuthenticationSuccessHandler();
+    successHandler.setTargetUrlParameter(<span class="string"><span class="delimiter">&quot;</span><span class="content">redirectTo</span><span class="delimiter">&quot;</span></span>);
+    successHandler.setDefaultTargetUrl(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>));
 
     http.authorizeRequests(
-        (authorizeRequests) -&gt; authorizeRequests.antMatchers(this.adminServer.path("/assets/**")).permitAll() <i class="conum" data-value="1"></i><b>(1)</b>
-            .antMatchers(this.adminServer.path("/login")).permitAll().anyRequest().authenticated() <i class="conum" data-value="2"></i><b>(2)</b>
+        (authorizeRequests) -&gt; authorizeRequests.antMatchers(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/assets/**</span><span class="delimiter">&quot;</span></span>)).permitAll() <i class="conum" data-value="1"></i><b>(1)</b>
+            .antMatchers(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>)).permitAll().anyRequest().authenticated() <i class="conum" data-value="2"></i><b>(2)</b>
     ).formLogin(
-        (formLogin) -&gt; formLogin.loginPage(this.adminServer.path("/login")).successHandler(successHandler).and() <i class="conum" data-value="3"></i><b>(3)</b>
-    ).logout((logout) -&gt; logout.logoutUrl(this.adminServer.path("/logout"))).httpBasic(Customizer.withDefaults()) <i class="conum" data-value="4"></i><b>(4)</b>
+        (formLogin) -&gt; formLogin.loginPage(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>)).successHandler(successHandler).and() <i class="conum" data-value="3"></i><b>(3)</b>
+    ).logout((logout) -&gt; logout.logoutUrl(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/logout</span><span class="delimiter">&quot;</span></span>))).httpBasic(<span class="predefined-type">Customizer</span>.withDefaults()) <i class="conum" data-value="4"></i><b>(4)</b>
         .csrf((csrf) -&gt; csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) <i class="conum" data-value="5"></i><b>(5)</b>
             .ignoringRequestMatchers(
-                new AntPathRequestMatcher(this.adminServer.path("/instances"),
+                <span class="keyword">new</span> AntPathRequestMatcher(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/instances</span><span class="delimiter">&quot;</span></span>),
                     HttpMethod.POST.toString()), <i class="conum" data-value="6"></i><b>(6)</b>
-                new AntPathRequestMatcher(this.adminServer.path("/instances/*"),
+                <span class="keyword">new</span> AntPathRequestMatcher(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/instances/*</span><span class="delimiter">&quot;</span></span>),
                     HttpMethod.DELETE.toString()), <i class="conum" data-value="6"></i><b>(6)</b>
-                new AntPathRequestMatcher(this.adminServer.path("/actuator/**")) <i class="conum" data-value="7"></i><b>(7)</b>
+                <span class="keyword">new</span> AntPathRequestMatcher(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/actuator/**</span><span class="delimiter">&quot;</span></span>)) <i class="conum" data-value="7"></i><b>(7)</b>
             ))
-        .rememberMe((rememberMe) -&gt; rememberMe.key(UUID.randomUUID().toString()).tokenValiditySeconds(1209600));
+        .rememberMe((rememberMe) -&gt; rememberMe.key(<span class="predefined-type">UUID</span>.randomUUID().toString()).tokenValiditySeconds(<span class="integer">1209600</span>));
   }
 
-  // Required to provide UserDetailsService for "remember functionality"
-  @Override
-  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-    auth.inMemoryAuthentication().withUser("user").password("{noop}password").roles("USER");
+  <span class="comment">// Required to provide UserDetailsService for &quot;remember functionality&quot;</span>
+  <span class="annotation">@Override</span>
+  <span class="directive">protected</span> <span class="type">void</span> configure(AuthenticationManagerBuilder auth) <span class="directive">throws</span> <span class="exception">Exception</span> {
+    auth.inMemoryAuthentication().withUser(<span class="string"><span class="delimiter">&quot;</span><span class="content">user</span><span class="delimiter">&quot;</span></span>).password(<span class="string"><span class="delimiter">&quot;</span><span class="content">{noop}password</span><span class="delimiter">&quot;</span></span>).roles(<span class="string"><span class="delimiter">&quot;</span><span class="content">USER</span><span class="delimiter">&quot;</span></span>);
   }
 
 }</code></pre>
@@ -2463,9 +2463,9 @@ public class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="highlight"><code class="language-yaml" data-lang="yaml">spring.boot.admin.client:
-   username: sba-client
-   password: s3cret</code></pre>
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">spring.boot.admin.client</span>:
+   <span class="key">username</span>: <span class="string"><span class="content">sba-client</span></span>
+   <span class="key">password</span>: <span class="string"><span class="content">s3cret</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2542,12 +2542,12 @@ When using this approach the SBA Server decides whether or not the user can acce
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="highlight"><code class="language-yaml" data-lang="yaml">spring.boot.admin.client:
-    url: http://localhost:8080
-    instance:
-      metadata:
-        user.name: ${spring.security.user.name}
-        user.password: ${spring.security.user.password}</code></pre>
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">spring.boot.admin.client</span>:
+    <span class="key">url</span>: <span class="string"><span class="content">http://localhost:8080</span></span>
+    <span class="key">instance</span>:
+      <span class="key">metadata</span>:
+        <span class="key">user.name</span>: <span class="string"><span class="content">${spring.security.user.name}</span></span>
+        <span class="key">user.password</span>: <span class="string"><span class="content">${spring.security.user.password}</span></span></code></pre>
 </div>
 </div>
 </div>
@@ -2589,18 +2589,18 @@ If your clients provide credentials via metadata (i.e., via service annotations)
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="highlight"><code class="language-yaml" data-lang="yaml">spring.boot.admin:
-  instance-auth:
-    enabled: true
-    default-user-name: "${some.user.name.from.secret}"
-    default-user-password: "${some.user.password.from.secret}"
-    service-map:
-      my-first-service-to-monitor:
-        user-name: "${some.user.name.from.secret}"
-        user-password: "${some.user.password.from.secret}"
-      my-second-service-to-monitor:
-        user-name: "${some.user.name.from.secret}"
-        user-password: "${some.user.password.from.secret}"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">spring.boot.admin</span>:
+  <span class="key">instance-auth</span>:
+    <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
+    <span class="key">default-user-name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">${some.user.name.from.secret}</span><span class="delimiter">&quot;</span></span>
+    <span class="key">default-user-password</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">${some.user.password.from.secret}</span><span class="delimiter">&quot;</span></span>
+    <span class="key">service-map</span>:
+      <span class="key">my-first-service-to-monitor</span>:
+        <span class="key">user-name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">${some.user.name.from.secret}</span><span class="delimiter">&quot;</span></span>
+        <span class="key">user-password</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">${some.user.password.from.secret}</span><span class="delimiter">&quot;</span></span>
+      <span class="key">my-second-service-to-monitor</span>:
+        <span class="key">user-name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">${some.user.name.from.secret}</span><span class="delimiter">&quot;</span></span>
+        <span class="key">user-password</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">${some.user.password.from.secret}</span><span class="delimiter">&quot;</span></span></code></pre>
 </div>
 </div>
 </div>
@@ -2609,11 +2609,11 @@ If your clients provide credentials via metadata (i.e., via service annotations)
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="highlight"><code class="language-yaml" data-lang="yaml">eureka:
-  instance:
-    metadata-map:
-      user.name: ${spring.security.user.name}
-      user.password: ${spring.security.user.password}</code></pre>
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">eureka</span>:
+  <span class="key">instance</span>:
+    <span class="key">metadata-map</span>:
+      <span class="key">user.name</span>: <span class="string"><span class="content">${spring.security.user.name}</span></span>
+      <span class="key">user.password</span>: <span class="string"><span class="content">${spring.security.user.password}</span></span></code></pre>
 </div>
 </div>
 </div>
@@ -2622,11 +2622,11 @@ If your clients provide credentials via metadata (i.e., via service annotations)
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="highlight"><code class="language-yaml" data-lang="yaml">spring.cloud.consul:
-  discovery:
-    metadata:
-        user-name: ${spring.security.user.name}
-        user-password: ${spring.security.user.password}</code></pre>
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">spring.cloud.consul</span>:
+  <span class="key">discovery</span>:
+    <span class="key">metadata</span>:
+        <span class="key">user-name</span>: <span class="string"><span class="content">${spring.security.user.name}</span></span>
+        <span class="key">user-password</span>: <span class="string"><span class="content">${spring.security.user.password}</span></span></code></pre>
 </div>
 </div>
 <div class="admonitionblock warning">
@@ -2649,10 +2649,10 @@ Consul does not allow dots (".") in metadata keys, use dashes instead.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">@Override
-protected void configure(HttpSecurity http) throws Exception {
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Override</span>
+<span class="directive">protected</span> <span class="type">void</span> configure(HttpSecurity http) <span class="directive">throws</span> <span class="exception">Exception</span> {
     http.csrf()
-        .ignoringAntMatchers("/actuator/**");
+        .ignoringAntMatchers(<span class="string"><span class="delimiter">&quot;</span><span class="content">/actuator/**</span><span class="delimiter">&quot;</span></span>);
 }</code></pre>
 </div>
 </div>
@@ -2666,14 +2666,14 @@ If a custom configured <code>ClientHttpConnector</code> bean is present, Spring 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">@Bean
-public ClientHttpConnector customHttpClient() {
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Bean</span>
+<span class="directive">public</span> ClientHttpConnector customHttpClient() {
     SslContextBuilder sslContext = SslContextBuilder.forClient();
-    //Your sslContext customizations go here
+    <span class="comment">//Your sslContext customizations go here</span>
     HttpClient httpClient = HttpClient.create().secure(
         ssl -&gt; ssl.sslContext(sslContext)
     );
-    return new ReactorClientHttpConnector(httpClient);
+    <span class="keyword">return</span> <span class="keyword">new</span> ReactorClientHttpConnector(httpClient);
 }</code></pre>
 </div>
 </div>
@@ -2691,23 +2691,23 @@ public ClientHttpConnector customHttpClient() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">public class CustomNotifier extends AbstractEventNotifier {
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">class</span> <span class="class">CustomNotifier</span> <span class="directive">extends</span> AbstractEventNotifier {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(LoggingNotifier.class);
+  <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">Logger</span> LOGGER = LoggerFactory.getLogger(LoggingNotifier.class);
 
-  public CustomNotifier(InstanceRepository repository) {
-    super(repository);
+  <span class="directive">public</span> CustomNotifier(InstanceRepository repository) {
+    <span class="local-variable">super</span>(repository);
   }
 
-  @Override
-  protected Mono&lt;Void&gt; doNotify(InstanceEvent event, Instance instance) {
-    return Mono.fromRunnable(() -&gt; {
-      if (event instanceof InstanceStatusChangedEvent) {
-        LOGGER.info("Instance {} ({}) is {}", instance.getRegistration().getName(), event.getInstance(),
+  <span class="annotation">@Override</span>
+  <span class="directive">protected</span> Mono&lt;<span class="predefined-type">Void</span>&gt; doNotify(InstanceEvent event, Instance instance) {
+    <span class="keyword">return</span> Mono.fromRunnable(() -&gt; {
+      <span class="keyword">if</span> (event <span class="keyword">instanceof</span> InstanceStatusChangedEvent) {
+        LOGGER.info(<span class="string"><span class="delimiter">&quot;</span><span class="content">Instance {} ({}) is {}</span><span class="delimiter">&quot;</span></span>, instance.getRegistration().getName(), event.getInstance(),
             ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus());
       }
-      else {
-        LOGGER.info("Instance {} ({}) {}", instance.getRegistration().getName(), event.getInstance(),
+      <span class="keyword">else</span> {
+        LOGGER.info(<span class="string"><span class="delimiter">&quot;</span><span class="content">Instance {} ({}) {}</span><span class="delimiter">&quot;</span></span>, instance.getRegistration().getName(), event.getInstance(),
             event.getType());
       }
     });
@@ -2724,12 +2724,12 @@ public ClientHttpConnector customHttpClient() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">@Bean
-public HttpHeadersProvider customHttpHeadersProvider() {
-  return (instance) -&gt; {
-    HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.add("X-CUSTOM", "My Custom Value");
-    return httpHeaders;
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Bean</span>
+<span class="directive">public</span> HttpHeadersProvider customHttpHeadersProvider() {
+  <span class="keyword">return</span> (instance) -&gt; {
+    HttpHeaders httpHeaders = <span class="keyword">new</span> HttpHeaders();
+    httpHeaders.add(<span class="string"><span class="delimiter">&quot;</span><span class="content">X-CUSTOM</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">My Custom Value</span><span class="delimiter">&quot;</span></span>);
+    <span class="keyword">return</span> httpHeaders;
   };
 }</code></pre>
 </div>
@@ -2743,11 +2743,11 @@ This can be useful for auditing or adding some extra security checks.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">@Bean
-public InstanceExchangeFilterFunction auditLog() {
-  return (instance, request, next) -&gt; next.exchange(request).doOnSubscribe((s) -&gt; {
-    if (HttpMethod.DELETE.equals(request.method()) || HttpMethod.POST.equals(request.method())) {
-      log.info("{} for {} on {}", request.method(), instance.getId(), request.url());
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Bean</span>
+<span class="directive">public</span> InstanceExchangeFilterFunction auditLog() {
+  <span class="keyword">return</span> (instance, request, next) -&gt; next.exchange(request).doOnSubscribe((s) -&gt; {
+    <span class="keyword">if</span> (HttpMethod.DELETE.equals(request.method()) || HttpMethod.POST.equals(request.method())) {
+      log.info(<span class="string"><span class="delimiter">&quot;</span><span class="content">{} for {} on {}</span><span class="delimiter">&quot;</span></span>, request.method(), instance.getId(), request.url());
     }
   });
 }</code></pre>
@@ -2761,14 +2761,14 @@ public InstanceExchangeFilterFunction auditLog() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-yaml" data-lang="yaml">spring:
-  boot:
-    admin:
-      ui:
-        external-views:
-          - label: "🚀"
-            url: http://codecentric.de
-            order: 2000</code></pre>
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">spring</span>:
+  <span class="key">boot</span>:
+    <span class="key">admin</span>:
+      <span class="key">ui</span>:
+        <span class="key">external-views</span>:
+          - <span class="string"><span class="content">label: &quot;🚀&quot;</span></span>
+            <span class="key">url</span>: <span class="string"><span class="content">http://codecentric.de</span></span>
+            <span class="key">order</span>: <span class="string"><span class="content">2000</span></span></code></pre>
 </div>
 </div>
 </div>
@@ -2811,23 +2811,23 @@ The <code>install()</code> function receives the following parameters in order t
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-html" data-lang="html">&lt;template&gt;
-  &lt;pre v-text="stringify(applications, null, 4)" /&gt;
-&lt;/template&gt;
+<pre class="CodeRay highlight"><code data-lang="html"><span class="tag">&lt;template&gt;</span>
+  <span class="tag">&lt;pre</span> <span class="attribute-name">v-text</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">stringify(applications, null, 4)</span><span class="delimiter">&quot;</span></span> <span class="tag">/&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
 
-&lt;script&gt;
-export default {
-  props: {
-    applications: { <i class="conum" data-value="1"></i><b>(1)</b>
-      type: Array,
-      required: true
+<span class="tag">&lt;script&gt;</span>
+<span class="inline"><span class="reserved">export</span> <span class="keyword">default</span> {
+  <span class="key">props</span>: {
+    <span class="key">applications</span>: { <i class="conum" data-value="1"></i><b>(1)</b>
+      <span class="key">type</span>: Array,
+      <span class="key">required</span>: <span class="predefined-constant">true</span>
     }
   },
-  methods: {
-    stringify: JSON.stringify
+  <span class="key">methods</span>: {
+    <span class="key">stringify</span>: JSON.stringify
   }
-};
-&lt;/script&gt;</code></pre>
+};</span>
+<span class="tag">&lt;/script&gt;</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -2855,14 +2855,14 @@ There are some helpful methods on the application and instances object available
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-javascript" data-lang="javascript">SBA.use({
+<pre class="CodeRay highlight"><code data-lang="javascript">SBA.use({
   install({viewRegistry}) {
     viewRegistry.addView({
-      name: 'custom',  <i class="conum" data-value="1"></i><b>(1)</b>
-      path: '/custom', <i class="conum" data-value="2"></i><b>(2)</b>
-      component: custom, <i class="conum" data-value="3"></i><b>(3)</b>
-      label: 'Custom', <i class="conum" data-value="4"></i><b>(4)</b>
-      order: 1000, <i class="conum" data-value="5"></i><b>(5)</b>
+      <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">custom</span><span class="delimiter">'</span></span>,  <i class="conum" data-value="1"></i><b>(1)</b>
+      <span class="key">path</span>: <span class="string"><span class="delimiter">'</span><span class="content">/custom</span><span class="delimiter">'</span></span>, <i class="conum" data-value="2"></i><b>(2)</b>
+      <span class="key">component</span>: custom, <i class="conum" data-value="3"></i><b>(3)</b>
+      <span class="key">label</span>: <span class="string"><span class="delimiter">'</span><span class="content">Custom</span><span class="delimiter">'</span></span>, <i class="conum" data-value="4"></i><b>(4)</b>
+      <span class="key">order</span>: <span class="integer">1000</span>, <i class="conum" data-value="5"></i><b>(5)</b>
     });
   }
 });</code></pre>
@@ -2897,7 +2897,7 @@ There are some helpful methods on the application and instances object available
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-text" data-lang="text">/custom/**</code></pre>
+<pre class="CodeRay highlight"><code data-lang="text">/custom/**</code></pre>
 </div>
 </div>
 </div>
@@ -2908,37 +2908,37 @@ There are some helpful methods on the application and instances object available
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-html" data-lang="html">&lt;template&gt;
-  &lt;div class="custom"&gt;
-    &lt;p&gt;Instance: &lt;span v-text="instance.id" /&gt;&lt;/p&gt;
-    &lt;p&gt;Output: &lt;span v-text="text" /&gt;&lt;/p&gt;
-  &lt;/div&gt;
-&lt;/template&gt;
+<pre class="CodeRay highlight"><code data-lang="html"><span class="tag">&lt;template&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">custom</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+    <span class="tag">&lt;p&gt;</span>Instance: <span class="tag">&lt;span</span> <span class="attribute-name">v-text</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">instance.id</span><span class="delimiter">&quot;</span></span> <span class="tag">/&gt;</span><span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;p&gt;</span>Output: <span class="tag">&lt;span</span> <span class="attribute-name">v-text</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">text</span><span class="delimiter">&quot;</span></span> <span class="tag">/&gt;</span><span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
 
-&lt;script&gt;
-  export default {
-    props: {
-      instance: { <i class="conum" data-value="1"></i><b>(1)</b>
-        type: Object,
-        required: true
+<span class="tag">&lt;script&gt;</span>
+<span class="inline">  <span class="reserved">export</span> <span class="keyword">default</span> {
+    <span class="key">props</span>: {
+      <span class="key">instance</span>: { <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="key">type</span>: Object,
+        <span class="key">required</span>: <span class="predefined-constant">true</span>
       }
     },
-    data: () =&gt; ({
-      text: ''
+    <span class="key">data</span>: () =&gt; ({
+      <span class="key">text</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
     }),
     async created() {
-      const response = await this.instance.axios.get('actuator/custom'); <i class="conum" data-value="2"></i><b>(2)</b>
-      this.text = response.data;
+      const response = await <span class="local-variable">this</span>.instance.axios.get(<span class="string"><span class="delimiter">'</span><span class="content">actuator/custom</span><span class="delimiter">'</span></span>); <i class="conum" data-value="2"></i><b>(2)</b>
+      <span class="local-variable">this</span>.text = response.data;
     }
-  };
-&lt;/script&gt;
+  };</span>
+<span class="tag">&lt;/script&gt;</span>
 
-&lt;style&gt;
-  .custom {
-    font-size: 20px;
-    width: 80%;
-  }
-&lt;/style&gt;</code></pre>
+<span class="tag">&lt;style&gt;</span>
+<span class="inline">  <span class="class">.custom</span> {
+    <span class="key">font-size</span>: <span class="float">20px</span>;
+    <span class="key">width</span>: <span class="float">80%</span>;
+  }</span>
+<span class="tag">&lt;/style&gt;</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -2958,23 +2958,23 @@ There are some helpful methods on the application and instances object available
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-javascript" data-lang="javascript">SBA.use({
+<pre class="CodeRay highlight"><code data-lang="javascript">SBA.use({
   install({viewRegistry, vueI18n}) {
     viewRegistry.addView({
-      name: 'instances/custom',
-      parent: 'instances', <i class="conum" data-value="1"></i><b>(1)</b>
-      path: 'custom',
-      component: customEndpoint,
-      label: 'Custom',
-      group: 'custom', <i class="conum" data-value="2"></i><b>(2)</b>
-      order: 1000,
-      isEnabled: ({instance}) =&gt; instance.hasEndpoint('custom') <i class="conum" data-value="3"></i><b>(3)</b>
+      <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">instances/custom</span><span class="delimiter">'</span></span>,
+      <span class="key">parent</span>: <span class="string"><span class="delimiter">'</span><span class="content">instances</span><span class="delimiter">'</span></span>, <i class="conum" data-value="1"></i><b>(1)</b>
+      <span class="key">path</span>: <span class="string"><span class="delimiter">'</span><span class="content">custom</span><span class="delimiter">'</span></span>,
+      <span class="key">component</span>: customEndpoint,
+      <span class="key">label</span>: <span class="string"><span class="delimiter">'</span><span class="content">Custom</span><span class="delimiter">'</span></span>,
+      <span class="key">group</span>: <span class="string"><span class="delimiter">'</span><span class="content">custom</span><span class="delimiter">'</span></span>, <i class="conum" data-value="2"></i><b>(2)</b>
+      <span class="key">order</span>: <span class="integer">1000</span>,
+      <span class="key">isEnabled</span>: ({instance}) =&gt; instance.hasEndpoint(<span class="string"><span class="delimiter">'</span><span class="content">custom</span><span class="delimiter">'</span></span>) <i class="conum" data-value="3"></i><b>(3)</b>
     });
 
-    vueI18n.mergeLocaleMessage('en', { <i class="conum" data-value="4"></i><b>(4)</b>
-      sidebar: {
-        custom : {
-          title : "My Custom Extensions"
+    vueI18n.mergeLocaleMessage(<span class="string"><span class="delimiter">'</span><span class="content">en</span><span class="delimiter">'</span></span>, { <i class="conum" data-value="4"></i><b>(4)</b>
+      <span class="key">sidebar</span>: {
+        <span class="key">custom</span> : {
+          <span class="key">title</span> : <span class="string"><span class="delimiter">&quot;</span><span class="content">My Custom Extensions</span><span class="delimiter">&quot;</span></span>
         }
       }
     });
@@ -3105,13 +3105,13 @@ or you must ensure yourself that the image gets served correctly (e.g. by regist
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-yaml" data-lang="yaml">spring:
-  boot:
-    admin:
-      ui:
-        view-settings:
-          - name: "journal"
-            enabled: false</code></pre>
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">spring</span>:
+  <span class="key">boot</span>:
+    <span class="key">admin</span>:
+      <span class="key">ui</span>:
+        <span class="key">view-settings</span>:
+          - <span class="string"><span class="content">name: &quot;journal&quot;</span></span>
+            <span class="key">enabled</span>: <span class="string"><span class="content">false</span></span></code></pre>
 </div>
 </div>
 </div>
@@ -3131,7 +3131,7 @@ able to register at a newer server. Since the API has slight changes, you need t
 <div class="listingblock">
 <div class="title">application.yml</div>
 <div class="content">
-<pre class="highlight"><code class="language-yml" data-lang="yml">spring.boot.admin.api-path: instances</code></pre>
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">spring.boot.admin.api-path</span>: <span class="string"><span class="content">instances</span></span></code></pre>
 </div>
 </div>
 </li>
@@ -3271,5 +3271,94 @@ You can set <code>spring.boot.admin.context-path</code> to alter the path where 
 Version 2.3.0-SNAPSHOT<br>
 </div>
 </div>
+<style>
+/* Stylesheet for CodeRay to match GitHub theme | MIT License | http://foundation.zurb.com */
+pre.CodeRay{background:#f7f7f8}
+.CodeRay .line-numbers{border-right:1px solid currentColor;opacity:.35;padding:0 .5em 0 0}
+.CodeRay span.line-numbers{display:inline-block;margin-right:.75em}
+.CodeRay .line-numbers strong{color:#000}
+table.CodeRay{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.CodeRay td{vertical-align:top;line-height:inherit}
+table.CodeRay td.line-numbers{text-align:right}
+table.CodeRay td.code{padding:0 0 0 .75em}
+.CodeRay .debug{color:#fff !important;background:#000080 !important}
+.CodeRay .annotation{color:#007}
+.CodeRay .attribute-name{color:#000080}
+.CodeRay .attribute-value{color:#700}
+.CodeRay .binary{color:#509}
+.CodeRay .comment{color:#998;font-style:italic}
+.CodeRay .char{color:#04d}
+.CodeRay .char .content{color:#04d}
+.CodeRay .char .delimiter{color:#039}
+.CodeRay .class{color:#458;font-weight:bold}
+.CodeRay .complex{color:#a08}
+.CodeRay .constant,.CodeRay .predefined-constant{color:#008080}
+.CodeRay .color{color:#099}
+.CodeRay .class-variable{color:#369}
+.CodeRay .decorator{color:#b0b}
+.CodeRay .definition{color:#099}
+.CodeRay .delimiter{color:#000}
+.CodeRay .doc{color:#970}
+.CodeRay .doctype{color:#34b}
+.CodeRay .doc-string{color:#d42}
+.CodeRay .escape{color:#666}
+.CodeRay .entity{color:#800}
+.CodeRay .error{color:#808}
+.CodeRay .exception{color:inherit}
+.CodeRay .filename{color:#099}
+.CodeRay .function{color:#900;font-weight:bold}
+.CodeRay .global-variable{color:#008080}
+.CodeRay .hex{color:#058}
+.CodeRay .integer,.CodeRay .float{color:#099}
+.CodeRay .include{color:#555}
+.CodeRay .inline{color:#000}
+.CodeRay .inline .inline{background:#ccc}
+.CodeRay .inline .inline .inline{background:#bbb}
+.CodeRay .inline .inline-delimiter{color:#d14}
+.CodeRay .inline-delimiter{color:#d14}
+.CodeRay .important{color:#555;font-weight:bold}
+.CodeRay .interpreted{color:#b2b}
+.CodeRay .instance-variable{color:#008080}
+.CodeRay .label{color:#970}
+.CodeRay .local-variable{color:#963}
+.CodeRay .octal{color:#40e}
+.CodeRay .predefined{color:#369}
+.CodeRay .preprocessor{color:#579}
+.CodeRay .pseudo-class{color:#555}
+.CodeRay .directive{font-weight:bold}
+.CodeRay .type{font-weight:bold}
+.CodeRay .predefined-type{color:inherit}
+.CodeRay .reserved,.CodeRay .keyword {color:#000;font-weight:bold}
+.CodeRay .key{color:#808}
+.CodeRay .key .delimiter{color:#606}
+.CodeRay .key .char{color:#80f}
+.CodeRay .value{color:#088}
+.CodeRay .regexp .delimiter{color:#808}
+.CodeRay .regexp .content{color:#808}
+.CodeRay .regexp .modifier{color:#808}
+.CodeRay .regexp .char{color:#d14}
+.CodeRay .regexp .function{color:#404;font-weight:bold}
+.CodeRay .string{color:#d20}
+.CodeRay .string .string .string{background:#ffd0d0}
+.CodeRay .string .content{color:#d14}
+.CodeRay .string .char{color:#d14}
+.CodeRay .string .delimiter{color:#d14}
+.CodeRay .shell{color:#d14}
+.CodeRay .shell .delimiter{color:#d14}
+.CodeRay .symbol{color:#990073}
+.CodeRay .symbol .content{color:#a60}
+.CodeRay .symbol .delimiter{color:#630}
+.CodeRay .tag{color:#008080}
+.CodeRay .tag-special{color:#d70}
+.CodeRay .variable{color:#036}
+.CodeRay .insert{background:#afa}
+.CodeRay .delete{background:#faa}
+.CodeRay .change{color:#aaf;background:#007}
+.CodeRay .head{color:#f8f;background:#505}
+.CodeRay .insert .insert{color:#080}
+.CodeRay .delete .delete{color:#800}
+.CodeRay .change .change{color:#66f}
+.CodeRay .head .head{color:#f4f}
+</style>
 </body>
 </html>
