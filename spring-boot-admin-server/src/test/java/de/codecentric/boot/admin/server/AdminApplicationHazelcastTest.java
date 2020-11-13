@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,13 @@ package de.codecentric.boot.admin.server;
 import java.util.stream.Collectors;
 
 import com.hazelcast.config.Config;
+import com.hazelcast.config.EvictionConfig;
 import com.hazelcast.config.EvictionPolicy;
 import com.hazelcast.config.InMemoryFormat;
 import com.hazelcast.config.MapConfig;
 import com.hazelcast.config.MergePolicyConfig;
 import com.hazelcast.config.TcpIpConfig;
-import com.hazelcast.map.merge.PutIfAbsentMapMergePolicy;
+import com.hazelcast.spi.merge.PutIfAbsentMergePolicy;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -117,12 +118,13 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
 		@Bean
 		public Config hazelcastConfig() {
 			MapConfig eventStoreMap = new MapConfig(DEFAULT_NAME_EVENT_STORE_MAP)
-					.setInMemoryFormat(InMemoryFormat.OBJECT).setBackupCount(1).setEvictionPolicy(EvictionPolicy.NONE)
-					.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), 100));
+					.setInMemoryFormat(InMemoryFormat.OBJECT).setBackupCount(1)
+					.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
 
 			MapConfig sentNotificationsMap = new MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)
-					.setInMemoryFormat(InMemoryFormat.OBJECT).setBackupCount(1).setEvictionPolicy(EvictionPolicy.LRU)
-					.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), 100));
+					.setInMemoryFormat(InMemoryFormat.OBJECT).setBackupCount(1)
+					.setEvictionConfig(new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU))
+					.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
 
 			Config config = new Config();
 			config.addMapConfig(eventStoreMap);

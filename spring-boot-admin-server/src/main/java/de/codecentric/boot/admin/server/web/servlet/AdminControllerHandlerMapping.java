@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,18 +47,19 @@ public class AdminControllerHandlerMapping extends RequestMappingHandlerMapping 
 	}
 
 	private RequestMappingInfo withPrefix(RequestMappingInfo mapping) {
-		if (!StringUtils.hasText(adminContextPath)) {
+		if (!StringUtils.hasText(this.adminContextPath)) {
 			return mapping;
 		}
 		PatternsRequestCondition patternsCondition = new PatternsRequestCondition(
 				withNewPatterns(mapping.getPatternsCondition().getPatterns()));
+
 		return new RequestMappingInfo(patternsCondition, mapping.getMethodsCondition(), mapping.getParamsCondition(),
 				mapping.getHeadersCondition(), mapping.getConsumesCondition(), mapping.getProducesCondition(),
 				mapping.getCustomCondition());
 	}
 
 	private String[] withNewPatterns(Set<String> patterns) {
-		return patterns.stream().map((pattern) -> PathUtils.normalizePath(adminContextPath + pattern))
+		return patterns.stream().map((pattern) -> PathUtils.normalizePath(this.adminContextPath + pattern))
 				.toArray(String[]::new);
 	}
 

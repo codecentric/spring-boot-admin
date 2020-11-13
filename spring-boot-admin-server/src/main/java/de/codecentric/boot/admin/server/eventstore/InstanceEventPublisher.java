@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@ import org.reactivestreams.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
-import reactor.core.publisher.UnicastProcessor;
+import reactor.core.publisher.Sinks;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
@@ -34,24 +33,23 @@ public class InstanceEventPublisher implements Publisher<InstanceEvent> {
 
 	private final Flux<InstanceEvent> publishedFlux;
 
-	private final FluxSink<InstanceEvent> sink;
+	private final Sinks.Many<InstanceEvent> unicast;
 
 	protected InstanceEventPublisher() {
-		UnicastProcessor<InstanceEvent> unicastProcessor = UnicastProcessor.create();
-		this.publishedFlux = unicastProcessor.publish().autoConnect(0);
-		this.sink = unicastProcessor.sink();
+		this.unicast = Sinks.many().unicast().onBackpressureBuffer();
+		this.publishedFlux = this.unicast.asFlux().publish().autoConnect(0);
 	}
 
 	protected void publish(List<InstanceEvent> events) {
 		events.forEach((event) -> {
 			log.debug("Event published {}", event);
-			this.sink.next(event);
+			this.unicast.tryEmitNext(event);
 		});
 	}
 
 	@Override
 	public void subscribe(Subscriber<? super InstanceEvent> s) {
-		publishedFlux.subscribe(s);
+		this.publishedFlux.subscribe(s);
 	}
 
 }

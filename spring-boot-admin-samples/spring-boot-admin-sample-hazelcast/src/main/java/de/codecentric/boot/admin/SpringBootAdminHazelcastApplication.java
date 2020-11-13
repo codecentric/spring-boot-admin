@@ -17,12 +17,13 @@
 package de.codecentric.boot.admin;
 
 import com.hazelcast.config.Config;
+import com.hazelcast.config.EvictionConfig;
 import com.hazelcast.config.EvictionPolicy;
 import com.hazelcast.config.InMemoryFormat;
 import com.hazelcast.config.MapConfig;
 import com.hazelcast.config.MergePolicyConfig;
 import com.hazelcast.config.TcpIpConfig;
-import com.hazelcast.map.merge.PutIfAbsentMapMergePolicy;
+import com.hazelcast.spi.merge.PutIfAbsentMergePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -65,16 +66,16 @@ public class SpringBootAdminHazelcastApplication {
 		// It should be configured to reliably hold all the data,
 		// Spring Boot Admin will compact the events, if there are too many
 		MapConfig eventStoreMap = new MapConfig(DEFAULT_NAME_EVENT_STORE_MAP).setInMemoryFormat(InMemoryFormat.OBJECT)
-				.setBackupCount(1).setEvictionPolicy(EvictionPolicy.NONE)
-				.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), 100));
+				.setBackupCount(1)
+				.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
 
 		// This map is used to deduplicate the notifications.
 		// If data in this map gets lost it should not be a big issue as it will atmost
 		// lead to
 		// the same notification to be sent by multiple instances
 		MapConfig sentNotificationsMap = new MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)
-				.setInMemoryFormat(InMemoryFormat.OBJECT).setBackupCount(1).setEvictionPolicy(EvictionPolicy.LRU)
-				.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), 100));
+				.setInMemoryFormat(InMemoryFormat.OBJECT).setBackupCount(1).setEvictionConfig(new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU))
+				.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
 
 		Config config = new Config();
 		config.addMapConfig(eventStoreMap);

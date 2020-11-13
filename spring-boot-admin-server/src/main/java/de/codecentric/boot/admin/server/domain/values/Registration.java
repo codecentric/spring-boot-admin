@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,9 +58,9 @@ public final class Registration implements Serializable {
 		Assert.hasText(name, "'name' must not be empty.");
 		Assert.hasText(healthUrl, "'healthUrl' must not be empty.");
 		Assert.isTrue(checkUrl(healthUrl), "'healthUrl' is not valid: " + healthUrl);
-		Assert.isTrue(StringUtils.isEmpty(managementUrl) || checkUrl(managementUrl),
+		Assert.isTrue(!StringUtils.hasText(managementUrl) || checkUrl(managementUrl),
 				"'managementUrl' is not valid: " + managementUrl);
-		Assert.isTrue(StringUtils.isEmpty(serviceUrl) || checkUrl(serviceUrl),
+		Assert.isTrue(!StringUtils.hasText(serviceUrl) || checkUrl(serviceUrl),
 				"'serviceUrl' is not valid: " + serviceUrl);
 		this.name = name;
 		this.managementUrl = managementUrl;
@@ -68,7 +68,7 @@ public final class Registration implements Serializable {
 		this.serviceUrl = serviceUrl;
 		this.source = source;
 		this.metadata = new LinkedHashMap<>();
-		metadata.forEach((key, value) -> this.metadata.put(key, value));
+		metadata.forEach(this.metadata::put);
 	}
 
 	public static Registration.Builder create(String name, String healthUrl) {

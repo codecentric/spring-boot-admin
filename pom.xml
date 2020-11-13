@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2014-2019 the original author or authors.
+  ~ Copyright 2014-2020 the original author or authors.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -35,13 +35,13 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>2.3.4.RELEASE</spring-boot.version>
-        <spring-cloud.version>Hoxton.SR8</spring-cloud.version>
+        <spring-boot.version>2.4.0</spring-boot.version>
+        <spring-cloud.version>2020.0.0-M3</spring-cloud.version>
         <wiremock.version>2.27.2</wiremock.version>
-        <hazelcast-tests.version>3.12.10</hazelcast-tests.version>
+        <hazelcast-tests.version>4.0.3</hazelcast-tests.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
         <awaitility.version>4.0.3</awaitility.version>
-        <testcontainers.version>1.14.3</testcontainers.version>
+        <testcontainers.version>1.15.0</testcontainers.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.2.0</build-helper-maven-plugin.version>
