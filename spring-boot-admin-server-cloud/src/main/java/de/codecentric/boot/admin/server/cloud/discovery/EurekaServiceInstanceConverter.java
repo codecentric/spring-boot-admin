@@ -40,7 +40,7 @@ public class EurekaServiceInstanceConverter extends DefaultServiceInstanceConver
 
 		InstanceInfo instanceInfo = ((EurekaServiceInstance) instance).getInstanceInfo();
 		String healthUrl = instanceInfo.getSecureHealthCheckUrl();
-		if (StringUtils.isEmpty(healthUrl)) {
+		if (!StringUtils.hasText(healthUrl)) {
 			healthUrl = instanceInfo.getHealthCheckUrl();
 		}
 		return URI.create(healthUrl);

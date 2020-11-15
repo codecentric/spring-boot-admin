@@ -28,7 +28,7 @@ import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 
 import static java.util.Collections.emptyMap;
-import static org.springframework.util.StringUtils.isEmpty;
+import static org.springframework.util.StringUtils.hasText;
 
 /**
  * Converts any {@link ServiceInstance}s to {@link Instance}s. To customize the health- or
@@ -83,7 +83,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 
 	protected String getHealthPath(ServiceInstance instance) {
 		String healthPath = instance.getMetadata().get(KEY_HEALTH_PATH);
-		if (!isEmpty(healthPath)) {
+		if (hasText(healthPath)) {
 			return healthPath;
 		}
 		return this.healthEndpointPath;
@@ -112,7 +112,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 
 	private String getManagementScheme(ServiceInstance instance) {
 		String managementServerScheme = instance.getMetadata().get(KEY_MANAGEMENT_SCHEME);
-		if (!isEmpty(managementServerScheme)) {
+		if (hasText(managementServerScheme)) {
 			return managementServerScheme;
 		}
 		return getServiceUrl(instance).getScheme();
@@ -120,7 +120,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 
 	protected String getManagementHost(ServiceInstance instance) {
 		String managementServerHost = instance.getMetadata().get(KEY_MANAGEMENT_ADDRESS);
-		if (!isEmpty(managementServerHost)) {
+		if (hasText(managementServerHost)) {
 			return managementServerHost;
 		}
 		return getServiceUrl(instance).getHost();
@@ -128,7 +128,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 
 	protected int getManagementPort(ServiceInstance instance) {
 		String managementPort = instance.getMetadata().get(KEY_MANAGEMENT_PORT);
-		if (!isEmpty(managementPort)) {
+		if (hasText(managementPort)) {
 			return Integer.parseInt(managementPort);
 		}
 		return getServiceUrl(instance).getPort();
@@ -136,7 +136,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 
 	protected String getManagementPath(ServiceInstance instance) {
 		String managementPath = instance.getMetadata().get(DefaultServiceInstanceConverter.KEY_MANAGEMENT_PATH);
-		if (!isEmpty(managementPath)) {
+		if (hasText(managementPath)) {
 			return managementPath;
 		}
 		return this.managementContextPath;

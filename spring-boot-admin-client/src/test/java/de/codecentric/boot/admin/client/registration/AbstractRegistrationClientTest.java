@@ -16,11 +16,10 @@
 
 package de.codecentric.boot.admin.client.registration;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
-import org.junit.Rule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,8 +39,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public abstract class AbstractRegistrationClientTest {
 
-	@Rule
-	public WireMockRule wireMock = new WireMockRule(options().dynamicPort().notifier(new ConsoleNotifier(true)));
+	private final WireMockServer wireMock = new WireMockServer(
+			options().dynamicPort().notifier(new ConsoleNotifier(true)));
 
 	private final Application application = Application.create("AppName").managementUrl("http://localhost:8080/mgmt")
 			.healthUrl("http://localhost:8080/health").serviceUrl("http://localhost:8080").build();

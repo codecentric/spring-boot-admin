@@ -74,7 +74,8 @@ public class SpringBootAdminHazelcastApplication {
 		// lead to
 		// the same notification to be sent by multiple instances
 		MapConfig sentNotificationsMap = new MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)
-				.setInMemoryFormat(InMemoryFormat.OBJECT).setBackupCount(1).setEvictionConfig(new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU))
+				.setInMemoryFormat(InMemoryFormat.OBJECT).setBackupCount(1)
+				.setEvictionConfig(new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU))
 				.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
 
 		Config config = new Config();
