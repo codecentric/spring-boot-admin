@@ -92,7 +92,7 @@ public class AbstractEventHandlerTest {
 		protected Publisher<Void> handle(Flux<InstanceRegisteredEvent> publisher) {
 			return publisher.flatMap((event) -> {
 				if (event.equals(errorEvent)) {
-					return Mono.error(new IllegalStateException("Error"));
+					return Mono.error(new IllegalStateException("TestError"));
 				}
 				else {
 					log.info("Event {}", event);

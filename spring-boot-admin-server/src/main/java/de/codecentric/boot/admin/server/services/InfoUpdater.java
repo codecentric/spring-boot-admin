@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,8 +70,8 @@ public class InfoUpdater {
 		}
 
 		log.debug("Update info for {}", instance);
-		return this.instanceWebClient.instance(instance).get().uri(Endpoint.INFO).exchange()
-				.log(log.getName(), Level.FINEST).flatMap((response) -> convertInfo(instance, response))
+		return this.instanceWebClient.instance(instance).get().uri(Endpoint.INFO)
+				.exchangeToMono((response) -> convertInfo(instance, response)).log(log.getName(), Level.FINEST)
 				.onErrorResume((ex) -> Mono.just(convertInfo(instance, ex))).map(instance::withInfo);
 	}
 

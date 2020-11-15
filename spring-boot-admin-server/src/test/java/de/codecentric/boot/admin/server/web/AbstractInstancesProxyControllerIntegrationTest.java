@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,10 +60,10 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 
 	private static final String ACTUATOR_CONTENT_TYPE = ActuatorMediaType.V2_JSON + ";charset=UTF-8";
 
-	private static ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
+	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
 	};
 
-	public WireMockServer wireMock = new WireMockServer(
+	private final WireMockServer wireMock = new WireMockServer(
 			WireMockConfiguration.options().dynamicPort().extensions(new ConnectionCloseExtension()));
 
 	private WebTestClient client;
@@ -82,12 +82,12 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 
 	@BeforeEach
 	void setup() {
-		wireMock.start();
+		this.wireMock.start();
 	}
 
 	@AfterEach
 	void teardown() {
-		wireMock.stop();
+		this.wireMock.stop();
 	}
 
 	protected void setUpClient(ConfigurableApplicationContext context) {
@@ -99,25 +99,31 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 	}
 
 	@Test
-	public void should_return_status_503_404() {
+	public void should_return_status_503() {
 		// 503 on invalid instance
 		this.client.get().uri("/instances/{instanceId}/actuator/info", "UNKNOWN").accept(ACTUATOR_V2_MEDIATYPE)
 				.exchange().expectStatus().isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+	}
 
+	@Test
+	public void should_return_status_404() {
 		// 404 on non-existent endpoint
 		this.client.get().uri("/instances/{instanceId}/actuator/not-exist", this.instanceId)
 				.accept(ACTUATOR_V2_MEDIATYPE).exchange().expectStatus().isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	@Test
-	public void should_return_status_502_504() {
+	public void should_return_status_502() {
 		// 502 on invalid response
 		this.client.get().uri("/instances/{instanceId}/actuator/invalid", this.instanceId).accept(ACTUATOR_V2_MEDIATYPE)
 				.exchange().expectStatus().isEqualTo(HttpStatus.BAD_GATEWAY);
+	}
 
-		// 504 on read timeout
-		this.client.get().uri("/instances/{instanceId}/actuator/timeout", this.instanceId).accept(ACTUATOR_V2_MEDIATYPE)
-				.exchange().expectStatus().isEqualTo(HttpStatus.GATEWAY_TIMEOUT);
+	@Test
+	public void should_return_status_504() {
+		// 502 on invalid response
+		this.client.get().uri("/instances/{instanceId}/actuator/invalid", this.instanceId).accept(ACTUATOR_V2_MEDIATYPE)
+				.exchange().expectStatus().isEqualTo(HttpStatus.BAD_GATEWAY);
 	}
 
 	@Test
@@ -200,8 +206,8 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 				ok().withHeader(ALLOW, HttpMethod.HEAD.name(), HttpMethod.GET.name(), HttpMethod.OPTIONS.name())));
 		this.wireMock.stubFor(get(urlEqualTo(managementPath + ""))
 				.willReturn(ok(actuatorIndex).withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
-		this.wireMock.stubFor(
-				get(urlEqualTo(managementPath + "/invalid")).willReturn(aResponse().withFault(Fault.EMPTY_RESPONSE)));
+		this.wireMock.stubFor(get(urlEqualTo(managementPath + "/invalid"))
+				.willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER)));
 		this.wireMock.stubFor(get(urlEqualTo(managementPath + "/timeout")).willReturn(ok().withFixedDelay(10000)));
 		this.wireMock.stubFor(get(urlEqualTo(managementPath + "/test"))
 				.willReturn(ok("{ \"foo\" : \"bar\" }").withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));

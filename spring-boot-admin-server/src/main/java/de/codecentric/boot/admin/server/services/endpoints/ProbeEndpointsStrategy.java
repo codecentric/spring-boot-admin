@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,8 +70,8 @@ public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
 	protected Mono<DetectedEndpoint> detectEndpoint(Instance instance, EndpointDefinition endpoint) {
 		URI uri = UriComponentsBuilder.fromUriString(instance.getRegistration().getManagementUrl()).path("/")
 				.path(endpoint.getPath()).build().toUri();
-		return this.instanceWebClient.instance(instance).options().uri(uri).exchange()
-				.flatMap(this.convert(instance.getId(), endpoint, uri)).onErrorResume((e) -> {
+		return this.instanceWebClient.instance(instance).options().uri(uri)
+				.exchangeToMono(this.convert(instance.getId(), endpoint, uri)).onErrorResume((e) -> {
 					log.warn("Endpoint probe for instance {} on endpoint '{}' failed: {}", instance.getId(), uri,
 							e.getMessage());
 					log.debug("Endpoint probe for instance {} on endpoint '{}' failed.", instance.getId(), uri, e);
