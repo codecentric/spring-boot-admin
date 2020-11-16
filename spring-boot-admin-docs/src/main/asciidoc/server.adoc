@@ -63,7 +63,7 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 | A default user name used to authenticate to registered services. The `spring.boot.admin.instance-auth.enabled` property must be `true`.
 | `null`
 
-| spring.boot.admin.instance-auth.default-user-password
+| spring.boot.admin.instance-auth.default-password
 | A default user password used to authenticate to registered services. The `spring.boot.admin.instance-auth.enabled` property must be `true`.
 | `null`
 
