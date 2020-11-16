@@ -80,14 +80,11 @@ public class UiControllerTest {
 					}
 
 					@Override
-					public Object resolveArgument(MethodParameter parameter,
-												  ModelAndViewContainer mavContainer,
-												  NativeWebRequest webRequest,
-												  WebDataBinderFactory binderFactory) throws Exception {
+					public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+							NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 						return null;
 					}
-				})
-				.setCustomHandlerMapping(() -> new AdminControllerHandlerMapping("")).build();
+				}).setCustomHandlerMapping(() -> new AdminControllerHandlerMapping("")).build();
 	}
 
 }

@@ -101,7 +101,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 		}
 
 		return UriComponentsBuilder.newInstance().scheme(getScheme(this.server.getSsl())).host(getServiceHost())
-								   .port(getLocalServerPort()).toUriString();
+				.port(getLocalServerPort()).toUriString();
 	}
 
 	protected String getServicePath() {
