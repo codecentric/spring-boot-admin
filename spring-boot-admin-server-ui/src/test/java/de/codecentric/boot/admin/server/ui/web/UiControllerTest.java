@@ -16,16 +16,9 @@
 
 package de.codecentric.boot.admin.server.ui.web;
 
-import java.security.Principal;
-
 import org.junit.jupiter.api.Test;
-import org.springframework.core.MethodParameter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.support.WebDataBinderFactory;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.method.support.ModelAndViewContainer;
 
 import de.codecentric.boot.admin.server.ui.extensions.UiExtensions;
 import de.codecentric.boot.admin.server.web.servlet.AdminControllerHandlerMapping;
@@ -73,18 +66,7 @@ public class UiControllerTest {
 		return MockMvcBuilders
 				.standaloneSetup(
 						new UiController(publicUrl, UiExtensions.EMPTY, UiController.Settings.builder().build()))
-				.setCustomArgumentResolvers(new HandlerMethodArgumentResolver() {
-					@Override
-					public boolean supportsParameter(MethodParameter parameter) {
-						return parameter.getParameterType().equals(Principal.class);
-					}
-
-					@Override
-					public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-							NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-						return null;
-					}
-				}).setCustomHandlerMapping(() -> new AdminControllerHandlerMapping("")).build();
+				.setCustomHandlerMapping(() -> new AdminControllerHandlerMapping("")).build();
 	}
 
 }
