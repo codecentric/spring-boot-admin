@@ -72,6 +72,7 @@
 
   .panel {
     margin-bottom: 1.5rem;
+    overflow: initial;
 
     &__close {
       margin-right: 0.75em;
