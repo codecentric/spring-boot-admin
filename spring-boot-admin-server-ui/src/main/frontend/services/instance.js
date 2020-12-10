@@ -212,6 +212,10 @@ class Instance {
     return this.axios.delete(uri`actuator/sessions/${sessionId}`);
   }
 
+  async fetchStartup() {
+    return this.axios.post(uri`actuator/startup`);
+  }
+
   streamLogfile(interval) {
     return logtail(opt => this.axios.get(uri`actuator/logfile`, opt), interval);
   }

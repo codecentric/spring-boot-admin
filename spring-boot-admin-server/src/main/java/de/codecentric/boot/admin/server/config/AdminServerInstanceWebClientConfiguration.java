@@ -214,6 +214,12 @@ public class AdminServerInstanceWebClientConfiguration {
 			return LegacyEndpointConverters.mappings();
 		}
 
+		@Bean
+		@ConditionalOnMissingBean(name = "startupLegacyEndpointConverter")
+		public LegacyEndpointConverter startupLegacyEndpointConverter() {
+			return LegacyEndpointConverters.startup();
+		}
+
 	}
 
 }

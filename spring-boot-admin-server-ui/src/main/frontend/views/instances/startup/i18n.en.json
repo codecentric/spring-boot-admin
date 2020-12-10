@@ -1,0 +1,13 @@
+{
+  "instances": {
+    "startup": {
+      "label": "Startup",
+      "fetch_failed": "Fetching metrics failed.",
+      "column": {
+        "name": "Name",
+        "duration": "Duration (s)",
+        "details": "Details"
+      }
+    }
+  }
+}
