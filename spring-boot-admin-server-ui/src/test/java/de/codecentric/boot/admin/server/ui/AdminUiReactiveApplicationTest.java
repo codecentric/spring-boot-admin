@@ -16,7 +16,8 @@
 
 package de.codecentric.boot.admin.server.ui;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
@@ -31,21 +32,28 @@ import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
 public class AdminUiReactiveApplicationTest extends AbstractAdminUiApplicationTest {
 
-	private ConfigurableApplicationContext instance;
+	private static ConfigurableApplicationContext instance;
 
-	@BeforeEach
-	public void setUp() {
-		this.instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
-				.web(WebApplicationType.REACTIVE).run("--server.port=0",
-						"--spring.boot.admin.ui.extension-resource-locations=classpath:/META-INF/test-extensions/",
-						"--spring.boot.admin.ui.available-languages=de");
+	private static Integer port;
 
-		super.setUp(this.instance.getEnvironment().getProperty("local.server.port", Integer.class, 0));
+	@BeforeAll
+	public static void setUp() {
+		instance = new SpringApplicationBuilder().sources(TestAdminApplication.class).web(WebApplicationType.REACTIVE)
+			.run("--server.port=0",
+				"--spring.boot.admin.ui.extension-resource-locations=classpath:/META-INF/test-extensions/",
+				"--spring.boot.admin.ui.available-languages=de");
+
+		port = instance.getEnvironment().getProperty("local.server.port", Integer.class, 0);
 	}
 
-	@AfterEach
-	public void shutdown() {
-		this.instance.close();
+	@AfterAll
+	public static void shutdown() {
+		instance.close();
+	}
+
+	@BeforeEach
+	public void setupEach() {
+		super.setUp(port);
 	}
 
 	@EnableAdminServer
