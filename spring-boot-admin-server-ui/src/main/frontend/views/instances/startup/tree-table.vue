@@ -17,16 +17,20 @@
 <template>
   <div class="tree">
     <div class="row row--head">
-      <div class="column column--name" v-text="$t('instances.startup.column.name')" />
-      <div class="column column--duration" v-text="$t('instances.startup.column.duration')" />
-      <div class="column column--details" v-text="$t('instances.startup.column.details')" />
+      <div class="column column--name">
+        <input class="checkbox-expand-all" type="checkbox" @change="expandTree" v-model="isExpanded" v-bind:aria-expanded="isExpanded">
+        <span v-text="$t('instances.startup.column.name')"></span>
+      </div>
+      <div class="column column--duration" v-text="$t('instances.startup.column.duration')"/>
+      <div class="column column--details" v-text="$t('instances.startup.column.details')"/>
     </div>
     <ul>
       <tree-item
         v-for="(eventNode, index) in tree.getRoots()"
         :key="index"
         :item="eventNode"
-        :tree="tree"
+        :expand="expandedNodes"
+        @toggle="onToggle"
       />
     </ul>
   </div>
@@ -44,6 +48,33 @@ export default {
       required: true
     }
   },
+  data: () => ({
+    expandedNodes: new Set(),
+    isExpanded: false
+  }),
+  computed: {
+    treeSize() {
+      return new Set(this.tree.getEvents().map(e => e.startupStep.id)).size
+    }
+  },
+  methods: {
+    expandTree() {
+      if(this.isExpanded) {
+        this.expandedNodes = new Set(this.tree.getEvents().map(e => e.startupStep.id));
+      } else {
+        this.expandedNodes = new Set();
+      }
+    },
+    onToggle($event) {
+      if ($event.isOpen === true) {
+        this.expandedNodes.add($event.target.startupStep.id)
+      } else {
+        this.expandedNodes.delete($event.target.startupStep.id)
+      }
+
+      this.isExpanded = this.expandedNodes.size === this.treeSize
+    }
+  }
 }
 </script>
 
@@ -61,6 +92,10 @@ export default {
 }
 
 .tree {
+  .checkbox-expand-all {
+    margin-right: 5px;
+  }
+
   .row {
     display: grid;
     grid-template-columns: 1fr 140px 1fr;
@@ -88,16 +123,24 @@ export default {
       overflow: hidden;
       text-overflow: ellipsis;
 
-      &--name { grid-area: 1 / 1 / 2 / 2; }
-      &--duration { grid-area: 1 / 2 / 2 / 3; }
-      &--details { grid-area: 1 / 3 / 2 / 4; }
+      &--name {
+        grid-area: 1 / 1 / 2 / 2;
+      }
+
+      &--duration {
+        grid-area: 1 / 2 / 2 / 3;
+      }
+
+      &--details {
+        grid-area: 1 / 3 / 2 / 4;
+      }
     }
   }
 }
 
 .tree-item {
   margin: 0;
-  transition-property: display;
+  transition-property: transform;
   transition-duration: 125ms;
 
   .icon {

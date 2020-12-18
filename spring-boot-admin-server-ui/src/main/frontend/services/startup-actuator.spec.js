@@ -43,7 +43,7 @@ describe('StartupActuatorService', () => {
 
   it('should add parents as reference', () => {
     let tree = StartupActuatorService.parseAsTree(data);
-    let child = tree.getById( 8);
+    let child = tree.getById(8);
     let parent = tree.getById(7);
 
     expect(child.startupStep.parent).toBe(parent);
@@ -53,7 +53,7 @@ describe('StartupActuatorService', () => {
   it('should add children as reference', () => {
     let tree = StartupActuatorService.parseAsTree(data);
     let parent = tree.getById(7);
-    let child = tree.getById( 8);
+    let child = tree.getById(8);
 
     expect(parent.startupStep.children).toContain(child);
   });
@@ -107,5 +107,12 @@ describe('StartupActuatorService', () => {
 
     expect(period.start).toBe(0);
     expect(period.end).toBe(0.000038153408219073554);
+  });
+
+  it('should return the path in tree for a given id (no pun intended)', () => {
+    let tree = StartupActuatorService.parseAsTree(data);
+
+    let path = tree.getPath(8);
+    expect(path).toBe([8, 7, 6, 5])
   });
 });

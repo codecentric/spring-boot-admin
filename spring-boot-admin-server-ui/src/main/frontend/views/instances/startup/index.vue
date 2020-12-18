@@ -57,7 +57,7 @@
         this.error = null;
         try {
           const res = await this.instance.fetchStartup();
-          this.eventTree = StartupActuatorService.parseAsTree(res.data)
+          this.eventTree = StartupActuatorService.parseAsTree(res.data);
         } catch (error) {
           console.warn('Fetching startup failed:', error);
           this.error = error;
@@ -79,8 +79,3 @@
     }
   }
 </script>
-
-<style lang="scss">
-  .startup-view {
-  }
-</style>

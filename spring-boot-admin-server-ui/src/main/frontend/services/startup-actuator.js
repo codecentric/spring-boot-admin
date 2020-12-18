@@ -51,6 +51,19 @@ export class StartupActuatorEventTree {
     return this.getEvents().map(e => Date.parse(e.endTime)).reduce((a, b) => Math.max(a, b), Number.MIN_VALUE)
   }
 
+  getPath(id) {
+    let event = this.getById(id);
+    const path = [id]
+
+    let parent = event.startupStep.parent;
+    while (parent !== null && parent !== undefined) {
+      path.push(parent.startupStep.id);
+      parent = parent.startupStep.parent;
+    }
+
+    return path;
+  }
+
   getPeriod(event) {
     const eventStartTime = Date.parse(event.startTime);
     const eventEndTime = Date.parse(event.endTime)

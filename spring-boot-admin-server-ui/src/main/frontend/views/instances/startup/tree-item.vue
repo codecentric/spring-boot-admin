@@ -18,14 +18,14 @@
   <li class="tree-item" :tree-item-depth="item.startupStep.depth" :class="{'is-open': isOpen}">
     <div class="row">
       <div class="column column--name">
-        <a class="icon" :class="{'empty': !hasChildren, 'icon--open': isOpen}" @click="toggle" />
-        <span v-text="item.startupStep.name" />&nbsp;<small>(#<span v-text="item.startupStep.id" />)</small>
+        <a class="icon" :class="{'empty': !hasChildren, 'icon--open': isOpen}" @click="toggle"/>
+        <span v-text="item.startupStep.name"/>&nbsp;<small>(#<span v-text="item.startupStep.id"/>)</small>
       </div>
-      <div class="column column--duration monospaced" v-text="item.duration.toFixed(9)" />
+      <div class="column column--duration monospaced" v-text="item.duration.toFixed(9)"/>
       <div class="column column--details">
         <span v-for="(tag, index) in item.startupStep.tags" :key="index">
           <strong>{{ tag.key }}: </strong>
-          <span v-text="tag.value" class="enforce-word-wrap" />
+          <span v-text="tag.value" class="enforce-word-wrap"/>
           <br>
         </span>
       </div>
@@ -35,14 +35,14 @@
         v-for="(child, index) in item.startupStep.children"
         :key="index"
         :item="child"
-        :tree="tree"
+        :expand="expand"
+        @toggle="onToggle"
       />
     </ul>
   </li>
 </template>
 
 <script>
-import {StartupActuatorEventTree} from '@/services/startup-actuator';
 
 export default {
   name: 'TreeItem',
@@ -51,23 +51,32 @@ export default {
       type: Object,
       required: true
     },
-    tree: {
-      type: StartupActuatorEventTree,
-      required: true
-    }
+    expand: Set
   },
   data: () => ({
     isOpen: false,
   }),
+  watch: {
+    expand: function (newVal) {
+      this.isOpen = this.expand.has(this.item.startupStep.id);
+    }
+  },
   computed: {
     hasChildren: function () {
       return this.item.startupStep.children && this.item.startupStep.children.length;
     }
   },
   methods: {
+    onToggle: function ($event) {
+      this.$emit('toggle', $event);
+    },
     toggle: function () {
       if (this.hasChildren) {
         this.isOpen = !this.isOpen;
+        this.$emit('toggle', {
+          target: this.item,
+          isOpen: this.isOpen
+        });
       }
     },
   }
