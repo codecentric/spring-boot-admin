@@ -53,8 +53,11 @@ export class StartupActuatorEventTree {
 
   getPath(id) {
     let event = this.getById(id);
-    const path = [id]
+    if (!event) {
+      return [];
+    }
 
+    const path = [id]
     let parent = event.startupStep.parent;
     while (parent !== null && parent !== undefined) {
       path.push(parent.startupStep.id);

@@ -18,14 +18,14 @@
   <li class="tree-item" :tree-item-depth="item.startupStep.depth" :class="{'is-open': isOpen}">
     <div class="row">
       <div class="column column--name">
-        <a class="icon" :class="{'empty': !hasChildren, 'icon--open': isOpen}" @click="toggle"/>
-        <span v-text="item.startupStep.name"/>&nbsp;<small>(#<span v-text="item.startupStep.id"/>)</small>
+        <a class="icon" :class="{'empty': !hasChildren, 'icon--open': isOpen}" @click="toggle" />
+        <span v-text="item.startupStep.name" />&nbsp;<small>(#<span v-text="item.startupStep.id" />)</small>
       </div>
-      <div class="column column--duration monospaced" v-text="item.duration.toFixed(9)"/>
+      <div class="column column--duration monospaced" v-text="item.duration.toFixed(9)" />
       <div class="column column--details">
         <span v-for="(tag, index) in item.startupStep.tags" :key="index">
           <strong>{{ tag.key }}: </strong>
-          <span v-text="tag.value" class="enforce-word-wrap"/>
+          <span v-text="tag.value" class="enforce-word-wrap" />
           <br>
         </span>
       </div>
@@ -56,9 +56,12 @@ export default {
   data: () => ({
     isOpen: false,
   }),
+  created() {
+      this.isOpen = this.expand.has(this.item.startupStep.id);
+  },
   watch: {
     expand: function (newVal) {
-      this.isOpen = this.expand.has(this.item.startupStep.id);
+      this.isOpen = newVal.has(this.item.startupStep.id);
     }
   },
   computed: {

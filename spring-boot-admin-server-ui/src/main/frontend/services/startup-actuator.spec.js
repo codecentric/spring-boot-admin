@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-import data from './startup-actuator.fixture.spec.json'
 import {StartupActuatorService} from './startup-actuator'
 
-const events = data.timeline.events
 
 describe('StartupActuatorService', () => {
+  let data = {};
+  let events = {};
+
+  beforeEach(() => {
+    data = require('./startup-actuator.fixture.spec.json');
+    events = data.timeline.events;
+  })
+
   it('should find element by id', () => {
     let item8 = StartupActuatorService.getById(events, 8);
 
@@ -112,7 +118,7 @@ describe('StartupActuatorService', () => {
   it('should return the path in tree for a given id (no pun intended)', () => {
     let tree = StartupActuatorService.parseAsTree(data);
 
-    let path = tree.getPath(8);
-    expect(path).toBe([8, 7, 6, 5])
+    let path = tree.getPath(10);
+    expect(path).toEqual([10, 9, 6, 5])
   });
 });

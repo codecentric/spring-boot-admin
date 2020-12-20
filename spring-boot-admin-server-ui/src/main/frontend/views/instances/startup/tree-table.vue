@@ -18,11 +18,16 @@
   <div class="tree">
     <div class="row row--head">
       <div class="column column--name">
-        <input class="checkbox-expand-all" type="checkbox" @change="expandTree" v-model="isExpanded" v-bind:aria-expanded="isExpanded">
-        <span v-text="$t('instances.startup.column.name')"></span>
+        <input class="checkbox-expand-all"
+               type="checkbox"
+               @change="expandTree"
+               v-model="isExpanded"
+               :title="$t('instances.startup.expand_all')"
+        >
+        <span v-text="$t('instances.startup.column.name')" />
       </div>
-      <div class="column column--duration" v-text="$t('instances.startup.column.duration')"/>
-      <div class="column column--details" v-text="$t('instances.startup.column.details')"/>
+      <div class="column column--duration" v-text="$t('instances.startup.column.duration')" />
+      <div class="column column--details" v-text="$t('instances.startup.column.details')" />
     </div>
     <ul>
       <tree-item
@@ -46,20 +51,37 @@ export default {
     tree: {
       type: StartupActuatorEventTree,
       required: true
+    },
+    expand: {
+      type: Set,
+      required: false,
+      default: null
     }
   },
   data: () => ({
     expandedNodes: new Set(),
     isExpanded: false
   }),
+  created() {
+    if (this.expand) {
+      this.expandedNodes = this.expand;
+    }
+  },
   computed: {
     treeSize() {
-      return new Set(this.tree.getEvents().map(e => e.startupStep.id)).size
+      return new Set(this.tree.getEvents()).size
+    }
+  },
+  watch: {
+    expandedNodes() {
+      this.$emit('change', {
+        expandedNodes: this.expandedNodes
+      });
     }
   },
   methods: {
     expandTree() {
-      if(this.isExpanded) {
+      if (this.isExpanded) {
         this.expandedNodes = new Set(this.tree.getEvents().map(e => e.startupStep.id));
       } else {
         this.expandedNodes = new Set();
@@ -68,8 +90,10 @@ export default {
     onToggle($event) {
       if ($event.isOpen === true) {
         this.expandedNodes.add($event.target.startupStep.id)
+        this.expandedNodes = new Set(this.expandedNodes)
       } else {
         this.expandedNodes.delete($event.target.startupStep.id)
+        this.expandedNodes = new Set(this.expandedNodes)
       }
 
       this.isExpanded = this.expandedNodes.size === this.treeSize
@@ -107,6 +131,7 @@ export default {
     &--head {
       background-color: #fff;
       position: sticky;
+      z-index: 100;
       top: 54px;
       grid-template-rows: 1fr;
       color: #363636;

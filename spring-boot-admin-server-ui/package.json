@@ -38,7 +38,6 @@
     "rxjs": "^6.6.3",
     "vue": "^2.6.12",
     "vue-clickaway2": "^2.3.2",
-    "vue-fragment": "^1.5.1",
     "vue-i18n": "^8.22.1",
     "vue-infinite-loading": "^2.4.5",
     "vue-router": "^3.4.9"

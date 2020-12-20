@@ -2,11 +2,11 @@
   "instances": {
     "startup": {
       "label": "Startup",
-      "expand_all": "Expand all",
-      "fetch_failed": "Fetching startup data failed.",
+      "expand_all": "Alle aufklappen",
+      "fetch_failed": "Das Laden der Startup-Daten ist fehlgeschlagen.",
       "column": {
         "name": "Name",
-        "duration": "Duration (s)",
+        "duration": "Dauer (s)",
         "details": "Details"
       }
     }
