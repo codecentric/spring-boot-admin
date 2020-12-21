@@ -26,7 +26,7 @@
         >
         <span v-text="$t('instances.startup.column.name')" />
       </div>
-      <div class="column column--duration" v-text="$t('instances.startup.column.duration')" />
+      <div class="column column--duration text-right" v-text="$t('instances.startup.column.duration')" />
       <div class="column column--details" v-text="$t('instances.startup.column.details')" />
     </div>
     <ul>

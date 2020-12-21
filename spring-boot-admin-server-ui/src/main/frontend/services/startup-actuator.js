@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import {isNumeric} from 'rxjs/internal-compatibility';
-
 const regex = new RegExp('([^=\\s]*)=\\[([^\\]]*)\\]', 'gi')
 
 export class StartupActuatorEventTree {
@@ -96,7 +94,7 @@ export const StartupActuatorService = {
         event.startupStep.tags = event.startupStep.tags.map(this.parseTag)
         event.startupStep.depth = 0;
         event.startupStep.children = this.getByParentId(events, event.startupStep.id);
-        event.duration = isNumeric(event.duration) ? event.duration : Number.parseFloat(event.duration.replace(/[\w]*/, ''))
+        event.duration = this.convertToMicroseconds(event.duration);
         return event;
       })
       .map((event) => {
@@ -110,6 +108,15 @@ export const StartupActuatorService = {
       });
 
     return new StartupActuatorEventTree(eventsForTree);
+  },
+  convertToMicroseconds: function (duration) {
+    let result = duration;
+
+    if (typeof duration.replace === 'function') {
+      result = result.replace(/[\w]*/, '');
+    }
+
+    return Number.parseFloat(result) * 1000;
   },
   getById(events, id) {
     return (events || [])

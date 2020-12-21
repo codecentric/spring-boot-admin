@@ -6,7 +6,7 @@
       "fetch_failed": "Fetching startup data failed.",
       "column": {
         "name": "Name",
-        "duration": "Duration (s)",
+        "duration": "Duration (ms)",
         "details": "Details"
       }
     }

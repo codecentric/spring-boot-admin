@@ -6,7 +6,7 @@
       "fetch_failed": "Das Laden der Startup-Daten ist fehlgeschlagen.",
       "column": {
         "name": "Name",
-        "duration": "Dauer (s)",
+        "duration": "Dauer (ms)",
         "details": "Details"
       }
     }
