@@ -21,6 +21,7 @@ import com.hazelcast.config.EvictionConfig;
 import com.hazelcast.config.EvictionPolicy;
 import com.hazelcast.config.InMemoryFormat;
 import com.hazelcast.config.MapConfig;
+import com.hazelcast.config.MaxSizePolicy;
 import com.hazelcast.config.MergePolicyConfig;
 import com.hazelcast.config.TcpIpConfig;
 import com.hazelcast.spi.merge.PutIfAbsentMergePolicy;
@@ -75,7 +76,8 @@ public class SpringBootAdminHazelcastApplication {
 		// the same notification to be sent by multiple instances
 		MapConfig sentNotificationsMap = new MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)
 				.setInMemoryFormat(InMemoryFormat.OBJECT).setBackupCount(1)
-				.setEvictionConfig(new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU))
+				.setEvictionConfig(new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU)
+						.setMaxSizePolicy(MaxSizePolicy.PER_NODE))
 				.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
 
 		Config config = new Config();
