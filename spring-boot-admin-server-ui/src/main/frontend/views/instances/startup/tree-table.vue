@@ -29,7 +29,7 @@
       <div class="column column--duration text-right" v-text="$t('instances.startup.column.duration')" />
       <div class="column column--details" v-text="$t('instances.startup.column.details')" />
     </div>
-    <ul>
+    <ul v-if="tree">
       <tree-item
         v-for="(eventNode, index) in tree.getRoots()"
         :key="index"

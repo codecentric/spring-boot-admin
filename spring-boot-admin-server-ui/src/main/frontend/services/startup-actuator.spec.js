@@ -15,6 +15,8 @@
  */
 
 import {StartupActuatorService} from './startup-actuator'
+import {cloneDeep} from 'lodash';
+
 
 
 describe('StartupActuatorService', () => {
@@ -22,9 +24,9 @@ describe('StartupActuatorService', () => {
   let events = {};
 
   beforeEach(() => {
-    data = require('./startup-actuator.fixture.spec.json');
+    data = cloneDeep(require('./startup-actuator.fixture.spec.json'));
     events = data.timeline.events;
-  })
+  });
 
   it('should find element by id', () => {
     let item8 = StartupActuatorService.getById(events, 8);
@@ -120,5 +122,12 @@ describe('StartupActuatorService', () => {
 
     let path = tree.getPath(10);
     expect(path).toEqual([10, 9, 6, 5])
+  });
+
+  it('should parse duration to seconds', () => {
+    let tree = StartupActuatorService.parseAsTree(data);
+    let event = tree.getById(1);
+
+    expect(event.duration).toBe(45.279861);
   });
 });

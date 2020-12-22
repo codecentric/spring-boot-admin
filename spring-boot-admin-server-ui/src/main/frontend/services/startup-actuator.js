@@ -14,87 +14,24 @@
  * limitations under the License.
  */
 
+import {StartupActuatorEventTree} from '@/services/startup-activator.tree';
+import {parse, toMilliseconds} from '@/utils/iso8601-duration';
+
 const regex = new RegExp('([^=\\s]*)=\\[([^\\]]*)\\]', 'gi')
-
-export class StartupActuatorEventTree {
-  constructor(events) {
-    this.events = events;
-  }
-
-  getEvents() {
-    return this.events || [];
-  }
-
-  getRoots() {
-    return this.getByDepth(0);
-  }
-
-  getByDepth(depth) {
-    return this.getEvents().filter((event) => event.startupStep.depth === depth)
-  }
-
-  getById(id) {
-    return this.getEvents().find((event) => event.startupStep.id === id)
-  }
-
-  getByParentId(parentId) {
-    return this.getEvents().filter((event) => event.startupStep.parentId === parentId)
-  }
-
-  getStartTime() {
-    return this.getEvents().map(e => Date.parse(e.startTime)).reduce((a, b) => Math.min(a, b), Number.MAX_VALUE)
-  }
-
-  getEndTime() {
-    return this.getEvents().map(e => Date.parse(e.endTime)).reduce((a, b) => Math.max(a, b), Number.MIN_VALUE)
-  }
-
-  getPath(id) {
-    let event = this.getById(id);
-    if (!event) {
-      return [];
-    }
-
-    const path = [id]
-    let parent = event.startupStep.parent;
-    while (parent !== null && parent !== undefined) {
-      path.push(parent.startupStep.id);
-      parent = parent.startupStep.parent;
-    }
-
-    return path;
-  }
-
-  getPeriod(event) {
-    const eventStartTime = Date.parse(event.startTime);
-    const eventEndTime = Date.parse(event.endTime)
-    const treeStartTime = this.getStartTime();
-    const treeEndTime = this.getEndTime();
-
-    const treeTimeSpan = treeEndTime - treeStartTime
-    const relativeEventStartTime = eventStartTime - treeStartTime;
-    const relativeEventEndTime = eventEndTime - treeStartTime;
-    const relativeStart = relativeEventStartTime > 0 ? relativeEventStartTime / treeTimeSpan : 0;
-    const relativeEnd = relativeEventEndTime > 0 ? relativeEventEndTime / treeTimeSpan : 0;
-
-    return {
-      start: relativeStart,
-      end: relativeEnd,
-    };
-  }
-}
 
 export const StartupActuatorService = {
   parseAsTree(data) {
-    let events = data.timeline.events || [];
-    let eventsForTree = events
+    const events = data.timeline.events || [];
+    const eventsForTree = events
       .sort((a, b) => a.startupStep.id - b.startupStep.id)
       .map((event) => {
         event.startupStep.parent = this.getById(events, event.startupStep.parentId);
-        event.startupStep.tags = event.startupStep.tags.map(this.parseTag)
-        event.startupStep.depth = 0;
         event.startupStep.children = this.getByParentId(events, event.startupStep.id);
-        event.duration = this.convertToMicroseconds(event.duration);
+
+        event.startupStep.tags = event.startupStep.tags.map(this.parseTag)
+        event.duration = toMilliseconds(parse(event.duration));
+        event.startupStep.depth = 0;
+
         return event;
       })
       .map((event) => {
@@ -108,15 +45,6 @@ export const StartupActuatorService = {
       });
 
     return new StartupActuatorEventTree(eventsForTree);
-  },
-  convertToMicroseconds: function (duration) {
-    let result = duration;
-
-    if (typeof duration.replace === 'function') {
-      result = result.replace(/[\w]*/, '');
-    }
-
-    return Number.parseFloat(result) * 1000;
   },
   getById(events, id) {
     return (events || [])
