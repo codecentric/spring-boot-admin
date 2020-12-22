@@ -444,8 +444,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="details">
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
-<span id="revnumber">version 2.3.0-SNAPSHOT,</span>
-<span id="revdate">11.11.2020</span>
+<span id="revnumber">version 2.4.0-SNAPSHOT,</span>
+<span id="revdate">22.12.2020</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -581,7 +581,7 @@ The UI is just a Vue.js application on top of the Spring Boot Actuator endpoints
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
     <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
     <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-starter-server<span class="tag">&lt;/artifactId&gt;</span>
-    <span class="tag">&lt;version&gt;</span>2.3.0-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;version&gt;</span>2.4.0-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
 <span class="tag">&lt;/dependency&gt;</span>
 <span class="tag">&lt;dependency&gt;</span>
     <span class="tag">&lt;groupId&gt;</span>org.springframework.boot<span class="tag">&lt;/groupId&gt;</span>
@@ -693,7 +693,7 @@ If you want to setup the Spring Boot Admin Server via war-deployment in a servle
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
     <span class="tag">&lt;groupId&gt;</span>de.codecentric<span class="tag">&lt;/groupId&gt;</span>
     <span class="tag">&lt;artifactId&gt;</span>spring-boot-admin-starter-client<span class="tag">&lt;/artifactId&gt;</span>
-    <span class="tag">&lt;version&gt;</span>2.3.0-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;version&gt;</span>2.4.0-SNAPSHOT<span class="tag">&lt;/version&gt;</span>
 <span class="tag">&lt;/dependency&gt;</span>
 <span class="tag">&lt;dependency&gt;</span>
     <span class="tag">&lt;groupId&gt;</span>org.springframework.boot<span class="tag">&lt;/groupId&gt;</span>
@@ -1280,7 +1280,7 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>null</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.instance-auth.default-user-password</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.instance-auth.default-password</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">A default user password used to authenticate to registered services. The <code>spring.boot.admin.instance-auth.enabled</code> property must be <code>true</code>.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>null</code></p></td>
 </tr>
@@ -1592,16 +1592,18 @@ Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-
   <span class="comment">// It should be configured to reliably hold all the data,</span>
   <span class="comment">// Spring Boot Admin will compact the events, if there are too many</span>
   MapConfig eventStoreMap = <span class="keyword">new</span> MapConfig(DEFAULT_NAME_EVENT_STORE_MAP).setInMemoryFormat(InMemoryFormat.OBJECT)
-      .setBackupCount(<span class="integer">1</span>).setEvictionPolicy(EvictionPolicy.NONE)
-      .setMergePolicyConfig(<span class="keyword">new</span> MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), <span class="integer">100</span>));
+      .setBackupCount(<span class="integer">1</span>)
+      .setMergePolicyConfig(<span class="keyword">new</span> MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), <span class="integer">100</span>));
 
   <span class="comment">// This map is used to deduplicate the notifications.</span>
   <span class="comment">// If data in this map gets lost it should not be a big issue as it will atmost</span>
   <span class="comment">// lead to</span>
   <span class="comment">// the same notification to be sent by multiple instances</span>
   MapConfig sentNotificationsMap = <span class="keyword">new</span> MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)
-      .setInMemoryFormat(InMemoryFormat.OBJECT).setBackupCount(<span class="integer">1</span>).setEvictionPolicy(EvictionPolicy.LRU)
-      .setMergePolicyConfig(<span class="keyword">new</span> MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), <span class="integer">100</span>));
+      .setInMemoryFormat(InMemoryFormat.OBJECT).setBackupCount(<span class="integer">1</span>)
+      .setEvictionConfig(<span class="keyword">new</span> EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU)
+          .setMaxSizePolicy(MaxSizePolicy.PER_NODE))
+      .setMergePolicyConfig(<span class="keyword">new</span> MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), <span class="integer">100</span>));
 
   Config config = <span class="keyword">new</span> Config();
   config.addMapConfig(eventStoreMap);
@@ -2593,7 +2595,7 @@ If your clients provide credentials via metadata (i.e., via service annotations)
   <span class="key">instance-auth</span>:
     <span class="key">enabled</span>: <span class="string"><span class="content">true</span></span>
     <span class="key">default-user-name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">${some.user.name.from.secret}</span><span class="delimiter">&quot;</span></span>
-    <span class="key">default-user-password</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">${some.user.password.from.secret}</span><span class="delimiter">&quot;</span></span>
+    <span class="key">default-password</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">${some.user.password.from.secret}</span><span class="delimiter">&quot;</span></span>
     <span class="key">service-map</span>:
       <span class="key">my-first-service-to-monitor</span>:
         <span class="key">user-name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">${some.user.name.from.secret}</span><span class="delimiter">&quot;</span></span>
@@ -3268,7 +3270,7 @@ You can set <code>spring.boot.admin.context-path</code> to alter the path where 
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 2.3.0-SNAPSHOT<br>
+Version 2.4.0-SNAPSHOT<br>
 </div>
 </div>
 <style>
