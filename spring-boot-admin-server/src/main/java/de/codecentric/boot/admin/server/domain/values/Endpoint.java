@@ -47,6 +47,8 @@ public final class Endpoint implements Serializable {
 
 	public static final String MAPPINGS = "mappings";
 
+	public static final String STARTUP = "startup";
+
 	private final String id;
 
 	private final String url;
