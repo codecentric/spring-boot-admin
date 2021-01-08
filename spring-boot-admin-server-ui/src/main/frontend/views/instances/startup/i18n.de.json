@@ -1,0 +1,14 @@
+{
+  "instances": {
+    "startup": {
+      "label": "Startup",
+      "expand_all": "Alle aufklappen",
+      "fetch_failed": "Das Laden der Startup-Daten ist fehlgeschlagen.",
+      "column": {
+        "name": "Name",
+        "duration": "Dauer (ms)",
+        "details": "Details"
+      }
+    }
+  }
+}

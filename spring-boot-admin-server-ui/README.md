@@ -19,7 +19,8 @@ spring.boot.admin.ui.resource-locations: file:@project.basedir@/../../spring-boo
 spring.boot.admin.ui.template-location: file:@project.basedir@/../../spring-boot-admin-server-ui/target/dist/
 spring.boot.admin.ui.cache-templates: false
 ```
-Or just start the [spring-boot-admin-sample-servlet](../spring-boot-admin-samples/spring-boot-admin-sample-servlet) project using the `dev` profile.
+Or just start the [spring-boot-admin-sample-servlet](../spring-boot-admin-samples/spring-boot-admin-sample-servlet)
+project using the `dev` profile. You also might want to use the `insecure` profile so you don't need to login.
 
 ### Build
 ```shell
