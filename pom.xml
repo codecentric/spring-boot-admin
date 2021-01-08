@@ -68,7 +68,7 @@
         <flatten-maven-plugin.version>1.2.5</flatten-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.1.1</maven-checkstyle-plugin.version>
         <checkstyle.version>8.37</checkstyle.version>
-        <spring-javaformat-checkstyle.version>0.0.25</spring-javaformat-checkstyle.version>
+        <spring-javaformat-checkstyle.version>0.0.26</spring-javaformat-checkstyle.version>
         <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
     </properties>
     <modules>
@@ -159,14 +159,6 @@
                     <execution>
                         <id>checkstyle-validation</id>
                         <phase>validate</phase>
-                        <configuration>
-                            <configLocation>src/checkstyle/checkstyle.xml</configLocation>
-                            <headerLocation>src/checkstyle/checkstyle-header.txt</headerLocation>
-                            <encoding>UTF-8</encoding>
-                            <consoleOutput>true</consoleOutput>
-                            <failOnViolation>true</failOnViolation>
-                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                        </configuration>
                         <goals>
                             <goal>check</goal>
                         </goals>
