@@ -445,7 +445,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.4.0-SNAPSHOT,</span>
-<span id="revdate">08.01.2021</span>
+<span id="revdate">13.01.2021</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -2403,6 +2403,8 @@ By default <code>spring-boot-admin-server-ui</code> provides a login page and a 
 
     http.authorizeRequests(
         (authorizeRequests) -&gt; authorizeRequests.antMatchers(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/assets/**</span><span class="delimiter">&quot;</span></span>)).permitAll() <i class="conum" data-value="1"></i><b>(1)</b>
+            .antMatchers(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/actuator/info</span><span class="delimiter">&quot;</span></span>)).permitAll()
+            .antMatchers(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/actuator/health</span><span class="delimiter">&quot;</span></span>)).permitAll()
             .antMatchers(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>)).permitAll().anyRequest().authenticated() <i class="conum" data-value="2"></i><b>(2)</b>
     ).formLogin(
         (formLogin) -&gt; formLogin.loginPage(<span class="local-variable">this</span>.adminServer.path(<span class="string"><span class="delimiter">&quot;</span><span class="content">/login</span><span class="delimiter">&quot;</span></span>)).successHandler(successHandler).and() <i class="conum" data-value="3"></i><b>(3)</b>
