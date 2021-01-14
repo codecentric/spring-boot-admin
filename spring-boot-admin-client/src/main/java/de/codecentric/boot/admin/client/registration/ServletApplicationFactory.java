@@ -68,7 +68,7 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
 	protected String getManagementBaseUrl() {
 		String baseUrl = instance.getManagementBaseUrl();
 
-		if (!StringUtils.isEmpty(baseUrl)) {
+		if (StringUtils.hasText(baseUrl)) {
 			return baseUrl;
 		}
 
@@ -83,7 +83,7 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
 	}
 
 	protected String getManagementContextPath() {
-		return management.getServlet().getContextPath();
+		return management.getBasePath();
 	}
 
 	protected String getServerContextPath() {

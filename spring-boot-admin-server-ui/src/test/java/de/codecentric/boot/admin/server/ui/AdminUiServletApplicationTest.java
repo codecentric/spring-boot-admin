@@ -59,7 +59,7 @@ public class AdminUiServletApplicationTest extends AbstractAdminUiApplicationTes
 			@Override
 			protected void configure(HttpSecurity http) throws Exception {
 				http.authorizeRequests().anyRequest().permitAll()//
-						.and().csrf().disable();
+						.and().csrf().disable().anonymous().principal("anonymousUser");
 			}
 
 		}

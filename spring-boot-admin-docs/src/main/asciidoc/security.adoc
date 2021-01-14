@@ -75,7 +75,7 @@ spring.boot.admin:
   instance-auth:
     enabled: true
     default-user-name: "${some.user.name.from.secret}"
-    default-user-password: "${some.user.password.from.secret}"
+    default-password: "${some.user.password.from.secret}"
     service-map:
       my-first-service-to-monitor:
         user-name: "${some.user.name.from.secret}"

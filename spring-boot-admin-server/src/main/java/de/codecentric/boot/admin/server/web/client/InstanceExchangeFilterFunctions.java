@@ -138,7 +138,7 @@ public final class InstanceExchangeFilterFunctions {
 	}
 
 	private static ClientResponse convertLegacyResponse(LegacyEndpointConverter converter, ClientResponse response) {
-		return ClientResponse.from(response).headers((headers) -> {
+		return response.mutate().headers((headers) -> {
 			headers.replace(HttpHeaders.CONTENT_TYPE, singletonList(ActuatorMediaType.V2_JSON));
 			headers.remove(HttpHeaders.CONTENT_LENGTH);
 		}).body(response.bodyToFlux(DataBuffer.class).transform(converter::convert)).build();

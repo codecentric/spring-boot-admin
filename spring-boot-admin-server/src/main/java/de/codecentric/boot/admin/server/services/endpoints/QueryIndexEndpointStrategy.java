@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,8 +61,8 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
 			return Mono.empty();
 		}
 
-		return this.instanceWebClient.instance(instance).get().uri(managementUrl).exchange()
-				.flatMap(this.convert(instance, managementUrl)).onErrorResume((e) -> {
+		return this.instanceWebClient.instance(instance).get().uri(managementUrl)
+				.exchangeToMono(this.convert(instance, managementUrl)).onErrorResume((e) -> {
 					log.warn("Querying actuator-index for instance {} on '{}' failed: {}", instance.getId(),
 							managementUrl, e.getMessage());
 					log.debug("Querying actuator-index for instance {} on '{}' failed.", instance.getId(),

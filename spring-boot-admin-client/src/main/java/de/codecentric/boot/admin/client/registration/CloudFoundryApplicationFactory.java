@@ -43,7 +43,7 @@ public class CloudFoundryApplicationFactory extends DefaultApplicationFactory {
 	@Override
 	protected String getServiceBaseUrl() {
 		String baseUrl = this.instance.getServiceBaseUrl();
-		if (!StringUtils.isEmpty(baseUrl)) {
+		if (StringUtils.hasText(baseUrl)) {
 			return baseUrl;
 		}
 

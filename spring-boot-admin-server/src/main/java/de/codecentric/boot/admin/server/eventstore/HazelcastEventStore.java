@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,7 @@ import java.util.stream.Collectors;
 
 import com.hazelcast.core.EntryAdapter;
 import com.hazelcast.core.EntryEvent;
-import com.hazelcast.core.IMap;
-import com.hazelcast.map.listener.MapListener;
+import com.hazelcast.map.IMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +44,7 @@ public class HazelcastEventStore extends ConcurrentMapEventStore {
 	public HazelcastEventStore(int maxLogSizePerAggregate, IMap<InstanceId, List<InstanceEvent>> eventLog) {
 		super(maxLogSizePerAggregate, eventLog);
 
-		eventLog.addEntryListener((MapListener) new EntryAdapter<InstanceId, List<InstanceEvent>>() {
+		eventLog.addEntryListener(new EntryAdapter<InstanceId, List<InstanceEvent>>() {
 			@Override
 			public void entryUpdated(EntryEvent<InstanceId, List<InstanceEvent>> event) {
 				log.debug("Updated {}", event);

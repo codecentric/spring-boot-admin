@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import java.util.List;
 
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IMap;
+import com.hazelcast.map.IMap;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -33,7 +33,7 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 public class HazelcastEventStoreWithClientConfigTest extends AbstractEventStoreTest {
 
 	@Container
-	private static GenericContainer hazelcastServer = new GenericContainer("hazelcast/hazelcast:3.12.8")
+	private static final GenericContainer hazelcastServer = new GenericContainer("hazelcast/hazelcast:4.0")
 			.withExposedPorts(5701);
 
 	private final HazelcastInstance hazelcast;
@@ -44,7 +44,7 @@ public class HazelcastEventStoreWithClientConfigTest extends AbstractEventStoreT
 
 	@Override
 	protected InstanceEventStore createStore(int maxLogSizePerAggregate) {
-		IMap<InstanceId, List<InstanceEvent>> eventLog = hazelcast.getMap("testList" + System.currentTimeMillis());
+		IMap<InstanceId, List<InstanceEvent>> eventLog = this.hazelcast.getMap("testList" + System.currentTimeMillis());
 		return new HazelcastEventStore(maxLogSizePerAggregate, eventLog);
 	}
 
@@ -54,7 +54,7 @@ public class HazelcastEventStoreWithClientConfigTest extends AbstractEventStoreT
 		ClientConfig clientConfig = new ClientConfig();
 		clientConfig.getNetworkConfig().addAddress(address);
 
-		return (new HazelcastClientFactory(clientConfig)).getHazelcastInstance();
+		return new HazelcastClientFactory(clientConfig).getHazelcastInstance();
 	}
 
 }

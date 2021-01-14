@@ -54,6 +54,8 @@ public class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
 
 		http.authorizeRequests(
 				(authorizeRequests) -> authorizeRequests.antMatchers(this.adminServer.path("/assets/**")).permitAll() // <1>
+						.antMatchers(this.adminServer.path("/actuator/info")).permitAll()
+						.antMatchers(this.adminServer.path("/actuator/health")).permitAll()
 						.antMatchers(this.adminServer.path("/login")).permitAll().anyRequest().authenticated() // <2>
 		).formLogin(
 				(formLogin) -> formLogin.loginPage(this.adminServer.path("/login")).successHandler(successHandler).and() // <3>

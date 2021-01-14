@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,8 @@ import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.UnicastProcessor;
+import reactor.core.publisher.Sinks;
 import reactor.test.StepVerifier;
 import reactor.test.publisher.TestPublisher;
 
@@ -63,7 +62,6 @@ public class AbstractEventHandlerTest {
 		StepVerifier.create(eventHandler.getFlux()).expectSubscription()
 				.then(() -> testPublisher.next(firstEvent, errorEvent, secondEvent)).expectNext(firstEvent, secondEvent)
 				.thenCancel().verify(Duration.ofSeconds(1));
-
 	}
 
 	@Test
@@ -80,26 +78,25 @@ public class AbstractEventHandlerTest {
 
 	public static final class TestEventHandler extends AbstractEventHandler<InstanceRegisteredEvent> {
 
-		private final FluxSink<InstanceEvent> sink;
+		private final Sinks.Many<InstanceEvent> unicast;
 
 		private final Flux<InstanceEvent> flux;
 
 		private TestEventHandler(Publisher<InstanceEvent> publisher) {
 			super(publisher, InstanceRegisteredEvent.class);
-			UnicastProcessor<InstanceEvent> processor = UnicastProcessor.create();
-			this.sink = processor.sink();
-			this.flux = processor;
+			this.unicast = Sinks.many().unicast().onBackpressureBuffer();
+			this.flux = this.unicast.asFlux();
 		}
 
 		@Override
 		protected Publisher<Void> handle(Flux<InstanceRegisteredEvent> publisher) {
 			return publisher.flatMap((event) -> {
 				if (event.equals(errorEvent)) {
-					return Mono.error(new IllegalStateException("Error"));
+					return Mono.error(new IllegalStateException("TestError"));
 				}
 				else {
 					log.info("Event {}", event);
-					this.sink.next(event);
+					this.unicast.tryEmitNext(event);
 					return Mono.empty();
 				}
 			}).then();

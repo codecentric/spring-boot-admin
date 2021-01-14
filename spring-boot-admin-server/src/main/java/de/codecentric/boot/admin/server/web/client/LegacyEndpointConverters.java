@@ -133,6 +133,10 @@ public final class LegacyEndpointConverters {
 				convertUsing(RESPONSE_TYPE_MAP, RESPONSE_TYPE_MAP, LegacyEndpointConverters::convertMappings));
 	}
 
+	public static LegacyEndpointConverter startup() {
+		return new LegacyEndpointConverter(Endpoint.STARTUP, (flux) -> flux);
+	}
+
 	@SuppressWarnings("unchecked")
 	private static <S, T> Function<Flux<DataBuffer>, Flux<DataBuffer>> convertUsing(
 			ParameterizedTypeReference<S> sourceType, ParameterizedTypeReference<T> targetType,
@@ -399,7 +403,7 @@ public final class LegacyEndpointConverters {
 
 			// All detail values in SB1.x are in form of 'str1 || str2' so we split
 			// them on ' || '
-			List<Object> conditionValue = Arrays.asList(conditionValueStr.split(" \\|\\| "));
+			List<Object> conditionValue = Arrays.asList((Object[]) conditionValueStr.split(" \\|\\| "));
 
 			// Based on conditionKey we may need to apply some transformations,
 			// mostly wrapping, of the input values

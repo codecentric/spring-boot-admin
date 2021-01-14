@@ -24,6 +24,7 @@ import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
 import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -49,7 +50,9 @@ public class SpringBootAdminServletApplication {
 	private static final Logger log = LoggerFactory.getLogger(SpringBootAdminServletApplication.class);
 
 	public static void main(String[] args) {
-		SpringApplication.run(SpringBootAdminServletApplication.class, args);
+		SpringApplication app = new SpringApplication(SpringBootAdminServletApplication.class);
+		app.setApplicationStartup(new BufferingApplicationStartup(1500));
+		app.run(args);
 	}
 
 	// tag::customization-instance-exchange-filter-function[]

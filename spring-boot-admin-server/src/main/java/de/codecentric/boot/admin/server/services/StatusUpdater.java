@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,8 +72,8 @@ public class StatusUpdater {
 		}
 
 		log.debug("Update status for {}", instance);
-		return this.instanceWebClient.instance(instance).get().uri(Endpoint.HEALTH).exchange()
-				.log(log.getName(), Level.FINEST).flatMap(this::convertStatusInfo)
+		return this.instanceWebClient.instance(instance).get().uri(Endpoint.HEALTH)
+				.exchangeToMono(this::convertStatusInfo).log(log.getName(), Level.FINEST)
 				.doOnError((ex) -> logError(instance, ex)).onErrorResume(this::handleError)
 				.map(instance::withStatusInfo);
 	}

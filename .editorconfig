@@ -7,6 +7,21 @@ trim_trailing_whitespace= true
 [*.java]
 indent_style = tab
 indent_size = 4
+ij_java_space_before_for_left_brace = true
+ij_java_keep_multiple_expressions_in_one_line = true
+ij_java_keep_simple_blocks_in_one_line = true
+ij_java_keep_simple_classes_in_one_line = true
+ij_java_else_on_new_line = true
+ij_java_catch_on_new_line = true
+ij_java_finally_on_new_line = true
+ij_java_align_multiline_method_parentheses = false
+ij_java_keep_blank_lines_before_right_brace = 1
+ij_java_blank_lines_after_class_header = 0
+ij_java_doc_enable_formatting = false
+ij_java_class_count_to_use_import_on_demand = 100
+ij_java_names_count_to_use_import_on_demand = 100
+ij_java_imports_layout = |,java.**,|,javax.**,|,*,org.springframework.**,|,de.codecentric.boot.admin.**,|,$*
+ij_java_layout_static_imports_separately = true
 
 [*.xml]
 indent_style = space

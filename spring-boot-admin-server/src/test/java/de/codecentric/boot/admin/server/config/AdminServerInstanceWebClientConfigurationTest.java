@@ -54,7 +54,8 @@ public class AdminServerInstanceWebClientConfigurationTest {
 					"healthLegacyEndpointConverter", "infoLegacyEndpointConverter", "envLegacyEndpointConverter",
 					"httptraceLegacyEndpointConverter", "threaddumpLegacyEndpointConverter",
 					"liquibaseLegacyEndpointConverter", "flywayLegacyEndpointConverter", "beansLegacyEndpointConverter",
-					"configpropsLegacyEndpointConverter", "mappingsLegacyEndpointConverter");
+					"configpropsLegacyEndpointConverter", "mappingsLegacyEndpointConverter",
+					"startupLegacyEndpointConverter");
 		});
 	}
 

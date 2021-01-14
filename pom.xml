@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2014-2019 the original author or authors.
+  ~ Copyright 2014-2020 the original author or authors.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@
     <description>Spring Boot Admin</description>
     <url>https://github.com/codecentric/spring-boot-admin/</url>
     <properties>
-        <revision>2.3.0-SNAPSHOT</revision>
+        <revision>2.4.0-SNAPSHOT</revision>
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
@@ -35,13 +35,13 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>2.3.4.RELEASE</spring-boot.version>
-        <spring-cloud.version>Hoxton.SR8</spring-cloud.version>
+        <spring-boot.version>2.4.0</spring-boot.version>
+        <spring-cloud.version>2020.0.0-M3</spring-cloud.version>
         <wiremock.version>2.27.2</wiremock.version>
-        <hazelcast-tests.version>3.12.10</hazelcast-tests.version>
+        <hazelcast-tests.version>4.0.3</hazelcast-tests.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
         <awaitility.version>4.0.3</awaitility.version>
-        <testcontainers.version>1.14.3</testcontainers.version>
+        <testcontainers.version>1.15.0</testcontainers.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.2.0</build-helper-maven-plugin.version>
@@ -51,8 +51,8 @@
         <maven-dependency-plugin.version>3.1.2</maven-dependency-plugin.version>
         <maven-deploy-plugin.version>3.0.0-M1</maven-deploy-plugin.version>
         <maven-enforcer-plugin.version>3.0.0-M3</maven-enforcer-plugin.version>
-        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-        <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
+        <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.0.0-M5</maven-failsafe-plugin.version>
         <maven-install-plugin.version>2.5.2</maven-install-plugin.version>
         <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
         <maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
@@ -68,7 +68,7 @@
         <flatten-maven-plugin.version>1.2.5</flatten-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.1.1</maven-checkstyle-plugin.version>
         <checkstyle.version>8.37</checkstyle.version>
-        <spring-javaformat-checkstyle.version>0.0.25</spring-javaformat-checkstyle.version>
+        <spring-javaformat-checkstyle.version>0.0.26</spring-javaformat-checkstyle.version>
         <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
     </properties>
     <modules>
@@ -159,14 +159,6 @@
                     <execution>
                         <id>checkstyle-validation</id>
                         <phase>validate</phase>
-                        <configuration>
-                            <configLocation>src/checkstyle/checkstyle.xml</configLocation>
-                            <headerLocation>src/checkstyle/checkstyle-header.txt</headerLocation>
-                            <encoding>UTF-8</encoding>
-                            <consoleOutput>true</consoleOutput>
-                            <failOnViolation>true</failOnViolation>
-                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                        </configuration>
                         <goals>
                             <goal>check</goal>
                         </goals>
@@ -327,6 +319,7 @@
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                        <rerunFailingTestsCount>2</rerunFailingTestsCount>
                         <includes>
                             <include>**/*Tests.java</include>
                             <include>**/*Test.java</include>

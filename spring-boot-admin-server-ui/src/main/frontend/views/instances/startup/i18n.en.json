@@ -1,0 +1,14 @@
+{
+  "instances": {
+    "startup": {
+      "label": "Startup",
+      "expand_all": "Expand all",
+      "fetch_failed": "Fetching startup data failed.",
+      "column": {
+        "name": "Name",
+        "duration": "Duration (ms)",
+        "details": "Details"
+      }
+    }
+  }
+}
