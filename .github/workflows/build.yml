@@ -33,3 +33,14 @@ jobs:
         run: mvn -B --no-transfer-progress deploy -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Maven project version for Asciidoc GitHub Pages directory naming
+        run: echo "PROJECT_VERSION=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)" >> $GITHUB_ENV
+
+      - name: Deploy GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages # The branch the action should deploy to.
+          FOLDER: spring-boot-admin-docs/target/generated-docs/$PROJECT_VERSION # The folder the action should deploy.
+          CLEAN: true # Automatically remove deleted files from the deploy branch
