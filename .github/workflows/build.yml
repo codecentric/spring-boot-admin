@@ -30,7 +30,7 @@ jobs:
           java-version: 1.8
 
       - name: Publish SNAPSHOT version to GitHub Packages (we can skip tests, since we only deploy, if the build workflow succeeded)
-        run: mvn -B --no-transfer-progress deploy -DskipTests
+        run: mvn -B --no-transfer-progress --projects spring-boot-admin-docs package -DskipTests #  deploy -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -42,5 +42,6 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages # The branch the action should deploy to.
-          FOLDER: "spring-boot-admin-docs/target/generated-docs/$PROJECT_VERSION" # The folder the action should deploy.
+          FOLDER: spring-boot-admin-docs/target/generated-docs # The folder the action should deploy.
+          TARGET_FOLDER: "$PROJECT_VERSION"
           CLEAN: true # Automatically remove deleted files from the deploy branch
