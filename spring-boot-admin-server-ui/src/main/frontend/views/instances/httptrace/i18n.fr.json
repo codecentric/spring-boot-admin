@@ -21,7 +21,7 @@
         "server_errors": "Erreurs serveurs",
         "success": "succès"
       },
-      "length_response": "Longueur",
+      "length_response": "Response Longueur",
       "method": "Methodes",
       "no_traces_found": "Aucune traces trouvées.",
       "status": "Statut",
