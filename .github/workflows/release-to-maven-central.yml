@@ -14,7 +14,7 @@ jobs:
   publish-central-and-pages:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Will start a Maven Central upload with version 2.3.1" # ${{ github.event.inputs.releaseversion }}"
+      - run: echo "Will start a Maven Central upload with version 2.1.1" # ${{ github.event.inputs.releaseversion }}"
 
       - uses: actions/checkout@v2
 
@@ -29,7 +29,7 @@ jobs:
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
       - name: Set projects Maven version to GitHub Action GUI set version
-        run: mvn versions:set "-DnewVersion=2.3.1" --no-transfer-progress # "-DnewVersion=${{ github.event.inputs.releaseversion }}" --no-transfer-progress
+        run: mvn versions:set "-DnewVersion=2.1.1" --no-transfer-progress # "-DnewVersion=${{ github.event.inputs.releaseversion }}" --no-transfer-progress
 
       - name: Publish package
         run: mvn --batch-mode clean deploy --no-transfer-progress -P central-deploy -DskipTests=true
