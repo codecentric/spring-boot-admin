@@ -29,10 +29,10 @@ jobs:
         with:
           java-version: 1.8
 
-#      - name: Publish SNAPSHOT version to GitHub Packages (we can skip tests, since we only deploy, if the build workflow succeeded)
-#        run: mvn -B --no-transfer-progress --projects spring-boot-admin-docs package -DskipTests #  deploy -DskipTests
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish SNAPSHOT version to GitHub Packages (we can skip tests, since we only deploy, if the build workflow succeeded)
+        run: mvn -B --no-transfer-progress --projects spring-boot-admin-docs package -DskipTests #  deploy -DskipTests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract Maven project version for Asciidoc GitHub Pages directory naming
         run: echo ::set-output name=version::$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
@@ -41,11 +41,11 @@ jobs:
       - name: Show extracted Maven project version
         run: echo ${{ steps.project.outputs.version }}
 
-#      - name: Deploy GitHub Pages
-#        uses: JamesIves/github-pages-deploy-action@3.7.1
-#        with:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#          BRANCH: gh-pages # The branch the action should deploy to.
-#          FOLDER: spring-boot-admin-docs/target/generated-docs # The folder the action should deploy.
-#          TARGET_FOLDER: ${{ steps.project_version.outputs }}
-#          CLEAN: true # Automatically remove deleted files from the deploy branch
+      - name: Deploy GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages # The branch the action should deploy to.
+          FOLDER: spring-boot-admin-docs/target/generated-docs # The folder the action should deploy.
+          TARGET_FOLDER: ${{ steps.project.outputs.version }}
+          CLEAN: true # Automatically remove deleted files from the deploy branch
