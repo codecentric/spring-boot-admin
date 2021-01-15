@@ -35,7 +35,7 @@ jobs:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish-github-pages:
-    needs: build
+    #needs: publish-snapshot
     runs-on: ubuntu-latest
 
     steps:
