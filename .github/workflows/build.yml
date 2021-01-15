@@ -35,11 +35,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract Maven project version for Asciidoc GitHub Pages directory naming
-        run: mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec
-        id: project_version
+        run: ::set-output name=version::$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+        id: project
 
       - name: Show extracted Maven project version
-        run: echo ${{ steps.project_version.outputs }}
+        run: echo ${{ steps.project.outputs.version }}
 
 #      - name: Deploy GitHub Pages
 #        uses: JamesIves/github-pages-deploy-action@3.7.1
