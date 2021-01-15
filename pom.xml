@@ -408,40 +408,7 @@
             </modules>
         </profile>
         <profile>
-            <id>sign-artifacts</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                                <configuration>
-                                    <!-- This is necessary for gpg to not try to use the pinentry programs -->
-                                    <gpgArguments>
-                                        <arg>--pinentry-mode</arg>
-                                        <arg>loopback</arg>
-                                    </gpgArguments>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>travis</id>
-            <activation>
-                <property>
-                    <name>env.TRAVIS</name>
-                    <value>true</value>
-                </property>
-            </activation>
+            <id>central-deploy</id>
             <build>
                 <plugins>
                     <plugin>
@@ -472,9 +439,27 @@
                         <artifactId>coveralls-maven-plugin</artifactId>
                     </plugin>
 
-                    <!-- We need to deploy using the nexus-staging-maven-plugin specifying a stagingProfileId. This is to
-                         workaround the problem that travis uploads the artifacts using different ip addresses resulting
-                         in multiple staging repositories -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- This is necessary for gpg to not try to use the pinentry programs -->
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-deploy-plugin</artifactId>
@@ -487,18 +472,17 @@
                         <artifactId>nexus-staging-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>default-deploy</id>
+                                <id>deploy-to-sonatype</id>
                                 <phase>deploy</phase>
                                 <goals>
                                     <goal>deploy</goal>
+                                    <goal>release</goal>
                                 </goals>
                             </execution>
                         </executions>
                         <configuration>
-                            <serverId>${repositoryId}</serverId>
+                            <serverId>oss.sonatype.org</serverId>
                             <nexusUrl>https://oss.sonatype.org</nexusUrl>
-                            <!-- explicit matching using the staging profile id -->
-                            <stagingProfileId>1e79a0f1acc1b8</stagingProfileId>
                         </configuration>
                     </plugin>
                 </plugins>
