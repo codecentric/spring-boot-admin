@@ -22,8 +22,10 @@
         <th class="httptraces__trace-method" v-text="$t('instances.httptrace.method')" />
         <th class="httptraces__trace-uri" v-text="$t('instances.httptrace.uri')" />
         <th class="httptraces__trace-status" v-text="$t('instances.httptrace.status')" />
-        <th class="httptraces__trace-contentType" v-text="$t('instances.httptrace.content_type')" />
-        <th class="httptraces__trace-contentLength" v-text="$t('instances.httptrace.length')" />
+        <th class="httptraces__trace-contentType" v-text="$t('instances.httptrace.content_type_request')" />
+        <th class="httptraces__trace-contentLength" v-text="$t('instances.httptrace.length_request')" />
+        <th class="httptraces__trace-contentType" v-text="$t('instances.httptrace.content_type_response')" />
+        <th class="httptraces__trace-contentLength" v-text="$t('instances.httptrace.length_response')" />
         <th class="httptraces__trace-timeTaken" v-text="$t('instances.httptrace.time')" />
       </tr>
     </thead>
@@ -50,9 +52,13 @@
                   :class="{ 'is-muted' : trace.isPending(), 'is-success' : trace.isSuccess(), 'is-warning' : trace.isClientError(), 'is-danger' : trace.isServerError() }"
             />
           </td>
-          <td class="httptraces__trace-contentType" v-text="trace.contentType" />
+          <td class="httptraces__trace-contentType" v-text="trace.contentTypeRequest" />
           <td class="httptraces__trace-contentLength"
-              v-text="trace.contentLength ? prettyBytes(trace.contentLength) : ''"
+              v-text="trace.contentLengthRequest ? prettyBytes(trace.contentLengthRequest) : ''"
+          />
+          <td class="httptraces__trace-contentType" v-text="trace.contentTypeResponse" />
+          <td class="httptraces__trace-contentLength"
+              v-text="trace.contentLengthResponse ? prettyBytes(trace.contentLengthResponse) : ''"
           />
           <td class="httptraces__trace-timeTaken"
               v-text="trace.timeTaken !== null && typeof trace.timeTaken !== 'undefined' ? `${trace.timeTaken} ms` : ''"

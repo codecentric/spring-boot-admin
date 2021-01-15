@@ -10,7 +10,9 @@
         "successful_requests": "Requisições sucedidas",
         "total_requests": "total de requisições"
       },
-      "content_type": "Content-Type",
+      "content_type_response": "Response Content-Type",
+      "content_type_request": "Request Content-Type",
+      "length_request": "Request Length",
       "fetching_failed": "Falha na busca de traces.",
       "limit": "limite",
       "filter": {
@@ -19,7 +21,7 @@
         "server_errors": "erros do servidor",
         "success": "sucesso"
       },
-      "length": "Tamanho",
+      "length_response": "Response Tamanho",
       "method": "Metodo",
       "no_traces_found": "Nenhum trace encontrado.",
       "status": "Status",

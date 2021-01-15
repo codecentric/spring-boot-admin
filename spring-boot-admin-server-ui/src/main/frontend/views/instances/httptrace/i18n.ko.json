@@ -10,7 +10,9 @@
         "successful_requests": "성공적인 요청",
         "total_requests": "전체 요청"
       },
-      "content_type": "Content-Type",
+      "content_type_response": "Response Content-Type",
+      "content_type_request": "Request Content-Type",
+      "length_request": "Request 길이",
       "fetching_failed": "트레이스 정보를 가져오는데 실패했습니다.",
       "limit": "제한",
       "filter": {
@@ -19,7 +21,7 @@
         "server_errors": "서버 에러",
         "success": "성공"
       },
-      "length": "길이",
+      "length_response": "Response 길이",
       "method": "Method",
       "no_traces_found": "트레이스 정보가 없습니다.",
       "status": "상태",
