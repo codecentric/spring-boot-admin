@@ -3,39 +3,22 @@ name: build
 on: [push]
 
 jobs:
-#  build:
-#    runs-on: ubuntu-latest
-#    steps:
-#
-#      - uses: actions/checkout@v2
-#
-#      - name: Set up JDK 1.8
-#        uses: actions/setup-java@v1
-#        with:
-#          java-version: 1.8
-#
-#      - name: Build with Maven
-#        run: mvn -B install --no-transfer-progress --file pom.xml
-#
-#  publish-snapshot:
-#    needs: build
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - uses: actions/checkout@v2
-#
-#      - name: Set up settings.xml for GitHub Packages
-#        uses: actions/setup-java@v1
-#        with:
-#          java-version: 1.8
-#
-#      - name: Publish SNAPSHOT version to GitHub Packages (we can skip tests, since we only deploy, if the build workflow succeeded)
-#        run: mvn -B --no-transfer-progress deploy -DskipTests
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  build:
+    runs-on: ubuntu-latest
+    steps:
 
-  publish-github-pages:
-    #needs: publish-snapshot
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Build with Maven
+        run: mvn -B install --no-transfer-progress --file pom.xml
+
+  publish-snapshot:
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
@@ -46,8 +29,25 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: Generate spring-boot-admin-docs only
-        run: mvn -B --no-transfer-progress --projects spring-boot-admin-docs package -DskipTests
+      - name: Publish SNAPSHOT version to GitHub Packages (we can skip tests, since we only deploy, if the build workflow succeeded)
+        run: mvn -B --no-transfer-progress deploy -DskipTests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-github-pages:
+    needs: publish-snapshot
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up settings.xml for GitHub Packages
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Publish SNAPSHOT version to GitHub Packages (we can skip tests, since we only deploy, if the build workflow succeeded)
+        run: mvn -B --no-transfer-progress package --projects spring-boot-admin-docs -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -58,7 +58,7 @@ jobs:
       - name: Show extracted Maven project version
         run: echo ${{ steps.project.outputs.version }}
 
-      - name: Deploy GitHub Pages
+      - name: Deploy Asciidoc docs output to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

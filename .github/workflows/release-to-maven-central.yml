@@ -36,6 +36,48 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
+
+  publish-github-pages:
+    needs: publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up settings.xml for GitHub Packages
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Publish SNAPSHOT version to GitHub Packages (we can skip tests, since we only deploy, if the build workflow succeeded)
+        run: mvn -B --no-transfer-progress package --projects spring-boot-admin-docs -DskipTests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Maven project version for Asciidoc GitHub Pages directory naming
+        run: echo ::set-output name=version::$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+        id: project
+
+      - name: Show extracted Maven project version
+        run: echo ${{ steps.project.outputs.version }}
+
+      - name: Deploy Asciidoc docs output to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages # The branch the action should deploy to.
+          FOLDER: spring-boot-admin-docs/target/generated-docs # The folder the action should deploy.
+          TARGET_FOLDER: ${{ steps.project.outputs.version }}
+          CLEAN: true # Automatically remove deleted files from the deploy branch
+
+
+  publish-github-release:
+    needs: publish-github-pages
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
       - name: Generate changelog
         id: changelog
         uses: metcalfc/changelog-generator@v0.4.4
@@ -52,6 +94,8 @@ jobs:
           release_name: ${{ github.event.inputs.releaseversion }}
           body: |
             Grab the new version from Maven central https://repo1.maven.org/maven2/de/codecentric/
+
+            Current docs at https://codecentric.github.io/spring-boot-admin/${{ github.event.inputs.releaseversion }}/
 
             ### Things that changed in this release
             ${{ steps.changelog.outputs.changelog }}
