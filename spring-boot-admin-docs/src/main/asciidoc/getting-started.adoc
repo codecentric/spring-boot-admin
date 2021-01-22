@@ -22,7 +22,6 @@ First, you need to setup your server. To do this just setup a simple boot projec
 </dependency>
 ----
 
-ifeval::["{scm-tag}" == ""]
 [TIP]
 ====
 If you want to use a snapshot version of Spring Boot Admin Server you most likely need to include the spring and sonatype snapshot repositories:
@@ -59,7 +58,6 @@ If you want to use a snapshot version of Spring Boot Admin Server you most likel
 </repositories>
 ----
 ====
-endif::[]
 
 . Pull in the Spring Boot Admin Server configuration via adding `@EnableAdminServer` to your configuration:
 +

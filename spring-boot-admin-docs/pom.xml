@@ -76,25 +76,8 @@
                                 <spring-cloud-version>${spring-cloud.version}</spring-cloud-version>
                                 <samples-dir>${basedir}/../spring-boot-admin-samples/</samples-dir>
                                 <main-dir>${basedir}/../</main-dir>
-                                <scm-tag>${env.TRAVIS_TAG}</scm-tag>
                                 <github-src>https://github.com/codecentric/spring-boot-admin/tree/master</github-src>
                             </attributes>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>deploy-gh-pages</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>./deploy-gh-pages.sh</executable>
                         </configuration>
                     </execution>
                 </executions>
