@@ -10,7 +10,9 @@
         "successful_requests": "請求成功",
         "total_requests": "請求總數"
       },
-      "content_type": "內容類型",
+      "content_type_response": "Response 內容類型",
+      "content_type_request": "Request 內容類型",
+      "length_request": "Request 長度",
       "fetching_failed": "抓取追蹤信息失敗。",
       "limit": "limit",
       "filter": {
@@ -19,7 +21,7 @@
         "server_errors": "伺服器錯誤",
         "success": "請求成功"
       },
-      "length": "長度",
+      "length_response": "Response 長度",
       "method": "方法",
       "no_traces_found": "沒有追蹤信息。",
       "status": "狀態",

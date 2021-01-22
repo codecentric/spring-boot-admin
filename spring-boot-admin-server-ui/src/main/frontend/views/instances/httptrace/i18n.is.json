@@ -10,7 +10,9 @@
         "successful_requests": "Farsælar fyrirspurnir",
         "total_requests": "Samtals fyrirspurnir"
       },
-      "content_type": "Content-Type",
+      "content_type_response": "Response Content-Type",
+      "content_type_request": "Request Content-Type",
+      "length_request": "Request Length",
       "fetching_failed": "Mistókst að sækja upplýsingar um HTTP spor.",
       "limit": "Takmörkun",
       "filter": {
@@ -19,7 +21,7 @@
         "server_errors": "Vandamál þjóns",
         "success": "farsælt"
       },
-      "length": "Stærð",
+      "length_response": "Response Stærð",
       "method": "Aðferð",
       "no_traces_found": "Fundið engin spor.",
       "status": "Staða",

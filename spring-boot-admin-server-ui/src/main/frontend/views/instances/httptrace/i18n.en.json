@@ -10,7 +10,9 @@
         "successful_requests": "successful requests",
         "total_requests": "total requests"
       },
-      "content_type": "Content-Type",
+      "content_type_response": "Response Content-Type",
+      "content_type_request": "Request Content-Type",
+      "length_request": "Request Length",
       "fetching_failed": "Fetching traces failed.",
       "limit": "limit",
       "filter": {
@@ -19,7 +21,7 @@
         "server_errors": "server errors",
         "success": "success"
       },
-      "length": "Length",
+      "length_response": "Response Length",
       "method": "Method",
       "no_traces_found": "No traces found.",
       "status": "Status",

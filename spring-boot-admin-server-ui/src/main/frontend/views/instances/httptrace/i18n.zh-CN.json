@@ -10,7 +10,9 @@
         "successful_requests": "请求成功",
         "total_requests": "请求总数"
       },
-      "content_type": "内容类型",
+      "content_type_response": "Response 内容类型",
+      "content_type_request": "Request 内容类型",
+      "length_request": "Request 长度",
       "fetching_failed": "获取跟踪信息失败。",
       "limit": "limit",
       "filter": {
@@ -19,7 +21,7 @@
         "server_errors": "服务器错误",
         "success": "请求成功"
       },
-      "length": "长度",
+      "length_response": "Response 长度",
       "method": "方法",
       "no_traces_found": "没有跟踪信息。",
       "status": "状态",

@@ -10,7 +10,8 @@
         "successful_requests": "Erfolgreiche Anfragen",
         "total_requests": "Anfragen insgesamt"
       },
-      "content_type": "Content-Type",
+      "content_type_response": "Response Content-Type",
+      "content_type_request": "Request Content-Type",
       "fetching_failed": "Das Laden der Tracing-Informationen ist fehlgeschlagen.",
       "limit": "Limit",
       "filter": {
@@ -19,7 +20,8 @@
         "server_errors": "Server-Fehler",
         "success": "erfolgreich"
       },
-      "length": "Größe",
+      "length_response": "Response Größe",
+      "length_request": "Request Größe",
       "method": "Methode",
       "no_traces_found": "Keine Traces gefunden.",
       "status": "Status",
