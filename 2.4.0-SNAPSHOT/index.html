@@ -445,7 +445,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.4.0-SNAPSHOT,</span>
-<span id="revdate">15.01.2021</span>
+<span id="revdate">22.01.2021</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -2391,8 +2391,11 @@ By default <code>spring-boot-admin-server-ui</code> provides a login page and a 
 
   <span class="directive">private</span> <span class="directive">final</span> AdminServerProperties adminServer;
 
-  <span class="directive">public</span> SecuritySecureConfig(AdminServerProperties adminServer) {
+  <span class="directive">private</span> <span class="directive">final</span> SecurityProperties security;
+
+  <span class="directive">public</span> SecuritySecureConfig(AdminServerProperties adminServer, SecurityProperties security) {
     <span class="local-variable">this</span>.adminServer = adminServer;
+    <span class="local-variable">this</span>.security = security;
   }
 
   <span class="annotation">@Override</span>
@@ -2423,7 +2426,8 @@ By default <code>spring-boot-admin-server-ui</code> provides a login page and a 
   <span class="comment">// Required to provide UserDetailsService for &quot;remember functionality&quot;</span>
   <span class="annotation">@Override</span>
   <span class="directive">protected</span> <span class="type">void</span> configure(AuthenticationManagerBuilder auth) <span class="directive">throws</span> <span class="exception">Exception</span> {
-    auth.inMemoryAuthentication().withUser(<span class="string"><span class="delimiter">&quot;</span><span class="content">user</span><span class="delimiter">&quot;</span></span>).password(<span class="string"><span class="delimiter">&quot;</span><span class="content">{noop}password</span><span class="delimiter">&quot;</span></span>).roles(<span class="string"><span class="delimiter">&quot;</span><span class="content">USER</span><span class="delimiter">&quot;</span></span>);
+    auth.inMemoryAuthentication().withUser(security.getUser().getName())
+        .password(<span class="string"><span class="delimiter">&quot;</span><span class="content">{noop}</span><span class="delimiter">&quot;</span></span> + security.getUser().getPassword()).roles(<span class="string"><span class="delimiter">&quot;</span><span class="content">USER</span><span class="delimiter">&quot;</span></span>);
   }
 
 }</code></pre>
