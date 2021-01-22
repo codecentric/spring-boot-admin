@@ -1,6 +1,11 @@
 name: build
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+      - 1.*
+      - 2.*
 
 jobs:
   build:
@@ -15,7 +20,7 @@ jobs:
           java-version: 1.8
 
       - name: Build with Maven
-        run: mvn -B install --no-transfer-progress --file pom.xml
+        run: mvn -B install --no-transfer-progress -Dmaven.javadoc.skip=true
 
   publish-snapshot:
     needs: build
