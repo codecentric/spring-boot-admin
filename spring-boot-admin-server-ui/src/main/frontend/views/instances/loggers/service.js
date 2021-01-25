@@ -48,23 +48,46 @@ export class ApplicationLoggers {
   }
 
   async fetchLoggers() {
-    const responses = (await this.application.fetchLoggers()).responses;
-    const successful = responses.filter(r => r.body && r.status >= 200 && r.status < 299);
-    const errors = responses.filter(r => r.status >= 400).map(r => ({instanceId: r.instanceId, error: 'HTTP Status ' + r.status}));
-    return {
-      errors,
-      levels: union(...successful.map(r => r.body.levels)),
-      loggers: Object.entries(
+    let errors;
+    let levels;
+    let loggers;
+
+    try {
+      const responses = (await this.application.fetchLoggers()).responses;
+      const successful = responses.filter(r => r.body && r.status >= 200 && r.status < 299);
+
+      errors = responses.filter(r => r.status >= 400).map(r => ({instanceId: r.instanceId, error: 'HTTP Status ' + r.status}));
+      loggers = Object.entries(
         groupBy(
           flatMap(successful, r => convertLoggers(r.body.loggers, r.instanceId)),
           l => l.name
         )
-      ).map(([name, configs]) => ({name, level: flatMap(configs, c => c.level)}))
-    };
+      ).map(([name, configs]) => ({name, level: flatMap(configs, c => c.level)}));
+      levels = union(...successful.map(r => r.body.levels));
+    } catch {
+      console.warn('Failed to fetch loggers for some instances')
+
+      errors = [];
+      levels = [];
+      loggers = [];
+    }
+
+    return {
+      errors,
+      levels,
+      loggers
+    }
   }
 
   async configureLogger(name, level) {
-    const responses = (await this.application.configureLogger(name, level)).responses;
+    let responses;
+
+    try {
+      responses = (await this.application.configureLogger(name, level)).responses;
+    } catch {
+      responses = [];
+    }
+
     const errors = responses.filter(r => r.status >= 400).map(r => ({instanceId: r.instanceId, error: 'HTTP Status ' + r.status}));
     if (errors.length > 0) {
       console.warn('Failed to set loglevel for some instances', errors)
