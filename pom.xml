@@ -133,6 +133,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <source>${java.version}</source>
+                    <quiet>true</quiet>
                 </configuration>
                 <executions>
                     <execution>
