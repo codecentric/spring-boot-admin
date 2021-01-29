@@ -72,7 +72,7 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 
 	@BeforeAll
 	public static void setUp() {
-		StepVerifier.setDefaultTimeout(Duration.ofSeconds(5));
+		StepVerifier.setDefaultTimeout(Duration.ofSeconds(10));
 	}
 
 	@AfterAll

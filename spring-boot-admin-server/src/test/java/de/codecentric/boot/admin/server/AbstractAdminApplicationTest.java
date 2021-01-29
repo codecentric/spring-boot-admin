@@ -62,7 +62,7 @@ public abstract class AbstractAdminApplicationTest {
 					listInstances();
 					deregisterInstance(location.get());
 				}).assertNext((event) -> assertThat(event.opt("type")).isEqualTo("DEREGISTERED"))
-				.then(this::listEmptyInstances).thenCancel().verify(Duration.ofSeconds(60));
+				.then(this::listEmptyInstances).thenCancel().verify(Duration.ofSeconds(120));
 	}
 
 	protected Flux<JSONObject> getEventStream() {
