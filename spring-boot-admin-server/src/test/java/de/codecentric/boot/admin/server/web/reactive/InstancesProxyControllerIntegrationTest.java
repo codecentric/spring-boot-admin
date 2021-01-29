@@ -36,7 +36,7 @@ public class InstancesProxyControllerIntegrationTest extends AbstractInstancesPr
 	public void setUpClient() {
 		context = new SpringApplicationBuilder().sources(AdminReactiveApplicationTest.TestAdminApplication.class)
 				.web(WebApplicationType.REACTIVE)
-				.run("--server.port=0", "--spring.boot.admin.monitor.default-timeout=2500");
+				.run("--server.port=0", "--spring.boot.admin.monitor.default-timeout=5000");
 
 		super.setUpClient(context);
 	}
