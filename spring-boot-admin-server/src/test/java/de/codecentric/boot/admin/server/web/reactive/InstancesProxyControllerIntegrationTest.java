@@ -37,12 +37,6 @@ public class InstancesProxyControllerIntegrationTest extends AbstractInstancesPr
 	@Nullable
 	private static ConfigurableApplicationContext context;
 
-
-	@BeforeAll
-	public static void setUp() {
-		StepVerifier.setDefaultTimeout(Duration.ofSeconds(60));
-	}
-
 	@BeforeEach
 	public void setUpClient() {
 		context = new SpringApplicationBuilder().sources(AdminReactiveApplicationTest.TestAdminApplication.class)
