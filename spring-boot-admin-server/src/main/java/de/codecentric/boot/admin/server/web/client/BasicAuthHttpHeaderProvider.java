@@ -27,7 +27,6 @@ import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
-import lombok.NoArgsConstructor;
 
 /**
  * Provides Basic Auth headers for the {@link Instance} using the metadata for "user.name"
@@ -103,8 +102,9 @@ public class BasicAuthHttpHeaderProvider implements HttpHeadersProvider {
 		return null;
 	}
 
-	@lombok.Data(staticConstructor = "of")
-	@NoArgsConstructor
+	@lombok.Data
+	@lombok.NoArgsConstructor
+	@lombok.AllArgsConstructor
 	public static class InstanceCredentials {
 
 		/**
