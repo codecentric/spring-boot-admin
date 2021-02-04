@@ -40,6 +40,7 @@
         <property name="headerFile" value="${checkstyle.header.file}"/>
         <property name="fileExtensions" value="java"/>
     </module>
+    <module name="com.puppycrawl.tools.checkstyle.checks.NewlineAtEndOfFileCheck" />
 
     <!-- TreeWalker Checks -->
     <module name="com.puppycrawl.tools.checkstyle.TreeWalker">
