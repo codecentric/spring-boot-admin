@@ -2,7 +2,7 @@ codecentric's Spring Boot Admin
 ===============================
 [![Apache License 2](https://img.shields.io/badge/license-ASF2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 [![Build Status](https://github.com/codecentric/spring-boot-admin/workflows/build/badge.svg)](https://github.com/codecentric/spring-boot-admin/actions)
-[![Coverage Status](https://coveralls.io/repos/github/codecentric/spring-boot-admin/badge.svg?branch=master)](https://coveralls.io/github/codecentric/spring-boot-admin?branch=master)
+[![codecov](https://codecov.io/gh/codecentric/spring-boot-admin/branch/master/graph/badge.svg?token=u5SWsZpj5S)](https://codecov.io/gh/codecentric/spring-boot-admin)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.codecentric/spring-boot-admin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.codecentric/spring-boot-admin/)
 [![Gitter](https://badges.gitter.im/codecentric/spring-boot-admin.svg)](https://gitter.im/codecentric/spring-boot-admin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
