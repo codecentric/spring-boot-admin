@@ -24,7 +24,7 @@ jobs:
       - name: Build with Maven
         run: |
           mvn -B spring-javaformat:apply --no-transfer-progress
-          mvn -B verify -P coverage --no-transfer-progress -Dmaven.javadoc.skip=true
+          mvn -B verify -P coverage --no-transfer-progress -D maven.javadoc.skip=true
 
       - uses: codecov/codecov-action@v1
         with:
