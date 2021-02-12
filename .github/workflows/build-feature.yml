@@ -9,7 +9,11 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-2016]
+
+    runs-on: ${{ matrix.os }}
     steps:
 
       - uses: actions/checkout@v2
@@ -19,8 +23,12 @@ jobs:
         with:
           java-version: 1.8
 
+      # since we also build on Windows Powershell, we need to add a space between -D maven.javadoc.skip=true
+      # otherwise the build will fail https://stackoverflow.com/questions/38051787/maven-javadoc-skip-true-throws-an-error
       - name: Build with Maven
-        run: mvn -B install -P coverage --no-transfer-progress -Dmaven.javadoc.skip=true
+        run: |
+          mvn -B spring-javaformat:apply --no-transfer-progress
+          mvn -B verify -P coverage --no-transfer-progress -D maven.javadoc.skip=true
 
       - uses: codecov/codecov-action@v1
         with:

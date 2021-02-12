@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.List;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
+import org.junit.jupiter.api.Tag;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -29,11 +30,12 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
-@Testcontainers
+@Testcontainers(disabledWithoutDocker = true)
+@Tag("docker")
 public class HazelcastEventStoreWithClientConfigTest extends AbstractEventStoreTest {
 
 	@Container
-	private static final GenericContainer hazelcastServer = new GenericContainer("hazelcast/hazelcast:4.0")
+	private static final GenericContainer<?> hazelcastServer = new GenericContainer<>("hazelcast/hazelcast:4.0")
 			.withExposedPorts(5701);
 
 	private final HazelcastInstance hazelcast;
