@@ -1,11 +1,7 @@
-name: build
+name: Pull Request Workflow
 
 on:
-  push:
-    branches-ignore:
-      - master
-      - 1.*
-      - 2.*
+  pull_request:
 
 jobs:
   build:

@@ -71,35 +71,35 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>npm-install</id>
-                        <phase>validate</phase>
+                        <id>install-node-and-npm</id>
                         <goals>
-                            <goal>exec</goal>
+                            <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <executable>npm</executable>
-                            <arguments>
-                                <argument>ci</argument>
-                            </arguments>
+                            <nodeVersion>v15.6.0</nodeVersion>
+                            <npmVersion>7.4.0</npmVersion>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm-install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>ci</arguments>
                         </configuration>
                     </execution>
                     <execution>
                         <id>npm-build</id>
-                        <phase>generate-resources</phase>
                         <goals>
-                            <goal>exec</goal>
+                            <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <skip>${skipNpmBuild}</skip>
-                            <executable>npm</executable>
-                            <arguments>
-                                <argument>run</argument>
-                                <argument>build</argument>
-                            </arguments>
+                            <arguments>run build</arguments>
                             <environmentVariables>
                                 <PROJECT_VERSION>${project.version}</PROJECT_VERSION>
                             </environmentVariables>
@@ -107,17 +107,11 @@
                     </execution>
                     <execution>
                         <id>npm-test</id>
-                        <phase>test</phase>
                         <goals>
-                            <goal>exec</goal>
+                            <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <skip>${skipTests}</skip>
-                            <executable>npm</executable>
-                            <arguments>
-                                <argument>run</argument>
-                                <argument>test:unit</argument>
-                            </arguments>
+                            <arguments>run test:unit</arguments>
                         </configuration>
                     </execution>
                 </executions>

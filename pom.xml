@@ -26,7 +26,7 @@
     <description>Spring Boot Admin</description>
     <url>https://github.com/codecentric/spring-boot-admin/</url>
     <properties>
-        <revision>2.4.0-SNAPSHOT</revision>
+        <revision>2.4.1-SNAPSHOT</revision>
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
@@ -35,13 +35,13 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>2.4.2</spring-boot.version>
+        <spring-boot.version>2.4.3</spring-boot.version>
         <spring-cloud.version>2020.0.1</spring-cloud.version>
         <wiremock.version>2.27.2</wiremock.version>
         <hazelcast-tests.version>4.0.3</hazelcast-tests.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
         <awaitility.version>4.0.3</awaitility.version>
-        <testcontainers.version>1.15.1</testcontainers.version>
+        <testcontainers.version>1.15.2</testcontainers.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.2.0</build-helper-maven-plugin.version>
@@ -58,17 +58,16 @@
         <maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
         <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
-        <maven-war-plugin.version>3.2.3</maven-war-plugin.version>
+        <maven-war-plugin.version>3.3.1</maven-war-plugin.version>
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
-        <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
+        <frontend-maven-plugin.version>1.11.2</frontend-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.6</jacoco-maven-plugin.version>
-        <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
         <asciidoctor-maven-plugin.version>2.1.0</asciidoctor-maven-plugin.version>
-        <git-commit-id-plugin.version>3.0.1</git-commit-id-plugin.version>
+        <git-commit-id-plugin.version>4.0.3</git-commit-id-plugin.version>
         <flatten-maven-plugin.version>1.2.5</flatten-maven-plugin.version>
-        <maven-checkstyle-plugin.version>3.1.1</maven-checkstyle-plugin.version>
-        <checkstyle.version>8.39</checkstyle.version>
-        <spring-javaformat-checkstyle.version>0.0.26</spring-javaformat-checkstyle.version>
+        <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
+        <checkstyle.version>8.40</checkstyle.version>
+        <spring-javaformat-checkstyle.version>0.0.27</spring-javaformat-checkstyle.version>
         <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
     </properties>
     <modules>
@@ -133,6 +132,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <source>${java.version}</source>
+                    <quiet>true</quiet>
                 </configuration>
                 <executions>
                     <execution>
@@ -363,9 +363,9 @@
                     </dependencies>
                 </plugin>
                 <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <version>${exec-maven-plugin.version}</version>
+                    <groupId>com.github.eirslett</groupId>
+                    <artifactId>frontend-maven-plugin</artifactId>
+                    <version>${frontend-maven-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>pl.project13.maven</groupId>
@@ -381,11 +381,6 @@
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>${jacoco-maven-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.eluder.coveralls</groupId>
-                    <artifactId>coveralls-maven-plugin</artifactId>
-                    <version>${coveralls-maven-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.sonatype.plugins</groupId>
@@ -408,7 +403,7 @@
             </modules>
         </profile>
         <profile>
-            <id>central-deploy</id>
+            <id>coverage</id>
             <build>
                 <plugins>
                     <plugin>
@@ -427,18 +422,19 @@
                                  been run. -->
                             <execution>
                                 <id>post-unit-test</id>
-                                <phase>test</phase>
                                 <goals>
                                     <goal>report</goal>
                                 </goals>
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
-                        <groupId>org.eluder.coveralls</groupId>
-                        <artifactId>coveralls-maven-plugin</artifactId>
-                    </plugin>
-
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>central-deploy</id>
+            <build>
+                <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
