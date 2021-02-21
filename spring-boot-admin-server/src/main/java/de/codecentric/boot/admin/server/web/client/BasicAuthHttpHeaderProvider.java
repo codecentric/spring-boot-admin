@@ -91,19 +91,17 @@ public class BasicAuthHttpHeaderProvider implements HttpHeadersProvider {
 		return null;
 	}
 
-	@lombok.Data(staticConstructor = "of")
+	@lombok.Data
 	public static class InstanceCredentials {
 
 		/**
 		 * user name for this instance
 		 */
-		@lombok.NonNull
 		private String userName;
 
 		/**
 		 * user password for this instance
 		 */
-		@lombok.NonNull
 		private String userPassword;
 
 	}
