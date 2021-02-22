@@ -78,7 +78,7 @@ Having trouble with codecentric's Spring Boot Admin? We’d like to help!
 ## Trademarks and licenses
 The source code of codecentric's Spring Boot Admin is licensed under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
-Spring, Spring Boot and Spring Cloud are trademarks of [Pivotal Software, Inc.](https://pivotal.io/) in the U.S. and other countries.
+Spring, Spring Boot and Spring Cloud are trademarks of [VMware, Inc.](https://tanzu.vmware.com/) in the U.S. and other countries.
 
 ## Snapshot builds
 You can access snapshot builds from the sonatype snapshot repository by adding the following to your `repositories`:
