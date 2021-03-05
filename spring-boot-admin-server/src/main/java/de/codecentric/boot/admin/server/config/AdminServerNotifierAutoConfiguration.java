@@ -311,7 +311,7 @@ public class AdminServerNotifierAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.dingtalk", name = "webhook-url")
+	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.dingtalk", name = "webhookUrl")
 	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
 	@Lazy(false)
 	public static class DingTalkNotifierConfiguration {

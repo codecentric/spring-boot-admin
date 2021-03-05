@@ -53,14 +53,14 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 
 	private RestTemplate restTemplate;
 
-	/* Base url for DingTalk. */
+	/**
+	 * Webhook URI for the DingTalk API.
+	 */
 	private String webhookUrl;
 
-	/* AccessToken for DingTalk. */
-	@Nullable
-	private String accessToken;
-
-	/* Secret for DingTalk. */
+	/**
+	 * Secret for DingTalk.
+	 */
 	@Nullable
 	private String secret;
 
@@ -80,7 +80,7 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 
 	private String buildUrl() {
 		Long timestamp = System.currentTimeMillis();
-		return String.format("%s?access_token=%s&timestamp=%s&sign=%s", webhookUrl, accessToken, timestamp, getSign(timestamp));
+		return String.format("%s&timestamp=%s&sign=%s", webhookUrl, timestamp, getSign(timestamp));
 	}
 
 	protected Object createMessage(InstanceEvent event, Instance instance) {
@@ -126,15 +126,6 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 
 	public void setWebhookUrl(String webhookUrl) {
 		this.webhookUrl = webhookUrl;
-	}
-
-	@Nullable
-	public String getAccessToken() {
-		return accessToken;
-	}
-
-	public void setAccessToken(@Nullable String accessToken) {
-		this.accessToken = accessToken;
 	}
 
 	@Nullable

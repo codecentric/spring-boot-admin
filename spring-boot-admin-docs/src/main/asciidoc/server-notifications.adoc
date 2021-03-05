@@ -440,7 +440,7 @@ TIP: This example combines the reminding and filtering notifiers. This allows yo
 
 [[DingTalk-notifications]]
 ==== DingTalk Notifications ====
-To enable https://www.dingtalk.com/[Telegram] notifications you need to create and authorize a dingtalk bot and set the appropriate configuration properties for accessToken and secret.
+To enable https://www.dingtalk.com/[DingTalk] notifications you need to create and authorize a dingtalk bot and set the appropriate configuration properties for webhookUrl and secret.
 
 .DingTalk notifications configuration options
 |===
@@ -452,10 +452,6 @@ To enable https://www.dingtalk.com/[Telegram] notifications you need to create a
 
 | spring.boot.admin.notify.dingtalk.webhookUrl
 | The DingTalk webhook url to send the notifications to.
-|
-
-| spring.boot.admin.notify.dingtalk.accessToken
-| The token to access the DingTalk API.
 |
 
 | spring.boot.admin.notify.dingtalk.secret
