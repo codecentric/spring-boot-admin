@@ -61,10 +61,22 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- Optional Kuberneteds Discovery Client -->
+        <!-- Optional Kubernetes Discovery using Official Kubernetes Client -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-kubernetes</artifactId>
+            <artifactId>spring-cloud-starter-kubernetes-client</artifactId>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-web</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- Optional Kubernetes Discovery using Fabric 8 Kubernetes Java Client -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-kubernetes-fabric8</artifactId>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
