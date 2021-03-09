@@ -450,7 +450,7 @@ To enable https://www.dingtalk.com/[DingTalk] notifications you need to create a
 | Enable DingTalk notifications.
 | `true`
 
-| spring.boot.admin.notify.dingtalk.webhookUrl
+| spring.boot.admin.notify.dingtalk.webhook-url
 | The DingTalk webhook url to send the notifications to.
 |
 
