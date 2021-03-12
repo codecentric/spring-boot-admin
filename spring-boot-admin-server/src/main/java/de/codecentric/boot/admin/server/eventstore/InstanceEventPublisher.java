@@ -36,7 +36,7 @@ public class InstanceEventPublisher implements Publisher<InstanceEvent> {
 	private final Sinks.Many<InstanceEvent> unicast;
 
 	private final Sinks.EmitFailureHandler emitFailureHandler = (signalType, emitResult) -> emitResult
-		.equals(Sinks.EmitResult.FAIL_NON_SERIALIZED);
+			.equals(Sinks.EmitResult.FAIL_NON_SERIALIZED);
 
 	protected InstanceEventPublisher() {
 		this.unicast = Sinks.many().unicast().onBackpressureBuffer();
