@@ -120,6 +120,10 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 		return "";
 	}
 
+	public void setRestTemplate(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
+
 	public String getWebhookUrl() {
 		return webhookUrl;
 	}
