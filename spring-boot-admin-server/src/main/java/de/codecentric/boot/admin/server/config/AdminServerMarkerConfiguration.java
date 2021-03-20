@@ -16,12 +16,14 @@
 
 package de.codecentric.boot.admin.server.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
 public class AdminServerMarkerConfiguration {
 
+	@ConditionalOnProperty(prefix = "spring.boot.admin", name = "enabled", matchIfMissing = true)
 	@Bean
 	public Marker adminServerMarker() {
 		return new Marker();
