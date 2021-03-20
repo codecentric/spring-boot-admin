@@ -24,16 +24,8 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * This condition checks if the client should be enabled. Two properties are checked:
- * spring.boot.admin.server.enabled. The following table
- * shows under which conditions the client is active. <pre>
- *           | enabled: false | enabled: true (default) |
- * --------- | -------------- | ----------------------- |
- * url empty | inactive       | inactive                |
- * (default) |                |                         |
- * --------- | -------------- | ----------------------- |
- * url set   | inactive       | active                  |
- * </pre>
+ * This condition checks if the sever should be enabled.
+ * Property spring.boot.admin.server.enabled is checked.
  */
 public class SpringBootAdminServerEnabledCondition extends SpringBootCondition {
 
