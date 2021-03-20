@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.codecentric.boot.admin.server.config.SpringBootAdminServerEnabledCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -31,6 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -50,6 +52,7 @@ import de.codecentric.boot.admin.server.ui.web.UiController.Settings;
 import static java.util.Arrays.asList;
 
 @Configuration(proxyBeanMethods = false)
+@Conditional(SpringBootAdminServerEnabledCondition.class)
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
 @AutoConfigureAfter(AdminServerWebConfiguration.class)
 @EnableConfigurationProperties(AdminServerUiProperties.class)
