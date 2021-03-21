@@ -10,6 +10,10 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 |===
 | Property name |Description |Default value
 
+| spring.boot.admin.server.enabled
+| Enables the Spring Boot Admin Server.
+| `true`
+
 | spring.boot.admin.context-path
 | The context-path prefixes the path where the Admin Server's statics assets and API should be served. Relative to the Dispatcher-Servlet.
 |
@@ -52,7 +56,7 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 
 | spring.boot.admin.probed-endpoints
 | For Spring Boot 1.x client applications SBA probes for the specified endpoints using an OPTIONS request.
-  If the path differs from the id you can specify this as id:path (e.g. health:ping)..
+If the path differs from the id you can specify this as id:path (e.g. health:ping)..
 | `"health", "env", "metrics", "httptrace:trace", "threaddump:dump", "jolokia", "info", "logfile", "refresh", "flyway", "liquibase", "heapdump", "loggers", "auditevents"`
 
 | spring.boot.admin.instance-auth.enabled

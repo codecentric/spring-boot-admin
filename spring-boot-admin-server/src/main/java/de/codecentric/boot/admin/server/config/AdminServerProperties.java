@@ -41,6 +41,8 @@ public class AdminServerProperties {
 	 */
 	private String contextPath = "";
 
+	private ServerProperties server = new ServerProperties();
+
 	private MonitorProperties monitor = new MonitorProperties();
 
 	private InstanceAuthProperties instanceAuth = new InstanceAuthProperties();
@@ -73,6 +75,16 @@ public class AdminServerProperties {
 	 */
 	public String path(String path) {
 		return this.contextPath + path;
+	}
+
+	@lombok.Data
+	public static class ServerProperties {
+
+		/**
+		 * Enable Spring Boot Admin Server Default: true
+		 */
+		private boolean enabled = true;
+
 	}
 
 	@lombok.Data
