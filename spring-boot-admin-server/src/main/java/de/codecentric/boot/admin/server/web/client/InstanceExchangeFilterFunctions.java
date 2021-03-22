@@ -141,7 +141,7 @@ public final class InstanceExchangeFilterFunctions {
 		return response.mutate().headers((headers) -> {
 			headers.replace(HttpHeaders.CONTENT_TYPE, singletonList(ActuatorMediaType.V2_JSON));
 			headers.remove(HttpHeaders.CONTENT_LENGTH);
-		}).body(response.bodyToFlux(DataBuffer.class).transform(converter::convert)).build();
+		}).body(converter::convert).build();
 	}
 
 	public static InstanceExchangeFilterFunction setDefaultAcceptHeader() {
