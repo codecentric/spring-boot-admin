@@ -30,6 +30,7 @@ import de.codecentric.boot.admin.client.config.InstanceProperties;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -63,9 +64,9 @@ public class CloudFoundryApplicationFactoryTest {
 
 		Application app = this.factory.createApplication();
 
-		assertThat(app.getManagementUrl()).isEqualTo("http://application/Uppercase/actuator");
-		assertThat(app.getHealthUrl()).isEqualTo("http://application/Uppercase/actuator/health");
-		assertThat(app.getServiceUrl()).isEqualTo("http://application/Uppercase/");
+		assertAll(() -> assertThat(app.getManagementUrl()).isEqualTo("http://application/Uppercase/actuator"),
+				() -> assertThat(app.getHealthUrl()).isEqualTo("http://application/Uppercase/actuator/health"),
+				() -> assertThat(app.getServiceUrl()).isEqualTo("http://application/Uppercase/"));
 	}
 
 	@Test
@@ -76,9 +77,9 @@ public class CloudFoundryApplicationFactoryTest {
 
 		Application app = this.factory.createApplication();
 
-		assertThat(app.getManagementUrl()).isEqualTo("https://serviceBaseUrl/actuator");
-		assertThat(app.getHealthUrl()).isEqualTo("https://serviceBaseUrl/actuator/health");
-		assertThat(app.getServiceUrl()).isEqualTo("https://serviceBaseUrl/");
+		assertAll(() -> assertThat(app.getManagementUrl()).isEqualTo("https://serviceBaseUrl/actuator"),
+				() -> assertThat(app.getHealthUrl()).isEqualTo("https://serviceBaseUrl/actuator/health"),
+				() -> assertThat(app.getServiceUrl()).isEqualTo("https://serviceBaseUrl/"));
 	}
 
 }
