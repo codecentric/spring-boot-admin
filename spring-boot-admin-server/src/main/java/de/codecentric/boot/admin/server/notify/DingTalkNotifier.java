@@ -141,4 +141,12 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 		this.secret = secret;
 	}
 
+	public String getMessage() {
+		return message.getExpressionString();
+	}
+
+	public void setMessage(String message) {
+		this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
+	}
+
 }
