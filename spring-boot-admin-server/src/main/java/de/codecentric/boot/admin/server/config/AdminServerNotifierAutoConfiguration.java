@@ -54,6 +54,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.notify.CompositeNotifier;
+import de.codecentric.boot.admin.server.notify.DingTalkNotifier;
 import de.codecentric.boot.admin.server.notify.DiscordNotifier;
 import de.codecentric.boot.admin.server.notify.HipchatNotifier;
 import de.codecentric.boot.admin.server.notify.LetsChatNotifier;
@@ -305,6 +306,21 @@ public class AdminServerNotifierAutoConfiguration {
 		@ConfigurationProperties("spring.boot.admin.notify.discord")
 		public DiscordNotifier discordNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
 			return new DiscordNotifier(repository, createNotifierRestTemplate(proxyProperties));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.dingtalk", name = "webhook-url")
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
+	@Lazy(false)
+	public static class DingTalkNotifierConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConfigurationProperties("spring.boot.admin.notify.dingtalk")
+		public DingTalkNotifier dingTalkNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
+			return new DingTalkNotifier(repository, createNotifierRestTemplate(proxyProperties));
 		}
 
 	}
