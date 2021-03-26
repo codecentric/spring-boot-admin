@@ -35,7 +35,7 @@ public class SpringBootAdminServerEnabledCondition extends SpringBootCondition {
 
 		if (!serverProperties.getServer().isEnabled()) {
 			return ConditionOutcome
-					.noMatch("Spring Boot Server is disabled, because 'spring.boot.admin.client.enabled' is false.");
+					.noMatch("Spring Boot Server is disabled, because 'spring.boot.admin.server.enabled' is false.");
 		}
 
 		return ConditionOutcome.match();
