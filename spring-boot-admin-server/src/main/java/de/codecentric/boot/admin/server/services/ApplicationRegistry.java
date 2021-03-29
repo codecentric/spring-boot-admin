@@ -97,8 +97,11 @@ public class ApplicationRegistry {
 	protected Mono<Application> toApplication(String name, Flux<Instance> instances) {
 		return instances.collectList().map((instanceList) -> {
 			Tuple2<String, Instant> status = getStatus(instanceList);
-			return Application.create(name).instances(instanceList).buildVersion(getBuildVersion(instanceList))
-					.status(status.getT1()).statusTimestamp(status.getT2()).build();
+			String groupName = instanceList.isEmpty() ? null
+					: instanceList.get(0).getRegistration().getGroupName();
+			return Application.create(name).groupName(groupName).instances(instanceList)
+					.buildVersion(getBuildVersion(instanceList)).status(status.getT1()).statusTimestamp(status.getT2())
+					.build();
 		});
 	}
 

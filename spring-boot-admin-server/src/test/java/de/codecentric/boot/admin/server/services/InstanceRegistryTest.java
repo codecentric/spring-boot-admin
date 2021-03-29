@@ -22,6 +22,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
+import de.codecentric.boot.admin.server.config.AdminServerInstanceFilter;
+import de.codecentric.boot.admin.server.config.DefaultAdminServerInstanceFilter;
 import de.codecentric.boot.admin.server.domain.entities.EventsourcingInstanceRepository;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
@@ -43,11 +45,14 @@ public class InstanceRegistryTest {
 
 	private InstanceRegistry registry;
 
+	private AdminServerInstanceFilter adminServerInstanceFilter;
+
 	@BeforeEach
 	public void setUp() {
 		repository = new EventsourcingInstanceRepository(new InMemoryEventStore());
 		idGenerator = new HashingInstanceUrlIdGenerator();
-		registry = new InstanceRegistry(repository, idGenerator);
+		adminServerInstanceFilter = new DefaultAdminServerInstanceFilter();
+		registry = new InstanceRegistry(repository, idGenerator, adminServerInstanceFilter);
 	}
 
 	@Test

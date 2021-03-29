@@ -78,7 +78,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 	@Override
 	public Application createApplication() {
 		return Application.create(getName()).healthUrl(getHealthUrl()).managementUrl(getManagementUrl())
-				.serviceUrl(getServiceUrl()).metadata(getMetadata()).build();
+				.serviceUrl(getServiceUrl()).metadata(getMetadata()).groupName(getGroupName()).build();
 	}
 
 	protected String getName() {
@@ -112,6 +112,14 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 		}
 
 		return "/";
+	}
+
+	protected String getGroupName() {
+		String groupName = this.instance.getGroupName();
+		if (StringUtils.hasText(groupName)) {
+			return groupName;
+		}
+		return "DEFAULT_GROUP";
 	}
 
 	protected String getManagementUrl() {

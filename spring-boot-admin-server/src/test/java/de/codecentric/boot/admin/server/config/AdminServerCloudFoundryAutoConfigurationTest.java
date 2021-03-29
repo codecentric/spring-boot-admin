@@ -38,7 +38,8 @@ public class AdminServerCloudFoundryAutoConfigurationTest {
 			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
 					ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class,
 					HazelcastAutoConfiguration.class, WebMvcAutoConfiguration.class, AdminServerAutoConfiguration.class,
-					AdminServerCloudFoundryAutoConfiguration.class))
+					AdminServerCloudFoundryAutoConfiguration.class, AdminServerFilterAutoConfiguration.class,
+					AdminServerEventFilterAutoConfiguration.class))
 			.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
 	@Test

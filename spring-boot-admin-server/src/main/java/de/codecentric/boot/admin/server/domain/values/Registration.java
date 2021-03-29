@@ -29,6 +29,8 @@ import lombok.ToString;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import static de.codecentric.boot.admin.server.domain.constant.Constant.DEFAULT_GROUP_NAME;
+
 /**
  * Registration info for the instance registers with (including metadata)
  *
@@ -39,6 +41,8 @@ import org.springframework.util.StringUtils;
 public final class Registration implements Serializable {
 
 	private final String name;
+
+	private final String groupName;
 
 	@Nullable
 	private final String managementUrl;
@@ -53,6 +57,25 @@ public final class Registration implements Serializable {
 	private final Map<String, String> metadata;
 
 	@lombok.Builder(builderClassName = "Builder", toBuilder = true)
+	private Registration(String name, @Nullable String managementUrl, String healthUrl, @Nullable String serviceUrl,
+			String source, @lombok.Singular("metadata") Map<String, String> metadata, @Nullable String groupName) {
+		Assert.hasText(name, "'name' must not be empty.");
+		Assert.hasText(healthUrl, "'healthUrl' must not be empty.");
+		Assert.isTrue(checkUrl(healthUrl), "'healthUrl' is not valid: " + healthUrl);
+		Assert.isTrue(!StringUtils.hasText(managementUrl) || checkUrl(managementUrl),
+				"'managementUrl' is not valid: " + managementUrl);
+		Assert.isTrue(!StringUtils.hasText(serviceUrl) || checkUrl(serviceUrl),
+				"'serviceUrl' is not valid: " + serviceUrl);
+		this.name = name;
+		this.managementUrl = managementUrl;
+		this.healthUrl = healthUrl;
+		this.serviceUrl = serviceUrl;
+		this.source = source;
+		this.metadata = new LinkedHashMap<>();
+		metadata.forEach(this.metadata::put);
+		this.groupName = (groupName != null) ? groupName : DEFAULT_GROUP_NAME;
+	}
+
 	private Registration(String name, @Nullable String managementUrl, String healthUrl, @Nullable String serviceUrl,
 			String source, @lombok.Singular("metadata") Map<String, String> metadata) {
 		Assert.hasText(name, "'name' must not be empty.");
@@ -69,6 +92,7 @@ public final class Registration implements Serializable {
 		this.source = source;
 		this.metadata = new LinkedHashMap<>();
 		metadata.forEach(this.metadata::put);
+		this.groupName = DEFAULT_GROUP_NAME;
 	}
 
 	public static Registration.Builder create(String name, String healthUrl) {

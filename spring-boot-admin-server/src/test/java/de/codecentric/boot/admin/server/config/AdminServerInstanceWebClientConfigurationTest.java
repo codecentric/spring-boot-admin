@@ -37,7 +37,8 @@ public class AdminServerInstanceWebClientConfigurationTest {
 			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
 					ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class,
 					WebMvcAutoConfiguration.class, AdminServerAutoConfiguration.class,
-					AdminServerInstanceWebClientConfiguration.class))
+					AdminServerInstanceWebClientConfiguration.class, AdminServerFilterAutoConfiguration.class,
+					AdminServerEventFilterAutoConfiguration.class))
 			.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
 	@Test

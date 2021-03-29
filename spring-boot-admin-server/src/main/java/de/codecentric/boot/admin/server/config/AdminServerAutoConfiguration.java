@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.config;
 
 import org.reactivestreams.Publisher;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -52,7 +53,8 @@ import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
 @EnableConfigurationProperties(AdminServerProperties.class)
 @ImportAutoConfiguration({ AdminServerInstanceWebClientConfiguration.class, AdminServerWebConfiguration.class })
-@AutoConfigureAfter({ WebClientAutoConfiguration.class })
+@AutoConfigureAfter({ WebClientAutoConfiguration.class, AdminServerFilterAutoConfiguration.class})
+@AutoConfigureBefore(AdminServerEventFilterAutoConfiguration.class)
 @Lazy(false)
 public class AdminServerAutoConfiguration {
 
@@ -65,8 +67,8 @@ public class AdminServerAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public InstanceRegistry instanceRegistry(InstanceRepository instanceRepository,
-			InstanceIdGenerator instanceIdGenerator) {
-		return new InstanceRegistry(instanceRepository, instanceIdGenerator);
+			InstanceIdGenerator instanceIdGenerator, AdminServerInstanceFilter adminServerInstanceFilter) {
+		return new InstanceRegistry(instanceRepository, instanceIdGenerator, adminServerInstanceFilter);
 	}
 
 	@Bean

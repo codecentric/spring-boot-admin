@@ -25,3 +25,6 @@ node/
 
 #flattened POMs
 .flattened-pom.xml
+
+# mac OS
+.DS_Store

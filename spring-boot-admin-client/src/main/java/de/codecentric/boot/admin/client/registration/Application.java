@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -31,7 +33,11 @@ import org.springframework.util.Assert;
 @lombok.ToString(exclude = "metadata")
 public class Application {
 
+	private static final String DEFAULT_GROUP_NAME = "DEFAULT_GROUP";
+
 	private final String name;
+
+	private final String groupName;
 
 	private final String managementUrl;
 
@@ -43,7 +49,7 @@ public class Application {
 
 	@lombok.Builder(builderClassName = "Builder")
 	protected Application(String name, String managementUrl, String healthUrl, String serviceUrl,
-			@lombok.Singular("metadata") Map<String, String> metadata) {
+			@lombok.Singular("metadata") Map<String, String> metadata, @Nullable String groupName) {
 		Assert.hasText(name, "name must not be empty!");
 		Assert.hasText(healthUrl, "healthUrl must not be empty!");
 		this.name = name;
@@ -51,6 +57,19 @@ public class Application {
 		this.healthUrl = healthUrl;
 		this.serviceUrl = serviceUrl;
 		this.metadata = new HashMap<>(metadata);
+		this.groupName = (groupName != null) ? groupName : DEFAULT_GROUP_NAME;
+	}
+
+	protected Application(String name, String managementUrl, String healthUrl, String serviceUrl,
+						  @lombok.Singular("metadata") Map<String, String> metadata) {
+		Assert.hasText(name, "name must not be empty!");
+		Assert.hasText(healthUrl, "healthUrl must not be empty!");
+		this.name = name;
+		this.managementUrl = managementUrl;
+		this.healthUrl = healthUrl;
+		this.serviceUrl = serviceUrl;
+		this.metadata = new HashMap<>(metadata);
+		this.groupName = DEFAULT_GROUP_NAME;
 	}
 
 	public static Builder create(String name) {

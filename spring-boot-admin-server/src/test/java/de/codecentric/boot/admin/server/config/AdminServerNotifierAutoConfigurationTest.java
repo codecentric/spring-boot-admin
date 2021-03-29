@@ -52,7 +52,8 @@ public class AdminServerNotifierAutoConfigurationTest {
 			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
 					ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class,
 					HazelcastAutoConfiguration.class, WebMvcAutoConfiguration.class, AdminServerAutoConfiguration.class,
-					AdminServerNotifierAutoConfiguration.class))
+					AdminServerNotifierAutoConfiguration.class, AdminServerFilterAutoConfiguration.class,
+					AdminServerEventFilterAutoConfiguration.class))
 			.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
 	@Test
