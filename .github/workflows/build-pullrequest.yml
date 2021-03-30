@@ -34,7 +34,6 @@ jobs:
       - name: Build with Maven
         if: matrix.os == 'windows-2016'
         run: |
-          set
           echo %HOMEPATH%
           dir ~/.m2/
           dir ~
