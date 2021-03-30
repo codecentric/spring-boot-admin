@@ -319,7 +319,8 @@ public class AdminServerNotifierAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConfigurationProperties("spring.boot.admin.notify.dingtalk")
-		public DingTalkNotifier dingTalkNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
+		public DingTalkNotifier dingTalkNotifier(InstanceRepository repository,
+				NotifierProxyProperties proxyProperties) {
 			return new DingTalkNotifier(repository, createNotifierRestTemplate(proxyProperties));
 		}
 
