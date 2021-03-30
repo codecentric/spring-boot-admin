@@ -23,8 +23,15 @@ jobs:
         with:
           java-version: 1.8
 
+      - name: Show contents of settings.xml
+        if: matrix.os == 'windows-2016'
+        run: |
+          echo $Env:HOMEPATH
+          type ~/.m2/settings.xml
+
       - name: Cache local Maven repository
         uses: actions/cache@v2
+        if: matrix.os == 'ubuntu-latest'
         env:
           cache-name: cache-mvn
         with:
@@ -35,10 +42,18 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Show contents of settings.xml
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
         if: matrix.os == 'windows-2016'
-        run: |
-          type ~/.m2/settings.xml
+        env:
+          cache-name: cache-mvn
+        with:
+          path: C:\Users\runneradmin\.m2\repository
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
 
       # since we also build on Windows Powershell, we need to add a space between -D maven.javadoc.skip=true
       # otherwise the build will fail https://stackoverflow.com/questions/38051787/maven-javadoc-skip-true-throws-an-error
@@ -51,7 +66,7 @@ jobs:
         if: matrix.os == 'windows-2016'
         run: |
           echo %HOMEPATH%
-          dir ~/.m2/
+          dir ~/.m2/repository
           dir ~
 
       - uses: codecov/codecov-action@v1
