@@ -19,32 +19,12 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: Show contents of settings.xml
-        if: matrix.os == 'windows-2016'
-        run: |
-          echo $Env:HOMEPATH
-          type ~/.m2/settings.xml
-
       - name: Cache local Maven repository
-        uses: actions/cache@v2
-        if: matrix.os == 'ubuntu-latest'
+        uses: actions/cache@v2.1.4
         env:
           cache-name: cache-mvn
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-
-      - name: Cache local Maven repository
-        uses: actions/cache@v2
-        if: matrix.os == 'windows-2016'
-        env:
-          cache-name: cache-mvn
-        with:
-          path: C:\Users\runneradmin\.m2\repository
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
@@ -57,13 +37,6 @@ jobs:
         run: |
           mvn -B spring-javaformat:apply --no-transfer-progress
           mvn -B verify -P coverage --no-transfer-progress -D maven.javadoc.skip=true
-
-      - name: Build with Maven
-        if: matrix.os == 'windows-2016'
-        run: |
-          echo "%HOMEPATH%"
-          dir ~/.m2/repository
-          dir ~
 
       - uses: codecov/codecov-action@v1
         with:
