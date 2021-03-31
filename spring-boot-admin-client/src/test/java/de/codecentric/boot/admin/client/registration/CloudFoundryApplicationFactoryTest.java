@@ -16,6 +16,7 @@
 
 package de.codecentric.boot.admin.client.registration;
 
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -29,7 +30,6 @@ import de.codecentric.boot.admin.client.config.InstanceProperties;
 
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -63,9 +63,11 @@ public class CloudFoundryApplicationFactoryTest {
 
 		Application app = this.factory.createApplication();
 
-		assertThat(app.getManagementUrl()).isEqualTo("http://application/Uppercase/actuator");
-		assertThat(app.getHealthUrl()).isEqualTo("http://application/Uppercase/actuator/health");
-		assertThat(app.getServiceUrl()).isEqualTo("http://application/Uppercase/");
+		SoftAssertions softly = new SoftAssertions();
+		softly.assertThat(app.getManagementUrl()).isEqualTo("http://application/Uppercase/actuator");
+		softly.assertThat(app.getHealthUrl()).isEqualTo("http://application/Uppercase/actuator/health");
+		softly.assertThat(app.getServiceUrl()).isEqualTo("http://application/Uppercase/");
+		softly.assertAll();
 	}
 
 	@Test
@@ -76,9 +78,11 @@ public class CloudFoundryApplicationFactoryTest {
 
 		Application app = this.factory.createApplication();
 
-		assertThat(app.getManagementUrl()).isEqualTo("https://serviceBaseUrl/actuator");
-		assertThat(app.getHealthUrl()).isEqualTo("https://serviceBaseUrl/actuator/health");
-		assertThat(app.getServiceUrl()).isEqualTo("https://serviceBaseUrl/");
+		SoftAssertions softly = new SoftAssertions();
+		softly.assertThat(app.getManagementUrl()).isEqualTo("https://serviceBaseUrl/actuator");
+		softly.assertThat(app.getHealthUrl()).isEqualTo("https://serviceBaseUrl/actuator/health");
+		softly.assertThat(app.getServiceUrl()).isEqualTo("https://serviceBaseUrl/");
+		softly.assertAll();
 	}
 
 }
