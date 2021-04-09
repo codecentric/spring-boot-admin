@@ -66,10 +66,11 @@
 <script>
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
-  import {concatMap, from, timer} from '@/utils/rxjs';
+  import {concatMap, delay, from, retryWhen, timer} from '@/utils/rxjs';
   import moment from 'moment';
   import prettyBytes from 'pretty-bytes';
   import i18n from '@/i18n';
+  import {take} from 'rxjs/operators';
 
   const formatDuration = (value, baseUnit) => {
     const duration = moment.duration(toMillis(value, baseUnit));
@@ -174,7 +175,13 @@
       createSubscription() {
         const vm = this;
         return timer(0, 2500)
-          .pipe(concatMap(vm.fetchAllTags))
+          .pipe(concatMap(vm.fetchAllTags), retryWhen(
+            err => {
+              return err.pipe(
+                delay(1000),
+                take(2)
+              )
+            }))
           .subscribe({
             next: () => {
             }

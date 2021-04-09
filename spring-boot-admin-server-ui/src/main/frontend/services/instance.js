@@ -39,7 +39,7 @@ class Instance {
     });
     this.axios.interceptors.response.use(
       response => response,
-      redirectOn401(error => !isInstanceActuatorRequest(error.config.url))
+      redirectOn401(error => !isInstanceActuatorRequest(error.config.baseURL + error.config.url))
     );
   }
 
