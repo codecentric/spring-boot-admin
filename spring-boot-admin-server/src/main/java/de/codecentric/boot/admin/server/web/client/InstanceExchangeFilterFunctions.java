@@ -27,7 +27,6 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
-import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -141,7 +140,7 @@ public final class InstanceExchangeFilterFunctions {
 		return response.mutate().headers((headers) -> {
 			headers.replace(HttpHeaders.CONTENT_TYPE, singletonList(ActuatorMediaType.V2_JSON));
 			headers.remove(HttpHeaders.CONTENT_LENGTH);
-		}).body(response.bodyToFlux(DataBuffer.class).transform(converter::convert)).build();
+		}).body(converter::convert).build();
 	}
 
 	public static InstanceExchangeFilterFunction setDefaultAcceptHeader() {
