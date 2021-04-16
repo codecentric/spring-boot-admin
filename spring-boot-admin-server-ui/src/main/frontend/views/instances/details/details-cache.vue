@@ -61,9 +61,10 @@
   import sbaConfig from '@/sba-config';
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
-  import {concatMap, timer} from '@/utils/rxjs';
+  import {concatMap, delay, retryWhen, timer} from '@/utils/rxjs';
   import moment from 'moment';
   import cacheChart from './cache-chart';
+  import {take} from 'rxjs/operators';
 
   export default {
     props: {
@@ -145,7 +146,13 @@
       createSubscription() {
         const vm = this;
         return timer(0, sbaConfig.uiSettings.pollTimer.cache)
-          .pipe(concatMap(vm.fetchMetrics))
+          .pipe(concatMap(vm.fetchMetrics), retryWhen(
+            err => {
+              return err.pipe(
+                delay(1000),
+                take(5)
+              )
+            }))
           .subscribe({
             next: data => {
               vm.hasLoaded = true;
