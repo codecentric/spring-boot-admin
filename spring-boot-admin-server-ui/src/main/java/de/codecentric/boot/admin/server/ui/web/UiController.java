@@ -190,7 +190,7 @@ public class UiController {
 		/**
 		 * Set view enabled.
 		 */
-		private boolean enabled = true;
+		private boolean enabled;
 
 		public ViewSettings(String name, boolean enabled) {
 			Assert.hasText(name, "'name' must not be empty");

@@ -35,6 +35,9 @@ public class InstanceEventPublisher implements Publisher<InstanceEvent> {
 
 	private final Sinks.Many<InstanceEvent> unicast;
 
+	private final Sinks.EmitFailureHandler emitFailureHandler = (signalType, emitResult) -> emitResult
+			.equals(Sinks.EmitResult.FAIL_NON_SERIALIZED);
+
 	protected InstanceEventPublisher() {
 		this.unicast = Sinks.many().unicast().onBackpressureBuffer();
 		this.publishedFlux = this.unicast.asFlux().publish().autoConnect(0);
@@ -43,7 +46,7 @@ public class InstanceEventPublisher implements Publisher<InstanceEvent> {
 	protected void publish(List<InstanceEvent> events) {
 		events.forEach((event) -> {
 			log.debug("Event published {}", event);
-			this.unicast.tryEmitNext(event);
+			this.unicast.emitNext(event, emitFailureHandler);
 		});
 	}
 

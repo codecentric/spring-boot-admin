@@ -436,3 +436,29 @@ include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecen
 <2> Add the `RemindingNotifier` as primary bean using the `FilteringNotifier` as delegate.
 
 TIP: This example combines the reminding and filtering notifiers. This allows you to get notifications after the deployed application hasn't restarted in a certain amount of time (until the filter expires).
+
+
+[[DingTalk-notifications]]
+==== DingTalk Notifications ====
+To enable https://www.dingtalk.com/[DingTalk] notifications you need to create and authorize a dingtalk bot and set the appropriate configuration properties for webhookUrl and secret.
+
+.DingTalk notifications configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.dingtalk.enabled
+| Enable DingTalk notifications.
+| `true`
+
+| spring.boot.admin.notify.dingtalk.webhook-url
+| The DingTalk webhook url to send the notifications to.
+|
+
+| spring.boot.admin.notify.dingtalk.secret
+| The secret to get message sign.
+|
+
+| spring.boot.admin.notify.dingtalk.message
+| Text to send. SpEL-expressions are supported.
+| `+++"#{instance.registration.name} #{instance.id} is #{event.statusInfo.status} "+++`
+|===

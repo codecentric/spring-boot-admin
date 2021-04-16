@@ -107,13 +107,14 @@
 <script>
 import subscribing from '@/mixins/subscribing';
 import Instance from '@/services/instance';
-import {concatMap, timer} from '@/utils/rxjs';
+import {concatMap, delay, retryWhen, timer} from '@/utils/rxjs';
 import debounce from 'lodash/debounce';
 import mapKeys from 'lodash/mapKeys';
 import moment from 'moment';
 import {VIEW_GROUP} from '../../index';
 import sbaTracesChart from './traces-chart';
 import sbaTracesList from './traces-list';
+import {take} from 'rxjs/operators';
 
 const addToFilter = (oldFilter, addedFilter) =>
     !oldFilter
@@ -265,7 +266,13 @@ const addToFilter = (oldFilter, addedFilter) =>
       createSubscription() {
         const vm = this;
         return timer(0, 5000)
-          .pipe(concatMap(vm.fetchHttptrace))
+          .pipe(concatMap(vm.fetchHttptrace), retryWhen(
+            err => {
+              return err.pipe(
+                delay(1000),
+                take(2)
+              )
+            }))
           .subscribe({
             next: traces => {
               vm.hasLoaded = true;

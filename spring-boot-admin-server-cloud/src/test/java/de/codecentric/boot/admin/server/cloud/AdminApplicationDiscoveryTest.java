@@ -31,6 +31,7 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.discovery.event.InstanceRegisteredEvent;
 import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryProperties;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -66,7 +67,7 @@ public class AdminApplicationDiscoveryTest {
 		this.instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
 				.web(WebApplicationType.REACTIVE).run("--server.port=0", "--management.endpoints.web.base-path=/mgmt",
 						"--endpoints.health.enabled=true", "--info.test=foobar", "--eureka.client.enabled=false",
-						"--spring.cloud.kubernetes.discovery.enabled=false");
+						"--spring.cloud.kubernetes.enabled=false", "--spring.cloud.kubernetes.discovery.enabled=false");
 
 		this.simpleDiscovery = this.instance.getBean(SimpleDiscoveryProperties.class);
 
@@ -96,7 +97,7 @@ public class AdminApplicationDiscoveryTest {
 		// We register the instance by setting static values for the SimpleDiscoveryClient
 		// and issuing a
 		// InstanceRegisteredEvent that makes sure the instance gets registered.
-		SimpleDiscoveryProperties.SimpleServiceInstance serviceInstance = new SimpleDiscoveryProperties.SimpleServiceInstance();
+		DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
 		serviceInstance.setServiceId("Test-Instance");
 		serviceInstance.setUri(URI.create("http://localhost:" + this.port));
 		serviceInstance.getMetadata().put("management.context-path", "/mgmt");

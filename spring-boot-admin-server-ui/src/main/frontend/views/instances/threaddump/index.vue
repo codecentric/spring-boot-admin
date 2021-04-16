@@ -49,11 +49,12 @@
 <script>
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
-  import {concatMap, timer} from '@/utils/rxjs';
+  import {concatMap, delay, retryWhen, timer} from '@/utils/rxjs';
   import remove from 'lodash/remove';
   import moment from 'moment';
   import threadsList from './threads-list';
   import {VIEW_GROUP} from '../../index';
+  import {take} from 'rxjs/operators';
 
   export default {
     props: {
@@ -137,7 +138,13 @@
         const vm = this;
         vm.errorFetch = null;
         return timer(0, 1000)
-          .pipe(concatMap(vm.fetchThreaddump))
+          .pipe(concatMap(vm.fetchThreaddump), retryWhen(
+            err => {
+              return err.pipe(
+                delay(1000),
+                take(2)
+              )
+            }))
           .subscribe({
             next: threads => {
               vm.hasLoaded = true;

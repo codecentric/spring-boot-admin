@@ -68,9 +68,10 @@
   import sbaConfig from '@/sba-config'
   import subscribing from '@/mixins/subscribing';
   import Instance from '@/services/instance';
-  import {concatMap, timer} from '@/utils/rxjs';
+  import {concatMap, delay, retryWhen, timer} from '@/utils/rxjs';
   import {toMillis} from '../metrics/metric';
   import processUptime from './process-uptime';
+  import {take} from 'rxjs/operators';
 
   export default {
     props: {
@@ -129,7 +130,13 @@
       createSubscription() {
         const vm = this;
         return timer(0, sbaConfig.uiSettings.pollTimer.process)
-          .pipe(concatMap(this.fetchCpuLoadMetrics))
+          .pipe(concatMap(this.fetchCpuLoadMetrics), retryWhen(
+            err => {
+              return err.pipe(
+                delay(1000),
+                take(5)
+              )
+            }))
           .subscribe({
             next: data => {
               vm.processCpuLoad = data.processCpuLoad;
