@@ -35,8 +35,8 @@ spring:
       ui:
         cache:
           no-cache: true
-        template-location: file://@project.basedir@/../../spring-boot-admin-server-ui/target/dist/
-        resource-locations: file://@project.basedir@/../../spring-boot-admin-server-ui/target/dist/
+        template-location: file:../../spring-boot-admin-server-ui/target/dist/
+        resource-locations: file:../../spring-boot-admin-server-ui/target/dist/
         cache-templates: false
 
 ---
