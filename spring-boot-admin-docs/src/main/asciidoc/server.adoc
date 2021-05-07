@@ -10,6 +10,10 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 |===
 | Property name |Description |Default value
 
+| spring.boot.admin.server.enabled
+| Enables the Spring Boot Admin Server.
+| `true`
+
 | spring.boot.admin.context-path
 | The context-path prefixes the path where the Admin Server's statics assets and API should be served. Relative to the Dispatcher-Servlet.
 |
