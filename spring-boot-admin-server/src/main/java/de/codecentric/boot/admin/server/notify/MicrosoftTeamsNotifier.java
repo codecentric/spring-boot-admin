@@ -16,12 +16,20 @@
 
 package de.codecentric.boot.admin.server.notify;
 
+import static java.util.Collections.singletonList;
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.MissingFormatArgumentException;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
@@ -30,7 +38,6 @@ import lombok.Builder;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.publisher.Mono;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
@@ -40,15 +47,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
-
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
-import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
-
-import static java.util.Collections.singletonList;
+import reactor.core.publisher.Mono;
 
 public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 
@@ -65,6 +64,13 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 	private static final String SOURCE_KEY = "Source";
 
 	private static final String DEFAULT_THEME_COLOR_EXPRESSION = "#{event.type == 'STATUS_CHANGED' ? (event.statusInfo.status=='UP' ? '6db33f' : 'b32d36') : '439fe0'}";
+
+	private static final String DEFAULT_DEREGISTER_ACTIVITY_SUBTITLE_EXPRESSION = "#{instance.registration.name} with id #{instance.id} has de-registered from Spring Boot Admin";
+
+	private static final String DEFAULT_REGISTER_ACTIVITY_SUBTITLE_EXPRESSION = "#{instance.registration.name} with id #{instance.id} has registered with Spring Boot Admin";
+
+	private static final String DEFAULT_STATUS_ACTIVITY_SUBTITLE_EXPRESSION = "#{instance.registration.name} with id #{instance.id} changed status from #{lastStatus} to #{event.statusInfo.status}";
+
 
 	private final SpelExpressionParser parser = new SpelExpressionParser();
 	private RestTemplate restTemplate;
@@ -85,19 +91,19 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 	 * Message will be used as title of the Activity section of the Teams message when an
 	 * app de-registers.
 	 */
-	private String deregisterActivitySubtitlePattern = "%s with id %s has de-registered from Spring Boot Admin";
+	private Expression deregisterActivitySubtitle;
 
 	/**
 	 * Message will be used as title of the Activity section of the Teams message when an
 	 * app registers
 	 */
-	private String registerActivitySubtitlePattern = "%s with id %s has registered with Spring Boot Admin";
+	private Expression registerActivitySubtitle;
 
 	/**
 	 * Message will be used as title of the Activity section of the Teams message when an
 	 * app changes status
 	 */
-	private String statusActivitySubtitlePattern = "%s with id %s changed status from %s to %s";
+	private Expression statusActivitySubtitle;
 
 	/**
 	 * Title of the Teams message when an app de-registers
@@ -122,7 +128,17 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 	public MicrosoftTeamsNotifier(InstanceRepository repository, RestTemplate restTemplate) {
 		super(repository);
 		this.restTemplate = restTemplate;
-		this.themeColor = parser.parseExpression(DEFAULT_THEME_COLOR_EXPRESSION, ParserContext.TEMPLATE_EXPRESSION);
+		this.themeColor = parser
+			.parseExpression(DEFAULT_THEME_COLOR_EXPRESSION, ParserContext.TEMPLATE_EXPRESSION);
+		this.deregisterActivitySubtitle = parser
+			.parseExpression(DEFAULT_DEREGISTER_ACTIVITY_SUBTITLE_EXPRESSION,
+				ParserContext.TEMPLATE_EXPRESSION);
+		this.registerActivitySubtitle = parser
+			.parseExpression(DEFAULT_REGISTER_ACTIVITY_SUBTITLE_EXPRESSION,
+				ParserContext.TEMPLATE_EXPRESSION);
+		this.statusActivitySubtitle = parser
+			.parseExpression(DEFAULT_STATUS_ACTIVITY_SUBTITLE_EXPRESSION,
+				ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 	@Override
@@ -136,9 +152,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 			message = getDeregisteredMessage(instance, context);
 		}
 		else if (event instanceof InstanceStatusChangedEvent) {
-			InstanceStatusChangedEvent statusChangedEvent = (InstanceStatusChangedEvent) event;
-			message = getStatusChangedMessage(instance, getLastStatus(event.getInstance()),
-				statusChangedEvent.getStatusInfo().getStatus(), context);
+			message = getStatusChangedMessage(instance, context);
 		}
 		else {
 			return Mono.empty();
@@ -157,39 +171,29 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 
 	@Override
 	protected boolean shouldNotify(InstanceEvent event, Instance instance) {
-		return event instanceof InstanceRegisteredEvent || event instanceof InstanceDeregisteredEvent
+		return event instanceof InstanceRegisteredEvent
+			|| event instanceof InstanceDeregisteredEvent
 			|| super.shouldNotify(event, instance);
 	}
 
 	protected Message getDeregisteredMessage(Instance instance, StandardEvaluationContext context) {
-		String activitySubtitle = this.safeFormat(deregisterActivitySubtitlePattern,
-			instance.getRegistration().getName(), instance.getId());
+		String activitySubtitle = evaluateExpression(context, deregisterActivitySubtitle);
 		return createMessage(instance, deRegisteredTitle, activitySubtitle, context);
 	}
 
 	protected Message getRegisteredMessage(Instance instance, StandardEvaluationContext context) {
-		String activitySubtitle = this.safeFormat(registerActivitySubtitlePattern, instance.getRegistration().getName(),
-			instance.getId());
+		String activitySubtitle = evaluateExpression(context, registerActivitySubtitle);
 		return createMessage(instance, registeredTitle, activitySubtitle, context);
 	}
 
-	protected Message getStatusChangedMessage(Instance instance, String statusFrom, String statusTo, StandardEvaluationContext context) {
-		String activitySubtitle = this.safeFormat(statusActivitySubtitlePattern, instance.getRegistration().getName(),
-			instance.getId(), statusFrom, statusTo);
+	protected Message getStatusChangedMessage(Instance instance,
+		StandardEvaluationContext context) {
+		String activitySubtitle = evaluateExpression(context, statusActivitySubtitle);
 		return createMessage(instance, statusChangedTitle, activitySubtitle, context);
 	}
 
-	private String safeFormat(String format, Object... args) {
-		try {
-			return String.format(format, args);
-		}
-		catch (MissingFormatArgumentException ex) {
-			LOGGER.warn("Exception while trying to format the message. Falling back by using the format string.", ex);
-			return format;
-		}
-	}
-
-	protected Message createMessage(Instance instance, String registeredTitle, String activitySubtitle, StandardEvaluationContext context) {
+	protected Message createMessage(Instance instance, String registeredTitle,
+		String activitySubtitle, StandardEvaluationContext context) {
 		List<Fact> facts = new ArrayList<>();
 		facts.add(new Fact(STATUS_KEY, instance.getStatusInfo().getStatus()));
 		facts.add(new Fact(SERVICE_URL_KEY, instance.getRegistration().getServiceUrl()));
@@ -200,7 +204,8 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 		Section section = Section.builder().activityTitle(instance.getRegistration().getName())
 			.activitySubtitle(activitySubtitle).facts(facts).build();
 
-		return Message.builder().title(registeredTitle).summary(messageSummary).themeColor(evaluateExpression(context, themeColor))
+		return Message.builder().title(registeredTitle).summary(messageSummary)
+			.themeColor(evaluateExpression(context, themeColor))
 			.sections(singletonList(section)).build();
 	}
 
@@ -208,7 +213,8 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 		return Objects.requireNonNull(expression.getValue(context, String.class));
 	}
 
-	protected StandardEvaluationContext createEvaluationContext(InstanceEvent event, Instance instance) {
+	protected StandardEvaluationContext createEvaluationContext(InstanceEvent event,
+		Instance instance) {
 		Map<String, Object> root = new HashMap<>();
 		root.put("event", event);
 		root.put("instance", instance);
@@ -235,28 +241,31 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 		this.themeColor = parser.parseExpression(themeColor, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
-	public String getDeregisterActivitySubtitlePattern() {
-		return deregisterActivitySubtitlePattern;
+	public String getDeregisterActivitySubtitle() {
+		return deregisterActivitySubtitle.getExpressionString();
 	}
 
-	public void setDeregisterActivitySubtitlePattern(String deregisterActivitySubtitlePattern) {
-		this.deregisterActivitySubtitlePattern = deregisterActivitySubtitlePattern;
+	public void setDeregisterActivitySubtitle(String deregisterActivitySubtitle) {
+		this.deregisterActivitySubtitle = parser
+			.parseExpression(deregisterActivitySubtitle, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
-	public String getRegisterActivitySubtitlePattern() {
-		return registerActivitySubtitlePattern;
+	public String getRegisterActivitySubtitle() {
+		return registerActivitySubtitle.getExpressionString();
 	}
 
-	public void setRegisterActivitySubtitlePattern(String registerActivitySubtitlePattern) {
-		this.registerActivitySubtitlePattern = registerActivitySubtitlePattern;
+	public void setRegisterActivitySubtitle(String registerActivitySubtitle) {
+		this.registerActivitySubtitle = parser
+			.parseExpression(registerActivitySubtitle, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
-	public String getStatusActivitySubtitlePattern() {
-		return statusActivitySubtitlePattern;
+	public String getStatusActivitySubtitle() {
+		return statusActivitySubtitle.getExpressionString();
 	}
 
-	public void setStatusActivitySubtitlePattern(String statusActivitySubtitlePattern) {
-		this.statusActivitySubtitlePattern = statusActivitySubtitlePattern;
+	public void setStatusActivitySubtitle(String statusActivitySubtitle) {
+		this.statusActivitySubtitle = parser
+			.parseExpression(statusActivitySubtitle, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 	public String getDeRegisteredTitle() {
