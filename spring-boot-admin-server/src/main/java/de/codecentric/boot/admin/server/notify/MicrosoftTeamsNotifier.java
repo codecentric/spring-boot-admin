@@ -63,6 +63,9 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 	private static final String MANAGEMENT_URL_KEY = "Management URL";
 
 	private static final String SOURCE_KEY = "Source";
+
+	private static final String DEFAULT_THEME_COLOR_EXPRESSION = "#{event.type == 'STATUS_CHANGED' ? (event.statusInfo.status=='UP' ? '6db33f' : 'b32d36') : '439fe0'}";
+
 	private final SpelExpressionParser parser = new SpelExpressionParser();
 	private RestTemplate restTemplate;
 	/**
@@ -119,7 +122,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 	public MicrosoftTeamsNotifier(InstanceRepository repository, RestTemplate restTemplate) {
 		super(repository);
 		this.restTemplate = restTemplate;
-		this.themeColor = parser.parseExpression("6db33f", ParserContext.TEMPLATE_EXPRESSION);
+		this.themeColor = parser.parseExpression(DEFAULT_THEME_COLOR_EXPRESSION, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 	@Override

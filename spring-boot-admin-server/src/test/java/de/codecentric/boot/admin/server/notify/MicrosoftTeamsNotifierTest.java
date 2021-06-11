@@ -45,6 +45,10 @@ import static org.mockito.Mockito.when;
 
 public class MicrosoftTeamsNotifierTest {
 
+	private static final String BLUE = "439fe0";
+	private static final String RED = "b32d36";
+	private static final String GREEN = "6db33f";
+
 	private static final String appName = "Test App";
 
 	private static final String appId = "TestAppId";
@@ -89,7 +93,7 @@ public class MicrosoftTeamsNotifierTest {
 		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
 		assertMessage(entity.getValue().getBody(), notifier.getDeRegisteredTitle(), notifier.getMessageSummary(),
 			String.format(notifier.getDeregisterActivitySubtitlePattern(), instance.getRegistration().getName(),
-				instance.getId()));
+				instance.getId()), BLUE);
 	}
 
 	@Test
@@ -105,7 +109,7 @@ public class MicrosoftTeamsNotifierTest {
 		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
 		assertMessage(entity.getValue().getBody(), notifier.getRegisteredTitle(), notifier.getMessageSummary(),
 			String.format(notifier.getRegisterActivitySubtitlePattern(), instance.getRegistration().getName(),
-				instance.getId()));
+				instance.getId()), BLUE);
 	}
 
 	@Test
@@ -121,7 +125,7 @@ public class MicrosoftTeamsNotifierTest {
 		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
 		assertMessage(entity.getValue().getBody(), notifier.getStatusChangedTitle(), notifier.getMessageSummary(),
 			String.format(notifier.getStatusActivitySubtitlePattern(), instance.getRegistration().getName(),
-				instance.getId(), StatusInfo.ofUnknown().getStatus(), StatusInfo.ofUp().getStatus()));
+				instance.getId(), StatusInfo.ofUnknown().getStatus(), StatusInfo.ofUp().getStatus()), GREEN);
 	}
 
 	@Test
@@ -142,7 +146,7 @@ public class MicrosoftTeamsNotifierTest {
 
 		assertMessage(message, notifier.getDeRegisteredTitle(), notifier.getMessageSummary(),
 			String.format(notifier.getDeregisterActivitySubtitlePattern(), instance.getRegistration().getName(),
-				instance.getId()));
+				instance.getId()), BLUE);
 	}
 
 	@Test
@@ -150,16 +154,16 @@ public class MicrosoftTeamsNotifierTest {
 		Message message = notifier.getRegisteredMessage(instance, notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertMessage(message, notifier.getRegisteredTitle(), notifier.getMessageSummary(), String.format(
-			notifier.getRegisterActivitySubtitlePattern(), instance.getRegistration().getName(), instance.getId()));
+			notifier.getRegisterActivitySubtitlePattern(), instance.getRegistration().getName(), instance.getId()), BLUE);
 	}
 
 	@Test
 	public void test_getStatusChangedMessageForAppReturns_correctContent() {
-		Message message = notifier.getStatusChangedMessage(instance, "UP", "DOWN", notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
+		Message message = notifier.getStatusChangedMessage(instance, "UP", "DOWN", notifier.createEvaluationContext(new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofDown()), instance));
 
 		assertMessage(message, notifier.getStatusChangedTitle(), notifier.getMessageSummary(),
 			String.format(notifier.getStatusActivitySubtitlePattern(), instance.getRegistration().getName(),
-				instance.getId(), StatusInfo.ofUp().getStatus(), StatusInfo.ofDown().getStatus()));
+				instance.getId(), StatusInfo.ofUp().getStatus(), StatusInfo.ofDown().getStatus()), RED);
 	}
 
 	@Test
@@ -217,17 +221,17 @@ public class MicrosoftTeamsNotifierTest {
 
 	@Test
 	public void test_getStatusChangedMessage_parsesThemeColorFromSpelExpression() {
-		notifier.setThemeColor("#{event.statusInfo.status=='UP'?'green':'red'}");
+		notifier.setThemeColor("#{event.type == 'STATUS_CHANGED' ? (event.statusInfo.status=='UP' ? 'green' : 'red') : 'blue'}");
 
 		Message message = notifier.getStatusChangedMessage(instance, "DOWN", "UP", notifier.createEvaluationContext(new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofUp()), instance));
 
 		assertThat(message.getThemeColor()).isEqualTo("green");
 	}
 
-	private void assertMessage(Message message, String expectedTitle, String expectedSummary, String expectedSubTitle) {
+	private void assertMessage(Message message, String expectedTitle, String expectedSummary, String expectedSubTitle, String expectedColor) {
 		assertThat(message.getTitle()).isEqualTo(expectedTitle);
 		assertThat(message.getSummary()).isEqualTo(expectedSummary);
-		assertThat(message.getThemeColor()).isEqualTo("6db33f");
+		assertThat(message.getThemeColor()).isEqualTo(expectedColor);
 
 		assertThat(message.getSections()).hasSize(1).anySatisfy((section) -> {
 			assertThat(section.getActivityTitle()).isEqualTo(instance.getRegistration().getName());
