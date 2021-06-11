@@ -43,7 +43,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class MicrosoftTeamsNotifierTest {
+class MicrosoftTeamsNotifierTest {
+
+	private static final String BLUE = "439fe0";
+
+	private static final String RED = "b32d36";
+
+	private static final String GREEN = "6db33f";
 
 	private static final String appName = "Test App";
 
@@ -64,7 +70,7 @@ public class MicrosoftTeamsNotifierTest {
 	private InstanceRepository repository;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		instance = Instance.create(InstanceId.of(appId)).register(
 				Registration.create(appName, healthUrl).managementUrl(managementUrl).serviceUrl(serviceUrl).build());
 
@@ -78,7 +84,7 @@ public class MicrosoftTeamsNotifierTest {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void test_onClientApplicationDeRegisteredEvent_resolve() {
+	void test_onClientApplicationDeRegisteredEvent_resolve() {
 		InstanceDeregisteredEvent event = new InstanceDeregisteredEvent(instance.getId(), 1L);
 
 		StepVerifier.create(notifier.doNotify(event, instance)).verifyComplete();
@@ -88,13 +94,12 @@ public class MicrosoftTeamsNotifierTest {
 
 		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
 		assertMessage(entity.getValue().getBody(), notifier.getDeRegisteredTitle(), notifier.getMessageSummary(),
-				String.format(notifier.getDeregisterActivitySubtitlePattern(), instance.getRegistration().getName(),
-						instance.getId()));
+				"Test App with id TestAppId has de-registered from Spring Boot Admin", BLUE);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void test_onApplicationRegisteredEvent_resolve() {
+	void test_onApplicationRegisteredEvent_resolve() {
 		InstanceRegisteredEvent event = new InstanceRegisteredEvent(instance.getId(), 1L, instance.getRegistration());
 
 		StepVerifier.create(notifier.doNotify(event, instance)).verifyComplete();
@@ -104,13 +109,12 @@ public class MicrosoftTeamsNotifierTest {
 
 		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
 		assertMessage(entity.getValue().getBody(), notifier.getRegisteredTitle(), notifier.getMessageSummary(),
-				String.format(notifier.getRegisterActivitySubtitlePattern(), instance.getRegistration().getName(),
-						instance.getId()));
+				"Test App with id TestAppId has registered with Spring Boot Admin", BLUE);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void test_onApplicationStatusChangedEvent_resolve() {
+	void test_onApplicationStatusChangedEvent_resolve() {
 		InstanceStatusChangedEvent event = new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofUp());
 
 		StepVerifier.create(notifier.doNotify(event, instance)).verifyComplete();
@@ -120,105 +124,104 @@ public class MicrosoftTeamsNotifierTest {
 
 		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
 		assertMessage(entity.getValue().getBody(), notifier.getStatusChangedTitle(), notifier.getMessageSummary(),
-				String.format(notifier.getStatusActivitySubtitlePattern(), instance.getRegistration().getName(),
-						instance.getId(), StatusInfo.ofUnknown().getStatus(), StatusInfo.ofUp().getStatus()));
+				"Test App with id TestAppId changed status from UNKNOWN to UP", GREEN);
 	}
 
 	@Test
-	public void test_shouldNotifyWithRegisteredEventReturns_true() {
+	void test_shouldNotifyWithRegisteredEventReturns_true() {
 		InstanceRegisteredEvent event = new InstanceRegisteredEvent(instance.getId(), 1L, instance.getRegistration());
 		assertThat(notifier.shouldNotify(event, instance)).isTrue();
 	}
 
 	@Test
-	public void test_shouldNotifyWithDeRegisteredEventReturns_true() {
+	void test_shouldNotifyWithDeRegisteredEventReturns_true() {
 		InstanceDeregisteredEvent event = new InstanceDeregisteredEvent(instance.getId(), 1L);
 		assertThat(notifier.shouldNotify(event, instance)).isTrue();
 	}
 
 	@Test
-	public void test_getDeregisteredMessageForAppReturns_correctContent() {
-		Message message = notifier.getDeregisteredMessage(instance);
+	void test_getDeregisteredMessageForAppReturns_correctContent() {
+		Message message = notifier.getDeregisteredMessage(instance,
+				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertMessage(message, notifier.getDeRegisteredTitle(), notifier.getMessageSummary(),
-				String.format(notifier.getDeregisterActivitySubtitlePattern(), instance.getRegistration().getName(),
-						instance.getId()));
+				"Test App with id TestAppId has de-registered from Spring Boot Admin", BLUE);
 	}
 
 	@Test
-	public void test_getRegisteredMessageForAppReturns_correctContent() {
-		Message message = notifier.getRegisteredMessage(instance);
+	void test_getRegisteredMessageForAppReturns_correctContent() {
+		Message message = notifier.getRegisteredMessage(instance,
+				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
-		assertMessage(message, notifier.getRegisteredTitle(), notifier.getMessageSummary(), String.format(
-				notifier.getRegisterActivitySubtitlePattern(), instance.getRegistration().getName(), instance.getId()));
+		assertMessage(message, notifier.getRegisteredTitle(), notifier.getMessageSummary(),
+				"Test App with id TestAppId has registered with Spring Boot Admin", BLUE);
 	}
 
 	@Test
-	public void test_getStatusChangedMessageForAppReturns_correctContent() {
-		Message message = notifier.getStatusChangedMessage(instance, "UP", "DOWN");
+	void test_getStatusChangedMessageForAppReturns_correctContent() {
+		Message message = notifier.getStatusChangedMessage(instance, notifier.createEvaluationContext(
+				new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofDown()), instance));
 
 		assertMessage(message, notifier.getStatusChangedTitle(), notifier.getMessageSummary(),
-				String.format(notifier.getStatusActivitySubtitlePattern(), instance.getRegistration().getName(),
-						instance.getId(), StatusInfo.ofUp().getStatus(), StatusInfo.ofDown().getStatus()));
+				"Test App with id TestAppId changed status from UNKNOWN to DOWN", RED);
 	}
 
 	@Test
-	public void test_getStatusChangedMessageWithMissingFormatArgumentReturns_activitySubtitlePattern() {
-		String pattern = "STATUS_%s_ACTIVITY%s_PATTERN%s%s%s%s";
-		notifier.setStatusActivitySubtitlePattern(pattern);
-		Message message = notifier.getStatusChangedMessage(instance, "UP", "DOWN");
+	void test_getStatusChangedMessageForAppReturns_UP_to_DOWN() {
+		notifier.updateLastStatus(new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofUp()));
 
-		assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo(pattern);
+		Message message = notifier.getStatusChangedMessage(instance, notifier.createEvaluationContext(
+				new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofDown()), instance));
+
+		assertMessage(message, notifier.getStatusChangedTitle(), notifier.getMessageSummary(),
+				"Test App with id TestAppId changed status from UP to DOWN", RED);
 	}
 
 	@Test
-	public void test_getStatusChangedMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
-		notifier.setStatusActivitySubtitlePattern("STATUS_ACTIVITY_PATTERN_%s");
-		Message message = notifier.getStatusChangedMessage(instance, "UP", "DOWN");
+	void test_getStatusChangedMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
+		notifier.setStatusActivitySubtitle("STATUS_ACTIVITY_PATTERN_#{instance.registration.name}");
+		Message message = notifier.getStatusChangedMessage(instance,
+				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo("STATUS_ACTIVITY_PATTERN_" + appName);
 	}
 
 	@Test
-	public void test_getRegisterMessageWithMissingFormatArgumentReturns_activitySubtitlePattern() {
-		String pattern = "REGISTER_%s_ACTIVITY%s_PATTERN%s%s%s%s";
-		notifier.setRegisterActivitySubtitlePattern(pattern);
-		Message message = notifier.getRegisteredMessage(instance);
-
-		assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo(pattern);
-	}
-
-	@Test
-	public void test_getRegisterMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
-		notifier.setRegisterActivitySubtitlePattern("REGISTER_ACTIVITY_PATTERN_%s");
-		Message message = notifier.getRegisteredMessage(instance);
+	void test_getRegisterMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
+		notifier.setRegisterActivitySubtitle("REGISTER_ACTIVITY_PATTERN_#{instance.registration.name}");
+		Message message = notifier.getRegisteredMessage(instance,
+				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertThat(message.getSections().get(0).getActivitySubtitle())
 				.isEqualTo("REGISTER_ACTIVITY_PATTERN_" + appName);
 	}
 
 	@Test
-	public void test_getDeRegisterMessageWithMissingFormatArgumentReturns_activitySubtitlePattern() {
-		String pattern = "DEREGISTER_%s_ACTIVITY%s_PATTERN%s%s%s%s";
-		notifier.setDeregisterActivitySubtitlePattern(pattern);
-		Message message = notifier.getDeregisteredMessage(instance);
-
-		assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo(pattern);
-	}
-
-	@Test
-	public void test_getDeRegisterMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
-		notifier.setDeregisterActivitySubtitlePattern("DEREGISTER_ACTIVITY_PATTERN_%s");
-		Message message = notifier.getDeregisteredMessage(instance);
+	void test_getDeRegisterMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
+		notifier.setDeregisterActivitySubtitle("DEREGISTER_ACTIVITY_PATTERN_#{instance.registration.name}");
+		Message message = notifier.getDeregisteredMessage(instance,
+				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertThat(message.getSections().get(0).getActivitySubtitle())
 				.isEqualTo("DEREGISTER_ACTIVITY_PATTERN_" + appName);
 	}
 
-	private void assertMessage(Message message, String expectedTitle, String expectedSummary, String expectedSubTitle) {
+	@Test
+	void test_getStatusChangedMessage_parsesThemeColorFromSpelExpression() {
+		notifier.setThemeColor(
+				"#{event.type == 'STATUS_CHANGED' ? (event.statusInfo.status=='UP' ? 'green' : 'red') : 'blue'}");
+
+		Message message = notifier.getStatusChangedMessage(instance, notifier.createEvaluationContext(
+				new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofUp()), instance));
+
+		assertThat(message.getThemeColor()).isEqualTo("green");
+	}
+
+	private void assertMessage(Message message, String expectedTitle, String expectedSummary, String expectedSubTitle,
+			String expectedColor) {
 		assertThat(message.getTitle()).isEqualTo(expectedTitle);
 		assertThat(message.getSummary()).isEqualTo(expectedSummary);
-		assertThat(message.getThemeColor()).isEqualTo("6db33f");
+		assertThat(message.getThemeColor()).isEqualTo(expectedColor);
 
 		assertThat(message.getSections()).hasSize(1).anySatisfy((section) -> {
 			assertThat(section.getActivityTitle()).isEqualTo(instance.getRegistration().getName());

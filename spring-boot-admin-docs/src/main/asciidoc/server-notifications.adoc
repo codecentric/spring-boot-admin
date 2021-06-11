@@ -289,9 +289,37 @@ To enable Microsoft Teams notifications you need to setup a connector webhook ur
 | The Microsoft Teams webhook url to send the notifications to.
 |
 
-| spring.boot.admin.notify.ms-teams.*
-| There are several options to customize the message title and color
-|
+| spring.boot.admin.notify.ms-teams.deRegisteredTitle
+| Title of the Teams message when an app de-registers.
+| De-Registered
+
+| spring.boot.admin.notify.ms-teams.registeredTitle
+| Title of the Teams message when an app dregisters.
+| Registered
+
+| spring.boot.admin.notify.ms-teams.statusChangedTitle
+| Title of the Teams message when an app changes status.
+| Status Changed
+
+| spring.boot.admin.notify.ms-teams.messageSummary
+| Summary section of every Teams message originating from Spring Boot Admin.
+| Spring Boot Admin Notification
+
+| spring.boot.admin.notify.ms-teams.theme_color
+| Set the theme color. SpEL-expressions are supported.
+| `#{event.type == 'STATUS_CHANGED' ? (event.statusInfo.status=='UP' ? '6db33f' : 'b32d36') : '439fe0'}`
+
+| spring.boot.admin.notify.ms-teams.deregister_activity_subtitle
+| Subtitle of the Activity section of the Teams message when an app de-registers. SpEL-expressions are supported.
+| `#{instance.registration.name} with id #{instance.id} has de-registered from Spring Boot Admin`
+
+| spring.boot.admin.notify.ms-teams.register_activity_subtitle
+| Subtitle of the Activity section of the Teams message when an app registers. SpEL-expressions are supported.
+| `#{instance.registration.name} with id #{instance.id} has registered with Spring Boot Admin`
+
+| spring.boot.admin.notify.ms-teams.status_activity_subtitle
+| Subtitle of the Activity section of the Teams message when an app changes status. SpEL-expressions are supported.
+| `#{instance.registration.name} with id #{instance.id} changed status from #{lastStatus} to #{event.statusInfo.status}`
 |===
 
 
