@@ -445,7 +445,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <span id="author" class="author">Johannes Edmeier</span><br>
 <span id="email" class="email"><a href="https://twitter.com/joshiste">@joshiste</a></span><br>
 <span id="revnumber">version 2.4.2-SNAPSHOT,</span>
-<span id="revdate">21.05.2021</span>
+<span id="revdate">11.06.2021</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -2107,9 +2107,44 @@ account and configure it appropriately.</p>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.ms-teams.*</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">There are several options to customize the message title and color</p></td>
-<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.ms-teams.deRegisteredTitle</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Title of the Teams message when an app de-registers.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">De-Registered</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.ms-teams.registeredTitle</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Title of the Teams message when an app dregisters.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Registered</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.ms-teams.statusChangedTitle</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Title of the Teams message when an app changes status.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Status Changed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.ms-teams.messageSummary</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Summary section of every Teams message originating from Spring Boot Admin.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Spring Boot Admin Notification</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.ms-teams.theme_color</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Set the theme color. SpEL-expressions are supported.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>#{event.type == 'STATUS_CHANGED' ? (event.statusInfo.status=='UP' ? '6db33f' : 'b32d36') : '439fe0'}</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.ms-teams.deregister_activity_subtitle</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subtitle of the Activity section of the Teams message when an app de-registers. SpEL-expressions are supported.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>#{instance.registration.name} with id #{instance.id} has de-registered from Spring Boot Admin</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.ms-teams.register_activity_subtitle</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subtitle of the Activity section of the Teams message when an app registers. SpEL-expressions are supported.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>#{instance.registration.name} with id #{instance.id} has registered with Spring Boot Admin</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.ms-teams.status_activity_subtitle</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subtitle of the Activity section of the Teams message when an app changes status. SpEL-expressions are supported.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>#{instance.registration.name} with id #{instance.id} changed status from #{lastStatus} to #{event.statusInfo.status}</code></p></td>
 </tr>
 </tbody>
 </table>
