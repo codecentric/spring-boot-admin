@@ -16,20 +16,17 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import javax.annotation.Nullable;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 
 import lombok.Builder;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.publisher.Mono;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
@@ -39,13 +36,12 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
+import reactor.core.publisher.Mono;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
-import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import javax.annotation.Nullable;
+
+import java.net.URI;
+import java.util.*;
 
 import static java.util.Collections.singletonList;
 
@@ -131,11 +127,11 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 		this.restTemplate = restTemplate;
 		this.themeColor = parser.parseExpression(DEFAULT_THEME_COLOR_EXPRESSION, ParserContext.TEMPLATE_EXPRESSION);
 		this.deregisterActivitySubtitle = parser.parseExpression(DEFAULT_DEREGISTER_ACTIVITY_SUBTITLE_EXPRESSION,
-				ParserContext.TEMPLATE_EXPRESSION);
+			ParserContext.TEMPLATE_EXPRESSION);
 		this.registerActivitySubtitle = parser.parseExpression(DEFAULT_REGISTER_ACTIVITY_SUBTITLE_EXPRESSION,
-				ParserContext.TEMPLATE_EXPRESSION);
+			ParserContext.TEMPLATE_EXPRESSION);
 		this.statusActivitySubtitle = parser.parseExpression(DEFAULT_STATUS_ACTIVITY_SUBTITLE_EXPRESSION,
-				ParserContext.TEMPLATE_EXPRESSION);
+			ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 	@Override
@@ -163,13 +159,13 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 		}
 
 		return Mono.fromRunnable(() -> this.restTemplate.postForEntity(webhookUrl,
-				new HttpEntity<Object>(message, headers), Void.class));
+			new HttpEntity<Object>(message, headers), Void.class));
 	}
 
 	@Override
 	protected boolean shouldNotify(InstanceEvent event, Instance instance) {
 		return event instanceof InstanceRegisteredEvent || event instanceof InstanceDeregisteredEvent
-				|| super.shouldNotify(event, instance);
+			|| super.shouldNotify(event, instance);
 	}
 
 	protected Message getDeregisteredMessage(Instance instance, StandardEvaluationContext context) {
@@ -182,13 +178,14 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 		return createMessage(instance, registeredTitle, activitySubtitle, context);
 	}
 
-	protected Message getStatusChangedMessage(Instance instance, StandardEvaluationContext context) {
+	protected Message getStatusChangedMessage(Instance instance,
+											  StandardEvaluationContext context) {
 		String activitySubtitle = evaluateExpression(context, statusActivitySubtitle);
 		return createMessage(instance, statusChangedTitle, activitySubtitle, context);
 	}
 
-	protected Message createMessage(Instance instance, String registeredTitle, String activitySubtitle,
-			StandardEvaluationContext context) {
+	protected Message createMessage(Instance instance, String registeredTitle,
+									String activitySubtitle, StandardEvaluationContext context) {
 		List<Fact> facts = new ArrayList<>();
 		facts.add(new Fact(STATUS_KEY, instance.getStatusInfo().getStatus()));
 		facts.add(new Fact(SERVICE_URL_KEY, instance.getRegistration().getServiceUrl()));
@@ -197,17 +194,18 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 		facts.add(new Fact(SOURCE_KEY, instance.getRegistration().getSource()));
 
 		Section section = Section.builder().activityTitle(instance.getRegistration().getName())
-				.activitySubtitle(activitySubtitle).facts(facts).build();
+			.activitySubtitle(activitySubtitle).facts(facts).build();
 
 		return Message.builder().title(registeredTitle).summary(messageSummary)
-				.themeColor(evaluateExpression(context, themeColor)).sections(singletonList(section)).build();
+			.themeColor(evaluateExpression(context, themeColor)).sections(singletonList(section)).build();
 	}
 
 	protected String evaluateExpression(StandardEvaluationContext context, Expression expression) {
 		return Objects.requireNonNull(expression.getValue(context, String.class));
 	}
 
-	protected StandardEvaluationContext createEvaluationContext(InstanceEvent event, Instance instance) {
+	protected StandardEvaluationContext createEvaluationContext(InstanceEvent event,
+																Instance instance) {
 		Map<String, Object> root = new HashMap<>();
 		root.put("event", event);
 		root.put("instance", instance);
@@ -240,7 +238,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 
 	public void setDeregisterActivitySubtitle(String deregisterActivitySubtitle) {
 		this.deregisterActivitySubtitle = parser.parseExpression(deregisterActivitySubtitle,
-				ParserContext.TEMPLATE_EXPRESSION);
+			ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 	public String getRegisterActivitySubtitle() {
@@ -249,7 +247,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 
 	public void setRegisterActivitySubtitle(String registerActivitySubtitle) {
 		this.registerActivitySubtitle = parser.parseExpression(registerActivitySubtitle,
-				ParserContext.TEMPLATE_EXPRESSION);
+			ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 	public String getStatusActivitySubtitle() {
