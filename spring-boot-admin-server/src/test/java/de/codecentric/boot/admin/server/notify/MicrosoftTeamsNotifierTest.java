@@ -16,11 +16,16 @@
 
 package de.codecentric.boot.admin.server.notify;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import java.net.URI;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
@@ -32,21 +37,18 @@ import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.notify.MicrosoftTeamsNotifier.Message;
 
-import java.net.URI;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.MediaType;
-import org.springframework.web.client.RestTemplate;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class MicrosoftTeamsNotifierTest {
 
 	private static final String BLUE = "439fe0";
+
 	private static final String RED = "b32d36";
+
 	private static final String GREEN = "6db33f";
 
 	private static final String appName = "Test App";
@@ -70,8 +72,7 @@ class MicrosoftTeamsNotifierTest {
 	@BeforeEach
 	void setUp() {
 		instance = Instance.create(InstanceId.of(appId)).register(
-			Registration.create(appName, healthUrl).managementUrl(managementUrl)
-				.serviceUrl(serviceUrl).build());
+				Registration.create(appName, healthUrl).managementUrl(managementUrl).serviceUrl(serviceUrl).build());
 
 		repository = mock(InstanceRepository.class);
 		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
@@ -89,58 +90,46 @@ class MicrosoftTeamsNotifierTest {
 		StepVerifier.create(notifier.doNotify(event, instance)).verifyComplete();
 
 		ArgumentCaptor<HttpEntity<Message>> entity = ArgumentCaptor.forClass(HttpEntity.class);
-		verify(mockRestTemplate)
-			.postForEntity(eq(URI.create("http://example.com")), entity.capture(), eq(Void.class));
+		verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")), entity.capture(), eq(Void.class));
 
-		assertThat(entity.getValue().getHeaders().getContentType())
-			.isEqualTo(MediaType.APPLICATION_JSON);
-		assertMessage(entity.getValue().getBody(), notifier.getDeRegisteredTitle(),
-			notifier.getMessageSummary(),
-			"Test App with id TestAppId has de-registered from Spring Boot Admin", BLUE);
+		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+		assertMessage(entity.getValue().getBody(), notifier.getDeRegisteredTitle(), notifier.getMessageSummary(),
+				"Test App with id TestAppId has de-registered from Spring Boot Admin", BLUE);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	void test_onApplicationRegisteredEvent_resolve() {
-		InstanceRegisteredEvent event = new InstanceRegisteredEvent(instance.getId(), 1L,
-			instance.getRegistration());
+		InstanceRegisteredEvent event = new InstanceRegisteredEvent(instance.getId(), 1L, instance.getRegistration());
 
 		StepVerifier.create(notifier.doNotify(event, instance)).verifyComplete();
 
 		ArgumentCaptor<HttpEntity<Message>> entity = ArgumentCaptor.forClass(HttpEntity.class);
-		verify(mockRestTemplate)
-			.postForEntity(eq(URI.create("http://example.com")), entity.capture(), eq(Void.class));
+		verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")), entity.capture(), eq(Void.class));
 
-		assertThat(entity.getValue().getHeaders().getContentType())
-			.isEqualTo(MediaType.APPLICATION_JSON);
-		assertMessage(entity.getValue().getBody(), notifier.getRegisteredTitle(),
-			notifier.getMessageSummary(),
-			"Test App with id TestAppId has registered with Spring Boot Admin", BLUE);
+		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+		assertMessage(entity.getValue().getBody(), notifier.getRegisteredTitle(), notifier.getMessageSummary(),
+				"Test App with id TestAppId has registered with Spring Boot Admin", BLUE);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	void test_onApplicationStatusChangedEvent_resolve() {
-		InstanceStatusChangedEvent event = new InstanceStatusChangedEvent(instance.getId(), 1L,
-			StatusInfo.ofUp());
+		InstanceStatusChangedEvent event = new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofUp());
 
 		StepVerifier.create(notifier.doNotify(event, instance)).verifyComplete();
 
 		ArgumentCaptor<HttpEntity<Message>> entity = ArgumentCaptor.forClass(HttpEntity.class);
-		verify(mockRestTemplate)
-			.postForEntity(eq(URI.create("http://example.com")), entity.capture(), eq(Void.class));
+		verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")), entity.capture(), eq(Void.class));
 
-		assertThat(entity.getValue().getHeaders().getContentType())
-			.isEqualTo(MediaType.APPLICATION_JSON);
-		assertMessage(entity.getValue().getBody(), notifier.getStatusChangedTitle(),
-			notifier.getMessageSummary(),
-			"Test App with id TestAppId changed status from UNKNOWN to UP", GREEN);
+		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+		assertMessage(entity.getValue().getBody(), notifier.getStatusChangedTitle(), notifier.getMessageSummary(),
+				"Test App with id TestAppId changed status from UNKNOWN to UP", GREEN);
 	}
 
 	@Test
 	void test_shouldNotifyWithRegisteredEventReturns_true() {
-		InstanceRegisteredEvent event = new InstanceRegisteredEvent(instance.getId(), 1L,
-			instance.getRegistration());
+		InstanceRegisteredEvent event = new InstanceRegisteredEvent(instance.getId(), 1L, instance.getRegistration());
 		assertThat(notifier.shouldNotify(event, instance)).isTrue();
 	}
 
@@ -152,84 +141,84 @@ class MicrosoftTeamsNotifierTest {
 
 	@Test
 	void test_getDeregisteredMessageForAppReturns_correctContent() {
-		Message message = notifier.getDeregisteredMessage(instance, notifier
-			.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L),
-				instance));
+		Message message = notifier.getDeregisteredMessage(instance,
+				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertMessage(message, notifier.getDeRegisteredTitle(), notifier.getMessageSummary(),
-			"Test App with id TestAppId has de-registered from Spring Boot Admin", BLUE);
+				"Test App with id TestAppId has de-registered from Spring Boot Admin", BLUE);
 	}
 
 	@Test
 	void test_getRegisteredMessageForAppReturns_correctContent() {
-		Message message = notifier.getRegisteredMessage(instance, notifier
-			.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L),
-				instance));
+		Message message = notifier.getRegisteredMessage(instance,
+				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertMessage(message, notifier.getRegisteredTitle(), notifier.getMessageSummary(),
-			"Test App with id TestAppId has registered with Spring Boot Admin", BLUE);
+				"Test App with id TestAppId has registered with Spring Boot Admin", BLUE);
 	}
 
 	@Test
 	void test_getStatusChangedMessageForAppReturns_correctContent() {
-		Message message = notifier.getStatusChangedMessage(instance,
-			notifier.createEvaluationContext(
-				new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofDown()),
-				instance));
+		Message message = notifier.getStatusChangedMessage(instance, notifier.createEvaluationContext(
+				new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofDown()), instance));
 
 		assertMessage(message, notifier.getStatusChangedTitle(), notifier.getMessageSummary(),
-			"Test App with id TestAppId changed status from UNKNOWN to DOWN", RED);
+				"Test App with id TestAppId changed status from UNKNOWN to DOWN", RED);
+	}
+
+	@Test
+	void test_getStatusChangedMessageForAppReturns_UP_to_DOWN() {
+		notifier.updateLastStatus(new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofUp()));
+
+		Message message = notifier.getStatusChangedMessage(instance, notifier.createEvaluationContext(
+				new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofDown()), instance));
+
+		assertMessage(message, notifier.getStatusChangedTitle(), notifier.getMessageSummary(),
+				"Test App with id TestAppId changed status from UP to DOWN", RED);
 	}
 
 	@Test
 	void test_getStatusChangedMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
 		notifier.setStatusActivitySubtitle("STATUS_ACTIVITY_PATTERN_#{instance.registration.name}");
 		Message message = notifier.getStatusChangedMessage(instance,
-			notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L),
-				instance));
+				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
-		assertThat(message.getSections().get(0).getActivitySubtitle())
-			.isEqualTo("STATUS_ACTIVITY_PATTERN_" + appName);
+		assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo("STATUS_ACTIVITY_PATTERN_" + appName);
 	}
 
 	@Test
 	void test_getRegisterMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
-		notifier
-			.setRegisterActivitySubtitle("REGISTER_ACTIVITY_PATTERN_#{instance.registration.name}");
-		Message message = notifier.getRegisteredMessage(instance, notifier
-			.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L),
-				instance));
+		notifier.setRegisterActivitySubtitle("REGISTER_ACTIVITY_PATTERN_#{instance.registration.name}");
+		Message message = notifier.getRegisteredMessage(instance,
+				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertThat(message.getSections().get(0).getActivitySubtitle())
-			.isEqualTo("REGISTER_ACTIVITY_PATTERN_" + appName);
+				.isEqualTo("REGISTER_ACTIVITY_PATTERN_" + appName);
 	}
 
 	@Test
 	void test_getDeRegisterMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
-		notifier.setDeregisterActivitySubtitle(
-			"DEREGISTER_ACTIVITY_PATTERN_#{instance.registration.name}");
-		Message message = notifier.getDeregisteredMessage(instance, notifier
-			.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L),
-				instance));
+		notifier.setDeregisterActivitySubtitle("DEREGISTER_ACTIVITY_PATTERN_#{instance.registration.name}");
+		Message message = notifier.getDeregisteredMessage(instance,
+				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertThat(message.getSections().get(0).getActivitySubtitle())
-			.isEqualTo("DEREGISTER_ACTIVITY_PATTERN_" + appName);
+				.isEqualTo("DEREGISTER_ACTIVITY_PATTERN_" + appName);
 	}
 
 	@Test
 	void test_getStatusChangedMessage_parsesThemeColorFromSpelExpression() {
 		notifier.setThemeColor(
-			"#{event.type == 'STATUS_CHANGED' ? (event.statusInfo.status=='UP' ? 'green' : 'red') : 'blue'}");
+				"#{event.type == 'STATUS_CHANGED' ? (event.statusInfo.status=='UP' ? 'green' : 'red') : 'blue'}");
 
-		Message message = notifier.getStatusChangedMessage(instance,
-			notifier.createEvaluationContext(
+		Message message = notifier.getStatusChangedMessage(instance, notifier.createEvaluationContext(
 				new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofUp()), instance));
 
 		assertThat(message.getThemeColor()).isEqualTo("green");
 	}
 
-	private void assertMessage(Message message, String expectedTitle, String expectedSummary,
-		String expectedSubTitle, String expectedColor) {
+	private void assertMessage(Message message, String expectedTitle, String expectedSummary, String expectedSubTitle,
+			String expectedColor) {
 		assertThat(message.getTitle()).isEqualTo(expectedTitle);
 		assertThat(message.getSummary()).isEqualTo(expectedSummary);
 		assertThat(message.getThemeColor()).isEqualTo(expectedColor);
