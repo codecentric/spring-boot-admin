@@ -21,11 +21,11 @@ import java.net.URI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
@@ -66,7 +66,7 @@ public class MicrosoftTeamsNotifierTest {
 	@BeforeEach
 	public void setUp() {
 		instance = Instance.create(InstanceId.of(appId)).register(
-				Registration.create(appName, healthUrl).managementUrl(managementUrl).serviceUrl(serviceUrl).build());
+			Registration.create(appName, healthUrl).managementUrl(managementUrl).serviceUrl(serviceUrl).build());
 
 		repository = mock(InstanceRepository.class);
 		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
@@ -88,8 +88,8 @@ public class MicrosoftTeamsNotifierTest {
 
 		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
 		assertMessage(entity.getValue().getBody(), notifier.getDeRegisteredTitle(), notifier.getMessageSummary(),
-				String.format(notifier.getDeregisterActivitySubtitlePattern(), instance.getRegistration().getName(),
-						instance.getId()));
+			String.format(notifier.getDeregisterActivitySubtitlePattern(), instance.getRegistration().getName(),
+				instance.getId()));
 	}
 
 	@Test
@@ -104,8 +104,8 @@ public class MicrosoftTeamsNotifierTest {
 
 		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
 		assertMessage(entity.getValue().getBody(), notifier.getRegisteredTitle(), notifier.getMessageSummary(),
-				String.format(notifier.getRegisterActivitySubtitlePattern(), instance.getRegistration().getName(),
-						instance.getId()));
+			String.format(notifier.getRegisterActivitySubtitlePattern(), instance.getRegistration().getName(),
+				instance.getId()));
 	}
 
 	@Test
@@ -120,8 +120,8 @@ public class MicrosoftTeamsNotifierTest {
 
 		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
 		assertMessage(entity.getValue().getBody(), notifier.getStatusChangedTitle(), notifier.getMessageSummary(),
-				String.format(notifier.getStatusActivitySubtitlePattern(), instance.getRegistration().getName(),
-						instance.getId(), StatusInfo.ofUnknown().getStatus(), StatusInfo.ofUp().getStatus()));
+			String.format(notifier.getStatusActivitySubtitlePattern(), instance.getRegistration().getName(),
+				instance.getId(), StatusInfo.ofUnknown().getStatus(), StatusInfo.ofUp().getStatus()));
 	}
 
 	@Test
@@ -138,35 +138,35 @@ public class MicrosoftTeamsNotifierTest {
 
 	@Test
 	public void test_getDeregisteredMessageForAppReturns_correctContent() {
-		Message message = notifier.getDeregisteredMessage(instance);
+		Message message = notifier.getDeregisteredMessage(instance, notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertMessage(message, notifier.getDeRegisteredTitle(), notifier.getMessageSummary(),
-				String.format(notifier.getDeregisterActivitySubtitlePattern(), instance.getRegistration().getName(),
-						instance.getId()));
+			String.format(notifier.getDeregisterActivitySubtitlePattern(), instance.getRegistration().getName(),
+				instance.getId()));
 	}
 
 	@Test
 	public void test_getRegisteredMessageForAppReturns_correctContent() {
-		Message message = notifier.getRegisteredMessage(instance);
+		Message message = notifier.getRegisteredMessage(instance, notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertMessage(message, notifier.getRegisteredTitle(), notifier.getMessageSummary(), String.format(
-				notifier.getRegisterActivitySubtitlePattern(), instance.getRegistration().getName(), instance.getId()));
+			notifier.getRegisterActivitySubtitlePattern(), instance.getRegistration().getName(), instance.getId()));
 	}
 
 	@Test
 	public void test_getStatusChangedMessageForAppReturns_correctContent() {
-		Message message = notifier.getStatusChangedMessage(instance, "UP", "DOWN");
+		Message message = notifier.getStatusChangedMessage(instance, "UP", "DOWN", notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertMessage(message, notifier.getStatusChangedTitle(), notifier.getMessageSummary(),
-				String.format(notifier.getStatusActivitySubtitlePattern(), instance.getRegistration().getName(),
-						instance.getId(), StatusInfo.ofUp().getStatus(), StatusInfo.ofDown().getStatus()));
+			String.format(notifier.getStatusActivitySubtitlePattern(), instance.getRegistration().getName(),
+				instance.getId(), StatusInfo.ofUp().getStatus(), StatusInfo.ofDown().getStatus()));
 	}
 
 	@Test
 	public void test_getStatusChangedMessageWithMissingFormatArgumentReturns_activitySubtitlePattern() {
 		String pattern = "STATUS_%s_ACTIVITY%s_PATTERN%s%s%s%s";
 		notifier.setStatusActivitySubtitlePattern(pattern);
-		Message message = notifier.getStatusChangedMessage(instance, "UP", "DOWN");
+		Message message = notifier.getStatusChangedMessage(instance, "UP", "DOWN", notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo(pattern);
 	}
@@ -174,7 +174,7 @@ public class MicrosoftTeamsNotifierTest {
 	@Test
 	public void test_getStatusChangedMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
 		notifier.setStatusActivitySubtitlePattern("STATUS_ACTIVITY_PATTERN_%s");
-		Message message = notifier.getStatusChangedMessage(instance, "UP", "DOWN");
+		Message message = notifier.getStatusChangedMessage(instance, "UP", "DOWN", notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo("STATUS_ACTIVITY_PATTERN_" + appName);
 	}
@@ -183,7 +183,7 @@ public class MicrosoftTeamsNotifierTest {
 	public void test_getRegisterMessageWithMissingFormatArgumentReturns_activitySubtitlePattern() {
 		String pattern = "REGISTER_%s_ACTIVITY%s_PATTERN%s%s%s%s";
 		notifier.setRegisterActivitySubtitlePattern(pattern);
-		Message message = notifier.getRegisteredMessage(instance);
+		Message message = notifier.getRegisteredMessage(instance, notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo(pattern);
 	}
@@ -191,17 +191,17 @@ public class MicrosoftTeamsNotifierTest {
 	@Test
 	public void test_getRegisterMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
 		notifier.setRegisterActivitySubtitlePattern("REGISTER_ACTIVITY_PATTERN_%s");
-		Message message = notifier.getRegisteredMessage(instance);
+		Message message = notifier.getRegisteredMessage(instance, notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertThat(message.getSections().get(0).getActivitySubtitle())
-				.isEqualTo("REGISTER_ACTIVITY_PATTERN_" + appName);
+			.isEqualTo("REGISTER_ACTIVITY_PATTERN_" + appName);
 	}
 
 	@Test
 	public void test_getDeRegisterMessageWithMissingFormatArgumentReturns_activitySubtitlePattern() {
 		String pattern = "DEREGISTER_%s_ACTIVITY%s_PATTERN%s%s%s%s";
 		notifier.setDeregisterActivitySubtitlePattern(pattern);
-		Message message = notifier.getDeregisteredMessage(instance);
+		Message message = notifier.getDeregisteredMessage(instance, notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo(pattern);
 	}
@@ -209,10 +209,19 @@ public class MicrosoftTeamsNotifierTest {
 	@Test
 	public void test_getDeRegisterMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
 		notifier.setDeregisterActivitySubtitlePattern("DEREGISTER_ACTIVITY_PATTERN_%s");
-		Message message = notifier.getDeregisteredMessage(instance);
+		Message message = notifier.getDeregisteredMessage(instance, notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertThat(message.getSections().get(0).getActivitySubtitle())
-				.isEqualTo("DEREGISTER_ACTIVITY_PATTERN_" + appName);
+			.isEqualTo("DEREGISTER_ACTIVITY_PATTERN_" + appName);
+	}
+
+	@Test
+	public void test_getStatusChangedMessage_parsesThemeColorFromSpelExpression() {
+		notifier.setThemeColor("#{event.statusInfo.status=='UP'?'green':'red'}");
+
+		Message message = notifier.getStatusChangedMessage(instance, "DOWN", "UP", notifier.createEvaluationContext(new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofUp()), instance));
+
+		assertThat(message.getThemeColor()).isEqualTo("green");
 	}
 
 	private void assertMessage(Message message, String expectedTitle, String expectedSummary, String expectedSubTitle) {
