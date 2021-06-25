@@ -66,7 +66,7 @@ class AdminApplicationDiscoveryTest {
 	void setUp() {
 		this.instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
 				.web(WebApplicationType.REACTIVE).run("--server.port=0", "--management.endpoints.web.base-path=/mgmt",
-						"--management.endpoints.web.exposure.include=*", "--endpoints.health.enabled=true",
+						"--management.endpoints.web.exposure.include=info,health", "--endpoints.health.enabled=true",
 						"--info.test=foobar", "--eureka.client.enabled=false",
 						"--spring.cloud.kubernetes.enabled=false", "--spring.cloud.kubernetes.discovery.enabled=false");
 

@@ -68,7 +68,7 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
 		System.setProperty("hazelcast.wait.seconds.before.join", "0");
 		this.instance1 = new SpringApplicationBuilder().sources(TestAdminApplication.class)
 				.web(WebApplicationType.REACTIVE).run("--server.port=0", "--management.endpoints.web.base-path=/mgmt",
-						"--endpoints.health.enabled=true", "--management.endpoints.web.exposure.include=*",
+						"--endpoints.health.enabled=true", "--management.endpoints.web.exposure.include=info,health",
 						"--info.test=foobar", "--spring.jmx.enabled=false");
 
 		this.instance2 = new SpringApplicationBuilder().sources(TestAdminApplication.class)
