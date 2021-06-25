@@ -213,6 +213,11 @@ class Instance {
   }
 
   async fetchStartup() {
+    let optionsResponse = await this.axios.options(uri`actuator/startup`);
+    if (optionsResponse.headers.allow && optionsResponse.headers.allow.includes('GET')) {
+      return this.axios.get(uri`actuator/startup`);
+    }
+
     return this.axios.post(uri`actuator/startup`);
   }
 

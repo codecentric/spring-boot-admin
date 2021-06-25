@@ -43,7 +43,7 @@
 
 <script>
 import TreeItem from '@/views/instances/startup/tree-item';
-import {StartupActuatorEventTree} from '@/services/startup-actuator';
+import {StartupActuatorEventTree} from '@/services/startup-activator-tree';
 
 export default {
   components: {TreeItem},
