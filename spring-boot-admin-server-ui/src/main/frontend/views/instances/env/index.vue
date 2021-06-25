@@ -61,7 +61,7 @@
             <span v-text="name" /><br>
             <small class="is-muted" v-if="value.origin" v-text="value.origin" />
           </td>
-          <td class="is-breakable" v-text="value.value" />
+          <td class="is-breakable" v-text="getValue(name, value.value)" />
         </tr>
       </table>
       <p class="is-muted" v-else v-text="$t('instances.env.no_properties')" />
@@ -102,7 +102,10 @@
       error: null,
       env: null,
       filter: null,
-      hasEnvManagerSupport: false
+      hasEnvManagerSupport: false,
+      propertyNamesToEscape: [
+        'line.separator'
+      ]
     }),
     computed: {
       propertySources() {
@@ -140,6 +143,13 @@
           console.warn('Determine env manager support failed:', error);
           this.hasEnvManagerSupport = false;
         }
+      },
+      getValue(name, value) {
+        if (this.propertyNamesToEscape.includes(name)) {
+          return value.replace(/\n/g, "\\n")
+            .replace(/\r/g, "\\r");
+        }
+        return value;
       }
     },
     install({viewRegistry}) {
