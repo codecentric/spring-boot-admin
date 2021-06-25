@@ -38,7 +38,7 @@ public class AdminReactiveApplicationTest extends AbstractAdminApplicationTest {
 	public void setUp() {
 		this.instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
 				.web(WebApplicationType.REACTIVE)
-				.run("--server.port=0", "--management.endpoints.web.base-path=/mgmt", "--info.test=foobar");
+				.run("--server.port=0", "--management.endpoints.web.base-path=/mgmt", "--management.endpoints.web.exposure.include=*", "--info.test=foobar");
 
 		super.setUp(this.instance.getEnvironment().getProperty("local.server.port", Integer.class, 0));
 	}
