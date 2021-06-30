@@ -15,22 +15,15 @@
   -->
 
 <template>
-  <section class="section" :class="{ 'is-loading' : !hasLoaded }">
+  <section :class="{ 'is-loading' : !hasLoaded }" class="section">
     <template v-if="hasLoaded">
-      <div v-if="error" class="message is-danger">
-        <div class="message-body">
-          <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            <span v-text="$t('instances.mappings.fetch_failed')" />
-          </strong>
-          <p v-text="error.message" />
-        </div>
-      </div>
+      <sba-alert v-if="error" :error="error" :title="$t('instances.mappings.fetch_failed')" />
+
       <div v-if="isOldMetrics" class="message is-warning">
         <div class="message-body" v-text="$t('instances.mappings.mappings_not_supported_spring_boot_1')" />
       </div>
       <template v-for="(context, ctxName) in contexts">
-        <h3 class="title" v-text="ctxName" :key="ctxName" />
+        <h3 :key="ctxName" class="title" v-text="ctxName" />
 
         <dispatcher-mappings v-if="!isEmpty(context.mappings.dispatcherServlets)"
                              :key="`${ctxName}_dispatcherServlets`"
@@ -55,60 +48,60 @@
 </template>
 
 <script>
-  import Instance from '@/services/instance';
-  import DispatcherMappings from '@/views/instances/mappings/DispatcherMappings';
-  import ServletFilterMappings from '@/views/instances/mappings/ServletFilterMappings';
-  import ServletMappings from '@/views/instances/mappings/ServletMappings';
-  import isEmpty from 'lodash/isEmpty';
-  import {VIEW_GROUP} from '../../index';
+import Instance from '@/services/instance';
+import DispatcherMappings from '@/views/instances/mappings/DispatcherMappings';
+import ServletFilterMappings from '@/views/instances/mappings/ServletFilterMappings';
+import ServletMappings from '@/views/instances/mappings/ServletMappings';
+import isEmpty from 'lodash/isEmpty';
+import {VIEW_GROUP} from '../../index';
 
-  export default {
-    components: {DispatcherMappings, ServletMappings, ServletFilterMappings},
-    props: {
-      instance: {
-        type: Instance,
-        required: true
-      }
-    },
-    data: () => ({
-      hasLoaded: false,
-      error: null,
-      contexts: null,
-      isOldMetrics: false
-    }),
-    created() {
-      this.fetchMappings();
-    },
-    computed: {},
-    methods: {
-      isEmpty,
-      async fetchMappings() {
-        this.error = null;
-        try {
-          const res = await this.instance.fetchMappings();
-          if (res.headers['content-type'].includes('application/vnd.spring-boot.actuator.v2')) {
-            this.contexts = res.data.contexts;
-          } else {
-            this.isOldMetrics = true;
-          }
-        } catch (error) {
-          console.warn('Fetching mappings failed:', error);
-          this.error = error;
-        }
-        this.hasLoaded = true;
-      }
-    },
-    install({viewRegistry}) {
-      viewRegistry.addView({
-        name: 'instances/mappings',
-        parent: 'instances',
-        path: 'mappings',
-        label: 'instances.mappings.label',
-        group: VIEW_GROUP.WEB,
-        component: this,
-        order: 450,
-        isEnabled: ({instance}) => instance.hasEndpoint('mappings')
-      });
+export default {
+  components: {DispatcherMappings, ServletMappings, ServletFilterMappings},
+  props: {
+    instance: {
+      type: Instance,
+      required: true
     }
+  },
+  data: () => ({
+    hasLoaded: false,
+    error: null,
+    contexts: null,
+    isOldMetrics: false
+  }),
+  created() {
+    this.fetchMappings();
+  },
+  computed: {},
+  methods: {
+    isEmpty,
+    async fetchMappings() {
+      this.error = null;
+      try {
+        const res = await this.instance.fetchMappings();
+        if (res.headers['content-type'].includes('application/vnd.spring-boot.actuator.v2')) {
+          this.contexts = res.data.contexts;
+        } else {
+          this.isOldMetrics = true;
+        }
+      } catch (error) {
+        console.warn('Fetching mappings failed:', error);
+        this.error = error;
+      }
+      this.hasLoaded = true;
+    }
+  },
+  install({viewRegistry}) {
+    viewRegistry.addView({
+      name: 'instances/mappings',
+      parent: 'instances',
+      path: 'mappings',
+      label: 'instances.mappings.label',
+      group: VIEW_GROUP.WEB,
+      component: this,
+      order: 450,
+      isEnabled: ({instance}) => instance.hasEndpoint('mappings')
+    });
   }
+}
 </script>
