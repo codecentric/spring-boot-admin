@@ -9,6 +9,10 @@
     "lint:fix": "vue-cli-service lint --fix",
     "watch": "vue-cli-service build --watch"
   },
+  "engines": {
+    "node": "~15",
+    "npm": "~7"
+  },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-brands-svg-icons": "^5.15.1",
