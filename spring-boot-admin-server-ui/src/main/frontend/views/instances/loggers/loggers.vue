@@ -21,34 +21,9 @@
     <div v-sticks-below="['#navigation']" class="loggers__header">
       <div class="field is-horizontal">
         <div class="field-body">
-          <div v-if="instanceCount > 1" class="field is-narrow">
-            <div class="control">
-              <button
-                v-if="scope === 'application'"
-                class="loggers__toggle-scope button is-primary is-active"
-                @click="$emit('changeScope', 'instance')"
-              >
-                <font-awesome-icon icon="cubes" />&nbsp;
-                <span v-text="$t('instances.loggers.application')" />
-              </button>
-              <button
-                v-else
-                class="loggers__toggle-scope button"
-                @click="$emit('changeScope', 'application')"
-              >
-                <font-awesome-icon icon="cube" />&nbsp;&nbsp;
-                <span v-text="$t('instances.loggers.instance')" />
-              </button>
-            </div>
-            <p class="help has-text-centered">
-              <span v-if="scope === 'application'"
-                    v-text="$t('instances.loggers.affects_all_instances', {count: instanceCount})"
-              />
-              <span v-else v-text="$t('instances.loggers.affects_this_instance_only')" />
-            </p>
-          </div>
+          <loggers-btn-scope v-if="instanceCount > 1" :instance-count="instanceCount" :scope="scope" @changeScope="$emit('changeScope', $event)" />
 
-          <div class="field">
+          <div class="field is-vertical">
             <div class="field-body">
               <div class="field has-addons">
                 <p class="control is-expanded has-icons-left">
@@ -84,6 +59,7 @@
         </div>
       </div>
     </div>
+
     <div v-if="failedInstances > 0" class="message is-warning">
       <div class="message-body">
         <font-awesome-icon class="has-text-warning" icon="exclamation-triangle" />
@@ -92,6 +68,7 @@
         />
       </div>
     </div>
+
     <loggers-list
       :levels="loggerConfig.levels"
       :loggers="filteredLoggers"
@@ -105,6 +82,7 @@
 import sticksBelow from '@/directives/sticks-below';
 import {finalize, from, listen} from '@/utils/rxjs';
 import LoggersList from './loggers-list';
+import LoggersBtnScope from '@/views/instances/loggers/loggers-btn-scope';
 
 const isClassName = name => /\.[A-Z]/.test(name);
 
@@ -128,7 +106,7 @@ const addLoggerCreationEntryIfLoggerNotPresent = (nameFilter, loggers) => {
 };
 
 export default {
-  components: {LoggersList},
+  components: {LoggersBtnScope, LoggersList},
   directives: {sticksBelow},
   props: {
     scope: {
