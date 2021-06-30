@@ -24,7 +24,6 @@
       </div>
 
       <template v-if="hasCronData">
-        <h3 class="title" v-text="$t('instances.scheduledtasks.cron.title')" />
         <table class="table is-fullwidth">
           <thead>
             <tr>

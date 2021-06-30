@@ -16,21 +16,8 @@
 
 <template>
   <section class="section" :class="{isLoading: isLoading}">
-    <div
-      v-if="error"
-      class="message is-danger"
-    >
-      <div class="message-body">
-        <strong>
-          <font-awesome-icon
-            class="has-text-danger"
-            icon="exclamation-triangle"
-          />
-          <span v-text="$t('instances.beans.fetch_failed')" />
-        </strong>
-        <p v-text="error.message" />
-      </div>
-    </div>
+    <sba-alert v-if="error" :error="error" :title="$t('instances.beans.fetch_failed')" />
+
     <div class="field">
       <p class="control is-expanded has-icons-left">
         <input
@@ -44,8 +31,9 @@
       </p>
     </div>
     <template v-for="context in filteredContexts">
-      <h3 class="title" v-text="context.name" :key="context.name" />
-      <beans-list :beans="context.beans" :key="`${context.name}-beans`" />
+      <sba-panel :title="context.name" :header-sticks-below="['#navigation']" :key="context.name">
+        <beans-list :beans="context.beans" :key="`${context.name}-beans`" />
+      </sba-panel>
     </template>
   </section>
 </template>
@@ -57,6 +45,7 @@
   import BeansList from '@/views/instances/beans/beans-list';
   import isEmpty from 'lodash/isEmpty';
   import {VIEW_GROUP} from '../../index';
+  import SbaPanel from '@/components/sba-panel';
 
   class Bean {
     constructor(name, bean) {
@@ -87,7 +76,7 @@
   };
 
   export default {
-    components: {BeansList},
+    components: {SbaPanel, BeansList},
     props: {
       instance: {
         type: Instance,
