@@ -52,7 +52,7 @@ import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AdminApplicationDiscoveryTest {
+class AdminApplicationDiscoveryTest {
 
 	private ConfigurableApplicationContext instance;
 
@@ -63,11 +63,12 @@ public class AdminApplicationDiscoveryTest {
 	private int port;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		this.instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
 				.web(WebApplicationType.REACTIVE).run("--server.port=0", "--management.endpoints.web.base-path=/mgmt",
-						"--endpoints.health.enabled=true", "--info.test=foobar", "--eureka.client.enabled=false",
-						"--spring.cloud.kubernetes.enabled=false", "--spring.cloud.kubernetes.discovery.enabled=false");
+						"--management.endpoints.web.exposure.include=info,health", "--info.test=foobar",
+						"--eureka.client.enabled=false", "--spring.cloud.kubernetes.enabled=false",
+						"--spring.cloud.kubernetes.discovery.enabled=false");
 
 		this.simpleDiscovery = this.instance.getBean(SimpleDiscoveryProperties.class);
 
@@ -76,7 +77,7 @@ public class AdminApplicationDiscoveryTest {
 	}
 
 	@Test
-	public void lifecycle() {
+	void lifecycle() {
 		AtomicReference<URI> location = new AtomicReference<>();
 
 		StepVerifier.create(getEventStream().log()).expectSubscription().then(() -> {
@@ -172,7 +173,7 @@ public class AdminApplicationDiscoveryTest {
 	}
 
 	@AfterEach
-	public void shutdown() {
+	void shutdown() {
 		this.instance.close();
 	}
 
