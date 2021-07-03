@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {StartupActuatorEventTree} from '@/services/startup-activator.tree';
+import {StartupActuatorEventTree} from '@/services/startup-activator-tree';
 import {parse, toMilliseconds} from '@/utils/iso8601-duration';
 
 const regex = new RegExp('([^=\\s]*)=\\[([^\\]]*)\\]', 'gi')
