@@ -167,8 +167,9 @@ public class AdminServerNotifierAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConfigurationProperties("spring.boot.admin.notify.mail")
-		public MailNotifier mailNotifier(JavaMailSender mailSender, InstanceRepository repository) {
-			return new MailNotifier(mailSender, repository, mailNotifierTemplateEngine());
+		public MailNotifier mailNotifier(JavaMailSender mailSender, InstanceRepository repository,
+				TemplateEngine mailNotifierTemplateEngine) {
+			return new MailNotifier(mailSender, repository, mailNotifierTemplateEngine);
 		}
 
 		@Bean
