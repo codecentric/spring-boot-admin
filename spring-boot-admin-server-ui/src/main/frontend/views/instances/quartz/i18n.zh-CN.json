@@ -1,0 +1,9 @@
+{
+  "instances" : {
+    "quartz": {
+      "label": "Quartz",
+      "no_data": "没有可用的石英信息",
+      "fetch_failed": "石英信息加载失败。"
+    }
+  }
+}

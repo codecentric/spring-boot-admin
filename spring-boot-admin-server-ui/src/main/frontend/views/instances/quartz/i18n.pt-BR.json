@@ -1,0 +1,9 @@
+{
+  "instances" : {
+    "quartz": {
+      "label": "Quartz",
+      "no_data": "Nenhuma informação de Quartz disponível",
+      "fetch_failed": "O carregamento das informações de quartzo falhou."
+    }
+  }
+}
