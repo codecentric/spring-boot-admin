@@ -28,10 +28,14 @@ import org.springframework.util.Assert;
 import de.codecentric.boot.admin.server.domain.values.BuildVersion;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 
+import static de.codecentric.boot.admin.server.domain.constant.Constant.DEFAULT_GROUP_NAME;
+
 @lombok.Data
 public final class Application {
 
 	private final String name;
+
+	private final String groupName;
 
 	@Nullable
 	private final BuildVersion buildVersion;
@@ -44,8 +48,9 @@ public final class Application {
 
 	@lombok.Builder(builderClassName = "Builder", toBuilder = true)
 	private Application(String name, @Nullable BuildVersion buildVersion, @Nullable String status,
-			@Nullable Instant statusTimestamp, List<Instance> instances) {
+			@Nullable Instant statusTimestamp, List<Instance> instances, @Nullable String groupName) {
 		Assert.notNull(name, "'name' must not be null");
+		Assert.notNull(instances, "'instances' must not be null");
 		this.name = name;
 		this.buildVersion = buildVersion;
 		this.status = (status != null) ? status : StatusInfo.STATUS_UNKNOWN;
@@ -57,6 +62,25 @@ public final class Application {
 			this.instances = new ArrayList<>(instances);
 
 		}
+		this.groupName = (groupName != null) ? groupName : DEFAULT_GROUP_NAME;
+	}
+
+	private Application(String name, @Nullable BuildVersion buildVersion, @Nullable String status,
+			@Nullable Instant statusTimestamp, List<Instance> instances) {
+		Assert.notNull(name, "'name' must not be null");
+		Assert.notNull(instances, "'instances' must not be null");
+		this.name = name;
+		this.buildVersion = buildVersion;
+		this.status = (status != null) ? status : StatusInfo.STATUS_UNKNOWN;
+		this.statusTimestamp = (statusTimestamp != null) ? statusTimestamp : Instant.now();
+		if (instances.isEmpty()) {
+			this.instances = Collections.emptyList();
+		}
+		else {
+			this.instances = new ArrayList<>(instances);
+
+		}
+		this.groupName = DEFAULT_GROUP_NAME;
 	}
 
 	public static Application.Builder create(String name) {

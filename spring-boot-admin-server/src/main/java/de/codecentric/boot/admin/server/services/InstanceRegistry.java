@@ -20,6 +20,7 @@ import org.springframework.util.Assert;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import de.codecentric.boot.admin.server.config.AdminServerInstanceFilter;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
@@ -36,9 +37,13 @@ public class InstanceRegistry {
 
 	private final InstanceIdGenerator generator;
 
-	public InstanceRegistry(InstanceRepository repository, InstanceIdGenerator generator) {
+	private final AdminServerInstanceFilter adminServerInstanceFilter;
+
+	public InstanceRegistry(InstanceRepository repository, InstanceIdGenerator generator,
+			AdminServerInstanceFilter adminServerInstanceFilter) {
 		this.repository = repository;
 		this.generator = generator;
+		this.adminServerInstanceFilter = adminServerInstanceFilter;
 	}
 
 	/**
@@ -63,7 +68,7 @@ public class InstanceRegistry {
 	 * @return list of all instances.
 	 */
 	public Flux<Instance> getInstances() {
-		return repository.findAll();
+		return repository.findAll().filter(adminServerInstanceFilter::filterInstance);
 	}
 
 	/**
@@ -72,7 +77,7 @@ public class InstanceRegistry {
 	 * @return list of instances for the given application
 	 */
 	public Flux<Instance> getInstances(String name) {
-		return repository.findByName(name);
+		return repository.findByName(name).filter(adminServerInstanceFilter::filterInstance);
 	}
 
 	/**
@@ -81,7 +86,7 @@ public class InstanceRegistry {
 	 * @return a Mono with the Instance.
 	 */
 	public Mono<Instance> getInstance(InstanceId id) {
-		return repository.find(id);
+		return repository.find(id).filter(adminServerInstanceFilter::filterInstance);
 	}
 
 	/**

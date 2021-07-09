@@ -29,6 +29,11 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.event.HeartbeatEvent;
 import org.springframework.cloud.client.discovery.event.InstanceRegisteredEvent;
 import org.springframework.cloud.client.discovery.event.ParentHeartbeatEvent;
+
+import de.codecentric.boot.admin.server.config.AdminServerInstanceFilter;
+
+import de.codecentric.boot.admin.server.config.DefaultAdminServerInstanceFilter;
+
 import reactor.test.StepVerifier;
 
 import de.codecentric.boot.admin.server.domain.entities.EventsourcingInstanceRepository;
@@ -58,11 +63,15 @@ public class InstanceDiscoveryListenerTest {
 
 	private InstanceRegistry registry;
 
+	private AdminServerInstanceFilter adminServerInstanceFilter;
+
 	@BeforeEach
 	public void setup() {
 		this.discovery = mock(DiscoveryClient.class);
+		this.adminServerInstanceFilter = new DefaultAdminServerInstanceFilter();
 		InstanceRepository repository = new EventsourcingInstanceRepository(new InMemoryEventStore());
-		this.registry = spy(new InstanceRegistry(repository, new HashingInstanceUrlIdGenerator()));
+		this.registry = spy(new InstanceRegistry(repository, new HashingInstanceUrlIdGenerator(),
+			adminServerInstanceFilter));
 		this.listener = new InstanceDiscoveryListener(this.discovery, this.registry, repository);
 	}
 

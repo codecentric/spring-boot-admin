@@ -77,6 +77,11 @@ public class InstanceProperties {
 	private String name = "spring-boot-application";
 
 	/**
+	 * Group name to register with.
+	 */
+	private String groupName;
+
+	/**
 	 * Should the registered urls be built with server.address or with hostname.
 	 */
 	private boolean preferIp = false;

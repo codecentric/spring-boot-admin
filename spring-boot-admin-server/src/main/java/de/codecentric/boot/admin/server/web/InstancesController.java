@@ -37,6 +37,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import de.codecentric.boot.admin.server.config.AdminServerInstanceEventFilter;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
@@ -62,9 +63,13 @@ public class InstancesController {
 
 	private final InstanceEventStore eventStore;
 
-	public InstancesController(InstanceRegistry registry, InstanceEventStore eventStore) {
+	private final AdminServerInstanceEventFilter adminServerInstanceEventFilter;
+
+	public InstancesController(InstanceRegistry registry, InstanceEventStore eventStore,
+			AdminServerInstanceEventFilter adminServerInstanceEventFilter) {
 		this.registry = registry;
 		this.eventStore = eventStore;
+		this.adminServerInstanceEventFilter = adminServerInstanceEventFilter;
 	}
 
 	/**
@@ -130,12 +135,13 @@ public class InstancesController {
 
 	@GetMapping(path = "/instances/events", produces = MediaType.APPLICATION_JSON_VALUE)
 	public Flux<InstanceEvent> events() {
-		return eventStore.findAll();
+		return eventStore.findAll().filter(adminServerInstanceEventFilter::filterForEvent);
 	}
 
 	@GetMapping(path = "/instances/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Flux<ServerSentEvent<InstanceEvent>> eventStream() {
-		return Flux.from(eventStore).map((event) -> ServerSentEvent.builder(event).build()).mergeWith(ping());
+		return Flux.from(eventStore).filter(adminServerInstanceEventFilter::filterForEvent)
+				.map((event) -> ServerSentEvent.builder(event).build()).mergeWith(ping());
 	}
 
 	@GetMapping(path = "/instances/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)

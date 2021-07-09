@@ -50,8 +50,9 @@ public class AdminServerWebConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public InstancesController instancesController(InstanceRegistry instanceRegistry, InstanceEventStore eventStore) {
-		return new InstancesController(instanceRegistry, eventStore);
+	public InstancesController instancesController(InstanceRegistry instanceRegistry, InstanceEventStore eventStore,
+			AdminServerInstanceEventFilter adminServerInstanceEventFilter) {
+		return new InstancesController(instanceRegistry, eventStore, adminServerInstanceEventFilter);
 	}
 
 	@Bean
