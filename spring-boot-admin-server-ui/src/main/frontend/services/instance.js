@@ -278,6 +278,31 @@ class Instance {
     });
   }
 
+  async fetchQuartzJobs() {
+    return this.axios.get(uri`actuator/quartz/jobs`, {
+      headers: {'Accept': 'application/json'}
+    });
+  }
+
+  async fetchQuartzJob(group, name) {
+    return this.axios.get(uri`actuator/quartz/jobs/${group}/${name}`, {
+      headers: {'Accept': 'application/json'}
+    });
+  }
+
+  async fetchQuartzTriggers() {
+    return this.axios.get(uri`actuator/quartz/triggers`, {
+      headers: {'Accept': 'application/json'}
+    });
+  }
+
+  async fetchQuartzTrigger(group, name) {
+    return this.axios.get(uri`actuator/quartz/triggers/${group}/${name}`, {
+      headers: {'Accept': 'application/json'}
+    });
+  }
+
+
   static getEventStream() {
     return concat(
       from(waitForPolyfill()).pipe(ignoreElements()),
