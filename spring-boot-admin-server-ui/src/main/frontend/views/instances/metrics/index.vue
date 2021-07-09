@@ -82,6 +82,7 @@
 </template>
 
 <script>
+<<<<<<< Updated upstream
   import Instance from '@/services/instance';
   import sortBy from 'lodash/sortBy';
   import Metric from './metric';
@@ -93,6 +94,41 @@
       instance: {
         type: Instance,
         required: true
+=======
+import Instance from '@/services/instance';
+import sortBy from 'lodash/sortBy';
+import Metric from './metric';
+import {VIEW_GROUP} from '../../index';
+
+export default {
+  components: {Metric},
+  props: {
+    instance: {
+      type: Instance,
+      required: true
+    }
+  },
+  data: () => ({
+    metrics: [],
+    error: null,
+    availableMetrics: [],
+    selectedMetric: null,
+    stateFetchingTags: null,
+    availableTags: null,
+    selectedTags: null,
+    isOldMetrics: false
+  }),
+  created() {
+    this.fetchMetricIndex();
+    this.metrics = this.loadMetrics();
+  },
+  watch: {
+    selectedMetric: 'fetchAvailableTags',
+    metrics: {
+      deep: true,
+      handler(value) {
+        this.persistMetrics(value);
+>>>>>>> Stashed changes
       }
     },
     data: () => ({

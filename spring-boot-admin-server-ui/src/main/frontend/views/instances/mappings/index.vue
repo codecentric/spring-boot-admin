@@ -32,7 +32,7 @@
       <template v-for="(context, ctxName) in contexts">
         <h3 class="title" v-text="ctxName" :key="ctxName" />
 
-        <dispatcher-mappings v-if="!isEmpty(context.mappings.dispatcherServlets)"
+        <dispatcher-mappings v-if="!isEmpty(context)"
                              :key="`${ctxName}_dispatcherServlets`"
                              :dispatchers="context.mappings.dispatcherServlets"
         />
