@@ -40,7 +40,7 @@ Spring Boot Admin provides the following features for registered applications:
 
 ## Getting Started
 
-[A quick guide](http://codecentric.github.io/spring-boot-admin/2.3.1/#getting-started) to get started can be found in our docs.
+[A quick guide](http://codecentric.github.io/spring-boot-admin/2.4.3/#getting-started) to get started can be found in our docs.
 
 There are introductory talks available on YouTube:
 
@@ -69,9 +69,9 @@ Having trouble with codecentric's Spring Boot Admin? We’d like to help!
  * Report bugs at http://github.com/codecentric/spring-boot-admin/issues.
 
 ## Reference Guide
-[Version 2.3.1](http://codecentric.github.io/spring-boot-admin/2.3.1/)
+[Version 2.4.3](http://codecentric.github.io/spring-boot-admin/2.4.3/)
 
-[Version 2.2.4](http://codecentric.github.io/spring-boot-admin/2.2.4/)
+[Version 2.3.1](http://codecentric.github.io/spring-boot-admin/2.3.1/)
 
 [Version 1.5.7](http://codecentric.github.io/spring-boot-admin/1.5.7/)
 
@@ -130,10 +130,10 @@ You can access snapshot builds from the sonatype snapshot repository by adding t
 
 ## Build
 **Requirements:**
-* [Node.js v8.x (LTS)](https://nodejs.org/en/download/)
+
 * JDK >= 1.8
 
-Please make sure you set `$JAVA_HOME` points to the correct JDK and that the `node` and `npm` commands are on your `$PATH`.
+Please make sure you set `$JAVA_HOME` points to the correct JDK.
 
 ```shell
 ./mvnw clean package
