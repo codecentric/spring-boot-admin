@@ -13,10 +13,12 @@
 export const Severity = {
   ERROR: 'ERROR',
   WARN: 'WARN',
+  INFO: 'INFO',
+  SUCCESS: 'SUCCESS',
 };
 
 export default {
-  name: 'SbaError',
+  name: 'SbaAlert',
   props: {
     title: {
       type: String,
@@ -34,12 +36,14 @@ export default {
   data() {
     return {
       alertClass: {
-          'is-danger': this.severity === Severity.ERROR,
-          'is-warning': this.severity === Severity.WARN
+          'is-danger': this.severity.toUpperCase() === Severity.ERROR,
+          'is-warning': this.severity.toUpperCase() === Severity.WARN,
+          'is-info': this.severity.toUpperCase() === Severity.INFO,
+          'is-success': this.severity.toUpperCase() === Severity.SUCCESS,
       },
       iconClass: {
-        'has-text-danger': this.severity === Severity.ERROR,
-        'has-text-warning': this.severity === Severity.WARN
+        'has-text-danger': this.severity.toUpperCase() === Severity.ERROR,
+        'has-text-warning': this.severity.toUpperCase() === Severity.WARN
       }
     }
   },
