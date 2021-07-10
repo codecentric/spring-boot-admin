@@ -17,9 +17,17 @@
 import {redirectOn401} from './axios';
 
 describe('redirectOn401', () => {
-  it('should not redirect on 500', async () => {
-    window.location.assign = jest.fn();
+  beforeEach(() => {
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: {
+        assign: jest.fn(),
+        href: 'http://example.com/'
+      }
+    });
+  })
 
+  it('should not redirect on 500', async () => {
     const error = {
       response: {
         status: 500
@@ -36,7 +44,7 @@ describe('redirectOn401', () => {
   });
 
   it('should redirect on 401', async () => {
-    window.location.assign = jest.fn();
+
 
     const error = {
       response: {
@@ -54,8 +62,6 @@ describe('redirectOn401', () => {
   });
 
   it('should not redirect on 401 for predicate yields false', async () => {
-    window.location.assign = jest.fn();
-
     const error = {
       response: {
         status: 401

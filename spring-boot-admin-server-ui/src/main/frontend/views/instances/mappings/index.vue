@@ -32,21 +32,23 @@
       <template v-for="(context, ctxName) in contexts">
         <h3 class="title" v-text="ctxName" :key="ctxName" />
 
-        <dispatcher-mappings v-if="!isEmpty(context.mappings.dispatcherServlets)"
+        <dispatcher-mappings v-if="hasDispatcherServlets(context)"
                              :key="`${ctxName}_dispatcherServlets`"
                              :dispatchers="context.mappings.dispatcherServlets"
         />
 
-        <dispatcher-mappings v-if="!isEmpty(context.mappings.dispatcherHandlers)"
+        <dispatcher-mappings v-if="hasDispatcherHandlers(context)"
                              :key="`${ctxName}_dispatcherHandlers`"
                              :dispatchers="context.mappings.dispatcherHandlers"
         />
 
-        <servlet-mappings :key="`${ctxName}_servlets`"
+        <servlet-mappings v-if="hasServlet(context)"
+                          :key="`${ctxName}_servlets`"
                           :servlets="context.mappings.servlets"
         />
 
-        <servlet-filter-mappings :key="`${ctxName}_servletFilters`"
+        <servlet-filter-mappings v-if="hasServletFilters(context)"
+                                 :key="`${ctxName}_servletFilters`"
                                  :servlet-filters="context.mappings.servletFilters"
         />
       </template>
@@ -55,53 +57,62 @@
 </template>
 
 <script>
-  import Instance from '@/services/instance';
-  import DispatcherMappings from '@/views/instances/mappings/DispatcherMappings';
-  import ServletFilterMappings from '@/views/instances/mappings/ServletFilterMappings';
-  import ServletMappings from '@/views/instances/mappings/ServletMappings';
-  import isEmpty from 'lodash/isEmpty';
-  import {VIEW_GROUP} from '../../index';
+import Instance from '@/services/instance';
+import DispatcherMappings from '@/views/instances/mappings/DispatcherMappings';
+import ServletFilterMappings from '@/views/instances/mappings/ServletFilterMappings';
+import ServletMappings from '@/views/instances/mappings/ServletMappings';
+import {VIEW_GROUP} from '../../index';
 
-  export default {
-    components: {DispatcherMappings, ServletMappings, ServletFilterMappings},
-    props: {
-      instance: {
-        type: Instance,
-        required: true
-      }
+export default {
+  components: {DispatcherMappings, ServletMappings, ServletFilterMappings},
+  props: {
+    instance: {
+      type: Instance,
+      required: true
+    }
+  },
+  data: () => ({
+    hasLoaded: false,
+    error: null,
+    contexts: null,
+    isOldMetrics: false
+  }),
+  created() {
+    this.fetchMappings();
+  },
+  methods: {
+    hasDispatcherServlets(context) {
+      return context?.mappings?.dispatcherServlets !== undefined;
     },
-    data: () => ({
-      hasLoaded: false,
-      error: null,
-      contexts: null,
-      isOldMetrics: false
-    }),
-    created() {
-      this.fetchMappings();
+    hasDispatcherHandlers(context) {
+      return context?.mappings?.dispatcherHandlers !== undefined;
     },
-    computed: {},
-    methods: {
-      isEmpty,
-      async fetchMappings() {
-        this.error = null;
-        try {
-          const res = await this.instance.fetchMappings();
-          if (res.headers['content-type'].includes('application/vnd.spring-boot.actuator.v2')) {
-            this.contexts = res.data.contexts;
-          } else {
-            this.isOldMetrics = true;
-          }
-        } catch (error) {
-          console.warn('Fetching mappings failed:', error);
-          this.error = error;
+    hasServlet(context) {
+      return context?.mappings?.servlets !== undefined;
+    },
+    hasServletFilters(context) {
+      return context?.mappings?.servletFilters !== undefined;
+    },
+    async fetchMappings() {
+      this.error = null;
+      try {
+        const res = await this.instance.fetchMappings();
+        if (res.headers['content-type'].includes('application/vnd.spring-boot.actuator.v2')) {
+          this.contexts = res.data.contexts;
+        } else {
+          this.isOldMetrics = true;
         }
-        this.hasLoaded = true;
+      } catch (error) {
+        console.warn('Fetching mappings failed:', error);
+        this.error = error;
       }
-    },
-    install({viewRegistry}) {
-      viewRegistry.addView({
-        name: 'instances/mappings',
-        parent: 'instances',
+      this.hasLoaded = true;
+    }
+  },
+  install({viewRegistry}) {
+    viewRegistry.addView({
+      name: 'instances/mappings',
+      parent: 'instances',
         path: 'mappings',
         label: 'instances.mappings.label',
         group: VIEW_GROUP.WEB,
