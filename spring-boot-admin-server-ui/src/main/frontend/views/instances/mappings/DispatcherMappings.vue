@@ -108,7 +108,7 @@
     props: {
       dispatchers: {
         type: Object,
-        default: () => []
+        default: () => ({})
       }
     },
     methods: {

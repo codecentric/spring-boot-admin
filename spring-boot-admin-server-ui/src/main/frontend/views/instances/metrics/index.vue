@@ -82,19 +82,6 @@
 </template>
 
 <script>
-<<<<<<< Updated upstream
-  import Instance from '@/services/instance';
-  import sortBy from 'lodash/sortBy';
-  import Metric from './metric';
-  import {VIEW_GROUP} from '../../index';
-
-  export default {
-    components: {Metric},
-    props: {
-      instance: {
-        type: Instance,
-        required: true
-=======
 import Instance from '@/services/instance';
 import sortBy from 'lodash/sortBy';
 import Metric from './metric';
@@ -128,127 +115,104 @@ export default {
       deep: true,
       handler(value) {
         this.persistMetrics(value);
->>>>>>> Stashed changes
+      }
+    }
+  },
+  methods: {
+    handleSubmit() {
+      this.addMetric(this.selectedMetric, this.selectedTags)
+    },
+    handleTypeSelect(metricName, statistic, type) {
+      const metric = this.metrics.find(m => m.name === metricName);
+      if (metric) {
+        metric.types = {...metric.types, [statistic]: type}
       }
     },
-    data: () => ({
-      metrics: [],
-      error: null,
-      availableMetrics: [],
-      selectedMetric: null,
-      stateFetchingTags: null,
-      availableTags: null,
-      selectedTags: null,
-      isOldMetrics: false
-    }),
-    created() {
-      this.fetchMetricIndex();
-      this.metrics = this.loadMetrics();
-    },
-    watch: {
-      selectedMetric: 'fetchAvailableTags',
-      metrics: {
-        deep: true,
-        handler(value) {
-          this.persistMetrics(value);
+    removeMetric(metricName, idxTagSelection) {
+      const idxMetric = this.metrics.findIndex(m => m.name === metricName);
+      if (idxMetric >= 0) {
+        const metric = this.metrics[idxMetric];
+        if (idxTagSelection < metric.tagSelections.length) {
+          metric.tagSelections.splice(idxTagSelection, 1);
+        }
+        if (metric.tagSelections.length === 0) {
+          this.metrics.splice(idxMetric, 1)
         }
       }
     },
-    methods: {
-      handleSubmit() {
-        this.addMetric(this.selectedMetric, this.selectedTags)
-      },
-      handleTypeSelect(metricName, statistic, type) {
+    addMetric(metricName, tagSelection = {}) {
+      if (metricName) {
         const metric = this.metrics.find(m => m.name === metricName);
         if (metric) {
-          metric.types = {...metric.types, [statistic]: type}
-        }
-      },
-      removeMetric(metricName, idxTagSelection) {
-        const idxMetric = this.metrics.findIndex(m => m.name === metricName);
-        if (idxMetric >= 0) {
-          const metric = this.metrics[idxMetric];
-          if (idxTagSelection < metric.tagSelections.length) {
-            metric.tagSelections.splice(idxTagSelection, 1);
-          }
-          if (metric.tagSelections.length === 0) {
-            this.metrics.splice(idxMetric, 1)
-          }
-        }
-      },
-      addMetric(metricName, tagSelection = {}) {
-        if (metricName) {
-          const metric = this.metrics.find(m => m.name === metricName);
-          if (metric) {
-            metric.tagSelections = [...metric.tagSelections, {...tagSelection}]
-          } else {
-            this.metrics = sortBy([...this.metrics, {
-              name: metricName,
-              tagSelections: [{...tagSelection}],
-              types: {}
-            }], [m => m.name]);
-          }
-        }
-      },
-      loadMetrics() {
-        if (window.localStorage) {
-          let persistedMetrics = localStorage.getItem(`applications/${this.instance.registration.name}/metrics`);
-          if (persistedMetrics) {
-            return JSON.parse(persistedMetrics);
-          }
-        }
-        return [];
-      },
-      persistMetrics(value) {
-        if (window.localStorage) {
-          localStorage.setItem(`applications/${this.instance.registration.name}/metrics`, JSON.stringify(value));
-        }
-      },
-      async fetchMetricIndex() {
-        this.error = null;
-        try {
-          const res = await this.instance.fetchMetrics();
-          if (res.headers['content-type'].includes('application/vnd.spring-boot.actuator.v2')) {
-            this.availableMetrics = res.data.names;
-            this.availableMetrics.sort();
-            this.selectedMetric = this.availableMetrics[0];
-          } else {
-            this.isOldMetrics = true;
-          }
-        } catch (error) {
-          console.warn('Fetching metric index failed:', error);
-          this.hasLoaded = true;
-          this.error = error;
-        }
-      },
-      async fetchAvailableTags(metricName) {
-        this.availableTags = null;
-        this.stateFetchingTags = 'executing';
-        try {
-          const response = await this.instance.fetchMetric(metricName);
-          this.availableTags = response.data.availableTags;
-          this.stateFetchingTags = 'completed';
-          this.selectedTags = {};
-          this.availableTags.forEach(t => this.selectedTags[t.tag] = undefined);
-        } catch (error) {
-          console.warn('Fetching metric tags failed:', error);
-          this.stateFetchingTags = 'failed';
+          metric.tagSelections = [...metric.tagSelections, {...tagSelection}]
+        } else {
+          this.metrics = sortBy([...this.metrics, {
+            name: metricName,
+            tagSelections: [{...tagSelection}],
+            types: {}
+          }], [m => m.name]);
         }
       }
     },
-    install({viewRegistry}) {
-      viewRegistry.addView({
-        id: 'metrics',
-        name: 'instances/metrics',
-        parent: 'instances',
-        path: 'metrics',
-        component: this,
-        label: 'instances.metrics.label',
-        group: VIEW_GROUP.INSIGHTS,
-        order: 50,
-        isEnabled: ({instance}) => instance.hasEndpoint('metrics')
-      });
+    loadMetrics() {
+      if (window.localStorage) {
+        let persistedMetrics = localStorage.getItem(`applications/${this.instance.registration.name}/metrics`);
+        if (persistedMetrics) {
+          return JSON.parse(persistedMetrics);
+        }
+      }
+      return [];
+    },
+    persistMetrics(value) {
+      if (window.localStorage) {
+        localStorage.setItem(`applications/${this.instance.registration.name}/metrics`, JSON.stringify(value));
+      }
+    },
+    async fetchMetricIndex() {
+      this.error = null;
+      try {
+        const res = await this.instance.fetchMetrics();
+        if (res.headers['content-type'].includes('application/vnd.spring-boot.actuator.v2')) {
+          this.availableMetrics = res.data.names;
+          this.availableMetrics.sort();
+          this.selectedMetric = this.availableMetrics[0];
+        } else {
+          this.isOldMetrics = true;
+        }
+      } catch (error) {
+        console.warn('Fetching metric index failed:', error);
+        this.hasLoaded = true;
+        this.error = error;
+      }
+    },
+    async fetchAvailableTags(metricName) {
+      this.availableTags = null;
+      this.stateFetchingTags = 'executing';
+      try {
+        const response = await this.instance.fetchMetric(metricName);
+        this.availableTags = response.data.availableTags;
+        this.stateFetchingTags = 'completed';
+        this.selectedTags = {};
+        this.availableTags.forEach(t => this.selectedTags[t.tag] = undefined);
+      } catch (error) {
+        console.warn('Fetching metric tags failed:', error);
+        this.stateFetchingTags = 'failed';
+      }
     }
+  },
+  install({viewRegistry}) {
+    viewRegistry.addView({
+      id: 'metrics',
+      name: 'instances/metrics',
+      parent: 'instances',
+      path: 'metrics',
+      component: this,
+      label: 'instances.metrics.label',
+      group: VIEW_GROUP.INSIGHTS,
+      order: 50,
+      isEnabled: ({instance}) => instance.hasEndpoint('metrics')
+    });
   }
+}
 </script>
 
