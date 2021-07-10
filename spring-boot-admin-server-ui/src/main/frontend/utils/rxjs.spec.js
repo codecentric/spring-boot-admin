@@ -62,6 +62,7 @@ describe('listen', () => {
 
   it('should call callback with failed', done => {
     const cb = jest.fn();
+    console.warn = jest.fn();
     throwError(new Error('test')).pipe(
       listen(cb)
     ).subscribe({

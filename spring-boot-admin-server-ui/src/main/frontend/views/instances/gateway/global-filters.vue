@@ -16,23 +16,15 @@
 
 <template>
   <div :class="{ 'is-loading' : isLoading }">
-    <div v-if="error" class="message is-danger">
-      <div class="message-body">
-        <strong>
-          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-          <span v-text="$t('instances.gateway.filters.fetch_failed')" />
-        </strong>
-        <p v-text="error.message" />
-      </div>
-    </div>
+    <sba-alert v-if="error" :error="error" :title="$t('instances.gateway.filters.fetch_failed')" />
 
     <sba-panel :header-sticks-below="['#navigation']" title="Global Filters">
-      <div class="field" v-if="globalFilters.length > 0">
+      <div v-if="globalFilters.length > 0" class="field">
         <p class="control is-expanded has-icons-left">
           <input
+            v-model="filterCriteria"
             class="input"
             type="search"
-            v-model="filterCriteria"
           >
           <span class="icon is-small is-left">
             <font-awesome-icon icon="filter" />
@@ -51,8 +43,8 @@
           <tr v-for="filter in globalFilters" :key="filter.name">
             <td>
               <span
-                v-text="filter.name"
                 class="is-breakable"
+                v-text="filter.name"
               />
               <span
                 class="is-muted"
@@ -74,62 +66,62 @@
 </template>
 
 <script>
-  import Instance from '@/services/instance';
-  import {compareBy} from '@/utils/collections';
+import Instance from '@/services/instance';
+import {compareBy} from '@/utils/collections';
 
-  const globalFilterHasKeyword = (globalFilter, keyword) => {
-    return globalFilter.name.toString().toLowerCase().includes(keyword);
-  };
+const globalFilterHasKeyword = (globalFilter, keyword) => {
+  return globalFilter.name.toString().toLowerCase().includes(keyword);
+};
 
-  const sortGlobalFilter = globalFilters => {
-    return [...globalFilters].sort(compareBy(f => f.order))
-  };
+const sortGlobalFilter = globalFilters => {
+  return [...globalFilters].sort(compareBy(f => f.order))
+};
 
-  export default {
-    props: {
-      instance: {
-        type: Instance,
-        required: true
+export default {
+  props: {
+    instance: {
+      type: Instance,
+      required: true
+    }
+  },
+  data: () => ({
+    isLoading: false,
+    error: null,
+    _globalFilters: [],
+    filterCriteria: null,
+  }),
+  computed: {
+    globalFilters() {
+      if (!this.filterCriteria) {
+        return sortGlobalFilter(this.$data._globalFilters);
       }
-    },
-    data: () => ({
-      isLoading: false,
-      error: null,
-      _globalFilters: [],
-      filterCriteria: null,
-    }),
-    computed: {
-      globalFilters() {
-        if (!this.filterCriteria) {
-          return sortGlobalFilter(this.$data._globalFilters);
-        }
-        const filtered = this.$data._globalFilters.filter(globalFilter => globalFilterHasKeyword(globalFilter, this.filterCriteria.toLowerCase()));
-        return sortGlobalFilter(filtered);
+      const filtered = this.$data._globalFilters.filter(globalFilter => globalFilterHasKeyword(globalFilter, this.filterCriteria.toLowerCase()));
+      return sortGlobalFilter(filtered);
+    }
+  },
+  created() {
+    this.fetchGlobalFilters();
+  },
+  methods: {
+    async fetchGlobalFilters() {
+      this.error = null;
+      this.isLoading = true;
+      try {
+        const response = await this.instance.fetchGatewayGlobalFilters();
+        this.$data._globalFilters = Object.entries(response.data).map(([name, order]) => {
+          const [className, objectId] = name.split('@');
+          return {
+            name: className,
+            objectId,
+            order
+          }
+        });
+      } catch (error) {
+        console.warn('Fetching global filters failed:', error);
+        this.error = error;
       }
-    },
-    created() {
-      this.fetchGlobalFilters();
-    },
-    methods: {
-      async fetchGlobalFilters() {
-        this.error = null;
-        this.isLoading = true;
-        try {
-          const response = await this.instance.fetchGatewayGlobalFilters();
-          this.$data._globalFilters =  Object.entries(response.data).map (([name, order]) => {
-            const [className, objectId] = name.split('@');
-            return {
-              name: className,
-              objectId,
-              order
-            }
-          });
-        } catch (error) {
-          console.warn('Fetching global filters failed:', error);
-          this.error = error;
-        }
-        this.isLoading = false;
-      }
+      this.isLoading = false;
     }
   }
+}
 </script>

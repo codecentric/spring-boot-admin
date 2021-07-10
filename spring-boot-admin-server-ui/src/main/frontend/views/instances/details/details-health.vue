@@ -18,62 +18,54 @@
   <sba-panel :title="$t('instances.details.health.title')">
     <template v-slot:actions>
       <router-link
-        class="button icon-button"
         :to="{ name: 'journal', query: { 'instanceId' : instance.id } }"
+        class="button icon-button"
       >
         <font-awesome-icon icon="history" />
       </router-link>
     </template>
     <div>
-      <div v-if="error" class="message is-warning">
-        <div class="message-body">
-          <strong>
-            <font-awesome-icon class="has-text-warning" icon="exclamation-triangle" />
-            <span v-text="$t('instances.details.health.fetch_failed')" />
-          </strong>
-          <p v-text="error.message" />
-        </div>
-      </div>
-      <health-details name="Instance" :health="health" />
+      <sba-alert v-if="error" :error="error" :title="$t('instances.details.health.fetch_failed')" severity="WARN" />
+      <health-details :health="health" name="Instance" />
     </div>
   </sba-panel>
 </template>
 
 <script>
-  import Instance from '@/services/instance';
-  import healthDetails from './health-details';
+import Instance from '@/services/instance';
+import healthDetails from './health-details';
 
-  export default {
-    props: {
-      instance: {
-        type: Instance,
-        required: true
-      }
-    },
-    components: {healthDetails},
-    data: () => ({
-      error: null,
-      liveHealth: null,
-    }),
-    created() {
-      this.fetchHealth();
-    },
-    computed: {
-      health() {
-        return this.liveHealth || this.instance.statusInfo;
-      }
-    },
-    methods: {
-      async fetchHealth() {
-        this.error = null;
-        try {
-          const res = await this.instance.fetchHealth();
-          this.liveHealth = res.data;
-        } catch (error) {
-          console.warn('Fetching live health failed:', error);
-          this.error = error;
-        }
+export default {
+  props: {
+    instance: {
+      type: Instance,
+      required: true
+    }
+  },
+  components: {healthDetails},
+  data: () => ({
+    error: null,
+    liveHealth: null,
+  }),
+  created() {
+    this.fetchHealth();
+  },
+  computed: {
+    health() {
+      return this.liveHealth || this.instance.statusInfo;
+    }
+  },
+  methods: {
+    async fetchHealth() {
+      this.error = null;
+      try {
+        const res = await this.instance.fetchHealth();
+        this.liveHealth = res.data;
+      } catch (error) {
+        console.warn('Fetching live health failed:', error);
+        this.error = error;
       }
     }
   }
+}
 </script>
