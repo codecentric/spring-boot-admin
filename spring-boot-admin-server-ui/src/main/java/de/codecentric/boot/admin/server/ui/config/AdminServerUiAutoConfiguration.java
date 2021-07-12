@@ -162,9 +162,11 @@ public class AdminServerUiAutoConfiguration {
 				List<String> routes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream())
 						.map(this.adminServer::path).collect(Collectors.toList());
 				String homepage = this.adminServer.path("/");
-				return new de.codecentric.boot.admin.server.ui.web.reactive.HomepageForwardingFilter(homepage, routes,
-						DEFAULT_UI_ROUTE_EXCLUDES);
-			}
+                List<String> routesExcludes = Stream.concat(DEFAULT_UI_ROUTE_EXCLUDES.stream(), extensionRoutes.stream())
+                        .map(this.adminServer::path).collect(Collectors.toList());
+                return new de.codecentric.boot.admin.server.ui.web.reactive.HomepageForwardingFilter(homepage, routes,
+                        routesExcludes);
+            }
 
 		}
 
@@ -210,9 +212,11 @@ public class AdminServerUiAutoConfiguration {
 				List<String> routes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream())
 						.map(this.adminServer::path).collect(Collectors.toList());
 				String homepage = this.adminServer.path("/");
-				return new de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter(homepage, routes,
-						DEFAULT_UI_ROUTE_EXCLUDES);
-			}
+                List<String> routesExcludes = Stream.concat(DEFAULT_UI_ROUTE_EXCLUDES.stream(), extensionRoutes.stream())
+                        .map(this.adminServer::path).collect(Collectors.toList());
+                return new de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter(homepage, routes,
+                        routesExcludes);
+            }
 
 		}
 
