@@ -15,7 +15,11 @@
       "context_updated": "Aktualisiert",
       "fetch_failed": "Das Laden der Umgebungskonfiguration ist fehlgeschlagen.",
       "no_properties": "Keine Eigenschaften gesetzt",
-      "refresh": "Umgebungskonfiguration neu laden"
+      "refresh": "Umgebungskonfiguration neu laden",
+      "application": "Anwendung",
+      "instance": "Instanz",
+      "affects_all_instances": "Betrifft alle {count} Instanzen",
+      "affects_this_instance_only": "Betrifft nur diese Instanz"
     }
   }
 }

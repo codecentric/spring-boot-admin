@@ -34,7 +34,9 @@
       </div>
     </div>
     <refresh v-if="instance.hasEndpoint('refresh')"
-                     :instance="instance"
+             :instance="instance"
+             :instance-count="application.instances.length"
+             :application="application"
     />
     <sba-env-manager v-if="env && hasEnvManagerSupport"
                      :instance="instance" :property-sources="env.propertySources"
@@ -77,7 +79,8 @@
   import pickBy from 'lodash/pickBy';
   import {VIEW_GROUP} from '../../index';
   import sbaEnvManager from './env-manager';
-  import refresh from "./refresh";
+  import refresh from './refresh';
+  import Application from '@/services/application';
 
   const filterProperty = (needle) => (property, name) => {
     return name.toString().toLowerCase().includes(needle) || (property.value && property.value.toString().toLowerCase().includes(needle));
@@ -97,6 +100,10 @@
     props: {
       instance: {
         type: Instance,
+        required: true
+      },
+      application: {
+        type: Application,
         required: true
       }
     },
@@ -150,8 +157,8 @@
       },
       getValue(name, value) {
         if (this.propertyNamesToEscape.includes(name)) {
-          return value.replace(/\n/g, "\\n")
-            .replace(/\r/g, "\\r");
+          return value.replace(/\n/g, '\\n')
+            .replace(/\r/g, '\\r');
         }
         return value;
       }
