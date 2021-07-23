@@ -15,7 +15,8 @@
       "context_updated": "Обновлено",
       "fetch_failed": "Ошибка получения окружения.",
       "no_properties": "Параметры не установлены",
-      "title": "Менеджер окружения"
+      "title": "Менеджер окружения",
+      "refresh": "Refresh environment"
     }
   }
 }

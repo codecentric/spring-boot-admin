@@ -33,6 +33,9 @@
         </div>
       </div>
     </div>
+    <refresh v-if="instance.hasEndpoint('refresh')"
+                     :instance="instance"
+    />
     <sba-env-manager v-if="env && hasEnvManagerSupport"
                      :instance="instance" :property-sources="env.propertySources"
                      @refresh="fetchEnv()" @update="fetchEnv" @reset="fetchEnv()"
@@ -74,6 +77,7 @@
   import pickBy from 'lodash/pickBy';
   import {VIEW_GROUP} from '../../index';
   import sbaEnvManager from './env-manager';
+  import refresh from "./refresh";
 
   const filterProperty = (needle) => (property, name) => {
     return name.toString().toLowerCase().includes(needle) || (property.value && property.value.toString().toLowerCase().includes(needle));
@@ -96,7 +100,7 @@
         required: true
       }
     },
-    components: {sbaEnvManager},
+    components: {sbaEnvManager, refresh},
     data: () => ({
       hasLoaded: false,
       error: null,

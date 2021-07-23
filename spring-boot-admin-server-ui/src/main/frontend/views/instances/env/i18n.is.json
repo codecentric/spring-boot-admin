@@ -15,7 +15,8 @@
       "context_updated": "Uppfært",
       "fetch_failed": "Mistókst að sækja umhverfi.",
       "no_properties": "Engir eiginleikar stillt",
-      "title": "Umhverfisstjórnandi"
+      "title": "Umhverfisstjórnandi",
+      "refresh": "Refresh environment"
     }
   }
 }
