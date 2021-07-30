@@ -4,48 +4,47 @@
   >
     <div class="field is-horizontal">
       <div class="field-body">
-      <div class="field is-narrow" v-if="instanceCount > 1 && instance.hasEndpoint('refresh')">
-        <div class="control">
-          <button
-            v-if="currentScope === 'application'"
-            class="refresh__toggle-scope button is-primary is-active"
-            @click="setScope('instance')"
-          >
-            <font-awesome-icon icon="cubes"/>&nbsp;
-            <span v-text="$t('instances.env.application')"/>
-          </button>
-          <button
-            v-else
-            class="refresh__toggle-scope button"
-            @click="setScope('application')"
-          >
-            <font-awesome-icon icon="cube"/>&nbsp;&nbsp;
-            <span v-text="$t('instances.env.instance')"/>
-          </button>
-        </div>
-        <p class="help has-text-centered">
+        <div class="field is-grouped is-grouped-left">
+          <div class="control" v-if="instanceCount > 1 && instance.hasEndpoint('refresh')">
+            <button
+              v-if="currentScope === 'application'"
+              class="refresh__toggle-scope button is-primary is-active"
+              @click="setScope('instance')"
+            >
+              <font-awesome-icon icon="cubes"/>&nbsp;
+              <span v-text="$t('instances.env.application')"/>
+            </button>
+            <button
+              v-else
+              class="refresh__toggle-scope button"
+              @click="setScope('application')"
+            >
+              <font-awesome-icon icon="cube"/>&nbsp;&nbsp;
+              <span v-text="$t('instances.env.instance')"/>
+            </button>
+            <p class="help has-text-centered">
           <span v-if="currentScope === 'application'"
                 v-text="$t('instances.env.affects_all_instances', {count: instanceCount})"/>
-          <span v-else v-text="$t('instances.env.affects_this_instance_only')"/>
-        </p>
-      </div>
-    </div>
+              <span v-else v-text="$t('instances.env.affects_this_instance_only')"/>
+            </p>
+          </div>
+          <div class="control" v-if="instance.hasEndpoint('refresh')">
+            <div class="field has-icons-left">
 
-    <div class="field-body" v-if="instance.hasEndpoint('refresh')">
-      <div class="field has-icons-left">
-        <div class="control">
-          <sba-confirm-button class="button is-light"
-                              :class="{'is-loading' : refreshStatus === 'executing', 'is-danger' : refreshStatus === 'failed', 'is-info' : refreshStatus === 'completed'}"
-                              :disabled="refreshStatus === 'executing'"
-                              @click="refreshContext(currentScope)"
-          >
-            <span v-if="refreshStatus === 'completed'" v-text="$t('instances.env.context_refreshed')"/>
-            <span v-else-if="refreshStatus === 'failed'" v-text="$t('instances.env.context_refresh_failed')"/>
-            <span v-else v-text="$t('instances.env.context_refresh')"/>
-          </sba-confirm-button>
+              <sba-confirm-button class="button is-light"
+                                  :class="{'is-loading' : refreshStatus === 'executing', 'is-danger' : refreshStatus === 'failed', 'is-info' : refreshStatus === 'completed'}"
+                                  :disabled="refreshStatus === 'executing'"
+                                  @click="refreshContext(currentScope)"
+              >
+                <span v-if="refreshStatus === 'completed'" v-text="$t('instances.env.context_refreshed')"/>
+                <span v-else-if="refreshStatus === 'failed'" v-text="$t('instances.env.context_refresh_failed')"/>
+                <span v-else v-text="$t('instances.env.context_refresh')"/>
+              </sba-confirm-button>
+
+            </div>
+          </div>
         </div>
       </div>
-    </div>
     </div>
   </sba-panel>
 </template>

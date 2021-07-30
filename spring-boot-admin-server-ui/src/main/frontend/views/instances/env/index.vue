@@ -37,10 +37,11 @@
              :instance="instance"
              :instance-count="application.instances.length"
              :application="application"
+             @reset="fetchEnv"
     />
     <sba-env-manager v-if="env && hasEnvManagerSupport"
                      :instance="instance" :property-sources="env.propertySources"
-                     @refresh="fetchEnv()" @update="fetchEnv" @reset="fetchEnv()"
+                     @refresh="fetchEnv" @update="fetchEnv"
     />
     <div class="field" v-if="env">
       <p class="control is-expanded has-icons-left">
