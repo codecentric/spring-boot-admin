@@ -19,7 +19,7 @@
     :loggers-service="service"
     :scope="scope"
     :instance-count="application.instances.length"
-    @changeScope="s => scope = s"
+    @changeScope="changeScope"
   />
 </template>
 
@@ -52,6 +52,11 @@
         return this.scope === 'instance'
           ? new InstanceLoggers(this.instance)
           : new ApplicationLoggers(this.application);
+      }
+    },
+    methods: {
+      changeScope(scope) {
+        this.scope = scope;
       }
     },
     install({viewRegistry}) {

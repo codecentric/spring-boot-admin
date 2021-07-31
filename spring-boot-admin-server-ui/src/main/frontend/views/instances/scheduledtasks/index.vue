@@ -15,23 +15,15 @@
   -->
 
 <template>
-  <section class="section" :class="{ 'is-loading' : !hasLoaded }">
+  <section :class="{ 'is-loading' : !hasLoaded }" class="section">
     <template v-if="hasLoaded">
-      <div v-if="error" class="message is-danger">
-        <div class="message-body">
-          <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            <span v-text="$t('instances.scheduledtasks.fetch_failed')" />
-          </strong>
-          <p v-text="error.message" />
-        </div>
-      </div>
+      <sba-alert v-if="error" :error="error" :title="$t('instances.scheduledtasks.fetch_failed')" />
+
       <div v-else-if="!hasData" class="message is-warning">
         <div class="message-body" v-text="$t('instances.scheduledtasks.no_scheduledtasks')" />
       </div>
 
       <template v-if="hasCronData">
-        <h3 class="title" v-text="$t('instances.scheduledtasks.cron.title')" />
         <table class="table is-fullwidth">
           <thead>
             <tr>
@@ -92,66 +84,66 @@
 </template>
 
 <script>
-  import Instance from '@/services/instance';
-  import {VIEW_GROUP} from '../../index';
+import Instance from '@/services/instance';
+import {VIEW_GROUP} from '../../index';
 
-  export default {
-    props: {
-      instance: {
-        type: Instance,
-        required: true
-      }
-    },
-    data: () => ({
-      hasLoaded: false,
-      error: null,
-      cron: null,
-      fixedDelay: null,
-      fixedRate: null
-    }),
-    computed: {
-      hasCronData: function () {
-        return this.cron && this.cron.length;
-      },
-      hasFixedDelayData: function () {
-        return this.fixedDelay && this.fixedDelay.length;
-      },
-      hasFixedRateData: function () {
-        return this.fixedRate && this.fixedRate.length;
-      },
-      hasData: function () {
-         return this.hasCronData || this.hasFixedDelayData || this.hasFixedRateData;
-      }
-    },
-    created() {
-      this.fetchScheduledTasks();
-    },
-    methods: {
-      async fetchScheduledTasks() {
-        this.error = null;
-        try {
-          const res = await this.instance.fetchScheduledTasks();
-          this.cron = res.data.cron;
-          this.fixedDelay = res.data.fixedDelay;
-          this.fixedRate = res.data.fixedRate;
-        } catch (error) {
-          console.warn('Fetching scheduled tasks failed:', error);
-          this.error = error;
-        }
-        this.hasLoaded = true;
-      }
-    },
-    install({viewRegistry}) {
-      viewRegistry.addView({
-        name: 'instances/scheduledtasks',
-        parent: 'instances',
-        path: 'scheduledtasks',
-        component: this,
-        label: 'instances.scheduledtasks.label',
-        group: VIEW_GROUP.INSIGHTS,
-        order: 950,
-        isEnabled: ({instance}) => instance.hasEndpoint('scheduledtasks')
-      });
+export default {
+  props: {
+    instance: {
+      type: Instance,
+      required: true
     }
+  },
+  data: () => ({
+    hasLoaded: false,
+    error: null,
+    cron: null,
+    fixedDelay: null,
+    fixedRate: null
+  }),
+  computed: {
+    hasCronData: function () {
+      return this.cron && this.cron.length;
+    },
+    hasFixedDelayData: function () {
+      return this.fixedDelay && this.fixedDelay.length;
+    },
+    hasFixedRateData: function () {
+      return this.fixedRate && this.fixedRate.length;
+    },
+    hasData: function () {
+      return this.hasCronData || this.hasFixedDelayData || this.hasFixedRateData;
+    }
+  },
+  created() {
+    this.fetchScheduledTasks();
+  },
+  methods: {
+    async fetchScheduledTasks() {
+      this.error = null;
+      try {
+        const res = await this.instance.fetchScheduledTasks();
+        this.cron = res.data.cron;
+        this.fixedDelay = res.data.fixedDelay;
+        this.fixedRate = res.data.fixedRate;
+      } catch (error) {
+        console.warn('Fetching scheduled tasks failed:', error);
+        this.error = error;
+      }
+      this.hasLoaded = true;
+    }
+  },
+  install({viewRegistry}) {
+    viewRegistry.addView({
+      name: 'instances/scheduledtasks',
+      parent: 'instances',
+      path: 'scheduledtasks',
+      component: this,
+      label: 'instances.scheduledtasks.label',
+      group: VIEW_GROUP.INSIGHTS,
+      order: 950,
+      isEnabled: ({instance}) => instance.hasEndpoint('scheduledtasks')
+    });
   }
+}
 </script>

@@ -15,18 +15,11 @@
   -->
 
 <template>
-  <sba-panel :title="$t('instances.details.threads.title')" v-if="hasLoaded">
+  <sba-panel v-if="hasLoaded" :title="$t('instances.details.threads.title')">
     <div>
-      <div v-if="error" class="message is-danger">
-        <div class="message-body">
-          <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            <span v-text="$t('instances.details.threads.fetch_failed')" />
-          </strong>
-          <p v-text="error.message" />
-        </div>
-      </div>
-      <div class="level threads-current" v-if="current">
+      <sba-alert v-if="error" :error="error" :title="$t('instances.details.threads.fetch_failed')" />
+
+      <div v-if="current" class="level threads-current">
         <div class="level-item has-text-centered">
           <div>
             <p class="heading has-bullet has-bullet-warning" v-text="$t('instances.details.threads.live')" />
@@ -52,70 +45,70 @@
 </template>
 
 <script>
-  import sbaConfig from '@/sba-config';
-  import subscribing from '@/mixins/subscribing';
-  import Instance from '@/services/instance';
-  import {concatMap, delay, retryWhen, timer} from '@/utils/rxjs';
-  import moment from 'moment';
-  import threadsChart from './threads-chart';
-  import {take} from 'rxjs/operators';
+import sbaConfig from '@/sba-config';
+import subscribing from '@/mixins/subscribing';
+import Instance from '@/services/instance';
+import {concatMap, delay, retryWhen, timer} from '@/utils/rxjs';
+import moment from 'moment';
+import threadsChart from './threads-chart';
+import {take} from 'rxjs/operators';
 
-  export default {
-    props: {
-      instance: {
-        type: Instance,
-        required: true
-      }
+export default {
+  props: {
+    instance: {
+      type: Instance,
+      required: true
+    }
+  },
+  mixins: [subscribing],
+  components: {threadsChart},
+  data: () => ({
+    hasLoaded: false,
+    error: null,
+    current: null,
+    chartData: [],
+  }),
+  methods: {
+    async fetchMetrics() {
+      const responseLive = this.instance.fetchMetric('jvm.threads.live');
+      const responsePeak = this.instance.fetchMetric('jvm.threads.peak');
+      const responseDaemon = this.instance.fetchMetric('jvm.threads.daemon');
+
+      return {
+        live: (await responseLive).data.measurements[0].value,
+        peak: (await responsePeak).data.measurements[0].value,
+        daemon: (await responseDaemon).data.measurements[0].value
+      };
     },
-    mixins: [subscribing],
-    components: {threadsChart},
-    data: () => ({
-      hasLoaded: false,
-      error: null,
-      current: null,
-      chartData: [],
-    }),
-    methods: {
-      async fetchMetrics() {
-        const responseLive = this.instance.fetchMetric('jvm.threads.live');
-        const responsePeak = this.instance.fetchMetric('jvm.threads.peak');
-        const responseDaemon = this.instance.fetchMetric('jvm.threads.daemon');
-
-        return {
-          live: (await responseLive).data.measurements[0].value,
-          peak: (await responsePeak).data.measurements[0].value,
-          daemon: (await responseDaemon).data.measurements[0].value
-        };
-      },
-      createSubscription() {
-        const vm = this;
-        return timer(0, sbaConfig.uiSettings.pollTimer.threads)
-          .pipe(concatMap(this.fetchMetrics), retryWhen(
-            err => {
-              return err.pipe(
-                delay(1000),
-                take(5)
-              )
-            }))
-          .subscribe({
-            next: data => {
-              vm.hasLoaded = true;
-              vm.current = data;
-              vm.chartData.push({...data, timestamp: moment().valueOf()});
-            },
-            error: error => {
-              vm.hasLoaded = true;
-              console.warn('Fetching threads metrics failed:', error);
-              vm.error = error;
-            }
-          });
-      }
+    createSubscription() {
+      const vm = this;
+      return timer(0, sbaConfig.uiSettings.pollTimer.threads)
+        .pipe(concatMap(this.fetchMetrics), retryWhen(
+          err => {
+            return err.pipe(
+              delay(1000),
+              take(5)
+            )
+          }))
+        .subscribe({
+          next: data => {
+            vm.hasLoaded = true;
+            vm.current = data;
+            vm.chartData.push({...data, timestamp: moment().valueOf()});
+          },
+          error: error => {
+            vm.hasLoaded = true;
+            console.warn('Fetching threads metrics failed:', error);
+            vm.error = error;
+          }
+        });
     }
   }
+}
 </script>
 
 <style lang="scss">
-  .threads-current {
-    margin-bottom: 0 !important;
-  }
+.threads-current {
+  margin-bottom: 0 !important;
+}
 </style>

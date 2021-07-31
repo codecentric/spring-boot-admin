@@ -17,17 +17,9 @@
 <template>
   <sba-panel :title="$t('instances.details.info.title')">
     <div>
-      <div v-if="error" class="message is-warning">
-        <div class="message-body">
-          <strong>
-            <font-awesome-icon class="has-text-warning" icon="exclamation-triangle" />
-            <span v-text="$t('instances.details.info.fetch_failed')" />
-          </strong>
-          <p v-text="error.message" />
-        </div>
-      </div>
+      <sba-alert v-if="error" :error="error" :title="$t('instances.details.info.fetch_failed')" severity="WARN" />
       <div class="content info">
-        <table class="table" v-if="!isEmptyInfo">
+        <table v-if="!isEmptyInfo" class="table">
           <tr v-for="(value, key) in info" :key="key">
             <td class="info__key" v-text="key" />
             <td>
@@ -42,54 +34,54 @@
 </template>
 
 <script>
-  import Instance from '@/services/instance';
+import Instance from '@/services/instance';
 
-  export default {
-    props: {
-      instance: {
-        type: Instance,
-        required: true
-      }
+export default {
+  props: {
+    instance: {
+      type: Instance,
+      required: true
+    }
+  },
+  data: () => ({
+    error: null,
+    liveInfo: null
+  }),
+  computed: {
+    info() {
+      return this.liveInfo || this.instance.info
     },
-    data: () => ({
-      error: null,
-      liveInfo: null
-    }),
-    computed: {
-      info() {
-        return this.liveInfo || this.instance.info
-      },
-      isEmptyInfo() {
-        return Object.keys(this.info).length <= 0;
-      }
-    },
-    created() {
-      this.fetchInfo();
-    },
-    methods: {
-      async fetchInfo() {
-        if (this.instance.hasEndpoint('info')) {
-          try {
-            this.error = null;
-            const res = await this.instance.fetchInfo();
-            this.liveInfo = res.data;
-          } catch (error) {
-            this.error = error;
-            console.warn('Fetching info failed:', error);
-          }
+    isEmptyInfo() {
+      return Object.keys(this.info).length <= 0;
+    }
+  },
+  created() {
+    this.fetchInfo();
+  },
+  methods: {
+    async fetchInfo() {
+      if (this.instance.hasEndpoint('info')) {
+        try {
+          this.error = null;
+          const res = await this.instance.fetchInfo();
+          this.liveInfo = res.data;
+        } catch (error) {
+          this.error = error;
+          console.warn('Fetching info failed:', error);
         }
       }
     }
   }
+}
 </script>
 
 <style lang="scss">
-  .info {
-    overflow: auto;
+.info {
+  overflow: auto;
 
-    &__key {
-      vertical-align: top;
-    }
+  &__key {
+    vertical-align: top;
   }
+}
 
 </style>

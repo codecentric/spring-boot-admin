@@ -15,21 +15,16 @@
   -->
 
 <template>
-  <sba-panel :title="$t('instances.details.datasource.title', {dataSource: dataSource})" v-if="hasLoaded">
+  <sba-panel v-if="hasLoaded" :title="$t('instances.details.datasource.title', {dataSource: dataSource})">
     <div>
-      <div v-if="error" class="message is-danger">
-        <div class="message-body">
-          <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            <span v-text="$t('instances.details.datasource.fetch_failed')" />
-          </strong>
-          <p v-text="error.message" />
-        </div>
-      </div>
-      <div class="level datasource-current" v-if="current">
+      <sba-alert v-if="error" :error="error" :title="$t('instances.details.datasource.fetch_failed')" />
+
+      <div v-if="current" class="level datasource-current">
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading has-bullet has-bullet-info" v-text="$t('instances.details.datasource.active_connections')" />
+            <p class="heading has-bullet has-bullet-info"
+               v-text="$t('instances.details.datasource.active_connections')"
+            />
             <p v-text="current.active" />
           </div>
         </div>
@@ -53,74 +48,74 @@
 </template>
 
 <script>
-  import sbaConfig from '@/sba-config';
-  import subscribing from '@/mixins/subscribing';
-  import Instance from '@/services/instance';
-  import {concatMap, delay, retryWhen, timer} from '@/utils/rxjs';
-  import moment from 'moment';
-  import datasourceChart from './datasource-chart';
-  import {take} from 'rxjs/operators';
+import sbaConfig from '@/sba-config';
+import subscribing from '@/mixins/subscribing';
+import Instance from '@/services/instance';
+import {concatMap, delay, retryWhen, timer} from '@/utils/rxjs';
+import moment from 'moment';
+import datasourceChart from './datasource-chart';
+import {take} from 'rxjs/operators';
 
-  export default {
-    props: {
-      instance: {
-        type: Instance,
-        required: true
-      },
-      dataSource: {
-        type: String,
-        required: true
-      }
+export default {
+  props: {
+    instance: {
+      type: Instance,
+      required: true
     },
-    mixins: [subscribing],
-    components: {datasourceChart},
-    data: () => ({
-      hasLoaded: false,
-      error: null,
-      current: null,
-      chartData: [],
-    }),
-    methods: {
-      async fetchMetrics() {
-        const responseActive = this.instance.fetchMetric('data.source.active.connections', {name: this.dataSource});
-        const responseMin = this.instance.fetchMetric('data.source.min.connections', {name: this.dataSource});
-        const responseMax = this.instance.fetchMetric('data.source.max.connections', {name: this.dataSource});
+    dataSource: {
+      type: String,
+      required: true
+    }
+  },
+  mixins: [subscribing],
+  components: {datasourceChart},
+  data: () => ({
+    hasLoaded: false,
+    error: null,
+    current: null,
+    chartData: [],
+  }),
+  methods: {
+    async fetchMetrics() {
+      const responseActive = this.instance.fetchMetric('data.source.active.connections', {name: this.dataSource});
+      const responseMin = this.instance.fetchMetric('data.source.min.connections', {name: this.dataSource});
+      const responseMax = this.instance.fetchMetric('data.source.max.connections', {name: this.dataSource});
 
-        return {
-          active: (await responseActive).data.measurements[0].value,
-          min: (await responseMin).data.measurements[0].value,
-          max: (await responseMax).data.measurements[0].value
-        };
-      },
-      createSubscription() {
-        const vm = this;
-        return timer(0, sbaConfig.uiSettings.pollTimer.datasource)
-          .pipe(concatMap(vm.fetchMetrics), retryWhen(
-            err => {
-              return err.pipe(
-                delay(1000),
-                take(5)
-              )
-            }))
-          .subscribe({
-            next: data => {
-              vm.hasLoaded = true;
-              vm.current = data;
-              vm.chartData.push({...data, timestamp: moment().valueOf()});
-            },
-            error: error => {
-              vm.hasLoaded = true;
-              console.warn(`Fetching datasource ${vm.dataSource} metrics failed:`, error);
-              vm.error = error;
-            }
-          });
-      }
+      return {
+        active: (await responseActive).data.measurements[0].value,
+        min: (await responseMin).data.measurements[0].value,
+        max: (await responseMax).data.measurements[0].value
+      };
+    },
+    createSubscription() {
+      const vm = this;
+      return timer(0, sbaConfig.uiSettings.pollTimer.datasource)
+        .pipe(concatMap(vm.fetchMetrics), retryWhen(
+          err => {
+            return err.pipe(
+              delay(1000),
+              take(5)
+            )
+          }))
+        .subscribe({
+          next: data => {
+            vm.hasLoaded = true;
+            vm.current = data;
+            vm.chartData.push({...data, timestamp: moment().valueOf()});
+          },
+          error: error => {
+            vm.hasLoaded = true;
+            console.warn(`Fetching datasource ${vm.dataSource} metrics failed:`, error);
+            vm.error = error;
+          }
+        });
     }
   }
+}
 </script>
 
 <style lang="scss">
-  .datasource-current {
-    margin-bottom: 0 !important;
-  }
+.datasource-current {
+  margin-bottom: 0 !important;
+}
 </style>

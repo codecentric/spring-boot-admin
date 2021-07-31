@@ -16,68 +16,61 @@
 
 <template>
   <div>
-    <div v-if="error" class="message is-danger">
-      <div class="message-body">
-        <strong>
-          <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-          <span v-text="$t('instances.jolokia.mbean.fetch_failed')" />
-        </strong>
-        <p v-text="error.message" />
-      </div>
-    </div>
+    <sba-alert v-if="error" :error="error" :title="$t('instances.jolokia.mbean.fetch_failed')" />
+
     <m-bean-attribute v-for="(attribute, name) in mBean.attr" :key="`attr-${name}`"
-                      :name="name" :descriptor="attribute" :value="attributeValues && attributeValues[name]"
-                      :on-save-value="value => writeAttribute(name, value)"
+                      :descriptor="attribute" :name="name" :on-save-value="value => writeAttribute(name, value)"
+                      :value="attributeValues && attributeValues[name]"
     />
   </div>
 </template>
 
 <script>
-  import Instance from '@/services/instance';
-  import {MBean} from './index';
-  import mBeanAttribute from './m-bean-attribute';
+import Instance from '@/services/instance';
+import {MBean} from './index';
+import mBeanAttribute from './m-bean-attribute';
 
-  export default {
-    props: {
-      domain: {
-        type: String,
-        required: true
-      },
-      mBean: {
-        type: MBean,
-        required: true
-      },
-      instance: {
-        type: Instance,
-        required: true
+export default {
+  props: {
+    domain: {
+      type: String,
+      required: true
+    },
+    mBean: {
+      type: MBean,
+      required: true
+    },
+    instance: {
+      type: Instance,
+      required: true
+    }
+  },
+  components: {mBeanAttribute},
+  data: () => ({
+    attributeValues: null,
+    error: null
+  }),
+  computed: {},
+  methods: {
+    async readAttributes() {
+      try {
+        const response = await this.instance.readMBeanAttributes(this.domain, this.mBean.descriptor.raw);
+        this.attributeValues = response.data.value;
+      } catch (error) {
+        console.warn('Fetching MBean attributes failed:', error);
+        this.error = error;
       }
     },
-    components: {mBeanAttribute},
-    data: () => ({
-      attributeValues: null,
-      error: null
-    }),
-    computed: {},
-    methods: {
-      async readAttributes() {
-        try {
-          const response = await this.instance.readMBeanAttributes(this.domain, this.mBean.descriptor.raw);
-          this.attributeValues = response.data.value;
-        } catch (error) {
-          console.warn('Fetching MBean attributes failed:', error);
-          this.error = error;
-        }
-      },
-      async writeAttribute(attribute, value) {
-        try {
-          await this.instance.writeMBeanAttribute(this.domain, this.mBean.descriptor.raw, attribute, value);
-        } finally {
-          await this.readAttributes();
-        }
+    async writeAttribute(attribute, value) {
+      try {
+        await this.instance.writeMBeanAttribute(this.domain, this.mBean.descriptor.raw, attribute, value);
+      } finally {
+        await this.readAttributes();
       }
-    },
-    created() {
-      this.readAttributes();
-    },
-  }
+    }
+  },
+  created() {
+    this.readAttributes();
+  },
+}
 </script>

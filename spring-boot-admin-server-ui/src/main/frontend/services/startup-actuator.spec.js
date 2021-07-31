@@ -17,8 +17,6 @@
 import {StartupActuatorService} from './startup-actuator'
 import {cloneDeep} from 'lodash';
 
-
-
 describe('StartupActuatorService', () => {
   let data = {};
   let events = {};
@@ -31,6 +29,7 @@ describe('StartupActuatorService', () => {
   it('should find element by id', () => {
     let item8 = StartupActuatorService.getById(events, 8);
 
+    expect.assertions(1);
     expect(item8).toEqual({
       'startupStep': {
         'name': 'spring.beans.instantiate',
@@ -46,7 +45,7 @@ describe('StartupActuatorService', () => {
       'startTime': '2020-12-10T21:53:42.958550077Z',
       'endTime': '2020-12-10T21:53:42.960040652Z',
       'duration': 'PT0.001490575S'
-    })
+    });
   });
 
   it('should add parents as reference', () => {
@@ -54,6 +53,7 @@ describe('StartupActuatorService', () => {
     let child = tree.getById(8);
     let parent = tree.getById(7);
 
+    expect.assertions(2);
     expect(child.startupStep.parent).toBe(parent);
     expect(child.startupStep.depth).toBe(3);
   });
@@ -63,6 +63,7 @@ describe('StartupActuatorService', () => {
     let parent = tree.getById(7);
     let child = tree.getById(8);
 
+    expect.assertions(1);
     expect(parent.startupStep.children).toContain(child);
   });
 
@@ -74,6 +75,7 @@ describe('StartupActuatorService', () => {
 
     let parsedTag = StartupActuatorService.parseTag(tag);
 
+    expect.assertions(1);
     expect(parsedTag).toStrictEqual({
       ...tag,
       parsed: {
@@ -94,6 +96,7 @@ describe('StartupActuatorService', () => {
     let tree = StartupActuatorService.parseAsTree(data);
     let children = tree.getByParentId(6);
 
+    expect.assertions(2);
     expect(children.length)
       .toBe(25);
     expect(children.map((event) => event.startupStep.id))
@@ -105,6 +108,7 @@ describe('StartupActuatorService', () => {
     let startTime = tree.getStartTime();
     let endTime = tree.getEndTime();
 
+    expect.assertions(2);
     expect(startTime).toBe(Date.parse('2020-12-10T21:53:41.836728041Z'))
     expect(endTime).toBe(Date.parse('2020-12-10T22:13:47.495769441Z'))
   });
@@ -113,6 +117,7 @@ describe('StartupActuatorService', () => {
     let tree = StartupActuatorService.parseAsTree(data);
     let period = tree.getPeriod(tree.getById(1));
 
+    expect.assertions(2);
     expect(period.start).toBe(0);
     expect(period.end).toBe(0.000038153408219073554);
   });
@@ -121,6 +126,7 @@ describe('StartupActuatorService', () => {
     let tree = StartupActuatorService.parseAsTree(data);
 
     let path = tree.getPath(10);
+    expect.assertions(1);
     expect(path).toEqual([10, 9, 6, 5])
   });
 
@@ -128,6 +134,7 @@ describe('StartupActuatorService', () => {
     let tree = StartupActuatorService.parseAsTree(data);
     let event = tree.getById(1);
 
+    expect.assertions(1);
     expect(event.duration).toBe(45.279861);
   });
 });
