@@ -85,6 +85,15 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>npm-install-node-gyp</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>install -g node-gyp</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>npm-install</id>
                         <goals>
                             <goal>npm</goal>
