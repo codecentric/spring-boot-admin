@@ -5,7 +5,7 @@
     <div class="field is-horizontal">
       <div class="field-body">
         <div class="field is-grouped is-grouped-left">
-          <div class="control" v-if="instanceCount > 1 && instance.hasEndpoint('refresh')">
+          <div class="control" v-if="instanceCount > 1">
             <button
               v-if="currentScope === 'application'"
               class="refresh__toggle-scope button is-primary is-active"
@@ -28,9 +28,8 @@
               <span v-else v-text="$t('instances.env.affects_this_instance_only')"/>
             </p>
           </div>
-          <div class="control" v-if="instance.hasEndpoint('refresh')">
+          <div class="control">
             <div class="field has-icons-left">
-
               <sba-confirm-button class="button is-light"
                                   :class="{'is-loading' : refreshStatus === 'executing', 'is-danger' : refreshStatus === 'failed', 'is-info' : refreshStatus === 'completed'}"
                                   :disabled="refreshStatus === 'executing'"
@@ -40,7 +39,6 @@
                 <span v-else-if="refreshStatus === 'failed'" v-text="$t('instances.env.context_refresh_failed')"/>
                 <span v-else v-text="$t('instances.env.context_refresh')"/>
               </sba-confirm-button>
-
             </div>
           </div>
         </div>
