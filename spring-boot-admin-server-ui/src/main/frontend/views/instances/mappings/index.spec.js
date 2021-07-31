@@ -9,7 +9,6 @@ const dispatcherServlets = mockedMapping.dispatcherServlets;
 const servlets = mockedMapping.servlets;
 const servletFilters = mockedMapping.servletFilters;
 
-
 describe('Mappings', () => {
   it('should render the header for a context when just context name is provided', async () => {
     renderWithInstance({

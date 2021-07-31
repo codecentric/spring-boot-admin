@@ -112,6 +112,10 @@ class Application {
     return {responses};
   }
 
+  async refreshContext() {
+    return this.axios.post(uri`actuator/refresh`);
+  }
+
   static _transformResponse(data) {
     if (!data) {
       return data;

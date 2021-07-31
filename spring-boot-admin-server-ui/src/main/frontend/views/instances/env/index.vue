@@ -33,9 +33,15 @@
         </div>
       </div>
     </div>
+    <refresh v-if="instance.hasEndpoint('refresh')"
+             :instance="instance"
+             :instance-count="application.instances.length"
+             :application="application"
+             @reset="fetchEnv"
+    />
     <sba-env-manager v-if="env && hasEnvManagerSupport"
                      :instance="instance" :property-sources="env.propertySources"
-                     @refresh="fetchEnv()" @update="fetchEnv" @reset="fetchEnv()"
+                     @refresh="fetchEnv" @update="fetchEnv"
     />
     <div class="field" v-if="env">
       <p class="control is-expanded has-icons-left">
@@ -74,6 +80,8 @@
   import pickBy from 'lodash/pickBy';
   import {VIEW_GROUP} from '../../index';
   import sbaEnvManager from './env-manager';
+  import refresh from './refresh';
+  import Application from '@/services/application';
 
   const filterProperty = (needle) => (property, name) => {
     return name.toString().toLowerCase().includes(needle) || (property.value && property.value.toString().toLowerCase().includes(needle));
@@ -94,9 +102,13 @@
       instance: {
         type: Instance,
         required: true
+      },
+      application: {
+        type: Application,
+        required: true
       }
     },
-    components: {sbaEnvManager},
+    components: {sbaEnvManager, refresh},
     data: () => ({
       hasLoaded: false,
       error: null,
@@ -146,8 +158,8 @@
       },
       getValue(name, value) {
         if (this.propertyNamesToEscape.includes(name)) {
-          return value.replace(/\n/g, "\\n")
-            .replace(/\r/g, "\\r");
+          return value.replace(/\n/g, '\\n')
+            .replace(/\r/g, '\\r');
         }
         return value;
       }

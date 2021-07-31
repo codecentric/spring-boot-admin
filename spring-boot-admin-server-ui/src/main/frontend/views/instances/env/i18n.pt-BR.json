@@ -15,7 +15,12 @@
       "context_updated": "Atualizado",
       "fetch_failed": "Falha na busca de ambiente.",
       "no_properties": "Nenhuma propriedade definida",
-      "title": "Gerenciador de Ambiente"
+      "title": "Gerenciador de Ambiente",
+      "refresh": "Refresh environment",
+      "application": "Application",
+      "instance": "Instance",
+      "affects_all_instances": "Affects all {count} instances",
+      "affects_this_instance_only": "Affects only this instance"
     }
   }
 }
