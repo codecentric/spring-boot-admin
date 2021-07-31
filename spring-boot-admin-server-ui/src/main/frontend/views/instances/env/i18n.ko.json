@@ -15,7 +15,12 @@
       "context_updated": "갱신됨",
       "fetch_failed": "환경 정보를 가져오는데 실패했습니다.",
       "no_properties": "프로퍼티 없음",
-      "title": "환경 관리자"
+      "title": "환경 관리자",
+      "refresh": "Refresh environment",
+      "application": "Application",
+      "instance": "Instance",
+      "affects_all_instances": "Affects all {count} instances",
+      "affects_this_instance_only": "Affects only this instance"
     }
   }
 }

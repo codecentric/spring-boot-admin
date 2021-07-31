@@ -15,7 +15,12 @@
       "context_updated": "已更新",
       "fetch_failed": "获取环境信息失败。",
       "no_properties": "属性未设置。",
-      "title": "环境管理"
+      "title": "环境管理",
+      "refresh": "Refresh environment",
+      "application": "Application",
+      "instance": "Instance",
+      "affects_all_instances": "Affects all {count} instances",
+      "affects_this_instance_only": "Affects only this instance"
     }
   }
 }

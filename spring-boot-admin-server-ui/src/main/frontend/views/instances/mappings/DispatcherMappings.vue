@@ -17,7 +17,7 @@
 <template>
   <div class="table-container">
     <table class="table is-fullwidth">
-      <template v-for="(handlerMappings, dispatcherName) in this.dispatchers">
+      <template v-for="(handlerMappings, dispatcherName) in dispatchers">
         <thead :key="`${dispatcherName}`">
           <tr>
             <th v-text="dispatcherName" colspan="99" />
@@ -108,7 +108,7 @@
     props: {
       dispatchers: {
         type: Object,
-        default: () => []
+        default: () => ({})
       }
     },
     methods: {

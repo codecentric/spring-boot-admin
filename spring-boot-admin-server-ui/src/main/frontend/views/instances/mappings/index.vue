@@ -25,21 +25,23 @@
       <template v-for="(context, ctxName) in contexts">
         <h3 :key="ctxName" class="title" v-text="ctxName" />
 
-        <dispatcher-mappings v-if="!isEmpty(context.mappings.dispatcherServlets)"
+        <dispatcher-mappings v-if="hasDispatcherServlets(context)"
                              :key="`${ctxName}_dispatcherServlets`"
                              :dispatchers="context.mappings.dispatcherServlets"
         />
 
-        <dispatcher-mappings v-if="!isEmpty(context.mappings.dispatcherHandlers)"
+        <dispatcher-mappings v-if="hasDispatcherHandlers(context)"
                              :key="`${ctxName}_dispatcherHandlers`"
                              :dispatchers="context.mappings.dispatcherHandlers"
         />
 
-        <servlet-mappings :key="`${ctxName}_servlets`"
+        <servlet-mappings v-if="hasServlet(context)"
+                          :key="`${ctxName}_servlets`"
                           :servlets="context.mappings.servlets"
         />
 
-        <servlet-filter-mappings :key="`${ctxName}_servletFilters`"
+        <servlet-filter-mappings v-if="hasServletFilters(context)"
+                                 :key="`${ctxName}_servletFilters`"
                                  :servlet-filters="context.mappings.servletFilters"
         />
       </template>
@@ -52,7 +54,6 @@ import Instance from '@/services/instance';
 import DispatcherMappings from '@/views/instances/mappings/DispatcherMappings';
 import ServletFilterMappings from '@/views/instances/mappings/ServletFilterMappings';
 import ServletMappings from '@/views/instances/mappings/ServletMappings';
-import isEmpty from 'lodash/isEmpty';
 import {VIEW_GROUP} from '../../index';
 
 export default {
@@ -72,9 +73,19 @@ export default {
   created() {
     this.fetchMappings();
   },
-  computed: {},
   methods: {
-    isEmpty,
+    hasDispatcherServlets(context) {
+      return context?.mappings?.dispatcherServlets !== undefined;
+    },
+    hasDispatcherHandlers(context) {
+      return context?.mappings?.dispatcherHandlers !== undefined;
+    },
+    hasServlet(context) {
+      return context?.mappings?.servlets !== undefined;
+    },
+    hasServletFilters(context) {
+      return context?.mappings?.servletFilters !== undefined;
+    },
     async fetchMappings() {
       this.error = null;
       try {
