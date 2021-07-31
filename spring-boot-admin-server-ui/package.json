@@ -36,7 +36,7 @@
     "popper.js": "^1.16.1",
     "pretty-bytes": "^5.4.1",
     "resize-observer-polyfill": "^1.5.1",
-    "rxjs": "^6.6.3",
+    "rxjs": "6.6.7",
     "vue": "^2.6.12",
     "vue-clickaway2": "^2.3.2",
     "vue-i18n": "^8.22.1",
