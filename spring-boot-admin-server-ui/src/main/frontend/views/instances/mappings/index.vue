@@ -82,20 +82,16 @@ export default {
   },
   methods: {
     hasDispatcherServlets(context) {
-      let mappings = context.mappings;
-      return mappings && mappings.dispatcherServlets !== undefined;
+      return context?.mappings?.dispatcherServlets !== undefined;
     },
     hasDispatcherHandlers(context) {
-      let mappings = context.mappings;
-      return mappings && mappings.dispatcherHandlers !== undefined;
+      return context?.mappings?.dispatcherHandlers !== undefined;
     },
     hasServlet(context) {
-      let mappings = context.mappings;
-      return mappings && mappings.servlets !== undefined;
+      return context?.mappings?.servlets !== undefined;
     },
     hasServletFilters(context) {
-      let mappings = context.mappings;
-      return mappings && mappings.servletFilters !== undefined;
+      return context?.mappings?.servletFilters !== undefined;
     },
     async fetchMappings() {
       this.error = null;
