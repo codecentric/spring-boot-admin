@@ -80,8 +80,8 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v15.12.0</nodeVersion>
-                            <npmVersion>7.6.3</npmVersion>
+                            <nodeVersion>v15.14.0</nodeVersion>
+                            <npmVersion>7.20.3</npmVersion>
                         </configuration>
                     </execution>
                     <execution>
@@ -90,7 +90,7 @@
                             <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <arguments>ci --verbose</arguments>
+                            <arguments>ci --prefer-offline --no-audit --verbose</arguments>
                         </configuration>
                     </execution>
                     <execution>
