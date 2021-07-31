@@ -4,7 +4,7 @@
       "label": "Umgebungskonfiguration",
       "manager": "Umgebungskonfiguration anpassen",
       "active_profile": "Profil",
-      "context_refresh": "Kontext neuladen",
+      "context_refresh": "Kontext neu laden",
       "context_refresh_failed": "Fehlgeschlagen",
       "context_refreshed": "Kontext neu geladen",
       "context_reset": "Zurücksetzen",
@@ -14,7 +14,12 @@
       "context_update_failed": "Fehlgeschlagen",
       "context_updated": "Aktualisiert",
       "fetch_failed": "Das Laden der Umgebungskonfiguration ist fehlgeschlagen.",
-      "no_properties": "Keine Eigenschaften gesetzt"
+      "no_properties": "Keine Eigenschaften gesetzt",
+      "refresh": "Umgebungskonfiguration neu laden",
+      "application": "Anwendung",
+      "instance": "Instanz",
+      "affects_all_instances": "Betrifft alle {count} Instanzen",
+      "affects_this_instance_only": "Betrifft nur diese Instanz"
     }
   }
 }

@@ -4,7 +4,7 @@
       "label": "Environment",
       "manager": "Environment Manager",
       "active_profile": "Profile",
-      "context_refresh": "Refresh Context",
+      "context_refresh": "Refresh context",
       "context_refresh_failed": "Failed",
       "context_refreshed": "Context refreshed",
       "context_reset": "Reset",
@@ -15,7 +15,12 @@
       "context_updated": "Updated",
       "fetch_failed": "Fetching environment failed.",
       "no_properties": "No properties set",
-      "title": "Environment Manager"
+      "title": "Environment Manager",
+      "refresh": "Refresh environment",
+      "application": "Application",
+      "instance": "Instance",
+      "affects_all_instances": "Affects all {count} instances",
+      "affects_this_instance_only": "Affects only this instance"
     }
   }
 }
