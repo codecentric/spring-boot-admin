@@ -18,7 +18,7 @@
     "ansi_up": "^5.0.0",
     "autolinker": "^3.14.2",
     "axios": "^0.21.1",
-    "bulma": "^0.9.1",
+    "bulma": "0.9.3",
     "bulma-badge": "^3.0.1",
     "core-js": "^3.6.5",
     "d3-array": "^2.8.0",
