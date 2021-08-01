@@ -17,10 +17,9 @@
 <template>
   <div class="field is-horizontal">
     <div class="field-body">
-      <btn-scope v-if="instanceCount > 1"
-                 :instance-count="instanceCount"
-                 :scope="currentScope"
-                 @changeScope="setScope"
+      <sba-toggle-scope-button v-if="instanceCount > 1"
+                               :instance-count="instanceCount"
+                               @changeScope="setScope"
       />
       <div class="field has-icons-left">
         <sba-confirm-button class="button is-light"
@@ -33,7 +32,7 @@
             <span v-else-if="refreshStatus === 'failed'" v-text="labelFailed" />
             <span v-else v-text="label" />
           </slot>
-          <slot :refresh-status="refreshStatus" v-else />
+          <slot v-else :refresh-status="refreshStatus" />
         </sba-confirm-button>
       </div>
     </div>
@@ -42,14 +41,16 @@
 
 <script>
 
-import BtnScope from '@/components/btn-scope';
 import {from, listen} from '@/utils/rxjs';
 
 export default {
-  components: {BtnScope},
   props: {
     instanceCount: {
       type: Number,
+      required: true
+    },
+    actionFn: {
+      type: Function,
       required: true
     },
     disabled: {type: Boolean, default: false},
@@ -69,10 +70,6 @@ export default {
         return this.$t('term.execution_successful')
       }
     },
-    actionFn: {
-      type: Function,
-      required: true
-    }
   },
   data: () => ({
     status: null,
@@ -87,11 +84,7 @@ export default {
       from(this.actionFn(this.currentScope))
         .pipe(listen(status => this.refreshStatus = status))
         .subscribe({
-          complete: () => {
-            setTimeout(() => this.refreshStatus = null, 2500);
-            return this.$emit('reset');
-          },
-          error: () => this.$emit('reset')
+          complete: () => setTimeout(() => this.refreshStatus = null, 2500)
         });
     }
   }
