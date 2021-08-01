@@ -18,7 +18,6 @@ export const parameters = {
   },
 }
 
-// THIS is my decorator
 export const decorators = [
   (story, context) => {
     const wrapped = story(context)
