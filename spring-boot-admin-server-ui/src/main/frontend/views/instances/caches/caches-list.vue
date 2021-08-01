@@ -76,7 +76,7 @@
 </template>
 <script>
 import Instance from '@/services/instance';
-import {concatMap, from, listen, of, tap} from '@/utils/rxjs';
+import {concatMap, listen, of, tap} from '@/utils/rxjs';
 import SbaActionButtonScoped from '@/components/sba-action-button-scoped';
 import Application from '@/services/application';
 

@@ -66,7 +66,7 @@
   import flatMap from 'lodash/flatMap';
   import isEmpty from 'lodash/isEmpty';
   import {VIEW_GROUP} from '../../index';
-  import Application from "@/services/application";
+  import Application from '@/services/application';
 
   const flattenCaches = cacheData => {
     if (isEmpty(cacheData.cacheManagers)) {
