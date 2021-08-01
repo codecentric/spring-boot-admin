@@ -3,26 +3,26 @@
     <div class="control">
       <button
         v-if="scope === 'application'"
-        class="loggers__toggle-scope button is-primary is-active"
+        class="button is-primary is-active"
         @click="$emit('changeScope', 'instance')"
       >
         <font-awesome-icon icon="cubes" />&nbsp;
-        <span v-text="$t('instances.loggers.application')" />
+        <span v-text="$t('term.application')" />
       </button>
       <button
         v-else
-        class="loggers__toggle-scope button"
+        class="button"
         @click="$emit('changeScope', 'application')"
       >
         <font-awesome-icon icon="cube" />&nbsp;&nbsp;
-        <span v-text="$t('instances.loggers.instance')" />
+        <span v-text="$t('term.instance')" />
       </button>
     </div>
     <p class="help has-text-centered">
       <span v-if="scope === 'application'"
-            v-text="$t('instances.loggers.affects_all_instances', {count: instanceCount})"
+            v-text="$t('term.affects_all_instances', {count: instanceCount})"
       />
-      <span v-else v-text="$t('instances.loggers.affects_this_instance_only')" />
+      <span v-else v-text="$t('term.affects_this_instance_only')" />
     </p>
   </div>
 </template>
@@ -41,3 +41,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.button {
+    width: 100%;
+}
+</style>

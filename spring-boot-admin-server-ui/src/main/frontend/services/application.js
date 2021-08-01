@@ -116,6 +116,10 @@ class Application {
     return this.axios.post(uri`actuator/refresh`);
   }
 
+  async clearCaches() {
+    return this.axios.delete(uri`actuator/caches`);
+  }
+
   static _transformResponse(data) {
     if (!data) {
       return data;

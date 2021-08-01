@@ -55,7 +55,7 @@
           </p>
         </div>
       </div>
-      <caches-list :instance="instance" :caches="filteredCaches" :is-loading="isLoading" />
+      <caches-list :instance="instance" :caches="filteredCaches" :is-loading="isLoading" :application="application" />
     </div>
   </section>
 </template>
@@ -66,6 +66,7 @@
   import flatMap from 'lodash/flatMap';
   import isEmpty from 'lodash/isEmpty';
   import {VIEW_GROUP} from '../../index';
+  import Application from "@/services/application";
 
   const flattenCaches = cacheData => {
     if (isEmpty(cacheData.cacheManagers)) {
@@ -83,6 +84,10 @@
     props: {
       instance: {
         type: Instance,
+        required: true
+      },
+      application: {
+        type: Application,
         required: true
       }
     },

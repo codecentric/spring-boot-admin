@@ -2,8 +2,6 @@
   "instances": {
     "loggers": {
       "label": "Logger",
-      "affects_all_instances": "Betrifft alle {count} Instanzen",
-      "affects_this_instance_only": "Betrifft nur diese Instanz",
       "application": "Anwendung",
       "fetch_failed": "Das Laden der Log-Informationen ist fehlgeschlagen.",
       "fetch_failed_some_instances": "Das Laden der Log-Informationen {failed} von {count} Instanzen ist fehlgeschlagen. Für diese wird das Konfigurieren der Logger sehr wahrscheinlich fehlschlagen.",

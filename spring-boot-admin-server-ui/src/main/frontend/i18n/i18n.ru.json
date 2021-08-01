@@ -3,6 +3,8 @@
     "server_connection_failed": "Ошибка подключения к серверу.  "
   },
   "term": {
+    "affects_all_instances": "Affects all {count} instances",
+    "affects_this_instance_only": "Affects only this instance",
     "application": "Приложение",
     "attributes": "Атрибуты",
     "bytes": "Байты",

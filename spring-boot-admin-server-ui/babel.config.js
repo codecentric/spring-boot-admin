@@ -19,12 +19,12 @@ module.exports = {
     '@vue/cli-plugin-babel/preset'
   ],
   plugins: [
-    ["@babel/plugin-proposal-optional-catch-binding"],
-    ["@babel/plugin-proposal-optional-chaining"]
+    ['@babel/plugin-proposal-optional-catch-binding'],
+    ['@babel/plugin-proposal-optional-chaining']
   ],
   env: {
     test: {
-      plugins: ['babel-plugin-transform-require-context']
+      plugins: ['babel-plugin-transform-require-context', 'require-context-hook']
     }
   }
 };

@@ -1,10 +1,10 @@
 <template>
-  <div class="message" :class="alertClass" role="alert">
+  <div class="message" :class="alertClass" role="alert" v-if="hasError">
     <div class="message-body">
       <strong>
         <font-awesome-icon :class="iconClass" icon="exclamation-triangle" />&nbsp;<span v-text="title" />
       </strong>
-      <p v-if="error.message" v-text="error.message" />
+      <p v-text="error.message" />
     </div>
   </div>
 </template>
@@ -26,7 +26,7 @@ export default {
     },
     error: {
       type: Error,
-      default: null
+      default: undefined
     },
     severity: {
       type: String,
@@ -36,10 +36,10 @@ export default {
   data() {
     return {
       alertClass: {
-          'is-danger': this.severity.toUpperCase() === Severity.ERROR,
-          'is-warning': this.severity.toUpperCase() === Severity.WARN,
-          'is-info': this.severity.toUpperCase() === Severity.INFO,
-          'is-success': this.severity.toUpperCase() === Severity.SUCCESS,
+        'is-danger': this.severity.toUpperCase() === Severity.ERROR,
+        'is-warning': this.severity.toUpperCase() === Severity.WARN,
+        'is-info': this.severity.toUpperCase() === Severity.INFO,
+        'is-success': this.severity.toUpperCase() === Severity.SUCCESS,
       },
       iconClass: {
         'has-text-danger': this.severity.toUpperCase() === Severity.ERROR,
@@ -47,5 +47,10 @@ export default {
       }
     }
   },
+  methods: {
+    hasError() {
+      return this.error !== undefined && this.error !== null;
+    }
+  }
 }
 </script>

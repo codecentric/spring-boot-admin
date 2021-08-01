@@ -19,41 +19,39 @@
     <sba-alert v-if="error" :error="error" :title="$t('instances.loggers.fetch_failed')" />
 
     <div v-sticks-below="['#navigation']" class="loggers__header">
-      <div class="field is-horizontal">
-        <div class="field-body">
-          <loggers-btn-scope v-if="instanceCount > 1" :instance-count="instanceCount" :scope="scope" @changeScope="$emit('changeScope', $event)" />
+      <div class="field is-grouped">
+        <div class="control">
+          <btn-scope v-if="instanceCount > 1" :instance-count="instanceCount" :scope="scope"
+                     @changeScope="$emit('changeScope', $event)"
+          />
+        </div>
+        <div class="control is-expanded">
+          <div class="field has-addons">
+            <p class="control is-expanded has-icons-left">
+              <input v-model="filter.name" class="input" type="search">
+              <span class="icon is-small is-left">
+                <font-awesome-icon icon="filter" />
+              </span>
+            </p>
+            <p class="control">
+              <span class="button is-static">
+                <span v-text="filteredLoggers.length" /> / <span v-text="loggerConfig.loggers.length" />
+              </span>
+            </p>
+          </div>
 
-          <div class="field is-vertical">
-            <div class="field-body">
-              <div class="field has-addons">
-                <p class="control is-expanded has-icons-left">
-                  <input v-model="filter.name" class="input" type="search">
-                  <span class="icon is-small is-left">
-                    <font-awesome-icon icon="filter" />
-                  </span>
-                </p>
-                <p class="control">
-                  <span class="button is-static">
-                    <span v-text="filteredLoggers.length" /> / <span v-text="loggerConfig.loggers.length" />
-                  </span>
-                </p>
-              </div>
+          <div class="field is-grouped">
+            <div class="control">
+              <label class="checkbox">
+                <input v-model="filter.classOnly" type="checkbox">
+                {{ $t('instances.loggers.filter.class_only') }}
+              </label>
             </div>
-            <div class="field-body">
-              <div class="field is-grouped">
-                <div class="control">
-                  <label class="checkbox">
-                    <input v-model="filter.classOnly" type="checkbox">
-                    <span v-text="$t('instances.loggers.filter.class_only')" />
-                  </label>
-                </div>
-                <div class="control">
-                  <label class="checkbox">
-                    <input v-model="filter.configuredOnly" type="checkbox">
-                    <span v-text="$t('instances.loggers.filter.configured')" />
-                  </label>
-                </div>
-              </div>
+            <div class="control">
+              <label class="checkbox">
+                <input v-model="filter.configuredOnly" type="checkbox">
+                {{ $t('instances.loggers.filter.configured') }}
+              </label>
             </div>
           </div>
         </div>
@@ -82,7 +80,6 @@
 import sticksBelow from '@/directives/sticks-below';
 import {finalize, from, listen} from '@/utils/rxjs';
 import LoggersList from './loggers-list';
-import LoggersBtnScope from '@/views/instances/loggers/loggers-btn-scope';
 
 const isClassName = name => /\.[A-Z]/.test(name);
 
@@ -106,7 +103,7 @@ const addLoggerCreationEntryIfLoggerNotPresent = (nameFilter, loggers) => {
 };
 
 export default {
-  components: {LoggersBtnScope, LoggersList},
+  components: {LoggersList},
   directives: {sticksBelow},
   props: {
     scope: {

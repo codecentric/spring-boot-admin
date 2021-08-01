@@ -19,7 +19,7 @@
              :title="$t('instances.env.manager')"
   >
     <datalist id="allPropertyNames">
-      <option v-for="name in allPropertyNames" :key="name" v-text="name"/>
+      <option v-for="name in allPropertyNames" :key="name" v-text="name" />
     </datalist>
     <div class="field is-horizontal" v-for="(prop, index) in managedProperties" :key="`managed-${index}`">
       <div class="field-body">
@@ -29,7 +29,7 @@
                    v-model="prop.name" @input="handlePropertyNameChange(prop, index)"
             >
           </div>
-          <p class="help is-danger" v-text="prop.validation"/>
+          <p class="help is-danger" v-text="prop.validation" />
         </div>
         <div class="field">
           <div class="control has-icons-right" :class="{'is-loading' : prop.status === 'executing'}">
@@ -37,13 +37,13 @@
                    @input="prop.status = null"
             >
             <span class="icon is-right has-text-success" v-if="prop.status === 'completed'">
-              <font-awesome-icon icon="check"/>
+              <font-awesome-icon icon="check" />
             </span>
             <span class="icon is-right has-text-warning" v-else-if="prop.status === 'failed'">
-              <font-awesome-icon icon="exclamation-triangle"/>
+              <font-awesome-icon icon="exclamation-triangle" />
             </span>
             <span class="icon is-right" v-else-if="prop.input !== prop.value">
-              <font-awesome-icon icon="pencil-alt"/>
+              <font-awesome-icon icon="pencil-alt" />
             </span>
           </div>
         </div>
@@ -58,9 +58,9 @@
                     :disabled="!hasManagedProperty || resetStatus === 'executing'"
                     @click="resetEnvironment"
             >
-              <span v-if="resetStatus === 'completed'" v-text="$t('instances.env.context_resetted')"/>
-              <span v-else-if="resetStatus === 'failed'" v-text="$t('instances.env.context_reset_failed')"/>
-              <span v-else v-text="$t('instances.env.context_reset')"/>
+              <span v-if="resetStatus === 'completed'" v-text="$t('instances.env.context_resetted')" />
+              <span v-else-if="resetStatus === 'failed'" v-text="$t('instances.env.context_reset_failed')" />
+              <span v-else v-text="$t('instances.env.context_reset')" />
             </button>
           </div>
           <div class="control">
@@ -69,9 +69,9 @@
                     :disabled="hasErrorProperty || !hasChangedProperty || updateStatus === 'executing'"
                     @click="updateEnvironment"
             >
-              <span v-if="updateStatus === 'completed'" v-text="$t('instances.env.context_updated')"/>
-              <span v-else-if="updateStatus === 'failed'" v-text="$t('instances.env.context_update_failed')"/>
-              <span v-else v-text="$t('instances.env.context_update')"/>
+              <span v-if="updateStatus === 'completed'" v-text="$t('instances.env.context_updated')" />
+              <span v-else-if="updateStatus === 'failed'" v-text="$t('instances.env.context_update_failed')" />
+              <span v-else v-text="$t('instances.env.context_update')" />
             </button>
           </div>
         </div>
