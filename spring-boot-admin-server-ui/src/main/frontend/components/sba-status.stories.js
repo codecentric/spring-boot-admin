@@ -1,5 +1,4 @@
 import SbaStatus from './sba-status.vue';
-import moment from 'moment';
 
 export default {
   component: SbaStatus,

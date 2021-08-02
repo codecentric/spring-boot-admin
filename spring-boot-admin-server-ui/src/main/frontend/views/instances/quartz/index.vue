@@ -72,10 +72,6 @@
 import {VIEW_GROUP} from '@/views';
 import Instance from '@/services/instance';
 
-const TRIGGER_STATE = {
-  NONE: 'NONE', NORMAL: 'NORMAL', PAUSED: 'PAUSED', COMPLETE: 'COMPLETE', ERROR: 'ERROR', BLOCKED: 'BLOCKED'
-}
-
 export default {
   props: {
     instance: {

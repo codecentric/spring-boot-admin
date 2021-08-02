@@ -78,10 +78,9 @@ import Instance from '@/services/instance';
 import sortBy from 'lodash/sortBy';
 import Metric from './metric';
 import {VIEW_GROUP} from '../../index';
-import SbaError from '@/components/sba-alert';
 
 export default {
-  components: {SbaError, Metric},
+  components: {Metric},
   props: {
     instance: {
       type: Instance,

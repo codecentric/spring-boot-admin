@@ -15,8 +15,8 @@
  */
 
 
-import {toMilliseconds} from "@/utils/iso8601-duration";
-import each from "jest-each";
+import {toMilliseconds} from '@/utils/iso8601-duration';
+import each from 'jest-each';
 
 
 describe('iso8601-duration', () => {

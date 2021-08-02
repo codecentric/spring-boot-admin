@@ -65,10 +65,16 @@
           </div>
           <div class="navbar-item has-dropdown is-hoverable">
             <a class="navbar-link">
-              <span v-text="currentLanguage" />
+              <span>{{ currentLanguage.label }} ({{ currentLanguage.locale }})</span>
             </a>
             <div class="navbar-dropdown">
-              <a class="navbar-item" @click="changeLanguage(language)" v-for="language in availableLanguages" :key="language" v-text="language" />
+              <a class="navbar-item"
+                 @click="changeLanguage(language)"
+                 v-for="language in availableLanguages"
+                 :key="language.locale"
+              >
+                {{ language.label }} ({{ language.locale }})
+              </a>
             </div>
           </div>
         </div>
@@ -78,89 +84,105 @@
 </template>
 
 <script>
-  import sbaConfig from '@/sba-config'
-  import {compareBy} from '@/utils/collections';
-  import {AVAILABLE_LANGUAGES} from '@/i18n';
-  import moment from 'moment';
-  import isEmpty from 'lodash/isEmpty';
+import sbaConfig from '@/sba-config'
+import {compareBy} from '@/utils/collections';
+import {AVAILABLE_LANGUAGES} from '@/i18n';
+import moment from 'moment';
+import isEmpty from 'lodash/isEmpty';
 
-  const readCookie = (name) => {
-    const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
-    return (match ? decodeURIComponent(match[3]) : null);
-  };
+const readCookie = (name) => {
+  const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
+  return (match ? decodeURIComponent(match[3]) : null);
+};
 
-  export default {
-    data: () => ({
-      showMenu: false,
-      brand: '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>',
-      userName: null,
-      csrfToken: null,
-      csrfParameterName: null,
-      availableLanguages: [],
-      currentLanguage: null
-    }),
-    props: {
-      views: {
-        type: Array,
-        default: () => []
-      },
-      applications: {
-        type: Array,
-        default: () => [],
-      },
-      error: {
-        type: Error,
-        default: null
-      }
+export default {
+  data: () => ({
+    showMenu: false,
+    brand: '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>',
+    userName: null,
+    csrfToken: null,
+    csrfParameterName: null,
+    currentLanguage: null
+  }),
+  props: {
+    views: {
+      type: Array,
+      default: () => []
     },
-    computed: {
-      enabledViews() {
-        return this.views.filter(
-          view => view.handle && (typeof view.isEnabled === 'undefined' || view.isEnabled())
-        ).sort(compareBy(v => v.order));
-      }
+    applications: {
+      type: Array,
+      default: () => [],
     },
-    methods: {
-      changeLanguage(lang) {
-        this.$i18n.locale = lang;
-        this.currentLanguage = lang;
-        moment.locale(lang);
-      }
-    },
-    created() {
-      this.brand = sbaConfig.uiSettings.brand;
-      this.userName = sbaConfig.user ? sbaConfig.user.name : null;
-      this.csrfToken = readCookie('XSRF-TOKEN');
-      this.csrfParameterName = sbaConfig.csrf.parameterName;
-      this.availableLanguages = (isEmpty(sbaConfig.uiSettings.availableLanguages)) ?
-        AVAILABLE_LANGUAGES :
-        sbaConfig.uiSettings.availableLanguages.filter(language => AVAILABLE_LANGUAGES.includes(language))
-      this.currentLanguage = this.$i18n.locale;
-    },
-    mounted() {
-      document.documentElement.classList.add('has-navbar-fixed-top');
-    },
-    beforeDestroy() {
-      document.documentElement.classList.remove('has-navbar-fixed-top')
+    error: {
+      type: Error,
+      default: null
     }
+  },
+  computed: {
+    enabledViews() {
+      return this.views.filter(
+        view => view.handle && (typeof view.isEnabled === 'undefined' || view.isEnabled())
+      ).sort(compareBy(v => v.order));
+    },
+    availableLanguages() {
+      let valueFromServer = sbaConfig.uiSettings.availableLanguages;
+
+      let languages = (isEmpty(valueFromServer))
+        ? AVAILABLE_LANGUAGES : valueFromServer.filter(language => AVAILABLE_LANGUAGES.includes(language));
+
+      return languages.map(locale => {
+        try {
+          return {
+            locale,
+            label: new Intl.DisplayNames([locale.toUpperCase(), this.$i18n.locale], {type: 'region'}).of(locale.toUpperCase())
+          };
+        } catch (e) {
+          return {
+            locale,
+            label: locale
+          };
+        }
+      })
+    }
+  },
+  methods: {
+    changeLanguage(lang) {
+      this.$i18n.locale = lang.locale;
+      this.currentLanguage = lang;
+      moment.locale(this.$i18n.locale);
+    }
+  },
+  created() {
+    this.brand = sbaConfig.uiSettings.brand;
+    this.userName = sbaConfig.user ? sbaConfig.user.name : null;
+    this.csrfToken = readCookie('XSRF-TOKEN');
+    this.csrfParameterName = sbaConfig.csrf.parameterName;
+    this.currentLanguage = {locale: this.$i18n.locale, label: this.$i18n.locale};
+  },
+  mounted() {
+    document.documentElement.classList.add('has-navbar-fixed-top');
+  },
+  beforeDestroy() {
+    document.documentElement.classList.remove('has-navbar-fixed-top')
   }
+}
 </script>
 
 <style lang="scss">
-  @import "~@/assets/css/utilities";
+@import "~@/assets/css/utilities";
 
-  .logo {
-    align-self: center;
-    flex-basis: 12em;
-    flex-basis: content;
-    max-height: 2.25em;
-    padding: 0.5em 1em 0.5em 0.5em;
-    font-size: 1.5em;
-    font-weight: 600;
-    white-space: nowrap;
+.logo {
+  align-self: center;
+  flex-basis: 12em;
+  flex-basis: content;
+  max-height: 2.25em;
+  padding: 0.5em 1em 0.5em 0.5em;
+  font-size: 1.5em;
+  font-weight: 600;
+  white-space: nowrap;
 
-    img {
-      margin-right: 0.5em;
-    }
+  img {
+    margin-right: 0.5em;
   }
+}
 </style>

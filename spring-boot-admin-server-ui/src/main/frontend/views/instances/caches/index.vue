@@ -17,46 +17,42 @@
 <template>
   <section class="section">
     <div
-      class="container"
+      v-if="error"
+      class="message is-danger"
     >
-      <div
-        v-if="error"
-        class="message is-danger"
-      >
-        <div class="message-body">
-          <strong>
-            <font-awesome-icon
-              class="has-text-danger"
-              icon="exclamation-triangle"
-            />
-            <span v-text="$t('instances.caches.fetch_failed')" />
-          </strong>
-          <p v-text="error.message" />
-        </div>
+      <div class="message-body">
+        <strong>
+          <font-awesome-icon
+            class="has-text-danger"
+            icon="exclamation-triangle"
+          />
+          <span v-text="$t('instances.caches.fetch_failed')" />
+        </strong>
+        <p v-text="error.message" />
       </div>
-      <div class="field-body">
-        <div class="field has-addons has-icons-left">
-          <p class="control is-expanded has-icons-left">
-            <input
-              class="input"
-              type="search"
-              v-model="filter"
-            >
-            <span class="icon is-small is-left">
-              <font-awesome-icon icon="filter" />
-            </span>
-          </p>
-          <p class="control">
-            <span class="button is-static">
-              <span v-text="filteredCaches.length" />
-              /
-              <span v-text="caches.length" />
-            </span>
-          </p>
-        </div>
-      </div>
-      <caches-list :instance="instance" :caches="filteredCaches" :is-loading="isLoading" />
     </div>
+    <div class="field-body">
+      <div class="field has-addons has-icons-left">
+        <p class="control is-expanded has-icons-left">
+          <input
+            class="input"
+            type="search"
+            v-model="filter"
+          >
+          <span class="icon is-small is-left">
+            <font-awesome-icon icon="filter" />
+          </span>
+        </p>
+        <p class="control">
+          <span class="button is-static">
+            <span v-text="filteredCaches.length" />
+            /
+            <span v-text="caches.length" />
+          </span>
+        </p>
+      </div>
+    </div>
+    <caches-list :instance="instance" :caches="filteredCaches" :is-loading="isLoading" :application="application" />
   </section>
 </template>
 
@@ -66,6 +62,7 @@
   import flatMap from 'lodash/flatMap';
   import isEmpty from 'lodash/isEmpty';
   import {VIEW_GROUP} from '../../index';
+  import Application from '@/services/application';
 
   const flattenCaches = cacheData => {
     if (isEmpty(cacheData.cacheManagers)) {
@@ -83,6 +80,10 @@
     props: {
       instance: {
         type: Instance,
+        required: true
+      },
+      application: {
+        type: Application,
         required: true
       }
     },

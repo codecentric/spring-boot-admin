@@ -3,6 +3,8 @@
     "server_connection_failed": "Verbindung zum Server fehlgeschlagen."
   },
   "term": {
+    "affects_all_instances": "Betrifft alle {count} Instanzen",
+    "affects_this_instance_only": "Betrifft nur diese Instanz",
     "application": "Anwendung",
     "attributes": "Attribute",
     "bytes": "Bytes",

@@ -59,6 +59,7 @@
     "@storybook/preset-scss": "^1.0.3",
     "@storybook/vue": "^6.3.4",
     "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/user-event": "^13.2.1",
     "@testing-library/vue": "^5.8.0",
     "@vue/cli-plugin-babel": "^4.5.8",
     "@vue/cli-plugin-eslint": "^4.5.8",
@@ -70,6 +71,7 @@
     "babel-eslint": "^10.1.0",
     "babel-jest": "^26.6.3",
     "babel-loader": "^8.2.2",
+    "babel-plugin-require-context-hook": "^1.0.0",
     "babel-plugin-transform-require-context": "^0.1.1",
     "css-loader": "^3.6.0",
     "eslint": "^6.8.0",
@@ -139,8 +141,11 @@
     "not ie <= 8"
   ],
   "jest": {
+    "setupFiles": [
+      "<rootDir>/.jest/register-context.js"
+    ],
     "setupFilesAfterEnv": [
-      "<rootDir>/jest.setup.js"
+      "<rootDir>/.jest/jest.setup.js"
     ],
     "testEnvironment": "jest-environment-jsdom-sixteen",
     "moduleFileExtensions": [

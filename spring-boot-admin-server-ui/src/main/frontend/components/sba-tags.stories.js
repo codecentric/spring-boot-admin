@@ -14,7 +14,7 @@ const Template = (args, {argTypes}) => ({
 export const Tags = Template.bind({});
 Tags.args = {
   tags: {
-    "This is a key": "This a value",
-    simpleKey: "value",
+    'This is a key': 'This a value',
+    simpleKey: 'value',
   }
 };

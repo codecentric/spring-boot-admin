@@ -2,8 +2,6 @@
   "instances": {
     "loggers": {
       "label": "Журналы",
-      "affects_all_instances": "Влияет на все экземпляры ({count}) ",
-      "affects_this_instance_only": "Влияет только на этот экземпляр",
       "application": "Приложение",
       "fetch_failed": "Ошибка при получении журналов.",
       "filter": {
