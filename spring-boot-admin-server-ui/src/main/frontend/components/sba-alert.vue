@@ -42,7 +42,7 @@ export default {
     },
     error: {
       type: Error,
-      default: undefined
+      default: null
     },
     severity: {
       type: String,

@@ -63,20 +63,10 @@
               </a>
             </div>
           </div>
-          <div class="navbar-item has-dropdown is-hoverable">
-            <a class="navbar-link">
-              <span>{{ currentLanguage.label }} ({{ currentLanguage.locale }})</span>
-            </a>
-            <div class="navbar-dropdown">
-              <a class="navbar-item"
-                 @click="changeLanguage(language)"
-                 v-for="language in availableLanguages"
-                 :key="language.locale"
-              >
-                {{ language.label }} ({{ language.locale }})
-              </a>
-            </div>
-          </div>
+          <navbar-item-language-selector :current-locale="$i18n.locale"
+                                         :available-locales="getAvailableLocales()"
+                                         @localeChanged="changeLocale"
+          />
         </div>
       </div>
     </div>
@@ -86,9 +76,9 @@
 <script>
 import sbaConfig from '@/sba-config'
 import {compareBy} from '@/utils/collections';
-import {AVAILABLE_LANGUAGES} from '@/i18n';
+import {getAvailableLocales} from '@/i18n';
 import moment from 'moment';
-import isEmpty from 'lodash/isEmpty';
+import NavbarItemLanguageSelector from '@/shell/navbar-item-language-selector';
 
 const readCookie = (name) => {
   const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
@@ -96,6 +86,7 @@ const readCookie = (name) => {
 };
 
 export default {
+  components: {NavbarItemLanguageSelector},
   data: () => ({
     showMenu: false,
     brand: '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>',
@@ -124,31 +115,11 @@ export default {
         view => view.handle && (typeof view.isEnabled === 'undefined' || view.isEnabled())
       ).sort(compareBy(v => v.order));
     },
-    availableLanguages() {
-      let valueFromServer = sbaConfig.uiSettings.availableLanguages;
-
-      let languages = (isEmpty(valueFromServer))
-        ? AVAILABLE_LANGUAGES : valueFromServer.filter(language => AVAILABLE_LANGUAGES.includes(language));
-
-      return languages.map(locale => {
-        try {
-          return {
-            locale,
-            label: new Intl.DisplayNames([locale.toUpperCase(), this.$i18n.locale], {type: 'region'}).of(locale.toUpperCase())
-          };
-        } catch (e) {
-          return {
-            locale,
-            label: locale
-          };
-        }
-      })
-    }
   },
   methods: {
-    changeLanguage(lang) {
-      this.$i18n.locale = lang.locale;
-      this.currentLanguage = lang;
+    getAvailableLocales,
+    changeLocale(locale) {
+      this.$i18n.locale = locale;
       moment.locale(this.$i18n.locale);
     }
   },
@@ -157,7 +128,6 @@ export default {
     this.userName = sbaConfig.user ? sbaConfig.user.name : null;
     this.csrfToken = readCookie('XSRF-TOKEN');
     this.csrfParameterName = sbaConfig.csrf.parameterName;
-    this.currentLanguage = {locale: this.$i18n.locale, label: this.$i18n.locale};
   },
   mounted() {
     document.documentElement.classList.add('has-navbar-fixed-top');
@@ -173,7 +143,6 @@ export default {
 
 .logo {
   align-self: center;
-  flex-basis: 12em;
   flex-basis: content;
   max-height: 2.25em;
   padding: 0.5em 1em 0.5em 0.5em;
