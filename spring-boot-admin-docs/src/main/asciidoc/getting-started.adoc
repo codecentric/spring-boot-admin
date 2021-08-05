@@ -154,6 +154,7 @@ include::{samples-dir}/spring-boot-admin-sample-eureka/pom.xml[tags=dependency-e
 @Configuration
 @EnableAutoConfiguration
 @EnableDiscoveryClient
+@EnableScheduling
 @EnableAdminServer
 public class SpringBootAdminApplication {
     public static void main(String[] args) {
