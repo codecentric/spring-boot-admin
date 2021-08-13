@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.web.client;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
@@ -63,7 +64,8 @@ public class InstanceWebClient {
 
 	private static ExchangeFilterFunction toExchangeFilterFunction(InstanceExchangeFilterFunction filter) {
 		return (request, next) -> request.attribute(ATTRIBUTE_INSTANCE).filter(Instance.class::isInstance)
-				.map(Instance.class::cast).map((instance) -> filter.filter(instance, request, next))
+				.map(Instance.class::cast)
+				.map((instance) -> filter.filter(instance, request, next))
 				.orElse(next.exchange(request));
 	}
 

@@ -87,8 +87,8 @@ public class AdminServerAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public StatusUpdater statusUpdater(InstanceRepository instanceRepository,
-			InstanceWebClient.Builder instanceWebClientBulder) {
-		return new StatusUpdater(instanceRepository, instanceWebClientBulder.build());
+			InstanceWebClient webClient) {
+		return new StatusUpdater(instanceRepository, webClient);
 	}
 
 	@Bean(initMethod = "start", destroyMethod = "stop")
@@ -103,8 +103,8 @@ public class AdminServerAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public EndpointDetector endpointDetector(InstanceRepository instanceRepository,
-			InstanceWebClient.Builder instanceWebClientBuilder) {
-		InstanceWebClient instanceWebClient = instanceWebClientBuilder.build();
+			InstanceWebClient webClient) {
+		InstanceWebClient instanceWebClient = webClient;
 		ChainingStrategy strategy = new ChainingStrategy(new QueryIndexEndpointStrategy(instanceWebClient),
 				new ProbeEndpointsStrategy(instanceWebClient, this.adminServerProperties.getProbedEndpoints()));
 		return new EndpointDetector(instanceRepository, strategy);
@@ -120,8 +120,8 @@ public class AdminServerAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public InfoUpdater infoUpdater(InstanceRepository instanceRepository,
-			InstanceWebClient.Builder instanceWebClientBuilder) {
-		return new InfoUpdater(instanceRepository, instanceWebClientBuilder.build());
+			InstanceWebClient webClient) {
+		return new InfoUpdater(instanceRepository, webClient);
 	}
 
 	@Bean(initMethod = "start", destroyMethod = "stop")

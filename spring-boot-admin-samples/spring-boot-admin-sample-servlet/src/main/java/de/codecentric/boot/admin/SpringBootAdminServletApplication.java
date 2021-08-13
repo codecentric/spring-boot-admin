@@ -55,14 +55,37 @@ public class SpringBootAdminServletApplication {
 		app.run(args);
 	}
 
+	private final java.util.concurrent.atomic.AtomicInteger a = new java.util.concurrent.atomic.AtomicInteger();
+
+	@Bean
+	@org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+	public de.codecentric.boot.admin.server.web.client.InstanceWebClient webClient(de.codecentric.boot.admin.server.web.client.InstanceWebClient.Builder builder) {
+		return builder.build();
+	}
+
+	@Bean
+	@org.springframework.core.annotation.Order(300)
+	public InstanceExchangeFilterFunction loggingInstanceExchangeFilter() {
+		return (instance, request, next) -> {
+			return next.exchange(request).doOnSuccess((resp) -> {
+				a.set(0);
+				log.info("exchange filter function: onsuccess [instance={}]", instance.getId());
+			});
+		};
+	}
+
 	// tag::customization-instance-exchange-filter-function[]
 	@Bean
 	public InstanceExchangeFilterFunction auditLog() {
-		return (instance, request, next) -> next.exchange(request).doOnSubscribe((s) -> {
-			if (HttpMethod.DELETE.equals(request.method()) || HttpMethod.POST.equals(request.method())) {
-				log.info("{} for {} on {}", request.method(), instance.getId(), request.url());
-			}
-		});
+		return (instance, request, next) -> {
+			log.info("auditLog: call [instance={}]", instance.getId());
+
+			return next.exchange(request).doOnSubscribe((s) -> {
+				if (org.springframework.http.HttpMethod.DELETE.equals(request.method()) || org.springframework.http.HttpMethod.POST.equals(request.method())) {
+					log.info("{} for {} on {}", request.method(), instance.getId(), request.url());
+				}
+			});
+		};
 	}
 	// end::customization-instance-exchange-filter-function[]
 

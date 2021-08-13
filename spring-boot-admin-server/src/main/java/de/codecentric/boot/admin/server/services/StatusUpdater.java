@@ -72,9 +72,11 @@ public class StatusUpdater {
 		}
 
 		log.debug("Update status for {}", instance);
-		return this.instanceWebClient.instance(instance).get().uri(Endpoint.HEALTH)
-				.exchangeToMono(this::convertStatusInfo).log(log.getName(), Level.FINEST)
-				.doOnError((ex) -> logError(instance, ex)).onErrorResume(this::handleError)
+		reactor.core.publisher.Mono<de.codecentric.boot.admin.server.domain.values.StatusInfo> log = this.instanceWebClient.instance(instance).get().uri(de.codecentric.boot.admin.server.domain.values.Endpoint.HEALTH)
+			.exchangeToMono(this::convertStatusInfo).log(de.codecentric.boot.admin.server.services.StatusUpdater.log.getName(), java.util.logging.Level.FINEST);
+		return log
+				.doOnError((ex) -> logError(instance, ex))
+				.onErrorResume(this::handleError)
 				.map(instance::withStatusInfo);
 	}
 
