@@ -21,19 +21,16 @@
         <th v-html="$t('instances.caches.name')" />
         <th v-html="$t('instances.caches.cache_manager')" />
         <th class="is-narrow">
-          <sba-confirm-button
-            class="button"
-            :class="{'is-loading' : clearingAll === 'executing', 'is-info' : clearingAll === 'completed', 'is-danger' : clearingAll === 'failed'}"
-            :disabled="clearingAll !== null"
-            @click="clearCaches"
-          >
-            <span v-if="clearingAll === 'completed'" v-text="$t('term.cleared')" />
-            <span v-else-if="clearingAll === 'failed'" v-text="$t('term.failed')" />
-            <span v-else>
-              <font-awesome-icon icon="trash" />&nbsp;
-              <span v-text="$t('term.clear')" />
-            </span>
-          </sba-confirm-button>
+          <sba-action-button-scoped :instance-count="application.instances.length" :action-fn="clearCaches">
+            <template v-slot="slotProps">
+              <span v-if="slotProps.refreshStatus === 'completed'" v-text="$t('term.execution_successful')" />
+              <span v-else-if="slotProps.refreshStatus === 'failed'" v-text="$t('term.execution_failed')" />
+              <span v-else>
+                <font-awesome-icon icon="trash" />&nbsp;
+                <span v-text="$t('term.clear')" />
+              </span>
+            </template>
+          </sba-action-button-scoped>
         </th>
       </tr>
     </thead>
@@ -78,75 +75,83 @@
   </table>
 </template>
 <script>
-  import Instance from '@/services/instance';
-  import {concatMap, from, listen, of, tap} from '@/utils/rxjs';
+import Instance from '@/services/instance';
+import {concatMap, listen, of, tap} from '@/utils/rxjs';
+import SbaActionButtonScoped from '@/components/sba-action-button-scoped';
+import Application from '@/services/application';
 
-
-  export default {
-    name: 'CachesList',
-    props: {
-      caches: {
-        type: Array,
-        default: () => []
-      },
-      instance: {
-        type: Instance,
-        required: true
-      },
-      isLoading: {
-        type: Boolean,
-        default: false
+export default {
+  name: 'CachesList',
+  components: {SbaActionButtonScoped},
+  props: {
+    caches: {
+      type: Array,
+      default: () => []
+    },
+    instance: {
+      type: Instance,
+      required: true
+    },
+    application: {
+      type: Application,
+      required: true
+    },
+    isLoading: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data: () => ({
+    clearing: {},
+    clearingAll: null,
+  }),
+  methods: {
+    clearCaches(scope) {
+      if (scope === 'instance') {
+        return this.instance.clearCaches();
+      } else {
+        return this.application.clearCaches();
       }
     },
-    data: () => ({
-      clearing: {},
-      clearingAll: null,
-    }),
-    methods: {
-      clearCaches() {
-        const vm = this;
-        from(vm.instance.clearCaches())
-          .pipe(listen(status => vm.clearingAll = status))
-          .subscribe({
-            complete: () => {
-              setTimeout(() => vm.clearingAll = null, 2500);
-              return vm.$emit('cleared', '*');
+    clearCache(cache) {
+      this._clearCache(cache)
+        .pipe(listen(status => {
+          this.clearing = {
+            ...this.clearing,
+            [cache]: status
+          }
+        }))
+        .subscribe({
+          complete: () => {
+            setTimeout(() => {
+              delete this.clearing[cache];
+              this.clearing = {...this.clearing};
+            }, 2500);
+            return this.$emit('cleared', cache);
+          },
+        });
+    },
+    _clearCache(cache) {
+      return of(cache)
+        .pipe(
+          concatMap(async (cache) => {
+            await this.instance.clearCache(cache);
+            return cache;
+          }),
+          tap({
+            error: error => {
+              console.warn(`Clearing cache ${cache} failed:`, error);
             }
-          });
-      },
-      clearCache(cache) {
-        const vm = this;
-        vm._clearCache(cache)
-          .pipe(listen(status => vm.$set(vm.clearing, cache, status)))
-          .subscribe({
-            complete: () => {
-              setTimeout(() => vm.$delete(vm.clearing, cache), 2500);
-              return vm.$emit('cleared', cache);
-            },
-          });
-      },
-      _clearCache(cache) {
-        const vm = this;
-        return of(cache)
-          .pipe(
-            concatMap(async cache => {
-              await vm.instance.clearCache(cache);
-              return cache;
-            }),
-            tap({
-              error: error => {
-                console.warn(`Clearing cache ${cache} failed:`, error);
-              }
-            })
-          );
-      }
+          })
+        );
     }
   }
+}
 </script>
 <style lang="scss">
-  .caches {
-    td, th {
-      vertical-align: middle;
-    }
+.caches {
+  td, th {
+    vertical-align: middle;
   }
+}
 </style>

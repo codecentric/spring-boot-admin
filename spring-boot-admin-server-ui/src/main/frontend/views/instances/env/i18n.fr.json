@@ -15,7 +15,10 @@
       "context_updated": "Mis à jour",
       "fetch_failed": "Echec de la récupération des environnement",
       "no_properties": "Pas de propriétés définies",
-      "title": "Gestion d'environnement"
+      "title": "Gestion d'environnement",
+      "refresh": "Refresh environment",
+      "application": "Application",
+      "instance": "Instance"
     }
   }
 }

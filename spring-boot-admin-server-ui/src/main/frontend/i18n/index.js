@@ -1,6 +1,8 @@
 import merge from 'lodash/merge';
 import Vue from 'vue';
 import VueI18n from 'vue-i18n';
+import sbaConfig from '@/sba-config';
+import isEmpty from 'lodash/isEmpty';
 
 Vue.use(VueI18n);
 
@@ -19,7 +21,14 @@ const messages = context.keys()
   })
   .reduce((prev, cur) => merge(prev, cur), {});
 
-export const AVAILABLE_LANGUAGES = Object.keys(messages);
+
+export const getAvailableLocales = () => {
+  let valueFromServer = sbaConfig.uiSettings.availableLanguages;
+
+  const strings = Object.keys(messages);
+  return (isEmpty(valueFromServer))
+    ? strings : valueFromServer.filter(language => strings.includes(language));
+};
 
 let browserLanguage = navigator.language;
 if (!browserLanguage.includes('zh')) {
@@ -28,7 +37,7 @@ if (!browserLanguage.includes('zh')) {
 
 const i18n = new VueI18n({
   fallbackLocale: 'en',
-  locale: AVAILABLE_LANGUAGES.includes(browserLanguage) ? browserLanguage : 'en',
+  locale: getAvailableLocales().includes(browserLanguage) ? browserLanguage : 'en',
   silentFallbackWarn: process.env.NODE_ENV === 'production',
   silentTranslationWarn: process.env.NODE_ENV === 'production',
   messages

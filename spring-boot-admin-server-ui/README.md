@@ -34,11 +34,22 @@ npm run watch
 ```
 
 ## Run tests
+
 ```shell
 npm run test
 ```
 
 Repeated tests with watching the files:
+
 ```shell
 npm run watch:test
 ```
+
+## Run Storybook
+
+```shell
+npm run storybook
+```
+
+For some recurring UI elements we have created components that should be reused. To see how they work and which
+options (props) they provide, use Storybook (see https://storybook.js.org/).

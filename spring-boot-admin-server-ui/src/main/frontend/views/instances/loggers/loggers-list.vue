@@ -16,6 +16,13 @@
 
 <template>
   <table class="table is-hoverable is-fullwidth">
+    <thead>
+      <tr>
+        <th>
+          Logger
+        </th>
+      </tr>
+    </thead>
     <tbody>
       <tr v-for="logger in loggers.slice(0, this.visibleLimit)" :key="logger.name">
         <td>

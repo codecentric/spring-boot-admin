@@ -2,8 +2,6 @@
   "instances": {
     "loggers": {
       "label": "日志配置",
-      "affects_all_instances": "{count} 个实例被影响",
-      "affects_this_instance_only": "只影响当前实例",
       "application": "应用",
       "fetch_failed": "获取日志配置失败。",
       "filter": {

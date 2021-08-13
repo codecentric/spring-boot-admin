@@ -15,8 +15,9 @@
   -->
 
 <template>
-  <div class="box">
-    <h1 class="is-size-6" v-text="$t('instances.env.manager')" />
+  <sba-panel :header-sticks-below="['#navigation']"
+             :title="$t('instances.env.manager')"
+  >
     <datalist id="allPropertyNames">
       <option v-for="name in allPropertyNames" :key="name" v-text="name" />
     </datalist>
@@ -49,21 +50,6 @@
       </div>
     </div>
     <div class="field is-horizontal">
-      <div class="field-body" v-if="instance.hasEndpoint('refresh')">
-        <div class="field">
-          <div class="control">
-            <sba-confirm-button class="button is-light"
-                                :class="{'is-loading' : refreshStatus === 'executing', 'is-danger' : refreshStatus === 'failed', 'is-info' : refreshStatus === 'completed'}"
-                                :disabled="refreshStatus === 'executing'"
-                                @click="refreshContext"
-            >
-              <span v-if="refreshStatus === 'completed'" v-text="$t('instances.env.context_refreshed')" />
-              <span v-else-if="refreshStatus === 'failed'" v-text="$t('instances.env.context_refresh_failed')" />
-              <span v-else v-text="$t('instances.env.context_refresh')" />
-            </sba-confirm-button>
-          </div>
-        </div>
-      </div>
       <div class="field-body">
         <div class="field is-grouped is-grouped-right">
           <div class="control">
@@ -91,170 +77,157 @@
         </div>
       </div>
     </div>
-  </div>
+  </sba-panel>
 </template>
 
 <script>
-  import Instance from '@/services/instance';
-  import {concatMap, filter, from, listen} from '@/utils/rxjs';
-  import debounce from 'lodash/debounce';
-  import uniq from 'lodash/uniq';
+import Instance from '@/services/instance';
+import {concatMap, filter, from, listen} from '@/utils/rxjs';
+import debounce from 'lodash/debounce';
+import uniq from 'lodash/uniq';
 
 
-  export default {
-    props: {
-      instance: {
-        type: Instance,
-        required: true
-      },
-      propertySources: {
-        type: Array,
-        default: () => []
-      }
+export default {
+  props: {
+    instance: {
+      type: Instance,
+      required: true
     },
-    data: () => ({
-      error: null,
-      refreshStatus: null,
-      resetStatus: null,
-      updateStatus: null,
-      managedProperties: [{
-        name: null,
-        input: null,
-        value: null,
-        status: null,
-        validation: null
-      }]
-    }),
-    computed: {
-      allPropertyNames() {
-        return uniq(this.propertySources.map(ps => ps.properties ? Object.keys(ps.properties) : [])
-          .reduce((result, names) => result.concat(names))
-          .sort());
-      },
-      managerPropertySource() {
-        return this.propertySources.find(ps => ps.name === 'manager') || {name: 'manager', properties: {}};
-      },
-      hasManagedProperty() {
-        return this.managedProperties.findIndex(property => !!property.name) >= 0;
-      },
-      hasChangedProperty() {
-        return this.managedProperties.findIndex(property => property.input !== property.value) >= 0;
-      },
-      hasErrorProperty() {
-        return this.managedProperties.findIndex(property => property.validation !== null) >= 0;
-      }
+    propertySources: {
+      type: Array,
+      default: () => []
+    }
+  },
+  data: () => ({
+    error: null,
+    resetStatus: null,
+    updateStatus: null,
+    managedProperties: [{
+      name: null,
+      input: null,
+      value: null,
+      status: null,
+      validation: null
+    }]
+  }),
+  computed: {
+    allPropertyNames() {
+      return uniq(this.propertySources.map(ps => ps.properties ? Object.keys(ps.properties) : [])
+        .reduce((result, names) => result.concat(names))
+        .sort());
     },
-    methods: {
-      handlePropertyNameChange: debounce(function (prop, idx) {
-        if (prop.name && idx === this.managedProperties.length - 1) {
-          this.managedProperties.push({
-            name: null,
-            input: null,
-            value: null,
-            status: null,
-            validation: null
-          });
-        }
-      }, 250),
-      refreshContext() {
-        const vm = this;
-        from(vm.instance.refreshContext())
-          .pipe(listen(status => vm.refreshStatus = status))
-          .subscribe({
-            complete: () => {
-              setTimeout(() => vm.refreshStatus = null, 2500);
-              return vm.$emit('reset');
-            },
-            error: () => vm.$emit('reset')
-          });
-      },
-      updateEnvironment() {
-        const vm = this;
-        from(vm.managedProperties)
-          .pipe(
-            filter(property => !!property.name && property.input !== property.value),
-            listen(status => vm.updateStatus = status),
-            concatMap(
-              property => from(vm.instance.setEnv(property.name, property.input))
-                .pipe(listen(status => property.status = status))
-            )
-          )
-          .subscribe({
-            complete: () => {
-              setTimeout(() => vm.updateStatus = null, 2500);
-              return vm.$emit('update');
-            },
-            error: () => vm.$emit('update')
-          });
-      },
-      resetEnvironment() {
-        const vm = this;
-        from(vm.instance.resetEnv())
-          .pipe(listen(status => vm.resetStatus = status))
-          .subscribe({
-            complete: () => {
-              vm.managedProperties = [{
-                name: null,
-                input: null,
-                value: null,
-                status: null,
-                validation: null
-              }];
-              setTimeout(() => vm.resetStatus = null, 2500);
-              return vm.$emit('refresh');
-            },
-            error: () => vm.$emit('refresh')
-          });
-      },
-      updateManagedProperties(manager) {
-        Object.entries(manager.properties).forEach(([name, property]) => {
-          const managedProperty = this.managedProperties.find(property => property.name === name);
-          if (managedProperty) {
-            managedProperty.value = property.value
-          } else {
-            const idx = this.managedProperties.length - 1;
-            this.managedProperties.splice(idx, 0, {
-              name,
-              input: property.value,
-              value: property.value,
-              status: null,
-              validation: null
-            })
-          }
+    managerPropertySource() {
+      return this.propertySources.find(ps => ps.name === 'manager') || {name: 'manager', properties: {}};
+    },
+    hasManagedProperty() {
+      return this.managedProperties.findIndex(property => !!property.name) >= 0;
+    },
+    hasChangedProperty() {
+      return this.managedProperties.findIndex(property => property.input !== property.value) >= 0;
+    },
+    hasErrorProperty() {
+      return this.managedProperties.findIndex(property => property.validation !== null) >= 0;
+    }
+  },
+  methods: {
+    handlePropertyNameChange: debounce(function (prop, idx) {
+      if (prop.name && idx === this.managedProperties.length - 1) {
+        this.managedProperties.push({
+          name: null,
+          input: null,
+          value: null,
+          status: null,
+          validation: null
         });
       }
+    }, 250),
+    updateEnvironment() {
+      const vm = this;
+      from(vm.managedProperties)
+        .pipe(
+          filter(property => !!property.name && property.input !== property.value),
+          listen(status => vm.updateStatus = status),
+          concatMap(
+            property => from(vm.instance.setEnv(property.name, property.input))
+              .pipe(listen(status => property.status = status))
+          )
+        )
+        .subscribe({
+          complete: () => {
+            setTimeout(() => vm.updateStatus = null, 2500);
+            return vm.$emit('update');
+          },
+          error: () => vm.$emit('update')
+        });
     },
-    watch: {
-      managerPropertySource: {
-        handler: 'updateManagedProperties',
-        immediate: true
-      },
-      managedProperties: {
-        deep: true,
-        handler() {
-          const counts = this.managedProperties.reduce(
-            (acc, v) => {
-              if (v.name) {
-                acc[v.name] = (acc[v.name] || 0) + 1;
-              }
-              return acc;
-            }, {});
-          this.managedProperties.forEach(property => {
-            if (!property.name) {
-              if (property.input) {
-                property.validation = 'Property name is required';
-              }
-              return;
-            }
-            const count = counts[property.name] || 0;
-            if (count > 1) {
-              property.validation = 'Property name must be unique';
-              return;
-            }
-            property.validation = null;
-          });
+    resetEnvironment() {
+      const vm = this;
+      from(vm.instance.resetEnv())
+        .pipe(listen(status => vm.resetStatus = status))
+        .subscribe({
+          complete: () => {
+            vm.managedProperties = [{
+              name: null,
+              input: null,
+              value: null,
+              status: null,
+              validation: null
+            }];
+            setTimeout(() => vm.resetStatus = null, 2500);
+            return vm.$emit('refresh');
+          },
+          error: () => vm.$emit('refresh')
+        });
+    },
+    updateManagedProperties(manager) {
+      Object.entries(manager.properties).forEach(([name, property]) => {
+        const managedProperty = this.managedProperties.find(property => property.name === name);
+        if (managedProperty) {
+          managedProperty.value = property.value
+        } else {
+          const idx = this.managedProperties.length - 1;
+          this.managedProperties.splice(idx, 0, {
+            name,
+            input: property.value,
+            value: property.value,
+            status: null,
+            validation: null
+          })
         }
+      });
+    }
+  },
+  watch: {
+    managerPropertySource: {
+      handler: 'updateManagedProperties',
+      immediate: true
+    },
+    managedProperties: {
+      deep: true,
+      handler() {
+        const counts = this.managedProperties.reduce(
+          (acc, v) => {
+            if (v.name) {
+              acc[v.name] = (acc[v.name] || 0) + 1;
+            }
+            return acc;
+          }, {});
+        this.managedProperties.forEach(property => {
+          if (!property.name) {
+            if (property.input) {
+              property.validation = 'Property name is required';
+            }
+            return;
+          }
+          const count = counts[property.name] || 0;
+          if (count > 1) {
+            property.validation = 'Property name must be unique';
+            return;
+          }
+          property.validation = null;
+        });
       }
     }
   }
+}
 </script>
