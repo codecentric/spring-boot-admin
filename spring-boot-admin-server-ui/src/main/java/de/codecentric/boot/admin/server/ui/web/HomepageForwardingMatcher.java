@@ -53,8 +53,9 @@ public class HomepageForwardingMatcher<T> implements Predicate<T> {
 		}
 
 		String path = this.pathAccessor.apply(request);
-		if (this.excludeRoutes.stream().anyMatch((p) -> p.matcher(path).matches())
-				|| this.includeRoutes.stream().noneMatch((p) -> p.matcher(path).matches())) {
+		boolean isExcludedRoute = this.excludeRoutes.stream().anyMatch((p) -> p.matcher(path).matches());
+		boolean isIncludedRoute = this.includeRoutes.stream().anyMatch((p) -> p.matcher(path).matches());
+		if (isExcludedRoute || !isIncludedRoute) {
 			return false;
 		}
 
