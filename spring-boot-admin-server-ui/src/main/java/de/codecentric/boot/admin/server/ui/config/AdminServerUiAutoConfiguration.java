@@ -129,11 +129,11 @@ public class AdminServerUiAutoConfiguration {
 		String homepage = this.adminServer.path("/");
 
 		List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
-			.scan(this.adminUi.getExtensionResourceLocations());
+				.scan(this.adminUi.getExtensionResourceLocations());
 		List<String> routesIncludes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream())
-			.map(this.adminServer::path).collect(Collectors.toList());
+				.map(this.adminServer::path).collect(Collectors.toList());
 		List<String> routesExcludes = Stream.concat(DEFAULT_UI_ROUTE_EXCLUDES.stream(), extensionRoutes.stream())
-			.map(this.adminServer::path).collect(Collectors.toList());
+				.map(this.adminServer::path).collect(Collectors.toList());
 
 		return new HomepageForwardingFilterConfig(homepage, routesIncludes, routesExcludes);
 	}
@@ -170,11 +170,13 @@ public class AdminServerUiAutoConfiguration {
 
 			@Bean
 			@ConditionalOnMissingBean
-			public de.codecentric.boot.admin.server.ui.web.reactive.HomepageForwardingFilter homepageForwardFilter(HomepageForwardingFilterConfig filterConfig)
-				throws IOException {
+			public de.codecentric.boot.admin.server.ui.web.reactive.HomepageForwardingFilter homepageForwardFilter(
+					HomepageForwardingFilterConfig filterConfig) throws IOException {
 				return new de.codecentric.boot.admin.server.ui.web.reactive.HomepageForwardingFilter(filterConfig);
 			}
+
 		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -201,17 +203,17 @@ public class AdminServerUiAutoConfiguration {
 			public void addResourceHandlers(
 					org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
 				registry.addResourceHandler(this.adminServer.path("/**"))
-					.addResourceLocations(this.adminUi.getResourceLocations())
-					.setCacheControl(this.adminUi.getCache().toCacheControl());
+						.addResourceLocations(this.adminUi.getResourceLocations())
+						.setCacheControl(this.adminUi.getCache().toCacheControl());
 				registry.addResourceHandler(this.adminServer.path("/extensions/**"))
-					.addResourceLocations(this.adminUi.getExtensionResourceLocations())
-					.setCacheControl(this.adminUi.getCache().toCacheControl());
+						.addResourceLocations(this.adminUi.getExtensionResourceLocations())
+						.setCacheControl(this.adminUi.getCache().toCacheControl());
 			}
 
 			@Bean
 			@ConditionalOnMissingBean
-			public de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter homepageForwardFilter(HomepageForwardingFilterConfig filterConfig)
-				throws IOException {
+			public de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter homepageForwardFilter(
+					HomepageForwardingFilterConfig filterConfig) throws IOException {
 				return new de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter(filterConfig);
 			}
 

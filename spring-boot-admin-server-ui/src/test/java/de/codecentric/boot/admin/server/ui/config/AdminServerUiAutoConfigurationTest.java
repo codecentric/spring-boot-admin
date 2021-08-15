@@ -101,6 +101,7 @@ public class AdminServerUiAutoConfigurationTest implements WithAssertions {
 						verify(serverWebExchange, atMostOnce()).mutate();
 					});
 		}
+
 	}
 
 	@Nested
@@ -111,7 +112,6 @@ public class AdminServerUiAutoConfigurationTest implements WithAssertions {
 						"--spring.boot.admin.contextPath=test")
 				.withBean(AdminServerProperties.class)
 				.withConfiguration(AutoConfigurations.of(AdminServerUiAutoConfiguration.class));
-
 
 		@ParameterizedTest
 		@CsvSource({ "/test/extensions/myextension", "/test/instances/1/actuator/heapdump",
@@ -138,14 +138,15 @@ public class AdminServerUiAutoConfigurationTest implements WithAssertions {
 			httpServletRequest.addHeader(HttpHeaders.ACCEPT, MediaType.TEXT_HTML_VALUE);
 
 			this.contextRunner.withUserConfiguration(SpringBootAdminServerEnabledCondition.class,
-				AdminServerMarkerConfiguration.Marker.class).run((context) -> {
-				de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter bean = context.getBean(
-					de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter.class);
-				bean.doFilter(httpServletRequest, new MockHttpServletResponse(), mock(FilterChain.class));
+					AdminServerMarkerConfiguration.Marker.class).run((context) -> {
+						de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter bean = context.getBean(
+								de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter.class);
+						bean.doFilter(httpServletRequest, new MockHttpServletResponse(), mock(FilterChain.class));
 
-				verify(httpServletRequest, atMostOnce()).getRequestDispatcher(any());
-			});
+						verify(httpServletRequest, atMostOnce()).getRequestDispatcher(any());
+					});
 		}
+
 	}
 
 }

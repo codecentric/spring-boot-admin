@@ -19,7 +19,6 @@ package de.codecentric.boot.admin.server.services;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +30,6 @@ import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
@@ -72,11 +70,12 @@ public class StatusUpdater {
 		}
 
 		log.debug("Update status for {}", instance);
-		reactor.core.publisher.Mono<de.codecentric.boot.admin.server.domain.values.StatusInfo> log = this.instanceWebClient.instance(instance).get().uri(de.codecentric.boot.admin.server.domain.values.Endpoint.HEALTH)
-			.exchangeToMono(this::convertStatusInfo).log(de.codecentric.boot.admin.server.services.StatusUpdater.log.getName(), java.util.logging.Level.FINEST);
-		return log
-				.doOnError((ex) -> logError(instance, ex))
-				.onErrorResume(this::handleError)
+		reactor.core.publisher.Mono<de.codecentric.boot.admin.server.domain.values.StatusInfo> log = this.instanceWebClient
+				.instance(instance).get().uri(de.codecentric.boot.admin.server.domain.values.Endpoint.HEALTH)
+				.exchangeToMono(this::convertStatusInfo)
+				.log(de.codecentric.boot.admin.server.services.StatusUpdater.log.getName(),
+						java.util.logging.Level.FINEST);
+		return log.doOnError((ex) -> logError(instance, ex)).onErrorResume(this::handleError)
 				.map(instance::withStatusInfo);
 	}
 

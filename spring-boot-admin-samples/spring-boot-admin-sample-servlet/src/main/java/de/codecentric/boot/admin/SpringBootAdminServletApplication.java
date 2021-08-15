@@ -59,7 +59,8 @@ public class SpringBootAdminServletApplication {
 
 	@Bean
 	@org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-	public de.codecentric.boot.admin.server.web.client.InstanceWebClient webClient(de.codecentric.boot.admin.server.web.client.InstanceWebClient.Builder builder) {
+	public de.codecentric.boot.admin.server.web.client.InstanceWebClient webClient(
+			de.codecentric.boot.admin.server.web.client.InstanceWebClient.Builder builder) {
 		return builder.build();
 	}
 
@@ -81,7 +82,8 @@ public class SpringBootAdminServletApplication {
 			log.info("auditLog: call [instance={}]", instance.getId());
 
 			return next.exchange(request).doOnSubscribe((s) -> {
-				if (org.springframework.http.HttpMethod.DELETE.equals(request.method()) || org.springframework.http.HttpMethod.POST.equals(request.method())) {
+				if (org.springframework.http.HttpMethod.DELETE.equals(request.method())
+						|| org.springframework.http.HttpMethod.POST.equals(request.method())) {
 					log.info("{} for {} on {}", request.method(), instance.getId(), request.url());
 				}
 			});
