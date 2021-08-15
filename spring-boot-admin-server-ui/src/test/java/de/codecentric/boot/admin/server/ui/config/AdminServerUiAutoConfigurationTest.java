@@ -17,7 +17,6 @@
 package de.codecentric.boot.admin.server.ui.config;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import org.assertj.core.api.WithAssertions;

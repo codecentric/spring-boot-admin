@@ -125,7 +125,7 @@ public class AdminServerUiAutoConfiguration {
 	}
 
 	@Bean
-	public HomepageForwardingFilterConfig getHomepageForwardingFilterConfig() throws IOException {
+	public HomepageForwardingFilterConfig homepageForwardingFilterConfig() throws IOException {
 		String homepage = this.adminServer.path("/");
 
 		List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
@@ -171,8 +171,9 @@ public class AdminServerUiAutoConfiguration {
 			@Bean
 			@ConditionalOnMissingBean
 			public de.codecentric.boot.admin.server.ui.web.reactive.HomepageForwardingFilter homepageForwardFilter(
-					HomepageForwardingFilterConfig filterConfig) throws IOException {
-				return new de.codecentric.boot.admin.server.ui.web.reactive.HomepageForwardingFilter(filterConfig);
+					HomepageForwardingFilterConfig homepageForwardingFilterConfig) throws IOException {
+				return new de.codecentric.boot.admin.server.ui.web.reactive.HomepageForwardingFilter(
+						homepageForwardingFilterConfig);
 			}
 
 		}
@@ -213,8 +214,9 @@ public class AdminServerUiAutoConfiguration {
 			@Bean
 			@ConditionalOnMissingBean
 			public de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter homepageForwardFilter(
-					HomepageForwardingFilterConfig filterConfig) throws IOException {
-				return new de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter(filterConfig);
+					HomepageForwardingFilterConfig homepageForwardingFilterConfig) throws IOException {
+				return new de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter(
+						homepageForwardingFilterConfig);
 			}
 
 		}
