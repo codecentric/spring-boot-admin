@@ -26,6 +26,7 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
+import de.codecentric.boot.admin.server.ui.web.HomepageForwardingFilterConfig;
 import de.codecentric.boot.admin.server.ui.web.HomepageForwardingMatcher;
 
 public class HomepageForwardingFilter implements WebFilter {
@@ -40,6 +41,10 @@ public class HomepageForwardingFilter implements WebFilter {
 		this.homepage = homepage;
 		this.matcher = new HomepageForwardingMatcher<>(routeIncludes, routeExcludes, ServerHttpRequest::getMethodValue,
 				(r) -> r.getPath().pathWithinApplication().toString(), (r) -> r.getHeaders().getAccept());
+	}
+
+	public HomepageForwardingFilter(HomepageForwardingFilterConfig filterConfig) {
+		this(filterConfig.getHomepage(), filterConfig.getRoutesIncludes(), filterConfig.getRoutesExcludes());
 	}
 
 	@Override

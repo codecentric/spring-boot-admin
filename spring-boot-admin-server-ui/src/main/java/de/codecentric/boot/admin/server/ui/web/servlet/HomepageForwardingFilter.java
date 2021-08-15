@@ -33,6 +33,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.util.UrlPathHelper;
 
+import de.codecentric.boot.admin.server.ui.web.HomepageForwardingFilterConfig;
 import de.codecentric.boot.admin.server.ui.web.HomepageForwardingMatcher;
 
 /**
@@ -56,6 +57,10 @@ public class HomepageForwardingFilter implements Filter {
 		this.matcher = new HomepageForwardingMatcher<>(routes, excludedRoutes, HttpServletRequest::getMethod,
 				urlPathHelper::getPathWithinApplication,
 				(r) -> MediaType.parseMediaTypes(r.getHeader(HttpHeaders.ACCEPT)));
+	}
+
+	public HomepageForwardingFilter(HomepageForwardingFilterConfig filterConfig) {
+		this(filterConfig.getHomepage(), filterConfig.getRoutesIncludes(), filterConfig.getRoutesExcludes());
 	}
 
 	@Override
