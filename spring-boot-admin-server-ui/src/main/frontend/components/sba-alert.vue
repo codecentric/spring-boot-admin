@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <div class="message" :class="alertClass" role="alert" v-if="hasError">
+  <div class="message" :class="alertClass" role="alert" v-if="hasError()">
     <div class="message-body">
       <strong>
         <font-awesome-icon :class="iconClass" icon="exclamation-triangle" />&nbsp;<span v-text="title" />
