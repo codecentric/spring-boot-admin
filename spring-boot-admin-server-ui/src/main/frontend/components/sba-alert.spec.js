@@ -33,4 +33,18 @@ describe('sba-alert', () => {
     expect(screen.getByText('i am a error message')).toBeDefined();
     expect(screen.getByText('This is a caption')).toBeDefined();
   });
+
+  it('should render nothing', () => {
+    const props = {
+      title: 'This is a caption',
+    }
+    render(sbaAlert, {
+      props,
+      stubs: {
+        'font-awesome-icon': true
+      }
+    });
+
+    expect(screen.queryByText('This is a caption')).not.toBeInTheDocument();
+  });
 })
