@@ -51,6 +51,7 @@ spring:
 # end::customization-external-views[]
 
 ---
+# see readme of spring-boot-admin-server-ui
 spring:
   profiles: dev
   boot:

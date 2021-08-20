@@ -22,6 +22,9 @@ spring.boot.admin.ui.cache-templates: false
 Or just start the [spring-boot-admin-sample-servlet](../spring-boot-admin-samples/spring-boot-admin-sample-servlet)
 project using the `dev` profile. You also might want to use the `insecure` profile so you don't need to login.
 
+If you are using hierarchical projects (like the samples here), you have to point "Working directory" in your run config to the Project you are running.
+In IDEA you can simply use "$MODULE_DIR$".
+
 ### Build
 ```shell
 npm install
