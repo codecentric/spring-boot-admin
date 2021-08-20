@@ -220,7 +220,7 @@ public final class InstanceExchangeFilterFunctions {
 			return request;
 		}
 
-		log.trace("Cookies found for request [url={},cookies={}]", request.url(), storedCookies);
+		log.trace("Cookies found for request [url={}]", request.url());
 		return ClientRequest.from(request).cookies((cm) -> cm.addAll(storedCookies)).build();
 	}
 

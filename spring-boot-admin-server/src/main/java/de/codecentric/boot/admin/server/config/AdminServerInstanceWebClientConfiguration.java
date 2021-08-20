@@ -240,7 +240,7 @@ public class AdminServerInstanceWebClientConfiguration {
 	protected static class CookieStoreConfiguration {
 
 		/**
-		 * Creates a default {@link PerInstanceCookieStore} that should used.
+		 * Creates a default {@link PerInstanceCookieStore} that should be used.
 		 * @return the cookie store
 		 */
 		@Bean
