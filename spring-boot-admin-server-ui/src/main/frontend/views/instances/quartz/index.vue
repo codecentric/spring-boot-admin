@@ -21,6 +21,7 @@
           <tr>
             <th>Job Name</th>
             <th>Description</th>
+            <th>Group</th>
             <th>Durable</th>
             <th>Request Recovery</th>
           </tr>
@@ -31,6 +32,7 @@
               <span v-text="jobDetail.name" /> <small v-text="'('+jobDetail.className+')'" />
             </td>
             <td v-text="jobDetail.description" />
+            <td v-text="jobDetail.group" />
             <td v-text="jobDetail.durable" />
             <td v-text="jobDetail.requestRecovery" />
           </tr>
@@ -43,26 +45,18 @@
           <tr>
             <th>Name</th>
             <th>Description</th>
+            <th>Group</th>
             <th>State</th>
             <th>Type</th>
+            <th>Priority</th>
             <th>Start Time</th>
             <th>End Time</th>
             <th>Previous Fire Time</th>
             <th>Next Fire Time</th>
           </tr>
         </thead>
-        <tbody>
-          <tr v-for="triggerDetail in triggerDetails" :key="triggerDetail.group + '-' + triggerDetail.name">
-            <td v-text="triggerDetail.name" />
-            <td v-text="triggerDetail.description" />
-            <td v-text="triggerDetail.state" />
-            <td v-text="triggerDetail.type" />
-            <td v-text="triggerDetail.startTime" />
-            <td v-text="triggerDetail.endTime" />
-            <td v-text="triggerDetail.previousFireTime" />
-            <td v-text="triggerDetail.nextFireTime" />
-          </tr>
-        </tbody>
+
+        <trigger-row v-for="triggerDetail in triggerDetails" :key="triggerDetail.group + '-' + triggerDetail.name" :trigger-detail="triggerDetail" />
       </table>
     </template>
   </section>
@@ -71,8 +65,10 @@
 <script>
 import {VIEW_GROUP} from '@/views';
 import Instance from '@/services/instance';
+import TriggerRow from '@/views/instances/quartz/trigger-row';
 
 export default {
+  components: {TriggerRow},
   props: {
     instance: {
       type: Instance,
