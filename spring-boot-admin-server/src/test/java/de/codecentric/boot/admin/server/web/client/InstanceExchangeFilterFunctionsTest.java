@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,10 @@ import java.time.Duration;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
@@ -31,6 +33,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -44,6 +48,7 @@ import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
+import de.codecentric.boot.admin.server.web.client.cookies.PerInstanceCookieStore;
 import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
 
 import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V1_MEDIATYPE;
@@ -54,6 +59,11 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.CONTENT_LENGTH;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -463,6 +473,52 @@ class InstanceExchangeFilterFunctionsTest {
 
 			Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (req) -> {
 				assertThat(req.headers().getAccept()).containsExactly(MediaType.APPLICATION_JSON);
+				return Mono.just(ClientResponse.create(HttpStatus.OK).build());
+			});
+
+			StepVerifier.create(response).expectNextCount(1).verifyComplete();
+		}
+
+	}
+
+	@Nested
+	public class CookieHandling {
+
+		private PerInstanceCookieStore cookieStore;
+
+		private InstanceExchangeFilterFunction filter;
+
+		@BeforeEach
+		public void setUp() {
+			this.cookieStore = mock(PerInstanceCookieStore.class);
+			this.filter = InstanceExchangeFilterFunctions.handleCookies(cookieStore);
+		}
+
+		@Test
+		void should_store_retrieved_cookie() {
+			ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("http://localhost/test")).build();
+
+			Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (req) -> Mono.just(
+					ClientResponse.create(HttpStatus.OK).header("Set-Cookie", "testCookie=testCookieValue").build()));
+
+			StepVerifier.create(response).expectNextCount(1).verifyComplete();
+
+			@SuppressWarnings("unchecked")
+			ArgumentCaptor<MultiValueMap<String, String>> captor = ArgumentCaptor.forClass(MultiValueMap.class);
+			verify(this.cookieStore).put(eq(INSTANCE.getId()), eq(request.url()), captor.capture());
+			assertThat(captor.getValue()).containsEntry("Set-Cookie", singletonList("testCookie=testCookieValue"));
+		}
+
+		@Test
+		void should_add_stored_cookie_to_request() {
+			ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("http://localhost/test")).build();
+
+			MultiValueMap<String, String> cookieMap = new LinkedMultiValueMap<>();
+			cookieMap.add("testCookie", "testCookieValue");
+			when(this.cookieStore.get(eq(INSTANCE.getId()), eq(request.url()), any())).thenReturn(cookieMap);
+
+			Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (req) -> {
+				assertThat(req.cookies()).containsEntry("testCookie", singletonList("testCookieValue"));
 				return Mono.just(ClientResponse.create(HttpStatus.OK).build());
 			});
 

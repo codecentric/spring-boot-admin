@@ -16,8 +16,10 @@
 
 package de.codecentric.boot.admin.server.config;
 
+import java.net.CookiePolicy;
 import java.util.List;
 
+import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -28,6 +30,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider;
 import de.codecentric.boot.admin.server.web.client.CompositeHttpHeadersProvider;
 import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
@@ -37,6 +40,9 @@ import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClientCustomizer;
 import de.codecentric.boot.admin.server.web.client.LegacyEndpointConverter;
 import de.codecentric.boot.admin.server.web.client.LegacyEndpointConverters;
+import de.codecentric.boot.admin.server.web.client.cookies.CookieStoreCleanupTrigger;
+import de.codecentric.boot.admin.server.web.client.cookies.JdkPerInstanceCookieStore;
+import de.codecentric.boot.admin.server.web.client.cookies.PerInstanceCookieStore;
 
 @Configuration(proxyBeanMethods = false)
 @Lazy(false)
@@ -108,6 +114,14 @@ public class AdminServerInstanceWebClientConfiguration {
 			@ConditionalOnMissingBean(name = "logfileAcceptWorkaround")
 			public InstanceExchangeFilterFunction logfileAcceptWorkaround() {
 				return InstanceExchangeFilterFunctions.logfileAcceptWorkaround();
+			}
+
+			@Bean
+			@Order(50)
+			@ConditionalOnMissingBean(name = "cookieHandlingInstanceExchangeFilter")
+			public InstanceExchangeFilterFunction cookieHandlingInstanceExchangeFilter(
+					final PerInstanceCookieStore store) {
+				return InstanceExchangeFilterFunctions.handleCookies(store);
 			}
 
 			@Bean
@@ -218,6 +232,36 @@ public class AdminServerInstanceWebClientConfiguration {
 		@ConditionalOnMissingBean(name = "startupLegacyEndpointConverter")
 		public LegacyEndpointConverter startupLegacyEndpointConverter() {
 			return LegacyEndpointConverters.startup();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	protected static class CookieStoreConfiguration {
+
+		/**
+		 * Creates a default {@link PerInstanceCookieStore} that should be used.
+		 * @return the cookie store
+		 */
+		@Bean
+		@ConditionalOnMissingBean
+		public PerInstanceCookieStore cookieStore() {
+			return new JdkPerInstanceCookieStore(CookiePolicy.ACCEPT_ORIGINAL_SERVER);
+		}
+
+		/**
+		 * Creates a default trigger to cleanup the cookie store on deregistering of an
+		 * {@link de.codecentric.boot.admin.server.domain.entities.Instance}.
+		 * @param publisher publisher of {@link InstanceEvent}s events
+		 * @param cookieStore the store to inform about deregistration of an
+		 * {@link de.codecentric.boot.admin.server.domain.entities.Instance}
+		 * @return a new trigger
+		 */
+		@Bean(initMethod = "start", destroyMethod = "stop")
+		@ConditionalOnMissingBean
+		public CookieStoreCleanupTrigger cookieStoreCleanupTrigger(final Publisher<InstanceEvent> publisher,
+				final PerInstanceCookieStore cookieStore) {
+			return new CookieStoreCleanupTrigger(publisher, cookieStore);
 		}
 
 	}

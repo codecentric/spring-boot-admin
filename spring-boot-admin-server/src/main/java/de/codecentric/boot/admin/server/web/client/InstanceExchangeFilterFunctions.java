@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.util.UriComponents;
@@ -37,6 +39,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.domain.values.Endpoint;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.web.client.cookies.PerInstanceCookieStore;
 import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
 
 import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V1_MEDIATYPE;
@@ -188,6 +192,47 @@ public final class InstanceExchangeFilterFunctions {
 			}
 			return next.exchange(request);
 		};
+	}
+
+	/**
+	 * Creates the {@link InstanceExchangeFilterFunction} that could handle cookies during
+	 * requests and responses to/from applications.
+	 * @param store the cookie store to use
+	 * @return the new filter function
+	 */
+	public static InstanceExchangeFilterFunction handleCookies(final PerInstanceCookieStore store) {
+		return (instance, request, next) -> {
+			// we need an absolute URL to be able to deal with cookies
+			if (request.url().isAbsolute()) {
+				return next.exchange(enrichRequestWithStoredCookies(instance.getId(), request, store))
+						.map((response) -> storeCookiesFromResponse(instance.getId(), request, response, store));
+			}
+
+			return next.exchange(request);
+		};
+	}
+
+	private static ClientRequest enrichRequestWithStoredCookies(final InstanceId instId, final ClientRequest request,
+			final PerInstanceCookieStore store) {
+		final MultiValueMap<String, String> storedCookies = store.get(instId, request.url(), request.headers());
+		if (CollectionUtils.isEmpty(storedCookies)) {
+			log.trace("No cookies found for request [url={}]", request.url());
+			return request;
+		}
+
+		log.trace("Cookies found for request [url={}]", request.url());
+		return ClientRequest.from(request).cookies((cm) -> cm.addAll(storedCookies)).build();
+	}
+
+	private static ClientResponse storeCookiesFromResponse(final InstanceId instId, final ClientRequest request,
+			final ClientResponse response, final PerInstanceCookieStore store) {
+		final HttpHeaders headers = response.headers().asHttpHeaders();
+		log.trace("Searching for cookies in header values of response [url={},headerValues={}]", request.url(),
+				headers);
+
+		store.put(instId, request.url(), headers);
+
+		return response;
 	}
 
 }
