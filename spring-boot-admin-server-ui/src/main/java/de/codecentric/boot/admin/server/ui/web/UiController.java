@@ -131,6 +131,8 @@ public class UiController {
 
 		private final boolean rememberMeEnabled;
 
+		private final boolean languagesEnabled;
+
 		private final List<String> availableLanguages;
 
 		private final List<String> routes;
