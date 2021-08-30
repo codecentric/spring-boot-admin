@@ -90,7 +90,7 @@
           .attr('d', d3.area()
             .x(d => x(d.timestamp))
             .y0(y(0))
-            .y1(d => y(d.metaspace)));
+            .y1(d => y(d.metaspace || 0)));
         metaspace.exit().remove();
 
         //draw axis
