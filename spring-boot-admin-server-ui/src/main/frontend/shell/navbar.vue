@@ -63,8 +63,8 @@
               </a>
             </div>
           </div>
-          <navbar-item-language-selector :current-locale="$i18n.locale"
-                                         :available-locales="getAvailableLocales()"
+          <navbar-item-language-selector v-if="availableLocales.length > 1" :current-locale="$i18n.locale"
+                                         :available-locales="availableLocales"
                                          @localeChanged="changeLocale"
           />
         </div>
@@ -117,7 +117,6 @@ export default {
     },
   },
   methods: {
-    getAvailableLocales,
     changeLocale(locale) {
       this.$i18n.locale = locale;
       moment.locale(this.$i18n.locale);
@@ -126,6 +125,7 @@ export default {
   created() {
     this.brand = sbaConfig.uiSettings.brand;
     this.userName = sbaConfig.user ? sbaConfig.user.name : null;
+    this.availableLocales = getAvailableLocales();
     this.csrfToken = readCookie('XSRF-TOKEN');
     this.csrfParameterName = sbaConfig.csrf.parameterName;
   },
