@@ -1,4 +1,4 @@
-name: build
+name: build main
 
 on:
   push:
@@ -58,7 +58,7 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-          
+
       - name: Cache local Maven repository
         uses: actions/cache@v2.1.4
         env:

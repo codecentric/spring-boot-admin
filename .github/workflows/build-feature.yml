@@ -1,4 +1,4 @@
-name: build
+name: build feature branches
 
 on:
   push:
