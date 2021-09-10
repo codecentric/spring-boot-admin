@@ -37,7 +37,7 @@
     "event-source-polyfill": "^1.0.24",
     "file-saver": "^2.0.5",
     "iso8601-duration": "^1.3.0",
-    "lodash": "^4.17.21",
+    "lodash": "4.17.21",
     "moment": "^2.29.1",
     "popper.js": "^1.16.1",
     "pretty-bytes": "^5.6.0",
