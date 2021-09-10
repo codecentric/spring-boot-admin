@@ -113,11 +113,6 @@ public class AdminServerUiProperties {
 	private boolean rememberMeEnabled = true;
 
 	/**
-	 * Whether the option to choose a language should be available.
-	 */
-	private boolean languagesEnabled = true;
-
-	/**
 	 * Limit languages to this list. Intersection of all supported languages and this list
 	 * will be used.
 	 */
