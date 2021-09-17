@@ -32,7 +32,7 @@
     "d3-brush": "2.1.0",
     "d3-scale": "3.3.0",
     "d3-selection": "2.0.0",
-    "d3-shape": "2.1.0",
+    "d3-shape": "3.0.1",
     "d3-time": "2.1.1",
     "event-source-polyfill": "1.0.25",
     "file-saver": "2.0.5",
