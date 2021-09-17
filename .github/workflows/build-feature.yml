@@ -44,5 +44,4 @@ jobs:
 
       - uses: codecov/codecov-action@v2
         with:
-          file: ./**/target/site/jacoco/jacoco.xml
-          name: codecov
+          files: ./**/target/site/jacoco/jacoco.xml
