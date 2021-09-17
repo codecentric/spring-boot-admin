@@ -19,9 +19,10 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
-          java-version: 1.8
+          distribution: 'adopt'
+          java-version: '8'
 
       - name: Cache local Maven repository
         uses: actions/cache@v2.1.6
@@ -55,7 +56,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Set up settings.xml for GitHub Packages
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
           java-version: 1.8
 
