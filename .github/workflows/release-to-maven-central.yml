@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
-          java-version: '1.8'
+          java-version: '8'
           server-id: oss.sonatype.org
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
