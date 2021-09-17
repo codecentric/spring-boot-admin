@@ -7,19 +7,19 @@
     "watch": "vue-cli-service build --watch"
   },
   "dependencies": {
-    "babel-eslint": "^10.1.0",
-    "core-js": "^3.6.5",
-    "eslint-plugin-vue": "^6.2.2"
+    "babel-eslint": "10.1.0",
+    "core-js": "3.6.5",
+    "eslint-plugin-vue": "6.2.2"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^4.5.8",
-    "@vue/cli-plugin-eslint": "^4.5.8",
-    "@vue/cli-service": "^4.5.8",
-    "@vue/eslint-config-standard": "^5.1.2",
-    "copy-webpack-plugin": "^5.1.2",
-    "eslint": "^7.12.1",
-    "vue": "^2.6.12",
-    "vue-template-compiler": "^2.6.12"
+    "@vue/cli-plugin-babel": "4.5.8",
+    "@vue/cli-plugin-eslint": "4.5.8",
+    "@vue/cli-service": "4.5.8",
+    "@vue/eslint-config-standard": "5.1.2",
+    "copy-webpack-plugin": "5.1.2",
+    "eslint": "7.12.1",
+    "vue": "2.6.12",
+    "vue-template-compiler": "2.6.12"
   },
   "peerDependencies": {
     "vue": "^2.5.16"
