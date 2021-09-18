@@ -52,11 +52,10 @@ jobs:
       - name: Deploy Asciidoc docs output to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages # The branch the action should deploy to.
-          FOLDER: spring-boot-admin-docs/target/generated-docs # The folder the action should deploy.
-          TARGET_FOLDER: ${{ github.event.inputs.releaseversion }}
-          CLEAN: true # Automatically remove deleted files from the deploy branch
+          branch: gh-pages # The branch the action should deploy to.
+          folder: spring-boot-admin-docs/target/generated-docs # The folder the action should deploy.
+          target-folder: ${{ github.event.inputs.releaseversion }}
+          clean: true # Automatically remove deleted files from the deploy branch
 
 
   publish-github-release:
