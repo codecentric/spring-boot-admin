@@ -21,8 +21,9 @@
     <div v-sticks-below="['#navigation']" class="loggers__header">
       <div class="field is-grouped">
         <div class="control">
-          <btn-scope v-if="instanceCount > 1" :instance-count="instanceCount" :scope="scope"
-                     @changeScope="$emit('changeScope', $event)"
+          <sba-toggle-scope-button v-if="instanceCount > 1"
+                                   :instance-count="instanceCount"
+                                   @changeScope="$emit('changeScope', $event)"
           />
         </div>
         <div class="control is-expanded">
@@ -80,6 +81,7 @@
 import sticksBelow from '@/directives/sticks-below';
 import {finalize, from, listen} from '@/utils/rxjs';
 import LoggersList from './loggers-list';
+import SbaToggleScopeButton from '@/components/sba-toggle-scope-button';
 
 const isClassName = name => /\.[A-Z]/.test(name);
 
@@ -103,7 +105,7 @@ const addLoggerCreationEntryIfLoggerNotPresent = (nameFilter, loggers) => {
 };
 
 export default {
-  components: {LoggersList},
+  components: {SbaToggleScopeButton, LoggersList},
   directives: {sticksBelow},
   props: {
     scope: {
