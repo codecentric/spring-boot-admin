@@ -185,7 +185,9 @@ export default {
         this.availableTags = response.data.availableTags;
         this.stateFetchingTags = 'completed';
         this.selectedTags = {};
-        this.availableTags.forEach(t => this.selectedTags[t.tag] = undefined);
+        if (this.availableTags) {
+          this.availableTags.forEach(t => this.selectedTags[t.tag] = undefined);
+        }
       } catch (error) {
         console.warn('Fetching metric tags failed:', error);
         this.stateFetchingTags = 'failed';
