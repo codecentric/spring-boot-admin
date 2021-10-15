@@ -37,6 +37,12 @@
           v-if="application.isUnregisterable"
           @click="$emit('unregister', application)"
         />
+        <sba-icon-button
+          title="shutdown"
+          :icon="['far', 'stop-circle']"
+          v-if="application.isUnregisterable"
+          @click="$emit('shutdown', application)"
+        />
       </div>
     </header>
     <div class="card-content" v-if="isExpanded">
@@ -50,6 +56,11 @@
           <sba-icon-button icon="trash"
                            v-if="instance.isUnregisterable"
                            @click.stop="$emit('unregister', instance)"
+          />
+          <sba-icon-button :icon="['far', 'stop-circle']"
+                           title="shutdown"
+                           v-if="instance.isUnregisterable"
+                           @click.stop="$emit('shutdown', instance)"
           />
         </template>
       </instances-list>
