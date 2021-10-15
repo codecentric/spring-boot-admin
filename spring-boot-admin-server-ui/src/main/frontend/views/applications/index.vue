@@ -52,6 +52,7 @@
                                     :is-expanded="selected === application.name || Boolean(filter)"
                                     :notification-filters="notificationFilters"
                                     @unregister="unregister"
+                                    @shutdown="shutdown"
                                     @click.stop="select(application.name)"
                                     @toggle-notification-filter-settings="toggleNotificationFilterSettings"
             />
@@ -175,6 +176,13 @@ export default {
       this.toggleNotificationFilterSettings(null);
       try {
         item.unregister();
+      } catch (e) {
+        this.errors.push(e);
+      }
+    },
+    shutdown(item) {
+      try {
+        item.shutdown();
       } catch (e) {
         this.errors.push(e);
       }

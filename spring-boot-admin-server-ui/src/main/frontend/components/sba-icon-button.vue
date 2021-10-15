@@ -26,6 +26,7 @@
       title: {
         type: String,
         required: false,
+        default: null
       },
       icon: {
         type: [String, Array],

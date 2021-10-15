@@ -38,9 +38,9 @@
           @click="$emit('unregister', application)"
         />
         <sba-icon-button
+          v-if="hasShutdownEndpoint(application)"
           title="shutdown"
           :icon="['far', 'stop-circle']"
-          v-if="application.isUnregisterable"
           @click="$emit('shutdown', application)"
         />
       </div>
@@ -57,9 +57,9 @@
                            v-if="instance.isUnregisterable"
                            @click.stop="$emit('unregister', instance)"
           />
-          <sba-icon-button :icon="['far', 'stop-circle']"
+          <sba-icon-button v-if="instance.hasEndpoint('shutdown')"
+                           :icon="['far', 'stop-circle']"
                            title="shutdown"
-                           v-if="instance.isUnregisterable"
                            @click.stop="$emit('shutdown', instance)"
           />
         </template>
@@ -118,6 +118,9 @@
     methods: {
       hasActiveNotificationFilter(object) {
         return this.notificationFilters.some(f => f.affects(object));
+      },
+      hasShutdownEndpoint(application) {
+        return application.instances.some(i => i.hasEndpoint('shutdown'));
       }
     }
   }

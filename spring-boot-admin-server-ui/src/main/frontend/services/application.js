@@ -120,6 +120,10 @@ class Application {
     return this.axios.delete(uri`actuator/caches`);
   }
 
+  shutdown() {
+    return this.axios.post(uri`actuator/shutdown`);
+  }
+
   static _transformResponse(data) {
     if (!data) {
       return data;
