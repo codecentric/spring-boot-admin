@@ -12,6 +12,10 @@
     "suppress_notifications_on": "Suppress notifications on <code>{name}</code> for",
     "status": "Status",
     "label": "Applications",
-    "up": "up"
+    "up": "up",
+    "shutdown": "Shutdown application <code>{name}</code>?"
+  },
+  "instances": {
+    "shutdown": "Shutdown instance <code>{name}</code>?"
   }
 }

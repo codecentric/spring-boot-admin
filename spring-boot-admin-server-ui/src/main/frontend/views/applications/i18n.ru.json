@@ -12,6 +12,10 @@
     "suppress_notifications_on": "Скрыть уведомления для <code>{name}</code> на",
     "status": "Статус",
     "label": "Приложения",
-    "up": "ОК"
+    "up": "ОК",
+    "shutdown": "Shutdown application <code>{name}</code>?"
+  },
+  "instances": {
+    "shutdown": "Shutdown instance <code>{name}</code>?"
   }
 }

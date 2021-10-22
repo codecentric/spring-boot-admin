@@ -17,8 +17,8 @@
 <template>
   <div>
     <sba-modal v-model="isModalApplicationOpen" @close="isModalApplicationOpen = false">
-      <template v-slot:header>Shutdown {{ application.name }}?</template>
-      <template v-slot:body><span>Shutdown {{ application.name }}?</span></template>
+      <template v-slot:header><span>shutdown endpoint</span></template>
+      <template v-slot:body><span v-html="$t('applications.shutdown', {name: application.name})" /></template>
       <template v-slot:footer>
         <button class="button is-success" @click="shutdownApplication(application)">OK</button>
         <button class="button" @click="closeModal">Cancel</button>
@@ -57,8 +57,8 @@
       <div class="card-content" v-if="isExpanded">
 
         <sba-modal v-model="isModalInstanceOpen" @close="isModalInstanceOpeno = false">
-          <template v-slot:header>Shutdown instance {{ currentModalInstance.id }}?</template>
-          <template v-slot:body><span>Shutdown instance {{ currentModalInstance.id }}?</span></template>
+          <template v-slot:header><span>shutdown endpoint</span></template>
+          <template v-slot:body><span v-html="$t('instances.shutdown', {name: currentModalInstance.id})" /></template>
           <template v-slot:footer>
             <button class="button is-success" @click="shutdownInstance">OK</button>
             <button class="button" @click="closeModal">Cancel</button>

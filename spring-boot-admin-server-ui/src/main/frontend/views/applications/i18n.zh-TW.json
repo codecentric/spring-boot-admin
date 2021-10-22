@@ -12,6 +12,10 @@
     "suppress_notifications_on": "Suppress notifications on <code>{name}</code> for",
     "status": "實例狀態",
     "label": "應用",
-    "up": "正常"
+    "up": "正常",
+    "shutdown": "Shutdown application <code>{name}</code>?"
+  },
+  "instances": {
+    "shutdown": "Shutdown instance <code>{name}</code>?"
   }
 }
