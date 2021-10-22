@@ -1,12 +1,19 @@
 <template>
   <div v-if="open" class="modal is-active">
-    <div class="modal-background" @click="close"></div>
-    <div class="modal-content">
-      <div class="box">
-        <slot/>
-      </div>
+    <div class="modal-background" ></div>
+
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title"><slot name="header"/></p>
+        <button class="delete" aria-label="close" @click="close"></button>
+      </header>
+      <section class="modal-card-body">
+        <slot name="body"/>
+      </section>
+      <footer class="modal-card-foot">
+        <slot name="footer"/>
+      </footer>
     </div>
-    <button class="modal-close is-large" aria-label="close" @click="close"></button>
   </div>
 </template>
 

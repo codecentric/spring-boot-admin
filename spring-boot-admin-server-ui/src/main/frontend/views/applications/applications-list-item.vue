@@ -16,9 +16,13 @@
 
 <template>
   <div>
-    <sba-modal v-model="currentOpenedModal === application.name" @close="currentOpenedModal = undefined">
-      <span>{{application.name}} schließen?</span>
-      <button @click="shutdownApplication(application)">OK</button>
+    <sba-modal v-model="isModalApplicationOpen" @close="isModalApplicationOpen = false">
+      <template v-slot:header>Shutdown {{ application.name }}?</template>
+      <template v-slot:body><span>Shutdown {{ application.name }}?</span></template>
+      <template v-slot:footer>
+        <button class="button is-success" @click="shutdownApplication(application)">OK</button>
+        <button class="button" @click="closeModal">Cancel</button>
+      </template>
     </sba-modal>
     <div class="application-list-item card" :class="{'is-active': isExpanded}">
       <header class="hero application-list-item__header" :class="headerClass" v-on="$listeners">
@@ -51,6 +55,16 @@
         </div>
       </header>
       <div class="card-content" v-if="isExpanded">
+
+        <sba-modal v-model="isModalInstanceOpen" @close="isModalInstanceOpeno = false">
+          <template v-slot:header>Shutdown instance {{ currentModalInstance.id }}?</template>
+          <template v-slot:body><span>Shutdown instance {{ currentModalInstance.id }}?</span></template>
+          <template v-slot:footer>
+            <button class="button is-success" @click="shutdownInstance">OK</button>
+            <button class="button" @click="closeModal">Cancel</button>
+          </template>
+        </sba-modal>
+
         <instances-list :instances="application.instances">
           <template slot="actions" slot-scope="{instance}">
             <sba-icon-button :id="`nf-settings-${instance.id}`"
@@ -65,7 +79,7 @@
             <sba-icon-button v-if="instance.hasEndpoint('shutdown')"
                              :icon="['far', 'stop-circle']"
                              title="shutdown"
-                             @click.stop="$emit('shutdown', instance)"
+                             @click.stop="confirmShutdownInstance(instance)"
             />
           </template>
         </instances-list>
@@ -77,10 +91,9 @@
 import Application from '@/services/application';
 import ApplicationSummary from './application-summary';
 import InstancesList from './instances-list';
-import SbaModal from "@/components/sba-modal";
 
 export default {
-  components: {SbaModal, ApplicationSummary, InstancesList},
+  components: {ApplicationSummary, InstancesList},
   props: {
     application: {
       type: Application,
@@ -101,7 +114,9 @@ export default {
   },
   data() {
     return {
-      currentOpenedModal: undefined
+      isModalApplicationOpen: false,
+      isModalInstanceOpen: false,
+      currentModalInstance: undefined
     }
   },
   computed: {
@@ -134,12 +149,25 @@ export default {
     hasShutdownEndpoint(application) {
       return application.instances.some(i => i.hasEndpoint('shutdown'));
     },
-    confirmShutdownApplication(application) {
-      this.currentOpenedModal = application.name;
+    confirmShutdownApplication() {
+      this.isModalApplicationOpen = true;
+    },
+    confirmShutdownInstance(instance) {
+      this.isModalInstanceOpen = true;
+      this.currentModalInstance = instance;
+    },
+    closeModal() {
+      this.currentModalInstance = undefined;
+      this.isModalApplicationOpen = false;
+      this.isModalInstanceOpen = false;
     },
     shutdownApplication(application) {
       this.$emit('shutdown', application);
-      this.currentOpenedModal = undefined;
+      this.closeModal();
+    },
+    shutdownInstance() {
+      this.$emit('shutdown', this.currentModalInstance);
+      this.closeModal();
     }
   }
 }
