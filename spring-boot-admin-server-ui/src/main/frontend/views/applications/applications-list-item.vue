@@ -56,7 +56,7 @@
       </header>
       <div class="card-content" v-if="isExpanded">
 
-        <sba-modal v-model="isModalInstanceOpen" @close="isModalInstanceOpeno = false">
+        <sba-modal v-model="isModalInstanceOpen" @close="isModalInstanceOpen = false">
           <template v-slot:header><span>shutdown endpoint</span></template>
           <template v-slot:body><span v-html="$t('instances.shutdown', {name: currentModalInstance.id})" /></template>
           <template v-slot:footer>
