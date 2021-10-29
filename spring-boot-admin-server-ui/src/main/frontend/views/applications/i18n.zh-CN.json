@@ -12,6 +12,10 @@
     "suppress_notifications_on": "Suppress notifications on <code>{name}</code> for",
     "status": "实例状态",
     "label": "应用",
-    "up": "在线"
+    "up": "在线",
+    "shutdown": "Shutdown application <code>{name}</code>?"
+  },
+  "instances": {
+    "shutdown": "Shutdown instance <code>{name}</code>?"
   }
 }

@@ -12,6 +12,10 @@
     "suppress_notifications_on": "Benachrichtungen für <code>{name}</code> für",
     "status": "Status",
     "label": "Anwendungen",
-    "up": "OK"
+    "up": "OK",
+    "shutdown": "Anwendung <code>{name}</code> herunterfahren?"
+  },
+  "instances": {
+    "shutdown": "Instanz <code>{name}</code> herunterfahren?"
   }
 }

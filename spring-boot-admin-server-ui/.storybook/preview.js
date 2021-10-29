@@ -1,4 +1,5 @@
 import "@/assets/css/base.scss";
+import "./storybook.scss";
 
 import Vue from "vue/dist/vue.js";
 import components from "@/components";

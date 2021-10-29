@@ -12,6 +12,10 @@
     "suppress_notifications_on": "<code>{name}</code>에 대한 알림",
     "status": "상태",
     "label": "애플리케이션",
-    "up": "정상"
+    "up": "정상",
+    "shutdown": "Shutdown application <code>{name}</code>?"
+  },
+  "instances": {
+    "shutdown": "Shutdown instance <code>{name}</code>?"
   }
 }

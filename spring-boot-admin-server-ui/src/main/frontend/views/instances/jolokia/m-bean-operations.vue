@@ -50,7 +50,6 @@
     data: () => ({
       invocation: null
     }),
-    computed: {},
     methods: {
       closeInvocation() {
         this.invocation = null

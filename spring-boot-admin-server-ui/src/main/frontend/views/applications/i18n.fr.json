@@ -12,6 +12,10 @@
     "suppress_notifications_on": "Supression des notifications sur <code>{name}</code>",
     "status": "Statut",
     "label": "Applications",
-    "up": "OK"
+    "up": "OK",
+    "shutdown": "Shutdown application <code>{name}</code>?"
+  },
+  "instances": {
+    "shutdown": "Shutdown instance <code>{name}</code>?"
   }
 }
