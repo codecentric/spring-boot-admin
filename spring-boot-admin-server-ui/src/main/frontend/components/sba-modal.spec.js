@@ -17,20 +17,14 @@
 import {render} from '../test-utils';
 import SbaModal from './sba-modal';
 import userEvent from '@testing-library/user-event';
-import {screen, waitFor} from '@testing-library/vue';
+import {screen} from '@testing-library/vue';
 
 describe('sba-modal.vue', () => {
-  it('closes when close button is clicked', async () => {
+  it('modal is closed when close button is clicked', async () => {
     const {emitted} = render(SbaModal, {props: {open: true}})
 
-    const modal = screen.getByRole('dialog');
-    const closeButton = screen.getByLabelText('close');
-    userEvent.click(closeButton);
+    userEvent.click(screen.getByLabelText('close'));
 
-    expect(emitted().close).toBeDefined();
-
-    await waitFor(() => {
-      expect(modal).not.toBeVisible()
-    })
+    expect(emitted().change).toBeDefined();
   })
 })
