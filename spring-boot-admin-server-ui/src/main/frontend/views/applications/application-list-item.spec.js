@@ -20,10 +20,16 @@ import ApplicationListItem from './applications-list-item';
 import {applications} from '../../mocks/applications/data';
 import {screen, waitFor} from '@testing-library/vue';
 import userEvent from '@testing-library/user-event';
+import _ from 'lodash';
 
 describe('application-list-item.vue', () => {
+  let application;
+
+  beforeEach(() => {
+    application = _.cloneDeep(applications[0])
+  });
+
   it('does not show shutdown button when shutdown endpoint is missing', () => {
-    const application = {...applications[0]};
     application.instances[0].endpoints = [];
 
     render(ApplicationListItem, { props: {application: new Application(application)}})
@@ -33,17 +39,18 @@ describe('application-list-item.vue', () => {
   })
 
   it('should call shutdown endpoint when modal is confirmed', async () => {
-    const application = {...applications[0]};
+    const {emitted} = render(ApplicationListItem, {props: {application: new Application(application)}})
 
-    render(ApplicationListItem, {props: {application: new Application(application)}})
-
-    const shutdownButton = screen.queryByTitle('shutdown')
-    userEvent.click(shutdownButton);
+    const element = screen.queryByTitle('shutdown');
+    userEvent.click(element);
 
     await waitFor(() => {
       screen.findByRole('dialog');
     })
 
-    screen.debug();
+    const buttonOK = screen.queryByRole('button', {name: 'OK'});
+    userEvent.click(buttonOK);
+
+    expect(emitted().shutdown).toBeDefined();
   })
 })
