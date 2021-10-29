@@ -26,7 +26,7 @@ const Template = (args, {argTypes}) => ({
   components: {SbaModal},
   props: Object.keys(argTypes),
   template: `
-    <sba-modal v-model="$props.open" v-bind="$props" @close="$props.open = false">
+    <sba-modal v-model="$props.open" v-bind="$props">
       <template v-if="${'header' in args}" v-slot:header>${args.header}</template>
       <template v-if="${'body' in args}" v-slot:default>${args.body}</template>
       <template v-if="${'footer' in args}" v-slot:footer>${args.footer}</template>
@@ -37,7 +37,7 @@ const Template = (args, {argTypes}) => ({
 
 export const ModalWithBody = Template.bind({});
 ModalWithBody.args = {
-  open: false,
+  open: true,
   body: 'I am a body'
 };
 

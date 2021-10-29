@@ -1,5 +1,5 @@
 <template>
-  <div v-if="open" class="modal is-active">
+  <div v-if="isOpen" class="modal is-active" role="dialog">
     <div class="modal-background" />
 
     <div class="modal-card">
@@ -33,8 +33,14 @@ export default {
       required: true
     }
   },
+  data() {
+    return {
+      isOpen: this.open
+    }
+  },
   methods: {
     close() {
+      this.isOpen = false;
       this.$emit('close');
     }
   }

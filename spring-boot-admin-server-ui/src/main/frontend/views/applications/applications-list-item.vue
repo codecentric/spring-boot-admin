@@ -16,24 +16,32 @@
 
 <template>
   <div>
-    <sba-modal v-model="isModalApplicationOpen" @close="isModalApplicationOpen = false">
-      <template v-slot:header><span>shutdown endpoint</span></template>
-      <template v-slot:body><span v-html="$t('applications.shutdown', {name: application.name})" /></template>
+    <sba-modal v-model="isModalApplicationOpen">
+      <template v-slot:header>
+        <span>shutdown endpoint</span>
+      </template>
+      <template v-slot:body>
+        <span v-html="$t('applications.shutdown', {name: application.name})" />
+      </template>
       <template v-slot:footer>
-        <button class="button is-success" @click="shutdownApplication(application)">OK</button>
-        <button class="button" @click="closeModal">Cancel</button>
+        <button class="button is-success" @click="shutdownApplication(application)">
+          OK
+        </button>
+        <button class="button" @click="closeModal">
+          Cancel
+        </button>
       </template>
     </sba-modal>
     <div class="application-list-item card" :class="{'is-active': isExpanded}">
       <header class="hero application-list-item__header" :class="headerClass" v-on="$listeners">
-        <application-summary v-if="!isExpanded" :application="application"/>
-        <h1 v-else class="title is-size-5" v-text="application.name"/>
+        <application-summary v-if="!isExpanded" :application="application" />
+        <h1 v-else class="title is-size-5" v-text="application.name" />
         <div class="application-list-item__header__actions" @click.stop="">
           <router-link
             class="button icon-button"
             :to="{ name: 'journal', query: { 'application' : application.name } }"
           >
-            <font-awesome-icon icon="history"/>
+            <font-awesome-icon icon="history" />
           </router-link>
           <sba-icon-button
             :id="`nf-settings-${application.name}`"
@@ -55,13 +63,20 @@
         </div>
       </header>
       <div class="card-content" v-if="isExpanded">
-
-        <sba-modal v-model="isModalInstanceOpen" @close="isModalInstanceOpen = false">
-          <template v-slot:header><span>shutdown endpoint</span></template>
-          <template v-slot:body><span v-html="$t('instances.shutdown', {name: currentModalInstance.id})" /></template>
+        <sba-modal v-model="isModalInstanceOpen">
+          <template v-slot:header>
+            <span>shutdown endpoint</span>
+          </template>
+          <template v-slot:body>
+            <span v-html="$t('instances.shutdown', {name: currentModalInstance.id})" />
+          </template>
           <template v-slot:footer>
-            <button class="button is-success" @click="shutdownInstance">OK</button>
-            <button class="button" @click="closeModal">Cancel</button>
+            <button class="button is-success" @click="shutdownInstance">
+              OK
+            </button>
+            <button class="button" @click="closeModal">
+              Cancel
+            </button>
           </template>
         </sba-modal>
 
