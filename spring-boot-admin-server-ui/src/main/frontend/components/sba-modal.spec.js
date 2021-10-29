@@ -25,6 +25,6 @@ describe('sba-modal.vue', () => {
 
     userEvent.click(screen.getByLabelText('close'));
 
-    expect(emitted().change).toBeDefined();
+    expect(emitted().change[0]).toContain(false);
   })
 })
