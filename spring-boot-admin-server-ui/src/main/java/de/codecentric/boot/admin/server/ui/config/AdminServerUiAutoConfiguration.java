@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -149,12 +150,15 @@ public class AdminServerUiAutoConfiguration {
 
 			private final AdminServerProperties adminServer;
 
+			private final WebFluxProperties webFluxProperties;
+
 			private final ApplicationContext applicationContext;
 
 			public AdminUiWebfluxConfig(AdminServerUiProperties adminUi, AdminServerProperties adminServer,
-					ApplicationContext applicationContext) {
+					WebFluxProperties webFluxProperties, ApplicationContext applicationContext) {
 				this.adminUi = adminUi;
 				this.adminServer = adminServer;
+				this.webFluxProperties = webFluxProperties;
 				this.applicationContext = applicationContext;
 			}
 
@@ -173,7 +177,7 @@ public class AdminServerUiAutoConfiguration {
 			public de.codecentric.boot.admin.server.ui.web.reactive.HomepageForwardingFilter homepageForwardFilter(
 					HomepageForwardingFilterConfig homepageForwardingFilterConfig) throws IOException {
 				return new de.codecentric.boot.admin.server.ui.web.reactive.HomepageForwardingFilter(
-						homepageForwardingFilterConfig);
+						homepageForwardingFilterConfig, webFluxProperties);
 			}
 
 		}

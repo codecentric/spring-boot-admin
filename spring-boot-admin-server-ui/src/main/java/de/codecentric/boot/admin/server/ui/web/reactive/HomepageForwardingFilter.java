@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
@@ -43,8 +44,9 @@ public class HomepageForwardingFilter implements WebFilter {
 				(r) -> r.getPath().pathWithinApplication().toString(), (r) -> r.getHeaders().getAccept());
 	}
 
-	public HomepageForwardingFilter(HomepageForwardingFilterConfig filterConfig) {
-		this(filterConfig.getHomepage(), filterConfig.getRoutesIncludes(), filterConfig.getRoutesExcludes());
+	public HomepageForwardingFilter(HomepageForwardingFilterConfig filterConfig, WebFluxProperties webFluxProperties) {
+		this((webFluxProperties.getBasePath() != null) ? webFluxProperties.getBasePath() + "/"
+				: filterConfig.getHomepage(), filterConfig.getRoutesIncludes(), filterConfig.getRoutesExcludes());
 	}
 
 	@Override
