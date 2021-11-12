@@ -27,6 +27,9 @@ public class HomepageForwardingFilterConfig {
 
 	List<String> routesIncludes;
 
+	/**
+	 * routes which are excluded intentionally (for instance downloads)
+	 */
 	List<String> routesExcludes;
 
 }
