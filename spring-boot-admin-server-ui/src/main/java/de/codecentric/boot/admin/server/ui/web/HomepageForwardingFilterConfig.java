@@ -23,10 +23,13 @@ import lombok.Value;
 @Value
 public class HomepageForwardingFilterConfig {
 
-	private final String homepage;
+	String homepage;
 
-	private final List<String> routesIncludes;
+	List<String> routesIncludes;
 
-	private final List<String> routesExcludes;
+	/**
+	 * routes which are excluded intentionally (for instance downloads)
+	 */
+	List<String> routesExcludes;
 
 }

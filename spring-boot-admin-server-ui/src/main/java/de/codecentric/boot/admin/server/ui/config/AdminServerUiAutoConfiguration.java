@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -124,20 +125,6 @@ public class AdminServerUiAutoConfiguration {
 		return resolver;
 	}
 
-	@Bean
-	public HomepageForwardingFilterConfig homepageForwardingFilterConfig() throws IOException {
-		String homepage = this.adminServer.path("/");
-
-		List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
-				.scan(this.adminUi.getExtensionResourceLocations());
-		List<String> routesIncludes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream())
-				.map(this.adminServer::path).collect(Collectors.toList());
-		List<String> routesExcludes = DEFAULT_UI_ROUTE_EXCLUDES.stream().map(this.adminServer::path)
-				.collect(Collectors.toList());
-
-		return new HomepageForwardingFilterConfig(homepage, routesIncludes, routesExcludes);
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 	public static class ReactiveUiConfiguration {
@@ -149,13 +136,34 @@ public class AdminServerUiAutoConfiguration {
 
 			private final AdminServerProperties adminServer;
 
+			private final WebFluxProperties webFluxProperties;
+
 			private final ApplicationContext applicationContext;
 
 			public AdminUiWebfluxConfig(AdminServerUiProperties adminUi, AdminServerProperties adminServer,
-					ApplicationContext applicationContext) {
+					WebFluxProperties webFluxProperties, ApplicationContext applicationContext) {
 				this.adminUi = adminUi;
 				this.adminServer = adminServer;
+				this.webFluxProperties = webFluxProperties;
 				this.applicationContext = applicationContext;
+			}
+
+			@Bean
+			public HomepageForwardingFilterConfig homepageForwardingFilterConfig() throws IOException {
+				String webFluxBasePath = webFluxProperties.getBasePath();
+				boolean webfluxBasePathSet = webFluxBasePath != null;
+				String homepage = webfluxBasePathSet ? webFluxBasePath + "/" : this.adminServer.path("/");
+
+				List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
+						.scan(this.adminUi.getExtensionResourceLocations());
+				List<String> routesIncludes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream())
+						.map(this.adminServer::path).collect(Collectors.toList());
+				routesIncludes.add("");
+
+				List<String> routesExcludes = DEFAULT_UI_ROUTE_EXCLUDES.stream().map(this.adminServer::path)
+						.collect(Collectors.toList());
+
+				return new HomepageForwardingFilterConfig(homepage, routesIncludes, routesExcludes);
 			}
 
 			@Override
@@ -198,6 +206,20 @@ public class AdminServerUiAutoConfiguration {
 				this.adminUi = adminUi;
 				this.adminServer = adminServer;
 				this.applicationContext = applicationContext;
+			}
+
+			@Bean
+			public HomepageForwardingFilterConfig homepageForwardingFilterConfig() throws IOException {
+				String homepage = this.adminServer.path("/");
+
+				List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
+						.scan(this.adminUi.getExtensionResourceLocations());
+				List<String> routesIncludes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream())
+						.map(this.adminServer::path).collect(Collectors.toList());
+				List<String> routesExcludes = DEFAULT_UI_ROUTE_EXCLUDES.stream().map(this.adminServer::path)
+						.collect(Collectors.toList());
+
+				return new HomepageForwardingFilterConfig(homepage, routesIncludes, routesExcludes);
 			}
 
 			@Override

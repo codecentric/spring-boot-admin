@@ -132,6 +132,7 @@
                     <includeEmptyDirs>true</includeEmptyDirs>
                 </configuration>
             </plugin>
+
         </plugins>
         <resources>
             <resource>
@@ -144,4 +145,20 @@
             </resource>
         </resources>
     </build>
+    <profiles>
+        <profile>
+            <id>noNpm</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
