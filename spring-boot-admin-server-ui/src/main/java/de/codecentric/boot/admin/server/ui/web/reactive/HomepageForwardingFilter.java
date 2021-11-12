@@ -17,6 +17,8 @@
 package de.codecentric.boot.admin.server.ui.web.reactive;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +48,11 @@ public class HomepageForwardingFilter implements WebFilter {
 
 	public HomepageForwardingFilter(HomepageForwardingFilterConfig filterConfig, WebFluxProperties webFluxProperties) {
 		this((webFluxProperties.getBasePath() != null) ? webFluxProperties.getBasePath() + "/"
-				: filterConfig.getHomepage(), filterConfig.getRoutesIncludes(), filterConfig.getRoutesExcludes());
+				: filterConfig.getHomepage(),
+				(webFluxProperties.getBasePath() != null) ? Stream
+						.concat(Stream.of(""), filterConfig.getRoutesIncludes().stream()).collect(Collectors.toList())
+						: filterConfig.getRoutesIncludes(),
+				filterConfig.getRoutesExcludes());
 	}
 
 	@Override
