@@ -42,6 +42,7 @@
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
         <awaitility.version>4.1.0</awaitility.version>
         <testcontainers.version>1.16.0</testcontainers.version>
+        <jetty.version>9.4.44.v20210927</jetty.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.2.0</build-helper-maven-plugin.version>
