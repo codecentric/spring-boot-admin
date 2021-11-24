@@ -47,16 +47,7 @@ export default {
   },
   props: {
     current: {type: Number, default: 1},
-    pageSize: {type: Number, default: 25},
     pageCount: {type: Number, required: true}
-  },
-  computed: {
-    indexStart() {
-      return (this.current - 1) * this.pageSize;
-    },
-    indexEnd() {
-      return this.indexStart + this.pageSize;
-    },
   }
 }
 </script>

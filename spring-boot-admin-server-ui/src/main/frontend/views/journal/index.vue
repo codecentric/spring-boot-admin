@@ -47,8 +47,8 @@
             <div class="field is-narrow">
               <div class="control">
                 <div class="select is-fullwidth">
-                  <select v-model="pageSize">
-                    <option v-for="count in [10, 25, 50, 100, 200, 500]" :key="'count' + count" v-text="count" />
+                  <select @change="setPageSize($event.target.value)" :value="pageSize">
+                    <option v-for="perPage in [10, 25, 50, 100, 200, 500]" :key="'pp_' + perPage" v-text="perPage" />
                     <option :value="events.length" v-text="$t('journal.per_page.all')" />
                   </select>
                 </div>
@@ -159,16 +159,20 @@ export default {
       return this.filterEvents(this.events.slice(0, this.listOffset)).length;
     },
     indexStart() {
-      return (this.current - 1) * this.pageSize;
+      return (this.current - 1) * (+this.pageSize);
     },
     pageCount() {
-      return Math.ceil(this.events.length / this.pageSize);
+      return Math.ceil(this.events.length / (+this.pageSize));
     },
     indexEnd() {
-      return this.indexStart + this.pageSize;
+      return this.indexStart + (+this.pageSize);
     },
   },
   methods: {
+    setPageSize(newPageSize) {
+      this.current = 1;
+      this.pageSize = +newPageSize;
+    },
     toJson(obj) {
       return JSON.stringify(obj, null, 4);
     },
@@ -230,6 +234,20 @@ export default {
   async created() {
     try {
       const response = await Instance.fetchEvents();
+      response.data = [
+        ...response.data,
+        ...response.data,
+        ...response.data,
+        ...response.data,
+        ...response.data,
+        ...response.data,
+        ...response.data,
+        ...response.data,
+        ...response.data
+      ].map((e, idx) => ({
+        ...e,
+        version: idx
+      }))
       const events = response.data.sort(compareBy(v => v.timestamp)).reverse().map(e => new Event(e));
       this.events = Object.freeze(events);
       this.error = null;
@@ -254,12 +272,14 @@ export default {
 .label {
   white-space: nowrap;
 }
+
 .floating-panel {
   position: absolute;
   right: 0;
   top: 0;
   width: 25%;
 }
+
 .floating-panel .field {
   float: right;
 }
