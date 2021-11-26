@@ -124,6 +124,10 @@ class Application {
     return this.axios.post(uri`actuator/shutdown`);
   }
 
+  restart() {
+    return this.axios.post(uri`actuator/restart`);
+  }
+
   static _transformResponse(data) {
     if (!data) {
       return data;
