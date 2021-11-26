@@ -7,7 +7,7 @@ Mail notifications will be delivered as HTML emails rendered using https://www.t
 To enable Mail notifications, configure a `JavaMailSender` using `spring-boot-starter-mail` and set a recipient.
 
 .Sample Mail Notification
-image::mail-notification-sample.png[Sample Mail Notification]
+image::images/mail-notification-sample.png[Sample Mail Notification]
 
 NOTE: To prevent disclosure of sensitive information, the default mail template doesn't show any metadata of
 the instance. If you want to you show some of the metadata you can use a custom template.

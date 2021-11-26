@@ -29,6 +29,15 @@ For *non-Spring Boot* applications you can either add a `version` or `build.vers
 </build>
 ----
 
+To generate the build-info in a gradle project, add the following snippet to your `build.gradle`:
+[source,groovy]
+.build.gradle
+----
+springBoot {
+	buildInfo()
+}
+----
+
 [[jmx-bean-management]]
 === JMX-Bean Management ===
 
