@@ -1043,6 +1043,17 @@ See also the <a href="http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/re
 <span class="tag">&lt;/build&gt;</span></code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>To generate the build-info in a gradle project, add the following snippet to your <code>build.gradle</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">springBoot {
+  buildInfo()
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="jmx-bean-management"><a class="anchor" href="#jmx-bean-management"></a><a class="link" href="#jmx-bean-management">3.2. JMX-Bean Management</a></h3>
@@ -1760,7 +1771,7 @@ To enable Mail notifications, configure a <code>JavaMailSender</code> using <cod
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="mail-notification-sample.png" alt="Sample Mail Notification">
+<img src="images/mail-notification-sample.png" alt="Sample Mail Notification">
 </div>
 <div class="title">Figure 1. Sample Mail Notification</div>
 </div>
