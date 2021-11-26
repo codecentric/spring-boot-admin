@@ -42,6 +42,7 @@
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
         <awaitility.version>4.1.0</awaitility.version>
         <testcontainers.version>1.16.0</testcontainers.version>
+        <jetty.version>9.4.44.v20210927</jetty.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.2.0</build-helper-maven-plugin.version>
@@ -69,6 +70,8 @@
         <checkstyle.version>9.0</checkstyle.version>
         <spring-javaformat-checkstyle.version>0.0.28</spring-javaformat-checkstyle.version>
         <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
+        <node.version>v15.14.0</node.version>
+        <npm.version>7.20.3</npm.version>
     </properties>
     <modules>
         <module>spring-boot-admin-server</module>

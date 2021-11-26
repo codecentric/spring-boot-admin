@@ -53,7 +53,6 @@ spring:
 ---
 # see readme of spring-boot-admin-server-ui
 spring:
-  profiles: dev
   boot:
     admin:
       ui:
@@ -63,6 +62,9 @@ spring:
         resource-locations: file:../../spring-boot-admin-server-ui/target/dist/
         cache-templates: false
         extension-resource-locations: file:../spring-boot-admin-sample-custom-ui/target/dist/
+  config:
+    activate:
+      on-profile: dev
 
 ---
 
@@ -78,13 +80,17 @@ spring:
 
 ---
 spring:
-  profiles: insecure
+  config:
+    activate:
+      on-profile: insecure
 
 info.tags.security: insecure
 
 ---
 spring:
-  profiles: secure
+  config:
+    activate:
+      on-profile: secure
   security:
     user:
       name: "user"
