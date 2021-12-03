@@ -71,6 +71,7 @@
         <div class="application-list-item__header__actions" @click.stop="">
           <router-link
             class="button icon-button"
+            title="journal"
             :to="{ name: 'journal', query: { 'application' : application.name } }"
           >
             <font-awesome-icon icon="history" />
@@ -83,6 +84,7 @@
           />
           <sba-icon-button
             icon="trash"
+            title="unregister"
             v-if="application.isUnregisterable"
             @click="$emit('unregister', application)"
           />
@@ -157,6 +159,7 @@
                              :icon="hasActiveNotificationFilter(instance) ? 'bell-slash' : 'bell'"
             />
             <sba-icon-button icon="trash"
+                             title="unregister"
                              v-if="instance.isUnregisterable"
                              @click.stop="$emit('unregister', instance)"
             />
