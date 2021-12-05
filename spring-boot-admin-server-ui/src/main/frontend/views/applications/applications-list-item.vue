@@ -97,7 +97,7 @@
           <sba-icon-button
             v-if="hasRestartEndpoint(application)"
             title="restart"
-            icon="redo"
+            icon="sync-alt"
             @click="confirmRestartApplication(application)"
           />
         </div>
@@ -169,7 +169,7 @@
                              @click.stop="confirmShutdownInstance(instance)"
             />
             <sba-icon-button v-if="instance.hasEndpoint('restart')"
-                             icon="redo"
+                             icon="sync-alt"
                              title="restart"
                              @click.stop="confirmRestartInstance(instance)"
             />
@@ -297,6 +297,10 @@ export default {
 
 .application-list-item {
   transition: all $easing $speed;
+
+  .icon-button {
+    padding: 0.5em 1em;
+  }
 
   &.is-active {
     margin: 0.75rem -0.75rem;
