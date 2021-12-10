@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.cloud.discovery;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,7 +148,9 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 	}
 
 	protected Map<String, String> getMetadata(ServiceInstance instance) {
-		return (instance.getMetadata() != null) ? instance.getMetadata() : emptyMap();
+		return (instance.getMetadata() != null) ? instance.getMetadata().entrySet().stream()
+				.filter((e) -> e.getKey() != null).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+				: emptyMap();
 	}
 
 	public void setManagementContextPath(String managementContextPath) {
