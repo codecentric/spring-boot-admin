@@ -13,9 +13,13 @@
     "status": "實例狀態",
     "label": "應用",
     "up": "正常",
-    "shutdown": "Shutdown application <code>{name}</code>?"
+    "shutdown": "Shutdown application <code>{name}</code>?",
+    "restart": "Restart application <code>{name}</code>?",
+    "restarted": "Successfully restarted application <code>{name}</code>"
   },
   "instances": {
-    "shutdown": "Shutdown instance <code>{name}</code>?"
+    "shutdown": "Shutdown instance <code>{name}</code>?",
+    "restart": "Restart instance <code>{name}</code>?",
+    "restarted": "Successfully restarted instance"
   }
 }

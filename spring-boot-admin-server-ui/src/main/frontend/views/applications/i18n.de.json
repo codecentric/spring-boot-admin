@@ -13,9 +13,13 @@
     "status": "Status",
     "label": "Anwendungen",
     "up": "OK",
-    "shutdown": "Anwendung <code>{name}</code> herunterfahren?"
+    "shutdown": "Anwendung <code>{name}</code> herunterfahren?",
+    "restart": "Anwendung <code>{name}</code> neu starten?",
+    "restarted": "Anwendung <code>{name}</code> erfolgreich neu gestartet"
   },
   "instances": {
-    "shutdown": "Instanz <code>{name}</code> herunterfahren?"
+    "shutdown": "Instanz <code>{name}</code> herunterfahren?",
+    "restart": "Instanz <code>{name}</code> neu starten?",
+    "restarted": "Instanz erfolgreich neu gestartet"
   }
 }
