@@ -306,6 +306,10 @@ class Instance {
     return this.axios.post(uri`actuator/shutdown`);
   }
 
+  restart() {
+    return this.axios.post(uri`actuator/restart`);
+  }
+
   static getEventStream() {
     return concat(
       from(waitForPolyfill()).pipe(ignoreElements()),

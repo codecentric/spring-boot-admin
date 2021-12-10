@@ -44,6 +44,8 @@ import {faStepBackward} from '@fortawesome/free-solid-svg-icons/faStepBackward';
 import {faStepForward} from '@fortawesome/free-solid-svg-icons/faStepForward';
 import {faTimesCircle} from '@fortawesome/free-solid-svg-icons/faTimesCircle';
 import {faTrash} from '@fortawesome/free-solid-svg-icons/faTrash';
+import {faRedo} from '@fortawesome/free-solid-svg-icons/faRedo';
+import {faSyncAlt} from '@fortawesome/free-solid-svg-icons/faSyncAlt';
 import {faStopCircle as farStopCircle} from '@fortawesome/free-regular-svg-icons/faStopCircle';
 import {faUserCircle} from '@fortawesome/free-solid-svg-icons/faUserCircle';
 import {faWrench} from '@fortawesome/free-solid-svg-icons/faWrench';
@@ -80,6 +82,8 @@ library.add(
   faStepForward,
   faTimesCircle,
   faTrash,
+  faRedo,
+  faSyncAlt,
   faUserCircle,
   faWrench,
 //regular

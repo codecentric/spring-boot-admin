@@ -88,7 +88,11 @@ export const applications = [{
     }, {'id': 'info', 'url': 'http://localhost:8080/actuator/info'}, {
       'id': 'shutdown',
       'url': 'http://localhost:8080/actuator/shutdown'
-    }],
+    },
+      {
+        'id': 'restart',
+        'url': 'http://localhost:8080/actuator/restart'
+      }],
     'buildVersion': '2.5.2-SNAPSHOT',
     'tags': {'environment': 'test', 'security': 'insecure'}
   }]
