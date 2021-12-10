@@ -17,7 +17,7 @@
 <template>
   <div class="navbar-item has-dropdown is-hoverable">
     <a class="navbar-link" role="button">
-      {{ selectedLanguage.label }} ({{ selectedLanguage.locale }})
+      {{ selectedLanguage.label }}
     </a>
     <div class="navbar-dropdown">
       <a class="navbar-item"
@@ -26,7 +26,7 @@
          :key="language.locale"
          @click="localeChanged(language.locale)"
       >
-        {{ language.label }} ({{ language.locale }})
+        {{ language.label }}
       </a>
     </div>
   </div>
@@ -55,8 +55,16 @@ export default {
     },
     mapLocale(locale) {
       try {
-        const localeUppercase = locale.split('-').pop().toUpperCase();
-        let label = new Intl.DisplayNames([localeUppercase, this.$i18n.locale], {type: 'region'}).of(localeUppercase);
+        let langTag =  locale.split('-').length > 1 ? `-${locale.split('-').pop()}` : ''
+        if (locale.toLowerCase().startsWith('zh')) {
+          if (locale.endsWith('CN')) {
+            langTag = '-Hans'
+          }
+          if (locale.endsWith('TW')) {
+            langTag = '-Hant'
+          }
+        }
+        let label = new Intl.DisplayNames([locale], {type: 'language'}).of(`${locale.split('-').reverse().pop()}${langTag}`);
 
         if (label?.toUpperCase() === 'UNKNOWN REGION') {
           label = locale;
