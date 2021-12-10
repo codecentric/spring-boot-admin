@@ -8,7 +8,7 @@
     "lint": "vue-cli-service lint",
     "lint:fix": "vue-cli-service lint --fix",
     "watch": "vue-cli-service build --watch",
-    "storybook": "start-storybook -p 6006",
+    "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook"
   },
   "engines": {
@@ -81,6 +81,7 @@
     "jest-each": "26.6.2",
     "jest-environment-jsdom-sixteen": "2.0.0",
     "msw": "0.35.0",
+    "msw-storybook-addon": "1.5.0",
     "node-sass": "6.0.1",
     "sass-loader": "10.2.0",
     "style-loader": "1.3.0",
@@ -168,5 +169,8 @@
       "**/*.spec.js"
     ],
     "testURL": "http://example.com"
+  },
+  "msw": {
+    "workerDirectory": "public"
   }
 }
