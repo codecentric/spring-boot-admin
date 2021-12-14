@@ -26,7 +26,7 @@
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin</artifactId>
         <version>${revision}</version>
-        <relativePath>..</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <dependencyManagement>
         <dependencies>
