@@ -18,7 +18,7 @@
   <div class="field is-narrow">
     <div class="control">
       <button
-        v-if="selectedScope === 'application'"
+        v-if="scope === 'application'"
         class="button is-primary is-active"
         @click="toggleScope('instance')"
       >
@@ -35,7 +35,7 @@
       </button>
     </div>
     <p class="help has-text-centered">
-      <span v-if="selectedScope === 'application'"
+      <span v-if="scope === 'application'"
             v-text="$t('term.affects_all_instances', {count: instanceCount})"
       />
       <span v-else v-text="$t('term.affects_this_instance_only')" />
@@ -45,7 +45,15 @@
 
 <script>
 export default {
+  model: {
+    prop: 'scope',
+    event: 'changeScope'
+  },
   props: {
+    scope: {
+      type: String,
+      required: true
+    },
     instanceCount: {
       type: Number,
       required: true
@@ -57,10 +65,8 @@ export default {
     }
   },
   methods: {
-    toggleScope(scope) {
-      this.selectedScope = scope;
-
-      this.$emit('changeScope', this.selectedScope)
+    toggleScope(newScope) {
+      this.$emit('changeScope', newScope)
     }
   }
 }
