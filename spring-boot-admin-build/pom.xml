@@ -30,6 +30,28 @@
     </parent>
     <dependencyManagement>
         <dependencies>
+            <!-- REMOVE WHEN UPDATING TO SPRING BOOT -->
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.2.8</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>1.2.8</version>
+            </dependency>
+            <dependency>
+                <groupId> org.apache.logging.log4j</groupId>
+                <artifactId>log4j-to-slf4j</artifactId>
+                <version>2.16.0</version>
+            </dependency>
+            <dependency>
+                <groupId> org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>2.16.0</version>
+            </dependency>
+            <!-- REMOVE END -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
