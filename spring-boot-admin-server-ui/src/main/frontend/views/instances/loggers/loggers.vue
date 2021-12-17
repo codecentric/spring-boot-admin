@@ -22,8 +22,8 @@
       <div class="field is-grouped">
         <div class="control">
           <sba-toggle-scope-button v-if="instanceCount > 1"
+                                   v-model="scope"
                                    :instance-count="instanceCount"
-                                   @changeScope="$emit('changeScope', $event)"
           />
         </div>
         <div class="control is-expanded">
@@ -108,10 +108,6 @@ export default {
   components: {SbaToggleScopeButton, LoggersList},
   directives: {sticksBelow},
   props: {
-    scope: {
-      type: String,
-      required: true
-    },
     instanceCount: {
       type: Number,
       required: true
@@ -121,18 +117,21 @@ export default {
       required: true
     }
   },
-  data: () => ({
-    hasLoaded: false,
-    error: null,
-    failedInstances: 0,
-    loggerConfig: {loggers: [], levels: []},
-    filter: {
-      name: '',
-      classOnly: false,
-      configuredOnly: false,
-    },
-    loggersStatus: {}
-  }),
+  data() {
+    return {
+      hasLoaded: false,
+      error: null,
+      failedInstances: 0,
+      loggerConfig: {loggers: [], levels: []},
+      filter: {
+        name: '',
+        classOnly: false,
+        configuredOnly: false,
+      },
+      loggersStatus: {},
+      scope: this.instanceCount > 1 ? 'application' : 'instance'
+    }
+  },
   computed: {
     filteredLoggers() {
       const filterFn = this.getFilterFn();

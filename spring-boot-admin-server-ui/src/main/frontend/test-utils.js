@@ -9,6 +9,8 @@ Vue.use(VueI18n);
 Vue.use(components);
 Vue.use(VueRouter);
 
+export const localVue = Vue;
+
 export const render = (testComponent, options) => {
   return tlRender(testComponent, options,
     () => {
