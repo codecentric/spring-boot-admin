@@ -42,14 +42,24 @@
                 <version>1.2.8</version>
             </dependency>
             <dependency>
-                <groupId> org.apache.logging.log4j</groupId>
+                <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-to-slf4j</artifactId>
                 <version>2.16.0</version>
             </dependency>
             <dependency>
-                <groupId> org.apache.logging.log4j</groupId>
+                <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-api</artifactId>
                 <version>2.16.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.thymeleaf</groupId>
+                <artifactId>thymeleaf</artifactId>
+                <version>3.0.14.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>org.thymeleaf</groupId>
+                <artifactId>thymeleaf-spring5</artifactId>
+                <version>3.0.14.RELEASE</version>
             </dependency>
             <!-- REMOVE END -->
             <dependency>
