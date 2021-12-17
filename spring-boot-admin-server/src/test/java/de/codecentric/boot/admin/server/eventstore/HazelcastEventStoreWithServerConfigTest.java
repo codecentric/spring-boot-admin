@@ -25,10 +25,10 @@ import com.hazelcast.config.InMemoryFormat;
 import com.hazelcast.config.MapConfig;
 import com.hazelcast.config.MergePolicyConfig;
 import com.hazelcast.config.TcpIpConfig;
+import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import com.hazelcast.spi.merge.PutIfAbsentMergePolicy;
-import org.springframework.boot.autoconfigure.hazelcast.HazelcastInstanceFactory;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
@@ -54,7 +54,7 @@ public class HazelcastEventStoreWithServerConfigTest extends AbstractEventStoreT
 
 	private HazelcastInstance createHazelcastInstance() {
 		Config config = createHazelcastConfig();
-		return (new HazelcastInstanceFactory(config)).getHazelcastInstance();
+		return Hazelcast.newHazelcastInstance(config);
 	}
 
 	// config from sample project
