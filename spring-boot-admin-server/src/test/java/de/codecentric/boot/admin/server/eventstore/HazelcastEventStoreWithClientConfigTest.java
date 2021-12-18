@@ -35,7 +35,7 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 public class HazelcastEventStoreWithClientConfigTest extends AbstractEventStoreTest {
 
 	@Container
-	private static final GenericContainer<?> hazelcastServer = new GenericContainer<>("hazelcast/hazelcast:4.0")
+	private static final GenericContainer<?> hazelcastServer = new GenericContainer<>("hazelcast/hazelcast:4.2.2")
 			.withExposedPorts(5701);
 
 	private final HazelcastInstance hazelcast;
