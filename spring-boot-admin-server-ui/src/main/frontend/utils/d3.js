@@ -20,7 +20,7 @@ import * as brush from 'd3-brush';
 import * as scale from 'd3-scale';
 import * as selection from 'd3-selection';
 import * as shape from 'd3-shape';
-import * as time from 'd3-time';
+import * as time from 'd3-time/dist/d3-time';
 
 export default {
   ...array,
