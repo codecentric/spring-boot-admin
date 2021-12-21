@@ -90,7 +90,7 @@
                             <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <arguments>ci --prefer-offline --no-audit --verbose</arguments>
+                            <arguments>ci --prefer-offline --no-audit</arguments>
                         </configuration>
                     </execution>
                     <execution>
