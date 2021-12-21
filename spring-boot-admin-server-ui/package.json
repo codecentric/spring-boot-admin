@@ -12,8 +12,8 @@
     "build-storybook": "build-storybook"
   },
   "engines": {
-    "node": "~15",
-    "npm": "~7"
+    "node": ">=15",
+    "npm": ">=7"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "1.2.36",
