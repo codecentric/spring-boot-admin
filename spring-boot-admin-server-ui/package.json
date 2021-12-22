@@ -27,8 +27,8 @@
     "bulma": "0.9.3",
     "bulma-badge": "3.0.1",
     "core-js": "3.17.3",
-    "d3-array": "2.12.1",
-    "d3-axis": "2.1.0",
+    "d3-array": "3.1.1",
+    "d3-axis": "3.0.0",
     "d3-brush": "2.1.0",
     "d3-scale": "3.3.0",
     "d3-selection": "2.0.0",
@@ -152,6 +152,9 @@
       "js",
       "json",
       "vue"
+    ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!(d3-.*)/)"
     ],
     "transform": {
       ".+\\.vue$": "vue-jest",
