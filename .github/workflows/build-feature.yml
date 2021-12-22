@@ -53,7 +53,6 @@ jobs:
           mvn -B spring-javaformat:apply --no-transfer-progress
           mvn -B verify -P coverage --no-transfer-progress -D maven.javadoc.skip=true
 
-      - uses: codecov/codecov-action@v1
+      - uses: codecov/codecov-action@v2
         with:
-          file: ./**/target/site/jacoco/jacoco.xml
-          name: codecov
+          files: "'*/jacoco.xml'"
