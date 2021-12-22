@@ -83,7 +83,6 @@
     "msw-storybook-addon": "1.5.0",
     "node-sass": "6.0.1",
     "sass-loader": "10.2.0",
-    "style-loader": "1.3.0",
     "vue-loader": "15.9.8",
     "vue-template-compiler": "2.6.14",
     "webpack-bundle-analyzer": "4.5.0"
