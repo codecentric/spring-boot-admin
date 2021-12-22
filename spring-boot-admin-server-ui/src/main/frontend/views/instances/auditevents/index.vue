@@ -98,11 +98,12 @@
   class Auditevent {
     constructor({timestamp, ...event}) {
       Object.assign(this, event);
+      this.zonedTimestamp = timestamp;
       this.timestamp = moment(timestamp);
     }
 
     get key() {
-      return `${this.timestamp}-${this.type}-${this.principal}`;
+      return `${this.zonedTimestamp}-${this.type}-${this.principal}`;
     }
 
     get remoteAddress() {

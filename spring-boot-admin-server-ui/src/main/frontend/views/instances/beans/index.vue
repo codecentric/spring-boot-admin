@@ -104,7 +104,8 @@
           return () => true;
         }
         const regex = new RegExp(this.filter, 'i');
-        return bean => (bean.name.match(regex) || bean.aliases.some(alias => alias.match(regex)));
+        return bean => (bean.name.match(regex) ||
+        (bean.aliases && bean.aliases.some(alias => alias.match(regex))));
       },
       async fetchBeans() {
         this.error = null;

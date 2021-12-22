@@ -53,6 +53,7 @@
                                     :notification-filters="notificationFilters"
                                     @unregister="unregister"
                                     @shutdown="shutdown"
+                                    @restart="restart"
                                     @click.stop="select(application.name)"
                                     @toggle-notification-filter-settings="toggleNotificationFilterSettings"
             />
@@ -183,6 +184,13 @@ export default {
     shutdown(item) {
       try {
         item.shutdown();
+      } catch (e) {
+        this.errors.push(e);
+      }
+    },
+    restart(item) {
+      try {
+        item.restart();
       } catch (e) {
         this.errors.push(e);
       }

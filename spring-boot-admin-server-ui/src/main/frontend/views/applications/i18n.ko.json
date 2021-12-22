@@ -13,9 +13,13 @@
     "status": "상태",
     "label": "애플리케이션",
     "up": "정상",
-    "shutdown": "Shutdown application <code>{name}</code>?"
+    "shutdown": "Shutdown application <code>{name}</code>?",
+    "restart": "Restart application <code>{name}</code>?",
+    "restarted": "Successfully restarted application <code>{name}</code>"
   },
   "instances": {
-    "shutdown": "Shutdown instance <code>{name}</code>?"
+    "shutdown": "Shutdown instance <code>{name}</code>?",
+    "restart": "Restart instance <code>{name}</code>?",
+    "restarted": "Successfully restarted instance"
   }
 }
