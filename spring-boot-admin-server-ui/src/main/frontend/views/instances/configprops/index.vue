@@ -56,7 +56,7 @@ import pickBy from 'lodash/pickBy';
 import {VIEW_GROUP} from '../../index';
 
 const filterProperty = (needle) => (value, name) => {
-  return name.toString().toLowerCase().includes(needle) || value.toString().toLowerCase().includes(needle);
+  return name.toString().toLowerCase().includes(needle) || (value && value.toString().toLowerCase().includes(needle));
 };
 const filterProperties = (needle, properties) => pickBy(properties, filterProperty(needle));
 const filterConfigurationProperties = (needle) => (propertySource) => {

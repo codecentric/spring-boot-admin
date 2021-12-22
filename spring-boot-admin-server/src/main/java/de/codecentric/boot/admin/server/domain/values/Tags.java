@@ -78,11 +78,12 @@ public final class Tags implements Serializable {
 			}
 
 			String flatPrefix = prefix + ".";
-			return from(map.entrySet().stream().filter((e) -> e.getKey().toLowerCase().startsWith(flatPrefix))
+			return from(map.entrySet().stream().filter((e) -> e.getKey() != null)
+					.filter((e) -> e.getKey().toLowerCase().startsWith(flatPrefix))
 					.collect(toLinkedHashMap((e) -> e.getKey().substring(flatPrefix.length()), Map.Entry::getValue)));
 		}
 
-		return new Tags(map.entrySet().stream()
+		return new Tags(map.entrySet().stream().filter((e) -> e.getKey() != null)
 				.collect(toLinkedHashMap(Map.Entry::getKey, (e) -> Objects.toString(e.getValue()))));
 	}
 

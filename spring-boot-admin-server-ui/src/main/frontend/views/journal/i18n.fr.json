@@ -1,6 +1,10 @@
 {
   "journal": {
     "title": "Journal d'évènements",
-    "label": "Journal"
+    "label": "Journal",
+    "per_page": {
+      "per_page": "Par page:",
+      "all": "Tous"
+    }
   }
 }

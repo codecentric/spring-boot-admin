@@ -12,6 +12,14 @@
     "suppress_notifications_on": "Suspenda notificações de <code>{name}</code> por",
     "status": "Estado",
     "label": "Aplicações",
-    "up": "up"
+    "up": "up",
+    "shutdown": "Shutdown application <code>{name}</code>?",
+    "restart": "Restart application <code>{name}</code>?",
+    "restarted": "Successfully restarted application <code>{name}</code>"
+  },
+  "instances": {
+    "shutdown": "Shutdown instance <code>{name}</code>?",
+    "restart": "Restart instance <code>{name}</code>?",
+    "restarted": "Successfully restarted instance"
   }
 }

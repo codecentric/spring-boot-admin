@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <button class="button icon-button" v-on="$listeners">
+  <button class="button icon-button" v-on="$listeners" :title="title">
     <font-awesome-icon :icon="icon" :size="size" :class="iconClass" />
   </button>
 </template>
@@ -23,6 +23,11 @@
 <script>
   export default {
     props: {
+      title: {
+        type: String,
+        required: false,
+        default: null
+      },
       icon: {
         type: [String, Array],
         required: true,
