@@ -21,7 +21,7 @@ jobs:
           java-version: '8'
 
       - name: Cache local Maven repository
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v2.1.7
         env:
           cache-name: cache-mvn
         with:
