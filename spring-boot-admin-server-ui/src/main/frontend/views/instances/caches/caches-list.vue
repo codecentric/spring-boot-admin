@@ -53,11 +53,11 @@
         </td>
         <td class="is-narrow">
           <button class="button"
-                  :class="{ 'is-loading' : clearing[cache.name] === 'executing', 'is-info' : clearing[cache.name] === 'completed', 'is-danger' : clearing[cache.name] === 'failed' }"
-                  :disabled="cache.name in clearing" @click="clearCache(cache.name)"
+                  :class="{ 'is-loading' : clearing[cache.key] === 'executing', 'is-info' : clearing[cache.key] === 'completed', 'is-danger' : clearing[cache.key] === 'failed' }"
+                  :disabled="cache.key in clearing" @click="clearCache(cache)"
           >
-            <span v-if="clearing[cache.name] === 'completed'" v-text="$t('term.cleared')" />
-            <span v-else-if="clearing[cache.name] === 'failed'" v-text="$t('term.failed')" />
+            <span v-if="clearing[cache.key] === 'completed'" v-text="$t('term.cleared')" />
+            <span v-else-if="clearing[cache.key] === 'failed'" v-text="$t('term.failed')" />
             <span v-else>
               <font-awesome-icon icon="trash" />
               <span v-text="$t('term.clear')" />
@@ -118,16 +118,16 @@ export default {
         .pipe(listen(status => {
           this.clearing = {
             ...this.clearing,
-            [cache]: status
+            [cache.key]: status
           }
         }))
         .subscribe({
           complete: () => {
             setTimeout(() => {
-              delete this.clearing[cache];
+              delete this.clearing[cache.key];
               this.clearing = {...this.clearing};
             }, 2500);
-            return this.$emit('cleared', cache);
+            return this.$emit('cleared', cache.key);
           },
         });
     },
@@ -135,12 +135,12 @@ export default {
       return of(cache)
         .pipe(
           concatMap(async (cache) => {
-            await this.instance.clearCache(cache);
-            return cache;
+            await this.instance.clearCache(cache.name, cache.cacheManager);
+            return cache.key;
           }),
           tap({
             error: error => {
-              console.warn(`Clearing cache ${cache} failed:`, error);
+              console.warn(`Clearing cache ${cache.key} failed:`, error);
             }
           })
         );

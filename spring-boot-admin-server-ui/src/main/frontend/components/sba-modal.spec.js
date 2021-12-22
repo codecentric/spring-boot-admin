@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin.server.ui.web;
+import {render} from '../test-utils';
+import SbaModal from './sba-modal';
+import userEvent from '@testing-library/user-event';
+import {screen} from '@testing-library/vue';
 
-import java.util.List;
+describe('sba-modal.vue', () => {
+  it('modal is closed when close button is clicked', async () => {
+    const {emitted} = render(SbaModal, {props: {open: true}})
 
-import lombok.Value;
+    userEvent.click(screen.getByLabelText('close'));
 
-@Value
-public class HomepageForwardingFilterConfig {
-
-	String homepage;
-
-	List<String> routesIncludes;
-
-	/**
-	 * routes which are excluded intentionally (for instance downloads)
-	 */
-	List<String> routesExcludes;
-
-}
+    expect(emitted().change[0]).toContain(false);
+  })
+})

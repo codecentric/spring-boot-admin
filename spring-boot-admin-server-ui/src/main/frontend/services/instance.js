@@ -302,6 +302,13 @@ class Instance {
     });
   }
 
+  shutdown() {
+    return this.axios.post(uri`actuator/shutdown`);
+  }
+
+  restart() {
+    return this.axios.post(uri`actuator/restart`);
+  }
 
   static getEventStream() {
     return concat(

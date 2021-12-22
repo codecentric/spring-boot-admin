@@ -27,6 +27,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.http.HttpHeaders;
@@ -57,9 +58,8 @@ public class AdminServerUiAutoConfigurationTest implements WithAssertions {
 	public class ReactiveUiConfigurationTest {
 
 		private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-				.withPropertyValues("--spring.boot.admin.ui.available-languages=de",
-						"--spring.boot.admin.contextPath=test")
-				.withBean(AdminServerProperties.class)
+				.withPropertyValues("--spring.boot.admin.ui.available-languages=de", "--spring.webflux.base-path=test")
+				.withBean(AdminServerProperties.class).withBean(WebFluxProperties.class)
 				.withConfiguration(AutoConfigurations.of(AdminServerUiAutoConfiguration.class));
 
 		@Mock

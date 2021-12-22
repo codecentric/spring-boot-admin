@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright 2014-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,22 +14,7 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin.server.ui.web;
-
-import java.util.List;
-
-import lombok.Value;
-
-@Value
-public class HomepageForwardingFilterConfig {
-
-	String homepage;
-
-	List<String> routesIncludes;
-
-	/**
-	 * routes which are excluded intentionally (for instance downloads)
-	 */
-	List<String> routesExcludes;
-
+.modal {
+  position: relative;
+  padding: 2rem 0;
 }

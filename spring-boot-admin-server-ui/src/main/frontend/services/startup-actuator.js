@@ -19,6 +19,16 @@ import {parse, toMilliseconds} from '@/utils/iso8601-duration';
 
 const regex = new RegExp('([^=\\s]*)=\\[([^\\]]*)\\]', 'gi')
 
+function mapDuration(duration) {
+  if (typeof duration === 'string') {
+    return toMilliseconds(parse(duration));
+  } else if (!isNaN(Number.parseFloat(duration))) {
+    return toMilliseconds(duration);
+  } else {
+    return -1;
+  }
+}
+
 export const StartupActuatorService = {
   parseAsTree(data) {
     const events = data.timeline.events || [];
@@ -29,7 +39,8 @@ export const StartupActuatorService = {
         event.startupStep.children = this.getByParentId(events, event.startupStep.id);
 
         event.startupStep.tags = event.startupStep.tags.map(this.parseTag)
-        event.duration = toMilliseconds(parse(event.duration));
+        event.duration = mapDuration(event.duration);
+
         event.startupStep.depth = 0;
 
         return event;
