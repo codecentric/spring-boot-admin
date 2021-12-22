@@ -51,5 +51,5 @@ jobs:
 
       - uses: codecov/codecov-action@v2
         with:
-          files: "'./**/target/site/jacoco/jacoco.xml'"
+          files: "'*/jacoco.xml'"
           verbose: true
