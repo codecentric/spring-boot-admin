@@ -52,4 +52,3 @@ jobs:
       - uses: codecov/codecov-action@v2
         with:
           files: "'*/jacoco.xml'"
-          verbose: true
