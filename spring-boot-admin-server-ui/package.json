@@ -50,8 +50,8 @@
     "vue-router": "3.5.3"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-optional-catch-binding": "7.14.5",
-    "@babel/plugin-proposal-optional-chaining": "7.14.5",
+    "@babel/plugin-proposal-optional-catch-binding": "7.16.5",
+    "@babel/plugin-proposal-optional-chaining": "7.16.5",
     "@storybook/addon-actions": "6.3.8",
     "@storybook/addon-essentials": "6.3.8",
     "@storybook/addon-links": "6.3.8",
@@ -70,7 +70,7 @@
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.1.0",
     "babel-jest": "27.4.5",
-    "babel-loader": "8.2.2",
+    "babel-loader": "8.2.3",
     "babel-plugin-require-context-hook": "1.0.0",
     "babel-plugin-transform-require-context": "0.1.1",
     "eslint": "6.8.0",
