@@ -20,7 +20,7 @@
     "@fortawesome/free-brands-svg-icons": "5.15.4",
     "@fortawesome/free-regular-svg-icons": "5.15.4",
     "@fortawesome/free-solid-svg-icons": "5.15.4",
-    "@fortawesome/vue-fontawesome": "2.0.2",
+    "@fortawesome/vue-fontawesome": "2.0.6",
     "ansi_up": "5.0.1",
     "autolinker": "3.14.3",
     "axios": "0.21.4",
