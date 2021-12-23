@@ -20,6 +20,7 @@
 
 <script>
 export default {
+  name: "CustomView",
   props: {
     applications: { //<1>
       type: Array,
