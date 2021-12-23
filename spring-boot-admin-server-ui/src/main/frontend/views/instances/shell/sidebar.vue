@@ -71,6 +71,7 @@ import Instance from '@/services/instance';
 import {compareBy} from '@/utils/collections';
 
 export default {
+  name: 'InstanceSidebar',
   props: {
     views: {
       type: Array,
