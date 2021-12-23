@@ -58,7 +58,7 @@
     "@storybook/addon-postcss": "2.0.0",
     "@storybook/preset-scss": "1.0.3",
     "@storybook/vue": "6.3.8",
-    "@testing-library/jest-dom": "5.14.1",
+    "@testing-library/jest-dom": "5.16.1",
     "@testing-library/user-event": "13.5.0",
     "@testing-library/vue": "5.8.2",
     "@vue/cli-plugin-babel": "4.5.15",
