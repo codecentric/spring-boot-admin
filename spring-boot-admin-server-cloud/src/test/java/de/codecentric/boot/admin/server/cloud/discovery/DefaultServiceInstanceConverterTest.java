@@ -78,6 +78,23 @@ public class DefaultServiceInstanceConverterTest {
 	}
 
 	@Test
+	public void should_convert_with_metadata_having_null_value() {
+		ServiceInstance service = new DefaultServiceInstance("test-1", "test", "localhost", 80, false);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("health.path", "ping");
+		metadata.put("management.scheme", "https");
+		metadata.put("management.address", "127.0.0.1");
+		metadata.put("management.port", "1234");
+		metadata.put("null.value", null);
+		metadata.put(null, "null.key");
+		service.getMetadata().putAll(metadata);
+
+		Registration registration = new DefaultServiceInstanceConverter().convert(service);
+
+		assertThat(registration.getHealthUrl()).isEqualTo("https://127.0.0.1:1234/actuator/ping");
+	}
+
+	@Test
 	public void should_convert_service_with_uri() {
 		ServiceInstance service = new TestServiceInstance("test", URI.create("http://localhost/test"),
 				Collections.emptyMap());
