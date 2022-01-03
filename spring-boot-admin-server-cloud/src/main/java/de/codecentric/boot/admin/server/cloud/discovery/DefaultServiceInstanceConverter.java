@@ -148,8 +148,9 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 	}
 
 	protected Map<String, String> getMetadata(ServiceInstance instance) {
-		return (instance.getMetadata() != null) ? instance.getMetadata().entrySet().stream()
-				.filter((e) -> e.getKey() != null && e.getValue() != null).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+		return (instance.getMetadata() != null)
+				? instance.getMetadata().entrySet().stream().filter((e) -> e.getKey() != null && e.getValue() != null)
+						.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
 				: emptyMap();
 	}
 
