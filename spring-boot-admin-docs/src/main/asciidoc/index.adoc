@@ -1,5 +1,4 @@
 = Spring Boot Admin Reference Guide =
-Johannes Edmeier <https://twitter.com/joshiste[@joshiste]>
 :revnumber: {project-version}
 :revdate: {commit-time}
 :toc: left
