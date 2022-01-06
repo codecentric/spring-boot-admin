@@ -38,11 +38,11 @@
         <!-- used dependencies versions -->
         <spring-boot.version>2.6.1</spring-boot.version>
         <spring-cloud.version>2021.0.0</spring-cloud.version>
-        <wiremock.version>2.31.0</wiremock.version>
-        <hazelcast-tests.version>4.2.2</hazelcast-tests.version>
+        <wiremock.version>2.32.0</wiremock.version>
+        <hazelcast-tests.version>4.2.4</hazelcast-tests.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
         <awaitility.version>4.1.1</awaitility.version>
-        <testcontainers.version>1.16.0</testcontainers.version>
+        <testcontainers.version>1.16.2</testcontainers.version>
         <jetty.version>9.4.44.v20210927</jetty.version>
 
 
@@ -62,15 +62,15 @@
         <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-war-plugin.version>3.3.2</maven-war-plugin.version>
-        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+        <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
         <frontend-maven-plugin.version>1.12.0</frontend-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
         <asciidoctor-maven-plugin.version>2.2.1</asciidoctor-maven-plugin.version>
         <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
         <flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
-        <checkstyle.version>9.0</checkstyle.version>
-        <spring-javaformat-checkstyle.version>0.0.28</spring-javaformat-checkstyle.version>
+        <checkstyle.version>9.2</checkstyle.version>
+        <spring-javaformat-checkstyle.version>0.0.29</spring-javaformat-checkstyle.version>
         <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
         <node.version>v15.14.0</node.version>
         <npm.version>7.20.3</npm.version>
