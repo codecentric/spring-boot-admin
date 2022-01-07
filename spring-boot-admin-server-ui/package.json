@@ -50,8 +50,8 @@
     "vue-router": "3.5.3"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-optional-catch-binding": "7.16.5",
-    "@babel/plugin-proposal-optional-chaining": "7.16.5",
+    "@babel/plugin-proposal-optional-catch-binding": "7.16.7",
+    "@babel/plugin-proposal-optional-chaining": "7.16.7",
     "@storybook/addon-actions": "6.4.9",
     "@storybook/addon-essentials": "6.4.9",
     "@storybook/addon-links": "6.4.9",
