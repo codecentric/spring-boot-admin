@@ -68,7 +68,7 @@ class AdminApplicationDiscoveryTest {
 				.web(WebApplicationType.REACTIVE).run("--server.port=0", "--management.endpoints.web.base-path=/mgmt",
 						"--management.endpoints.web.exposure.include=info,health", "--info.test=foobar",
 						"--eureka.client.enabled=false", "--spring.cloud.kubernetes.enabled=false",
-						"--spring.cloud.kubernetes.discovery.enabled=false");
+						"--spring.cloud.kubernetes.discovery.enabled=false", "--management.info.env.enabled=true");
 
 		this.simpleDiscovery = this.instance.getBean(SimpleDiscoveryProperties.class);
 

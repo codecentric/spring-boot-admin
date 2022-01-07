@@ -18,11 +18,11 @@ package de.codecentric.boot.admin.server.eventstore;
 
 import java.util.List;
 
+import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import org.junit.jupiter.api.Tag;
-import org.springframework.boot.autoconfigure.hazelcast.HazelcastClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -35,7 +35,7 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 public class HazelcastEventStoreWithClientConfigTest extends AbstractEventStoreTest {
 
 	@Container
-	private static final GenericContainer<?> hazelcastServer = new GenericContainer<>("hazelcast/hazelcast:4.0")
+	private static final GenericContainer<?> hazelcastServer = new GenericContainer<>("hazelcast/hazelcast:4.2.2")
 			.withExposedPorts(5701);
 
 	private final HazelcastInstance hazelcast;
@@ -56,7 +56,7 @@ public class HazelcastEventStoreWithClientConfigTest extends AbstractEventStoreT
 		ClientConfig clientConfig = new ClientConfig();
 		clientConfig.getNetworkConfig().addAddress(address);
 
-		return new HazelcastClientFactory(clientConfig).getHazelcastInstance();
+		return HazelcastClient.newHazelcastClient(clientConfig);
 	}
 
 }
