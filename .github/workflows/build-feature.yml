@@ -39,6 +39,7 @@ jobs:
           echo "username = api" >> .transifexrc
           echo "password = $TX_TOKEN" >> .transifexrc
           cat .transifexrc
+          cd spring-boot-admin-server-ui && tx pull -a -f --mode reviewed --parallel --no-interactive
         env:
           TX_TOKEN: ${{ secrets.TX_TOKEN }}
 
