@@ -11,7 +11,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-2016]
+        os: [ubuntu-latest, windows-2016]
 
     runs-on: ${{ matrix.os }}
     steps:
