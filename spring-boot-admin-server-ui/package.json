@@ -3,7 +3,7 @@
   "private": true,
   "description": "Spring Boot Admin UI",
   "scripts": {
-    "i18n:update": "tx pull -a -f --parallel --mode reviewed",
+    "i18n:update": "tx pull -a -f --mode reviewed",
     "prebuild": "npm run i18n:update",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
