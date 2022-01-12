@@ -29,7 +29,7 @@ export {
   concatMap,
   delay,
   debounceTime,
-  merge,
+  mergeWith,
   map,
   retryWhen,
   tap,
