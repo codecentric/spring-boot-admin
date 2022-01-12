@@ -1,4 +1,4 @@
-name: build feature branches
+name: build pull requests / branches
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
       - master
       - 1.*
       - 2.*
+  pull_request:
 
 jobs:
   build:
