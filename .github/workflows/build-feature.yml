@@ -24,6 +24,12 @@ jobs:
           distribution: 'adopt'
           java-version: '8'
 
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+      - run: pip install transifex-client
+
       - name: Cache local Maven repository
         uses: actions/cache@v2.1.7
         env:
