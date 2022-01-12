@@ -27,15 +27,18 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: '3.x'
-      - run: python -m pip install transifex-client
-
       - run: |
+          python -m pip install transifex-client
+          tx --version
+
+
+      - name: "Write Transifex config"
+        run: |
           echo "[https://www.transifex.com]" > ~/.transifexrc
           echo "api_hostname = https://api.transifex.com" >> ~/.transifexrc
           echo "hostname = https://www.transifex.com" >> ~/.transifexrc
           echo "username = api" >> ~/.transifexrc
           echo "password = ${TX_TOKEN}" >> ~/.transifexrc
-          cat ~/.transifexrc
         env:
           TX_TOKEN: ${{ secrets.TX_TOKEN }}
 
