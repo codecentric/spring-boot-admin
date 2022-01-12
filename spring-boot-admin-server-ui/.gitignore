@@ -2,7 +2,8 @@
 node_modules
 /dist
 
-i18n.*.json
+/src/main/frontend/i18n/i18n.*.json
+/src/main/frontend/views/about/i18n.*.json
 
 # local env files
 .env.local
