@@ -28,7 +28,7 @@ jobs:
         with:
           python-version: '3.x'
       - run: |
-          python -m pip install transifex-client=0.14.4
+          python -m pip install transifex-client==0.14.4
           tx --version
 
       - name: "Write Transifex config"
