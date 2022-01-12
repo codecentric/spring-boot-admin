@@ -4,7 +4,7 @@
   "description": "Spring Boot Admin UI",
   "scripts": {
     "i18n:update": "tx pull -a -f --mode reviewed --parallel --no-interactive",
-    "prebuild": "npm run i18n:update",
+    "preinstall": "npm run i18n:update",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",

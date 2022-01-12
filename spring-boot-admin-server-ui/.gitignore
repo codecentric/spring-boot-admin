@@ -2,8 +2,10 @@
 node_modules
 /dist
 
+# Exclude translation files except english
 /src/main/frontend/i18n/i18n.*.json
 /src/main/frontend/views/about/i18n.*.json
+!i18n.en.json
 
 # local env files
 .env.local

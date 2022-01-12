@@ -24,7 +24,7 @@ const messages = context.keys()
 export const getAvailableLocales = () => {
   let valueFromServer = sbaConfig.uiSettings.availableLanguages;
 
-  const strings = Object.keys(messages).map(locale => locale.replace('_','-'));
+  const strings = Object.keys(messages).map(locale => locale.replace('_', '-'));
   return (isEmpty(valueFromServer))
     ? strings : valueFromServer.filter(language => strings.includes(language));
 };
