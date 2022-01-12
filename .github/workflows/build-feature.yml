@@ -26,9 +26,8 @@ jobs:
 
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
-          cache: 'pip'
-      - run: pip install transifex-client
+          python-version: '3.x'
+      - run: python -m pip install transifex-client
 
       - name: Cache local Maven repository
         uses: actions/cache@v2.1.7
