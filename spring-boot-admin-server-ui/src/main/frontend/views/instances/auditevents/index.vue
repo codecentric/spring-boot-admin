@@ -89,7 +89,7 @@
 <script>
 import subscribing from '@/mixins/subscribing';
 import Instance from '@/services/instance';
-import {concatMap, debounceTime, merge, Subject, tap, timer} from '@/utils/rxjs';
+import {concatMap, debounceTime, mergeWith, Subject, tap, timer} from '@/utils/rxjs';
 import AuditeventsList from '@/views/instances/auditevents/auditevents-list';
 import uniqBy from 'lodash/uniqBy';
 import moment from 'moment';
@@ -173,7 +173,7 @@ export default {
 
       return timer(0, 5000)
         .pipe(
-          merge(vm.filterChanged.pipe(
+          mergeWith(vm.filterChanged.pipe(
             debounceTime(250),
             tap({
               next: () => vm.events = []

@@ -77,7 +77,7 @@ import Popper from '@/directives/popper';
 import subscribing from '@/mixins/subscribing';
 import NotificationFilter from '@/services/notification-filter';
 import {anyValueMatches} from '@/utils/collections';
-import {concatMap, merge, Subject, timer} from '@/utils/rxjs';
+import {concatMap, mergeWith, Subject, timer} from '@/utils/rxjs';
 import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
 import transform from 'lodash/transform';
@@ -200,7 +200,7 @@ export default {
       vm.notificationFilterSubject = new Subject();
       return timer(0, 60000)
         .pipe(
-          merge(vm.notificationFilterSubject),
+          mergeWith(vm.notificationFilterSubject),
           concatMap(this.fetchNotificationFilters),
         )
         .subscribe({
