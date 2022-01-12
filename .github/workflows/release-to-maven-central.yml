@@ -27,6 +27,15 @@ jobs:
           gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
+      - name: Set up Transifex
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - run: |
+          python -m pip install transifex-client==0.14.4
+          tx --version
+
       - name: Cache local Maven repository
         uses: actions/cache@v2.1.7
         env:
@@ -58,6 +67,7 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+          TX_TOKEN: ${{ secrets.TX_TOKEN }}
 
       - name: Deploy Asciidoc docs output to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@4.1.8
