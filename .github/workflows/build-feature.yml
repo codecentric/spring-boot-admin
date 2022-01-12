@@ -11,7 +11,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-2016]
+        os: [windows-2016]
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -33,11 +33,12 @@ jobs:
 
       - name: "Write Transifex config"
         run: |
-          echo "[https://www.transifex.com]" > ~/.transifexrc
-          echo "api_hostname = https://api.transifex.com" >> ~/.transifexrc
-          echo "hostname = https://www.transifex.com" >> ~/.transifexrc
-          echo "username = api" >> ~/.transifexrc
-          echo "password = ${TX_TOKEN}" >> ~/.transifexrc
+          echo "[https://www.transifex.com]" > .transifexrc
+          echo "api_hostname = https://api.transifex.com" >> .transifexrc
+          echo "hostname = https://www.transifex.com" >> .transifexrc
+          echo "username = api" >> .transifexrc
+          echo "password = $TX_TOKEN" >> .transifexrc
+          cat .transifexrc
         env:
           TX_TOKEN: ${{ secrets.TX_TOKEN }}
 
