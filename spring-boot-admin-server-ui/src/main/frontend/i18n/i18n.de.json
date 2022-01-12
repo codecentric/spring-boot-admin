@@ -1,6 +1,6 @@
 {
   "error": {
-    "server_connection_failed": "Verbindung zum Server fehlgeschlagen."
+    "server_connection_failed": "Verbindung zum Server fehlgeschlagen!"
   },
   "term": {
     "affects_all_instances": "Betrifft alle {count} Instanzen",
@@ -13,17 +13,22 @@
     "cleared": "Geleert",
     "close": "Schließen",
     "confirm": "Bestätigen",
+    "context_refresh": "Kontext neu laden",
+    "context_refresh_failed": "Fehler",
+    "context_refreshed": "Kontext wurde neu geladen",
     "delete": "Löschen",
     "deleted": "Gelöscht",
     "duration": "Dauer",
     "event": "Ereignis",
     "ever": "immer",
+    "execute": "Ausführen",
     "executing": "Wird ausgeführt...",
     "execution_failed": "Ausführung fehlgeschlagen.",
     "execution_successful": "Ausführung erfolgreich.",
     "failed": "Fehlgeschlagen",
     "float": "Float",
     "hours": "{count} Stunde | {count} Stunden",
+    "instance": "Instanz",
     "instances": "Instanzen",
     "integer": "Integer",
     "milliseconds": "Millisekunden",

@@ -1,0 +1,14 @@
+[main]
+host = https://www.transifex.com
+
+[spring-boot-admin.core]
+file_filter = src/main/frontend/i18n/i18n.<lang>.json
+source_file = translationfiles/templates/core.json
+source_lang = en
+type = KEYVALUEJSON
+
+[spring-boot-admin.view-about]
+file_filter = src/main/frontend/views/about/i18n.<lang>.json
+source_file = translationfiles/templates/views/about.json
+source_lang = en
+type = KEYVALUEJSON
