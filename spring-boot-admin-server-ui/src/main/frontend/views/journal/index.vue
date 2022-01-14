@@ -234,17 +234,7 @@ export default {
   async created() {
     try {
       const response = await Instance.fetchEvents();
-      response.data = [
-        ...response.data,
-        ...response.data,
-        ...response.data,
-        ...response.data,
-        ...response.data,
-        ...response.data,
-        ...response.data,
-        ...response.data,
-        ...response.data
-      ].map((e, idx) => ({
+      response.data.map((e, idx) => ({
         ...e,
         version: idx
       }))
