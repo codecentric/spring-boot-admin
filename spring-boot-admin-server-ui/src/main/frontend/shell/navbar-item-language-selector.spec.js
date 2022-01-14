@@ -50,7 +50,7 @@ describe('NavbarItemLanguageSelector', () => {
 
   it.each`
     locale      | expected
-    ${'de-DE'}  | ${'Deutsch (Deutschland)'}
+    ${'de'}     | ${'Deutsch'}
     ${'is'}     | ${'íslenska'}
     ${'de-DE'}  | ${'Deutsch (Deutschland)'}
     ${'zh-CN'}  | ${'简体中文'}
