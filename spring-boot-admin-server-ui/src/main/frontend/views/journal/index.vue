@@ -234,21 +234,15 @@ export default {
   async created() {
     try {
       const response = await Instance.fetchEvents();
-      response.data = [
-        ...response.data,
-        ...response.data,
-        ...response.data,
-        ...response.data,
-        ...response.data,
-        ...response.data,
-        ...response.data,
-        ...response.data,
-        ...response.data
-      ].map((e, idx) => ({
-        ...e,
-        version: idx
-      }))
-      const events = response.data.sort(compareBy(v => v.timestamp)).reverse().map(e => new Event(e));
+      const events = response.data
+        .map((e, idx) => ({
+          ...e,
+          version: idx
+        }))
+        .sort(compareBy(v => v.timestamp))
+        .reverse()
+        .map(e => new Event(e));
+
       this.events = Object.freeze(events);
       this.error = null;
     } catch (error) {
