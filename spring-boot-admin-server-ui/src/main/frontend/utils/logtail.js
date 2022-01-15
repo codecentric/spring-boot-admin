@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {concatMap, EMPTY, of, timer} from '@/utils/rxjs';
+import {concatMap, catchError, EMPTY, Observable, of, timer} from '@/utils/rxjs';
 
 export default (getFn, interval, initialSize = 300 * 1024) => {
   let range = `bytes=-${initialSize}`;
@@ -22,25 +22,35 @@ export default (getFn, interval, initialSize = 300 * 1024) => {
 
   return timer(0, interval)
     .pipe(
-      concatMap(() => getFn({headers: {range, 'Accept': 'text/plain'}})),
+      concatMap(() => {
+        return new Observable((observer) => {
+          getFn({headers: {range, 'Accept': 'text/plain'}})
+            .then(response => {
+              observer.next(response);
+              observer.complete();
+            }).catch(error => observer.error(error));
+        }).pipe(catchError(error => of({data: '', status: error.response.status})));
+      }),
       concatMap(response => {
-        const initial = size === 0;
-        const contentLength = response.data.length;
+        let initial = size === 0;
+        let contentLength = response.data.length;
+
         if (response.status === 200) {
           if (!initial) {
             throw 'Expected 206 - Partial Content on subsequent requests.';
           }
           size = contentLength;
+          range = `bytes=${size - 1}-`;
         } else if (response.status === 206) {
           size = parseInt(response.headers['content-range'].split('/')[1]);
+          range = `bytes=${size - 1}-`;
+        } else if (response.status === 416) {
+          size = 0;
+          range = `bytes=-${initialSize}`;
+          initial = true;
         } else {
           throw 'Unexpected response status: ' + response.status;
         }
-
-        // Reload the last byte to avoid a 416: Range unsatisfiable.
-        // If the response has length = 1 the file hasn't beent changed.
-        // If the response status is 416 the logfile has been truncated.
-        range = `bytes=${size - 1}-`;
 
         let addendum = null;
         let skipped = 0;
