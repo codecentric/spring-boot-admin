@@ -16,12 +16,8 @@
 
 package de.codecentric.boot.admin.client.registration;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import javax.annotation.Nullable;
+import de.codecentric.boot.admin.client.config.InstanceProperties;
+import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
@@ -34,8 +30,12 @@ import org.springframework.context.event.EventListener;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import de.codecentric.boot.admin.client.config.InstanceProperties;
-import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
+import javax.annotation.Nullable;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Default implementation for creating the {@link Application} instance which gets
@@ -65,8 +65,8 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 	private Integer localManagementPort;
 
 	public DefaultApplicationFactory(InstanceProperties instance, ManagementServerProperties management,
-			ServerProperties server, PathMappedEndpoints pathMappedEndpoints, WebEndpointProperties webEndpoint,
-			MetadataContributor metadataContributor) {
+									 ServerProperties server, PathMappedEndpoints pathMappedEndpoints, WebEndpointProperties webEndpoint,
+									 MetadataContributor metadataContributor) {
 		this.instance = instance;
 		this.management = management;
 		this.server = server;
@@ -78,7 +78,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 	@Override
 	public Application createApplication() {
 		return Application.create(getName()).healthUrl(getHealthUrl()).managementUrl(getManagementUrl())
-				.serviceUrl(getServiceUrl()).metadata(getMetadata()).build();
+			.serviceUrl(getServiceUrl()).metadata(getMetadata()).build();
 	}
 
 	protected String getName() {
@@ -101,7 +101,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 		}
 
 		return UriComponentsBuilder.newInstance().scheme(getScheme(this.server.getSsl())).host(getServiceHost())
-				.port(getLocalServerPort()).toUriString();
+			.port(getLocalServerPort()).toUriString();
 	}
 
 	protected String getServicePath() {
@@ -120,7 +120,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 		}
 
 		return UriComponentsBuilder.fromUriString(getManagementBaseUrl()).path("/").path(getEndpointsWebPath())
-				.toUriString();
+			.toUriString();
 	}
 
 	protected String getManagementBaseUrl() {
@@ -136,7 +136,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 
 		Ssl ssl = (this.management.getSsl() != null) ? this.management.getSsl() : this.server.getSsl();
 		return UriComponentsBuilder.newInstance().scheme(getScheme(ssl)).host(getManagementHost())
-				.port(getLocalManagementPort()).toUriString();
+			.port(getLocalManagementPort()).toUriString();
 	}
 
 	protected boolean isManagementPortEqual() {
@@ -152,7 +152,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 			return this.instance.getHealthUrl();
 		}
 		return UriComponentsBuilder.fromHttpUrl(getManagementBaseUrl()).path("/").path(getHealthEndpointPath())
-				.toUriString();
+			.toUriString();
 	}
 
 	protected Map<String, String> getMetadata() {
@@ -190,7 +190,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 	protected Integer getLocalServerPort() {
 		if (this.localServerPort == null) {
 			throw new IllegalStateException(
-					"couldn't determine local port. Please set spring.boot.admin.client.instance.service-base-url.");
+				"couldn't determine local port. Please set spring.boot.admin.client.instance.service-base-url.");
 		}
 		return this.localServerPort;
 	}
@@ -219,7 +219,19 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 	}
 
 	protected String getHost(InetAddress address) {
-		return this.instance.isPreferIp() ? address.getHostAddress() : address.getCanonicalHostName();
+		if (this.instance.isPreferIp()) {
+			return address.getHostAddress();
+		}
+
+		switch (this.instance.getServiceUrlType()) {
+			case IP:
+				return address.getHostAddress();
+			case HOST_NAME:
+				return address.getHostName();
+			case CANONICAL_HOST_NAME:
+			default:
+				return address.getCanonicalHostName();
+		}
 	}
 
 	@EventListener

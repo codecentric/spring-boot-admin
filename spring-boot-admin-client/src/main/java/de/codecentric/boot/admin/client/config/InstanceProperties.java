@@ -78,8 +78,16 @@ public class InstanceProperties {
 
 	/**
 	 * Should the registered urls be built with server.address or with hostname.
+	 *
+	 * @deprecated
 	 */
+	@Deprecated
 	private boolean preferIp = false;
+
+	/**
+	 * Should the registered urls be built with server.address or with hostname.
+	 */
+	private ServiceUrlType serviceUrlType = ServiceUrlType.CANONICAL_HOST_NAME;
 
 	/**
 	 * Metadata that should be associated with this application
