@@ -78,8 +78,7 @@ public class InstanceProperties {
 
 	/**
 	 * Should the registered urls be built with server.address or with hostname.
-	 *
-	 * @deprecated
+	 * @deprecated Use serviceUrlType instead.
 	 */
 	@Deprecated
 	private boolean preferIp = false;
