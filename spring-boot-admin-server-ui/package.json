@@ -79,7 +79,7 @@
     "jest": "27.4.7",
     "jest-each": "27.4.6",
     "jest-environment-jsdom-sixteen": "2.0.0",
-    "msw": "0.35.0",
+    "msw": "0.36.4",
     "msw-storybook-addon": "1.6.0",
     "node-sass": "6.0.1",
     "vue-loader": "15.9.8",
