@@ -45,7 +45,7 @@
     "rxjs": "7.4.0",
     "vue": "2.6.14",
     "vue-clickaway2": "2.3.2",
-    "vue-i18n": "8.26.7",
+    "vue-i18n": "8.26.8",
     "vue-infinite-loading": "2.4.5",
     "vue-router": "3.5.3"
   },
