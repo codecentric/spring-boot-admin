@@ -9,6 +9,9 @@ on:
 
 jobs:
   build:
+    env:
+      TC_CLOUD_TOKEN: ${{ secrets.TC_CLOUD_TOKEN }}
+
     strategy:
       matrix:
         os: [ubuntu-latest, windows-2016]
@@ -45,6 +48,14 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      - name: Prepare Testcontainers Cloud agent
+        if: env.TC_CLOUD_TOKEN != ''
+        run: |
+          curl -L -o agent https://app.testcontainers.cloud/download/testcontainers-cloud-agent_linux_x86-64
+          chmod +x agent
+          ./agent &
+          ./agent wait
 
       # since we also build on Windows Powershell, we need to add a space between -D maven.javadoc.skip=true
       # otherwise the build will fail https://stackoverflow.com/questions/38051787/maven-javadoc-skip-true-throws-an-error
