@@ -29,6 +29,7 @@
     </p>
     <p class="control" v-for="(page, idx) in pageRange" :key="'page_' + idx">
       <button class="button"
+              :disabled="page === skipPageString"
               :aria-label="$t('term.go_to_page_n', {page})"
               :class="{'is-active': page === current}"
               @click="() => changePage(page)"
@@ -60,6 +61,7 @@ export default {
   props: {
     current: {type: Number, default: 1},
     pageCount: {type: Number, required: true},
+    // Define amount of pages shown before and after current page.
     delta: {type: Number, default: 2}
   },
   data() {
@@ -84,23 +86,24 @@ export default {
       let prevPageNum;
 
       return Array(this.pageCount).fill(0)
-        .reduce((prev, cur, idx) => {
+        .reduce((pageNumsRemaining, cur, idx) => {
           const pageNum = idx + 1;
           if (pageNum === 1 || pageNum === this.pageCount || (pageNum >= left && pageNum < right)) {
-            prev.push(pageNum);
+            pageNumsRemaining.push(pageNum);
           }
-          return prev;
-        }, []).reduce((prev, pageNum) => {
+          return pageNumsRemaining;
+        }, [])
+        .reduce((paginationNavEntries, pageNum) => {
           if (prevPageNum) {
             if (pageNum - prevPageNum === 2) {
-              prev.push(prevPageNum + 1);
+              paginationNavEntries.push(prevPageNum + 1);
             } else if (pageNum - prevPageNum !== 1) {
-              prev.push(this.skipPageString);
+              paginationNavEntries.push(this.skipPageString);
             }
           }
-          prev.push(pageNum);
+          paginationNavEntries.push(pageNum);
           prevPageNum = pageNum;
-          return prev;
+          return paginationNavEntries;
         }, []);
     }
   }
