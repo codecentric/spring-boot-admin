@@ -22,6 +22,8 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -31,6 +33,7 @@ import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.BuildVersion;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
+import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventPublisher;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,15 +46,13 @@ public class ApplicationRegistryTest {
 
 	private InstanceRegistry instanceRegistry;
 
-	private InstanceEventPublisher instanceEventPublisher;
-
 	private ApplicationRegistry applicationRegistry;
 
 	@BeforeEach
 	public void setUp() {
 		this.instanceRegistry = mock(InstanceRegistry.class);
-		this.instanceEventPublisher = mock(InstanceEventPublisher.class);
-		this.applicationRegistry = new ApplicationRegistry(this.instanceRegistry, this.instanceEventPublisher);
+		InstanceEventPublisher instanceEventPublisher = mock(InstanceEventPublisher.class);
+		this.applicationRegistry = new ApplicationRegistry(this.instanceRegistry, instanceEventPublisher);
 	}
 
 	@Test
@@ -147,6 +148,32 @@ public class ApplicationRegistryTest {
 		// Multiple instances should return the version number range:
 		assertThat(this.applicationRegistry.getBuildVersion(Arrays.asList(instance1, instance2)))
 				.isEqualTo(BuildVersion.valueOf("0.1 ... 0.2"));
+	}
+
+	@ParameterizedTest
+	@CsvSource({
+		"UP, UP, UP",
+		"DOWN, DOWN, DOWN",
+		"UNKNOWN, UNKNOWN, UNKNOWN",
+		"UP, DOWN, RESTRICTED",
+		"UP, UNKNOWN, RESTRICTED",
+		"UP, OUT_OF_SERVICE, RESTRICTED",
+		"UP, OFFLINE, RESTRICTED",
+		"UP, RESTRICTED, RESTRICTED",
+		"DOWN, UP, RESTRICTED"
+	})
+	public void getStatus(String instance1Status, String instance2Status, String expectedApplicationStatus) {
+		Instance instance1 = getInstance("App1").withStatusInfo(StatusInfo.valueOf(instance1Status));
+		Instance instance2 = getInstance("App1").withStatusInfo(StatusInfo.valueOf(instance2Status));
+
+		when(this.instanceRegistry.getInstances()).thenReturn(Flux.just(instance1, instance2));
+
+		StepVerifier.create(this.applicationRegistry.getApplications())
+			.recordWith(ArrayList::new)
+			.thenConsumeWhile((a) -> true)
+			.consumeRecordedWith((applications) -> assertThat(applications.stream().map(Application::getStatus))
+				.containsExactly(expectedApplicationStatus))
+			.verifyComplete();
 	}
 
 	private Instance getInstance(String applicationName, String version) {
