@@ -40,6 +40,9 @@
     "suppress": "Suppress",
     "time": "Time",
     "unsuppress": "Unsuppress",
-    "username": "Username"
+    "username": "Username",
+    "go_to_previous_page": "Go to previous page",
+    "go_to_page_n": "Go to page {page}",
+    "go_to_next_page": "Go to next page"
   }
 }

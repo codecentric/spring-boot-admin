@@ -17,19 +17,32 @@
 <template>
   <div class="field has-addons has-addons-centered">
     <p class="control">
-      <button class="button" @click="$emit('change', current-1)" :disabled="current <= 1">
+      <button class="button"
+              :aria-label="$t('term.go_to_previous_page')"
+              @click="$emit('change', current-1)"
+              :disabled="current <= 1"
+      >
         <span class="icon is-small">
           <font-awesome-icon :icon="['fas','angle-double-left']" />
         </span>
       </button>
     </p>
-    <p class="control" v-for="page in pageCount" :key="'page' + page">
-      <button class="button" :class="{'is-active': page === current}" @click="$emit('change', page)">
-        <span>{{ page }}</span>
+    <p class="control" v-for="(page, idx) in pageRange" :key="'page_' + idx">
+      <button class="button"
+              :disabled="page === skipPageString"
+              :aria-label="$t('term.go_to_page_n', {page})"
+              :class="{'is-active': page === current}"
+              @click="() => changePage(page)"
+      >
+        <span v-text="page" />
       </button>
     </p>
     <p class="control">
-      <button class="button" @click="$emit('change', current+1)" :disabled="current >= pageCount">
+      <button class="button"
+              :aria-label="$t('term.go_to_next_page')"
+              @click="$emit('change', current+1)"
+              :disabled="current >= pageCount"
+      >
         <span class="icon is-small">
           <font-awesome-icon :icon="['fas','angle-double-right']" />
         </span>
@@ -47,7 +60,52 @@ export default {
   },
   props: {
     current: {type: Number, default: 1},
-    pageCount: {type: Number, required: true}
+    pageCount: {type: Number, required: true},
+    // Define amount of pages shown before and after current page.
+    delta: {type: Number, default: 2}
+  },
+  data() {
+    return {
+      skipPageString: '...'
+    }
+  },
+  methods: {
+    changePage(page) {
+      if (page !== this.skipPageString) {
+        this.$emit('change', page)
+      }
+    }
+  },
+  computed: {
+    pageRange() {
+      const current = this.current;
+      const delta = this.delta;
+      const left = current - delta;
+      const right = current + delta + 1;
+
+      let prevPageNum;
+
+      return Array(this.pageCount).fill(0)
+        .reduce((pageNumsRemaining, cur, idx) => {
+          const pageNum = idx + 1;
+          if (pageNum === 1 || pageNum === this.pageCount || (pageNum >= left && pageNum < right)) {
+            pageNumsRemaining.push(pageNum);
+          }
+          return pageNumsRemaining;
+        }, [])
+        .reduce((paginationNavEntries, pageNum) => {
+          if (prevPageNum) {
+            if (pageNum - prevPageNum === 2) {
+              paginationNavEntries.push(prevPageNum + 1);
+            } else if (pageNum - prevPageNum !== 1) {
+              paginationNavEntries.push(this.skipPageString);
+            }
+          }
+          paginationNavEntries.push(pageNum);
+          prevPageNum = pageNum;
+          return paginationNavEntries;
+        }, []);
+    }
   }
 }
 </script>
