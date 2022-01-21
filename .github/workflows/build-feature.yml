@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-2016]
+        os: [ubuntu-latest, windows-latest]
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -62,7 +62,7 @@ jobs:
       - name: Build with Maven
         run: |
           mvn -B spring-javaformat:apply --no-transfer-progress
-          mvn -B verify -P coverage --no-transfer-progress -D maven.javadoc.skip=true
+          mvn -B verify -P coverage --no-transfer-progress -D maven.javadoc.skip=true -T 2
 
       - uses: codecov/codecov-action@v2
         with:
