@@ -35,6 +35,9 @@
     "suppress": "Unterdrücken",
     "time": "Zeit",
     "unsuppress": "Reaktivieren",
-    "username": "Username"
+    "username": "Username",
+    "go_to_previous_page": "Gehe zur vorherigen Seite",
+    "go_to_page_n": "Gehe zu Seite {page}",
+    "go_to_next_page": "Gehe zur nächsten Seite"
   }
 }
