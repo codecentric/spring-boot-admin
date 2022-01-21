@@ -223,7 +223,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 			return address.getHostAddress();
 		}
 
-		switch (this.instance.getServiceUrlType()) {
+		switch (this.instance.getServiceHostType()) {
 		case IP:
 			return address.getHostAddress();
 		case HOST_NAME:
