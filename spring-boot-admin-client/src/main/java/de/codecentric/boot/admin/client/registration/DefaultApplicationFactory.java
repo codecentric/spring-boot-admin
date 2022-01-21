@@ -219,7 +219,19 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 	}
 
 	protected String getHost(InetAddress address) {
-		return this.instance.isPreferIp() ? address.getHostAddress() : address.getCanonicalHostName();
+		if (this.instance.isPreferIp()) {
+			return address.getHostAddress();
+		}
+
+		switch (this.instance.getServiceHostType()) {
+		case IP:
+			return address.getHostAddress();
+		case HOST_NAME:
+			return address.getHostName();
+		case CANONICAL_HOST_NAME:
+		default:
+			return address.getCanonicalHostName();
+		}
 	}
 
 	@EventListener

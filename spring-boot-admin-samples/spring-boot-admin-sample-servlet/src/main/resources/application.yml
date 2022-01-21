@@ -30,6 +30,7 @@ spring:
       client:
         url: http://localhost:8080
         instance:
+          service-host-type: IP
           metadata:
             tags:
               environment: test

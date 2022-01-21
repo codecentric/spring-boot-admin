@@ -173,9 +173,14 @@ spring.boot.admin.client.password
 | Name to register with.
 | `${spring.application.name}` if set, `"spring-boot-application"` otherwise.
 
-| spring.boot.admin.client.instance.prefer-ip
-| Use the ip-address rather then the hostname in the guessed urls. If `server.address` / `management.address` is set, it get used. Otherwise the IP address returned from `InetAddress.getLocalHost()` gets used.
-| `false`
+| spring.boot.admin.client.instance.service-host-type
+| Select which information should be considered when sending the host of a service: +
+    * `IP`: Uses the IP returned by `InetAddress.getHostAddress()` +
+    * `HOST_NAME`: Uses the host name of a single machine returned by `InetAddress.getHostName()` +
+    * `CANONICAL_HOST_NAME`: Uses the FQDN returned by `InetAddress.geCanonicalHostName()` +
+    If `server.address` or `management.address` is set in the service, the value will overrule this property.
+| `CANONICAL_HOST_NAME`
+
 
 | spring.boot.admin.client.instance.metadata.*
 | Metadata key-value-pairs to be associated with this instance.
