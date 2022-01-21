@@ -17,9 +17,11 @@
 import {defer, tap} from 'rxjs';
 
 export {
-  throwError, of,
+  of,
   defer,
   concat,
+  catchError,
+  throwError,
   EMPTY,
   from,
   timer,
