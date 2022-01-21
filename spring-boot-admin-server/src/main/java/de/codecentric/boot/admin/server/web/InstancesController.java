@@ -67,11 +67,6 @@ public class InstancesController {
 		this.eventStore = eventStore;
 	}
 
-	@SuppressWarnings("unchecked")
-	private static <T> Flux<ServerSentEvent<T>> ping() {
-		return (Flux<ServerSentEvent<T>>) (Flux) PING_FLUX;
-	}
-
 	/**
 	 * Register an instance.
 	 * @param registration registration info
@@ -148,6 +143,11 @@ public class InstancesController {
 		return Flux.from(eventStore).filter((event) -> event.getInstance().equals(InstanceId.of(id)))
 				.flatMap((event) -> registry.getInstance(event.getInstance()))
 				.map((event) -> ServerSentEvent.builder(event).build()).mergeWith(ping());
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> Flux<ServerSentEvent<T>> ping() {
+		return (Flux<ServerSentEvent<T>>) (Flux) PING_FLUX;
 	}
 
 }
