@@ -174,10 +174,10 @@ spring.boot.admin.client.password
 | `${spring.application.name}` if set, `"spring-boot-application"` otherwise.
 
 | spring.boot.admin.client.instance.service-url-type
-| Select which information should be considered when guessing the URL of a service: +
+| Select which information should be considered when sending the URL of a service: +
     * `IP`: Uses the IP returned by `InetAddress.getHostAddress()` +
-    * `HOST_NAME`: Uses the value returned by `InetAddress.getHostName()` +
-    * `CANONICAL_HOST_NAME`: Uses the value returned by `InetAddress.geCanonicalHostName()` +
+    * `HOST_NAME`: Uses the hostname of a single machine returned by `InetAddress.getHostName()` +
+    * `CANONICAL_HOST_NAME`: Uses the FQDN returned by `InetAddress.geCanonicalHostName()` +
     If `server.address` or `management.address` is set in the service, the value will overrule this property.
 | `CANONICAL_HOST_NAME`
 
