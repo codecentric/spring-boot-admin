@@ -1248,9 +1248,13 @@ spring.boot.admin.client.password</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>${spring.application.name}</code> if set, <code>"spring-boot-application"</code> otherwise.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.instance.prefer-ip</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Use the ip-address rather then the hostname in the guessed urls. If <code>server.address</code> / <code>management.address</code> is set, it get used. Otherwise the IP address returned from <code>InetAddress.getLocalHost()</code> gets used.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.instance.service-host-type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Select which information should be considered when sending the host of a service:<br>
+    * <code>IP</code>: Uses the IP returned by <code>InetAddress.getHostAddress()</code><br>
+    * <code>HOST_NAME</code>: Uses the host name of a single machine returned by <code>InetAddress.getHostName()</code><br>
+    * <code>CANONICAL_HOST_NAME</code>: Uses the FQDN returned by <code>InetAddress.geCanonicalHostName()</code><br>
+    If <code>server.address</code> or <code>management.address</code> is set in the service, the value will overrule this property.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CANONICAL_HOST_NAME</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.client.instance.metadata.*</p></td>
