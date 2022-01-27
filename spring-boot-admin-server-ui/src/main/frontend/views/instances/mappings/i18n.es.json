@@ -1,0 +1,19 @@
+{
+  "instances": {
+    "mappings": {
+      "label": "Mapeos",
+      "class": "Clase",
+      "consumes": "Consumo",
+      "fetch_failed": "Falla recuperando mapeos.",
+      "filter_name": "Filtro",
+      "handler": "Manejador",
+      "headers": "Encabezados",
+      "http-verb": "Método",
+      "mappings_not_supported_spring_boot_1": "Los Mapeos no están soportados para aplicaciones Spring 1.X.",
+      "parameters": "Parámetros",
+      "produces": "Produce",
+      "servlet_name": "Servlet",
+      "url_pattern": "Patrón Url"
+    }
+  }
+}

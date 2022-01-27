@@ -1,0 +1,25 @@
+{
+  "applications": {
+    "all_up": "Todo arriba",
+    "applications": "Aplicaciones",
+    "instances": "Instancias",
+    "instances_down": "instancias caídas",
+    "loading_applications": "Cargando aplicaciones...",
+    "no_applications_registered": "No hay aplicaciones registradas.",
+    "notifications_suppressed_for": "Notificaciones para <code>{name}</code> estás suspendidas por",
+    "restricted": "restringido",
+    "server_connection_failed": "Conexión al servidor fallida.",
+    "suppress_notifications_on": "Suspender notificaciones para <code>{name}</code> por",
+    "status": "Estado",
+    "label": "Aplicaciones",
+    "up": "Arriba",
+    "shutdown": "Detener aplicación <code>{name}</code>?",
+    "restart": "Reiniciar aplicación <code>{name}</code>?",
+    "restarted": "Aplicación <code>{name}</code> reiniciada exitosamente"
+  },
+  "instances": {
+    "shutdown": "Detener instancia <code>{name}</code>?",
+    "restart": "Reinciar instancia <code>{name}</code>?",
+    "restarted": "Instancia reiniciada exitosamente"
+  }
+}
