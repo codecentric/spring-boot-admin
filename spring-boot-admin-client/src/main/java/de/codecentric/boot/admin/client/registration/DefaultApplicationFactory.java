@@ -21,8 +21,7 @@ import java.net.UnknownHostException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
+import org.jetbrains.annotations.Nullable;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.EndpointId;

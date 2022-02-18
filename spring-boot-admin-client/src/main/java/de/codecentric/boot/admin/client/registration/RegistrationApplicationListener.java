@@ -19,8 +19,7 @@ package de.codecentric.boot.admin.client.registration;
 import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
 
-import javax.annotation.Nullable;
-
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
