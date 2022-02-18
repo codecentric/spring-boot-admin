@@ -32,10 +32,10 @@ public class InfoTest {
 		map.put("z", "1");
 		map.put("x", "2");
 
-		Iterator<?> iter = Info.from(map).getValues().entrySet().iterator();
+		Iterator<Map.Entry<String, Object>> iterator = Info.from(map).getValues().entrySet().iterator();
 
-		assertThat(iter.next()).hasFieldOrPropertyWithValue("key", "z").hasFieldOrPropertyWithValue("value", "1");
-		assertThat(iter.next()).hasFieldOrPropertyWithValue("key", "x").hasFieldOrPropertyWithValue("value", "2");
+		assertThat(iterator.next()).isEqualTo(Map.entry("z", "1"));
+		assertThat(iterator.next()).isEqualTo(Map.entry("x", "2"));
 	}
 
 }
