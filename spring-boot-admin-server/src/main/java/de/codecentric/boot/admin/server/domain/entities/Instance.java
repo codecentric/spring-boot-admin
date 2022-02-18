@@ -25,8 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.annotation.Nullable;
-
+import org.jetbrains.annotations.Nullable;
 import org.springframework.util.Assert;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;

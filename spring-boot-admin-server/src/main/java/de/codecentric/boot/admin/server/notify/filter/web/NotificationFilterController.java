@@ -19,8 +19,7 @@ package de.codecentric.boot.admin.server.notify.filter.web;
 import java.time.Instant;
 import java.util.Collection;
 
-import javax.annotation.Nullable;
-
+import org.jetbrains.annotations.Nullable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;

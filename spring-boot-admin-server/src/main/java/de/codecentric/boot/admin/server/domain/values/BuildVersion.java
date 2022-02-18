@@ -20,8 +20,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Scanner;
 
-import javax.annotation.Nullable;
-
+import org.jetbrains.annotations.Nullable;
 import org.springframework.util.Assert;
 
 @lombok.Data

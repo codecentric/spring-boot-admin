@@ -20,8 +20,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
+import org.jetbrains.annotations.Nullable;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
