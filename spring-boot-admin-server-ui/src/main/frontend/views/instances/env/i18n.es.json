@@ -1,0 +1,24 @@
+{
+  "instances": {
+    "env": {
+      "label": "Ambiente",
+      "manager": "Administrador de configuración",
+      "active_profile": "Perfil",
+      "context_refresh": "Refrescar contexto",
+      "context_refresh_failed": "Fallido",
+      "context_refreshed": "Contexto actualizado",
+      "context_reset": "Reiniciar",
+      "context_reset_failed": "Fallido",
+      "context_resetted": "Reiniciado",
+      "context_update": "Actualizar",
+      "context_update_failed": "Fallido",
+      "context_updated": "Actualizado",
+      "fetch_failed": "Falla recuperando la configuración de ambiente.",
+      "no_properties": "No hay propiedades configuradas",
+      "title": "Administrador de configuración de ambiente",
+      "refresh": "Refrescar configuración",
+      "application": "Aplicación",
+      "instance": "Instancia"
+    }
+  }
+}

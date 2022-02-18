@@ -1,0 +1,10 @@
+{
+  "instances": {
+    "logfile": {
+      "label": "Archivo de log",
+      "download": "Descargar",
+      "fetch_failed": "Falla recuperando el archivo de log.",
+      "wrap_lines": "Ajustar líneas"
+    }
+  }
+}

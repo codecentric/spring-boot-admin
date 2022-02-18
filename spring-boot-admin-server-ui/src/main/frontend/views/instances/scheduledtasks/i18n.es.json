@@ -1,0 +1,26 @@
+{
+  "instances": {
+    "scheduledtasks": {
+      "label": "Tareas programadas",
+      "no_scheduledtasks": "No se encontraron tareas programadas.",
+      "cron": {
+        "expression": "Expresión",
+        "runnable": "Ejecutable",
+        "title": "Cron"
+      },
+      "fetch_failed": "Falla obteniendo tareas programadas.",
+      "fixed_delay": {
+        "initial_delay_ms": "Demora inicial (ms)",
+        "interval_ms": "Intervalo (ms)",
+        "runnable": "Ejecutable",
+        "title": "Fixed delay"
+      },
+      "fixed_rate": {
+        "initial_delay_ms": "Demora inicial (ms)",
+        "interval_ms": "Intervalo (ms)",
+        "runnable": "Ejecutable",
+        "title": "Fixed Rate"
+      }
+    }
+  }
+}
