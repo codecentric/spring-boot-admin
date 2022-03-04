@@ -28,7 +28,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
+import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -58,9 +58,10 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 public abstract class AbstractInstancesProxyControllerIntegrationTest {
 
-	private static final String ACTUATOR_CONTENT_TYPE = ActuatorMediaType.V2_JSON + ";charset=UTF-8";
+	private static final String ACTUATOR_CONTENT_TYPE = ApiVersion.V2.getProducedMimeType().toString()
+			+ ";charset=UTF-8";
 
-	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
+	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<>() {
 	};
 
 	private final WireMockServer wireMock = new WireMockServer(
@@ -198,8 +199,8 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 							"\"timeout\": { \"href\": \"" + managementUrl + "/timeout\", \"templated\": false }" +
 							" } }";
 		//@formatter:on
-		this.wireMock.stubFor(get(urlEqualTo(managementPath + "/health"))
-				.willReturn(ok("{ \"status\" : \"UP\" }").withHeader(CONTENT_TYPE, ActuatorMediaType.V2_JSON)));
+		this.wireMock.stubFor(get(urlEqualTo(managementPath + "/health")).willReturn(
+				ok("{ \"status\" : \"UP\" }").withHeader(CONTENT_TYPE, ApiVersion.V2.getProducedMimeType().getType())));
 		this.wireMock.stubFor(get(urlEqualTo(managementPath + "/info"))
 				.willReturn(ok("{ }").withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
 		this.wireMock.stubFor(options(urlEqualTo(managementPath + "/env")).willReturn(

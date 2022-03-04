@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
+import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import reactor.core.publisher.Mono;
@@ -46,7 +46,8 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
 
 	private final InstanceWebClient instanceWebClient;
 
-	private static final MediaType actuatorMediaType = MediaType.parseMediaType(ActuatorMediaType.V2_JSON);
+	private static final MediaType actuatorMediaType = MediaType
+			.parseMediaType(ApiVersion.V2.getProducedMimeType().toString());
 
 	public QueryIndexEndpointStrategy(InstanceWebClient instanceWebClient) {
 		this.instanceWebClient = instanceWebClient;

@@ -26,7 +26,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
+import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpHeaders;
@@ -100,7 +100,8 @@ class InstanceExchangeFilterFunctionsTest {
 			Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (r) -> Mono.just(legacyResponse));
 
 			StepVerifier.create(response).assertNext((r) -> {
-				assertThat(r.headers().contentType()).hasValue(MediaType.valueOf(ActuatorMediaType.V2_JSON));
+				assertThat(r.headers().contentType())
+						.hasValue(MediaType.valueOf(ApiVersion.V2.getProducedMimeType().toString()));
 				assertThat(r.headers().contentLength()).isEmpty();
 				StepVerifier.create(r.body(BodyExtractors.toDataBuffers())).expectNext(this.converted).verifyComplete();
 			}).verifyComplete();
@@ -118,7 +119,8 @@ class InstanceExchangeFilterFunctionsTest {
 			Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (r) -> Mono.just(legacyResponse));
 
 			StepVerifier.create(response).assertNext((r) -> {
-				assertThat(r.headers().contentType()).hasValue(MediaType.valueOf(ActuatorMediaType.V2_JSON));
+				assertThat(r.headers().contentType())
+						.hasValue(MediaType.valueOf(ApiVersion.V2.getProducedMimeType().toString()));
 				assertThat(r.headers().contentLength()).isEmpty();
 				StepVerifier.create(r.body(BodyExtractors.toDataBuffers())).expectNext(this.converted).verifyComplete();
 			}).verifyComplete();
@@ -133,14 +135,15 @@ class InstanceExchangeFilterFunctionsTest {
 			ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
 					.attribute(ATTRIBUTE_ENDPOINT, "test").build();
 			ClientResponse response = ClientResponse.create(HttpStatus.OK)
-					.header(CONTENT_TYPE, ActuatorMediaType.V2_JSON)
+					.header(CONTENT_TYPE, ApiVersion.V2.getProducedMimeType().toString())
 					.header(CONTENT_LENGTH, Integer.toString(this.original.readableByteCount()))
 					.body(Flux.just(this.original)).build();
 
 			Mono<ClientResponse> convertedResponse = filter.filter(INSTANCE, request, (r) -> Mono.just(response));
 
 			StepVerifier.create(convertedResponse).assertNext((r) -> {
-				assertThat(r.headers().contentType()).hasValue(MediaType.valueOf(ActuatorMediaType.V2_JSON));
+				assertThat(r.headers().contentType())
+						.hasValue(MediaType.valueOf(ApiVersion.V2.getProducedMimeType().toString()));
 				assertThat(r.headers().contentLength()).hasValue(this.original.readableByteCount());
 				StepVerifier.create(r.body(BodyExtractors.toDataBuffers())).expectNext(this.original).verifyComplete();
 			}).verifyComplete();

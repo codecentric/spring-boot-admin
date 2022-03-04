@@ -26,7 +26,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
+import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.http.MediaType;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -102,8 +102,9 @@ public class StatusUpdaterTest {
 	@Test
 	public void should_change_status_to_down() {
 		String body = "{ \"status\" : \"UP\", \"details\" : { \"foo\" : \"bar\" } }";
-		this.wireMock.stubFor(get("/health").willReturn(okForContentType(ActuatorMediaType.V2_JSON, body)
-				.withHeader("Content-Length", Integer.toString(body.length()))));
+		this.wireMock.stubFor(
+				get("/health").willReturn(okForContentType(ApiVersion.V2.getProducedMimeType().toString(), body)
+						.withHeader("Content-Length", Integer.toString(body.length()))));
 
 		StepVerifier.create(this.eventStore).expectSubscription()
 				.then(() -> StepVerifier.create(this.updater.updateStatus(this.instance.getId())).verifyComplete())

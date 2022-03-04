@@ -25,7 +25,7 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
+import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -85,7 +85,8 @@ public class QueryIndexEndpointStrategyTest {
 				+ "/mgmt\"},\"metrics\":{\"templated\":false,\"href\":\"" + host
 				+ "/mgmt/stats\"},\"info\":{\"templated\":false,\"href\":\"" + host + "/mgmt/info\"}}}";
 
-		this.wireMock.stubFor(get("/mgmt").willReturn(ok(body).withHeader("Content-Type", ActuatorMediaType.V2_JSON)));
+		this.wireMock.stubFor(get("/mgmt")
+				.willReturn(ok(body).withHeader("Content-Type", ApiVersion.V2.getProducedMimeType().toString())));
 
 		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
 
@@ -108,7 +109,8 @@ public class QueryIndexEndpointStrategyTest {
 				+ "/mgmt\"},\"metrics\":{\"templated\":false,\"href\":\"" + host
 				+ "/mgmt/stats\"},\"info\":{\"templated\":false,\"href\":\"" + host + "/mgmt/info\"}}}";
 
-		this.wireMock.stubFor(get("/mgmt").willReturn(ok(body).withHeader("Content-Type", ActuatorMediaType.V2_JSON)));
+		this.wireMock.stubFor(get("/mgmt")
+				.willReturn(ok(body).withHeader("Content-Type", ApiVersion.V2.getProducedMimeType().toString())));
 
 		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
 
@@ -128,8 +130,8 @@ public class QueryIndexEndpointStrategyTest {
 				.create("test", this.wireMock.url("/mgmt/health")).managementUrl(this.wireMock.url("/mgmt")).build());
 
 		String body = "{\"_links\":{}}";
-		this.wireMock
-				.stubFor(get("/mgmt").willReturn(okJson(body).withHeader("Content-Type", ActuatorMediaType.V2_JSON)));
+		this.wireMock.stubFor(get("/mgmt")
+				.willReturn(okJson(body).withHeader("Content-Type", ApiVersion.V2.getProducedMimeType().toString())));
 
 		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
 
@@ -214,7 +216,7 @@ public class QueryIndexEndpointStrategyTest {
 				.willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER)).willSetStateTo("recovered"));
 
 		this.wireMock.stubFor(get("/mgmt").inScenario("retry").whenScenarioStateIs("recovered")
-				.willReturn(ok(body).withHeader("Content-Type", ActuatorMediaType.V2_JSON)));
+				.willReturn(ok(body).withHeader("Content-Type", ApiVersion.V2.getProducedMimeType().toString())));
 
 		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
 

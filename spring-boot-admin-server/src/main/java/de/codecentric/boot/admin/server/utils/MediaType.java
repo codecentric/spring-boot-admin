@@ -16,7 +16,7 @@
 
 package de.codecentric.boot.admin.server.utils;
 
-import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
+import org.springframework.boot.actuate.endpoint.ApiVersion;
 
 public final class MediaType {
 
@@ -24,7 +24,7 @@ public final class MediaType {
 			.parseMediaType("application/vnd.spring-boot.actuator.v1+json");
 
 	public static final org.springframework.http.MediaType ACTUATOR_V2_MEDIATYPE = org.springframework.http.MediaType
-			.parseMediaType(ActuatorMediaType.V2_JSON);
+			.parseMediaType(ApiVersion.V2.getProducedMimeType().toString());
 
 	private MediaType() {
 	}
