@@ -47,6 +47,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.okForContentType;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.serverError;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunctions.retry;
@@ -206,7 +207,6 @@ public class StatusUpdaterTest {
 	@Test
 	public void should_change_status_to_offline() {
 		this.wireMock.stubFor(get("/health").willReturn(aResponse().withFault(Fault.EMPTY_RESPONSE)));
-
 		StepVerifier.create(this.eventStore).expectSubscription()
 				.then(() -> StepVerifier.create(this.updater.updateStatus(this.instance.getId())).verifyComplete())
 				.assertNext((event) -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class)).thenCancel()
@@ -221,10 +221,36 @@ public class StatusUpdaterTest {
 	}
 
 	@Test
+	public void should_not_change_to_offline_on_connection_issue() {
+		String SCENARIO = "Connection issue";
+		String SERVICE_UP = "Service up";
+
+		// on 1st request: Service returns error
+		this.wireMock.stubFor(get("/health").inScenario(SCENARIO).whenScenarioStateIs(STARTED).willReturn(serverError())
+				.willSetStateTo(SERVICE_UP));
+
+		// on 2nd request: Service returns ok
+		this.wireMock.stubFor(get("/health").inScenario(SCENARIO).whenScenarioStateIs(SERVICE_UP).willReturn(ok()));
+
+		StepVerifier.create(this.eventStore).expectSubscription()
+				.then(() -> StepVerifier.create(this.updater.updateStatus(this.instance.getId())).verifyComplete())
+				.assertNext((event) -> assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class)).thenCancel()
+				.verify();
+
+		StepVerifier.create(this.repository.find(this.instance.getId()))
+				.assertNext((app) -> assertThat(app.getStatusInfo().getStatus()).isEqualTo("UP")).verifyComplete();
+	}
+
+	@Test
 	public void should_retry() {
-		this.wireMock.stubFor(get("/health").inScenario("retry").whenScenarioStateIs(STARTED)
-				.willReturn(aResponse().withFixedDelay(5000)).willSetStateTo("recovered"));
-		this.wireMock.stubFor(get("/health").inScenario("retry").whenScenarioStateIs("recovered").willReturn(ok()));
+		String SCENARIO = "retry";
+		String STATE_RECOVERED = "recovered";
+
+		this.wireMock.stubFor(get("/health").inScenario(SCENARIO).whenScenarioStateIs(STARTED)
+				.willReturn(aResponse().withFixedDelay(5000)).willSetStateTo(STATE_RECOVERED));
+
+		this.wireMock
+				.stubFor(get("/health").inScenario(SCENARIO).whenScenarioStateIs(STATE_RECOVERED).willReturn(ok()));
 
 		StepVerifier.create(this.eventStore).expectSubscription()
 				.then(() -> StepVerifier.create(this.updater.updateStatus(this.instance.getId())).verifyComplete())

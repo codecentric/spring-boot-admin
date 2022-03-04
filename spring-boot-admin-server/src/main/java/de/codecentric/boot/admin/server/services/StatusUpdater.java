@@ -17,7 +17,6 @@
 package de.codecentric.boot.admin.server.services;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -28,6 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
@@ -74,6 +74,8 @@ public class StatusUpdater {
 		log.debug("Update status for {}", instance);
 		return this.instanceWebClient.instance(instance).get().uri(Endpoint.HEALTH)
 				.exchangeToMono(this::convertStatusInfo).log(log.getName(), Level.FINEST)
+				.retryWhen(Retry.max(5)
+						.doBeforeRetry((s) -> log.info("RETRYING: Couldn't retrieve status for {}", instance)))
 				.doOnError((ex) -> logError(instance, ex)).onErrorResume(this::handleError)
 				.map(instance::withStatusInfo);
 	}
@@ -83,16 +85,15 @@ public class StatusUpdater {
 				(mt) -> mt.isCompatibleWith(MediaType.APPLICATION_JSON) || mt.isCompatibleWith(ACTUATOR_V2_MEDIATYPE))
 				.orElse(false);
 
-		StatusInfo statusInfoFromStatus = this.getStatusInfoFromStatus(response.statusCode(), emptyMap());
 		if (hasCompatibleContentType) {
 			return response.bodyToMono(RESPONSE_TYPE).map((body) -> {
 				if (body.get("status") instanceof String) {
 					return StatusInfo.from(body);
 				}
 				return getStatusInfoFromStatus(response.statusCode(), body);
-			}).defaultIfEmpty(statusInfoFromStatus);
+			}).switchIfEmpty(Mono.fromSupplier(() -> this.getStatusInfoFromStatus(response.statusCode(), emptyMap())));
 		}
-		return response.releaseBody().then(Mono.just(statusInfoFromStatus));
+		return response.releaseBody().then(Mono.just(this.getStatusInfoFromStatus(response.statusCode(), emptyMap())));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -100,22 +101,20 @@ public class StatusUpdater {
 		if (httpStatus.is2xxSuccessful()) {
 			return StatusInfo.ofUp();
 		}
-		Map<String, Object> details = new LinkedHashMap<>();
-		details.put("status", httpStatus.value());
-		details.put("error", httpStatus.getReasonPhrase());
-		if (body.get("details") instanceof Map) {
-			details.putAll((Map<? extends String, ?>) body.get("details"));
-		}
-		else {
-			details.putAll(body);
-		}
-		return StatusInfo.ofDown(details);
+
+		throw new StatusInfoNotOkException(httpStatus, body);
 	}
 
 	protected Mono<StatusInfo> handleError(Throwable ex) {
+		if (ex.getCause() instanceof StatusInfoNotOkException) {
+			StatusInfoNotOkException statusInfoNotOkException = (StatusInfoNotOkException) ex.getCause();
+			Map<String, Object> details = statusInfoNotOkException.getDetails();
+			return Mono.just(StatusInfo.ofDown(details));
+		}
+
 		Map<String, Object> details = new HashMap<>();
-		details.put("message", ex.getMessage());
 		details.put("exception", ex.getClass().getName());
+		details.put("message", ex.getMessage());
 		return Mono.just(StatusInfo.ofOffline(details));
 	}
 
