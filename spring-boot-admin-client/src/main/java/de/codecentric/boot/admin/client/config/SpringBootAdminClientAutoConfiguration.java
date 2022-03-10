@@ -137,7 +137,7 @@ public class SpringBootAdminClientAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public BlockingRegistrationClient registrationClient(ClientProperties client) {
+		public RegistrationClient registrationClient(ClientProperties client) {
 			RestTemplateBuilder builder = new RestTemplateBuilder().setConnectTimeout(client.getConnectTimeout())
 					.setReadTimeout(client.getReadTimeout());
 			if (client.getUsername() != null && client.getPassword() != null) {
@@ -155,7 +155,7 @@ public class SpringBootAdminClientAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ReactiveRegistrationClient registrationClient(ClientProperties client, WebClient.Builder webClient) {
+		public RegistrationClient registrationClient(ClientProperties client, WebClient.Builder webClient) {
 			if (client.getUsername() != null && client.getPassword() != null) {
 				webClient = webClient.filter(basicAuthentication(client.getUsername(), client.getPassword()));
 			}
