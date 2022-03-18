@@ -37,13 +37,14 @@
 
         <!-- used dependencies versions -->
         <spring-boot.version>3.0.0-M1</spring-boot.version>
-        <spring-cloud.version>2021.0.1</spring-cloud.version>
+        <spring-cloud.version>2022.0.0-M1</spring-cloud.version>
         <wiremock.version>2.32.0</wiremock.version>
         <hazelcast-tests.version>4.2.4</hazelcast-tests.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
         <awaitility.version>4.1.1</awaitility.version>
         <testcontainers.version>1.16.3</testcontainers.version>
         <jetty.version>9.4.44.v20210927</jetty.version>
+        <eureka-client.version>3.1.1</eureka-client.version>
         <!-- Wiremock does not yet support jetty 11 (see also https://github.com/wiremock/wiremock/issues/1760).
         Spring Boot 3 only supports jetty 11. -.- -->
         <!--<jetty.version>11.0.6</jetty.version>-->
