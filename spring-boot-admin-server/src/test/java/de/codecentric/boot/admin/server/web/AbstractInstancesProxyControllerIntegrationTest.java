@@ -199,8 +199,8 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 							"\"timeout\": { \"href\": \"" + managementUrl + "/timeout\", \"templated\": false }" +
 							" } }";
 		//@formatter:on
-		this.wireMock.stubFor(get(urlEqualTo(managementPath + "/health")).willReturn(
-				ok("{ \"status\" : \"UP\" }").withHeader(CONTENT_TYPE, ApiVersion.V2.getProducedMimeType().getType())));
+		this.wireMock.stubFor(get(urlEqualTo(managementPath + "/health")).willReturn(ok("{ \"status\" : \"UP\" }")
+				.withHeader(CONTENT_TYPE, ApiVersion.V2.getProducedMimeType().toString())));
 		this.wireMock.stubFor(get(urlEqualTo(managementPath + "/info"))
 				.willReturn(ok("{ }").withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
 		this.wireMock.stubFor(options(urlEqualTo(managementPath + "/env")).willReturn(
