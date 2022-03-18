@@ -31,7 +31,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>23.0.0</version>
+            <version>${jetbrains-annotations}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

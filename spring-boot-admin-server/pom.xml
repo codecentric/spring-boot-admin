@@ -65,7 +65,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>23.0.0</version>
+            <version>${jetbrains-annotations}</version>
         </dependency>
         <!-- Optional Mail Starter for mail-notfications -->
         <dependency>

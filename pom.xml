@@ -50,6 +50,7 @@
         <!--<jetty.version>11.0.6</jetty.version>-->
         <junit-jupiter.version>5.8.2</junit-jupiter.version>
         <jolokia.version>1.7.1</jolokia.version>
+        <jetbrains-annotations>23.0.0</jetbrains-annotations>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.3.0</build-helper-maven-plugin.version>
