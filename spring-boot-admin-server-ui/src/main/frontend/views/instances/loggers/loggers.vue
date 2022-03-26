@@ -23,6 +23,7 @@
         <div class="control">
           <sba-toggle-scope-button v-if="instanceCount > 1"
                                    v-model="scope"
+                                   @changeScope="$emit('changeScope', $event)"
                                    :instance-count="instanceCount"
           />
         </div>
