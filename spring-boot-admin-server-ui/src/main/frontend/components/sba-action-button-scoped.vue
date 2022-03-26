@@ -19,7 +19,7 @@
     <div class="field-body">
       <sba-toggle-scope-button v-if="instanceCount > 1"
                                :instance-count="instanceCount"
-                               @changeScope="setScope"
+                               v-model="currentScope"
       />
       <div class="field has-icons-left">
         <sba-confirm-button class="button is-light"
