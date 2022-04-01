@@ -63,6 +63,9 @@
               <span v-else v-text="$t('instances.env.context_reset')" />
             </button>
           </div>
+          <div class="control" v-if="application.instances.length > 1">
+            <sba-toggle-scope-button :instance-count="application.instances.length" v-model="scope" />
+          </div>
           <div class="control">
             <button class="button is-primary"
                     :class="{'is-loading' : updateStatus === 'executing', 'is-danger' : updateStatus === 'failed', 'is-success' : updateStatus === 'completed'}"
@@ -85,10 +88,16 @@ import Instance from '@/services/instance';
 import {concatMap, filter, from, listen} from '@/utils/rxjs';
 import debounce from 'lodash/debounce';
 import uniq from 'lodash/uniq';
-
+import Application from '@/services/application';
+import SbaToggleScopeButton from '@/components/sba-toggle-scope-button';
 
 export default {
+  components: {SbaToggleScopeButton},
   props: {
+    application: {
+      type: Application,
+      required: true
+    },
     instance: {
       type: Instance,
       required: true
@@ -100,6 +109,7 @@ export default {
   },
   data: () => ({
     error: null,
+    scope: 'instance',
     resetStatus: null,
     updateStatus: null,
     managedProperties: [{
@@ -148,8 +158,18 @@ export default {
           filter(property => !!property.name && property.input !== property.value),
           listen(status => vm.updateStatus = status),
           concatMap(
-            property => from(vm.instance.setEnv(property.name, property.input))
-              .pipe(listen(status => property.status = status))
+            property => {
+              let target;
+
+              if (vm.scope === 'instance') {
+                target = vm.instance;
+              } else {
+                target = vm.application;
+              }
+
+              return from(target.setEnv(property.name, property.input))
+                .pipe(listen(status => property.status = status));
+            }
           )
         )
         .subscribe({
