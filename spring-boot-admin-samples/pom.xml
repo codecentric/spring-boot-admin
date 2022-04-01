@@ -98,7 +98,8 @@
             <modules>
                 <module>spring-boot-admin-sample-eureka</module>
                 <module>spring-boot-admin-sample-consul</module>
-                <module>spring-boot-admin-sample-zookeeper</module>
+                <!-- FIXME spring-boot-3 nexus-staging-maven-plugin fails -->
+                <!--module>spring-boot-admin-sample-zookeeper</module-->
             </modules>
         </profile>
         <profile>
