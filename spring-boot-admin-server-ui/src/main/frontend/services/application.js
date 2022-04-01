@@ -112,6 +112,12 @@ class Application {
     return {responses};
   }
 
+  async setEnv(name, value) {
+    return this.axios.post(uri`actuator/env`, {name, value}, {
+      headers: {'Content-Type': 'application/json'}
+    });
+  }
+
   async refreshContext() {
     return this.axios.post(uri`actuator/refresh`);
   }
