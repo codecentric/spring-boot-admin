@@ -33,6 +33,7 @@
              @reset="fetchEnv"
     />
     <sba-env-manager v-if="env && hasEnvManagerSupport"
+                     :application="application"
                      :instance="instance" :property-sources="env.propertySources"
                      @refresh="fetchEnv" @update="fetchEnv"
     />
@@ -73,8 +74,8 @@ import Instance from '@/services/instance';
 import pickBy from 'lodash/pickBy';
 import {VIEW_GROUP} from '../../index';
 import sbaEnvManager from './env-manager';
-  import refresh from './refresh';
-  import Application from '@/services/application';
+import refresh from './refresh';
+import Application from '@/services/application';
 
 const filterProperty = (needle) => (property, name) => {
   return name.toString().toLowerCase().includes(needle) || (property.value && property.value.toString().toLowerCase().includes(needle));
@@ -95,13 +96,13 @@ export default {
     instance: {
       type: Instance,
       required: true
-      },
-      application: {
-        type: Application,
-        required: true
+    },
+    application: {
+      type: Application,
+      required: true
     }
   },
-    components: {sbaEnvManager, refresh},
+  components: {sbaEnvManager, refresh},
   data: () => ({
     hasLoaded: false,
     error: null,
