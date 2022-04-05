@@ -16,9 +16,10 @@
 
 <template>
   <div>
-    <div class="control" v-if="application.instances.length > 1">
-      <sba-toggle-scope-button :instance-count="application.instances.length" v-model="scope" />
-      <hr>
+    <div class="field is-grouped">
+      <div class="control" v-if="application.instances.length > 1">
+        <sba-toggle-scope-button :instance-count="application.instances.length" v-model="scope" />
+      </div>
     </div>
 
     <mBeanOperation v-for="(operation, name) in mBean.op" :key="`op-${name}`"
