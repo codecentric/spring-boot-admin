@@ -168,8 +168,8 @@
         this.state = 'executing';
         try {
           const result = await this.onExecute(this.args);
-          if (result.data.status < 400) {
-            this.result = result.data.value;
+          if (result.status < 400) {
+            this.result = this.parseValue(result.data);
             this.state = 'completed';
           } else {
             const error = new Error(`Execution failed: ${result.data.error}`);
@@ -187,6 +187,19 @@
       keyHandler(event) {
         if (event.keyCode === 27) {
           this.abort()
+        }
+      },
+      parseValue(data) {
+        if (Array.isArray(data)) {
+          return data.map(elem => {
+            const parsedBody = JSON.parse(elem['body']);
+            return {
+              instanceId: elem['instanceId'],
+              value: parsedBody['value']
+            };
+          });
+        } else {
+          return data.value;
         }
       }
     },

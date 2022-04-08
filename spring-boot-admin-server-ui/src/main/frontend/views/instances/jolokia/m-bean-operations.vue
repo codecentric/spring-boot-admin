@@ -16,6 +16,10 @@
 
 <template>
   <div>
+    <div class="field is-grouped control" v-if="application.instances.length > 1">
+      <sba-toggle-scope-button :instance-count="application.instances.length" v-model="scope" />
+    </div>
+
     <mBeanOperation v-for="(operation, name) in mBean.op" :key="`op-${name}`"
                     :name="name" :descriptor="operation" @click="invoke(name, operation)"
     />
@@ -26,10 +30,12 @@
 </template>
 
 <script>
+  import Application from '@/services/application';
   import Instance from '@/services/instance';
   import {MBean} from './index';
   import mBeanOperation from './m-bean-operation';
   import mBeanOperationInvocation from './m-bean-operation-invocation';
+  import SbaToggleScopeButton from '@/components/sba-toggle-scope-button';
 
   export default {
     props: {
@@ -41,14 +47,19 @@
         type: MBean,
         required: true
       },
+      application: {
+        type: Application,
+        required: true
+      },
       instance: {
         type: Instance,
         required: true
       }
     },
-    components: {mBeanOperation, mBeanOperationInvocation},
+    components: {mBeanOperation, mBeanOperationInvocation, SbaToggleScopeButton},
     data: () => ({
-      invocation: null
+      invocation: null,
+      scope: 'instance'
     }),
     methods: {
       closeInvocation() {
@@ -58,7 +69,8 @@
         this.invocation = {name, descriptor};
       },
       execute(args) {
-        return this.instance.invokeMBeanOperation(this.domain, this.mBean.descriptor.raw, this.invocation.name, args);
+        const target = (this.scope === 'instance') ? this.instance : this.application;
+        return target.invokeMBeanOperation(this.domain, this.mBean.descriptor.raw, this.invocation.name, args);
       }
     }
   }

@@ -61,10 +61,10 @@
 
           <div v-if="mBean === selectedMBean" class="card-content">
             <m-bean-attributes v-if="selected.view === 'attributes'" :domain="selectedDomain.domain"
-                               :instance="instance" :m-bean="mBean"
+                               :application="application" :instance="instance" :m-bean="mBean"
             />
             <m-bean-operations v-if="selected.view === 'operations'" :domain="selectedDomain.domain"
-                               :instance="instance" :m-bean="mBean"
+                               :application="application" :instance="instance" :m-bean="mBean"
             />
           </div>
         </div>
@@ -88,6 +88,7 @@
 
 <script>
 import sticksBelow from '@/directives/sticks-below';
+import Application from '@/services/application';
 import Instance from '@/services/instance';
 import flatMap from 'lodash/flatMap';
 import fromPairs from 'lodash/fromPairs';
@@ -135,6 +136,10 @@ export class MBean {
 
 export default {
   props: {
+    application: {
+      type: Application,
+      required: true
+    },
     instance: {
       type: Instance,
       required: true

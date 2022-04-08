@@ -16,6 +16,10 @@
 
 <template>
   <div>
+    <div class="field is-grouped control" v-if="application.instances.length > 1">
+      <sba-toggle-scope-button :instance-count="application.instances.length" v-model="scope" />
+    </div>
+
     <sba-alert v-if="error" :error="error" :title="$t('instances.jolokia.mbean.fetch_failed')" />
 
     <m-bean-attribute v-for="(attribute, name) in mBean.attr" :key="`attr-${name}`"
@@ -26,9 +30,11 @@
 </template>
 
 <script>
+import Application from '@/services/application';
 import Instance from '@/services/instance';
 import {MBean} from './index';
 import mBeanAttribute from './m-bean-attribute';
+import SbaToggleScopeButton from '@/components/sba-toggle-scope-button';
 
 export default {
   props: {
@@ -43,12 +49,17 @@ export default {
     instance: {
       type: Instance,
       required: true
+    },
+    application: {
+      type: Application,
+      required: true
     }
   },
-  components: {mBeanAttribute},
+  components: {mBeanAttribute, SbaToggleScopeButton},
   data: () => ({
     attributeValues: null,
-    error: null
+    error: null,
+    scope: 'instance'
   }),
   computed: {},
   methods: {
@@ -63,7 +74,8 @@ export default {
     },
     async writeAttribute(attribute, value) {
       try {
-        await this.instance.writeMBeanAttribute(this.domain, this.mBean.descriptor.raw, attribute, value);
+        const target = (this.scope === 'instance') ? this.instance : this.application;
+        await target.writeMBeanAttribute(this.domain, this.mBean.descriptor.raw, attribute, value);
       } finally {
         await this.readAttributes();
       }
