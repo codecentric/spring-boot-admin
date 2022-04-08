@@ -76,7 +76,8 @@
             <li>
               <a v-for="domain in domains" :key="domain.domain" :class="{'is-active' : domain === selectedDomain}"
                  class=""
-                 @click="select(domain)" v-text="domain.domain"
+                 :title="domain.domain"
+                 @click="select(domain)" v-text="truncatePackageName(domain.domain, 25)"
               />
             </li>
           </ul>
@@ -98,6 +99,7 @@ import {directive as onClickaway} from 'vue-clickaway2';
 import mBeanAttributes from './m-bean-attributes';
 import mBeanOperations from './m-bean-operations';
 import {VIEW_GROUP} from '../../index';
+import {truncatePackageName} from '@/views/instances/jolokia/utils';
 
 const getOperationName = (name, descriptor) => {
   const params = descriptor.args.map(arg => arg.type).join(',');
@@ -151,6 +153,7 @@ export default {
     hasLoaded: false,
     error: null,
     domains: [],
+    truncatePackageName,
     selected: {
       domain: null,
       mBean: null,

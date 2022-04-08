@@ -19,7 +19,7 @@
     <div class="modal-background" @click="abort" />
     <div class="modal-content">
       <div class="modal-card">
-        <header class="modal-card-head">
+        <header class="modal-card-head is-block">
           <p class="modal-card-title" v-text="name" />
         </header>
 
@@ -28,7 +28,7 @@
             <div class="field" v-for="(arg, idx) in descriptor.args" :key="arg.name">
               <label class="label">
                 <span v-text="arg.name" />
-                <small class="is-muted has-text-weight-normal" v-text="arg.type" />
+                <small class="is-muted has-text-weight-normal pl-1" v-text="arg.type" />
               </label>
               <div class="control">
                 <input type="text" class="input" v-model="args[idx]">
@@ -214,3 +214,9 @@
     },
   }
 </script>
+
+<style scoped>
+.modal-card-title {
+  word-break: break-all;
+}
+</style>
