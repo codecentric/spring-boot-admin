@@ -16,10 +16,8 @@
 
 <template>
   <div>
-    <div class="field is-grouped">
-      <div class="control" v-if="application.instances.length > 1">
-        <sba-toggle-scope-button :instance-count="application.instances.length" v-model="scope" />
-      </div>
+    <div class="field is-grouped control" v-if="application.instances.length > 1">
+      <sba-toggle-scope-button :instance-count="application.instances.length" v-model="scope" />
     </div>
 
     <sba-alert v-if="error" :error="error" :title="$t('instances.jolokia.mbean.fetch_failed')" />
