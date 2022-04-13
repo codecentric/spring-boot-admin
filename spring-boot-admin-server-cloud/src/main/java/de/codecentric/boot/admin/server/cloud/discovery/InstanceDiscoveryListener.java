@@ -125,8 +125,8 @@ public class InstanceDiscoveryListener {
 		log.debug("Discovering new instances from DiscoveryClient");
 		Flux.fromIterable(discoveryClient.getServices()).filter(this::shouldRegisterService)
 				.flatMapIterable(discoveryClient::getInstances).filter(this::shouldRegisterInstanceBasedOnMetadata)
-				.flatMap(this::registerInstance).collect(Collectors.toSet()).flatMap(this::removeStaleInstances)
-				.subscribe((v) -> {
+				.map(ServiceInstanceDefaultPortDecorator::new).flatMap(this::registerInstance)
+				.collect(Collectors.toSet()).flatMap(this::removeStaleInstances).subscribe((v) -> {
 				}, (ex) -> log.error("Unexpected error.", ex));
 	}
 
