@@ -50,6 +50,8 @@ import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 @AdminController
 public class InstancesProxyController {
 
+	private static final String PROXY_RESPONSE_HEADER = "sba-proxy-response";
+
 	private static final String INSTANCE_MAPPED_PATH = "/instances/{instanceId}/actuator/**";
 
 	private static final String APPLICATION_MAPPED_PATH = "/applications/{applicationName}/actuator/**";
@@ -86,6 +88,8 @@ public class InstancesProxyController {
 					response.setStatusCode(clientResponse.statusCode());
 					response.getHeaders()
 							.addAll(this.httpHeadersFilter.filterHeaders(clientResponse.headers().asHttpHeaders()));
+					response.getHeaders().add(PROXY_RESPONSE_HEADER, PROXY_RESPONSE_HEADER);
+					response.getHeaders().add("Access-Control-Expose-Headers", PROXY_RESPONSE_HEADER);
 					return response.writeAndFlushWith(clientResponse.body(BodyExtractors.toDataBuffers()).window(1));
 				});
 	}

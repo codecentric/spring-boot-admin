@@ -27,7 +27,9 @@ const actuatorMimeTypes = [
   'application/json'
 ].join(',');
 
-const isInstanceActuatorRequest = url => url.match(/^instances[/][^/]+[/]actuator([/].*)?$/);
+const isInstanceActuatorRequest = error => {
+  return error.response && error.response.headers['sba-proxy-response'] === 'sba-proxy-response';
+};
 
 class Instance {
   constructor({id, ...instance}) {
@@ -39,7 +41,7 @@ class Instance {
     });
     this.axios.interceptors.response.use(
       response => response,
-      redirectOn401(error => !isInstanceActuatorRequest(error.config.baseURL + error.config.url))
+      redirectOn401(error => !isInstanceActuatorRequest(error))
     );
   }
 
