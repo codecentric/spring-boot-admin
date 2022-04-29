@@ -144,6 +144,12 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 	}
 
 	protected URI getServiceUrl(ServiceInstance instance) {
+
+		if (instance.getPort() == -1) {
+			return UriComponentsBuilder.newInstance().scheme(instance.isSecure() ? "https" : "http")
+					.host(instance.getHost()).build().toUri();
+		}
+
 		return instance.getUri();
 	}
 
