@@ -67,6 +67,9 @@ Spring Boot Admin will detect everything that looks like an URL and render it as
 ANSI color-escapes are also supported.
 You need to set a custom file log pattern as Spring Boot's default one doesn't use colors.
 
+To enforce the use of ANSI-colored output, set `spring.output.ansi.enabled=ALWAYS`.
+Otherwise Spring tries to detect if ANSI-colored output is available and might disable it.
+
 .application.properties
 ----
 logging.file.name=/var/log/sample-boot-application.log <1>
