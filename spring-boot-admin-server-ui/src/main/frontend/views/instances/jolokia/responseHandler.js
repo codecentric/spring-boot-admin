@@ -32,12 +32,7 @@ export function parseValue(data) {
 }
 
 export function responseHandler(result) {
-  if (!resultContainsErrorStatus(result)) {
-    return {
-      result: parseValue(result.data),
-      state: STATE_COMPLETED
-    }
-  } else {
+  if (resultContainsErrorStatus(result)) {
     const parsedResult = parseValue(result.data);
     let failedRequest = result.data;
 
@@ -53,6 +48,11 @@ export function responseHandler(result) {
     return {
       state: STATE_FAILED,
       error
+    }
+  } else {
+    return {
+      result: parseValue(result.data),
+      state: STATE_COMPLETED
     }
   }
 }
