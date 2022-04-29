@@ -144,7 +144,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 	}
 
 	protected URI getServiceUrl(ServiceInstance instance) {
-
+		// TODO: Mitigates an issue that is fixed in Spring Cloud Commons 3.1.2. We will remove this as soon as Spring Cloud includes the fix.
 		if (instance.getPort() == -1) {
 			return UriComponentsBuilder.newInstance().scheme(instance.isSecure() ? "https" : "http")
 					.host(instance.getHost()).build().toUri();
