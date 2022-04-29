@@ -1089,6 +1089,10 @@ In order to enable the logfile actuator endpoint you need to configure Spring Bo
 <p>ANSI color-escapes are also supported.
 You need to set a custom file log pattern as Spring Boot&#8217;s default one doesn&#8217;t use colors.</p>
 </div>
+<div class="paragraph">
+<p>To enforce the use of ANSI-colored output, set <code>spring.output.ansi.enabled=ALWAYS</code>.
+Otherwise Spring tries to detect if ANSI-colored output is available and might disable it.</p>
+</div>
 <div class="listingblock">
 <div class="title">application.properties</div>
 <div class="content">
