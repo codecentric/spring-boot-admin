@@ -85,8 +85,6 @@ Having trouble with codecentric's Spring Boot Admin? We’d like to help!
 
 [Version 2.5.6](http://codecentric.github.io/spring-boot-admin/2.5.6/)
 
-
-
 [Version 1.5.7](http://codecentric.github.io/spring-boot-admin/1.5.7/)
 
 **Translated version**
