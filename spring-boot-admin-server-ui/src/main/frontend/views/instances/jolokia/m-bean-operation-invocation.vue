@@ -105,114 +105,101 @@
 </template>
 
 <script>
+import {
+  responseHandler,
+  STATE_EXECUTING, STATE_FAILED,
+  STATE_INPUT_ARGS,
+  STATE_PREPARED
+} from '@/views/instances/jolokia/responseHandler.js';
 
-  export default {
-    props: {
-      name: {
-        type: String,
-        required: true
-      },
-      descriptor: {
-        type: Object,
-        required: true
-      },
-      value: {
-        type: null,
-        default: null
-      },
-      onClose: {
-        type: Function,
-        required: true
-      },
-      onExecute: {
-        type: Function,
-        required: true
-      }
+export default {
+  props: {
+    name: {
+      type: String,
+      required: true
     },
-    data: () => ({
-      state: null,
-      error: null,
-      args: null,
-      result: null
-    }),
-    computed: {
-      prettyPrintedResult() {
-        if (this.result && typeof this.result === 'string') {
-          try {
-            const o = JSON.parse(this.result);
-            return JSON.stringify(o, undefined, 4);
-          } catch (e) {
-            return this.result;
-          }
-        } else if (typeof result === 'object') {
-          return JSON.stringify(this.result, undefined, 4);
-        }
-        return this.result;
-      }
+    descriptor: {
+      type: Object,
+      required: true
     },
-    methods: {
-      abort() {
-        this.onClose();
-      },
-      invoke(args) {
-        this.state = (args || this.descriptor.args.length === 0) ? 'prepared' : 'input-args';
-        this.args = args || new Array(this.descriptor.args.length);
-        this.error = null;
-        this.result = null;
-
-        if (this.state === 'prepared') {
-          this.execute()
-        }
-      },
-      async execute() {
-        this.state = 'executing';
+    value: {
+      type: null,
+      default: null
+    },
+    onClose: {
+      type: Function,
+      required: true
+    },
+    onExecute: {
+      type: Function,
+      required: true
+    }
+  },
+  data: () => ({
+    state: null,
+    error: null,
+    args: null,
+    result: null
+  }),
+  computed: {
+    prettyPrintedResult() {
+      if (this.result && typeof this.result === 'string') {
         try {
-          const result = await this.onExecute(this.args);
-          if (result.status < 400) {
-            this.result = this.parseValue(result.data);
-            this.state = 'completed';
-          } else {
-            const error = new Error(`Execution failed: ${result.data.error}`);
-            error.stacktrace = result.data.stacktrace;
-            this.state = 'failed';
-            this.error = error;
-            console.warn('Invocation failed', error);
-          }
-        } catch (error) {
-          this.state = 'failed';
-          this.error = error;
-          console.warn('Invocation failed', error);
+          const o = JSON.parse(this.result);
+          return JSON.stringify(o, undefined, 4);
+        } catch (e) {
+          return this.result;
         }
-      },
-      keyHandler(event) {
-        if (event.keyCode === 27) {
-          this.abort()
-        }
-      },
-      parseValue(data) {
-        if (Array.isArray(data)) {
-          return data.map(elem => {
-            const parsedBody = JSON.parse(elem['body']);
-            return {
-              instanceId: elem['instanceId'],
-              value: parsedBody['value']
-            };
-          });
-        } else {
-          return data.value;
-        }
+      } else if (typeof result === 'object') {
+        return JSON.stringify(this.result, undefined, 4);
+      }
+      return this.result;
+    }
+  },
+  methods: {
+    abort() {
+      this.onClose();
+    },
+    invoke(args) {
+      this.state = (args || this.descriptor.args.length === 0) ? STATE_PREPARED : STATE_INPUT_ARGS;
+      this.args = args || new Array(this.descriptor.args.length);
+      this.error = null;
+      this.result = null;
+
+      if (this.state === STATE_PREPARED) {
+        this.execute()
       }
     },
-    created() {
-      this.invoke();
+    async execute() {
+      this.state = STATE_EXECUTING;
+      try {
+        const response = await this.onExecute(this.args);
+        const {result, state, error} = responseHandler(response);
+        this.result = result;
+        this.state = state;
+        this.error = error;
+      } catch (error) {
+        this.state = STATE_FAILED;
+        this.error = error;
+        console.warn('Invocation failed', error);
+      }
     },
-    mounted() {
-      document.addEventListener('keyup', this.keyHandler)
+    keyHandler(event) {
+      if (event.keyCode === 27) {
+        this.abort()
+      }
     },
-    beforeDestroy() {
-      document.removeEventListener('keyup', this.keyHandler)
-    },
-  }
+  },
+  created() {
+    this.invoke();
+  },
+  mounted() {
+    document.addEventListener('keyup', this.keyHandler)
+  },
+  beforeDestroy() {
+    document.removeEventListener('keyup', this.keyHandler)
+  },
+}
 </script>
 
 <style scoped>
