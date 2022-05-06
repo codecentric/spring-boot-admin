@@ -109,19 +109,9 @@
     </scm>
     <developers>
         <developer>
-            <name>Johannes Edmeier</name>
-            <email>johannes.edmeier@codecentric.de</email>
-            <organization>codecentric AG</organization>
-        </developer>
-        <developer>
-            <name>Thomas Bosch</name>
-            <email>thomas.bosch@codecentric.de</email>
-            <organization>codecentric AG</organization>
-        </developer>
-        <developer>
-            <name>Dennis Schulte</name>
-            <email>dennis.schulte@codecentric.de</email>
-            <organization>codecentric AG</organization>
+            <name>codecentric AG</name>
+            <email>spring-boot-admin@codecentric.de</email>
+            <url>https://www.codecentric.de/</url>
         </developer>
     </developers>
     <build>
