@@ -41,7 +41,6 @@ const addExternalLink = (viewRegistry, {url, label, order}) => {
   viewRegistry.addView({
     name: url,
     href: url,
-    path: '',
     label,
     order
   });
