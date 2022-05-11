@@ -28,26 +28,21 @@
       </div>
       <div class="navbar-menu" :class="{'is-active' : showMenu}">
         <div class="navbar-end">
-          <template v-for="view in enabledViews">
-            <a
-              v-if="view.href"
-              :key="view.name"
-              :href="view.href"
-              class="navbar-item"
-              target="_blank"
-              rel="noopener noreferrer"
+          <template v-for="view in mainViews">
+            <div class="navbar-item "
+                 :key="view.name"
+                 :class="{'has-dropdown is-hoverable': hasSubitems(view.name)}"
             >
-              <component :is="view.handle" />
-            </a>
-            <router-link
-              v-else
-              :key="view.name"
-              :to="{name: view.name}"
-              class="navbar-item"
-            >
-              <component :is="view.handle" :applications="applications" :error="error" />
-            </router-link>
+              <navbar-link :applications="applications" :error="error" :has-subitems="hasSubitems(view.name)" :view="view" />
+
+              <div v-if="hasSubitems(view.name)" class="navbar-dropdown">
+                <template v-for="subitem in getSubitems(view.name)">
+                  <navbar-link :key="subitem.name" :applications="applications" :error="error" :view="subitem" />
+                </template>
+              </div>
+            </div>
           </template>
+
           <div class="navbar-item has-dropdown is-hoverable" v-if="userName">
             <a class="navbar-link">
               <font-awesome-icon icon="user-circle" size="lg" />&nbsp;<span v-text="userName" />
@@ -79,6 +74,7 @@ import {compareBy} from '@/utils/collections';
 import {getAvailableLocales} from '@/i18n';
 import moment from 'moment';
 import NavbarItemLanguageSelector from '@/shell/navbar-item-language-selector';
+import NavbarLink from '@/shell/NavbarLink.vue';
 
 const readCookie = (name) => {
   const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
@@ -86,7 +82,7 @@ const readCookie = (name) => {
 };
 
 export default {
-  components: {NavbarItemLanguageSelector},
+  components: {NavbarLink, NavbarItemLanguageSelector},
   data: () => ({
     showMenu: false,
     brand: '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>',
@@ -115,12 +111,21 @@ export default {
         view => view.handle && (typeof view.isEnabled === 'undefined' || view.isEnabled())
       ).sort(compareBy(v => v.order));
     },
+    mainViews() {
+      return this.enabledViews.filter(v => !v.parent);
+    }
   },
   methods: {
     changeLocale(locale) {
       this.$i18n.locale = locale;
       moment.locale(this.$i18n.locale);
-    }
+    },
+    getSubitems(parent) {
+      return this.enabledViews.filter(v => v.parent === parent);
+    },
+    hasSubitems(parent) {
+      return this.getSubitems(parent).length > 0;
+    },
   },
   created() {
     this.brand = sbaConfig.uiSettings.brand;

@@ -166,13 +166,19 @@ public class UiController {
 		 */
 		private final boolean iframe;
 
-		public ExternalView(String label, String url, Integer order, boolean iframe) {
+		/**
+		 * Name of the parent view in UI
+		 */
+		private final String parent;
+
+		public ExternalView(String label, String url, Integer order, boolean iframe, String parent) {
 			Assert.hasText(label, "'label' must not be empty");
 			Assert.hasText(url, "'url' must not be empty");
 			this.label = label;
 			this.url = url;
 			this.order = order;
 			this.iframe = iframe;
+			this.parent = parent;
 		}
 
 	}
