@@ -81,11 +81,21 @@ And this is how you register the top-level view.
 ----
 include::{samples-dir}/spring-boot-admin-sample-custom-ui/src/index.js[tags=customization-ui-toplevel]
 ----
-<1> Name of the view and the route to the view
-<2> Path where the view will be accessible
+<1> Name of the view and the route to the view.
+<2> Path where the view will be accessible.
 <3> The imported custom component, which will be rendered on the route.
 <4> The label for the custom view to be shown in the top navigation bar.
 <5> Order for the view. Views in the top navigation bar are sorted by ascending order.
+
+===== Example
+[source,javascript]
+----
+include::{samples-dir}/spring-boot-admin-sample-custom-ui/src/index.js[tags=customization-ui-child]
+----
+<1> References the name of the parent view.
+<2> Router path used to navigate to.
+<3> Define whether the path should be registered as child route in parent's route.
+    When set to `true`, the parent component has to implement `<router-view>`
 
 The `routes.txt` config with the added route:
 [source,text]

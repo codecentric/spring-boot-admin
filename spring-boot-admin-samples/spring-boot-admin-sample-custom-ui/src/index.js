@@ -16,6 +16,7 @@
 
 /* global SBA */
 import custom from './custom';
+import customSubitem from './custom-subitem';
 import customEndpoint from './custom-endpoint';
 
 // tag::customization-ui-toplevel[]
@@ -31,6 +32,22 @@ SBA.use({
   }
 });
 // end::customization-ui-toplevel[]
+
+// tag::customization-ui-child[]
+SBA.use({
+  install({viewRegistry}) {
+    viewRegistry.addView({
+      name: 'customSub',
+      parent: 'custom', // <1>
+      path: 'custom-sub', // <2>
+      isChildRoute: false, // <3>
+      component: customSubitem,
+      label: 'Custom Sub',
+      order: 1000,
+    });
+  }
+});
+// end::customization-ui-child[]
 
 // tag::customization-ui-endpoint[]
 SBA.use({
@@ -48,8 +65,8 @@ SBA.use({
 
     vueI18n.mergeLocaleMessage('en', { // <4>
       sidebar: {
-        custom : {
-          title : "My Custom Extensions"
+        custom: {
+          title: "My Custom Extensions"
         }
       }
     });
