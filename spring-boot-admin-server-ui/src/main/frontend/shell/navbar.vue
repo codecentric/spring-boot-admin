@@ -18,12 +18,12 @@
   <nav id="navigation" class="navbar is-fixed-top">
     <div class="container">
       <div class="navbar-brand">
-        <router-link class="navbar-item logo" to="/" v-html="brand" />
+        <router-link class="navbar-item logo" to="/" v-html="brand"/>
 
         <div class="navbar-burger burger" @click.stop="showMenu = !showMenu">
-          <span />
-          <span />
-          <span />
+          <span/>
+          <span/>
+          <span/>
         </div>
       </div>
       <div class="navbar-menu" :class="{'is-active' : showMenu}">
@@ -33,11 +33,12 @@
                  :key="view.name"
                  :class="{'has-dropdown is-hoverable': hasSubitems(view.name)}"
             >
-              <navbar-link :applications="applications" :error="error" :has-subitems="hasSubitems(view.name)" :view="view" />
+              <navbar-link :applications="applications" :error="error" :has-subitems="hasSubitems(view.name)"
+                           :view="view"/>
 
               <div v-if="hasSubitems(view.name)" class="navbar-dropdown">
                 <template v-for="subitem in getSubitems(view.name)">
-                  <navbar-link :key="subitem.name" :applications="applications" :error="error" :view="subitem" />
+                  <navbar-link :key="subitem.name" :applications="applications" :error="error" :view="subitem"/>
                 </template>
               </div>
             </div>
@@ -45,17 +46,19 @@
 
           <div class="navbar-item has-dropdown is-hoverable" v-if="userName">
             <a class="navbar-link">
-              <font-awesome-icon icon="user-circle" size="lg" />&nbsp;<span v-text="userName" />
+              <font-awesome-icon icon="user-circle" size="lg"/>&nbsp;<span v-text="userName"/>
             </a>
             <div class="navbar-dropdown">
-              <a class="navbar-item">
-                <form action="logout" method="post">
-                  <input v-if="csrfToken" type="hidden" :name="csrfParameterName" :value="csrfToken">
-                  <button class="button is-icon" type="submit" value="logout">
-                    <font-awesome-icon icon="sign-out-alt" />&nbsp;<span v-text="$t('navbar.logout')" />
-                  </button>
-                </form>
-              </a>
+              <navbar-link v-for="userSubMenuItem in userSubMenuItems" :key="userSubMenuItem.name"
+                           :applications="applications" :error="error" :view="userSubMenuItem"/>
+
+              <form action="logout" method="post">
+                <input v-if="csrfToken" type="hidden" :name="csrfParameterName" :value="csrfToken">
+                <button class="button is-icon" type="submit" value="logout">
+                  <font-awesome-icon icon="sign-out-alt"/>&nbsp;<span v-text="$t('navbar.logout')"/>
+                </button>
+              </form>
+
             </div>
           </div>
           <navbar-item-language-selector v-if="availableLocales.length > 1" :current-locale="$i18n.locale"
@@ -113,6 +116,9 @@ export default {
     },
     mainViews() {
       return this.enabledViews.filter(v => !v.parent);
+    },
+    userSubMenuItems() {
+      return this.enabledViews.filter(v => v.parent === 'user');
     }
   },
   methods: {
@@ -157,6 +163,22 @@ export default {
 
   img {
     margin-right: 0.5em;
+  }
+}
+</style>
+
+<style lang="scss" scoped>
+.button {
+  padding: 0.375rem 3rem 0.375rem 1rem;
+  font-size: inherit;
+  color: inherit;
+  text-align: left;
+  width: 100%;
+  display: block;
+
+  &:hover {
+    background-color: hsl(0deg, 0%, 96%);
+    color: hsl(0deg, 0%, 4%);
   }
 }
 </style>
